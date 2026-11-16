@@ -1,0 +1,15 @@
+{
+  "base": "ab7ebf3caf98e21f84f2ec3efdd66ee1b865b218",
+  "baseTree": "2561404aaaa9f184217d49304e26f956875b74c6",
+  "unchangedTrackedFiles": 19580,
+  "unchangedManifestEntries": 1889,
+  "mismatches": [],
+  "allowedChanges": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/catalogCameraSmoke.test.js",
+    "tests/unit/chervilCatalog.test.js"
+  ],
+  "freeBytes": 57079664640,
+  "staging": "f51518946685c18a895e73309c939a5a54e75d84",
+  "stagingTree": "7dd651525fccdb9b0de4a903957eed40b7960d27"
+}

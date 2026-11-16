@@ -1,0 +1,45 @@
+{
+  "referenceVehicle": "Early-1992 France/European LHD Delta HF Integrale Evoluzione I 1995cc turbo 16V, five-speed manual; non-catalyst selection assumption, not Swiss 8V Kat or 1993 Evo II",
+  "sources": [
+    {
+      "url": "https://www.brochure-catalogue-voiture-neuve.fr/brochures/lancia/delta/lancia-delta-1979/FRA-04-1992-HF-INTEGRALE/",
+      "fields": [
+        "tuning.powerHp",
+        "tuning.torqueLbFt",
+        "tuning.weightKg",
+        "tuning.engineDisplacementL",
+        "dimensions.lengthM",
+        "dimensions.widthM",
+        "setup.tireSize",
+        "tuning.centerDifferentialBalance"
+      ],
+      "access": "Manufacturer brochure PDF preview downloaded and visually read: page17 technical table; page18 IV/92 imprint. 205ch CEE/151kW at5750rpm;298Nm at3500rpm;1300kg ordre de marche;205/50ZR15;3900x1770mm;47/53 split."
+    }
+  ],
+  "verifiedFacts": {
+    "powerChCEE": 205,
+    "powerKw": 151,
+    "powerRpm": 5750,
+    "torqueNm": 298,
+    "torqueRpm": 3500,
+    "massKg": 1300,
+    "massBasis": "poids en ordre de marche; brochure does not define driver allowance",
+    "displacementCc": 1995,
+    "valves": 16,
+    "topSpeedKph": 220,
+    "zeroTo100Sec": 5.7,
+    "frontTorquePercent": 47
+  },
+  "gearingStatus": {
+    "individualRatios": "Estimates; not supported by the inspected period brochure",
+    "finalDrive": "Estimated 3.9; not factory verified"
+  },
+  "estimates": [
+    "Five forward gear ratios3.5/2.176/1.5/1.156/.917, reverse3.545 and final3.9 are simulation estimates, not verified factory gearing. Auto Assist is game automation of5MT, not a factory automatic.",
+    "Non-catalyst16V selected for this French-market Evoluzione I; inspected brochure does not explicitly say catalyst absent. Do not infer emissions certification. Swiss8VKat and laterEvoII215PS excluded. Common210PS claims are not substituted for the period205chCEE/151kW rating.",
+    "Wheelbase2.479m,tracks1.502/1.500m,height1.365m are unverified dimensional estimates. Mass retained exactly as running-order1300kg, not reclassified as driver-inclusive or dry.",
+    "All suspension,braking,grip,pressure36psi,alignment,differential locking,drag.41,CG.49m,frontweight60%,steering15:1,body profile/clearance,efficiency84%,idle850/redline6500/limiter6800 and torque curve except manufacturer peak anchors are simulation estimates. Nominal.293m tire radius is calculated, not measured loaded radius.",
+    "151kW converted to mechanical hp and298Nm to lb-ft; runtime scalar rounding.5.5s0-60 is estimated distinct from brochure5.7s0-100. No measured top-speed/acceleration calibration claimed.",
+    "Original cream/forest-green 2994 artwork, fictional repair details. Shared tires and steering wheel. Graphical wheel centers and cockpit anchors measured in generated PNGs."
+  ]
+}

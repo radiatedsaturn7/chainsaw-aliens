@@ -1,0 +1,25 @@
+{
+  "baseCommit": "0cb3fefef42125db37af615893a8f3f208c0eb5b",
+  "baseTree": "134d1bc4a536477958312ed82d536e6cc72503dc",
+  "checkedTrackedFiles": {
+    "data/server-storage/files/cars/": 641,
+    "data/server-storage/files/races/": 700
+  },
+  "existingManifestEntries": {
+    "cars": 100,
+    "races": 245
+  },
+  "mismatches": [],
+  "allPriorAssetsAndQaUnchanged": true,
+  "allowedExistingFileChanges": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/catalogCameraSmoke.test.js",
+    "tests/unit/speedwellCatalog.test.js",
+    "tests/unit/tamariskCatalog.test.js",
+    "tests/unit/valerianCatalog.test.js"
+  ],
+  "freeBytes": 61186707456,
+  "stagingFetched": "58c2ec08e9457b778a19f617fad3aded4e4fa0ee",
+  "stagingTree": "7e1315cdc36f12c3be7b8250e39ca4c251595722",
+  "stagingTreeMatchesOriginalBase": true
+}

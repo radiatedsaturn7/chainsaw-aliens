@@ -1,3 +1,4 @@
+import {triangulateRaceSurfaceQuad} from '../racing/RaceTerrainClipping.js';
 import {vehicleFeedbackRows} from '../racing/RaceVehicleFeedback.js';
 import {prepareSkyboxTexture} from '../racing/RaceSkyboxTexture.js';
 import {campaignConditionSnapshot,campaignRunSummary} from '../garage/CampaignObjectives.js';
@@ -68,7 +69,7 @@ import {createMechanicalState,applyMechanicalMission,mechanicalMissionVariables}
 import {applyWheelRaceInput} from '../hardware/wheels/applyWheelRaceInput.js';
 import {normalizeRaceVisualFx,skyboxImageGeometry,drawRaceSkySun,drawRaceSpeedFx,captureSkySun,localSunPoints,drawRaceSunGlare,advanceFxPreviewDistance,drawFxPreviewTrees} from '../racing/RaceVisualFx.js';
 import {editRaceVisualFx,skyboxEnvironment,applySkyboxEnvironment} from './RaceVisualFxEditor.js';
-import {raceBrightness,raceStartsWithHeadlights,updateRaceLighting} from '../racing/RaceLighting.js';
+import {raceBrightness,nightAmbientBrightness,raceStartsWithHeadlights,updateRaceLighting} from '../racing/RaceLighting.js';
 import {normalizeCarGauges,gaugeArtRefs,drawCarGauges,GAUGE_ART_FIELDS} from '../racing/CarGauges.js';
 import {enterCarGauges,drawCarGaugePanel,gaugePointer} from './CarGaugeEditor.js';
 import {migrateCarFx,normalizeCarFx,normalizeCarFxView,getCarFxArtRefs,drawCarFx,carFxDrivingState,carFxBodyFrame} from '../racing/CarFx.js';
@@ -16992,7 +16993,7 @@ export default class RaceEditor {
 
   getRaceLightingBrightness() {
     const weather=this.getRaceWeatherState();
-    const base=this.getRaceRenderBrightness()*(1-(weather.id==='storm'?.55:weather.id==='rain'?.25:weather.id==='snow'?.2:0)*this.getRaceWeatherVisualIntensity(weather));
+    const base=nightAmbientBrightness(this.selectedRace,this.getRaceRenderBrightness())*(1-(weather.id==='storm'?.55:weather.id==='rain'?.25:weather.id==='snow'?.2:0)*this.getRaceWeatherVisualIntensity(weather));
     return base+(1-base)*this.getRaceLightningFlash();
   }
 
@@ -38120,7 +38121,7 @@ export default class RaceEditor {
   getRaceThreeSurfacePoint(point = {}, source = '') {
     const cleanSource = String(source || '');
     if (cleanSource === 'terrain' || cleanSource.includes('terrain-roadside') || cleanSource.includes('seam-underlap')) return point;
-    if (point?.roadDeckElevation === true || cleanSource.startsWith('road-texture') || cleanSource.startsWith('boundary-texture')) return point;
+    if (point?.roadDeckElevation === true || cleanSource.startsWith('road-texture') || cleanSource.startsWith('shoulder-texture') || cleanSource.startsWith('boundary-texture')) return point;
     if (/^(bridge|tunnel|water):/.test(cleanSource)
       || (this.selectedRace?.road?.network && cleanSource === 'road-canonical')) return point;
     const x = Number(point?.x || 0);
@@ -38192,10 +38193,17 @@ export default class RaceEditor {
       const originX = Math.floor((xs.length ? Math.min(...xs) : 0) / scale) * scale;
       const originZ = Math.floor((zs.length ? Math.min(...zs) : 0) / scale) * scale;
       const liftM = this.getRaceThreeMeshLiftM(mesh);
-      for (let index = 1; index < points.length - 1; index += 1) {
-        pushVertex(points[0], color, { liftM, originX, originZ, scale });
-        pushVertex(points[index], color, { liftM, originX, originZ, scale });
-        pushVertex(points[index + 1], color, { liftM, originX, originZ, scale });
+      // Ribbon order is far-left, far-right, near-right, near-left. Use
+      // the same diagonal as the canonical road/contact mesh, especially on
+      // banked or folded tight turns; an arbitrary fan describes another deck.
+      const surfaceRibbon = /^(road|shoulder|boundary)-texture/.test(mesh.source || '');
+      const triangles = surfaceRibbon && points.length === 4
+        ? triangulateRaceSurfaceQuad([points[3], points[0], points[1], points[2]])
+        : Array.from({length: points.length - 2}, (_, i) => [points[0], points[i+1], points[i+2]]);
+      for (const triangle of triangles) {
+        const first = triangle.indexOf(points[0]);
+        const ordered = first > 0 ? [...triangle.slice(first), ...triangle.slice(0, first)] : triangle;
+        for (const point of ordered) pushVertex(point, color, { liftM, originX, originZ, scale });
       }
     });
     if (positions.length < 9) return null;
@@ -38619,7 +38627,7 @@ export default class RaceEditor {
     const lightDimensions=this.getRaceCarDimensions(lightCar);
     const brightness=this.playtestSession?this.getRaceLightingBrightness():1;
     const rearLights=carFxDrivingState(this.playtestSession,this.raceInput);
-    updateRaceLighting(renderer,{brightness,braking:rearLights.braking,reverse:rearLights.reverse,lampPower:this.playtestSession?.mechanical?.effects?.lights??1,highBeams:this.playtestSession?.mechanical?.highBeams===true,auxIntensity:this.playtestSession?.mechanical?.auxLights?(this.playtestSession?.mechanical?.effects?.lights??1):0,visibilityDistanceM:weatherState.visibilityDistanceM,cameraPosition:{x:Number(camera.x||0),y:cameraY,z:Number(camera.z||0)},headlightIntensity:this.raceHeadlightsEnabled()?(this.playtestSession?.mechanical?.effects?.lights??1):0,pose:lightPose?{...lightPose,y:lightPose.elevation*RACE_THREE_ELEVATION_M}:null,dimensions:{width:lightDimensions.widthM,length:lightDimensions.lengthM}});
+    updateRaceLighting(renderer,{brightness,night:Boolean(this.playtestSession&&this.selectedRace?.timeOfDay==='night'),braking:rearLights.braking,reverse:rearLights.reverse,lampPower:this.playtestSession?.mechanical?.effects?.lights??1,highBeams:this.playtestSession?.mechanical?.highBeams===true,auxIntensity:this.playtestSession?.mechanical?.auxLights?(this.playtestSession?.mechanical?.effects?.lights??1):0,visibilityDistanceM:weatherState.visibilityDistanceM,cameraPosition:{x:Number(camera.x||0),y:cameraY,z:Number(camera.z||0)},headlightIntensity:this.raceHeadlightsEnabled()?(this.playtestSession?.mechanical?.effects?.lights??1):0,pose:lightPose?{...lightPose,y:lightPose.elevation*RACE_THREE_ELEVATION_M}:null,dimensions:{width:lightDimensions.widthM,length:lightDimensions.lengthM}});
     renderer.threeRenderer.clear(true, true, true);
     syncRaceThreeDrivingLine(this, renderer);
     const renderStartMs = this.getNowMs();

@@ -1,0 +1,48 @@
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (246.350839ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (9.302379ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (53.785397ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (11803.054356ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (47.475154ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (4488.192884ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (264.577572ms)
+✔ requires explicit source data and mappings (0.83346ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (96.493182ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (237.752074ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (1.95361ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (54.100099ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (69.154715ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (973.056346ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (1097.327159ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (1193.908237ms)
+✔ performance is finite, deterministic, responds to upgrades and balances E1 through S (3.322303ms)
+✔ saved variants remain unique, exclude player, then fill only with the selected default (0.912308ms)
+✔ eligibility, category and performance filters apply together; fallback cannot select player (0.608272ms)
+✔ missing acceleration and legacy null selection use valid defaults (0.44685ms)
+✔ PI class ceilings are inclusive from E1 100 through S 1000 (0.371517ms)
+✔ dry-tarmac PI ignores stale performance claims and responds to gearing, driven wheels and tire compounds (0.80694ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (6997.086022ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (7829.544297ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.442784ms)
+✔ legacy expectation adds only explicit absent gauge defaults and keeps all authored values (7.139376ms)
+✔ Lobelia is final2005 GM basecoupe LS2 standard6MT with staggered tires (2.511767ms)
+✔ Lobelia verified standard six-speed gearing survives native editor manual and assist roundtrip (183.731644ms)
+✔ Lobelia has eight distinct original exterior frames, shared tire layers and original hashes (212.296384ms)
+✔ separate staging branch retains 99 playable documents and excludes3 legacy system templates (615.121906ms)
+✔ Lobelia 2005 published wheel graphics cover original opening heights without changing physical radius (673.58728ms)
+✔ two-output force allocation exactly matches generic distribution (140.818712ms)
+✔ Tamarisk is the280hp US Select AWD mild hybrid, not TurboS or PHEV (2.018176ms)
+✔ Tamarisk verified eight-speed gearing survives native editor manual and assist roundtrip (155.029041ms)
+✔ Tamarisk has eight distinct original exterior frames, shared tire layers and original hashes (217.638244ms)
+✔ separate staging branch retains 97 playable documents and excludes3 legacy system templates (369.187007ms)
+✔ Valerian is1992 US Turbo3door catalyst160hp SAE net (2.389333ms)
+✔ Valerian verified period gearing survives native editor manual and assist roundtrip (210.06348ms)
+✔ Valerian has eight distinct original exterior frames, shared tire layers and original hashes (355.517664ms)
+✔ separate staging branch retains 98 playable documents and excludes3 legacy system templates (301.00735ms)
+ℹ tests 40
+ℹ suites 0
+ℹ pass 40
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 17132.705259

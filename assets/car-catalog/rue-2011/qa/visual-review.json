@@ -1,0 +1,17 @@
+{
+  "reviewed": [
+    "All eight actual production editor exterior composites",
+    "Moving desktop cockpit",
+    "Moving handheld cockpit"
+  ],
+  "findings": [
+    "Every orientation distinct and complete in cell; shared animated wheels cover openings",
+    "Early LHD twin-level dash fitted; live speed, battery-input kW, gear and charge bar clear",
+    "Shared wheel seated below active displays; no logos or copied OEM pixels"
+  ],
+  "limitations": [
+    "Battery-input power includes modeled losses and is not mechanical motor output",
+    "Original tire/steering textures are fictional replacements",
+    "Gameplay movement is not a real-world performance calibration"
+  ]
+}

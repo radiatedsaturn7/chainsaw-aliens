@@ -1,0 +1,18 @@
+{
+  "stagingFilesByteExact": {
+    "src/racing/RaceCodriver.js": true,
+    "src/radio/RadioLibrary.js": true,
+    "src/radio/RadioPlayer.js": true,
+    "src/ui/RaceEditor.js": true,
+    "tests/unit/raceCodriver.test.js": true,
+    "tests/unit/raceIntro.test.js": true,
+    "tests/unit/racePauseRestart.test.js": true,
+    "tests/unit/raceTriggers.test.js": true,
+    "tests/unit/radioPlayer.test.js": true
+  },
+  "priorExternalOriginalsVerified": {
+    "/workspace/references/240z1971/1971-fsm.zip": true,
+    "/workspace/references/240z1971/manual/71 DATSUN S30 SERVICE MANUAL/1971 S30 Service Manual.pdf": true,
+    "/workspace/references/240z1971/1970-original-brochure.pdf": true
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "harebell-1970",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 800,
+    "gear": 1,
+    "elapsed": 2583.2333333333313,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "harebell-1970",
+    "x": 0,
+    "z": 12.165369987487793,
+    "speed": 7.894388198852539,
+    "rpm": 3184.99951171875,
+    "gear": 1,
+    "elapsed": 6699.733333333332,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "harebell-1970",
+    "x": -0.01243599969893694,
+    "z": 37.65854263305664,
+    "speed": 14.360837936401367,
+    "rpm": 5798.62890625,
+    "gear": 1,
+    "elapsed": 8982.933333333336,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

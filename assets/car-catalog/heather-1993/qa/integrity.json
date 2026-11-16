@@ -1,0 +1,18 @@
+{
+  "baseCommit": "88f6854d9c13dc8bcbf2d308d03f2563b33c6e8c",
+  "baseTree": "b7f9ff2f39a2365a056911bb5fcf7b8e3e6152b3",
+  "checkedTrackedFiles": {
+    "data/server-storage/files/cars/": 635,
+    "data/server-storage/files/races/": 700
+  },
+  "existingManifestEntries": {
+    "cars": 97,
+    "races": 245
+  },
+  "mismatches": [],
+  "meadowsweetAssetsUnchanged": true,
+  "freeBytes": 61359575040,
+  "stagingFetched": "58c2ec08e9457b778a19f617fad3aded4e4fa0ee",
+  "stagingTree": "7e1315cdc36f12c3be7b8250e39ca4c251595722",
+  "stagingTreeMatchesOriginalBase": true
+}

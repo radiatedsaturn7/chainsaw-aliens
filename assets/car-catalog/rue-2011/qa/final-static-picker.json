@@ -1,0 +1,54 @@
+{
+  "first": {
+    "selected": "2005 Flint Coupe",
+    "start": 0,
+    "visible": [
+      "2005 Flint Coupe",
+      "2018 Kestrel 660",
+      "2023 Volt-Hound GT",
+      "2024 Caravan-9"
+    ],
+    "targetIndex": 92,
+    "selectedIndex": 0,
+    "loadedCars": 7,
+    "totalChoices": 120,
+    "carId": "flint-coupe-2005",
+    "art": [
+      {
+        "ref": "catalog-flint-coupe-2005-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  },
+  "later": {
+    "selected": "Rue 2011",
+    "start": 92,
+    "visible": [
+      "Rue 2011",
+      "Saffron 135 2010",
+      "Sainfoin 1985",
+      "Scabious 2015"
+    ],
+    "targetIndex": 92,
+    "selectedIndex": 92,
+    "loadedCars": 99,
+    "totalChoices": 120,
+    "carId": "rue-2011",
+    "art": [
+      {
+        "ref": "catalog-rue-2011-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  }
+}

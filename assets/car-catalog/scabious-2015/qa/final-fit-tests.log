@@ -1,0 +1,13 @@
+✔ Scabious retains US two-door standard-power manual specifications (1.243876ms)
+✔ Scabious explicit estimated gearing survives native editor manual and assist roundtrip (74.813112ms)
+✔ Scabious has eight distinct original exterior frames, shared tire layers and original hashes (137.277712ms)
+✔ separate staging branch retains 103 playable documents and excludes3 legacy system templates (279.087362ms)
+✔ Scabious 2015 published wheel graphics cover original opening heights without changing physical radius (378.958611ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 772.553411

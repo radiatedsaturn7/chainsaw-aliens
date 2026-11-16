@@ -1,0 +1,18 @@
+
+Running 4 tests using 1 worker
+
+(node:25327) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:25327) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/playwright/chervil-driving.spec.js:3:34 › Chervil desktop keyboard moving gameplay (41.8s)
+  ✓  2 tests/playwright/chervil-driving.spec.js:3:34 › Chervil handheld touch moving gameplay (23.7s)
+  ✓  3 tests/playwright/chervil-preview.spec.js:6:1 › Chervil 1973 actual editor preview composites exterior/cockpit and advances production physics (30.4s)
+  ✓  4 tests/playwright/chervil-static-picker.spec.js:3:29 › Chervil desktop keyboard static picker initial page, later page, cockpit and keyboard drive (1.1m)
+
+  4 passed (2.7m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

@@ -2,9 +2,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {gzipSync,gunzipSync} from 'node:zlib';
-import {raceBrightness} from '../../src/racing/RaceLighting.js';
 
-// One-time library migration, also safe to rerun after importing older races.
+// Restore artwork visibility after the old sky/ambient matching migration.
+// Safe to rerun after importing older races; scene lighting stays untouched.
 // Keep the independent editor controls: this sets values, not a runtime lock.
 const root=fileURLToPath(new URL('../../data/server-storage/files/',import.meta.url));
 const manifest=JSON.parse(fs.readFileSync(path.join(root,'manifest.json')));
@@ -16,7 +16,7 @@ for(const relative of Object.values(manifest.folders.races)){
  const doc=compact?JSON.parse(gunzipSync(Buffer.from(stored.data,'base64'))):stored;
  if(!doc.race)throw Error('Missing race: '+relative);
  checked++;
- const brightness=raceBrightness(doc.race);
+ const brightness=1;
  if(doc.race.visualFx?.skyBrightness===brightness)continue;
  changed++;
  if(check)continue;

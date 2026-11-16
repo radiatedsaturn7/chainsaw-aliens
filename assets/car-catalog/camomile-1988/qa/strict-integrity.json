@@ -1,0 +1,26 @@
+{
+  "batch": {
+    "base": "0ecdf094fce29d1f2f596f0310c7b4ee7cec54b7",
+    "tree": "4d14d52c7e2c8b8090484446d4bfb08b07d97b3a",
+    "unchangedTrackedFiles": 18780,
+    "unchangedManifestEntries": 1847,
+    "allowedExistingFileChanges": [
+      "data/server-storage/files/manifest.json",
+      "tests/unit/catalogCameraSmoke.test.js",
+      "tests/unit/lobeliaCatalog.test.js"
+    ],
+    "mismatches": []
+  },
+  "immediate": {
+    "base": "9ba1316442c1f4293b63adc97e5f751b8d8b2a5f",
+    "tree": "5a45b138822465809bf3b9afc39f99cfedbe6d9c",
+    "unchangedTrackedFiles": 18822,
+    "unchangedManifestEntries": 1850,
+    "allowedExistingFileChanges": [
+      "data/server-storage/files/manifest.json",
+      "tests/unit/catalogCameraSmoke.test.js",
+      "tests/unit/gorseCatalog.test.js"
+    ],
+    "mismatches": []
+  }
+}

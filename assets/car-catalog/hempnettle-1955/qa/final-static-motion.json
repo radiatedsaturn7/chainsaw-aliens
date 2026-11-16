@@ -1,0 +1,37 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "hempnettle-1955",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 800,
+    "gear": 1,
+    "elapsed": 1666.5333333333306,
+    "throttle": 0,
+    "camera": "first-person"
+  },
+  "moving": {
+    "id": "hempnettle-1955",
+    "x": 0.00039000000106170774,
+    "z": 11.298465728759766,
+    "speed": 7.633401870727539,
+    "rpm": 2965.045166015625,
+    "gear": 1,
+    "elapsed": 6016.433333333325,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "cockpit": {
+    "id": "hempnettle-1955",
+    "x": 0.02281299978494644,
+    "z": 31.639760971069336,
+    "speed": 12.281481742858887,
+    "rpm": 4866.85302734375,
+    "gear": 1,
+    "elapsed": 8066.433333333325,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

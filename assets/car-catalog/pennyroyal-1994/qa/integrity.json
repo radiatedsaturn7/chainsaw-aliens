@@ -1,0 +1,15 @@
+{
+  "base": "46089a568ae3622b67bf599a2f58495a80590e35",
+  "baseTree": "29117711727340b4e994c7c67538b2e07b0b073f",
+  "unchangedTrackedFiles": 19156,
+  "unchangedManifestEntries": 1868,
+  "mismatches": [],
+  "allowedChanges": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/angelicaCatalog.test.js",
+    "tests/unit/catalogCameraSmoke.test.js"
+  ],
+  "freeBytes": 58233974784,
+  "staging": "2b699e5d92fef0f520913cfac3a3694c9ca10286",
+  "stagingTree": "7dd651525fccdb9b0de4a903957eed40b7960d27"
+}

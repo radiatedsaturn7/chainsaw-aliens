@@ -1,0 +1,37 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "scabious-2015",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 800,
+    "gear": 1,
+    "elapsed": 1066.666666666667,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "scabious-2015",
+    "x": 0.0017610000213608146,
+    "z": 12.277976036071777,
+    "speed": 8.134142875671387,
+    "rpm": 3484.271484375,
+    "gear": 1,
+    "elapsed": 4999.866666666668,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "scabious-2015",
+    "x": 0.005177000071853399,
+    "z": 38.55924606323242,
+    "speed": 14.217118263244629,
+    "rpm": 4026.814697265625,
+    "gear": 2,
+    "elapsed": 7299.7666666666655,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

@@ -1,0 +1,12 @@
+✔ Camomile is FranceMY1988 2CV6 Special with separate ISO and DIN ratings (1.756013ms)
+✔ Camomile explicit estimated gearing survives native editor manual and assist roundtrip (154.485475ms)
+✔ Camomile has eight distinct original exterior frames, shared tire layers and original hashes (352.763025ms)
+✔ separate staging branch retains 101 playable documents and excludes3 legacy system templates (249.409704ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1220.301586

@@ -1,0 +1,15 @@
+{
+  "base": "43ef7558d413ab457735866e613858ec0992c7b3",
+  "baseTree": "88ce07441afdc3dff8f89cd3bdb601bb39339ce7",
+  "unchangedTrackedFiles": 20233,
+  "unchangedManifestEntries": 1919,
+  "mismatches": [],
+  "allowedChanges": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/catalogCameraSmoke.test.js",
+    "tests/unit/osierCatalog.test.js"
+  ],
+  "freeBytes": 56118947840,
+  "staging": "f51518946685c18a895e73309c939a5a54e75d84",
+  "stagingTree": "7dd651525fccdb9b0de4a903957eed40b7960d27"
+}

@@ -2,12 +2,15 @@ import {firstPersonCameraFrame} from './RaceFirstPersonCamera.js';
 export const NIGHT_BRIGHTNESS=.05;
 // Visibility fill for car artwork, independent of the environment and lamps.
 export const CAR_MIN_BRIGHTNESS=.4;
-export const LOW_BEAM_REACH_M=75,HIGH_BEAM_REACH_M=140;
-// https://www.lazerlamps.com.au/eng/universal-rally-kit-2-lamp.html
-// Lazer two-lamp rally kit: 1 lux at 900 m, approximately 60° total spread.
-export const RALLY_LIGHT_REACH_M=900;
+// Usable visual reach, independent of lamp intensity (not a photometric rating).
+export const LOW_BEAM_REACH_M=55,HIGH_BEAM_REACH_M=160;
+export const RALLY_LIGHT_REACH_M=240;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 export function raceBrightness(race={}){return race.brightness!=null&&Number.isFinite(Number(race.brightness))?clamp(Number(race.brightness),0,1):race.timeOfDay==='night'?NIGHT_BRIGHTNESS:1;}
+// A small night fill reveals ground forms without affecting sky art or daylight.
+export function nightAmbientBrightness(race={},brightness=raceBrightness(race)){
+ return race.timeOfDay==='night'&&brightness>0?brightness+.04*(1-brightness):brightness;
+}
 export function raceStartsWithHeadlights(race={}){return typeof race.mechanicalMission?.headlights==='boolean'?race.mechanicalMission.headlights:race.timeOfDay==='night'||raceBrightness(race)<.5||['rain','storm','snow'].includes(race.weather);}
 export function applyRaceEnvironmentDraft(draft,result){
  const next={...result};
@@ -26,6 +29,7 @@ export function rearLightPose(pose={}, {width=1.8,length=4.5}={}){
 const declarations=`
  varying vec3 vRtgWorld;
  uniform float rtgAmbient;
+ uniform float rtgNight;
  uniform float rtgHeadlights;
  uniform float rtgHighBeam;
  uniform float rtgAux;
@@ -41,27 +45,30 @@ const declarations=`
  uniform vec3 rtgLampRight;
  uniform vec3 rtgLampForward;
  uniform vec3 rtgLampUp;
- float rtgBeam(vec3 origin,float reach,float spread,float dipped){
+ float rtgBeam(vec3 origin,float reach,float spread,float dipped,float strength,float falloff,float height){
   vec3 delta=vRtgWorld-origin;
   float ahead=dot(delta,rtgLampForward);
   if(ahead<=0.0)return 0.0;
   float distanceM=length(delta);
   float vertical=dot(delta,rtgLampUp)/max(ahead,0.01);
   float side=abs(dot(delta,cross(rtgLampForward,rtgLampUp)))/max(ahead,0.01);
-  float cone=(1.0-smoothstep(spread*.4,spread,side))
-    *(1.0-smoothstep(.08,.20,abs(vertical)));
+  float cone=(1.0-smoothstep(spread*.25,spread,side))
+    *(1.0-smoothstep(height*.3,height,abs(vertical-mix(.012,0.0,dipped))));
   if(dipped>.5)cone*=1.0-smoothstep(-.012,.002,vertical);
   float transmission=exp(-2.996*distanceM/max(1.0,rtgVisibility));
-  return .5*reach*reach/max(1.0,distanceM*distanceM)*cone*transmission
+  return .5*strength/(1.0+distanceM*distanceM/(falloff*falloff))*cone*transmission
     *(1.0-smoothstep(reach,reach*1.33,distanceM));
  }
  float rtgLighting(){
-  float reach=mix(75.0,140.0,rtgHighBeam);
-  float spread=mix(.35,.22,rtgHighBeam);
+  float reach=mix(${LOW_BEAM_REACH_M.toFixed(1)},${HIGH_BEAM_REACH_M.toFixed(1)},rtgHighBeam);
+  float spread=mix(.22,.24,rtgHighBeam);
+  float strength=mix(2.4,3.2,rtgHighBeam);
+  float falloff=mix(35.0,85.0,rtgHighBeam);
+  float height=mix(.16,.20,rtgHighBeam);
   float lux=0.0;
-  if(rtgHeadlights>0.001)lux=(rtgBeam(rtgLampLeft,reach,spread,1.0-rtgHighBeam)+rtgBeam(rtgLampRight,reach,spread,1.0-rtgHighBeam))*rtgHeadlights;
-  if(rtgAux>0.001)lux+=(rtgBeam(rtgLampLeft,900.0,.57735,0.0)+rtgBeam(rtgLampRight,900.0,.57735,0.0))*rtgAux;
-  return rtgAmbient+(1.0-rtgAmbient)*lux/(lux+1.0);
+  if(rtgHeadlights>0.001)lux=(rtgBeam(rtgLampLeft,reach,spread,1.0-rtgHighBeam,strength,falloff,height)+rtgBeam(rtgLampRight,reach,spread,1.0-rtgHighBeam,strength,falloff,height))*rtgHeadlights;
+  if(rtgAux>0.001)lux+=(rtgBeam(rtgLampLeft,${RALLY_LIGHT_REACH_M.toFixed(1)},.62,0.0,2.4,110.0,.28)+rtgBeam(rtgLampRight,${RALLY_LIGHT_REACH_M.toFixed(1)},.62,0.0,2.4,110.0,.28))*rtgAux;
+  return rtgAmbient+(1.0-rtgAmbient)*.88*lux/(lux+1.0);
  }
  // Short, broad pools behind the bumper; a little forward spill lights the
  // rear bodywork without turning the tail lamps into rear-facing headlights.
@@ -79,8 +86,18 @@ const declarations=`
   return min(color,vec3(1.0));
  }
  vec3 rtgFog(vec3 color){
-  float transmission=exp(-2.996*length(vRtgWorld-rtgCamera)/max(1.0,rtgVisibility));
-  return mix(vec3(.22,.25,.27)*rtgAmbient,color,transmission);
+  float distanceM=length(vRtgWorld-rtgCamera);
+  float transmission=exp(-2.996*distanceM/max(1.0,rtgVisibility));
+  // Clear-night aerial perspective is separate from weather extinction.
+  float nightFog=rtgNight*.55*(1.0-exp(-max(0.0,distanceM-75.0)/650.0));
+  vec3 nightColor=vec3(.10,.16,.25);
+  vec3 weatherColor=vec3(.22,.25,.27)*rtgAmbient;
+#ifdef RTG_LINEAR_FOG
+  nightColor=pow(nightColor,vec3(2.2));
+  weatherColor=pow(weatherColor,vec3(2.2));
+#endif
+  color=mix(color,nightColor,nightFog);
+  return mix(weatherColor,color,transmission);
  }
 
 `;
@@ -123,14 +140,14 @@ export function installRaceLighting(material,uniforms){
       : `gl_FragColor.rgb = rtgFog(gl_FragColor.rgb * ${light});`;
    shader.fragmentShader=shader.fragmentShader.slice(0,end)+'\n'+lighting+'\n'+shader.fragmentShader.slice(end);
   }
-  shader.fragmentShader=declarations+shader.fragmentShader;
+  shader.fragmentShader=(shader.fragmentShader.includes(opaque)?'#define RTG_LINEAR_FOG\n':'')+declarations+shader.fragmentShader;
  };
- material.customProgramCacheKey=()=>key+'|rtg-beams-rear-fog-v7'+(material.userData?.raceSnowCloud?'|snow-cloud':'')+(material.userData?.raceCarLighting?'|car-fill':'')+(material.userData?.raceSpriteEmissive?'|emissive-sprite':'')+(material.userData?.racePrecipitation?'|precipitation':'');material.needsUpdate=true;
+ material.customProgramCacheKey=()=>key+'|rtg-beams-rear-fog-v8'+(material.userData?.raceSnowCloud?'|snow-cloud':'')+(material.userData?.raceCarLighting?'|car-fill':'')+(material.userData?.raceSpriteEmissive?'|emissive-sprite':'')+(material.userData?.racePrecipitation?'|precipitation':'');material.needsUpdate=true;
 }
-export function updateRaceLighting(renderer,{brightness=1,pose=null,dimensions={},headlightIntensity=1,highBeams=false,auxIntensity=0,braking=false,reverse=false,lampPower=1,visibilityDistanceM=1e9,cameraPosition={}}={}){
- const u=renderer.raceLightingUniforms||={rtgTail:{value:0},rtgReverse:{value:0},rtgRearSpill:{value:2.475},rtgRearLeft:{value:{x:0,y:0,z:0}},rtgRearRight:{value:{x:0,y:0,z:0}},rtgHighBeam:{value:0},rtgAux:{value:0},rtgVisibility:{value:1e9},rtgCamera:{value:{x:0,y:0,z:0}},rtgAmbient:{value:1},rtgHeadlights:{value:0},rtgLampLeft:{value:{x:0,y:0,z:0}},rtgLampRight:{value:{x:0,y:0,z:0}},rtgLampForward:{value:{x:0,y:0,z:1}},rtgLampUp:{value:{x:0,y:1,z:0}}};
+export function updateRaceLighting(renderer,{brightness=1,night=false,pose=null,dimensions={},headlightIntensity=1,highBeams=false,auxIntensity=0,braking=false,reverse=false,lampPower=1,visibilityDistanceM=1e9,cameraPosition={}}={}){
+ const u=renderer.raceLightingUniforms||={rtgNight:{value:0},rtgTail:{value:0},rtgReverse:{value:0},rtgRearSpill:{value:2.475},rtgRearLeft:{value:{x:0,y:0,z:0}},rtgRearRight:{value:{x:0,y:0,z:0}},rtgHighBeam:{value:0},rtgAux:{value:0},rtgVisibility:{value:1e9},rtgCamera:{value:{x:0,y:0,z:0}},rtgAmbient:{value:1},rtgHeadlights:{value:0},rtgLampLeft:{value:{x:0,y:0,z:0}},rtgLampRight:{value:{x:0,y:0,z:0}},rtgLampForward:{value:{x:0,y:0,z:1}},rtgLampUp:{value:{x:0,y:1,z:0}}};
  u.rtgHighBeam.value=highBeams?1:0;u.rtgAux.value=pose?Math.max(0,Math.min(1,auxIntensity)):0;u.rtgVisibility.value=Number.isFinite(visibilityDistanceM)?Math.max(10,visibilityDistanceM):1e9;Object.assign(u.rtgCamera.value,{x:0,y:0,z:0},cameraPosition);
- u.rtgAmbient.value=brightness;u.rtgHeadlights.value=pose?Math.max(0,Math.min(1,headlightIntensity)):0;
+ u.rtgNight.value=night&&brightness>0?1:0;u.rtgAmbient.value=brightness;u.rtgHeadlights.value=pose?Math.max(0,Math.min(1,headlightIntensity)):0;
  const power=clamp(Number(lampPower)||0,0,1);
  u.rtgTail.value=pose?Math.max(u.rtgHeadlights.value*.36,braking?power*.54:0):0;
  u.rtgReverse.value=pose&&reverse?power*.46:0;

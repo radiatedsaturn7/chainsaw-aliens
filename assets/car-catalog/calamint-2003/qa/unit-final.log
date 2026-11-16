@@ -1,0 +1,38 @@
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (175.251546ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (5.752276ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (43.810761ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (6851.905365ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (16.180731ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (2814.145135ms)
+✔ Calamint preserves US manual Baja anchors and AWD distinctions (1.029264ms)
+✔ Calamint native roundtrip preserves manual5speed and explicitly fictional automatic assistance (137.067884ms)
+✔ Calamint has eight distinct original exterior frames, shared tire layers and original hashes (327.713936ms)
+✔ separate staging branch retains 128 playable documents and excludes3 legacy system templates (289.499218ms)
+✔ Calamint launches with sustained tread contact (2240.432389ms)
+✔ Calamint 2003 published wheel graphics cover original opening heights without changing physical radius (537.559858ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (220.442186ms)
+✔ requires explicit source data and mappings (0.616194ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (82.774999ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (275.758863ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (2.543023ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (93.040318ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (96.532625ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (546.676179ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (842.220718ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (571.235294ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (5491.65154ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (6002.867155ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.404897ms)
+✔ Mignonette preserves UK LFA power,min kerb,weight distribution and staggered tires (1.549644ms)
+✔ Mignonette native roundtrip retains ASG counter reduction and first-gear road speed (87.806178ms)
+✔ Mignonette has eight distinct original exterior frames, shared tire layers and original hashes (92.58173ms)
+✔ separate staging branch retains 127 playable documents and excludes3 legacy system templates (194.007969ms)
+✔ Mignonette launches with sustained tread contact (1979.879843ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15372.515436

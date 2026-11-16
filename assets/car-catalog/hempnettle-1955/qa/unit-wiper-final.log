@@ -1,0 +1,38 @@
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (597.487641ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (5.829082ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (35.470986ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (7248.940106ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (25.317478ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (4521.111362ms)
+✔ Calamint preserves US manual Baja anchors and AWD distinctions (1.348041ms)
+✔ Calamint native roundtrip preserves manual5speed and explicitly fictional automatic assistance (539.742698ms)
+✔ Calamint has eight distinct original exterior frames, shared tire layers and original hashes (154.150749ms)
+✔ separate staging branch retains 128 playable documents and excludes3 legacy system templates (340.615437ms)
+✔ Calamint launches with sustained tread contact (2111.919745ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (618.223864ms)
+✔ requires explicit source data and mappings (0.688062ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (61.589686ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (300.638305ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (3.139729ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (104.462106ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (67.09743ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (519.839718ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (547.308424ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (737.907403ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (5989.343819ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (8287.026906ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.405518ms)
+✔ Hempnettle preserves German PS, DIN kerb mass and sourced four-speed reductions (1.274311ms)
+✔ Hempnettle native roundtrip preserves manual4speed and explicitly fictional automatic assistance (91.380282ms)
+✔ Hempnettle has eight distinct original exterior frames, shared tire layers and original hashes (141.933046ms)
+✔ separate staging branch retains 129 playable documents and excludes3 legacy system templates (149.50482ms)
+✔ Hempnettle launches with sustained tread contact (1806.850082ms)
+✔ Hempnettle 1955 published wheel graphics cover original opening heights without changing physical radius (262.82244ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 17954.95911

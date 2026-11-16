@@ -1,0 +1,21 @@
+{
+  "meadowsweet-1992": {
+    "inventory": "missing; verified through git base blob comparisons"
+  },
+  "heather-1993": {
+    "filesChecked": 28,
+    "mismatches": []
+  },
+  "speedwell-1968": {
+    "filesChecked": 28,
+    "mismatches": []
+  },
+  "tamarisk-2024": {
+    "filesChecked": 26,
+    "mismatches": []
+  },
+  "valerian-turbo-1992": {
+    "filesChecked": 29,
+    "mismatches": []
+  }
+}

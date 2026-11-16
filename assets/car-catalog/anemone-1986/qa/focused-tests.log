@@ -1,0 +1,44 @@
+✔ Anemone is the early fastback1986 Fiero GT4MT with staggered tires (1.774572ms)
+✔ Anemone explicit estimated gearing survives native editor manual and assist roundtrip (167.959129ms)
+✔ Anemone has eight distinct original exterior frames, shared tire layers and original hashes (416.501977ms)
+✔ separate staging branch retains 102 playable documents and excludes3 legacy system templates (263.166655ms)
+✔ Anemone 1986 published wheel graphics cover original opening heights without changing physical radius (681.018641ms)
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (230.775922ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (5.930403ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (57.319901ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (6473.002532ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (14.862467ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (2696.872222ms)
+✔ Camomile is FranceMY1988 2CV6 Special with separate ISO and DIN ratings (1.861752ms)
+✔ Camomile explicit estimated gearing survives native editor manual and assist roundtrip (152.691805ms)
+✔ Camomile has eight distinct original exterior frames, shared tire layers and original hashes (443.133407ms)
+✔ separate staging branch retains 101 playable documents and excludes3 legacy system templates (316.221416ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (150.683028ms)
+✔ requires explicit source data and mappings (0.576034ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (54.579146ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (223.755566ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (2.489022ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (81.183642ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (123.894204ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (650.505054ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (685.747693ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (596.37511ms)
+✔ performance is finite, deterministic, responds to upgrades and balances E1 through S (2.255843ms)
+✔ saved variants remain unique, exclude player, then fill only with the selected default (0.544086ms)
+✔ eligibility, category and performance filters apply together; fallback cannot select player (0.342253ms)
+✔ missing acceleration and legacy null selection use valid defaults (0.209535ms)
+✔ PI class ceilings are inclusive from E1 100 through S 1000 (0.243726ms)
+✔ dry-tarmac PI ignores stale performance claims and responds to gearing, driven wheels and tire compounds (0.449864ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (4677.399826ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (4532.310475ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.303445ms)
+✔ legacy expectation adds only explicit absent gauge defaults and keeps all authored values (5.513799ms)
+✔ two-output force allocation exactly matches generic distribution (73.254957ms)
+ℹ tests 36
+ℹ suites 0
+ℹ pass 36
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12191.747047

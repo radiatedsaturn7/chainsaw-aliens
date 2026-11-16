@@ -1,0 +1,7 @@
+{
+  "originalSheet": "body-initial.png",
+  "issue": "Initial front-left and rear-right quarter orientations duplicated the opposite-side views.",
+  "resolution": "Imagegen correction before import; full eight-angle runtime review passed.",
+  "dashboard": "LHD two main binnacles and three center pods; fitted live speed,rpm,gear,fuel and shared animated wheel.",
+  "originalsPreserved": true
+}

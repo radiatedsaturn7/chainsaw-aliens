@@ -1,0 +1,37 @@
+{
+  "mobile": true,
+  "initial": {
+    "id": "fumitory-1974",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 850,
+    "gear": 1,
+    "elapsed": 1133.233333333331,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "fumitory-1974",
+    "x": -0.000003,
+    "z": 15.086635,
+    "speed": 8.669135,
+    "rpm": 5195.312792,
+    "gear": 2,
+    "elapsed": 5216.333333333324,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "fumitory-1974",
+    "x": -0.000058,
+    "z": 31.724149,
+    "speed": 12.829798,
+    "rpm": 3828.255883,
+    "gear": 2,
+    "elapsed": 6766.333333333321,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

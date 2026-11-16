@@ -1,0 +1,15 @@
+# Harebell 1970
+
+Original badge-free 2994 fastback inspired by the 1970 US Datsun 240-Z, two-seat S30 with 2393 cc L24 and standard four-speed manual. The original US brochure (Form 502/500M/270PGO) supplies the selected specification. No later 260Z/280Z, 2+2, Japanese 432/240ZG or competition-car data is substituted. Current/staged aliases and the old eleven-model crosswalk show no S30 duplicate; the old Datsun 510 is a separate model.
+
+The brochure gives 150 advertised horsepower at 5,600 rpm without specifying the measurement standard. The separately preserved 1971 factory engine manual says SAE (NEW), not SAE (NET), for its 151 hp/145.7 lb-ft figures. These ratings are not mixed or presented as verified installed-engine output. Runtime 125 hp and 130 lb-ft are explicit simulation estimates. This uncertainty remains in import.json and is covered by the source-anchor test.
+
+Published four-speed ratios 3.55/2.20/1.42/1.00, reverse 3.13, final drive 3.36 and steering ratio 17.8 are retained. Brochure dimensions are converted from inches. Its unqualified 2,300 lb weight becomes a rounded 1,043 kg; the weighing convention remains unresolved. The tire notation is 175SR14 on standard 4.5-inch rims; 80% aspect and derived rolling radius are assumptions. Tracks, fuel capacity and remaining simulation settings are explicitly estimated.
+
+The full original brochure and inspected specification page are retained. The original 1971 factory-manual ZIP and full PDF remain under /workspace/references/240z1971; their paths, sizes and SHA-256 hashes are recorded in references/original-source-hashes.json. A compact original PDF page and render are included here. No original source was deleted.
+
+Original generated exterior and vehicle-specific dashboard PNGs and prompts are preserved. The first body sheet had two repeated quarter-view orientations; body-initial.png is retained and an imagegen correction supplies all eight usable directions. Fitted shared moving tires and a left-hand-drive S30 dashboard with its three center pods, live speed/RPM/gear/fuel instruments and animated wheel are used. No period advertising pixels appear in gameplay.
+
+Immediate base is the independently verified Agrimony checkpoint 298bfb3c57097c37c6b6e2431f1f1cd207ccd2fb, with 109 playable cars. Harebell makes 110, excluding three system templates. Existing races, runtime/world files, prior art and earlier refs stay intact. Keyboard/touch driving uses production simulation on an in-memory route. The real picker check validates initial art, navigates to a later page, waits for Harebell's art and drives its cockpit. No publication, remote writes, transfers or deletion; the older 104-car branch remains separate.
+
+Validation: all 28 focused tests and all four browser checks pass. Manifest validation passes with 1,880 documents and 16 assets. Eight exterior views and both moving cockpits were visually reviewed. The real picker starts with seven of 110 cars loaded, then reaches Harebell at index 47 on the page beginning 44, waits for art and drives the selected cockpit. No unresolved validation blocker.

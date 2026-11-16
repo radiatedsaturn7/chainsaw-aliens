@@ -15,5 +15,10 @@ test('rally headlights shade real world geometry, follow the car, and leave rear
   updateRaceLighting(state,{brightness:1,pose:{}});renderer.render(scene,camera);const day=pixelAt(0,100);
   renderer.dispose();plane.geometry.dispose();plane.material.dispose();return {lit,far,behind,side,turnedAway,day,errors};
  });
- expect(result.errors).toEqual([]);expect(result.lit).toBeGreaterThan(180);expect(result.far).toBeLessThan(result.lit);expect(result.behind).toBeLessThan(30);expect(result.side).toBeLessThan(30);expect(result.turnedAway).toBeLessThan(30);expect(result.day).toBeGreaterThan(240);
+ expect(result.errors).toEqual([]);
+ // Rally lamps reveal distant forms without bleaching them toward daylight white.
+ expect(result.lit).toBeGreaterThan(100);
+ expect(result.lit).toBeLessThan(220);
+ expect(result.lit-result.turnedAway).toBeGreaterThan(80);
+ expect(result.far).toBeLessThan(result.lit);expect(result.behind).toBeLessThan(30);expect(result.side).toBeLessThan(30);expect(result.turnedAway).toBeLessThan(30);expect(result.day).toBeGreaterThan(240);
 });

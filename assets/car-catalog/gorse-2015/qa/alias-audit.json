@@ -1,0 +1,33 @@
+{
+  "0ecdf094fce29d1f2f596f0310c7b4ee7cec54b7": {
+    "defender": [],
+    "land rover": [],
+    "2cv": [],
+    "citroen": [
+      "2005 Flint Coupe"
+    ],
+    "rs2": [
+      "Fenfire 1800 1986",
+      "Alder RS 1994"
+    ],
+    "gnx": [
+      "Ashbaron 1987"
+    ]
+  },
+  "FETCH_HEAD": {
+    "defender": [],
+    "land rover": [],
+    "2cv": [],
+    "citroen": [
+      "2005 Flint Coupe"
+    ],
+    "rs2": [
+      "Fenfire 1800 1986",
+      "Alder RS 1994"
+    ],
+    "gnx": [
+      "Ashbaron 1987"
+    ]
+  },
+  "decision": "Defender90 and2CV6 absent on both bases; RS2 represented by Alder RS1994, GNX by Ashbaron1987. Neither selected model overlaps the supplied eleven-car unpublished crosswalk."
+}

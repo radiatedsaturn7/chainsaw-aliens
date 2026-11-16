@@ -1,0 +1,2 @@
+{"documents": 1835, "assets": 16}
+Published project manifest includes every current document.

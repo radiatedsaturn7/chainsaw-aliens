@@ -1,0 +1,15 @@
+{
+  "base": "364eaf0cad249cd2ccf35fe960532aa3e643f921",
+  "baseTree": "8ff76b813288e5565f87bf37700d143990661d7b",
+  "unchangedTrackedFiles": 20839,
+  "unchangedManifestEntries": 1940,
+  "mismatches": [],
+  "allowedChanges": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/catalogCameraSmoke.test.js",
+    "tests/unit/santolinaCatalog.test.js"
+  ],
+  "freeBytes": 55560978432,
+  "staging": "f51518946685c18a895e73309c939a5a54e75d84",
+  "stagingTree": "7dd651525fccdb9b0de4a903957eed40b7960d27"
+}

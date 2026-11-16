@@ -1,0 +1,44 @@
+✔ Anemone is the early fastback1986 Fiero GT4MT with staggered tires (1.392969ms)
+✔ Anemone explicit estimated gearing survives native editor manual and assist roundtrip (117.894187ms)
+✔ Anemone has eight distinct original exterior frames, shared tire layers and original hashes (282.304055ms)
+✔ separate staging branch retains 102 playable documents and excludes3 legacy system templates (382.539894ms)
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (161.218226ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (5.37488ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (34.776332ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (6478.413406ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (17.159883ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (2857.394111ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (209.210596ms)
+✔ requires explicit source data and mappings (0.853279ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (80.006775ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (215.662428ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (1.903785ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (67.892482ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (79.244407ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (676.913344ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (707.073168ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (549.943622ms)
+✔ performance is finite, deterministic, responds to upgrades and balances E1 through S (2.401631ms)
+✔ saved variants remain unique, exclude player, then fill only with the selected default (0.638017ms)
+✔ eligibility, category and performance filters apply together; fallback cannot select player (0.449484ms)
+✔ missing acceleration and legacy null selection use valid defaults (0.32647ms)
+✔ PI class ceilings are inclusive from E1 100 through S 1000 (0.269123ms)
+✔ dry-tarmac PI ignores stale performance claims and responds to gearing, driven wheels and tire compounds (0.53391ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (4689.731581ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (4425.562691ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.477236ms)
+✔ legacy expectation adds only explicit absent gauge defaults and keeps all authored values (11.511734ms)
+✔ two-output force allocation exactly matches generic distribution (61.660677ms)
+✔ Scabious retains US two-door standard-power manual specifications (1.492948ms)
+✔ Scabious explicit estimated gearing survives native editor manual and assist roundtrip (86.573748ms)
+✔ Scabious has eight distinct original exterior frames, shared tire layers and original hashes (241.683915ms)
+✔ separate staging branch retains 103 playable documents and excludes3 legacy system templates (305.279504ms)
+✔ Scabious 2015 published wheel graphics cover original opening heights without changing physical radius (279.069829ms)
+ℹ tests 36
+ℹ suites 0
+ℹ pass 36
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10778.44545

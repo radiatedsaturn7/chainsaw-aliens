@@ -1,0 +1,37 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "sainfoin-1985",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 850,
+    "gear": 1,
+    "elapsed": 1766.6333333333218,
+    "throttle": 0,
+    "camera": "first-person"
+  },
+  "moving": {
+    "id": "sainfoin-1985",
+    "x": -0.000028000000384054147,
+    "z": 13.506094932556152,
+    "speed": 7.9593892097473145,
+    "rpm": 3805.320556640625,
+    "gear": 1,
+    "elapsed": 6049.733333333328,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "cockpit": {
+    "id": "sainfoin-1985",
+    "x": 0.0017689999658614397,
+    "z": 34.049747467041016,
+    "speed": 12.870269775390625,
+    "rpm": 5826.97998046875,
+    "gear": 1,
+    "elapsed": 8033.0333333333165,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

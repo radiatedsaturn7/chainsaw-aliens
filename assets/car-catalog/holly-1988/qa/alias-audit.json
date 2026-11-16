@@ -1,0 +1,44 @@
+{
+  "ed8b4ad4e92d791dc336dc973f96d3c8a8af6d57": {
+    "matches": {
+      "Thunderbird Turbo Coupe": [
+        "Nightcoil GT 1995"
+      ],
+      "Tata Nano GenX": [
+        "Ember Pod Prototype"
+      ],
+      "Holly/Eyebright": []
+    },
+    "manifestCarsIncludingTemplates": 113
+  },
+  "f51518946685c18a895e73309c939a5a54e75d84": {
+    "matches": {
+      "Thunderbird Turbo Coupe": [
+        "Nightcoil GT 1995"
+      ],
+      "Tata Nano GenX": [
+        "Ember Pod Prototype"
+      ],
+      "Holly/Eyebright": []
+    },
+    "manifestCarsIncludingTemplates": 96
+  },
+  "oldElevenCrosswalk": [
+    "2004CadillacXLR",
+    "2006LancerEvolutionIX",
+    "1994NissanQuestXE",
+    "1993HondaCivicdelSolSi",
+    "2015Abarth695biposto",
+    "1973AMCGremlin232",
+    "1982DeLorean",
+    "1958AustinHealeySpriteMkI",
+    "1992Mercedes500E",
+    "1970Datsun510fourdoor",
+    "2016DodgeViperSRT"
+  ],
+  "oldElevenOverlap": false,
+  "matchResolution": {
+    "Nightcoil GT 1995": "False positive generic turbo coupe; actual1995MitsubishiEclipseGSX",
+    "Ember Pod Prototype": "Tata manufacturer match; actualTAMORacemo prototype,notNano"
+  }
+}

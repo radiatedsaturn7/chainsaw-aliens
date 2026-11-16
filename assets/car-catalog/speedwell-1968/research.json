@@ -1,0 +1,57 @@
+{
+  "referenceVehicle": "France model-year1968 Renault4 Export, standard747cc 4CV fiscal engine, LHD, four-speed manual. Optional845cc Super5CV not selected.",
+  "primaryEvidence": [
+    {
+      "url": "https://www.brochure-catalogue-voiture-neuve.fr/brochures/renault/4/renault-4-1961/FRA-1968/",
+      "fields": [
+        "tuning.engineDisplacementL",
+        "dimensions",
+        "tuning.steeringRatio"
+      ],
+      "access": "Original1968French brochure PDF: page2 explicitly1968,new four-speed; page5 standard4CV/optionalSuper5CV; page6 standard747cc30chSAE nouvelles normes at4700rpm,5.1mkgSAE at2600rpm; optional845cc30chSAE/5.9mkg2300. Dimensions and135x330tires."
+    },
+    {
+      "url": "https://cdn.group.renault.com/ren/master/renault-classic/tools-and-services/Renault4T1.pdf.asset.pdf/379ae4ac61.pdf",
+      "fields": [
+        "referenceVehicle",
+        "transmissions.manual"
+      ],
+      "access": "Renault manufacturer historical booklet: printedp17 Export747cc4CV and optional5CV; modelyear1968 grille andfour-speed. Corroborates trim/year relationship; period brochure supplies engine figures."
+    }
+  ],
+  "verifiedFacts": {
+    "modelYear": 1968,
+    "trim": "Export",
+    "displacementCc": 747,
+    "optionalDisplacementCcNotSelected": 845,
+    "powerChSAE": 30,
+    "powerStandard": "SAE nouvelles normes (brochure wording), not DIN or CEE",
+    "powerRpm": 4700,
+    "torqueMkgSAE": 5.1,
+    "torqueNmSAE": 50.01391499999999,
+    "torqueRpm": 2600,
+    "compressionRatio": 8.5,
+    "boreMm": 54.5,
+    "strokeMm": 80,
+    "manualSpeeds": 4,
+    "brakes": "four drums",
+    "steeringRatio": 22,
+    "tiresPeriod": "135 x 330",
+    "wheelbaseBasis": "brochure mean wheelbase2.420m",
+    "brochureGenericTopSpeedKph": 112
+  },
+  "unsupportedValues": [
+    "Runtime26mechanicalhp and46Nm are independently assumed net simulation values. They are NOT a conversion of30chSAE to DIN/CEE; no verified net rating is claimed.5.1mkgSAE is preserved as50.014NmSAE by units only. Do not substitute later27chDIN or845cc torque.",
+    "Four-speed ratios3.8/2.25/1.45/1.03,reverse3.6,final4.375 estimated; Auto Assist is game automation of4MT, not factoryautomatic.",
+    "650kg mass is an unverified simulation estimate; brochure supplies no mass.135/80R13 is an estimated modern dimensional interpretation of135x330, nominalradius.2731m calculated. Brochure112km/h is generic and not assigned as verified747cc performance; runtime66mph and39s0-60 are estimates.",
+    "Mean2.42m wheelbase models asymmetric rear torsionbar layout symmetrically; not a claim of identical left/right factory wheelbases. All body subgeometry,CG.58m,frontweight60%,drag.48,pressures26psi,suspension,grip,brakes,alignment,differential,efficiency86%,idle850/redline5000/limiter5300 and full net torque curve are estimates.",
+    "Original fictional2994 blue/ivory art, minimalist shelf dashboard and dash-mounted gear lever; live speed/RPM/gear/fuel retrofit is not a factory tachometer claim. Shared wheel and tires."
+  ],
+  "localReferences": {
+    "refs/1968-french-brochure.pdf": "698f180bebf97773e9d8a69266b3c87792526b0e330214eeffa502f6c712c7b0",
+    "refs/renault-history.pdf": "5151e6b520af482b09e2ea12dc15bb2cead9c7a9c288e23491ee6d6a3de24088"
+  },
+  "aliasCheck": "All manifest car documents decoded and searched: no Volvo240/B200F/Renault4Export/Renault4L/Heather/Speedwell duplicate before new additions. Backlog candidates were unimplemented.",
+  "separateCheckpointBase": "ad9f0453b4bffeb6b334771d94eb56e033779280",
+  "separateCheckpointBaseTree": "1bed32f8391f75de8df7f8db3da5defc23abf7ee"
+}

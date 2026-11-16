@@ -1,0 +1,38 @@
+{
+  "local": {
+    "carry": [
+      "assets/car-catalog/larch-turbo-1995/import.json",
+      "data/server-storage/files/cars/Larch Turbo 1995/document.json"
+    ],
+    "944": [
+      "assets/car-catalog/chicory-gt-2008/import.json",
+      "assets/car-catalog/goldenrod-1996/import.json",
+      "data/server-storage/files/cars/Chicory GT 2008/document.json",
+      "data/server-storage/files/cars/Goldenrod 1996/document.json",
+      "data/server-storage/files/cars/RTG-001/versions/1793066412181-1793053117944/document.json",
+      "data/server-storage/files/cars/RTG-001/versions/1793066416709-1793066412130/document.json",
+      "data/server-storage/files/cars/RTG-001/versions/1793066508216-1793066416702/document.json",
+      "data/server-storage/files/cars/RTG-001/versions/1793066536407-1793066508209/document.json",
+      "data/server-storage/files/cars/RTG-001/versions/1793066605187-1793066593333/document.json"
+    ],
+    "newNames": []
+  },
+  "staging": {
+    "carry": [
+      "assets/car-catalog/larch-turbo-1995/import.json",
+      "data/server-storage/files/cars/Larch Turbo 1995/document.json"
+    ],
+    "944": [
+      "assets/car-catalog/chicory-gt-2008/import.json",
+      "data/server-storage/files/cars/Chicory GT 2008/document.json",
+      "data/server-storage/files/cars/RTG-001/versions/1793066412181-1793053117944/document.json",
+      "data/server-storage/files/cars/RTG-001/versions/1793066416709-1793066412130/document.json",
+      "data/server-storage/files/cars/RTG-001/versions/1793066508216-1793066416702/document.json",
+      "data/server-storage/files/cars/RTG-001/versions/1793066536407-1793066508209/document.json",
+      "data/server-storage/files/cars/RTG-001/versions/1793066605187-1793066593333/document.json"
+    ],
+    "newNames": []
+  },
+  "oldEleven": "Checked provided exact model crosswalk; no Carry/Scrum or Porsche944. No old eleven added.",
+  "review": "Broad matches are false positives: carry as a verb in Volvo documentation; standalone numeric ratios/dimensions 944/951/952 and archived RTG-001 editor versions. No selected real-model identity or fictional name duplicate."
+}

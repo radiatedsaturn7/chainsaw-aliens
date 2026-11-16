@@ -1,0 +1,15 @@
+{
+  "base": "d79bfefd4e540dd089dcaee70760d54f8552b69f",
+  "baseTree": "83ae2600b78907a582333358e73cf87b22c67682",
+  "unchangedTrackedFiles": 18912,
+  "unchangedManifestEntries": 1856,
+  "mismatches": [],
+  "allowedChanges": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/anemoneCatalog.test.js",
+    "tests/unit/catalogCameraSmoke.test.js"
+  ],
+  "freeBytes": 60746383360,
+  "staging": "58c2ec08e9457b778a19f617fad3aded4e4fa0ee",
+  "stagingTree": "7e1315cdc36f12c3be7b8250e39ca4c251595722"
+}

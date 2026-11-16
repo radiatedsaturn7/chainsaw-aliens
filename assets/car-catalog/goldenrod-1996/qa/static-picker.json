@@ -1,0 +1,54 @@
+{
+  "first": {
+    "selected": "2005 Flint Coupe",
+    "start": 0,
+    "visible": [
+      "2005 Flint Coupe",
+      "2018 Kestrel 660",
+      "2023 Volt-Hound GT",
+      "2024 Caravan-9"
+    ],
+    "targetIndex": 42,
+    "selectedIndex": 0,
+    "loadedCars": 7,
+    "totalChoices": 105,
+    "carId": "flint-coupe-2005",
+    "art": [
+      {
+        "ref": "catalog-flint-coupe-2005-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  },
+  "later": {
+    "selected": "Goldenrod 1996",
+    "start": 40,
+    "visible": [
+      "Glimmer 1986",
+      "Glowmoth SC 1988",
+      "Goldenrod 1996",
+      "Gorse 2015"
+    ],
+    "targetIndex": 42,
+    "selectedIndex": 42,
+    "loadedCars": 47,
+    "totalChoices": 105,
+    "carId": "goldenrod-1996",
+    "art": [
+      {
+        "ref": "catalog-goldenrod-1996-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  }
+}

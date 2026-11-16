@@ -1,0 +1,44 @@
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (357.665571ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (9.110463ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (66.858827ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (10481.214126ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (16.012112ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (4108.384761ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (399.158301ms)
+✔ requires explicit source data and mappings (0.737556ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (109.268288ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (288.111752ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (1.749573ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (100.465006ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (105.318895ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (839.052894ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (747.188471ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (725.184103ms)
+✔ performance is finite, deterministic, responds to upgrades and balances E1 through S (2.936664ms)
+✔ saved variants remain unique, exclude player, then fill only with the selected default (0.918727ms)
+✔ eligibility, category and performance filters apply together; fallback cannot select player (0.706239ms)
+✔ missing acceleration and legacy null selection use valid defaults (0.591247ms)
+✔ PI class ceilings are inclusive from E1 100 through S 1000 (0.441332ms)
+✔ dry-tarmac PI ignores stale performance claims and responds to gearing, driven wheels and tire compounds (1.127841ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (7182.481488ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (6818.484856ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.389815ms)
+✔ legacy expectation adds only explicit absent gauge defaults and keeps all authored values (7.825893ms)
+✔ Gorse is the2015 Defender90 Station Wagon diesel6MT with optional235 tires (1.339308ms)
+✔ Gorse explicit estimated gearing survives native editor manual and assist roundtrip (190.650556ms)
+✔ Gorse has eight distinct original exterior frames, shared tire layers and original hashes (167.675079ms)
+✔ separate staging branch retains 100 playable documents and excludes3 legacy system templates (167.557593ms)
+✔ Gorse 2015 published wheel graphics cover original opening heights without changing physical radius (423.140276ms)
+✔ Lobelia is final2005 GM basecoupe LS2 standard6MT with staggered tires (1.946539ms)
+✔ Lobelia verified standard six-speed gearing survives native editor manual and assist roundtrip (130.871976ms)
+✔ Lobelia has eight distinct original exterior frames, shared tire layers and original hashes (158.595363ms)
+✔ separate staging branch retains 99 playable documents and excludes3 legacy system templates (218.883786ms)
+✔ two-output force allocation exactly matches generic distribution (132.495296ms)
+ℹ tests 36
+ℹ suites 0
+ℹ pass 36
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15620.772029

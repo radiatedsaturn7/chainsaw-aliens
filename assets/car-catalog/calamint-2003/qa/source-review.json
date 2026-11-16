@@ -1,0 +1,21 @@
+{
+  "source": "https://importarchive.com/brochure/subarubaja2003_03",
+  "manufacturer": "Subaru of America",
+  "brochure": "MSA8M0311 / model year2003",
+  "sourcePagesReviewed": {
+    "013": "Manual viscous-coupling locking center differential, automatic variable transfer clutch distinguished; standard rear limited-slip.",
+    "019": "LHD interior with rounded binnacle, silver centerstack trim and gray perforated seats.",
+    "026": "165hp5600rpm,166lb-ft4000rpm,2.5L,3485lb manual versus3550lb automatic,5MT,225/60R16,16.9gal,dimensions/clearance.",
+    "contact": "All30 publicly available scans saved and contact sheet inspected for body shape,standard equipment and year."
+  },
+  "retrievalLimits": [
+    "Scoobytruck public page returned403.",
+    "Automobilisto brochure PDF returned403.",
+    "Used publicly accessible original brochure scans; no paid high-resolution download accessed."
+  ],
+  "excludedClaims": [
+    "No precise engine code or exactcc sourced.",
+    "No explicit SAE standard suffix printed for horsepower.",
+    "No manufacturer gear reductions found in primary source; estimates labeled."
+  ]
+}

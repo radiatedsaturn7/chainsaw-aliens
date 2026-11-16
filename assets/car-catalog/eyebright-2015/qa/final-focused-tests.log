@@ -1,0 +1,36 @@
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (293.935376ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (16.018403ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (57.695186ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (8608.553705ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (21.754906ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (3942.093899ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (163.124551ms)
+✔ requires explicit source data and mappings (0.571897ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (52.689557ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (172.076388ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (1.937826ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (65.606449ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (74.369181ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (449.683472ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (931.432492ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (502.120037ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (5257.272653ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (5427.240708ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.354992ms)
+✔ Eyebright uses the exact2015XT4MT brochure values and separates AMT (1.497105ms)
+✔ Eyebright native roundtrip preserves estimated four-speed ratios and explicit manual assist (68.097825ms)
+✔ Eyebright has eight distinct original exterior frames, shared tire layers and original hashes (107.270072ms)
+✔ separate staging branch retains 112 playable documents and excludes3 legacy system templates (144.867436ms)
+✔ Eyebright 2015 published wheel graphics cover original opening heights without changing physical radius (273.675298ms)
+✔ Holly distinguishes manual brochure power from automatic and labels gearing estimates (1.389144ms)
+✔ Holly native roundtrip preserves estimated five-speed ratios and explicit manual assist (83.689838ms)
+✔ Holly has eight distinct original exterior frames, shared tire layers and original hashes (115.765528ms)
+✔ separate staging branch retains 111 playable documents and excludes3 legacy system templates (190.187277ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 29417.634934

@@ -1,0 +1,54 @@
+{
+  "first": {
+    "selected": "2005 Flint Coupe",
+    "start": 0,
+    "visible": [
+      "2005 Flint Coupe",
+      "2018 Kestrel 660",
+      "2023 Volt-Hound GT",
+      "2024 Caravan-9"
+    ],
+    "targetIndex": 70,
+    "selectedIndex": 0,
+    "loadedCars": 7,
+    "totalChoices": 108,
+    "carId": "flint-coupe-2005",
+    "art": [
+      {
+        "ref": "catalog-flint-coupe-2005-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  },
+  "later": {
+    "selected": "Periwinkle 1998",
+    "start": 68,
+    "visible": [
+      "Nightcoil GT 1995",
+      "Pennyroyal 1994",
+      "Periwinkle 1998",
+      "Pipit 100 2007"
+    ],
+    "targetIndex": 70,
+    "selectedIndex": 70,
+    "loadedCars": 75,
+    "totalChoices": 108,
+    "carId": "periwinkle-1998",
+    "art": [
+      {
+        "ref": "catalog-periwinkle-1998-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  }
+}

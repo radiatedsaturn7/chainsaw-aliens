@@ -151,6 +151,8 @@ class ProjectManifestTests(unittest.TestCase):
             (source / 'data/server-storage/performance-captures/recording.json').write_text('not game data')
             (source / 'assets/campaign-art').mkdir()
             (source / 'assets/campaign-art/source.png').write_bytes(b'authoring original')
+            (source / 'assets/car-catalog/example/qa').mkdir(parents=True)
+            (source / 'assets/car-catalog/example/qa/preview.png').write_bytes(b'authoring QA')
             output = Path(tmp) / 'site'
             counts = build_site(source, output)
             self.assertEqual(len(counts), 15)
@@ -165,6 +167,8 @@ class ProjectManifestTests(unittest.TestCase):
             self.assertFalse(any(output.rglob('versions')))
             self.assertFalse((output / 'assets/campaign-art').exists())
             self.assertTrue((source / 'assets/campaign-art/source.png').exists())
+            self.assertFalse((output / 'assets/car-catalog').exists())
+            self.assertTrue((source / 'assets/car-catalog/example/qa/preview.png').exists())
             self.assertTrue((output / 'assets/included.txt').exists())
             self.assertTrue((output / '.nojekyll').exists())
             with self.assertRaisesRegex(ValueError, 'deployment budget'):

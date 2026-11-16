@@ -1,0 +1,17 @@
+
+Running 3 tests using 1 worker
+
+(node:11191) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:11191) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/playwright/anemone-driving.spec.js:3:34 › Anemone desktop keyboard moving gameplay (38.1s)
+  ✓  2 tests/playwright/anemone-driving.spec.js:3:34 › Anemone handheld touch moving gameplay (25.1s)
+  ✓  3 tests/playwright/anemone-preview.spec.js:6:1 › Anemone 1986 actual editor preview composites exterior/cockpit and advances production physics (28.4s)
+
+  3 passed (1.6m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

@@ -1,0 +1,38 @@
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (255.913781ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (6.177631ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (75.906765ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (12701.123189ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (45.365398ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (4353.330607ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (430.286055ms)
+✔ requires explicit source data and mappings (0.57383ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (87.554046ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (270.369712ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (1.802823ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (77.154435ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (67.635946ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (987.693997ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (868.883944ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (716.435616ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (9802.210424ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (9993.613506ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.363485ms)
+✔ Santolina preserves base N360 metric ratings and both reduction stages (2.231836ms)
+✔ Santolina native roundtrip preserves manual4speed and explicitly fictional automatic assistance (160.878041ms)
+✔ Santolina has eight distinct original exterior frames, shared tire layers and original hashes (149.11529ms)
+✔ separate staging branch retains 130 playable documents and excludes3 legacy system templates (242.699507ms)
+✔ Santolina launches with sustained tread contact (3519.892316ms)
+✔ Teasel preserves Canadian base engine, standard tires and high-open split (9.507014ms)
+✔ Teasel native roundtrip retains sole four-speed automatic and explicit high-range limitation (131.004842ms)
+✔ Teasel has eight distinct original exterior frames, shared tire layers and original hashes (175.572348ms)
+✔ separate staging branch retains 131 playable documents and excludes3 legacy system templates (223.664062ms)
+✔ Teasel launches with sustained tread contact (2661.806894ms)
+✔ Teasel 2006 published wheel graphics cover original opening heights without changing physical radius (494.74599ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 20358.124251

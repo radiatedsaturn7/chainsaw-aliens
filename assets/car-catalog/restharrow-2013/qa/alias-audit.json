@@ -1,0 +1,41 @@
+{
+  "72ef5265a46a8de7d3721d729eb8ff234386f43b": {
+    "matches": {
+      "Fiat126": [
+        "Mugwort 1976"
+      ],
+      "DaciaDuster": [
+        "Sorrel 133 2008"
+      ],
+      "Mugwort/Restharrow": [
+        "Mugwort 1976"
+      ]
+    },
+    "manifestCarsIncludingTemplates": 118
+  },
+  "f51518946685c18a895e73309c939a5a54e75d84": {
+    "matches": {
+      "Fiat126": [],
+      "DaciaDuster": [
+        "Sorrel 133 2008"
+      ],
+      "Mugwort/Restharrow": []
+    },
+    "manifestCarsIncludingTemplates": 96
+  },
+  "oldElevenCrosswalk": [
+    "2004CadillacXLR",
+    "2006LancerEvolutionIX",
+    "1994NissanQuestXE",
+    "1993HondaCivicdelSolSi",
+    "2015Abarth695biposto",
+    "1973AMCGremlin232",
+    "1982DeLorean",
+    "1958AustinHealeySpriteMkI",
+    "1992Mercedes500E",
+    "1970Datsun510fourdoor",
+    "2016DodgeViperSRT"
+  ],
+  "oldElevenOverlap": false,
+  "DaciaFalsePositive": "Sorrel is Renault Twingo RS133;match is only archived source host planetedacia.com. No Duster represented."
+}

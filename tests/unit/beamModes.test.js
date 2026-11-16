@@ -15,7 +15,7 @@ test('storm starts on low beams; high beams and independent AUX follow pause con
  e.toggleRaceHeadlights();assert.equal(m.highBeams,false);assert.equal(controlLamp('headlightslight',e.playtestSession),0);assert.equal(controlLamp('auxlightslight',e.playtestSession),1);
 });
 test('beam modes update uniforms without changing poses and accumulate electrical loads',()=>{
- assert.deepEqual([LOW_BEAM_REACH_M,HIGH_BEAM_REACH_M,RALLY_LIGHT_REACH_M],[75,140,900]);
+ assert.deepEqual([LOW_BEAM_REACH_M,HIGH_BEAM_REACH_M,RALLY_LIGHT_REACH_M],[55,160,240]);
  const r={scene:{traverse(){}}};let u=updateRaceLighting(r,{pose:{},visibilityDistanceM:200});assert.equal(u.rtgAux.value,0);assert.equal(u.rtgHighBeam.value,0);
  u=updateRaceLighting(r,{pose:{},highBeams:true,auxIntensity:.6,headlightIntensity:0,visibilityDistanceM:200});assert.equal(u.rtgAux.value,.6);assert.equal(u.rtgHighBeam.value,1);assert.equal(u.rtgHeadlights.value,0);assert.equal(u.rtgVisibility.value,200);
  const current=options=>{const s=createMechanicalState({headlights:true,...options});s.components.alternator.failed=true;stepMechanicalState(s,1,{rpm:1500});return s.batteryCurrentA;};
