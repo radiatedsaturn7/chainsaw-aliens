@@ -1,0 +1,37 @@
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (175.692332ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (5.819218ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (42.13462ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (7255.928451ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (14.330542ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (4655.414031ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (200.805113ms)
+✔ requires explicit source data and mappings (0.712629ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (55.955076ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (201.646208ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (2.618417ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (91.874574ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (79.493387ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (542.317864ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (624.480162ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (541.666308ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (7355.986695ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (10088.464553ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.661723ms)
+✔ Mugwort retains selected1976 DIN power,mass and rear-engine four-speed identity (1.829404ms)
+✔ Mugwort native roundtrip preserves published four-speed ratios and explicit manual assist (117.982448ms)
+✔ Mugwort has eight distinct original exterior frames, shared tire layers and original hashes (293.927682ms)
+✔ separate staging branch retains 115 playable documents and excludes3 legacy system templates (220.349898ms)
+✔ Restharrow preserves exact French4x4 diesel table and separates assumptions (0.993029ms)
+✔ Restharrow native roundtrip preserves source-constrained six-speed estimates and explicit manual assist (211.90388ms)
+✔ Restharrow has eight distinct original exterior frames, shared tire layers and original hashes (139.465132ms)
+✔ separate staging branch retains 116 playable documents and excludes3 legacy system templates (263.023488ms)
+✔ Restharrow nominal gearing matches the brochure road-speed progression (0.243315ms)
+✔ Restharrow 2013 published wheel graphics cover original opening heights without changing physical radius (407.734917ms)
+ℹ tests 29
+ℹ suites 0
+ℹ pass 29
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 36660.620609

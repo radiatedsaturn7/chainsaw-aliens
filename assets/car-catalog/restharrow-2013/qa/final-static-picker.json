@@ -1,0 +1,54 @@
+{
+  "first": {
+    "selected": "2005 Flint Coupe",
+    "start": 0,
+    "visible": [
+      "2005 Flint Coupe",
+      "2018 Kestrel 660",
+      "2023 Volt-Hound GT",
+      "2024 Caravan-9"
+    ],
+    "targetIndex": 84,
+    "selectedIndex": 0,
+    "loadedCars": 7,
+    "totalChoices": 116,
+    "carId": "flint-coupe-2005",
+    "art": [
+      {
+        "ref": "catalog-flint-coupe-2005-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  },
+  "later": {
+    "selected": "Restharrow 2013",
+    "start": 84,
+    "visible": [
+      "Restharrow 2013",
+      "Rosefinch 1991",
+      "Rotarypetal 2011",
+      "Rotorveil 1993"
+    ],
+    "targetIndex": 84,
+    "selectedIndex": 84,
+    "loadedCars": 91,
+    "totalChoices": 116,
+    "carId": "restharrow-2013",
+    "art": [
+      {
+        "ref": "catalog-restharrow-2013-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  }
+}

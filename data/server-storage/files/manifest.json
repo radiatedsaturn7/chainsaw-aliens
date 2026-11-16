@@ -1064,7 +1064,9 @@
       "catalog-betony-2021-body": "art/catalog-betony-2021-body/document.json",
       "catalog-betony-2021-dashboard": "art/catalog-betony-2021-dashboard/document.json",
       "catalog-mugwort-1976-body": "art/catalog-mugwort-1976-body/document.json",
-      "catalog-mugwort-1976-dashboard": "art/catalog-mugwort-1976-dashboard/document.json"
+      "catalog-mugwort-1976-dashboard": "art/catalog-mugwort-1976-dashboard/document.json",
+      "catalog-restharrow-2013-body": "art/catalog-restharrow-2013-body/document.json",
+      "catalog-restharrow-2013-dashboard": "art/catalog-restharrow-2013-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1184,7 +1186,8 @@
       "Eyebright 2015": "cars/Eyebright 2015/document.json",
       "Chervil 1973": "cars/Chervil 1973/document.json",
       "Betony 2021": "cars/Betony 2021/document.json",
-      "Mugwort 1976": "cars/Mugwort 1976/document.json"
+      "Mugwort 1976": "cars/Mugwort 1976/document.json",
+      "Restharrow 2013": "cars/Restharrow 2013/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",

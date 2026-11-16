@@ -1,0 +1,15 @@
+{
+  "base": "72ef5265a46a8de7d3721d729eb8ff234386f43b",
+  "baseTree": "3f8abb5ba4e82a9c86d6902ae0f7b9d61a55a7b1",
+  "unchangedTrackedFiles": 19689,
+  "unchangedManifestEntries": 1895,
+  "mismatches": [],
+  "allowedChanges": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/catalogCameraSmoke.test.js",
+    "tests/unit/mugwortCatalog.test.js"
+  ],
+  "freeBytes": 56945848320,
+  "staging": "f51518946685c18a895e73309c939a5a54e75d84",
+  "stagingTree": "7dd651525fccdb9b0de4a903957eed40b7960d27"
+}
