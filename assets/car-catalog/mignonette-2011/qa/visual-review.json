@@ -1,0 +1,10 @@
+{
+  "exteriorReview": "All eight final production composites visually reviewed: correct directions, complete silhouettes and fitted shared wheels; no logos or clipped rooflines.",
+  "cockpitReview": "Desktop and portrait handheld moving screenshots reviewed: RHD single circular RPM, speed, gear and fuel are fitted in apertures and clear of the animated steering wheel.",
+  "originals": "Initial atlas, rejected roof-clipping edit, final atlas and dashboard retained byte-for-byte.",
+  "notes": [
+    "Wheel graphic radii are view-fitting values; physical staggered tire dimensions remain sourced.",
+    "Numeric live instruments simplify factory TFT; wing stays stowed."
+  ],
+  "pickerReview": "Initial visible Flint entry, later Mignonette entry with loaded exterior art, and subsequent moving cockpit visually reviewed."
+}

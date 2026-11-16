@@ -1,0 +1,2799 @@
+D O D G E  B R A N D  P R O D U C T  I N F O R M A T I O N
+2 0 0 5  D O D G E  D A K O T A
+1 6
+continued
+SPECIFICATIONS
+Dimensions are in inches (millimeters) unless otherwise noted.
+All dimensions measured on ST model at curb weight with standard tires unless otherwise noted.
+GENERAL INFORMATION
+Assembly Plant ____________________________________________________________Dodge City (Warren, Michigan)
+Introduction Date _______________________________________________________________________ October 2004
+EPA Vehicle Class _______________________________________________________Club Cab® and Quad Cab™ pickup
+ENGINE: NEXT-GENERATION 3.7-LITER, SOHC, 12-VALVE SMPI V-6 MAGNUM® 
+Availability _____________________________________________________________________________________ Std.
+Type and Description _________________________________________90-degree V-6, liquid cooled with balance shaft
+Displacement _________________________________________________________________ 226 cu. in. (3701 cu. cm)
+Bore x Stroke _________________________________________________________________ 3.66 x 3.57 (93.0 x 90.8)
+Valve System __________________________________ Chain-driven SOHC, 12 valves, hydraulic end-pivot roller rockers
+Fuel Injection _________________________________________________ Sequential, multi-port, electronic, returnless
+Construction ________________________________ Cast-iron block and bedplate, aluminum alloy heads, balance shaft
+Compression Ratio ______________________________________________________________________________ 9.7:1
+Power (estimated SAE net) ________________________________________ 210 bhp (157 kW) @ 5200 rpm (58.1 bhp/L)
+Torque (estimated SAE net) _______________________________________________235 lb.-ft. (319 N•m) @ 4000 rpm
+Max. Engine Speed _______________________________________________________ 6000 rpm (electronically limited)
+Fuel Requirement ___________________________________________________ Unleaded regular, 87 octane (R + M)/2
+Oil Capacity ___________________________________________________________________ 5.0 qt. (4.7L) SAE 5W/20
+Emission Controls _______ Dual three-way catalytic converters, heated oxygen sensors, and internal engine features(a)
+Estimated EPA Fuel Economy mpg (City/Hwy) _____________________2WD: 16/22—manual trans., 17/22—auto. trans.
+4WD: 16/20—manual trans., 15/19—auto. trans. 
+NEXT-GENERATION 4.7-LITER MAGNUM®, SOHC, 16-VALVE SMPI V-8
+Availability ___________________________________________________________________ Standard output: Opt.—all; 
+High Output: Opt.—SLT and Laramie
+Type and Description _______________________________________________________________V-type, liquid-cooled
+Displacement _________________________________________________________________ 287 cu. in. (4701 cu. cm)
+Bore x Stroke _________________________________________________________________ 3.66 x 3.40 (93.0 x 86.5)
+Valve System __________________________________ Chain-driven SOHC, 16 valves, hydraulic end-pivot roller rockers
+Fuel Injection _________________________________________________ Sequential, multi-port, electronic, returnless
+Construction _______________________________________________________ Cast-iron block, aluminum alloy heads
+Compression Ratio _______________________________________________9.0:1—Standard Output, 9.7:1—High Output
+Power (SAE Net) __________________________________________________________ 230 bhp (170 kW) @ 4600 rpm
+(48.9 bhp/liter)—Standard Output
+250+ bhp (186+ kW) @ 5200 rpm
+(53.1+ bhp/liter)—High Output (estimated)
+Torque (SAE Net) ________________________________________295 lb.-ft. (400 N•m) @ 3600 rpm—Standard Output
+300+ lb.-ft. (400 N•m) @ 3600 rpm—High Output (estimated)
+Max. Engine Speed __________________________________________________________________________5750 rpm
+Fuel Requirement ____________________________________________Unleaded regular, 87 octane (R + M)/2—Normal
+Unleaded premium, 93 octane (R+M)/2 recommended—High Output
+Oil Capacity _______________________________________________________________________________6 qt. (5.7L)
+Emission Controls _______ Dual three-way catalytic converters, heated oxygen sensors, and internal engine features(a)
+Estimated EPA Fuel Economy mpg (City/Hwy) ______________Standard Output: 15/20—2WD; 15/19—4WD man. trans.
+14/19—4WD auto. trans.; High-Output: 14/18—2WD, 14/18—4WD
+(a)  Meets federal Bin 10A emission standards and California LEV1 standards.
+
+D O D G E  B R A N D  P R O D U C T  I N F O R M A T I O N
+2 0 0 5  D O D G E  D A K O T A
+1 7
+continued
+GETRAG 238—MANUAL 6-SPEED OVERDRIVE
+Availability _____________________________________________________________ Std.—3.7 and 4.7 standard output
+Description ___________________________________________________________________ Synchronized in all gears
+Gear Ratios 
+ 
+1st ________________________________________________________________________________________ 4.23
+ 
+2nd _______________________________________________________________________________________ 2.53
+ 
+3rd ________________________________________________________________________________________ 1.67
+ 
+4th ________________________________________________________________________________________ 1.23
+ 
+5th ________________________________________________________________________________________ 1.00
+ 
+6th ________________________________________________________________________________________ 0.79
+ 
+Reverse ____________________________________________________________________________________ 3.84
+Overall Top Gear __________________________________________ 2.54 with 3.21 axle ratio, 2.80 with 3.55 axle ratio, 
+42RLE—Automatic, four-speed overdrive 
+Availability ____________________________________________________________________Included with 3.7L engine
+Description ___________________________________________________________Clutch-selected planetary gear sets 
+full electronic control, electronically controlled torque converter clutch
+Gear Ratios
+ 
+1st ________________________________________________________________________________________ 2.84
+ 
+2nd _______________________________________________________________________________________ 1.57
+ 
+3rd ________________________________________________________________________________________ 1.00
+ 
+4th ________________________________________________________________________________________ 0.69
+ 
+Overall Top Gear ________________________________________2.45 with 3.55 axle ratio, 2.74 with 3.92 axle ratio
+5-45RFE, Automatic five-speed overdrive
+Availability ___________________________________________________________________Included with 4.7L engines
+Description __________________________________________________________ Clutch-selected planetary gear sets, 
+full electronic control, electronically controlled torque converter clutch
+Gear Ratios
+ 
+1st ________________________________________________________________________________________ 3.00
+ 
+2nd __________________________________________________________________ 1.67—upshift; 1.50—kick-down
+ 
+3rd ________________________________________________________________________________________ 1.00
+ 
+4th ________________________________________________________________________________________ 0.75
+ 
+5th ________________________________________________________________________________________ 0.67
+Overall Top Gear _________________________________________2.34 with 3.55 axle ratio or 2.59 with 3.92 axle ratio
+NV233HD 
+Availability _________________________________________________________________________________ Standard
+Shift Mechanism ___________________________________________________________________ Electrical/electronic
+Operating Modes ________________________________________________________Neutral; 2WD; 4WD High, locked; 
+4WD Low, locked 
+Low Range Ratio ________________________________________________________________________________ 2.72
+Center Differential _____________________________________________________________________________ None
+SPECIFICATIONS
+
+D O D G E  B R A N D  P R O D U C T  I N F O R M A T I O N
+2 0 0 5  D O D G E  D A K O T A
+1 8
+continued
+NV244HD 
+Availability _________________________________________________________________ Optional on SLT and Laramie
+Shift Mechanism ___________________________________________________________________ Electrical/electronic
+Operating Modes _____________________________Neutral; 4WD High, full-time; 4WD High, locked; 4WD Low, locked 
+Low Range Ratio ________________________________________________________________________________ 2.72
+Center Differential Type ______________________________________________________________ Planetary with lock
+Torque Split, F/R _______________________________________________________________________________48/52
+ELECTRICAL SYSTEM
+Alternator _________________________________________________________________________________ 136-amp
+Battery ________________________________________ Maintenance-free, top-terminal 600 CCA—std.; 750 CCA—opt.
+BODY AND FRAME
+Description 
+2WD 
+4WD
+Layout ___________________ Longitudinal front engine, rear drive ______ Longitudinal front engine with transfer case 
+ 
+ 
+ 
+for rear-wheel drive or four-wheel drive
+Construction ___________________Ladder-type frame, steel body   ________________ Ladder-type frame, steel body 
+ 
+ 
+mounted on rubber isolators 
+mounted on rubber isolators
+SUSPENSION
+Front _______________________________ Upper and lower “A” arms, coil springs over gas-pressure shock absorbers, 
+link-type stabilizer bar
+Rear ____________________________________________________ Live axle, multi-leaf two-stage longitudinal springs, 
+staggered gas-pressure shock absorbers, link-type stabilizer bar
+STEERING
+Type ___________________________________________________________________________ Power rack and pinion
+Overall Ratio __________________________________________________________________________________ 17.4:1
+Turning Diameter (curb-to-curb) _________________________________________________________ 44.0 ft. (13.4 m)
+Steering Turns (lock-to-lock) ______________________________________________________________________ 3.18
+BRAKES 
+Front
+ 
+Availability ______________________________________________________________________________ Standard
+ 
+Size and type _______________________________________________________  12.3 x 1.1 (312 x 28) vented disc
+with 2.13 (54) dual-piston sliding caliper(a)
+ 
+Swept area ________________________________________________________________ 248 sq. in. (1604 sq. cm)
+Rear 
+ 
+Availability ______________________________________________________________________________ Standard
+ 
+Size and type ____________________________________________________ 11.6 x 2.28 (295 x 58) drum with ABS
+ 
+Swept area _______________________________________________________________ 166.6 sq. in. (1076 sq. cm)
+Power Assist 
+ 
+Availability ______________________________________________________________________________ Standard
+ 
+Type ___________________________________________________________ 9.06 (230) Tandem-diaphragm vacuum
+FUEL SYSTEM
+Fuel Tank Capacity _______________________________________________________________________ 22 gal. (83L) 
+(a) Available with ABS.
+SPECIFICATIONS
+
+D O D G E  B R A N D  P R O D U C T  I N F O R M A T I O N
+2 0 0 5  D O D G E  D A K O T A
+1 9
+continued
+DIMENSIONS AND CAPACITIES(a)
+2WD
+ 
+ 
+Club Cab 
+Quad Cab
+Wheelbase _________________________________ 131.3 (3335.3) ______________________________131.3 (3335.3)
+Track, Front __________________________________62.8 (1594.5) _______________________________ 62.8 (1594.5)
+Track, Rear ___________________________________ 62.9 (1598) ________________________________ 62.9 (1598)
+Overall Length ______________________________ 218.8 (5558.2) ______________________________218.8 (5558.2)
+Overall Width(a) ______________________________ 71.7 (1821.7) _______________________________ 71.7 (1821.7)
+Overall Height ________________________________68.6 (1743.2) _______________________________ 68.7 (1744.7)
+Tailgate Load Height ____________________________31.9 (809.6) ________________________________ 31.9 (809.6)
+Ground Clearance
+ 
+Front suspension (lowest point) _________________ 7.9 (201.9) _________________________________ 7.9 (201.9)
+ 
+Rear axle ___________________________________ 8.1 (205.1) _________________________________ 8.1 (205.1)
+ 
+Approach angle, deg. _______________________________ 23 ________________________________________23
+ 
+Ramp breakover angle, deg. _________________________ 19.9 ______________________________________ 19.9
+ 
+Departure angle, deg. ______________________________ 22.6 ______________________________________ 22.6
+Frontal Area, sq. ft. (sq. m) (estimated) _____________30.3 (2.81) _________________________________30.3 (2.81)
+Drag Coefficient (estimated) __________________________ 0.452 _____________________________________ 0.457
+CdA, sq. ft.  _________________________________________ 13.7 ______________________________________ 14.0
+4WD
+ 
+ 
+Club Cab 
+Quad Cab
+Wheelbase _________________________________ 131.3 (3335.3) ______________________________131.3 (3335.3)
+Track, Front __________________________________62.8 (1594.5) _______________________________ 62.8 (1594.5)
+Track, Rear ___________________________________ 62.9 (1598) ________________________________ 62.9 (1598)
+Overall Length ______________________________ 218.8 (5558.2) ______________________________218.8 (5558.2)
+Overall Width ________________________________ 71.7 (1821.7) _______________________________ 71.7 (1821.7)
+Overall Height ________________________________ 68.6 (1741.4) _______________________________ 68.6 (1742.9)
+Tailgate Load Height ____________________________31.8 (808.9) ________________________________31.8 (808.9)
+Ground Clearance
+ 
+Front suspension (lowest point) _________________ 7.9 (201.9) _________________________________ 7.9 (201.9)
+ 
+Rear axle __________________________________ 8.0 (203.8) _________________________________8.0 (203.8)
+ 
+Approach angle, deg. ______________________________ 22.8 ______________________________________ 22.8
+ 
+Ramp breakover angle, deg. _________________________ 19.6 ______________________________________ 19.6
+ 
+Departure angle, deg. ______________________________ 22.5 ______________________________________ 22.5
+Frontal Area, sq. ft. (sq. m) (estimated) _____________30.3 (2.81) _________________________________30.3 (2.81)
+Drag Coefficient (estimated) __________________________ 0.452 _____________________________________ 0.457
+CdA, sq. ft. _________________________________________ 13.7 ______________________________________ 14.0
+(a) At seating reference point.
+SPECIFICATIONS
+
+D O D G E  B R A N D  P R O D U C T  I N F O R M A T I O N
+2 0 0 5  D O D G E  D A K O T A
+2 0
+continued
+CARGO BOX DIMENSIONS
+ 
+ 
+Club Cab 
+Quad Cab
+Nominal Box Length, ft. ________________________________ 6.4 _______________________________________ 5.3
+Length at Floor, Tailgate Closed _________________ 78.8 (2001.5) _______________________________ 64.9 (1648.1)
+Length at Floor, Tailgate Open _________________ 100.3 (2546.6) _______________________________ 86.3 (2193.1)
+Interior Width, Maximum _______________________ 59.6 (1514.0) _______________________________ 59.6 (1514.0)
+Distance Between Wheelhouses _________________45.2 (1146.9) _______________________________ 45.2 (1148.0)
+Tailgate Opening Width _________________________ 59.6 (1514.0) _______________________________ 59.6 (1514.0)
+Depth ________________________________________17.6 (446.9) _______________________________  17.6 (446.9)
+Volume, cu. ft (cu. m) ____________________________46.6 (1.32) ________________________________38.2 (1.082)
+ACCOMMODATIONS
+ 
+ 
+Club Cab® 
+Quad Cab™
+Seating Capacity, F/R __________________________2 or 3/0 or 2 ___________________________________ 2 or 3/3
+Front 
+ 
+Head room _______________________________39.6 (1005.3) _______________________________ 39.9 (1013.1)
+ 
+Leg room _________________________________ 41.9 (1063.1) _______________________________ 41.9 (1063.1)
+ 
+Shoulder room _____________________________ 57.7 (1466) _________________________________57.7 (1466)
+ 
+Hip room _________________________________54.9 (1394.0) _______________________________54.9 (1394.0)
+ 
+Step height ___________________________ 4x2: 20.4 (518.0) ____________________________4x2: 20.4 (518.0)
+ 
+ 
+4x4: 20.3 (515.8) ____________________________4x4: 20.3 (515.8)
+ 
+Interior volume, cu. ft. (cu. m) __________________55.3 (1.57) _________________________________ 55.8 (1.58)
+ 
+Seat travel _____________________________8.7 (220)—driver,  ____________________________8.7 (220)—driver,
+ 
+ 
+7.5 (190)—passenger 
+ 8.7 (220)—passenger
+ 
+Recliner range, degrees _____________________________ 53 ________________________________________53
+Rear 
+ 
+Head room _______________________________ 36.5 (928.3) ________________________________38.4 (974.2)
+ 
+Leg room—min. _____________________________32.1 (815.4) ________________________________ 36.4 (925.1)
+ 
+Knee clearance ____________________________ -4.1 (-105.2) __________________________________3.0 (75.0)
+ 
+Shoulder room ____________________________57.4 (1458.3) _______________________________ 57.5 (1460.7)
+ 
+Hip room _________________________________56.9 (1446.2) _______________________________56.0 (1460.7)
+ 
+Interior volume, cu. ft. (cu. m) __________________ 39.0 (1.10) _________________________________ 46.5 (1.32)
+Cab Cargo Volume 
+ 
+(Rear seat up), cu. ft. (cu. m) __________________ 30.0 (0.85) _________________________________ 37.1 (1.05)
+SPECIFICATIONS
+
+D O D G E  B R A N D  P R O D U C T  I N F O R M A T I O N
+2 0 0 5  D O D G E  D A K O T A
+2 1
+continued
+SPECIFICATIONS
+CURB WEIGHT AND PAYLOAD 
+ 
+ 
+ 
+ 
+ 
+ 
+Base Curb Wt. 
+Payload 
+Drive 
+Body Style 
+Model 
+Engine 
+GVWR (lbs) 
+(lbs.)(a) 
+(lbs.)(b)
+2WD 
+Club Cab® 
+ST 
+3.7L V-6  
+6,010 
+4,294 
+1,720
+  
+ 
+ 
+4.7L V-8  
+6,010 
+4,377 
+1,630
+  
+ 
+SLT  
+3.7L V-6  
+6,010 
+4,282 
+1,730
+  
+ 
+ 
+4.7L V-8  
+6,010 
+4,372 
+1,640
+  
+ 
+ 
+4.7L V-8 HO 
+6,010 
+4,405 
+1,600
+  
+ 
+Laramie 
+3.7L V-6  
+6,010 
+4,346 
+1,660
+  
+ 
+ 
+4.7L V-8  
+6,010 
+4,436 
+1,570
+  
+ 
+ 
+4.7L V-8 HO  
+6,010 
+4,468 
+1,540
+  
+Quad Cab™ 
+ST  
+3.7L V-6  
+6,010 
+4,387 
+1,620
+  
+ 
+ 
+4.7L V-8  
+6,010 
+4,458 
+1,550
+  
+ 
+SLT 
+3.7L V-6  
+6,010 
+4,363 
+1,650
+  
+ 
+ 
+4.7L V-8  
+6,010 
+4,437 
+1,570
+  
+ 
+ 
+4.7L V-8 HO  
+6,010 
+4,470 
+1,540
+  
+ 
+Laramie 
+3.7L V-6  
+6,010 
+4,426 
+1,580
+  
+ 
+ 
+4.7L V-8  
+6,010 
+4,500 
+1,510
+  
+ 
+ 
+4.7L V-8 HO  
+6,010 
+4,533 
+1,480
+4WD 
+Club Cab 
+ST  
+3.7L V-6  
+6,010 
+4,475 
+1,530
+  
+ 
+ 
+4.7L V-8  
+6,010 
+4,567 
+1,440
+  
+ 
+SLT 
+3.7L V-6  
+6,010 
+4,515 
+1,490
+  
+ 
+ 
+4.7L V-8  
+6,010 
+4,591 
+1,420
+  
+ 
+ 
+4.7L V-8 HO  
+6,010 
+4,627 
+1,380
+  
+ 
+Laramie 
+3.7L V-6  
+6,010 
+4,549 
+1,460
+  
+ 
+ 
+4.7L V-8  
+6,010 
+4,625 
+1,390
+  
+ 
+ 
+4.7L V-8 HO  
+6,010 
+4,661 
+1,350
+  
+Quad Cab 
+ST 
+3.7L V-6  
+6,010 
+4,566 
+1,440
+  
+ 
+ 
+4.7L V-8  
+6,010 
+4,649 
+1,360
+  
+ 
+SLT 
+3.7L V-6  
+6,010 
+4,594 
+1,420
+  
+ 
+ 
+4.7L V-8  
+6,010 
+4,634 
+1,380
+  
+ 
+ 
+4.7L V-8 HO  
+6,010 
+4,702 
+1,310
+  
+ 
+Laramie 
+3.7L V-6  
+6,010 
+4,628 
+1,380
+  
+ 
+ 
+4.7L V-8  
+6,010 
+4,700 
+1,310
+  
+ 
+ 
+4.7L V-8 HO  
+6,010 
+4,736 
+1,270
+(a) Curb weight includes standard equipment and full quantities of fuel, lubricant and coolant.
+(b) Payload = GVWR minus curb weight minus 50 lbs. and payload is rounded to the nearest 10 lbs.
+
+D O D G E  B R A N D  P R O D U C T  I N F O R M A T I O N
+2 0 0 5  D O D G E  D A K O T A
+2 2
+SPECIFICATIONS
+CURB WEIGHT AND PAYLOAD 
+Club Cab 2WD SLT Short Bed
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Base 
+Base
+ 
+ 
+Trans 
+ Axle 
+ 
+ 
+Base Curb Wt. Curb Wt. GAWR GAWR 
+ 
+Max.
+Engine 
+Type 
+Transmission Ratio GVWR Payload Curb Wt. 
+Front 
+Rear Front 
+Rear GCWR Trail Wt.
+3.7L V-6 (EKG) 
+M6 
+Getrag six-speed manual 3.21 6010 
+1700 
+4306 
+2504 
+1802 3100 3806 7700 
+3250
+3.7L V-6 (EKG) 
+M6 
+Getrag six-speed manual 3.55 6010 
+1700 
+4306 
+2504 
+1802 3100 3806 8500 4050
+3.7L V-6 (EKG) 
+A4 42RLE four-speed automatic 3.55 6010 
+1720 
+4295 
+2485 
+1810 3100 3806 9000 
+4550
+3.7L V-6 (EKG) 
+A4 42RLE four-speed automatic 3.92 6010 
+1720 
+4295 
+2485 
+1810 3100 3806 9300 
+4850
+4.7L V-8 (EVA)  
+M6  
+Getrag six-speed manual  3.21  6010  1640  
+4374  2559  
+1815  3100  3806  9500 5000
+4.7L V-8 (EVA)  
+M6  
+Getrag six-speed manual  3.55  6010  1640 
+ 4374  2559  
+1815  3100  3806  10,000  5500
+4.7L V-8 (EVA)  
+A5  545RFE five-speed automatic  3.55  6010  1600  
+4413  2590 
+ 1824  3100  3806 10,500  5950
+4.7L V-8 (EVA)  
+A5  545RFE five-speed automatic  3.92  6010  1600  
+4413  2590  
+1824  3100  3806 11,500  6950
+4.7L V-8 HO (EVC)  A5 545RFE five-speed automatic  3.92  6010  1600  
+4413  2590 
+ 1824  3100  3806  11,500  6950
+Club Cab 2WD SLT Short Bed
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Base 
+Base
+ 
+ 
+Trans 
+ Axle 
+ 
+ 
+Base Curb Wt. Curb Wt. GAWR GAWR 
+ 
+Max.
+Engine 
+Type 
+Transmission Ratio GVWR Payload Curb Wt. 
+Front 
+Rear Front 
+Rear GCWR Trail Wt.
+3.7L V-6 (EKG)  
+M6  
+Getrag six-speed manual  3.21  6010  1720  
+4286  2479  
+1807  3100  3806  7700 
+3250
+3.7L V-6 (EKG)  
+M6 
+ Getrag six-speed manual  3.55  6010  1720 
+ 4286  2479  
+1807  3100  3806  8500 4050
+3.7L V-6 (EKG)  
+A4  42RLE four-speed automatic  3.55  6010  1740  
+4275  2460 
+ 1815  3100  3806  9000 4600
+3.7L V-6 (EKG)  
+A4  42RLE four-speed automatic  3.92  6010  1740  
+4275  2460  
+1815  3100  3806  9300 
+4900
+4.7L V-8 (EVA)  
+M6  
+Getrag six-speed manual  3.21  6010  1660  4345 
+2542 
+1804 3100  3806  9500 5000
+4.7L V-8 (EVA)  
+M6 
+ Getrag six-speed manual  3.55  6010  1660  4345  2542  
+1804  3100  3806  10,000 5500
+4.7L V-8 (EVA)  
+A5  545RFE five-speed automatic  3.55  6010  1630 
+4385  2572 
+ 1812  3100  3806  10,500 5950
+4.7L V-8 (EVA) 
+ A5  545RFE five-speed automatic  3.92  6010  1630  4385  2572 
+ 1812  3100  3806  11,500  6950
+4.7L V-8 (EVA)(a)  A5  545RFE five-speed automatic  3.92  6010  1640  
+4367  2566  
+1802  3100  3806  11,500 
+7000
+(a) Note option with bench seats only (sales code CBE).
+NOTE: Payload = GVWR minus Curb Wt.
+          Maximum trailer weights are rounded to the nearest 50 lbs. and Payload to nearest 10 lbs.
+          Maximum Trailer Weights = GCWR minus Curb. Wt. minus 150 lbs. (allowance for driver)
+
+D O D G E  B R A N D  P R O D U C T  I N F O R M A T I O N
+2 0 0 5  D O D G E  D A K O T A
+2 3
+continued
+CURB WEIGHT AND PAYLOAD (CONTINUED)
+Quad Cab 2WD SLT Short Bed
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Base 
+Base
+ 
+ 
+Trans 
+ Axle 
+ 
+ 
+Base Curb Wt. Curb Wt. GAWR GAWR 
+ 
+Max.
+Engine 
+Type 
+Transmission Ratio GVWR Payload Curb Wt. 
+Front 
+Rear Front 
+Rear GCWR Trail Wt.
+3.7L V-6 (EKG)  
+M6  
+Getrag six-speed manual  3.21  6010  1600  
+4408 
+ 2509  
+1899  3100  3806  7700 
+3150
+3.7L V-6 (EKG) 
+ M6  
+Getrag six-speed manual 3.55  6010  1600 
+4408  
+2509 
+1899  3100  3806  8500 
+3950
+3.7L V-6 (EKG)  
+A4  42RLE four-speed automatic  3.55  6010  1610  
+4397 
+2490 
+1906 3100 3806 9000 
+4450
+3.7L V-6 (EKG)  
+A4  42RLE four-speed automatic  3.92  6010  1610 
+4397 
+2490 
+1906 3100 3806 9300 
+4750
+4.7L V-8 (EVA) 
+M6  
+Getrag six-speed manual  3.21  6010  1520 
+ 4485  
+2567 
+ 1919  3100  3806  9500 
+4850
+4.7L V-8 (EVA)  
+M6  
+Getrag six-speed manual 3.55  6010  1520  
+4485  
+2567  
+1919  3100  3806  10,000 
+5350
+4.7L V-8 (EVA) 
+A5 545RFE five-speed automatic  3.55  6010  1480  
+4525  
+2598  
+1927  3100  3806  10,500 
+5800
+4.7L V-8 (EVA)  
+A5  545RFE five-speed automatic  3.92  6010  1480 
+ 4525  
+2598  
+1927  3100  3806  11,500 
+6800
+4.7L V-8 HO (EVC)  A5  545RFE five-speed automatic  3.92  6010  1480  
+4525 
+ 2598  
+1928  3100  3806  11,500 
+6800
+Quad Cab 2WD ST Short Bed
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Base 
+Base
+ 
+ 
+Trans 
+ Axle 
+ 
+ 
+Base Curb Wt. Curb Wt. GAWR GAWR 
+ 
+Max.
+Engine 
+Type 
+Transmission Ratio GVWR Payload Curb Wt. 
+Front 
+Rear Front 
+Rear GCWR Trail Wt.
+3.7L V-6 (EKG)  
+M6  
+Getrag six-speed manual 3.21  6010  1590  
+4422  
+2520  
+1902  3100  3806  7700 
+3150
+3.7L V-6 (EKG)  
+M6  
+Getrag six-speed manual  3.55  6010  1590  
+4422  
+2520  
+1902  3100  3806  8500 
+3950
+3.7L V-6 (EKG) 
+ A4  42RLE four-speed automatic  3.55  6010  1600  
+4411 
+ 2501 
+ 1910  3100 3806 9000 
+4450
+3.7L V-6 (EKG)  
+A4  42RLE four-speed automatic  3.92 6010  1600  
+4411  
+2501  
+1910  3100 3806 9300 
+4750
+4.7L V-8 (EVA)  
+M6 
+ Getrag six-speed manual  3.21  6010  1510 
+ 4505 
+2577 
+1927  3100 3806 9500 
+4850
+4.7L V-8 (EVA)  
+M6 
+Getrag six-speed manual 3.55  6010  1510 
+ 4505  
+2577 
+ 1927 3100 3806 10,000 
+5350
+4.7L V-8 (EVA)  
+A5  545RFE five-speed automatic 3.55  6010  1470  
+4545 
+2609 
+1936 3100  3806 10,500 
+5800
+4.7L V-8 (EVA)  
+A5  545RFE five-speed automatic  3.92  6010  1470 
+ 4545 
+ 2609 
+ 1936  3100  3806 11,500 
+6800
+SPECIFICATIONS
+
+D O D G E  B R A N D  P R O D U C T  I N F O R M A T I O N
+2 0 0 5  D O D G E  D A K O T A
+2 4
+continued
+CURB WEIGHT AND PAYLOAD (CONTINUED)
+Club Cab Laramie 2WD ST Short Bed
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Base 
+Base
+ 
+ 
+Trans 
+ Axle 
+ 
+ 
+Base Curb Wt. Curb Wt. GAWR GAWR 
+ 
+Max.
+Engine 
+Type 
+Transmission Ratio GVWR Payload Curb Wt. 
+Front 
+Rear Front 
+Rear GCWR Trail Wt.
+3.7L V-6 (EKG)  
+M6  
+Getrag six-speed manual  3.21  6010  1710  
+4304 
+ 2505  1799  3100  3806  7700 
+3250
+3.7L V-6 (EKG)  
+M6 
+ Getrag six-speed manual  3.55  6010  1710  
+4304 
+ 2505  1799  3100  3806  8500 
+4050
+3.7L V-6 (EKG)  
+A4  42RLE four-speed automatic  3.55  6010  1720  
+4293  
+2486  1807  3100  3806  9000 
+4550
+3.7L V-6 (EKG)  
+A4  42RLE four-speed automatic  3.92  6010  1720  
+4293  
+2486  1807  3100  3806  9300 
+4850
+4.7L V-8 (EVA)  
+M6  
+Getrag six-speed manual  3.21  6010  1620  
+4387  
+2562  1824  3100  3806  9500 
+4950
+4.7L V-8 (EVA)  
+M6  
+Getrag six-speed manual  3.55  6010  1620 
+ 4387  
+2562  1824  3100  3806  10,000 
+5450
+4.7L V-8 (EVA)  
+A5  545RFE five-speed automatic  3.55  6010  1580  
+4426  
+2593  1833  3100  3806  10,500 
+5900
+4.7L V-8 (EVA)  
+A5  545RFE five-speed automatic  3.92  6010  1580  
+4426  
+2593  1833  3100  3806  11,500 
+6900
+4.7L V-8 HO (EVC)  A5  545RFE five-speed automatic  3.92  6010  1580  
+4426  
+2593  1833  3100  3806 11,500 
+6900
+Quad Cab Laramie 2WD Short Bed
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Base 
+Base
+ 
+ 
+Trans 
+ Axle 
+ 
+ 
+Base Curb Wt. Curb Wt. GAWR GAWR 
+ 
+Max.
+Engine 
+Type 
+Transmission Ratio GVWR Payload Curb Wt. 
+Front 
+Rear Front 
+Rear GCWR Trail Wt.
+3.7L V-6 (EKG) 
+ M6  
+Getrag six-speed manual  3.21  6010  1620  4389  
+2513  1876  3100  3806  7700 
+3150
+3.7L V-6 (EKG)  
+M6 
+ Getrag six-speed manual  3.55  6010  1620  4389  
+2513  1876  3100  3806  8500 
+3950
+3.7L V-6 (EKG) 
+ A4 42RLE four-speed automatic  3.55  6010  1630  
+4378  2494  1884  3100  3806  9000 4450
+3.7L V-6 (EKG) 
+ A4  42RLE four-speed automatic  3.92  6010  1630  
+4378  2494  1884  3100  3806  9300 
+4750
+4.7L V-8 (EVA) 
+ M6  
+Getrag six-speed manual  3.21  6010  1540 
+ 4472  2570  1901  3100  3806 9500 
+4900
+4.7L V-8 (EVA)  
+M6  
+Getrag six-speed manual  3.55  6010  1540  
+4472  2570  1901  3100  3806 10,000 5400
+4.7L V-8 (EVA)  
+A5  545RFE five-speed automatic  3.55  6010  1500  
+4512  2602  1910  3100  3806  10,500 5850
+4.7L V-8 (EVA)  
+A5  545RFE five-speed automatic  3.92  6010  1500 
+ 4512  2602  1910  3100  3806  11,500 
+6850
+4.7L V-8 HO (EVC) A5 545RFE five-speed automatic 3.92 6010 1500 
+4512  2602  1910  3100  3806  11,500 
+6850
+SPECIFICATIONS
+
+D O D G E  B R A N D  P R O D U C T  I N F O R M A T I O N
+2 0 0 5  D O D G E  D A K O T A
+2 5
+continued
+CURB WEIGHT AND PAYLOAD (CONTINUED)
+Club Cab 4WD SLT Short Bed
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Base 
+Base
+ 
+ 
+Trans 
+ Axle 
+ 
+ 
+Base Curb Wt. Curb Wt. GAWR GAWR 
+ 
+Max.
+Engine 
+Type 
+Transmission Ratio GVWR Payload Curb Wt. 
+Front 
+Rear Front 
+Rear 
+GCWR Trail Wt.
+3.7L V-6 (EKG) 
+ M6 
+Getrag six-speed manual  3.55 6010  1530  4476  2656  1820  3600  3806  8500 3850
+3.7L V-6 (EKG)  
+A4  42RLE four-speed automatic 3.55  6010  1550  4464  2636  1828  3600  3806  9000 4400
+3.7L V-6 (EKG) 
+ A4  42RLE four-speed automatic  3.92  6010  1550  4464  2636  1828  3600  3806  9300 4700
+4.7L V-8 (EVA)  
+M6  
+Getrag six-speed manual  3.55  6010  1450  4565  2725  1840  3600  3806  10,000 5300
+4.7L V-8 (EVA)  
+A5  545RFE five-speed automatic  3.55  6010  1400  
+4615  2757  1857  3600  3806  10,500 5750
+4.7L V-8 (EVA)  
+A5  545RFE five-speed automatic  3.92  6010  1400  
+4615  2757  1857  3600  3806  11,500 6750
+4.7L V-8 HO (EVC)  A5  545RFE five-speed automatic  3.92  6010  1400  
+4615  2758  1857  3600  3806  11,500 6750
+Club Cab 4WD ST Short Bed
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Base 
+Base
+ 
+ 
+Trans 
+ Axle 
+ 
+ 
+Base Curb Wt. Curb Wt. GAWR GAWR 
+ 
+Max.
+Engine 
+Type 
+Transmission Ratio GVWR Payload Curb Wt. 
+Front 
+Rear Front 
+Rear 
+GCWR Trail Wt.
+3.7L V-6 (EKG)  
+M6  
+Getrag six-speed manual  3.55  6010  1550  4463  2662  1801  3600  3806  8500 3900
+3.7L V-6 (EKG)  
+A4  42RLE four-speed automatic  3.55  6010  1560  4451  2642  1808  3600  3806  9000 4400
+3.7L V-6 (EKG)  
+A4  42RLE four-speed automatic  3.92  6010  1560  4451  2642  1808  3600  3806  9300 4700
+4.7L V-8 (EVA)  
+M6 
+Getrag six-speed manual  3.55 6010  1460  4547  2721  1826  3600  3806  10,000 5300
+4.7L V-8 (EVA)  
+A5  545RFE five-speed automatic  3.55  6010  1410  4597  2754  1844  3600  3806  10,500 5750
+4.7L V-8 (EVA)  
+A5  545RFE five-speed automatic  3.92 6010  1410  4597  2754  1844  3600  3806 11,500 6750
+SPECIFICATIONS
+
+D O D G E  B R A N D  P R O D U C T  I N F O R M A T I O N
+2 0 0 5  D O D G E  D A K O T A
+2 6
+continued
+CURB WEIGHT AND PAYLOAD (CONTINUED)
+Quad Cab 4WD SLT Short Bed
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Base 
+Base
+ 
+ 
+Trans 
+ Axle 
+ 
+ 
+Base Curb Wt. Curb Wt. GAWR GAWR 
+ 
+Max.
+Engine 
+Type 
+Transmission Ratio GVWR Payload Curb Wt. 
+Front 
+Rear 
+Front 
+Rear GCWR Trail Wt.
+3.7L V-6 (EKG)  
+M6  
+Getrag six-speed manual  3.55  6010  1430  
+4579  
+2662 
+ 1917  3600  3806  8500 3750
+3.7L V-6 (EKG) 
+A4 42RLE four-speed automatic 3.55 6010 
+1440 
+4567 
+2642 
+1925 3600 3806 9000 4300
+3.7L V-6 (EKG) 
+A4 42RLE four-speed automatic 3.92 6010 
+1440 
+4567 
+2642 
+1925 3600 3806 9300 4600
+4.7L V-8 (EVA) 
+M6 
+Getrag six-speed manual 3.55 6010 
+1360 
+4646 
+2717 
+1929 3600 3806 10,000 5200
+4.7L V-8 (EVA) 
+A5 545RFE five-speed automatic 3.55 6010 
+1310 
+4696 
+2750 
+1947 3600 3806 10,500 5650
+4.7L V-8 (EVA) 
+A5 545RFE five-speed automatic 3.92 6010 
+1310 
+4696 
+2750 
+1947 3600 3806 11,500 6650
+4.7L V-8 HO (EVC) A5 545RFE five-speed automatic 3.92 6010 
+1310 
+4701 
+2765 
+1937 3600 3806 11,500 6650
+Quad Cab 4WD ST Short Bed
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Base 
+Base
+ 
+ 
+Trans 
+ Axle 
+ 
+ 
+Base Curb Wt. Curb Wt. GAWR GAWR 
+ 
+Max.
+Engine 
+Type 
+Transmission Ratio GVWR Payload Curb Wt. 
+Front 
+Rear 
+Front 
+Rear GCWR Trail Wt.
+3.7L V-6 (EKG)  
+M6  
+Getrag six-speed manual  3.55  6010  1450  
+4564 
+ 2668  
+1896  3600  3806  8500 3800
+3.7L V-6 (EKG)  
+A4  42RLE four-speed automatic  3.55  6010  1460  
+4552  
+2648 
+ 1904  3600  3806  9000 4300
+3.7L V-6 (EKG) 
+ A4  42RLE four-speed automatic  3.92  6010  1460  
+4552  
+2648 
+ 1904  3600  3806  9300 4600
+4.7L V-8 (EVA)  
+M6 
+ Getrag six-speed manual 3.55  6010  1360 
+4649 
+ 2727  
+1922  3600  3806  10,000 5200
+4.7L V-8 (EVA)  
+A5  545RFE five-speed automatic  3.55  6010  1310  
+4699 
+ 2760  
+1939  3600  3806  10,500 5650
+4.7L V-8 (EVA)  
+A5  545RFE five-speed automatic  3.92  6010  1310  
+4699 
+ 2760 
+ 1939  3600  3806  11,500 6650
+SPECIFICATIONS
+
+D O D G E  B R A N D  P R O D U C T  I N F O R M A T I O N
+2 0 0 5  D O D G E  D A K O T A
+2 7
+CURB WEIGHT AND PAYLOAD (CONTINUED)
+Club Cab Laramie 4WD ST Short Bed
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Base 
+Base
+ 
+ 
+Trans 
+ Axle 
+ 
+ 
+Base Curb Wt. Curb Wt. GAWR GAWR 
+ 
+Max.
+Engine 
+Type 
+Transmission Ratio GVWR Payload Curb Wt. 
+Front 
+Rear Front 
+Rear GCWR Trail Wt.
+3.7L V-6 (EKG)  
+M6  
+Getrag six-speed manual  3.55  6010  1520  
+4493 
+ 2672  
+1821  3600  3850  8500 3850
+3.7L V-6 (EKG)  
+A4  42RLE four-speed automatic  3.55  6010  1530  
+4481  
+2652  
+1829  3600  3850  9000 5750
+3.7L V-6 (EKG)  
+A4  42RLE four-speed automatic  3.92  6010  1530  
+4481  
+2652  
+1829  3600  3850  9300 5750
+4.7L V-8 (EVA)  
+M6  
+Getrag six-speed manual  3.55  6010  1440  
+4571 
+ 2726  
+1844  3600  3850  10,000 5750
+4.7L V-8 (EVA)  
+A5  545RFE five-speed automatic  3.55  6010  1390  
+4621  
+2759 
+1862  3600  3850  10,500 5750
+4.7L V-8 (EVA)  
+A5  545RFE five-speed automatic  3.92  6010  1390  
+4621  
+2759  
+1862  3600  3850  11,500  6750
+4.7L V-8 HO (EVC) A5  545RFE five-speed automatic  3.92  6010  1390  
+4621  
+2759  
+1862  3600  3850  11,500 6750
+Quad Cab Laramie 4WD Short Bed
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Base 
+Base
+ 
+ 
+Trans 
+ Axle 
+ 
+ 
+Base Curb Wt. Curb Wt. GAWR GAWR 
+ 
+Max.
+Engine 
+Type 
+Transmission Ratio GVWR Payload Curb Wt. 
+Front 
+Rear Front 
+Rear GCWR Trail Wt.
+3.7L V-6 (EKG) 
+ M6  
+Getrag six-speed manual 3.55  6010  1390  
+4623  
+2694 
+ 1929  3600  3850  8500  3750
+3.7L V-6 (EKG)  
+A4  42RLE four-speed automatic  3.55  6010  1400  
+4611 
+2674 
+1937  3600  3850  9000 4250
+3.7L V-6 (EKG) 
+ A4  42RLE four-speed automatic  3.92  6010  1400  
+4611  
+2674 
+ 1937  3600  3850  9300 4550
+4.7L V-8 (EVA)  
+M6  
+Getrag six-speed manual  3.55  6010  1300  
+4707  
+2753  
+1955  3600  3850  10,000 5150
+4.7L V-8 (EVA)  
+A5  545RFE five-speed automatic 3.55  6010  1250  
+4758  
+2786  
+1972  3600  3850  10,500 5600
+4.7L V-8 (EVA)  
+A5  545RFE five-speed automatic  3.92  6010  1250  
+4758  
+2786  
+1972  3600  3850  11,500 6600
+4.7L V-8 HO (EVC)  A5  545RFE five-speed automatic  3.92 6010 
+1240 
+4772 
+2792 
+1980  3600  3850 11,500 6600
+SPECIFICATIONS
+
+D O D G E  B R A N D  P R O D U C T  I N F O R M A T I O N
+2 0 0 5  D O D G E  D A K O T A
+1 5
+continued
+2WD CLUB CAB AND QUAD CAB
+ 
+ 
+ 
+Manual  
+Automatic 
+ 
+ 
+ 
+Transmission 
+Transmission 
+Axle Ratio(a) 
+ 
+ 
+ 
+Engine 
+ 
+G-238 
+42RLE 
+5-45RFE 
+3.21 
+3.55 
+3.55 
+3.92 
+GVWR, lbs. 
+3.7L V-6 
+4.7L V-8 
+4.7L HO 
+Six-Speed 
+Four-Speed Five-Speed 
+Open 
+ Open 
+ Anti-Spin Anti-Spin
+ST 
+S 
+— 
+— 
+S 
+— 
+— 
+S 
+— 
+O 
+— 
+ 6010 
+S 
+— 
+— 
+— 
+O 
+— 
+— 
+S 
+O 
+O 
+  
+— 
+O 
+— 
+S 
+— 
+— 
+S 
+— 
+O 
+— 
+  
+— 
+O 
+— 
+— 
+— 
+O 
+— 
+S 
+O 
+O 
+SLT 
+S 
+— 
+— 
+S 
+— 
+— 
+S 
+— 
+O 
+— 
+ 6010 
+S 
+— 
+— 
+— 
+O 
+— 
+— 
+S 
+O 
+O 
+  
+— 
+O 
+— 
+S 
+— 
+— 
+S 
+— 
+O 
+— 
+  
+— 
+O 
+— 
+— 
+— 
+O 
+— 
+S 
+O 
+O 
+  
+— 
+— 
+O 
+— 
+— 
+O 
+— 
+— 
+— 
+ S 
+Laramie 
+S 
+— 
+— 
+— 
+S 
+— 
+— 
+— 
+O 
+— 
+ 6010 
+S 
+— 
+— 
+— 
+— 
+— 
+— 
+S 
+O 
+O 
+  
+— 
+O 
+— 
+— 
+— 
+— 
+— 
+— 
+O 
+— 
+  
+— 
+O 
+— 
+— 
+— 
+O 
+— 
+S 
+O 
+O 
+  
+— 
+— 
+O 
+— 
+— 
+O 
+— 
+— 
+— 
+S 
+4WD CLUB CAB AND QUAD CAB 
+ 
+ 
+ 
+Manual  
+Automatic 
+ 
+ 
+ 
+ 
+ 
+Transmission 
+ Transmission 
+Axle Ratio(a)
+ 
+ 
+ 
+Engine 
+ 
+G-238 
+42RLE 
+5-45RFE 
+3.55 
+3.55 
+3.92
+GVWR, lbs. 
+3.7L V-6 
+4.7L V-8 
+4.7L HO 
+Six-Speed 
+Four-Speed 
+Five-Speed 
+ Open 
+ Anti-Spin 
+ Anti-Spin
+ST 
+S 
+— 
+— 
+S 
+— 
+— 
+S 
+O 
+—
+ 6010 
+S 
+— 
+— 
+— 
+O 
+— 
+S 
+O 
+O
+  
+— 
+O 
+— 
+S 
+— 
+— 
+S 
+O 
+— 
+  
+— 
+O 
+— 
+— 
+— 
+O 
+S 
+O 
+O 
+SLT 
+S 
+— 
+— 
+S 
+— 
+— 
+S 
+O 
+—
+ 6010 
+S 
+— 
+— 
+— 
+O 
+— 
+S 
+O 
+O
+  
+— 
+O 
+— 
+S 
+— 
+— 
+S 
+O 
+— 
+  
+— 
+O 
+— 
+— 
+— 
+O 
+S 
+O 
+O 
+  
+— 
+— 
+O 
+— 
+— 
+O 
+— 
+— 
+S 
+Laramie 
+S 
+— 
+— 
+— 
+S 
+— 
+S 
+O 
+—
+ 6010 
+S 
+— 
+— 
+— 
+— 
+— 
+S 
+O 
+O
+  
+— 
+O 
+— 
+— 
+— 
+— 
+S 
+O 
+— 
+  
+— 
+O 
+— 
+— 
+— 
+O 
+S 
+O 
+O 
+  
+— 
+— 
+O 
+— 
+— 
+O 
+— 
+— 
+S 
+DAKOTA POWERTRAIN AVAILABILITY
+
+D O D G E  B R A N D  P R O D U C T  I N F O R M A T I O N
+2 0 0 5  D O D G E  D A K O T A
+7
+continued
+ 
+ST 
+SLT 
+Laramie
+EXTERIOR
+Bedliner, under rail ______________________________________________________________  
+O 
+O 
+O 
+Bumpers and Fascias
+ 
+Front
+ 
+  Chrome insert on bumper (not available with Sport Appearance Group) _______________  
+— 
+S 
+S
+ 
+  Dark Slate, mold-in-color fascia and bumper; SLT includes chrome insert(a) on bumper __  
+S 
+S 
+—
+ 
+  Body color, painted (included in Sport Appearance Group on SLT) ____________________  
+— 
+P 
+S 
+ 
+Rear with Step Pads
+ 
+  Chrome ___________________________________________________________________  
+— 
+S 
+S
+ 
+  Dark Slate _________________________________________________________________  
+S 
+— 
+—
+ 
+  Body color, painted (included in Sport Appearance Group on SLT)  ___________________  
+— 
+P 
+P
+Colors
+ 
+Atlantic Blue Pearl Coat, Black, Bright Silver Metallic, Bright White, Flame Red, 
+Mineral Gray Metallic, Patriot Blue Pearl Coat(a), Deep Molten Red Pearl Coat(a) _________  
+O 
+O 
+O
+ 
+Light Almond Pearl Coat Metallic(a) _____________________________________________  
+— 
+O 
+O
+Defroster—Rear Window (not available with sliding rear window) _________________________  
+O 
+O 
+O
+Doors, Rear Access _____________________________________________________________  
+S 
+S 
+S
+Fog Lamps _____________________________________________________________________  
+— 
+S 
+S
+Glass
+ 
+Sunscreen, quarter windows ___________________________________________________  
+S 
+S 
+S
+ 
+Tinted, windshield and front door windows ________________________________________  
+S 
+S 
+S
+Grille
+ 
+Bright surround with integrated Dodge signature crosshair grille ______________________  
+S 
+S 
+S
+Headlamps, Automatic ___________________________________________________________  
+— 
+— 
+S
+Mirrors (Black)
+ 
+Dual 5" x 7", Manual __________________________________________________________  
+S 
+— 
+—
+ 
+Dual 5" x 7", Power ___________________________________________________________  
+— 
+S 
+S
+ 
+Dual 6" x 9", Folding Power Heated (included in optional Trailer Tow Group) _____________  
+— 
+P 
+P
+Molding
+ 
+Bodyside, bright _____________________________________________________________  
+— 
+— 
+S
+ 
+Bodyside, black mold-in-color __________________________________________________  
+— 
+O 
+—
+ 
+Bodyside, body color, painted (included in Sport Appearance Group) ___________________  
+— 
+P 
+P
+Rear Window, sliding (NA with Rear Defroster) ________________________________________  
+O 
+O 
+O
+Windshield Wipers, variable-delay Intermittent _______________________________________  
+S 
+S 
+S
+INTERIOR
+Assist Handles, driver and passenger _______________________________________________  
+S 
+S 
+S
+Climate Control—Air conditioning __________________________________________________  
+S 
+S 
+S
+Colors
+ 
+Khaki ______________________________________________________________________  
+— 
+O 
+O
+ 
+Dark Slate __________________________________________________________________  
+S 
+O 
+O
+Courtesy/Map Lamp(s) __________________________________________________________  
+S 
+S 
+—
+ 
+Dual Front (included with optional Interior Convenience Group) _______________________  
+— 
+P 
+S
+ 
+Rear Dome/Courtesy _________________________________________________________  
+S 
+S 
+S
+Cruise Control __________________________________________________________________  
+P 
+S 
+S
+DAKOTA CLUB CAB® FEATURE AVAILABILITY
+(a) Not available with Sport Appearance Group.
+
+D O D G E  B R A N D  P R O D U C T  I N F O R M A T I O N
+2 0 0 5  D O D G E  D A K O T A
+8
+continued
+ 
+ST 
+SLT 
+Laramie
+INTERIOR (CONTINUED)
+Floor Covering
+ 
+Carpet _____________________________________________________________________  
+S 
+S 
+S
+ 
+Floor Mats—Front, carpeted (color-keyed) _________________________________________  
+O 
+S 
+S
+Instrument Cluster
+ 
+Digital displays, vacuum-fluorescent: transmission range (with automatic transmission), 
+odometer and trip odometer ___________________________________________________  
+S 
+S 
+S
+ 
+Analog Gauges—Speedometer, tachometer, coolant temperature, fuel __________________  
+S 
+S 
+S
+Map Pockets, front and rear doors _________________________________________________  
+S 
+S 
+S
+Mirror, Rearview—Manual day/night ________________________________________________  
+S 
+S 
+—
+ 
+Auto-dimming Day/Night (included with UConnect™ Hands-Free Communications) _______  
+— 
+— 
+S
+Power Outlet, Front _____________________________________________________________  
+S 
+S 
+S
+Power Windows/Locks/Keyless Entry _______________________________________________  
+— 
+S 
+S
+Seats
+ 
+Cloth 40/20/40 Seat _________________________________________________________  
+S 
+S 
+—
+ 
+Leather 40/20/40 Seat with six-way power driver’s seat, manual lumbar _______________  
+— 
+O 
+S
+ 
+Rear Dual Folding Seats _______________________________________________________  
+O 
+S 
+S
+ 
+Cloth Heated Bucket Seats with six-way power driver’s seat, manual lumbar ____________  
+O 
+O 
+—
+ 
+Leather Heated Bucket Seats with six-way power driver’s seat, manual lumbar ___________  
+— 
+O 
+O
+ 
+Driver and Passenger Manual Recliners __________________________________________  
+S 
+S 
+S
+Full Length Center Console (bucket seats only) (included in D Package) ___________________  
+P 
+P 
+P
+Sound Systems
+ 
+AM/FM Stereo Radio with Single CD Player and four speakers ________________________  
+S 
+S 
+—
+ 
+Premium AM/FM Stereo Radio, CD Player with MP3 capability, 
+Integral Six-Disc CD Changer ___________________________________________________  
+— 
+O 
+S
+ 
+Infinity® Six-Speaker System with 288-watt Amplifier (must have six-disc CD changer) ____  
+— 
+O 
+S
+ 
+Satellite Digital Audio Radio (must have Premium audio) _____________________________  
+— 
+O 
+O
+Steering Column, Tilt ____________________________________________________________  
+P 
+S 
+S
+Steering Wheel, Leather-wrapped with remote audio controls ___________________________  
+— 
+O 
+S
+Sun Visors, Padded Cloth with passenger-side mirror __________________________________  
+S 
+S 
+S
+UConnect™ Hands-Free Communications System with Bluetooth™ wireless technology 
+ 
+(includes auto-dimming Day/Night Mirror) ________________________________________  
+O 
+O 
+O
+POWERTRAIN AND CHASSIS
+Brakes, Power
+ 
+Front Disc/Rear Drum with rear-wheel anti-lock ___________________________________  
+S 
+S 
+S
+ 
+Front Disc/Rear Drum with four-wheel anti-lock ___________________________________  
+O 
+O 
+O
+Differential, Anti-Slip ____________________________________________________________  
+O 
+O 
+O
+Engines
+ 
+3.7-liter V-6 _________________________________________________________________  
+S 
+S 
+S
+ 
+4.7-liter V-8 _________________________________________________________________  
+O 
+O 
+O
+ 
+4.7-liter HO V-8 ______________________________________________________________  
+— 
+O 
+O
+Heater—Engine block ____________________________________________________________  
+O 
+O 
+O
+Steering, Power Rack & Pinion _____________________________________________________  
+S 
+S 
+S
+Suspension
+ 
+Front: Independent SLA (short- and long-arm) with coil-over-shock spring 
+and shock absorber module ____________________________________________________  
+S 
+S 
+S
+ 
+Rear: Multi-leaf springs, two-stage; stabilizer bar __________________________________  
+S 
+S 
+S
+DAKOTA CLUB CAB® FEATURE AVAILABILITY
+
+D O D G E  B R A N D  P R O D U C T  I N F O R M A T I O N
+2 0 0 5  D O D G E  D A K O T A
+9
+continued
+ 
+ST 
+SLT 
+Laramie
+POWERTRAIN AND CHASSIS (CONTINUED)
+Tires(a)
+ 
+P245/70R16 black sidewall Wrangler SR-A ________________________________________  
+S 
+S 
+—
+ 
+P255/65R16 outline white letter Eagle LS (two-wheel drive only) ______________________  
+— 
+O 
+S
+ 
+P265/70R16 outline white letter Wrangler RT/S (four-wheel drive only) _________________  
+— 
+O 
+S
+ 
+P275/60R17 black sidewall Eagle RS-A (two-wheel drive only); 
+(included with chrome-clad aluminum wheels) _____________________________________  
+— 
+P 
+P
+ 
+P265/65R17 black sidewall Wrangler SR-A (four-wheel drive only); 
+(included with chrome-clad aluminum wheels) _____________________________________  
+— 
+P 
+P
+ 
+P265/65R17 outline white letter Wrangler SR-A (two-wheel drive and four-wheel drive); 
+must have chrome-clad aluminum wheels ________________________________________  
+— 
+O 
+O
+ 
+Spare, Conventional __________________________________________________________  
+S 
+S 
+S
+Transfer Cases
+ 
+NV233HD Electric-shift part-time (four-wheel drive only) ____________________________  
+S 
+S 
+S
+ 
+NV244HD Electric-shift full-time (four-wheel drive only); 
+must have 4.7-liter engine and automatic transmission ______________________________  
+— 
+O 
+O
+Transmissions
+ 
+Six-speed Manual ____________________________________________________________  
+S 
+S 
+—
+ 
+Four-speed Automatic (V-6 only) ________________________________________________  
+O 
+O 
+S
+ 
+Five-speed Automatic (V-8 only) ________________________________________________  
+O 
+O 
+O
+Wheels
+ 
+Styled steel, 16" x 7" painted ___________________________________________________  
+S 
+— 
+—
+ 
+Full-face steel, 16" x 7" painted _________________________________________________  
+P 
+— 
+—
+ 
+Cast-aluminum, 16" x 8" painted ________________________________________________  
+— 
+S 
+S
+ 
+Chrome-clad aluminum, 17" x 8" ________________________________________________  
+— 
+O 
+O
+SAFETY AND SECURITY
+Air Bags
+ 
+Multi-stage front (driver and outboard passenger) with Occupant Classification System 
+(OCS) controlling level of passenger air bag deployment; knee-bolsters(b) ______________  
+S 
+S 
+S
+ 
+Passenger Air Bag Cut-Off Switch—ignition key operated(c) __________________________  
+S 
+S 
+S
+ 
+Supplemental Side-curtain Air Bags _____________________________________________  
+O 
+O 
+O
+Brake-Shift Interlock (with automatic transmission only) ________________________________  
+S 
+S 
+S
+Security Alarm  _________________________________________________________________  
+— 
+P 
+S
+Sentry Key Immobilizer ___________________________________________________________  
+— 
+P 
+S
+Child Seat Tether Anchors—Top, cab back (three); included on ST with available rear seats ____  
+S 
+S 
+S
+Child Seat Anchor System—LATCH (Lower Anchors and Tethers for CHildren) _______________  
+S 
+S 
+S
+EQUIPMENT GROUPS
+Overhead Convenience Group—overhead console includes trip computer with compass 
+and outside temperature display, dual courtesy/map lamps; HomeLink® universal 
+transceiver (included in SLT E package) __________________________________________  
+— 
+P 
+S
+(a) All tires have steel-belted radial construction made by Goodyear. Other sizes and brands may also be used.
+(b) Certified to federal regulations that allow less forceful air bags. Always use seat belts. 
+Remember, a back seat is the safest place for children.
+(c) Important, always remove key. 
+A rearward-facing child seat may be used in the front passenger seat only with the air bag turned off.
+DAKOTA CLUB CAB® FEATURE AVAILABILITY
+
+D O D G E  B R A N D  P R O D U C T  I N F O R M A T I O N
+2 0 0 5  D O D G E  D A K O T A
+1 0
+continued
+EQUIPMENT GROUPS (CONTINUED)
+Skid Plate Group—Engine/transmission/transfer case and fuel tank skid plates 
+(four-wheel drive only) and two front tow hooks ____________________________________  
+O 
+O 
+O
+Sport Appearance Package—Body color painted front fascia, rear bumper 
+and bodyside molding _________________________________________________________  
+— 
+O 
+O
+Trailer Tow Group and Heavy-Duty Service Package—Class IV hitch receiver; 
+wiring harness with seven-circuit and four-circuit connectors; Heavy-Duty 
+Service Group consisting of heavy-duty engine cooling, auxiliary transmission 
+cooler with automatic transmission, power steering cooler and 750 CCA battery. 
+Includes Dual 6" x 9" Folding Power Heated Mirrors (NA on ST) _______________________  
+O 
+O 
+O
+DAKOTA CLUB CAB® FEATURE AVAILABILITY
+
+D O D G E  B R A N D  P R O D U C T  I N F O R M A T I O N
+2 0 0 5  D O D G E  D A K O T A
+1 1
+continued
+DAKOTA QUAD CAB™ FEATURE AVAILABILITY
+ 
+ST 
+SLT 
+Laramie
+EXTERIOR
+Bedliner, under rail ______________________________________________________________  
+O 
+O 
+O 
+Bumpers and Fascias
+ 
+Front
+ 
+   Chrome insert on bumper (not available with Sport Appearance Group) _______________  
+— 
+S 
+S
+ 
+   Dark Slate, mold-in-color fascia and bumper; SLT includes chrome insert(a) on bumper _  
+S 
+S 
+—
+ 
+   Body color, painted (included in Sport Appearance Group) _________________________  
+— 
+P 
+S
+ 
+Rear with Step Pads
+ 
+   Chrome __________________________________________________________________  
+— 
+S 
+S
+ 
+   Dark Slate ________________________________________________________________  
+S 
+— 
+—
+ 
+   Body color, painted (included in Sport Appearance Group)  _________________________  
+— 
+P 
+P
+Colors
+ 
+Atlantic Blue Pearl Coat, Black, Bright Silver Metallic, Bright White, Flame Red, Mineral 
+Gray Metallic, Patriot Blue Pearl Coat(a), Deep Molten Red Pearl Coat(a) _______________  
+O 
+O 
+O
+ 
+Light Almond Pearl Coat Metallic(a) _____________________________________________  
+— 
+O 
+O
+Defroster—Rear Window (not available with sliding rear window) _________________________  
+O 
+O 
+O
+Fog Lamps _____________________________________________________________________  
+— 
+S 
+S
+Glass, Tinted ___________________________________________________________________  
+S 
+S 
+S
+Grille
+ 
+Bright surround with integrated Dodge signature crosshair grille ______________________  
+S 
+S 
+Headlamps, Automatic ___________________________________________________________  
+— 
+— 
+S
+Mirrors (Black)
+ 
+Dual 5" x 7", manual __________________________________________________________  
+S 
+— 
+—
+ 
+Dual 5" x 7", power ___________________________________________________________  
+— 
+S 
+S
+ 
+Dual 6" x 9", folding power heated (included in optional Trailer Tow Group) ______________  
+— 
+P 
+P
+Molding
+ 
+Bodyside, bright _____________________________________________________________  
+— 
+— 
+S
+ 
+Bodyside, black mold-in-color __________________________________________________  
+— 
+O 
+—
+ 
+Bodyside, body color, painted (included in Sport Appearance Group) ___________________  
+— 
+P 
+P
+Rear window, sliding (NA with Rear Defroster) ________________________________________  
+O 
+O 
+O
+Windshield wipers, variable-delay intermittent ________________________________________  
+S 
+S 
+S
+(a) Not available with Sport Appearance Group.
+
+D O D G E  B R A N D  P R O D U C T  I N F O R M A T I O N
+2 0 0 5  D O D G E  D A K O T A
+1 2
+continued
+ 
+ST 
+SLT 
+Laramie
+INTERIOR
+Assist Handles, Driver and Passenger _______________________________________________  
+S 
+S 
+S
+Climate Control—Air Conditioning __________________________________________________  
+S 
+S 
+S
+Colors
+ 
+Khaki ______________________________________________________________________  
+— 
+O 
+O 
+ 
+Dark Slate __________________________________________________________________  
+S 
+O 
+O
+Courtesy/Map Lamp(s) __________________________________________________________  
+S 
+S 
+—
+ 
+Dual front __________________________________________________________________  
+S 
+P 
+S
+ 
+Rear dome/courtesy/reading ___________________________________________________  
+S 
+S 
+S
+ 
+Glovebox ___________________________________________________________________  
+S 
+S 
+S
+Cruise Control __________________________________________________________________  
+P 
+S 
+S
+Floor Covering
+ 
+Carpet  ____________________________________________________________________  
+S 
+S 
+S
+ 
+Floor mats—Front and rear, carpeted (color-keyed) _________________________________  
+O 
+S 
+S
+Instrument Cluster
+ 
+Digital displays, vacuum-fluorescent: transmission range (with automatic transmission), 
+odometer and trip odometer ___________________________________________________  
+S 
+S 
+S
+ 
+Analog gauges: speedometer, tachometer, coolant temperature, fuel ___________________  
+S 
+S 
+S
+Map Pockets, Front and Rear Doors ________________________________________________  
+S 
+S 
+S
+Mirror, Rearview—Manual Day/Night ________________________________________________  
+S 
+S 
+—
+ 
+Auto-dimming day/night (included with UConnect™ hands-free communications) ________  
+— 
+— 
+S
+Power Outlet, Front _____________________________________________________________  
+S 
+S 
+S
+Power Windows/Locks/Keyless Entry _______________________________________________  
+— 
+S 
+S
+Seats
+ 
+Cloth bucket seats  ___________________________________________________________  
+S 
+— 
+—
+ 
+Cloth bucket seats with full floor console _________________________________________  
+— 
+S 
+—
+ 
+Leather bucket seats with six-way power driver’s seat, manual lumbar and full floor 
+console ____________________________________________________________________  
+— 
+— 
+S
+ 
+Rear 60/40 split-folding bench _________________________________________________  
+S 
+S 
+S
+ 
+Cloth 40/20/40 seat with six-way power driver’s seat, manual lumbar _________________  
+O 
+O 
+—
+ 
+Leather 40/20/40 seat with six-way power driver’s seat, manual lumbar _______________  
+— 
+O 
+O
+ 
+Cloth heated bucket seats with six-way power driver’s seat, manual lumbar _____________  
+O 
+O 
+—
+ 
+Leather heated bucket seats with six-way power driver’s seat, manual lumbar ___________  
+— 
+O 
+O
+ 
+Driver and passenger manual recliners ___________________________________________  
+S 
+S 
+S
+Full Floor Console _______________________________________________________________  
+O 
+S 
+S
+Sound Systems
+ 
+AM/FM stereo radio with single CD player and four speakers _________________________  
+S 
+S 
+—
+ 
+Premium AM/FM stereo radio, CD player with MP3 capability, integral six-disc 
+CD changer _________________________________________________________________  
+— 
+O 
+S
+ 
+Infinity® six-speaker system with 288-watt amplifier (must have six-disc CD changer) _____  
+— 
+O 
+S
+ 
+Satellite digital audio radio (must have Premium audio) ______________________________  
+— 
+O 
+O
+Steering Column, Tilt ____________________________________________________________  
+P 
+S 
+S
+Steering Wheel, Leather-wrapped with Remote Audio Controls ___________________________  
+— 
+O 
+S
+UConnect hands-free Communications System with Bluetooth™ wireless technology 
+(includes auto-dimming day/night mirror) _________________________________________  
+O 
+O 
+O
+Sun Visors, Padded Cloth with Passenger-side Mirror __________________________________  
+S 
+S 
+S
+DAKOTA QUAD CAB™ FEATURE AVAILABILITY
+
+D O D G E  B R A N D  P R O D U C T  I N F O R M A T I O N
+2 0 0 5  D O D G E  D A K O T A
+1 3
+continued
+DAKOTA QUAD CAB™ FEATURE AVAILABILITY
+ 
+ST 
+SLT 
+Laramie
+POWERTRAIN AND CHASSIS
+Brakes, Power
+ 
+Front disc/rear drum with rear-wheel anti-lock ____________________________________  
+S 
+S 
+S
+ 
+Front disc/rear drum brakes with four-wheel anti-lock (part of the Security Group) _______  
+O 
+O 
+O
+Differential, Anti-Slip ____________________________________________________________  
+O 
+O 
+O
+Engines
+ 
+3.7-liter V-6 _________________________________________________________________  
+S 
+S 
+S
+ 
+4.7-liter V-8 _________________________________________________________________  
+O 
+O 
+O
+ 
+4.7-liter HO V-8 ______________________________________________________________  
+— 
+O 
+O
+Heater—Engine Block ____________________________________________________________  
+O 
+O 
+O
+Steering, Power Rack & Pinion _____________________________________________________  
+S 
+S 
+S
+Suspension
+ 
+Front: Independent SLA (short- and long-arm) with “coil-over” spring and shock 
+absorber module _____________________________________________________________  
+S 
+S 
+S
+ 
+Rear: Multi-leaf springs, two-stage; stabilizer bar __________________________________  
+S 
+S 
+S
+Tires(a)
+ 
+P245/70R16 black sidewall Wrangler SR-A ________________________________________  
+S 
+S 
+—
+ 
+P255/65R16 outline white letter Eagle LS (two-wheel drive only) ______________________  
+— 
+O 
+S
+ 
+P265/70R16 outline white letter Wrangler RT/S (four-wheel drive only) _________________  
+— 
+O 
+S
+ 
+P275/60R17 black sidewall Eagle RS-A (2WD only); (included with chrome-clad 
+aluminum wheels) ____________________________________________________________  
+— 
+P 
+P
+ 
+P265/65R17 black sidewall Wrangler SR-A (four-wheel drive only); (included with chrome-clad 
+aluminum wheels) ____________________________________________________________  
+— 
+P 
+P
+ 
+P265/65R17 outline white letter Wrangler SR-A (two-wheel drive and four-wheel drive); 
+must have chrome-clad aluminum wheels ________________________________________  
+— 
+O 
+O
+ 
+Spare, conventional __________________________________________________________  
+S 
+S 
+S
+Transfer Cases
+ 
+NV233HD electric-shift part-time (four-wheel drive only) ____________________________  
+S 
+S 
+S
+ 
+NV244HD electric-shift full-time (four-wheel drive only; must have 4.7-liter engine and automatic 
+transmission) _______________________________________________________________  
+— 
+O 
+O 
+Transmissions
+ 
+Six-speed manual ____________________________________________________________  
+S 
+S 
+—
+ 
+Four-speed automatic (V-6 only) ________________________________________________  
+O 
+O 
+S
+ 
+Five-speed automatic (V-8 only) ________________________________________________  
+O 
+O 
+O
+Wheels
+ 
+Styled steel, 16" x 7" painted ___________________________________________________  
+S 
+— 
+—
+ 
+Full-face steel, 16" x 7" painted _________________________________________________  
+P 
+— 
+—
+ 
+Cast-aluminum, 16" x 8" painted ________________________________________________  
+— 
+S 
+S
+ 
+Chrome-clad aluminum, 17" x 8" ________________________________________________  
+— 
+O 
+O
+(a) All tires have steel-belted radial construction made by Goodyear. Other sizes and brands may also be used.
+
+D O D G E  B R A N D  P R O D U C T  I N F O R M A T I O N
+2 0 0 5  D O D G E  D A K O T A
+1 4
+continued
+SAFETY AND SECURITY
+Air Bags
+ 
+Advanced front (driver and outboard passenger) with Occupant Classification System 
+(OCS) controlling level of passenger air bag deployment; knee-bolsters(a) ______________  
+S 
+S 
+S
+ 
+Supplemental side-curtain air bags (part of the Security Group) ______________________  
+O 
+O 
+O
+Brake-Shift Interlock (with automatic transmission only) ________________________________  
+S 
+S 
+S
+Security Alarm  _________________________________________________________________  
+— 
+P 
+S
+Sentry Key Immobilizer ___________________________________________________________  
+— 
+P 
+S
+Child Seat Tether Anchors—Top, cab back (three) ______________________________________  
+S 
+S 
+S
+Child Seat Anchor System—LATCH (Lower Anchors and Tethers for CHildren) _______________  
+S 
+S 
+S
+EQUIPMENT GROUPS
+Overhead Convenience Group—Overhead console includes trip computer with compass and 
+outside temperature display, dual courtesy/map lamps; HomeLink® Universal 
+Transceiver (included in SLT E Package) __________________________________________  
+— 
+P 
+S
+Skid Plate Group—Engine/transmission/transfer case and fuel tank skid plates (four-wheel 
+drive only) and two front tow hooks _____________________________________________  
+O 
+O 
+O
+Sport Appearance Package—Body color painted front fascia, rear bumper and bodyside 
+molding ____________________________________________________________________  
+— 
+O
+Trailer Tow Group and heavy duty Service Package—Class IV hitch receiver; wiring harness with 
+seven-circuit and four-circuit connectors; Heavy-Duty Service Group consisting of 
+heavy-duty engine cooling, auxiliary transmission cooler with automatic transmission, 
+power steering cooler and 750 CCA battery. Includes Dual 6" x 9" Folding Power Heated 
+Mirrors (not available on ST) ___________________________________________________  
+O 
+O 
+O
+(a)  Certified to federal regulations that allow less forceful air bags. Always use seat belts. 
+Remember, a back seat is the safest place for children. 
+DAKOTA QUAD CAB™ FEATURE AVAILABILITY

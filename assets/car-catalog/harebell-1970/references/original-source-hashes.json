@@ -1,0 +1,14 @@
+{
+  "/workspace/references/240z1971/1971-fsm.zip": {
+    "bytes": 238518787,
+    "sha256": "9cf54c96999ec944a598c7626c2c4143841f61f1036bc8b89f7623f5f2998d2e"
+  },
+  "/workspace/references/240z1971/manual/71 DATSUN S30 SERVICE MANUAL/1971 S30 Service Manual.pdf": {
+    "bytes": 336682490,
+    "sha256": "a439ae65d7a16263434ec17b2dacc9949d0426aebf37192cac077667a7d76177"
+  },
+  "/workspace/references/240z1971/1970-original-brochure.pdf": {
+    "bytes": 6105323,
+    "sha256": "de6db7210354edf35b24ee361ac3161157d62eeb3e9d5a2b3918da8140ca54fe"
+  }
+}

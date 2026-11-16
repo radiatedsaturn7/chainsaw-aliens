@@ -1,0 +1,36 @@
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (228.674285ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (23.696929ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (65.74301ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (8676.06418ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (23.234245ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (4349.426057ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (197.61375ms)
+✔ requires explicit source data and mappings (0.801342ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (95.136876ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (195.254106ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (2.995762ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (91.479611ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (84.393765ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (512.622658ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (568.597949ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (558.320219ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (7541.683679ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (8307.309524ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.504487ms)
+✔ Chervil keeps DIN separate from SAE and driver mass separate from unladen (1.742163ms)
+✔ Chervil native roundtrip preserves reciprocal published five-speed ratios and explicit manual assist (143.070232ms)
+✔ Chervil has eight distinct original exterior frames, shared tire layers and original hashes (173.736733ms)
+✔ separate staging branch retains 113 playable documents and excludes3 legacy system templates (240.413027ms)
+✔ Chervil 1973 published wheel graphics cover original opening heights without changing physical radius (565.208562ms)
+✔ Eyebright uses the exact2015XT4MT brochure values and separates AMT (1.91985ms)
+✔ Eyebright native roundtrip preserves estimated four-speed ratios and explicit manual assist (165.102815ms)
+✔ Eyebright has eight distinct original exterior frames, shared tire layers and original hashes (239.585171ms)
+✔ separate staging branch retains 112 playable documents and excludes3 legacy system templates (300.878757ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 36491.145044

@@ -1,0 +1,54 @@
+{
+  "first": {
+    "selected": "2005 Flint Coupe",
+    "start": 0,
+    "visible": [
+      "2005 Flint Coupe",
+      "2018 Kestrel 660",
+      "2023 Volt-Hound GT",
+      "2024 Caravan-9"
+    ],
+    "targetIndex": 44,
+    "selectedIndex": 0,
+    "loadedCars": 7,
+    "totalChoices": 121,
+    "carId": "flint-coupe-2005",
+    "art": [
+      {
+        "ref": "catalog-flint-coupe-2005-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  },
+  "later": {
+    "selected": "Fumitory 1974",
+    "start": 44,
+    "visible": [
+      "Fumitory 1974",
+      "Gentian SX 1977",
+      "Glasswing 1990",
+      "Glimmer 1986"
+    ],
+    "targetIndex": 44,
+    "selectedIndex": 44,
+    "loadedCars": 51,
+    "totalChoices": 121,
+    "carId": "fumitory-1974",
+    "art": [
+      {
+        "ref": "catalog-fumitory-1974-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  }
+}

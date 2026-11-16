@@ -1,0 +1,13 @@
+✔ Angelica retains1999 US V6 AWD automatic and measured mass basis (1.511177ms)
+✔ Angelica explicit estimated gearing survives native editor manual and assist roundtrip (138.783973ms)
+✔ Angelica has eight distinct original exterior frames, shared tire layers and original hashes (271.776157ms)
+✔ separate staging branch retains 106 playable documents and excludes3 legacy system templates (149.175189ms)
+✔ Angelica 1999 published wheel graphics cover original opening heights without changing physical radius (464.06654ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 918.342465

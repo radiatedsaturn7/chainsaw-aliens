@@ -1,0 +1,37 @@
+{
+  "rosterBase": "8c9a89ffb7624fc719b7dd55fc2576b462009607",
+  "staging": "2b699e5d92fef0f520913cfac3a3694c9ca10286",
+  "stagingTree": "7dd651525fccdb9b0de4a903957eed40b7960d27",
+  "mergeHead": "1ed3cf1c037916622d808c5e0024e3c2c654975b",
+  "mergeTree": "0372497f01953cce30a9119e3e35654a695e4046",
+  "changedFiles": [
+    "src/racing/RaceCodriver.js",
+    "src/radio/RadioLibrary.js",
+    "src/radio/RadioPlayer.js",
+    "src/ui/RaceEditor.js",
+    "tests/unit/raceCodriver.test.js",
+    "tests/unit/raceIntro.test.js",
+    "tests/unit/racePauseRestart.test.js",
+    "tests/unit/raceTriggers.test.js",
+    "tests/unit/radioPlayer.test.js"
+  ],
+  "unchangedRosterFiles": 19217,
+  "changedFilesExactlyMatchStaging": true,
+  "stagingCarsRacesAssetsChanged": false,
+  "playable": 107,
+  "freeBytes": 58180378624,
+  "checkpointRef": "local/staging-107-verified-checkpoint",
+  "focusedTests": {
+    "passed": 74,
+    "failed": 0
+  },
+  "manifest": {
+    "documents": 1871,
+    "assets": 16,
+    "passed": true
+  },
+  "browser": {
+    "passed": 3,
+    "failed": 0
+  }
+}

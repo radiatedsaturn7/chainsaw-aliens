@@ -1,0 +1,60 @@
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (196.102053ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (9.258916ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (46.776058ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (9804.145697ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (45.954015ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (5026.333229ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (337.701318ms)
+✔ requires explicit source data and mappings (0.835193ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (106.766561ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (322.826885ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (8.052997ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (97.792113ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (109.825464ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (886.589834ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (653.338539ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (747.463014ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (8399.432342ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (8824.788312ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.551447ms)
+✖ Madder preserves1969 two-door1116DIN anchors and distinguishes estimated running mass (1.452618ms)
+✔ Madder native roundtrip preserves standard four-speed reductions and explicit manual assist (120.497183ms)
+✔ Madder has eight distinct original exterior frames, shared tire layers and original hashes (235.682039ms)
+✔ separate staging branch retains 124 playable documents and excludes3 legacy system templates (308.56636ms)
+✔ Madder 1969 published wheel graphics cover original opening heights without changing physical radius (406.457096ms)
+✔ Osier preserves standard-output SLT Quad Cab NV244 high-range configuration (1.803895ms)
+✔ Osier native roundtrip retains actual automatic and its upshift ladder (144.788251ms)
+✔ Osier uses existing open-center AWD semantics without locking or low-range claims (0.654882ms)
+✔ Osier has eight distinct original exterior frames, shared tire layers and original hashes (227.21392ms)
+✔ separate staging branch retains 123 playable documents and excludes3 legacy system templates (307.695134ms)
+ℹ tests 29
+ℹ suites 0
+ℹ pass 28
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 17755.338015
+
+✖ failing tests:
+
+test at tests/unit/madderCatalog.test.js:3:1
+✖ Madder preserves1969 two-door1116DIN anchors and distinguishes estimated running mass (1.452618ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 54
+  - 54.247603883000004
+  
+      at TestContext.<anonymous> (file:///workspace/chainsaw-aliens/tests/unit/madderCatalog.test.js:3:290)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 54,
+    expected: 54.247603883000004,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

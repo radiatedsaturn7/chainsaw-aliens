@@ -1,0 +1,38 @@
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (246.784594ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (10.103683ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (45.287307ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (7349.000351ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (23.501015ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (3010.997743ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (335.834838ms)
+✔ requires explicit source data and mappings (0.932588ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (80.085996ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (264.85878ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (2.546519ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (77.829802ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (96.426571ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (749.137658ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (672.25279ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (579.911068ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (6148.739435ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (5941.364378ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.390696ms)
+✔ Loosestrife preserves French1988 Mi16 paired DIN anchors and early14inch tires (0.848993ms)
+✔ Loosestrife native roundtrip preserves manual5speed and explicitly fictional automatic assistance (126.271336ms)
+✔ Loosestrife has eight distinct original exterior frames, shared tire layers and original hashes (89.508952ms)
+✔ separate staging branch retains 126 playable documents and excludes3 legacy system templates (207.426948ms)
+✔ Loosestrife launches with sustained tread contact (1733.92603ms)
+✔ Mignonette preserves UK LFA power,min kerb,weight distribution and staggered tires (1.247952ms)
+✔ Mignonette native roundtrip retains ASG counter reduction and first-gear road speed (87.324916ms)
+✔ Mignonette has eight distinct original exterior frames, shared tire layers and original hashes (80.039569ms)
+✔ separate staging branch retains 127 playable documents and excludes3 legacy system templates (158.220429ms)
+✔ Mignonette launches with sustained tread contact (1741.864114ms)
+✔ Mignonette 2011 published wheel graphics cover original opening heights without changing physical radius (280.381609ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12558.859524

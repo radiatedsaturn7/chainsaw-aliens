@@ -1,0 +1,15 @@
+{
+  "base": "c3ae09acdf5853f94d0c4dfdb44f76ec72fc2a97",
+  "baseTree": "2640c4a750e1081daa46605ae4934c9dc3c902ca",
+  "unchangedTrackedFiles": 20785,
+  "unchangedManifestEntries": 1937,
+  "mismatches": [],
+  "allowedChanges": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/catalogCameraSmoke.test.js",
+    "tests/unit/hempnettleCatalog.test.js"
+  ],
+  "freeBytes": 55632134144,
+  "staging": "f51518946685c18a895e73309c939a5a54e75d84",
+  "stagingTree": "7dd651525fccdb9b0de4a903957eed40b7960d27"
+}

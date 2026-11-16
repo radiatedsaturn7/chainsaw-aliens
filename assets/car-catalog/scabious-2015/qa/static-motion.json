@@ -1,0 +1,37 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "anemone-1986",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 900,
+    "gear": 1,
+    "elapsed": 1949.933333333332,
+    "throttle": 0,
+    "camera": "first-person"
+  },
+  "moving": {
+    "id": "anemone-1986",
+    "x": 0,
+    "z": 14.757000923156738,
+    "speed": 10.867705345153809,
+    "rpm": 4286.8583984375,
+    "gear": 1,
+    "elapsed": 6216.4333333333325,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "cockpit": {
+    "id": "anemone-1986",
+    "x": 0,
+    "z": 43.458927154541016,
+    "speed": 16.928361892700195,
+    "rpm": 3751.93896484375,
+    "gear": 2,
+    "elapsed": 8216.333333333334,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

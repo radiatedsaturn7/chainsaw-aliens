@@ -1,0 +1,11 @@
+# Comfrey 1991
+
+Original badge-free 2994 interpretation of the September 1991 Japanese Suzuki Carry KC 2WD five-speed, V-DC51T KKCF, with a high cab roof and empty three-way drop-side bed. This is the 660 kg unladen variant, not the KA four-speed, DD51T four-wheel-drive, dump truck, Every van or export Super Carry.
+
+The retained official Suzuki table verifies 657 cc F6A, 42 PS net at 5500 rpm, 5.8 kg-m net at 4500 rpm, 36 L fuel, 3295 × 1395 × 1765 mm, 1855 mm wheelbase, 1205/1200 mm tracks and 160 mm clearance. Five-speed reductions are 4.063/2.361/1.469/1.000/0.877, reverse 3.809 and final drive 6.428. The 350 kg payload is recorded separately and is not added to the unladen simulation mass. Auto Assist uses the same manual gearbox, not a claimed factory automatic.
+
+The source specifies 145R12-6PR LT tires without an aspect ratio. The 80% aspect approximation, tire pressures, weight distribution, steering ratio, drag, handling, intermediate torque curve, RPM limits and performance targets are explicit estimates in import.json. Manufacturer net metric power and torque are converted without relabeling them SAE gross.
+
+The manufacturer's exterior/interior composite is a visual reference only. All gameplay body and dashboard pixels are original generated artwork; originals and intermediate passes are retained. The fitted right-hand-drive cockpit uses live speed, RPM, gear and fuel, plus animated shared steering and wipers. RPM/gear displays are fictional retrofit details. All eight directions use authored wheel openings and separate animated tires.
+
+Validation: 29 focused tests, four real browser checks and manifest validation passed (1901 documents, 16 assets; 117 playable cars excluding three templates). Keyboard and handheld touch both moved the production simulation with changing live instruments and no browser errors. The real picker initially loaded 7 of 117 choices, then reached Comfrey at index 30/page start 28 with body and tires ready before cockpit driving. All eight exterior composites and both moving cockpits were reviewed. Prior package hashes, saved local refs, original artwork and staging radio/countdown files are verified in QA inventories. No runtime or saved race files changed.

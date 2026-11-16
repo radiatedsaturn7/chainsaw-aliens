@@ -1,0 +1,37 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "chervil-1973",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 900,
+    "gear": 1,
+    "elapsed": 1066.666666666667,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "chervil-1973",
+    "x": 0.00021499999274965376,
+    "z": 17.48426055908203,
+    "speed": 10.162347793579102,
+    "rpm": 4022.505126953125,
+    "gear": 1,
+    "elapsed": 6366.499999999998,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "chervil-1973",
+    "x": -0.00698600010946393,
+    "z": 48.71609878540039,
+    "speed": 16.223684310913086,
+    "rpm": 4631.0556640625,
+    "gear": 2,
+    "elapsed": 8666.399999999992,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

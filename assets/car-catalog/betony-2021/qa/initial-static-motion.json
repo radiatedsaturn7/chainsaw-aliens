@@ -1,0 +1,37 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "betony-2021",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 0,
+    "gear": 1,
+    "elapsed": 1100.0000000000002,
+    "throttle": 0,
+    "camera": "first-person"
+  },
+  "moving": {
+    "id": "betony-2021",
+    "x": -0.012183000333607197,
+    "z": 16.715776443481445,
+    "speed": 12.252965927124023,
+    "rpm": 3227.968994140625,
+    "gear": 1,
+    "elapsed": 4699.966666666668,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "cockpit": {
+    "id": "betony-2021",
+    "x": -0.05449099838733673,
+    "z": 55.477996826171875,
+    "speed": 23.564193725585938,
+    "rpm": 6204.03369140625,
+    "gear": 1,
+    "elapsed": 6899.8666666666695,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

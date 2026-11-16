@@ -1,0 +1,9 @@
+# Lobelia 2005
+
+US2005 Chevrolet Corvette base coupe, LS2 and standard T56 six-speed manual, non-Z51. GM Heritage final restoration kit PDF13-14 printed5-6 visually verified and retained:400hp6000rpm,400lb-ft4400rpm,5967cc,1442kg base coupe curb,51%front,6500rpm maximum. Standard6MT2.66/1.78/1.30/1/.74/.50,reverse2.90,final3.42. This corrects preliminary3214lb and1.70second gear. Factory staggered245/40ZR18front and285/35ZR19rear preserved through native per-axle tire setup. Estimates and unsupported simulation settings clearly listed in import.json.
+
+Original badge-free2994 lavender/cream coupe and fitted LHD cockpit,8usable views with runtime tires. Rejected unequal-grid original retained. Live speed/RPM/gear/fuel plus steering. All8 exterior composites and desktop/handheld cockpit captures visually reviewed.
+
+40focused tests passed,3browser checks passed,manifest1847documents/16assets passed. Actual desktop keyboard drive19.09m at12.10m/s,then59.17m at21.15m/s in cockpit. Actual handheld touch13.40m at11.66m/s,then39.24m at21.49m/s. Changingposition/speed/RPM,first gear on these short samples,zero pageerrors. These are moving production-gameplay captures, not static mockups.
+
+Third independent checkpoint after394faa7f;99playable cars,102manifestcar entries including3excluded system templates. This is the separate fresh local branch, not integrated with the old104-car branch. Catalog/source alias audit retained; RS2 and GNX already present, while CX-90,Saab900 and Corvette absent. Old eleven crosswalk checked. No existing cars,races,art,refs or QA changed. Original96-base integrity checks18661trackedfiles apart from manifest/count-test updates. Prior package checksums match. Staging read-only fetch58c2ec08 still matches original stagingbase tree. No remote writes,PR,publication,Library transfer or deletion.

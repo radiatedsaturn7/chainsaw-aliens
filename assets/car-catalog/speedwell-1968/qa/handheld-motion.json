@@ -1,0 +1,37 @@
+{
+  "mobile": true,
+  "initial": {
+    "id": "speedwell-1968",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 850,
+    "gear": 1,
+    "elapsed": 1166.5333333333376,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "speedwell-1968",
+    "x": -0.00001,
+    "z": 19.499464,
+    "speed": 11.004554,
+    "rpm": 4008.904475,
+    "gear": 2,
+    "elapsed": 5283.133333333334,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "speedwell-1968",
+    "x": -0.00001,
+    "z": 39.192668,
+    "speed": 14.059062,
+    "rpm": 3249.805273,
+    "gear": 3,
+    "elapsed": 6816.333333333332,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

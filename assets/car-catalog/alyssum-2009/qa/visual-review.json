@@ -1,0 +1,15 @@
+{
+  "reviewed": true,
+  "exterior": "All eight production composites reviewed: distinct correct directions, no clipped neighboring frames, wheels fit openings, logo-free body. Low-alpha fringes in original do not appear in game.",
+  "desktopCockpit": "Speed, gear, fuel and separate RPM readouts visible above steering wheel; original vehicle-specific dashboard and shared animated wheel/wipers rendered.",
+  "handheldCockpit": "Portrait handheld renders full fitted cockpit with readable live speed/RPM and unobstructed GO touch input.",
+  "launchCorrection": "Initial collider caused zero valid tire loads. Only new car collider estimates adjusted; powertrain and global runtime unchanged. Initial config, logs and contact telemetry retained.",
+  "runtimeLimit": "Authored/source wheelbase1.8669m; existing runtime clamps2.1m. No exact factory turning/AMT control fidelity claimed.",
+  "picker": "Initial page0 visible Flint with loaded art; ArrowRight navigation to Alyssum index7 page start4; exterior loads on demand; selected car then driven in cockpit. No browser errors.",
+  "focusedPassed": 29,
+  "browserPassed": 4,
+  "manifest": {
+    "documents": 1925,
+    "assets": 16
+  }
+}

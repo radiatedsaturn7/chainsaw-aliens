@@ -1,0 +1,36 @@
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (143.135345ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (6.757575ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (38.231467ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (6316.272296ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (16.781887ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (3225.644023ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (174.426417ms)
+✔ requires explicit source data and mappings (0.629664ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (54.801358ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (165.795288ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (1.955703ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (71.735736ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (65.153403ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (539.739848ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (722.593387ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (569.495054ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (5225.895693ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (5175.667001ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (1.117987ms)
+✔ Pennyroyal retains French CEE anchors without DIN or later variant mixing (1.919899ms)
+✔ Pennyroyal native roundtrip preserves FIA reduction ratios and explicit manual assist (138.134705ms)
+✔ Pennyroyal has eight distinct original exterior frames, shared tire layers and original hashes (223.053183ms)
+✔ separate staging branch retains 107 playable documents and excludes3 legacy system templates (204.836715ms)
+✔ Periwinkle retains UK twin-point catalyst and EEC anchors with explicit estimates (1.547852ms)
+✔ Periwinkle native roundtrip preserves estimated reduction ratios and explicit manual assist (87.874732ms)
+✔ Periwinkle has eight distinct original exterior frames, shared tire layers and original hashes (226.64167ms)
+✔ separate staging branch retains 108 playable documents and excludes3 legacy system templates (174.116104ms)
+✔ Periwinkle 1998 published wheel graphics cover original opening heights without changing physical radius (419.009071ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 26838.873259

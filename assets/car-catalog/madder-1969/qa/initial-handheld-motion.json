@@ -1,0 +1,37 @@
+{
+  "mobile": true,
+  "initial": {
+    "id": "madder-1969",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 850,
+    "gear": 1,
+    "elapsed": 1149.7999999999993,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "madder-1969",
+    "x": -0.001304,
+    "z": 17.2527,
+    "speed": 11.081391,
+    "rpm": 5835.373599,
+    "gear": 1,
+    "elapsed": 5266.199999999999,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "madder-1969",
+    "x": -0.003325,
+    "z": 35.655148,
+    "speed": 14.500666,
+    "rpm": 4705.496869,
+    "gear": 2,
+    "elapsed": 6749.533333333328,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

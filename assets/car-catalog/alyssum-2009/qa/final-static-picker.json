@@ -1,0 +1,54 @@
+{
+  "first": {
+    "selected": "2005 Flint Coupe",
+    "start": 0,
+    "visible": [
+      "2005 Flint Coupe",
+      "2018 Kestrel 660",
+      "2023 Volt-Hound GT",
+      "2024 Caravan-9"
+    ],
+    "targetIndex": 7,
+    "selectedIndex": 0,
+    "loadedCars": 7,
+    "totalChoices": 125,
+    "carId": "flint-coupe-2005",
+    "art": [
+      {
+        "ref": "catalog-flint-coupe-2005-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  },
+  "later": {
+    "selected": "Alyssum 2009",
+    "start": 4,
+    "visible": [
+      "2024 Sentinel Sedan",
+      "Agrimony 1988",
+      "Alder RS 1994",
+      "Alyssum 2009"
+    ],
+    "targetIndex": 7,
+    "selectedIndex": 7,
+    "loadedCars": 11,
+    "totalChoices": 125,
+    "carId": "alyssum-2009",
+    "art": [
+      {
+        "ref": "catalog-alyssum-2009-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  }
+}

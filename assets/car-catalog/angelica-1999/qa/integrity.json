@@ -1,0 +1,15 @@
+{
+  "base": "997a447fbc7fb4bffe766c512752e17f2edd1050",
+  "baseTree": "4e3f80a8da1a0ce8205ec88662ec96bad3dbf3b3",
+  "unchangedTrackedFiles": 19087,
+  "unchangedManifestEntries": 1865,
+  "mismatches": [],
+  "allowedChanges": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/catalogCameraSmoke.test.js",
+    "tests/unit/goldenrodCatalog.test.js"
+  ],
+  "freeBytes": 60323770368,
+  "staging": "58c2ec08e9457b778a19f617fad3aded4e4fa0ee",
+  "stagingTree": "7e1315cdc36f12c3be7b8250e39ca4c251595722"
+}

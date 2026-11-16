@@ -1,0 +1,23 @@
+{
+  "base": "49aa617a37a4b9c629243ee1e62f532e01134076",
+  "unchangedBaseFiles": 19293,
+  "allowedCountAndManifestFiles": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/agrimonyCatalog.test.js",
+    "tests/unit/catalogCameraSmoke.test.js",
+    "tests/unit/periwinkleCatalog.test.js"
+  ],
+  "staging": "2b699e5d92fef0f520913cfac3a3694c9ca10286",
+  "stagingDeltaFilesUnchanged": [
+    "src/racing/RaceCodriver.js",
+    "src/radio/RadioLibrary.js",
+    "src/radio/RadioPlayer.js",
+    "src/ui/RaceEditor.js",
+    "tests/unit/raceCodriver.test.js",
+    "tests/unit/raceIntro.test.js",
+    "tests/unit/racePauseRestart.test.js",
+    "tests/unit/raceTriggers.test.js",
+    "tests/unit/radioPlayer.test.js"
+  ],
+  "mismatches": []
+}

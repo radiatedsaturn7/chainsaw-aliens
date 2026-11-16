@@ -1,0 +1,6 @@
+{
+  "initialObservedFree": "60 GiB (df -h before fetch)",
+  "firstExactFreeBytesBeforeFetchCompleted": 63827124224,
+  "finalFreeBytesBeforeCommit": 61439000576,
+  "filesystemBytes": 67586535424
+}

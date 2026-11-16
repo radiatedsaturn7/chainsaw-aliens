@@ -1,0 +1,37 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "rue-2011",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 0,
+    "gear": 1,
+    "elapsed": 1133.3333333333335,
+    "throttle": 0,
+    "camera": "first-person"
+  },
+  "moving": {
+    "id": "rue-2011",
+    "x": -0.002472999971359968,
+    "z": 12.228982925415039,
+    "speed": 7.5090742111206055,
+    "rpm": 2210.954345703125,
+    "gear": 1,
+    "elapsed": 4866.566666666688,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "cockpit": {
+    "id": "rue-2011",
+    "x": -0.0152580002322793,
+    "z": 32.068397521972656,
+    "speed": 12.56576919555664,
+    "rpm": 3317.017822265625,
+    "gear": 1,
+    "elapsed": 6866.466666666683,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

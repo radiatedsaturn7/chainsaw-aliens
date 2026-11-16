@@ -1,0 +1,18 @@
+
+Running 4 tests using 1 worker
+
+(node:28572) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:28572) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/playwright/restharrow-driving.spec.js:3:34 › Restharrow desktop keyboard moving gameplay (40.3s)
+  ✓  2 tests/playwright/restharrow-driving.spec.js:3:34 › Restharrow handheld touch moving gameplay (27.3s)
+  ✓  3 tests/playwright/restharrow-preview.spec.js:6:1 › Restharrow 2013 actual editor preview composites exterior/cockpit and advances production physics (29.2s)
+  ✓  4 tests/playwright/restharrow-static-picker.spec.js:3:29 › Restharrow desktop keyboard static picker initial page, later page, cockpit and keyboard drive (2.4m)
+
+  4 passed (4.1m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

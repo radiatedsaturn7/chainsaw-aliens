@@ -1,0 +1,15 @@
+{
+  "base": "567b2d3d02612b138ca347735ccfb017db41a52f",
+  "baseTree": "8737e199258305e4bbcd4133788b235f7ff12f6d",
+  "unchangedTrackedFiles": 20392,
+  "unchangedManifestEntries": 1925,
+  "mismatches": [],
+  "allowedChanges": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/alyssumCatalog.test.js",
+    "tests/unit/catalogCameraSmoke.test.js"
+  ],
+  "freeBytes": 55931420672,
+  "staging": "f51518946685c18a895e73309c939a5a54e75d84",
+  "stagingTree": "7dd651525fccdb9b0de4a903957eed40b7960d27"
+}

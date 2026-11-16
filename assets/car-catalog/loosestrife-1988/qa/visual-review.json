@@ -1,0 +1,14 @@
+{
+  "reviewedExterior": true,
+  "exterior": "All eight final production composites visually reviewed; distinct correct directions, full body margins, shared wheels fitted without adjacent-frame clipping. Corrected far frontRight wheel centered inside opening; physical radius and test thresholds unchanged.",
+  "desktopCockpit": "Final moving screenshot reviewed: readable live speed/RPM inside separate apertures, gear/fuel below, steering wheel below instruments.",
+  "handheldCockpit": "Final portrait touch screenshot reviewed: same fitted cockpit with readable changing instruments; GO button unobstructed.",
+  "originals": "Initial and corrected atlas plus dashboard preserved byte-for-byte; no reference-image pixels or manufacturer logos.",
+  "focusedTestsPassed": 30,
+  "manifest": {
+    "documents": 1928,
+    "assets": 16
+  },
+  "picker": "Final initial page0 visible Flint and loaded art reviewed; real ArrowRight navigation to index68/start68 Loosestrife with loaded exterior art; selected car opened in editor and driven in cockpit. Both images and moving cockpit reviewed.",
+  "browserChecksPassed": 4
+}

@@ -1,0 +1,61 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "betony-2021",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 0,
+    "gear": 1,
+    "elapsed": 1033.3333333333337,
+    "throttle": 0,
+    "camera": "third-person",
+    "battery": {
+      "batteryEnergyJ": 270000000,
+      "motorRpm": 0,
+      "driveMotorTorqueNm": 0,
+      "regenMotorTorqueNm": 0,
+      "batteryPowerW": 0,
+      "stateOfCharge": 1
+    }
+  },
+  "moving": {
+    "id": "betony-2021",
+    "x": -0.002894999925047159,
+    "z": 12.300498008728027,
+    "speed": 10.811874389648438,
+    "rpm": 3045.823486328125,
+    "gear": 1,
+    "elapsed": 4099.999999999998,
+    "throttle": 1,
+    "camera": "third-person",
+    "battery": {
+      "batteryEnergyJ": 269742555.65975404,
+      "motorRpm": 3070.2649994757244,
+      "driveMotorTorqueNm": 281.4818329126872,
+      "regenMotorTorqueNm": 0,
+      "batteryPowerW": 115390.28627843865,
+      "stateOfCharge": 0.9990465024435334
+    }
+  },
+  "cockpit": {
+    "id": "betony-2021",
+    "x": -0.03415500000119209,
+    "z": 54.91238784790039,
+    "speed": 23.579511642456055,
+    "rpm": 6207.5556640625,
+    "gear": 1,
+    "elapsed": 6616.499999999998,
+    "throttle": 1,
+    "camera": "first-person",
+    "battery": {
+      "batteryEnergyJ": 269056390.71951914,
+      "motorRpm": 6236.50247326858,
+      "driveMotorTorqueNm": 458.24989142506337,
+      "regenMotorTorqueNm": 0,
+      "batteryPowerW": 372720.16227184475,
+      "stateOfCharge": 0.9965051508130338
+    }
+  },
+  "errors": []
+}

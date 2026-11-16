@@ -1,0 +1,11 @@
+# Mugwort 1976
+
+Original badge-free 2994 interpretation of the January 1976 Italian Fiat 126 standard 594 cc, solid roof, left-hand drive and four-speed manual. The retained original Fiat owner manual (stampato 603.05.248, January 1976, eighth edition) was visually reviewed. It verifies 23 DIN CV / 16.9 kW, 580 kg running-order mass including supplies/spare/tools, 900 kg fully loaded, four ratios 3.250/2.066/1.300/0.871, reverse 4.024 and 39/8 final reduction. This excludes later 652 cc Personal, water-cooled BIS and Steyr-Puch variants.
+
+Manual dimensions are 3054 x 1377 x 1335 mm, wheelbase 1840 mm and tracks 1142/1203 mm. Original tires are 135-12 radials; the runtime's 135/80R12 aspect ratio is an approximation. Torque 4 kgm at 3400 rpm and power speed 4800 rpm are estimates informed by a retained secondary transcription of the same engine's 1973 service data. They are not presented as independently verified 1976 manual values. The primary manual resolves that transcription's inconsistent gear rounding and 13-inch tire typo. Other estimated simulation parameters are listed in import.json.
+
+Original exterior, initial/final dashboard and generation prompts are preserved. All eight production composites were visually reviewed. The left instrument pod has fitted live speed, RPM, gear and fuel, plus animated steering/wipers. RPM/gear windows and the replacement steering wheel are fictional 2994 retrofits. OEM scans remain reference material and are not gameplay pixels.
+
+Validation: 29 focused tests and all four browser checks passed. Manifest validated 1895 documents and 16 assets. The real picker initially loaded seven of115 playable cars, reached Mugwort at index73/page start72, waited for body/tire art and drove in cockpit. Keyboard/touch telemetry: {"desktop": {"distanceM": 10.866705899820548, "cockpitSpeedMps": 13.398740768432617, "cockpitRpm": 3356.417236328125}, "handheld": {"distanceM": 11.914879, "cockpitSpeedMps": 12.843736, "cockpitRpm": 4058.973464}}. No page errors. All screenshots, original artwork, prompts and source scans retained.
+
+Independent local checkpoint:115playable, separate from the older104-car branch. Existing114-base cars/races/art/QA protected by byte-level integrity checks. No runtime/world edits, remote writes, publication, transfers or deletion.

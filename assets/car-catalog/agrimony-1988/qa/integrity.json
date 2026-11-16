@@ -1,0 +1,15 @@
+{
+  "base": "49aa617a37a4b9c629243ee1e62f532e01134076",
+  "baseTree": "ac22ad8c9b66d46c3c75552542880fd5e272e3bb",
+  "unchangedTrackedFiles": 19293,
+  "unchangedManifestEntries": 1874,
+  "mismatches": [],
+  "allowedChanges": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/catalogCameraSmoke.test.js",
+    "tests/unit/periwinkleCatalog.test.js"
+  ],
+  "freeBytes": 57451237376,
+  "staging": "2b699e5d92fef0f520913cfac3a3694c9ca10286",
+  "stagingTree": "7dd651525fccdb9b0de4a903957eed40b7960d27"
+}

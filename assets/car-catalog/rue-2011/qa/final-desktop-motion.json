@@ -1,0 +1,61 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "rue-2011",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 0,
+    "gear": 1,
+    "elapsed": 1066.666666666667,
+    "throttle": 0,
+    "camera": "third-person",
+    "battery": {
+      "batteryEnergyJ": 75600000,
+      "motorRpm": 0,
+      "driveMotorTorqueNm": 0,
+      "regenMotorTorqueNm": 0,
+      "batteryPowerW": 0,
+      "stateOfCharge": 1
+    }
+  },
+  "moving": {
+    "id": "rue-2011",
+    "x": -0.0004710000066552311,
+    "z": 15.242203712463379,
+    "speed": 8.303327560424805,
+    "rpm": 2606.126708984375,
+    "gear": 1,
+    "elapsed": 5383.199999999999,
+    "throttle": 1,
+    "camera": "third-person",
+    "battery": {
+      "batteryEnergyJ": 75484169.47283903,
+      "motorRpm": 2625.920525642778,
+      "driveMotorTorqueNm": 115.30448671817769,
+      "regenMotorTorqueNm": 0,
+      "batteryPowerW": 39884.36644654588,
+      "stateOfCharge": 0.9984678501698284
+    }
+  },
+  "cockpit": {
+    "id": "rue-2011",
+    "x": -0.0016210000030696392,
+    "z": 40.535301208496094,
+    "speed": 14.282276153564453,
+    "rpm": 3738.200927734375,
+    "gear": 1,
+    "elapsed": 7649.700000000003,
+    "throttle": 1,
+    "camera": "first-person",
+    "battery": {
+      "batteryEnergyJ": 75316379.47418746,
+      "motorRpm": 3755.4623302224327,
+      "driveMotorTorqueNm": 191.75926914760538,
+      "regenMotorTorqueNm": 0,
+      "batteryPowerW": 95756.24423593143,
+      "stateOfCharge": 0.9962484057432204
+    }
+  },
+  "errors": []
+}

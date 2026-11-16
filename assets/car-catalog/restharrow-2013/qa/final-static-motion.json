@@ -1,0 +1,37 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "restharrow-2013",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 800,
+    "gear": 1,
+    "elapsed": 2016.5333333333451,
+    "throttle": 0,
+    "camera": "first-person"
+  },
+  "moving": {
+    "id": "restharrow-2013",
+    "x": 0.006945000030100346,
+    "z": 22.18916130065918,
+    "speed": 11.538029670715332,
+    "rpm": 3576.2177734375,
+    "gear": 3,
+    "elapsed": 6249.633333333351,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "cockpit": {
+    "id": "restharrow-2013",
+    "x": 0.016712000593543053,
+    "z": 50.0815315246582,
+    "speed": 15.994418144226074,
+    "rpm": 3667.224853515625,
+    "gear": 3,
+    "elapsed": 8266.233333333328,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

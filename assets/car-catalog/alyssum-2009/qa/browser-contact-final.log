@@ -1,0 +1,18 @@
+
+Running 4 tests using 1 worker
+
+(node:46441) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:46441) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/playwright/alyssum-driving.spec.js:3:34 › Alyssum desktop keyboard moving gameplay (35.7s)
+  ✓  2 tests/playwright/alyssum-driving.spec.js:3:34 › Alyssum handheld touch moving gameplay (26.2s)
+  ✓  3 tests/playwright/alyssum-preview.spec.js:6:1 › Alyssum 2009 actual editor preview composites exterior/cockpit and advances production physics (36.0s)
+  ✓  4 tests/playwright/alyssum-static-picker.spec.js:3:29 › Alyssum desktop keyboard static picker initial page, later page, cockpit and keyboard drive (51.3s)
+
+  4 passed (2.5m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

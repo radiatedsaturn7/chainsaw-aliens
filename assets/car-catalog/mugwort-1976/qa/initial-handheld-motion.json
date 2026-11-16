@@ -1,0 +1,37 @@
+{
+  "mobile": true,
+  "initial": {
+    "id": "mugwort-1976",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 850,
+    "gear": 1,
+    "elapsed": 1033.300000000003,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "mugwort-1976",
+    "x": 0,
+    "z": 11.914879,
+    "speed": 9.231811,
+    "rpm": 3759.994763,
+    "gear": 2,
+    "elapsed": 4083.1333333333364,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "mugwort-1976",
+    "x": 0,
+    "z": 26.504141,
+    "speed": 12.843736,
+    "rpm": 4058.973464,
+    "gear": 3,
+    "elapsed": 5332.966666666666,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

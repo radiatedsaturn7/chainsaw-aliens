@@ -1,0 +1,10 @@
+{
+  "base": "91d83a72b0a5143b2695a8bfb0f8e1b0f3eadc4f",
+  "protectedFilesUnchanged": 19526,
+  "allowedChanges": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/catalogCameraSmoke.test.js",
+    "tests/unit/eyebrightCatalog.test.js"
+  ],
+  "mismatches": []
+}

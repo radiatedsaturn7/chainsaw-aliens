@@ -1,0 +1,38 @@
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (197.01949ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (6.709733ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (31.839289ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (7220.325756ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (18.055298ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (3329.069993ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (228.481214ms)
+✔ requires explicit source data and mappings (0.852518ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (69.145349ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (231.314502ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (3.730124ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (109.319937ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (161.401073ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (689.772973ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (809.636098ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (717.225189ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (6769.919013ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (6797.7013ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.870055ms)
+✔ Hempnettle preserves German PS, DIN kerb mass and sourced four-speed reductions (1.916284ms)
+✔ Hempnettle native roundtrip preserves manual4speed and explicitly fictional automatic assistance (87.061821ms)
+✔ Hempnettle has eight distinct original exterior frames, shared tire layers and original hashes (119.875838ms)
+✔ separate staging branch retains 129 playable documents and excludes3 legacy system templates (272.088809ms)
+✔ Hempnettle launches with sustained tread contact (2133.275799ms)
+✔ Santolina preserves base N360 metric ratings and both reduction stages (1.790726ms)
+✔ Santolina native roundtrip preserves manual4speed and explicitly fictional automatic assistance (107.00647ms)
+✔ Santolina has eight distinct original exterior frames, shared tire layers and original hashes (104.9327ms)
+✔ separate staging branch retains 130 playable documents and excludes3 legacy system templates (145.605778ms)
+✔ Santolina launches with sustained tread contact (1500.463953ms)
+✔ Santolina 1967 published wheel graphics cover original opening heights without changing physical radius (292.811656ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14007.45468

@@ -1,0 +1,6 @@
+{
+  "firstSheet": "body-initial.png",
+  "initialFailure": "Could not separate the sprites without cutting visible pixels",
+  "writesBeforeFailure": false,
+  "resolution": "Original preserved; imagegen gutter edit, explicit rear-quarter mapping; import and8-view review passed."
+}

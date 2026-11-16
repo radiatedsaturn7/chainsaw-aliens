@@ -1,0 +1,15 @@
+{
+  "base": "963e9763411954e916b4d2d986135a5702f6d43a",
+  "baseTree": "da2dcc04e577040f0f60646983f9ce550542d601",
+  "unchangedTrackedFiles": 20065,
+  "unchangedManifestEntries": 1913,
+  "mismatches": [],
+  "allowedChanges": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/catalogCameraSmoke.test.js",
+    "tests/unit/fumitoryCatalog.test.js"
+  ],
+  "freeBytes": 56417005568,
+  "staging": "f51518946685c18a895e73309c939a5a54e75d84",
+  "stagingTree": "7dd651525fccdb9b0de4a903957eed40b7960d27"
+}

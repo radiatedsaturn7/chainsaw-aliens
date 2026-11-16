@@ -1,0 +1,44 @@
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (175.979283ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (9.890181ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (34.035859ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (6491.103158ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (22.918328ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (3014.251874ms)
+✔ Campion retains brochure standard US1992 AWD automatic anchors (1.805687ms)
+✔ Campion explicit estimated gearing survives native editor manual and assist roundtrip (173.104843ms)
+✔ Campion has eight distinct original exterior frames, shared tire layers and original hashes (212.685365ms)
+✔ separate staging branch retains 104 playable documents and excludes3 legacy system templates (281.084936ms)
+✔ Campion 1992 published wheel graphics cover original opening heights without changing physical radius (488.223604ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (199.350153ms)
+✔ requires explicit source data and mappings (0.615813ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (50.042522ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (226.766146ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (1.950675ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (53.099637ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (63.721434ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (770.70897ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (681.204225ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (688.246662ms)
+✔ performance is finite, deterministic, responds to upgrades and balances E1 through S (2.271616ms)
+✔ saved variants remain unique, exclude player, then fill only with the selected default (0.479719ms)
+✔ eligibility, category and performance filters apply together; fallback cannot select player (0.368042ms)
+✔ missing acceleration and legacy null selection use valid defaults (0.228824ms)
+✔ PI class ceilings are inclusive from E1 100 through S 1000 (0.188002ms)
+✔ dry-tarmac PI ignores stale performance claims and responds to gearing, driven wheels and tire compounds (0.4403ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (5330.939608ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (4815.175778ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.330426ms)
+✔ legacy expectation adds only explicit absent gauge defaults and keeps all authored values (8.952409ms)
+✔ two-output force allocation exactly matches generic distribution (65.996031ms)
+✔ Scabious retains US two-door standard-power manual specifications (1.978106ms)
+✔ Scabious explicit estimated gearing survives native editor manual and assist roundtrip (137.875824ms)
+✔ Scabious has eight distinct original exterior frames, shared tire layers and original hashes (317.691609ms)
+✔ separate staging branch retains 103 playable documents and excludes3 legacy system templates (284.693617ms)
+ℹ tests 36
+ℹ suites 0
+ℹ pass 36
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11650.943812

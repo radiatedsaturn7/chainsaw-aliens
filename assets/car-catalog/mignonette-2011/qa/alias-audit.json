@@ -1,0 +1,219 @@
+{
+  "pattern": "\\b(Lexus[ -]?LFA|Subaru[ -]?Baja|Mignonette|LFA)\\b",
+  "refs": {
+    "refs/heads/local/agrimony-1988-checkpoint": {
+      "decodedDocuments": 259,
+      "matches": []
+    },
+    "refs/heads/local/alyssum-2009-checkpoint": {
+      "decodedDocuments": 275,
+      "matches": []
+    },
+    "refs/heads/local/anemone-1986-checkpoint": {
+      "decodedDocuments": 252,
+      "matches": []
+    },
+    "refs/heads/local/angelica-1999-checkpoint": {
+      "decodedDocuments": 256,
+      "matches": []
+    },
+    "refs/heads/local/betony-2021-checkpoint": {
+      "decodedDocuments": 264,
+      "matches": []
+    },
+    "refs/heads/local/camomile-1988-checkpoint": {
+      "decodedDocuments": 251,
+      "matches": []
+    },
+    "refs/heads/local/campion-1992-checkpoint": {
+      "decodedDocuments": 254,
+      "matches": []
+    },
+    "refs/heads/local/chervil-1973-checkpoint": {
+      "decodedDocuments": 263,
+      "matches": []
+    },
+    "refs/heads/local/comfrey-1991-checkpoint": {
+      "decodedDocuments": 267,
+      "matches": []
+    },
+    "refs/heads/local/compact-variety-20261116": {
+      "decodedDocuments": 257,
+      "matches": []
+    },
+    "refs/heads/local/cx90-saab-variety-20261115": {
+      "decodedDocuments": 249,
+      "matches": []
+    },
+    "refs/heads/local/eyebright-2015-checkpoint": {
+      "decodedDocuments": 262,
+      "matches": []
+    },
+    "refs/heads/local/fumitory-1974-checkpoint": {
+      "decodedDocuments": 271,
+      "matches": []
+    },
+    "refs/heads/local/goldenrod-1996-checkpoint": {
+      "decodedDocuments": 255,
+      "matches": []
+    },
+    "refs/heads/local/gorse-2015-checkpoint": {
+      "decodedDocuments": 250,
+      "matches": []
+    },
+    "refs/heads/local/gorse-2015-verified": {
+      "decodedDocuments": 250,
+      "matches": []
+    },
+    "refs/heads/local/grand-touring-20261116": {
+      "decodedDocuments": 255,
+      "matches": []
+    },
+    "refs/heads/local/harebell-1970-checkpoint": {
+      "decodedDocuments": 260,
+      "matches": []
+    },
+    "refs/heads/local/heather-1993-checkpoint": {
+      "decodedDocuments": 245,
+      "matches": []
+    },
+    "refs/heads/local/heather-speedwell-20261115": {
+      "decodedDocuments": 246,
+      "matches": []
+    },
+    "refs/heads/local/holly-1988-checkpoint": {
+      "decodedDocuments": 261,
+      "matches": []
+    },
+    "refs/heads/local/lobelia-2005-checkpoint": {
+      "decodedDocuments": 249,
+      "matches": []
+    },
+    "refs/heads/local/loosestrife-1988-checkpoint": {
+      "decodedDocuments": 276,
+      "matches": []
+    },
+    "refs/heads/local/madder-1969-checkpoint": {
+      "decodedDocuments": 274,
+      "matches": []
+    },
+    "refs/heads/local/meadowsweet-staging-20261115": {
+      "decodedDocuments": 244,
+      "matches": []
+    },
+    "refs/heads/local/mugwort-1976-checkpoint": {
+      "decodedDocuments": 265,
+      "matches": []
+    },
+    "refs/heads/local/offroad-sports-20261116": {
+      "decodedDocuments": 260,
+      "matches": []
+    },
+    "refs/heads/local/osier-2005-checkpoint": {
+      "decodedDocuments": 273,
+      "matches": []
+    },
+    "refs/heads/local/pennyroyal-1994-checkpoint": {
+      "decodedDocuments": 257,
+      "matches": []
+    },
+    "refs/heads/local/periwinkle-1998-checkpoint": {
+      "decodedDocuments": 258,
+      "matches": []
+    },
+    "refs/heads/local/restharrow-2013-checkpoint": {
+      "decodedDocuments": 266,
+      "matches": []
+    },
+    "refs/heads/local/roster-air-electric-20261116": {
+      "decodedDocuments": 270,
+      "matches": []
+    },
+    "refs/heads/local/roster-city-saloon-20261116": {
+      "decodedDocuments": 275,
+      "matches": []
+    },
+    "refs/heads/local/roster-contrasts-20261116": {
+      "decodedDocuments": 266,
+      "matches": []
+    },
+    "refs/heads/local/roster-italian-20261116": {
+      "decodedDocuments": 274,
+      "matches": []
+    },
+    "refs/heads/local/roster-loosestrife-20261116": {
+      "decodedDocuments": 276,
+      "matches": []
+    },
+    "refs/heads/local/roster-people-sport-20261116": {
+      "decodedDocuments": 272,
+      "matches": []
+    },
+    "refs/heads/local/roster-pickup-20261116": {
+      "decodedDocuments": 273,
+      "matches": []
+    },
+    "refs/heads/local/roster-variety-20261116": {
+      "decodedDocuments": 262,
+      "matches": []
+    },
+    "refs/heads/local/roster-work-tourer-20261116": {
+      "decodedDocuments": 268,
+      "matches": []
+    },
+    "refs/heads/local/roster-world-20261116": {
+      "decodedDocuments": 264,
+      "matches": []
+    },
+    "refs/heads/local/rue-2011-checkpoint": {
+      "decodedDocuments": 270,
+      "matches": []
+    },
+    "refs/heads/local/sainfoin-1985-checkpoint": {
+      "decodedDocuments": 268,
+      "matches": []
+    },
+    "refs/heads/local/scabious-2015-checkpoint": {
+      "decodedDocuments": 253,
+      "matches": []
+    },
+    "refs/heads/local/sneezewort-1965-checkpoint": {
+      "decodedDocuments": 269,
+      "matches": []
+    },
+    "refs/heads/local/sport-variety-20261115": {
+      "decodedDocuments": 253,
+      "matches": []
+    },
+    "refs/heads/local/staging-107-verified-checkpoint": {
+      "decodedDocuments": 257,
+      "matches": []
+    },
+    "refs/heads/local/staging-roster-20261116": {
+      "decodedDocuments": 258,
+      "matches": []
+    },
+    "refs/heads/local/tamarisk-2024-checkpoint": {
+      "decodedDocuments": 247,
+      "matches": []
+    },
+    "refs/heads/local/utility-classics-20261115": {
+      "decodedDocuments": 251,
+      "matches": []
+    },
+    "refs/heads/local/valerian-turbo-1992-checkpoint": {
+      "decodedDocuments": 248,
+      "matches": []
+    },
+    "refs/heads/local/woodruff-1991-checkpoint": {
+      "decodedDocuments": 272,
+      "matches": []
+    },
+    "f51518946685c18a895e73309c939a5a54e75d84": {
+      "decodedDocuments": 243,
+      "matches": []
+    }
+  },
+  "uniqueCarBlobs": 276,
+  "oldEleven": "Exact parent-provided original eleven crosswalk checked; none is LexusLFA or SubaruBaja. Original104 branch not imported or modified."
+}

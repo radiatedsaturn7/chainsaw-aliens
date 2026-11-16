@@ -1,0 +1,43 @@
+✔ Betony preserves selected UK dual motor power, mass and 19 inch tires (1.352568ms)
+✔ Betony native roundtrip retains single reduction and live electric instrumentation (195.26196ms)
+✔ Betony has eight distinct original exterior frames, shared tire layers and original hashes (211.867322ms)
+✔ separate staging branch retains 114 playable documents and excludes3 legacy system templates (492.51878ms)
+✔ Betony saved pack drives, consumes energy and regenerates with measured electric state (1.809945ms)
+✔ Betony 2021 published wheel graphics cover original opening heights without changing physical radius (398.24766ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (286.385276ms)
+✔ requires explicit source data and mappings (0.591627ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (82.74166ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (284.690475ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (2.239438ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (96.495712ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (94.967568ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (739.051718ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (533.747002ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (588.904538ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (4928.075391ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (6129.315396ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.536975ms)
+✔ Chervil keeps DIN separate from SAE and driver mass separate from unladen (1.476334ms)
+✔ Chervil native roundtrip preserves reciprocal published five-speed ratios and explicit manual assist (133.589445ms)
+✔ Chervil has eight distinct original exterior frames, shared tire layers and original hashes (114.586974ms)
+✔ separate staging branch retains 113 playable documents and excludes3 legacy system templates (199.878737ms)
+✔ zero RPM launch has torque without idle, clutch or invented free RPM (1.32093ms)
+✔ constant-power envelope and overspeed cutoff (0.303265ms)
+✔ neutral, empty pack and opposite-direction command cannot propel (0.330927ms)
+✔ regen opposes both directions, tapers to zero and cannot charge full pack (0.330685ms)
+✔ substep energy bounds scale delivered torque, never create energy (0.267842ms)
+✔ traction intervention precedes energy accounting; neutral does not regenerate (0.175734ms)
+✔ explicit state is deterministic and serializable; zero dt preserves energy (1.116735ms)
+✔ reject invalid integration inputs rather than poison replay state (0.592318ms)
+✔ launch energy includes rotational acceleration even with zero winding losses (0.314271ms)
+✔ regen cannot reverse a shaft or recover more than its kinetic energy (0.367882ms)
+✔ worker initialization preserves authored EV config and partially depleted traction state (27.791726ms)
+✔ real worker-authority snapshots carry changing battery telemetry through client and dashboard (130.065041ms)
+ℹ tests 35
+ℹ suites 0
+ℹ pass 35
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18312.769605

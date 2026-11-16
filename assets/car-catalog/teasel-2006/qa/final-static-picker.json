@@ -1,0 +1,54 @@
+{
+  "first": {
+    "selected": "2005 Flint Coupe",
+    "start": 0,
+    "visible": [
+      "2005 Flint Coupe",
+      "2018 Kestrel 660",
+      "2023 Volt-Hound GT",
+      "2024 Caravan-9"
+    ],
+    "targetIndex": 121,
+    "selectedIndex": 0,
+    "loadedCars": 7,
+    "totalChoices": 131,
+    "carId": "flint-coupe-2005",
+    "art": [
+      {
+        "ref": "catalog-flint-coupe-2005-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  },
+  "later": {
+    "selected": "Teasel 2006",
+    "start": 120,
+    "visible": [
+      "Tansy Cargo 2010",
+      "Teasel 2006",
+      "Thistle 190 1990",
+      "Thornbill GT 2018"
+    ],
+    "targetIndex": 121,
+    "selectedIndex": 121,
+    "loadedCars": 127,
+    "totalChoices": 131,
+    "carId": "teasel-2006",
+    "art": [
+      {
+        "ref": "catalog-teasel-2006-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  }
+}

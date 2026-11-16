@@ -1,0 +1,37 @@
+{
+  "mobile": true,
+  "initial": {
+    "id": "heather-1993",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 800,
+    "gear": 1,
+    "elapsed": 1049.9333333333357,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "heather-1993",
+    "x": 0,
+    "z": 16.765444,
+    "speed": 10.827321,
+    "rpm": 5308.705458,
+    "gear": 1,
+    "elapsed": 5233.033333333332,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "heather-1993",
+    "x": 0,
+    "z": 33.103634,
+    "speed": 12.927507,
+    "rpm": 3323.714853,
+    "gear": 2,
+    "elapsed": 6599.89999999999,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}
