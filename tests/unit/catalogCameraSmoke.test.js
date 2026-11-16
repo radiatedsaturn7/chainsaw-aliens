@@ -4,7 +4,7 @@ const root=new URL('../../',import.meta.url);const read=p=>{const d=JSON.parse(f
 const configs=fs.readdirSync(new URL('assets/car-catalog/',root)).filter(n=>fs.existsSync(new URL(`assets/car-catalog/${n}/import.json`,root))).map(n=>read(`assets/car-catalog/${n}/import.json`));
 test('all sourced catalog cars use actual fixed-rear editor mode and existing surface FX',()=>{
  // 65 existing sourced imports plus Briar 2024, Thornbill, Celandine, Fenfire, Saffron, Vervain and Alder RS, Copperleaf 22 and Honeysuckle 22 Sycamore RT and Milkweed 60 and Gentian SX and Hellebore RS and Ironwood V8 and Tansy Cargo, Lunaria, Juniper, Magnolia, Rowan, Iris, Sumac, Zinnia and Meadowsweet additions.
- assert.equal(configs.length,99);
+ assert.equal(configs.length,100);
  assert.equal(new Set(configs.map(c=>c.car.id)).size,configs.length,'source car IDs must be unique');
  for(const {car} of configs){assert.equal(car.camera.trackingMode,'fixed-rear',car.id);assert.deepEqual(car.art.smoke,DEFAULT_CAR_SMOKE);assert.deepEqual(normalizeCarSmoke(car.art.smoke),DEFAULT_CAR_SMOKE);
  for(const ref of new Set(Object.values(car.art.smoke)))assert.ok(fs.existsSync(new URL(`data/server-storage/files/art/${ref}/document.json`,root)),ref);

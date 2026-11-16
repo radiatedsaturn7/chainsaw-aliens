@@ -1,0 +1,37 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "angelica-1999",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 700,
+    "gear": 1,
+    "elapsed": 2099.9333333333357,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "angelica-1999",
+    "x": 0.005065999925136566,
+    "z": 12.032942771911621,
+    "speed": 8.228588104248047,
+    "rpm": 2825.165283203125,
+    "gear": 1,
+    "elapsed": 6149.833333333334,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "angelica-1999",
+    "x": 0.012322000227868557,
+    "z": 39.04220962524414,
+    "speed": 15.729840278625488,
+    "rpm": 5456.6865234375,
+    "gear": 1,
+    "elapsed": 8366.333333333334,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}
