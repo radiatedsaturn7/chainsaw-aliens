@@ -1054,7 +1054,9 @@
       "catalog-agrimony-1988-body": "art/catalog-agrimony-1988-body/document.json",
       "catalog-agrimony-1988-dashboard": "art/catalog-agrimony-1988-dashboard/document.json",
       "catalog-harebell-1970-body": "art/catalog-harebell-1970-body/document.json",
-      "catalog-harebell-1970-dashboard": "art/catalog-harebell-1970-dashboard/document.json"
+      "catalog-harebell-1970-dashboard": "art/catalog-harebell-1970-dashboard/document.json",
+      "catalog-holly-1988-body": "art/catalog-holly-1988-body/document.json",
+      "catalog-holly-1988-dashboard": "art/catalog-holly-1988-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1169,7 +1171,8 @@
       "Pennyroyal 1994": "cars/Pennyroyal 1994/document.json",
       "Periwinkle 1998": "cars/Periwinkle 1998/document.json",
       "Agrimony 1988": "cars/Agrimony 1988/document.json",
-      "Harebell 1970": "cars/Harebell 1970/document.json"
+      "Harebell 1970": "cars/Harebell 1970/document.json",
+      "Holly 1988": "cars/Holly 1988/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
