@@ -1086,7 +1086,9 @@
       "catalog-alyssum-2009-body": "art/catalog-alyssum-2009-body/document.json",
       "catalog-alyssum-2009-dashboard": "art/catalog-alyssum-2009-dashboard/document.json",
       "catalog-loosestrife-1988-body": "art/catalog-loosestrife-1988-body/document.json",
-      "catalog-loosestrife-1988-dashboard": "art/catalog-loosestrife-1988-dashboard/document.json"
+      "catalog-loosestrife-1988-dashboard": "art/catalog-loosestrife-1988-dashboard/document.json",
+      "catalog-mignonette-2011-body": "art/catalog-mignonette-2011-body/document.json",
+      "catalog-mignonette-2011-dashboard": "art/catalog-mignonette-2011-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1217,7 +1219,8 @@
       "Osier 2005": "cars/Osier 2005/document.json",
       "Madder 1969": "cars/Madder 1969/document.json",
       "Alyssum 2009": "cars/Alyssum 2009/document.json",
-      "Loosestrife 1988": "cars/Loosestrife 1988/document.json"
+      "Loosestrife 1988": "cars/Loosestrife 1988/document.json",
+      "Mignonette 2011": "cars/Mignonette 2011/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
