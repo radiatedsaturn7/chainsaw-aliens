@@ -1,0 +1,37 @@
+{
+  "mobile": true,
+  "initial": {
+    "id": "santolina-1967",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 1100,
+    "gear": 1,
+    "elapsed": 1099.8666666666672,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "santolina-1967",
+    "x": 0,
+    "z": 14.523147,
+    "speed": 7.798538,
+    "rpm": 7650.388166,
+    "gear": 2,
+    "elapsed": 5233.100000000001,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "santolina-1967",
+    "x": -0.000237,
+    "z": 28.629336,
+    "speed": 10.95338,
+    "rpm": 7069.766658,
+    "gear": 3,
+    "elapsed": 6699.633333333333,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}
