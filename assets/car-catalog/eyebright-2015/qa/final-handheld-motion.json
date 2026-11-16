@@ -1,0 +1,37 @@
+{
+  "mobile": true,
+  "initial": {
+    "id": "eyebright-2015",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 950,
+    "gear": 1,
+    "elapsed": 1066.533333333334,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "eyebright-2015",
+    "x": 0,
+    "z": 12.048728,
+    "speed": 9.111756,
+    "rpm": 4002.425517,
+    "gear": 2,
+    "elapsed": 4233.066666666669,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "eyebright-2015",
+    "x": 0,
+    "z": 28.973344,
+    "speed": 14.478195,
+    "rpm": 5392.594378,
+    "gear": 2,
+    "elapsed": 5649.599999999995,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}
