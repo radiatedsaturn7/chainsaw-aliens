@@ -64,7 +64,13 @@ export function updateCodriverEvents(state,session,dt,{enabled,paused,intro,acti
     if(band>(state.damageBands[part]||0))state.pendingChatter={text,expires:now+12};
     state.damageBands[part]=band;
   }
-  if(!enabled||paused||intro){stopCodriver(state);state.pendingChatter=null;return;}
+  if(!enabled||paused){stopCodriver(state);state.pendingChatter=null;return;}
+  if(intro){
+    // The showcase supplies the first two beats; only 3, 2, 1 are HUD numbers.
+    const beat=Number(session.raceIntro?.elapsed||0)<1.8?5:4;
+    if(beat!==state.countdownBeat&&speakCodriver(state,String(beat),'countdown'))state.countdownBeat=beat;
+    return;
+  }
   const remaining=Number(session.countdownRemainingMs)||0;
   if(remaining>0){
     const beat=remaining>1000?Math.ceil((remaining-1000)/1000):0;

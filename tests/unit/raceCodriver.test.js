@@ -67,3 +67,14 @@ test('impact events produce occasional chatter, road calls preempt it and disabl
  s.vehicleDynamicsRunner.impactHistory.push({sequence:2,bodyNormalImpulseNs:5000});
  updateCodriverEvents(state,s,.1,{...options,enabled:false});assert.equal(spoken.length,2);
 }));
+
+test('showcase speaks five and four once, then hands off to three, with voice-only gating',()=>withSpeech((speech,spoken)=>{
+ const state={},s={countdownRemainingMs:4000,raceIntro:{active:true,elapsed:0}};
+ for(const elapsed of [0,.4,1.8,3.6,5.3]){s.raceIntro.elapsed=elapsed;updateCodriverEvents(state,s,.1,{enabled:true,intro:true,active:false});}
+ s.raceIntro.active=false;
+ for(const ms of [4000,3000,2000,1000]){s.countdownRemainingMs=ms;updateCodriverEvents(state,s,.1,{enabled:true,intro:false,active:false});}
+ assert.deepEqual(spoken,['5','4','3','2','1','Go!']);
+ for(const enabled of [false])for(const intro of [true,false])updateCodriverEvents({},s,.1,{enabled,intro,active:false});
+ assert.equal(spoken.length,6);
+ updateCodriverEvents({},s,.1,{enabled:true,intro:true,paused:true,active:false});assert.equal(spoken.length,6);
+}));

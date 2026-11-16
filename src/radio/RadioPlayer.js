@@ -1,7 +1,7 @@
 import {externalizeRadioMusic} from './RadioMusicAssets.js';
 import {hydrateProjectFilePayload} from '../ui/projectFiles.js';
 import {DEFAULT_MUSIC_VOLUME} from '../audio/musicVolume.js';
-import { normalizeRadioLibrary, normalizeRadioProgress, radioStationTracks } from './RadioLibrary.js';
+import { normalizeRadioLibrary, normalizeRadioProgress, radioStationTracks, isRadioTrackUnlocked } from './RadioLibrary.js';
 import { loadServerPreferenceAsync, saveServerPreference } from '../ui/serverPreferences.js';
 
 export const RADIO_LIBRARY_KEY = 'rtg-radio-library';
@@ -42,9 +42,9 @@ export class RadioPlayer {
   }
   get available() { return this.progress.enabled && this.contextEnabled; }
   get stations() {return this.library.stations.filter(station=>this.contextStationIds===null||this.contextStationIds.includes(station.id));}
-  get stationId() { if(this.contextStationId&&this.stations.some(s=>s.id===this.contextStationId))return this.contextStationId;return this.stations.some(s => s.id === this.progress.stationId) ? this.progress.stationId : this.stations[0]?.id || ''; }
+  get stationId() { if(this.contextStationId&&this.stations.some(s=>s.id===this.contextStationId))return this.contextStationId;return this.stations.some(s => s.id === this.progress.stationId) ? this.progress.stationId : (this.stations.find(s=>s.name.trim().toUpperCase()==='WRTG')||this.stations[0])?.id || ''; }
   get listeningProgress() {const inventory=this.getInventory();return inventory?.ready?{...this.progress,inventoryBacked:true,unlocked:Object.keys(inventory.progress.bags.radio).filter(id=>inventory.progress.bags.radio[id]>0)}:this.progress;}
-  ownsTrack(track) {return Boolean(track&&((!this.listeningProgress.inventoryBacked&&track.initiallyUnlocked)||this.listeningProgress.unlocked.includes(track.id)));}
+  ownsTrack(track) {return isRadioTrackUnlocked(track,this.listeningProgress);}
   get tracks() { return radioStationTracks(this.library, this.listeningProgress, this.stationId); }
   randomTrack() { const tracks=this.tracks;return tracks[Math.min(tracks.length-1,Math.max(0,Math.floor(this.random()*tracks.length)))]; }
   chooseRaceStation() {

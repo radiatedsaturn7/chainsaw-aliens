@@ -150,3 +150,26 @@ test('cue seek retries ignored metadata seek when media becomes playable and cle
   listeners.get('seeked')();assert.equal(listeners.size,0);assert.equal(radio.cancelPendingSeek,null);
  }finally{Object.defineProperty(globalThis,'performance',{configurable:true,value:prior});}
 });
+
+test('starter radio songs survive empty save-slot inventories without unlocking collectible tapes',async()=>{
+ const {player}=fixture();await player.load();
+ const inventory={ready:true,progress:{bags:{radio:{}}},load:async()=>{}};
+ player.getInventory=()=>inventory;player.setContext(true);
+ assert.deepEqual(player.tracks.map(t=>t.id),['b']);
+ assert.equal(player.ownsTrack(player.library.tracks[1]),true);
+ assert.equal(player.ownsTrack(player.library.tracks[0]),false);
+ assert.equal(await player.play(),true);
+ player.setContext(false);assert.equal(player.playing,false);
+ inventory.progress={bags:{radio:{}}};player.setContext(true);
+ assert.equal(await player.play(),true,'starter music remains available after cutscene/context and save-slot transitions');
+ await player.setTrackEnabled('b',false);assert.equal(player.tracks.length,0,'explicit song exclusions still apply');
+});
+
+test('station defaults to WRTG while preserving explicit selection and race restrictions',async()=>{
+ const {player}=fixture();await player.load();
+ player.library.stations.push({id:'wrtg',name:'WRTG',trackIds:['b']});
+ assert.equal(player.stationId,'wrtg');
+ player.progress.stationId='station';assert.equal(player.stationId,'station');
+ player.progress.stationId='removed';assert.equal(player.stationId,'wrtg');
+ player.setContext(true,['station']);assert.equal(player.stationId,'station');
+});
