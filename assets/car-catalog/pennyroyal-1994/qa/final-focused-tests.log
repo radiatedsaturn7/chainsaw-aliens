@@ -1,0 +1,13 @@
+✔ Pennyroyal retains French CEE anchors without DIN or later variant mixing (1.545557ms)
+✔ Pennyroyal native roundtrip preserves FIA reduction ratios and explicit manual assist (209.30186ms)
+✔ Pennyroyal has eight distinct original exterior frames, shared tire layers and original hashes (455.794809ms)
+✔ separate staging branch retains 107 playable documents and excludes3 legacy system templates (196.004465ms)
+✔ Pennyroyal 1994 published wheel graphics cover original opening heights without changing physical radius (867.830826ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1433.012065

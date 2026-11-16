@@ -1,0 +1,37 @@
+{
+  "mobile": true,
+  "initial": {
+    "id": "pennyroyal-1994",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 900,
+    "gear": 1,
+    "elapsed": 1133.1666666666667,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "pennyroyal-1994",
+    "x": 0,
+    "z": 17.3752,
+    "speed": 11.683049,
+    "rpm": 6701.150084,
+    "gear": 1,
+    "elapsed": 5382.966666666664,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "pennyroyal-1994",
+    "x": 0,
+    "z": 36.941636,
+    "speed": 15.241182,
+    "rpm": 4742.214418,
+    "gear": 2,
+    "elapsed": 6832.933333333331,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

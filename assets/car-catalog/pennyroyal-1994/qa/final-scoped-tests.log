@@ -1,0 +1,36 @@
+✔ Angelica retains1999 US V6 AWD automatic and measured mass basis (1.352187ms)
+✔ Angelica explicit estimated gearing survives native editor manual and assist roundtrip (85.834912ms)
+✔ Angelica has eight distinct original exterior frames, shared tire layers and original hashes (221.63359ms)
+✔ separate staging branch retains 106 playable documents and excludes3 legacy system templates (195.168142ms)
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (128.931424ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (5.510674ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (37.705973ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (6129.570098ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (15.151842ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (2822.545689ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (137.907258ms)
+✔ requires explicit source data and mappings (0.90005ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (66.594321ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (157.182563ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (1.959558ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (49.216926ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (49.350908ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (410.883415ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (496.854984ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (473.255068ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (4353.353133ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (4499.250806ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.377296ms)
+✔ Pennyroyal retains French CEE anchors without DIN or later variant mixing (1.755473ms)
+✔ Pennyroyal native roundtrip preserves FIA reduction ratios and explicit manual assist (83.531644ms)
+✔ Pennyroyal has eight distinct original exterior frames, shared tire layers and original hashes (230.656023ms)
+✔ separate staging branch retains 107 playable documents and excludes3 legacy system templates (146.248959ms)
+✔ Pennyroyal 1994 published wheel graphics cover original opening heights without changing physical radius (287.502069ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 23088.41063
