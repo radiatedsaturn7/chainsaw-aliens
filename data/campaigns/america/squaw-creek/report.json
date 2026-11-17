@@ -1,0 +1,62 @@
+[
+  {
+    "id": "detour-squaw-creek",
+    "name": "Squaw Creek \u2014 Highland Center",
+    "displayName": "Squaw Creek \u2014 Highland Center",
+    "status": "imported",
+    "state": "Nebraska",
+    "stateCode": "NE",
+    "location": {
+      "lat": 42.62,
+      "lon": -103.25
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 8,
+    "lengthM": 24123.329242594977,
+    "estimatedDrivingSeconds": 1340,
+    "laps": 1,
+    "surface": [
+      "asphalt",
+      "dirt",
+      "gravel"
+    ],
+    "generatedPath": "artifacts/campaign-import/squaw-creek/detour-squaw-creek.json",
+    "references": [
+      "https://tigerweb.geo.census.gov/tigerwebmain/Files/acs25/tigerweb_acs25_roads_loc_ne_045.html",
+      "https://www.anyplaceamerica.com/directory/ne/dawes-county-31045/cemeteries/highland-center-cemetery-835590/",
+      "https://www.openstreetmap.org/way/175520650",
+      "https://www.openstreetmap.org/way/175533702",
+      "https://www.openstreetmap.org/way/14068530",
+      "https://www.openstreetmap.org/way/166663413",
+      "https://outdoornebraska.gov/learn/nebraska-habitat/woodlands/"
+    ],
+    "routeReference": {
+      "routing": "Ordered GPS waypoints on connected public OSM roads; no repeated edges; service roads require explicit reviewed way IDs.",
+      "waypoints": [
+        {
+          "lat": 42.639048,
+          "lon": -103.3602382
+        },
+        {
+          "lat": 42.6390091,
+          "lon": -103.3428039
+        },
+        {
+          "lat": 42.6107396,
+          "lon": -103.1258691
+        }
+      ],
+      "allowedServiceWayIds": []
+    },
+    "artHubStage": 7,
+    "weather": "clear",
+    "palette": "pine-ridge",
+    "paceCapMps": 24
+  }
+]

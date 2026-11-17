@@ -5,14 +5,15 @@ import zlib from 'node:zlib';
 import {campaignEventCategory} from '../../src/menus/CampaignHubMenus.js';
 const read=p=>{const d=JSON.parse(fs.readFileSync(p));return d.__chainsawStorage?JSON.parse(zlib.gunzipSync(Buffer.from(d.data,'base64'))):d;};
 const root='data/server-storage/files/';
-const sources=read('tools/campaigns/wilderness_sources.json');
+const sources=[...read('tools/campaigns/wilderness_sources.json'),...read('tools/campaigns/squaw_creek_sources.json')];
 const catalog=read('data/campaigns/america/raceways/catalog.json');
 const manifest=read(root+'manifest.json');
 const menu=read(root+'menus/Game Menu/document.json');
-test('eleven wilderness events use imported geometry, saved artwork and reachable campaign buttons',()=>{
- assert.equal(sources.length,11);
+test('wilderness events use imported geometry, saved artwork and reachable campaign buttons',()=>{
+ assert.equal(sources.length,12);
  for(const source of sources){
   const entry=catalog.find(r=>r.id===source.id);assert.equal(entry?.status,'installed',source.id);
+  if(source.hubStage!=null)assert.equal(entry.hubStage,source.hubStage);
   assert.equal(manifest.folders.races[entry.raceRef],entry.documentPath);
   const race=read(root+entry.documentPath).race;
   assert.equal(race.id,source.id);assert.equal(race.road.autoExtend,false);

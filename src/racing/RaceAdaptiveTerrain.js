@@ -10,6 +10,7 @@ const orientation = (a,b,c) => {
   const value=u-v,tolerance=8*Number.EPSILON*(Math.abs(u)+Math.abs(v));
   return Math.abs(value)<=tolerance?0:Math.sign(value);
 };
+const EMPTY_ERRORS=Object.freeze([]);
 const pointKey = p => `${Math.round(p.x*1e6)},${Math.round(p.z*1e6)}`;
 const interpolate = (a,b,t) => ({x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t});
 
@@ -223,7 +224,7 @@ export function buildAdaptiveRaceTerrain({surfaceBake,runtimeType='destination',
       // Cache the expensive road-edge cuts, not every simple distant quad.
       // Keeping two triangulations and a boundary copy for the entire mountain
       // survey can exhaust the worker heap before the conformity pass begins.
-      if(reuseConformingPolygons&&distance<=40)poly.adaptiveConformance={boundary:[...poly],triangles,maxError,errors};
+      if(reuseConformingPolygons&&distance<=40)poly.adaptiveConformance={boundary:poly,maxError,errors:errors.length?errors:EMPTY_ERRORS};
     }
   };
   // Align roots with source material tiles; only refine where geometry needs it.
@@ -276,7 +277,13 @@ export function buildAdaptiveRaceTerrain({surfaceBake,runtimeType='destination',
     onProgress({phase:'connect',pass:passes+1,leafCells:finalLeaves.length,elapsedMs:Date.now()-started});
     const vertices=spatialIndex(5),registered=new Map();
     const register=p=>{const key=pointKey(p),existing=registered.get(key);if(existing)return existing;registered.set(key,p);vertices.add(p,p.x,p.x,p.z,p.z);return p;};
-    for(const c of finalLeaves)for(const poly of c.pieces)for(let i=0;i<poly.length;i++)poly[i]=register(poly[i]);
+    for(const c of finalLeaves)for(const poly of c.pieces)for(let i=0;i<poly.length;i++){
+      const previous=poly[i],canonical=register(previous);
+      // A shared boundary may alias poly itself. Invalidate its height/error
+      // summary before replacing a vertex, just as the former boundary copy did.
+      if(previous!==canonical&&poly.adaptiveConformance?.boundary===poly)delete poly.adaptiveConformance;
+      poly[i]=canonical;
+    }
     for(const p of field.boundaryVertices)register(sample(p.x,p.z));
     const boundaryCandidates = useBoundaryIndex
       ? boundaryVertexIndex(registered.values(), vertices)
@@ -288,7 +295,7 @@ export function buildAdaptiveRaceTerrain({surfaceBake,runtimeType='destination',
       if(++connectedCells%4096===0)onProgress({phase:'connecting',pass:passes+1,connectedCells,elapsedMs:Date.now()-started});
       stats.minimumCellSizeM=Math.min(stats.minimumCellSizeM,c.size);
       for(const poly of c.pieces){
-        const boundary=[];
+        let boundary=[];
         poly.forEach((a,i)=>{
           const b=poly[(i+1)%poly.length],dx=b.x-a.x,dz=b.z-a.z,length=Math.hypot(dx,dz);boundary.push(a);if(length<1e-8)return;
           const splits=[];
@@ -300,19 +307,20 @@ export function buildAdaptiveRaceTerrain({surfaceBake,runtimeType='destination',
           }
           splits.sort((a,b)=>a.t-b.t);for(const {p} of splits)if(pointKey(boundary.at(-1))!==pointKey(p))boundary.push(p);
         });
+        if(boundary.length===poly.length&&boundary.every((p,i)=>p===poly[i]))boundary=poly;
         // Only re-triangulate/re-sample polygons whose shared boundary changed.
         // A correction to one roadside cell must not re-evaluate the whole map.
         let cached=poly.adaptiveConformance;
         if(reuseConformingPolygons && cached && cached.boundary.length===boundary.length && boundary.every((p,i)=>p===cached.boundary[i])){
           stats.reusedPolygons++;
         }else{
-          cached={boundary,triangles:[],maxError:0,errors:[]};
+          cached={boundary,maxError:0,errors:[]};
           for(const points of triangulateTerrainBoundary(boundary)){
             const error=errorFor(points);
             cached.maxError=Math.max(cached.maxError,error.error);
             if(error.failed)cached.errors.push(error);
-            cached.triangles.push(points);
           }
+          if(!cached.errors.length)cached.errors=EMPTY_ERRORS;
           poly.adaptiveConformance=cached;
         }
         stats.maxHeightErrorM=Math.max(stats.maxHeightErrorM,cached.maxError);
@@ -341,7 +349,10 @@ export function buildAdaptiveRaceTerrain({surfaceBake,runtimeType='destination',
     const cells=[];
     for(const c of finalLeaves){
       for(const poly of c.pieces){
-        for(const points of poly.adaptiveConformance.triangles){
+        // Keep only boundary/error summaries during conformity. Retaining
+        // another triangle-array graph for every mountain cell can exhaust
+        // the worker heap; triangulation here preserves the same boundaries.
+        for(const points of triangulateTerrainBoundary(poly.adaptiveConformance.boundary)){
           const center={x:points.reduce((sum,p)=>sum+p.x,0)/3,z:points.reduce((sum,p)=>sum+p.z,0)/3};
           cells.push({key:`adaptive:${nextCellId++}`,points,tileCell:materialAt(center),terrainRegion:points.some(p=>p.terrainRegion==='transition')?'transition':'terrain',terrainTopology:'adaptive-road-first',adaptiveTerrainCellSizeM:c.size});
         }

@@ -173,7 +173,7 @@ def place(r):
  return result
 
 def main():
- parser=argparse.ArgumentParser();parser.add_argument('--apply',action='store_true');args=parser.parse_args()
+ parser=argparse.ArgumentParser();parser.add_argument('--apply',action='store_true');parser.add_argument('--report',default='data/campaigns/america/line-placement-audit.json');args=parser.parse_args()
  manifest=read(ROOT/'manifest.json');main=read(Path('data/campaigns/america/catalog.json'));side=read(Path('data/campaigns/america/side-races/catalog.json'))
  extra=read(Path('data/campaigns/america/raceways/catalog.json'))
  names=set(manifest['folders']['races']);rows=[]
@@ -197,7 +197,7 @@ def main():
   Path('data/campaigns/america/raceways/catalog.json').write_text(json.dumps(extra,indent=2)+'\n')
   Path('data/campaigns/america/catalog.json').write_text(json.dumps(main,indent=2)+'\n')
   Path('data/campaigns/america/side-races/catalog.json').write_text(json.dumps(side,indent=2)+'\n')
- report=Path('data/campaigns/america/line-placement-audit.json');report.write_text(json.dumps({'applied':args.apply,'windowM':80,'thresholdDegrees':10,'races':rows},indent=2)+'\n')
+ report=Path(args.report);report.parent.mkdir(parents=True,exist_ok=True);report.write_text(json.dumps({'applied':args.apply,'windowM':80,'thresholdDegrees':10,'races':rows},indent=2)+'\n')
  from collections import Counter
  print(Counter(r['status'] for r in rows))
  for r in rows:

@@ -1,13 +1,14 @@
 {
   "schemaVersion": 1,
   "kind": "race-doodad",
-  "savedAt": 1793447830185,
+  "savedAt": 1794860932839,
   "selectedDoodadId": "frozenbush",
   "doodad": {
     "id": "frozenbush",
     "name": "frozenbush",
     "artRef": "frozenbush",
     "isFence": false,
+    "fenceMirrorRepeat": false,
     "fenceThicknessM": 0.3,
     "itemType": "scenery",
     "unlockTrackId": "",
@@ -17,13 +18,12 @@
     "groundOffsetM": 0.41525773195876287,
     "hitboxWidthM": 1.5,
     "hitboxHeightM": 1,
-    "weightKg": 12,
+    "weightKg": 5,
     "defaultRule": {
-      "minSpeedMph": 0,
       "behavior": "flatten",
-      "speedDrainPercent": 8,
+      "speedDrainPercent": 0.2,
       "damage": {
-        "panels": 1,
+        "panels": 0,
         "suspension": 0,
         "engine": 0
       }

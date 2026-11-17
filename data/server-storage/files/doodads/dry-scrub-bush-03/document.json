@@ -1,1 +1,33 @@
-{"__chainsawStorage": "compact-v1", "encoding": "json-gzip-base64", "data": "H4sIAAAAAAAC/42RT0+DQBDFv8ueoYHyp5RbjTEa02hqowfjYWEH2LAMZHepNg3f3VnU6kETuTHvzW925p2YKRvo+CNoI3tkeeixVqJgOdO8BF/0veCCeczwA4iNJcNqHUdxECdRGKQe+zTkJyZdU8m7gcsafaGPvin1WPjFaBo/iIiBvAPy/CZxbXdQ/SFKcwVYUmvFlQGPVe5v38iyRTBmy/JgEZHLQrc/Dm6CKQFBH6l1RNWX7Z52aW/c+6jU9QIUy3FUymOvUtiGCOEiTbNwFcTLNEiTMF2uPdaArBs7i4SvdT+iuKsqA64WkC5t0b89nQmxO02cpcswSaIsi74c198cmvDzW9IDZvG2JpUKdE+o+KjsblTgjtpJfBgAxHZo5pkFNPwge02rVIpbC+iycY5LzSXeg6bVKaWMSLzj9QwZOIIyc7ZmJDN+RE04wFoieYJp8pimmeR6fvHOMW60vXBrG4f5762maXoHLEtNoVcCAAA="}
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794860932865,
+  "selectedDoodadId": "campaign-dry-scrub-bush-03",
+  "doodad": {
+    "id": "campaign-dry-scrub-bush-03",
+    "name": "dry-scrub-bush-03",
+    "artRef": "dry-scrub-bush-03",
+    "isFence": false,
+    "fenceMirrorRepeat": false,
+    "fenceThicknessM": 0.3,
+    "itemType": "scenery",
+    "unlockTrackId": "",
+    "model": null,
+    "widthM": 1.6681704260651629,
+    "heightM": 1.3,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 1.4179448621553883,
+    "hitboxHeightM": 1.1700000000000002,
+    "weightKg": 5,
+    "defaultRule": {
+      "behavior": "flatten",
+      "speedDrainPercent": 0.2,
+      "damage": {
+        "panels": 0,
+        "suspension": 0,
+        "engine": 0
+      }
+    },
+    "rules": []
+  }
+}

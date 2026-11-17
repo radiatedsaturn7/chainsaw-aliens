@@ -150,8 +150,11 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
       const race=resources?.race?.(ref);
       const quote=resources?.raceReward?.(ref)||raceRewardQuote(ref,race,resources?.garage?.progress);
       const part=quote.part&&resources?.partCatalog?.find(e=>e.item.id===quote.part)?.item.name;
+      const target=quote.targets;
+      const formatTarget=ms=>`${Math.floor(Math.round(ms/1000)/60)}:${String(Math.round(ms/1000)%60).padStart(2,'0')}`;
+      const targets=target?` Class ${target.class} estimated ${target.kind==='score'?'score':'time'} targets: Bronze ${target.kind==='score'?target.bronzeScore:formatTarget(target.bronzeMs)}, Silver ${target.kind==='score'?target.silverScore:formatTarget(target.silverMs)}, Gold ${target.kind==='score'?target.goldScore:formatTarget(target.goldMs)}. Best medal: ${quote.bestMedal||'None'}.${target.kind==='score'&&quote.classBestScore!=null?' Class best: '+Math.floor(quote.classBestScore)+' pts.':quote.classBestMs&&target.kind!=='score'?' Class best: '+formatTarget(quote.classBestMs)+'.':''} Medals award up to 300 scrap once per event.`:'';
       const rewards=race?`${quote.first?'First clear':'Repeat clear'}: ${quote.total} scrap${part?' · '+part:''}.`:'Loading rewards…';
-      drawCarDescription(ctx,b,element.property==='rewards'?`${quote.distanceKm.toFixed(1)} km · ${quote.surfaces||'Road'} · ${quote.weather}. ${rewards}${quote.objective?' '+quote.objective.brief+' Optional: '+quote.objective.label+(quote.objective.earned?' (earned).':` (+${quote.objective.bonus} scrap, once).`):''}`:`${rewards} ${race?.description||''}`,fontFamily,element,{time,editing});
+      drawCarDescription(ctx,b,element.property==='rewards'?`${quote.distanceKm.toFixed(1)} km · ${quote.surfaces||'Road'} · ${quote.weather}. ${rewards}${quote.featured?' '+(quote.featuredEarned?'Featured reward earned.':quote.featured):''}${targets}${quote.objective?' '+quote.objective.brief+' Optional: '+quote.objective.label+(quote.objective.earned?' (earned).':` (+${quote.objective.bonus} scrap, once).`):''}`:`${rewards} ${race?.description||''}`,fontFamily,element,{time,editing});
     }
     else if(element.type==='car-description'){
       const car=resources?.car(element.assetRef||value);

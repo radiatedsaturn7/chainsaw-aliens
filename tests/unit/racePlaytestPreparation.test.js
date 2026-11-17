@@ -1501,3 +1501,44 @@ test('travel fallback cancels the previous loading job before creating its prepa
     if(previousWorker===undefined)delete globalThis.Worker;else globalThis.Worker=previousWorker;
   }
 });
+
+test('missing tire smoke is optional during travel, but car artwork remains required', () => {
+  const editor = createEditor();
+  editor.raceLoadingCar = {art: {body:'body', smoke:{asphalt:'burnoutsmoke', snow:'custom-snow'}}};
+  assert.equal(editor.getRequiredRaceArtworkError(['burnoutsmoke','custom-snow']), null);
+  const error = editor.getRequiredRaceArtworkError(['burnoutsmoke','body']);
+  assert.deepEqual(error.missingArtRefs, ['body']);
+  // Reusing an effect's asset for a car body must not hide a real body failure.
+  editor.raceLoadingCar.art.body = 'burnoutsmoke';
+  assert.deepEqual(editor.getRequiredRaceArtworkError(['burnoutsmoke']).missingArtRefs, ['burnoutsmoke']);
+});
+
+test('missing race dust uses fallback but missing tire marks and road textures remain required', () => {
+  const editor = createEditor();
+  editor.selectedRace.tireFx = {snowDust:{artRef:'custom-dust'},asphaltSkid:{artRef:'tire-marks'}};
+  assert.equal(editor.getRequiredRaceArtworkError(['custom-dust']), null);
+  assert.deepEqual(editor.getRequiredRaceArtworkError(['tire-marks']).missingArtRefs, ['tire-marks']);
+  editor.selectedRace.surfaceArt = {asphalt:'custom-dust'};
+  assert.deepEqual(editor.getRequiredRaceArtworkError(['custom-dust']).missingArtRefs, ['custom-dust']);
+});
+
+test('race starts when a configured smoke download fails', () => {
+  const previousWorker = globalThis.Worker;
+  globalThis.Worker = FakeWorker;
+  FakeWorker.instances.length = 0;
+  try {
+    const editor = createEditor();
+    editor.project.cars[0].art = {smoke:{asphalt:'burnoutsmoke'}};
+    editor.startRacePlaytestPreparation();
+    const worker = FakeWorker.instances[0];
+    worker.emit({type:'prepared-header',bake:{key:'smoke-fallback',terrainCells:[]}});
+    worker.emit({type:'prepared-physics',surfaceSampler:null});
+    worker.emit({type:'prepared-terrain',packedTerrain:{packed:true,triangleCount:1}});
+    worker.emit({type:'core-ready'});
+    worker.emit({type:'prepared'});
+    worker.emit({type:'critical-art-ready',requiredArtRefs:['burnoutsmoke'],missingArtRefs:['burnoutsmoke']});
+    assert.equal(editor.playtestSession.running, true);
+    worker.emit({type:'deferred-art-ready',missingArtRefs:[]});
+    assert.equal(worker.terminated,true);
+  } finally { globalThis.Worker = previousWorker; }
+});

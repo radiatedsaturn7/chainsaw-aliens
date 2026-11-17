@@ -14,6 +14,13 @@ from audit_race_lines import place
 ROOT=Path('data/campaigns/america/state-expansion')
 OUT=Path('artifacts/campaign-import/state-expansion')
 
+def campaign_hub(row,hubs):
+ if row.get('hubStage') is not None:
+  for hub in hubs:
+   if hub['stage']==row['hubStage']:return hub
+  raise ValueError(f"Unknown campaign hub stage: {row['hubStage']}")
+ return min(hubs,key=lambda h:math.hypot(*track.metric(row['lat'],row['lon'],(h['location']['lat'],h['location']['lon']))))
+
 def right_angle_turns(points):
  count=0
  for a,b,c in zip(points,points[1:],points[2:]):
@@ -211,7 +218,7 @@ def build(row):
  race['source']['estimatedDrivingSeconds']=round(times[-1]*race['laps'])
  race['source']['durationModel']='Curvature-limited reference pace; traffic-free closed roads; car, weather and driver change the result.'
  hubs=json.loads(Path('data/campaigns/america/catalog.json').read_text())
- hub=min(hubs,key=lambda h:math.hypot(*track.metric(row['lat'],row['lon'],(h['location']['lat'],h['location']['lon']))))
+ hub=campaign_hub(row,hubs)
  race['campaign']={'optional':True,'hubStage':hub['stage'],'sideEventId':row['id'],'eventType':'City run' if row['kind']=='city' else 'Circuit race' if row['kind']=='circuit' else 'Scenic road stage'}
  race['description']=f"{row['state']}: {row['name']}. Real mapped roads adapted as a closed-road event in the frozen 2994 setting."
  if row['kind']=='city':race['source']['landmarkPlan']=row['landmarks']

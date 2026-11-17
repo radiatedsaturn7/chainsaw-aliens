@@ -64,6 +64,7 @@ export function buildRaceCanonicalSurfaceMesh({
   terrainCells = [],
   runtimeType = 'destination',
   elevationScaleM = 12,
+  collectTopologyStats = true,
   areaEpsilonM2 = 0.000001
 } = {}) {
   const vertices = [];
@@ -75,7 +76,7 @@ export function buildRaceCanonicalSurfaceMesh({
     transition: [],
     terrain: []
   };
-  const objectIndices = new WeakMap();
+  let objectIndices = new WeakMap();
   const coordinateIndices = new Map();
   const normalSums = [];
   let rejectedDegenerateTriangles = 0;
@@ -242,8 +243,11 @@ export function buildRaceCanonicalSurfaceMesh({
     vertices[index].normal = upward;
     return upward;
   });
+  // Vertex lookup and accumulated normals are build-only scratch data. Drop
+  // them before allocating edge diagnostics or worker transfer packets.
+  coordinateIndices.clear();objectIndices=new WeakMap();normalSums.length=0;
   const edgeCounts = new Map();
-  triangles.forEach((triangle) => {
+  if(collectTopologyStats)triangles.forEach((triangle) => {
     triangle.indices.forEach((a, index) => {
       const b = triangle.indices[(index + 1) % 3];
       const key = a < b ? `${a}:${b}` : `${b}:${a}`;
@@ -270,8 +274,9 @@ export function buildRaceCanonicalSurfaceMesh({
       triangles: triangles.length,
       rejectedDegenerateTriangles,
       correctedWindingTriangles,
-      openEdges,
-      nonManifoldEdges
+      topologyAudited:collectTopologyStats,
+      openEdges:collectTopologyStats?openEdges:null,
+      nonManifoldEdges:collectTopologyStats?nonManifoldEdges:null
     }
   };
 }

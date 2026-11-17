@@ -5,6 +5,7 @@ export const wildernessPalettes={
  tundra:{sky:'skybox-mount-washington',ground:'ground-snow-dead-grass',props:['frozen-bush-01','frozen-bush-03','alpine-rock-outcrop-02','expanded-grass-clump']},
  forest:{sky:'skybox-sawtooth',ground:'ground-alpine-rock-v2',props:['mostly-bare-pine-01','expanded-tree-shortleaf-pine-young-01','expanded-bush-blueberry-01','expanded-rock-granite-moss-01']},
  alpine:{sky:'skybox-pikes-peak',ground:'ground-alpine-rock-v2',props:['mostly-bare-pine-02','alpine-rock-outcrop-02','pikes-peak-alpine-vegetation']},
+ 'pine-ridge':{sky:'skybox-badlands',ground:'ground-prairie-grass-v1',props:['expanded-grass-little-bluestem-01','expanded-grass-little-bluestem-02','expanded-grass-roadside-weeds-01','mostly-bare-pine-01','angeles-crest-dry-mountain-pine','gray-rock-01']},
  prairie:{sky:'skybox-route-66',ground:'ground-desert-scrub-v2',props:['expanded-grass-little-bluestem-01','expanded-grass-little-bluestem-02','expanded-grass-roadside-weeds-01','dry-scrub-bush-01']},
  tropical:{sky:'skybox-palms-to-pines',ground:'grass',props:['tree','expanded-bush-blackberry-bramble-01','expanded-bush-willow-river-01','expanded-grass-sedge-wetland-01']},
  volcano:{sky:'skybox-pikes-peak',ground:'ground-alpine-rock-v2',props:['gray-rock-01','gray-rock-03','alpine-rock-outcrop-02','pikes-peak-alpine-vegetation']},
@@ -23,12 +24,13 @@ export function wildernessParent(parent,row,manifest,read){
 }
 export function applyWildernessConditions(race,row){
  if(!row.palette)return;
+ race.source.sceneryPalette=row.palette;
  race.weather=row.weather||'clear';race.weatherIntensity=race.weather==='snow'?.35:race.weather==='rain'?.3:0;
  race.weatherTemperatureC=race.weather==='snow'?-5:race.weather==='rain'?5:1;
  race.weatherVisibilityM=race.weather==='snow'?850:race.weather==='rain'?1500:5000;
  race.snowClouds={enabled:race.weather==='snow',artRef:'snowcloud'};
  const config=wildernessPalettes[row.palette];
- const groundSurface=({alaska:'snow',tundra:'snow',forest:'grass',alpine:'gravel',prairie:'grass',tropical:'grass',volcano:'gravel','volcano-snow':'snow',canyon:'dirt'})[row.palette];
+ const groundSurface=({alaska:'snow',tundra:'snow',forest:'grass',alpine:'gravel',prairie:'grass','pine-ridge':'grass',tropical:'grass',volcano:'gravel','volcano-snow':'snow',canyon:'dirt'})[row.palette];
  race.road.tileMap.defaultTileId=groundSurface;
  for(const cell of Object.values(race.road.tileMap.cells)){cell.tileId=groundSurface;delete cell.tileWeights;cell.artRef=config.ground;cell.tileArtRef=config.ground;}
  race.source.environmentNotes='Fictional closed-road 2994 conditions; real OSM road plan and DEM elevations. Existing regional artwork substitutes for location-specific vegetation and landmarks.';
@@ -43,7 +45,7 @@ export function applyWildernessConditions(race,row){
   }
  }
  for(const [i,s] of race.road.segments.entries())s.bumpiness=s.surface==='asphalt'?.012:s.surface==='snow'?.025:.045+.025*(.5+.5*Math.sin(i*.15));
- race.description+=` ${row.palette==='tropical'?'Wet hillside corners above Honolulu.':row.palette==='prairie'?'Open grassland and rolling prairie.':row.palette.startsWith('volcano')?'Sparse volcanic slopes and summit approaches.':row.palette==='canyon'?'Canyon walls, exposed rock and sparse scrub.':race.weather==='snow'?'Thin snow and changing alpine visibility.':'Mountain corners and forested approaches.'}`;
+ race.description+=` ${row.palette==='tropical'?'Wet hillside corners above Honolulu.':row.palette==='prairie'?'Open grassland and rolling prairie.':row.palette==='pine-ridge'?'Grassland, scattered pines and exposed Pine Ridge escarpment.':row.palette.startsWith('volcano')?'Sparse volcanic slopes and summit approaches.':row.palette==='canyon'?'Canyon walls, exposed rock and sparse scrub.':race.weather==='snow'?'Thin snow and changing alpine visibility.':'Mountain corners and forested approaches.'}`;
 }
 
 export function addWildernessDistantScenery(race,row,manifest,read,editor){

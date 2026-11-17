@@ -13,6 +13,16 @@ def portable_geometry_hash(points):
  return hashlib.sha256(json.dumps(canonical,sort_keys=True).encode()).hexdigest()
 
 class StateExpansion(unittest.TestCase):
+ def test_explicit_campaign_hub_wins_over_geographic_nearest(self):
+  from import_state_expansion import campaign_hub
+  hubs=[{'stage':1,'location':{'lat':42,'lon':-103}}, {'stage':8,'location':{'lat':39,'lon':-105}}]
+  row={'lat':42,'lon':-103,'hubStage':8}
+  self.assertEqual(campaign_hub(row,hubs)['stage'],8)
+  del row['hubStage']
+  self.assertEqual(campaign_hub(row,hubs)['stage'],1)
+  row['hubStage']=99
+  with self.assertRaisesRegex(ValueError,'Unknown campaign hub'):campaign_hub(row,hubs)
+
  def test_landmark_lookup_rejects_a_different_nearby_museum(self):
   from unittest.mock import patch
   from prepare_state_sources import geocode
@@ -82,6 +92,23 @@ class StateExpansion(unittest.TestCase):
    if a['tags'].get('surface')=='unpaved':loose+=d
   self.assertGreater(loose/total,.6)
   self.assertLess(math.hypot(*track.metric(points[-1]['lat'],points[-1]['lon'],(41.762288,-103.322445))),40)
+ def test_squaw_creek_follows_sawlog_connector_to_cemetery_without_shortcuts(self):
+  import race_track_import as track
+  row=json.loads(Path('tools/campaigns/squaw_creek_sources.json').read_text())[0]
+  ways=json.loads(Path('data/campaigns/america/squaw-creek/sources/detour-squaw-creek.json').read_text())
+  ways=[w for w in ways if w['tags']['highway'] not in ('service','track','motorway','motorway_link')]
+  origin=(row['lat'],row['lon'])
+  anchors=[dict(zip(('x','y'),track.metric(p['lat'],p['lon'],origin))) for p in row['waypoints']]
+  points=route.trace(ways,origin,anchors,max_snap=10,avoid_repeated_edges=True)
+  names=list(dict.fromkeys(p['tags'].get('name') for p in points))
+  self.assertEqual(names,['Burlington Road','Squaw Creek Road','Table Road'])
+  self.assertEqual(row['hubStage'],8)
+  total=sum(math.hypot(b['x']-a['x'],b['y']-a['y']) for a,b in zip(points,points[1:]))
+  self.assertGreater(total,24000);self.assertLess(total,24300)
+  self.assertLess(math.hypot(*track.metric(points[0]['lat'],points[0]['lon'],(42.639048,-103.3602382))),1)
+  self.assertLess(math.hypot(*track.metric(points[-1]['lat'],points[-1]['lon'],(42.6107396,-103.1258691))),1)
+  loose=sum(math.hypot(b['x']-a['x'],b['y']-a['y']) for a,b in zip(points,points[1:]) if a['tags'].get('surface') in ('gravel','unpaved'))
+  self.assertGreater(loose/total,.98)
  def test_all_missing_states_have_reviewed_non_oval_sources(self):
   specs=json.loads(Path('tools/campaigns/state_gap_sources.json').read_text());self.assertEqual(len(specs),29)
   report={r['id']:r for r in json.loads(Path('data/campaigns/america/state-expansion/report.json').read_text())}

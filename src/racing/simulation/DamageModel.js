@@ -214,7 +214,7 @@ export function updateRaceSceneryCollisions(editor, seconds = 0) {
     session.triggeredSceneryIds.push(sprite.id);
     if (rule.behavior === 'flatten') {
       session.flattenedSceneryIds.push(sprite.id);
-      queueVelocityScaleImpulse(Math.max(0.15, 1 - severity * (Number(rule.speedDrainPercent || 18) / 100)), hit.point);
+      queueVelocityScaleImpulse(Math.max(0.15, 1 - severity * (Number(rule.speedDrainPercent ?? 18) / 100)), hit.point);
       editor.applyRaceDamage('panels', severity * Number(rule.damage?.panels || 0), { keys: ['front'], source: `scenery:${sprite.id}` });
       editor.applyRaceDamage('suspension', severity * Number(rule.damage?.suspension || 0), { keys: ['fl', 'fr'], source: `scenery:${sprite.id}` });
       editor.applyRaceDamage('engine', severity * Number(rule.damage?.engine || 0), { source: `scenery:${sprite.id}` });
@@ -223,7 +223,7 @@ export function updateRaceSceneryCollisions(editor, seconds = 0) {
     if (rule.behavior === 'fly-off') {
       session.removedSceneryIds.push(sprite.id);
       const weightFactor = clamp(45 / Math.max(5, Number(doodad.weightKg || sprite.weightKg || 35)), 0.12, 1.4);
-      queueVelocityScaleImpulse(Math.max(0.12, 1 - severity * (Number(rule.speedDrainPercent || 16) / 100) / weightFactor), hit.point);
+      queueVelocityScaleImpulse(Math.max(0.12, 1 - severity * (Number(rule.speedDrainPercent ?? 16) / 100) / weightFactor), hit.point);
       editor.applyRaceDamage('panels', severity * Number(rule.damage?.panels || 0), { keys: ['front'], source: `scenery:${sprite.id}` });
       editor.applyRaceDamage('suspension', severity * Number(rule.damage?.suspension || 0), { keys: ['fl', 'fr'], source: `scenery:${sprite.id}` });
       editor.applyRaceDamage('engine', severity * Number(rule.damage?.engine || 0), { source: `scenery:${sprite.id}` });

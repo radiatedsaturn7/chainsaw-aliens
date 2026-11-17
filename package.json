@@ -39,7 +39,9 @@
     "test:playwright": "playwright test tests/playwright",
     "test:playwright:headed": "playwright test --headed",
     "calibrate:steering": "node tools/vehicle-validation/calibrate-digital-steering.mjs",
-    "calibrate:steering:assists": "node tools/vehicle-validation/calibrate-digital-steering.mjs --assists"
+    "calibrate:steering:assists": "node tools/vehicle-validation/calibrate-digital-steering.mjs --assists",
+    "test:campaign-progression": "node --test --test-concurrency=1 tests/unit/campaignChallenges.test.js tests/unit/campaignObjectives.test.js tests/unit/campaignEconomy.test.js tests/unit/campaignSaves.test.js tests/unit/campaignHubMenus.test.js tests/unit/garageService.test.js",
+    "audit:campaign-quality": "node tools/campaigns/audit_campaign_quality.mjs && python tools/campaigns/audit_race_lines.py --report=artifacts/campaign-quality/timing-lines.json && node tools/campaigns/audit_campaign_progression.mjs && node tools/campaigns/audit_campaign_roads.mjs && node tools/campaigns/audit_city_junctions.mjs --output=artifacts/campaign-quality/city-junctions.json && node tools/campaigns/validate_loading.mjs --report=artifacts/campaign-quality/main-loading.json"
   },
   "type": "module"
 }

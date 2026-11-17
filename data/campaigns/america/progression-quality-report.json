@@ -1,0 +1,321 @@
+{
+  "checkedAt": "2026-11-17T00:41:52.634Z",
+  "environment": "Android/Termux; background CPU scheduling. Load durations are diagnostic wall times, not foreground gameplay benchmarks.",
+  "loadingRetryNotes": [
+    "Moki originally exhausted the default Node heap. Retested successfully with the same heap/stack limits after reducing terrain-build temporary allocations.",
+    "Angeles original concurrent test was terminated to reduce memory contention; its serial retry passed with the memory optimizations.",
+    "Serial retry commands had no parent wall-clock timeout. Android placed these processes in its background CPU group; reported wall times are not foreground gameplay benchmarks."
+  ],
+  "inventory": {
+    "count": 238,
+    "errors": 0,
+    "warnings": 0
+  },
+  "runtimeRoads": {
+    "count": 238,
+    "errors": 0,
+    "probes": 20979,
+    "issues": []
+  },
+  "progression": {
+    "count": 238,
+    "errors": 0,
+    "issues": []
+  },
+  "cityJunctions": {
+    "cities": 50,
+    "junctions": 62,
+    "passed": true,
+    "failures": []
+  },
+  "mainLoading": [
+    {
+      "id": "america-opening-tower-hill",
+      "ok": true,
+      "seconds": 20.769,
+      "peakRssKB": 808204,
+      "unresolvedTerrainHeightSamples": 0
+    },
+    {
+      "id": "osm-cf573fba73e0",
+      "ok": true,
+      "seconds": 104.373,
+      "peakRssKB": 1210604,
+      "unresolvedTerrainHeightSamples": 530
+    },
+    {
+      "id": "america-middle-laurel",
+      "ok": true,
+      "seconds": 70.314,
+      "peakRssKB": 1086920,
+      "unresolvedTerrainHeightSamples": 18
+    },
+    {
+      "id": "america-middle-ohio",
+      "ok": true,
+      "seconds": 75.861,
+      "peakRssKB": 1182628,
+      "unresolvedTerrainHeightSamples": 14
+    },
+    {
+      "id": "america-middle-ozark",
+      "ok": true,
+      "seconds": 58.327,
+      "peakRssKB": 1034904,
+      "unresolvedTerrainHeightSamples": 0
+    },
+    {
+      "id": "america-middle-city",
+      "ok": true,
+      "seconds": 29.289,
+      "peakRssKB": 1002132,
+      "unresolvedTerrainHeightSamples": 0
+    },
+    {
+      "id": "america-middle-route66",
+      "ok": true,
+      "seconds": 85.998,
+      "peakRssKB": 1251484,
+      "unresolvedTerrainHeightSamples": 0
+    },
+    {
+      "id": "america-middle-pikes",
+      "ok": true,
+      "seconds": 83.981,
+      "peakRssKB": 1049672,
+      "unresolvedTerrainHeightSamples": 729
+    },
+    {
+      "id": "america-middle-moki",
+      "ok": true,
+      "seconds": 1548.459,
+      "peakRssKB": 1309748,
+      "unresolvedTerrainHeightSamples": 6735
+    },
+    {
+      "id": "america-middle-oak",
+      "ok": true,
+      "seconds": 108.421,
+      "peakRssKB": 1229276,
+      "unresolvedTerrainHeightSamples": 227
+    },
+    {
+      "id": "america-middle-angeles",
+      "ok": true,
+      "seconds": 1625.667,
+      "peakRssKB": 1210608,
+      "unresolvedTerrainHeightSamples": 8
+    }
+  ],
+  "timingReview": [
+    {
+      "name": "Glendora Mountain Road",
+      "beforeDegrees": [
+        40.01,
+        24.5
+      ],
+      "lengthBeforeM": 4173.3,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        74.6,
+        36.54
+      ],
+      "status": "manual-review",
+      "reason": "No nearby straight with 35 m grid approach and 40 m finish runout; original geography retained."
+    },
+    {
+      "name": "Little Tujunga Canyon Road",
+      "beforeDegrees": [
+        5.39,
+        9.22
+      ],
+      "lengthBeforeM": 4242.63,
+      "lineWindowsM": [
+        40,
+        80
+      ],
+      "corridorDegrees": [
+        5.39,
+        83.25
+      ],
+      "status": "manual-review",
+      "reason": "No nearby straight with 35 m grid approach and 40 m finish runout; original geography retained."
+    },
+    {
+      "name": "Hana Highway — Rainforest Bends",
+      "beforeDegrees": [
+        0,
+        0
+      ],
+      "lengthBeforeM": 7330.37,
+      "lineWindowsM": [
+        40,
+        80
+      ],
+      "corridorDegrees": [
+        6.61,
+        51.62
+      ],
+      "status": "manual-review",
+      "reason": "No nearby straight with 35 m grid approach and 40 m finish runout; original geography retained."
+    }
+  ],
+  "economy": {
+    "scenario": "All eleven main missions, no medals/objective cash; full fluids and 5% new damage to every component repaired after each race. Synthetic wear, not a driven playthrough.",
+    "carPrices": [
+      {
+        "pi": 300,
+        "price": 2400
+      },
+      {
+        "pi": 500,
+        "price": 4000
+      },
+      {
+        "pi": 700,
+        "price": 6400
+      },
+      {
+        "pi": 900,
+        "price": 9600
+      }
+    ],
+    "missions": [
+      {
+        "name": "Tower Hill Road",
+        "first": 850,
+        "repeat": 425,
+        "repair": 337,
+        "balance": 1013
+      },
+      {
+        "name": "Mount Washington Auto Road — point-to-point",
+        "first": 1500,
+        "repeat": 750,
+        "repair": 337,
+        "balance": 2176
+      },
+      {
+        "name": "Laurel Highlands Scenic Byway",
+        "first": 1350,
+        "repeat": 675,
+        "repair": 337,
+        "balance": 3189
+      },
+      {
+        "name": "Ohio River Crossing",
+        "first": 1350,
+        "repeat": 675,
+        "repair": 337,
+        "balance": 4202
+      },
+      {
+        "name": "Ozark Backroads",
+        "first": 1500,
+        "repeat": 750,
+        "repair": 337,
+        "balance": 5365
+      },
+      {
+        "name": "Data Center City",
+        "first": 1150,
+        "repeat": 575,
+        "repair": 337,
+        "balance": 6178
+      },
+      {
+        "name": "Historic Route 66",
+        "first": 1400,
+        "repeat": 700,
+        "repair": 337,
+        "balance": 7241
+      },
+      {
+        "name": "Pikes Peak Highway",
+        "first": 1200,
+        "repeat": 600,
+        "repair": 337,
+        "balance": 8104
+      },
+      {
+        "name": "Moki Dugway",
+        "first": 1550,
+        "repeat": 775,
+        "repair": 337,
+        "balance": 9317
+      },
+      {
+        "name": "Oak Creek Canyon",
+        "first": 1250,
+        "repeat": 625,
+        "repair": 337,
+        "balance": 10230
+      },
+      {
+        "name": "Angeles Crest Highway",
+        "first": 1250,
+        "repeat": 625,
+        "repair": 337,
+        "balance": 11143
+      }
+    ]
+  },
+  "featuredRewards": {
+    "raceway-lime-west-chicane": {
+      "part": "sport-brakes",
+      "brief": "Braking workshop: bring home a set of sport brakes."
+    },
+    "state-me": {
+      "part": "rally-suspension",
+      "brief": "Notch survivor: earn suspension for rougher roads."
+    },
+    "raceway-watkins-long": {
+      "part": "race-tires",
+      "brief": "Circuit shakedown: earn dry tarmac racing tires."
+    },
+    "raceway-vir-full": {
+      "part": "sport-intake",
+      "brief": "Long-course reward: a stronger intake for the next build."
+    },
+    "raceway-sebring-full": {
+      "part": "race-cooling",
+      "brief": "Endurance preparation: earn upgraded cooling."
+    },
+    "raceway-road-america-full": {
+      "part": "race-transmission",
+      "brief": "High-speed workshop: earn a race transmission."
+    },
+    "city-ok": {
+      "part": "sport-brakes",
+      "brief": "City precision: earn sport brakes."
+    },
+    "detour-squaw-creek": {
+      "part": "rally-differential",
+      "brief": "Gravel expedition: earn a rally differential."
+    },
+    "state-id": {
+      "part": "street-skid-plates",
+      "brief": "Backroad protection: earn underbody skid plates."
+    },
+    "detour-diamond-creek": {
+      "part": "offroad-suspension",
+      "brief": "Canyon expedition: earn offroad suspension."
+    },
+    "raceway-laguna-full": {
+      "part": "race-suspension",
+      "brief": "Corkscrew challenge: earn race suspension."
+    }
+  },
+  "limitations": [
+    "Medal targets are class-based planning estimates from road geometry and conditions, not measured driver or AI lap benchmarks.",
+    "Economy scenario applies synthetic damage/service costs; it is not a complete driven campaign.",
+    "Every catalogued event received road-mesh/contact, ordered checkpoint/projection, and dependency checks. Full terrain/worker load validation covered the eleven main missions, plus focused Burlington/Miami regressions.",
+    "Terrain refinement may reach its resolution limit at some off-road samples; successful load checks do not imply every terrain approximation is exact.",
+    "Real road geometry was preserved where timing-line audits found no nearby straight. Those entries remain manual-review items.",
+    "Interactive mobile/browser presentation and human medal-time calibration remain playtest checks."
+  ],
+  "passed": true
+}

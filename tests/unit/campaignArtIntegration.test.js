@@ -6,6 +6,7 @@ import {createRaceStaticColliderWorld} from '../../src/racing/RaceSimulation.js'
 import {buildRaceFencePlacements} from '../../src/racing/RaceFences.js';
 import {authoredFreeRaceArtwork,placedSceneryArtRefs,validateArtworkIntent,campaignArtworkRacePaths,assertCampaignImportInventory,createSavedDoodadResolver,assertSceneryArtwork} from '../helpers/campaignArtworkValidation.mjs';
 import {collectSceneryArtRefs} from '../../src/racing/RaceSceneryAssets.js';
+import {roadsideKind,softenRoadsideDefinition} from '../../tools/campaigns/soft_roadside.mjs';
 import {applyCampaignArtCoverage} from '../../tools/campaigns/campaign_art_coverage.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -168,7 +169,13 @@ test('campaign scenery covers the corridor and terrain has continuous artwork in
    const original=read(root+manifest.folders.doodads[p.campaignAppearance.originalRef]).doodad;
    assert.ok(p.previewDoodad.hitboxWidthM>0);
    assert.ok(p.previewDoodad.hitboxWidthM<=Math.max(original.hitboxWidthM,p.campaignAppearance.originalWidthM));
-   assert.deepEqual(p.previewDoodad.defaultRule,original.defaultRule);
+   const expected = structuredClone(original);
+   softenRoadsideDefinition(expected,p.campaignAppearance.originalRef);
+   if(roadsideKind(p.doodadRef)==='grass'){
+    assert.equal(p.previewDoodad.defaultRule.behavior,'flatten');
+    assert.equal(p.previewDoodad.defaultRule.speedDrainPercent,0);
+    assert.deepEqual(p.previewDoodad.defaultRule.damage,{panels:0,suspension:0,engine:0});
+   }else assert.deepEqual(p.previewDoodad.defaultRule,expected.defaultRule);
   }
  }
 });
@@ -217,6 +224,14 @@ test('expanded landmarks use reviewed regions and stay outside the driving corri
   const r=read(root+entry.documentPath).race,editor=new RaceEditor({});editor.applyLoadedRaceDocument(r);
   const fences=new Map();
   for(const p of r.scenery.filter(p=>p.artRef?.startsWith('expanded-'))){
+   if(p.ecologyLayer==='verge' && roadsideKind(p.doodadRef)==='grass'){
+    assert.ok(p.heightM<=.45);
+    const grass=p.previewDoodad || read(root+manifest.folders.doodads[p.doodadRef]).doodad;
+    assert.equal(grass.defaultRule.behavior,'flatten');
+    assert.equal(grass.defaultRule.speedDrainPercent,0);
+    assert.deepEqual(grass.defaultRule.damage,{panels:0,suspension:0,engine:0});
+    continue;
+   }
    const a=expanded.find(a=>a.name===p.artRef);
    assert.ok(a?.placements.some(plan=>plan.race===key),p.artRef+' in '+entry.name);
    if(a.kind==='fence'){

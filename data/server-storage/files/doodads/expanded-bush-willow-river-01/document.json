@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "race-doodad",
-  "savedAt": 1794370809223,
+  "savedAt": 1794860932872,
   "doodad": {
     "id": "campaign-expanded-bush-willow-river-01",
     "name": "expanded-bush-willow-river-01",
@@ -19,7 +19,7 @@
     "weightKg": 5,
     "defaultRule": {
       "behavior": "flatten",
-      "speedDrainPercent": 1,
+      "speedDrainPercent": 0.2,
       "damage": {
         "panels": 0,
         "suspension": 0,

@@ -47,7 +47,7 @@ if(id){
  }
  let phase='load';const started=Date.now();
  try {
-  const p=await buildRaceTransferPackage(doc.race,{includeRaceDocument:true,includeArtAssets:false,reportProgress:(_p,next)=>{phase=next;if(process.argv.includes('--progress'))console.error(`${stage.id}: ${phase} (${((Date.now()-started)/1000).toFixed(1)}s)`);}});
+  const p=await buildRaceTransferPackage(doc.race,{includeRaceDocument:true,includeArtAssets:false,reportProgress:(_p,next,detail)=>{phase=next;if(process.argv.includes('--progress'))console.error(`${stage.id}: ${phase} (${((Date.now()-started)/1000).toFixed(1)}s)${detail?' '+JSON.stringify(detail):''}`);}});
   assert.ok(p.packedSampler.positions.length>0,'physics triangles');
   assert.ok(p.packedTerrain.positions.length>0,'render triangles');
   assert.ok(p.header.routeLength>0,'timed route');

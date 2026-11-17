@@ -1,3 +1,4 @@
+import {startCampaignChallenge,updateCampaignSectors} from '../garage/CampaignChallenges.js';
 import {triangulateRaceSurfaceQuad} from '../racing/RaceTerrainClipping.js';
 import {vehicleFeedbackRows} from '../racing/RaceVehicleFeedback.js';
 import {prepareSkyboxTexture} from '../racing/RaceSkyboxTexture.js';
@@ -5,7 +6,7 @@ import {campaignConditionSnapshot,campaignRunSummary} from '../garage/CampaignOb
 import {awardCampaignRace} from '../garage/CampaignEconomy.js';
 import {collectSceneryArtRefs} from '../racing/RaceSceneryAssets.js';
 import {timingLine,timingLineArtRefs,buildTimingLineDecals} from '../racing/RaceTimingLines.js';
-import {routeProjectionScore} from '../racing/RaceRouteProgress.js';
+import {routeProjectionScore,isRaceRouteLoopClosed} from '../racing/RaceRouteProgress.js';
 import {restoreRaceDrivingPreferences,captureRaceDrivingPreferences} from '../racing/RaceDrivingPreferences.js';
 import {joinRaceAtGradeCrossings} from '../racing/RaceAtGradeJunctions.js';
 import { raceLineGraphic, distantRaceLineGraphic, RACE_LINE_DEPTH_M } from '../racing/RaceLineGraphics.js';
@@ -1498,16 +1499,9 @@ export default class RaceEditor {
   }
 
   isSelectedRaceLoopClosed() {
-    const points = this.getRaceEndpointPoints();
-    if (points.length < 2) return false;
-    const first = points[0];
-    const last = points[points.length - 1];
-    const closeDistance = Math.hypot(
-      Number(last.x || 0) - Number(first.x || 0),
-      Number(last.z || 0) - Number(first.z || 0)
-    );
-    const snapRange = Math.max(1.8, Math.min(this.getRaceRoadHalfWidthWorld() * 0.18, this.getRaceCarWorldWidth() * 2.4));
-    return closeDistance <= snapRange;
+    return isRaceRouteLoopClosed(this.getRaceEndpointPoints(),{
+      roadWidthM:this.getRaceRoadHalfWidthWorld()*2,carWidthM:this.getRaceCarWorldWidth()
+    });
   }
 
   getRaceEndpointPoints() {
@@ -11088,7 +11082,7 @@ export default class RaceEditor {
     return (this.selectedRace?.competition?.aiDrivers || []).filter((driver) => driver.enabled !== false).length;
   }
 
-  collectRaceCarArtRefs(car = null) {
+  collectRaceCarArtRefs(car = null, { includeSmoke = true } = {}) {
     const refs = new Set();
     const add = (value) => {
       const clean = String(value || '').trim();
@@ -11108,7 +11102,7 @@ export default class RaceEditor {
     add(car.art.brakeLightArtRef);
     getCarAngleArtRefs(car).forEach(add);
     getCarFxArtRefs(car).forEach(add);
-    carSmokeArtRefs(car).forEach(add);
+    if (includeSmoke) carSmokeArtRefs(car).forEach(add);
     gaugeArtRefs(car).forEach(add);
     addFrameEntry(car.art.tireSurfaces?.tread);
     addFrameEntry(car.art.tireSurfaces?.wheel);
@@ -11124,7 +11118,7 @@ export default class RaceEditor {
     return [...refs];
   }
 
-  collectSelectedRaceArtRefs() {
+  collectSelectedRaceArtRefs({ includeSmoke = true } = {}) {
     const race = this.selectedRace || {};
     const refs = new Set();
     const add = (value) => {
@@ -11146,7 +11140,7 @@ export default class RaceEditor {
       add(car.art.brakeLightArtRef);
       getCarAngleArtRefs(car).forEach(add);
     getCarFxArtRefs(car).forEach(add);
-    carSmokeArtRefs(car).forEach(add);
+    if (includeSmoke) carSmokeArtRefs(car).forEach(add);
     gaugeArtRefs(car).forEach(add);
       addFrameEntry(car.art.tireSurfaces?.tread);
       addFrameEntry(car.art.tireSurfaces?.wheel);
@@ -11176,7 +11170,9 @@ export default class RaceEditor {
     collectSceneryArtRefs(race, ref => this.loadRaceDoodadDocument(ref)).forEach(add);
     (race.decals || []).forEach((decal) => add(decal?.artRef));
     timingLineArtRefs(race).forEach(add);
-    Object.values(race.tireFx || {}).forEach((settings) => add(settings?.artRef));
+    Object.entries(race.tireFx || {}).forEach(([effect, settings]) => {
+      if (includeSmoke || effect === 'asphaltSkid') add(settings?.artRef);
+    });
     Object.values(race.road?.tileMap?.cells || {}).forEach((cell) => {
       add(cell?.artRef || cell?.tileArtRef);
     });
@@ -11309,10 +11305,23 @@ export default class RaceEditor {
   }
 
   getRequiredRaceArtworkError(missingArtRefs = []) {
+    if (!Array.isArray(missingArtRefs) || !missingArtRefs.length) return null;
+    // Airborne tire effects already have a procedural renderer fallback. They
+    // must not block a race when an animation is missing or its download fails.
+    // Subtract essential uses so an asset shared with a road/car stays required.
+    const essential = new Set(this.collectSelectedRaceArtRefs({ includeSmoke: false }));
+    const smoke = new Set(this.collectSelectedRaceArtRefs().filter(ref => !essential.has(ref)));
+    // Travel preparation happens before the incoming race becomes selected.
+    // Include the pending player car and opponent documents in that phase.
+    for (const car of [this.raceLoadingCar, ...(this.project?.cars || [])]) {
+      carSmokeArtRefs(car).forEach(ref => smoke.add(ref));
+      this.collectRaceCarArtRefs(car, { includeSmoke: false }).forEach(ref => essential.add(ref));
+    }
+    const optional = new Set([...smoke].filter(ref => !essential.has(ref)));
     const missing = [...new Set(
       (Array.isArray(missingArtRefs) ? missingArtRefs : [])
         .map((value) => String(value || '').trim())
-        .filter(Boolean)
+        .filter(ref => ref && !optional.has(ref))
     )];
     if (!missing.length) return null;
     const error = new Error(`Required artwork could not load: ${missing.join(', ')}`);
@@ -11966,6 +11975,7 @@ export default class RaceEditor {
     textureWorldM = this.getRaceGroundTextureBaseWorldM(),
     buildSurfaceSampler = true,
     retainTerrainCells = true,
+    collectTopologyStats = true,
     validate = true
   } = {}) {
     const startMs = this.getNowMs();
@@ -11980,6 +11990,7 @@ export default class RaceEditor {
       renderDebug
     });
     if (this.raceWorldBakeCache?.key === key
+      && (!collectTopologyStats || this.raceWorldBakeCache.mesh?.stats?.topologyAudited!==false)
       && (this.raceWorldBakeCache.terrainCellsRetained !== false) === (retainTerrainCells !== false)) {
       return this.raceWorldBakeCache;
     }
@@ -12077,6 +12088,7 @@ export default class RaceEditor {
       });
       const mesh = buildRaceCanonicalSurfaceMesh({
         surfaceBake: terrainSurfaceBake,
+        collectTopologyStats,
         terrainCells: corridorTerrain.terrainCells || [],
         runtimeType,
         elevationScaleM: RACE_THREE_ELEVATION_M
@@ -13710,7 +13722,7 @@ export default class RaceEditor {
       speedMps: initialSpeedMps,
       countdownRemainingMs: options?.carEditorPreview === true
         ? 0
-        : (raceStart.countdown ? 4000 : 0),
+        : (raceStart.countdown ? 6000 : 0),
       rollingStart: raceStart.rollingStart,
       rollingStartSpeedMps: raceStart.rollingStartSpeedMps,
       firedTriggerIds: new Set(),
@@ -13818,6 +13830,7 @@ export default class RaceEditor {
     };
     this.playtestSession.campaignStartCondition=campaignConditionSnapshot(this.playtestSession.mechanical);
     this.playtestSession.campaignRecoveries=0;
+    startCampaignChallenge(this.playtestSession,this.selectedRace,car,this.game.items?.garage?.progress);
     prepareManagedRaceScenery(this.ensureRaceScenery(), this.playtestSession);
     const drivingPlan = options?.carEditorPreview ? null : prepareRaceAiRoadPlan(this);
     this.playtestSession.drivingAssists = {plan: drivingPlan};
@@ -18621,7 +18634,7 @@ export default class RaceEditor {
     rawDistances.push(routeEnd);
     const sorted = rawDistances
       .filter((distance) => Number.isFinite(distance))
-      .map((distance) => Math.round(clamp(distance, 0, routeEnd) * 100) / 100)
+      .map((distance) => Math.min(routeEnd, Math.round(clamp(distance, 0, routeEnd) * 100) / 100))
       .sort((a, b) => a - b);
     const unique = [];
     for (const distance of sorted) {
@@ -19860,6 +19873,7 @@ export default class RaceEditor {
   recordRaceGhostSample() {
     const session = this.playtestSession;
     if (!session?.running) return;
+    updateCampaignSectors(session);
     const samples = session.ghostRecording || [];
     const elapsedMs = Number(session.elapsedMs || 0);
     const last = samples.at(-1);
@@ -20532,9 +20546,10 @@ export default class RaceEditor {
       ...(this.playtestSession.mechanicalMissionSuccess===false?[{id:'mission-failed',label:'Mechanical mission incomplete',value:'Salvage / condition requirement unmet',disabled:true}]:[]),
       ...(this.selectedRace?.campaign?.scoring==='drift'?[{id:'race-result-drift',label:'Drift score',value:String(Math.floor(this.playtestSession.driftScore?.points||0)),disabled:true}]:[]),
       {id:'race-result-time',label:'Finish time',value:(Number(this.playtestSession.elapsedMs||0)/1000).toFixed(2)+' s',disabled:true},
-      ...(this.playtestSession.campaignReward?[{id:'race-result-scrap',label:'Scrap earned',value:String(this.playtestSession.campaignReward.scrap),disabled:true},...(this.playtestSession.campaignReward.partName?[{id:'race-result-part',label:'Part won',value:this.playtestSession.campaignReward.partName,disabled:true}]:[])]:[]),
+      ...(this.playtestSession.campaignReward?[{id:'race-result-scrap',label:'Scrap earned',value:String(this.playtestSession.campaignReward.scrap)+(this.playtestSession.campaignReward.medalBonus?` (+${this.playtestSession.campaignReward.medalBonus} medal)` : ''),disabled:true},...(this.playtestSession.campaignReward.partName?[{id:'race-result-part',label:'Part won',value:this.playtestSession.campaignReward.partName,disabled:true}]:[])]:[]),
       ...(this.playtestSession.campaignReward?.objectiveStatus?[{id:'race-result-objective',label:this.playtestSession.campaignReward.objectiveStatus,value:this.playtestSession.campaignReward.objectiveBonus?`+${this.playtestSession.campaignReward.objectiveBonus} scrap`:'',disabled:true}]:[]),
-      ...(this.playtestSession.campaignReward?.bestTimeMs?[{id:'race-result-best',label:this.playtestSession.campaignReward.personalBest?'New personal best':'Car best',value:(this.playtestSession.campaignReward.bestTimeMs/1000).toFixed(2)+' s',disabled:true}]:[]),
+      ...(this.playtestSession.campaignReward?.bestTimeMs?[{id:'race-result-best',label:this.playtestSession.campaignReward.record?(this.playtestSession.campaignReward.recordBest?'Class best!':'Class best'):(this.playtestSession.campaignReward.personalBest?'New personal best':'Car best'),value:(this.playtestSession.campaignReward.targets?.kind==='score'?`${Math.floor(this.playtestSession.campaignReward.record?.score||0)} pts`:((this.playtestSession.campaignReward.record?.timeMs||this.playtestSession.campaignReward.bestTimeMs)/1000).toFixed(2)+' s')+(this.playtestSession.campaignReward.medal?' · '+this.playtestSession.campaignReward.targets.class+' '+this.playtestSession.campaignReward.medal:''),disabled:true}]:[]),
+      ...(this.playtestSession.campaignReward?.sectorDeltas?.length?[{id:'race-result-sectors',label:'Sector splits vs best',value:this.playtestSession.campaignReward.sectorDeltas.map((n,i)=>`S${i+1} ${n>=0?'+':''}${(n/1000).toFixed(1)}`).join(' · '),disabled:true}]:[]),
       {id:'race-results-continue',label:'Continue',value:'',onClick:()=>this.finishPlaytest()}
     ];
     if(this.raceInput.pauseMenuMode==='vehicle-feedback')return [...vehicleFeedbackRows(this.playtestSession),{id:'vehicle-feedback-back',label:'Back',value:'',onClick:()=>this.backRacePauseMenu()}];
@@ -25097,7 +25112,9 @@ export default class RaceEditor {
     const lapText = routeRuntimeType === 'circuit'
       ? `Lap ${session.lap}/${this.selectedRace.laps || 1}`
       : `${Math.round(clamp((session.distance || 0) / Math.max(1, session.routeLength || 1), 0, 1) * 100)}%`;
-    ctx.fillText(lapText, panel.x + panel.w - 5, panel.y + 20);
+    const split=session.campaignChallenge?.split;
+    const splitText=split&&session.elapsedMs<=split.untilMs?`S${split.number} ${split.deltaMs>=0?'+':''}${(split.deltaMs/1000).toFixed(1)}s · `:'';
+    ctx.fillText(splitText+lapText, panel.x + panel.w - 5, panel.y + 20);
   }
 
   drawRaceTachPanel(ctx, bounds, { speedMph = 0 } = {}) {
