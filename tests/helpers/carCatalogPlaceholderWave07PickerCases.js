@@ -1,3 +1,4 @@
+import {selectCatalogTarget} from './carCatalogBoundedPickerSetup.js';
 import {test,expect} from '@playwright/test';
 import fs from 'node:fs';
 
@@ -12,7 +13,7 @@ for(const target of targets)for(const mobile of [false,true])test(`${target.name
  const snapshot=()=>page.evaluate(async(target)=>{const g=window.__game,p=g.menuPlayer,{showroomPage}=await import('/src/menus/MenuGarageWidgets.js'),e=p.flow.screen.elements.find(e=>e.type==='car-showroom'),choices=p.resources.choices('cars',p.flow.document,p.flow.parameters),shown=showroomPage(choices,p.flow.parameters[e.binding],e.maxVisible),car=p.resources.car(p.flow.parameters.carRef);const {getRaceArtSpriteCanvasShared}=await import('/src/ui/shared/raceArtSpriteCanvas.js');const refs=car?p.resources.exteriorArtRefs(car):[];return {selected:p.flow.parameters.carRef,start:shown.start,visible:shown.entries.map(e=>e.value),targetIndex:choices.findIndex(e=>e.value===target.name),selectedIndex:shown.index,loadedCars:p.resources.cars.size,totalChoices:choices.length,carId:car?.id,art:refs.map(ref=>({ref,ready:!!getRaceArtSpriteCanvasShared(ref,{frameIndex:0,cache:g.carEditor.raceArtSpriteCache,allowSyncFetch:false})})),errors:[...p.resources.errors]};},target);
  const first=await snapshot();expect(first.start).toBe(0);expect(first.visible).toContain(first.selected);expect(first.art.length).toBeGreaterThan(0);expect(first.art.every(a=>a.ready)).toBe(true);expect(first.loadedCars).toBeLessThan(first.totalChoices);await page.screenshot({path:info.outputPath('picker-initial.png')});
  expect(first.targetIndex).toBeGreaterThan(3);
- for(let i=first.selectedIndex;i<first.targetIndex;i++){await page.keyboard.press('ArrowRight');await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));await menuReady();}
+ await selectCatalogTarget(page,{targetName:target.name,mobile,menuReady,info});
  // car() can start an asynchronous garage build after the request queue empties.
  await expect.poll(async()=>{const s=await snapshot();return {id:s.carId,artReady:s.art.length>0&&s.art.every(a=>a.ready)};},{timeout:90000}).toEqual({id:target.id,artReady:true});
  const later=await snapshot();expect(later.selected).toBe(target.name);expect(later.start).toBeGreaterThan(0);expect(later.visible).toContain(target.name);expect(later.carId).toBe(target.id);expect(later.art.every(a=>a.ready)).toBe(true);expect(later.errors).toEqual([]);await page.screenshot({path:info.outputPath('picker-later.png')});fs.writeFileSync(info.outputPath('picker.json'),JSON.stringify({first,later},null,2));

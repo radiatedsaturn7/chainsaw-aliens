@@ -74,3 +74,6 @@ import "../helpers/tutsanStaticPickerCases.js";
 import "../helpers/carCatalogPlaceholderWave07PickerCases.js";
 
 import "../helpers/carCatalogPlaceholderWave08PickerCases.js";
+
+// Full navigation coverage remains separate from each car's bounded setup and real drive.
+import '../helpers/carCatalogPickerTraversalCases.js';

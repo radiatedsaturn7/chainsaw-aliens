@@ -155,3 +155,6 @@ import "../helpers/carCatalogPlaceholderWave06Cases.js";
 import "../helpers/carCatalogPlaceholderWave07Cases.js";
 
 import "../helpers/carCatalogPlaceholderWave08Cases.js";
+
+// Keep bounded picker planning regressions in the existing Vehicle Catalog unit gate.
+import '../helpers/carCatalogPickerPlanCases.js';
