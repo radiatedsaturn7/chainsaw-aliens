@@ -1,0 +1,52 @@
+{
+  "base": "e2f31c64058816a3b362e038c466a517e54af4ec",
+  "historicalSlots": 660,
+  "localNonSystemEntries": 229,
+  "systemTemplates": 3,
+  "sharedPlaceholders": 18,
+  "previousFinishedReported": 210,
+  "echoOriginalArtAuthoredAwaitingDrive": 1,
+  "newAuthored": 3,
+  "newDriveVerified": 0,
+  "newOriginalArtFinished": 0,
+  "registeredPickerCases": 6,
+  "entries": [
+    {
+      "id": "storksbill-r-1987",
+      "name": "Storksbill R 1987",
+      "candidateId": "nissan-skyline-gts-r-hr31-1987-roster-candidate",
+      "documentSha256": "4df3be0e4f07d521dc98ae1f906827c73956ac3f694762e85b87fd761f198409"
+    },
+    {
+      "id": "shepherds-purse-1969",
+      "name": "Shepherds Purse 1969",
+      "candidateId": "nissan-fairlady-z-432-1969-roster-candidate",
+      "documentSha256": "13cc8c1f744e13ae0510cac6fbdf11220f205f9e316d93e288ef5211f722078f"
+    },
+    {
+      "id": "ladyfern-r-1990",
+      "name": "Ladyfern R 1990",
+      "candidateId": "nissan-pulsar-gti-r-1990-roster-candidate",
+      "documentSha256": "51fb019e694185689994fcc103543e4ddf447fe5bb3310bba2c27ce16f2a340a"
+    }
+  ],
+  "newUnitTested": 3,
+  "units": {
+    "passed": 88,
+    "failed": 0,
+    "skipped": 0
+  },
+  "priorDocumentsByteIdentical": true,
+  "browser": "No usable sandbox before page launch with chromiumSandbox:true; zero certified drives",
+  "evidenceSha256": {
+    "units.log": "52f0bd791de14f82bc94d7d2a26786bcce0cae5723171d9e6383b8e30278c050",
+    "browser.log": "881179865562d4e946c80f96a1afdd0ca87768e622ee4627dc56e18ccfca8b4e",
+    "discovery.log": "01febda8191f038bd211f005c20c0407f8254cde9eeb2cf3c7cfd024f4b382c9"
+  },
+  "manifestValidation": {
+    "documents": 2229,
+    "assets": 16,
+    "passed": true
+  },
+  "allAdditionPickerCasesRetained": 38
+}

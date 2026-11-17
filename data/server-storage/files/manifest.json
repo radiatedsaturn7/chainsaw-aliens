@@ -1513,7 +1513,10 @@
       "Pearlwort 1987": "cars/Pearlwort 1987/document.json",
       "Chickweed 1200 1963": "cars/Chickweed 1200 1963/document.json",
       "Glasswort 181 1973": "cars/Glasswort 181 1973/document.json",
-      "Tutsan 2003": "cars/Tutsan 2003/document.json"
+      "Tutsan 2003": "cars/Tutsan 2003/document.json",
+      "Storksbill R 1987": "cars/Storksbill R 1987/document.json",
+      "Shepherds Purse 1969": "cars/Shepherds Purse 1969/document.json",
+      "Ladyfern R 1990": "cars/Ladyfern R 1990/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
