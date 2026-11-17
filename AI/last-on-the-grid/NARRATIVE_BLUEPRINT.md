@@ -1,7 +1,7 @@
 # Last on the Grid — Narrative Blueprint
 **Milestone 1 · v0.1 · 2026-11-17 · FOR REVIEW, NOT FINAL SCREENPLAY**
 
-This document is the navigation hub. Read the [Narrative Constitution](NARRATIVE_CONSTITUTION.md), then the eleven [Chapter Treatments](CHAPTER_TREATMENTS/01-tower-hill.md). Character arcs, reveal map, motifs and the literary companion are linked below.
+This document is the navigation hub. Read the [Narrative Constitution](NARRATIVE_CONSTITUTION.md), then the eleven [Chapter Treatments](CHAPTER_TREATMENTS/README.md). Character arcs, reveal map, motifs and the literary companion are linked below.
 
 ## One-paragraph treatment
 In 2994, Robtergeist and Cait drive through an America whose cities and machines have mostly outlived human life. Cait has spent a long time following routines she never consciously chose. She wants to see the Pacific for herself; Rob, who finds his worth in being needed, agrees to take her. Along the route they encounter living creatures, unanswered signals, automated labor, uploaded human minds and other androids, each offering a competing picture of companionship. Cait's independence grows; the skills Rob uses to justify his place beside her become less essential. He wants her to say she loves him. She cares, demonstrably, but refuses a declaration she does not understand well enough to make. The trip tests both—not with a final lecture about love, but with choices that cannot be made for one another.
