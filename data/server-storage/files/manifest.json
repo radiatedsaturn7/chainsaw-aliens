@@ -1499,7 +1499,11 @@
       "Starflower 25 2024": "cars/Starflower 25 2024/document.json",
       "Briar Trail 2024": "cars/Briar Trail 2024/document.json",
       "Snowbell GT 2023": "cars/Snowbell GT 2023/document.json",
-      "Arrowleaf GT 2013": "cars/Arrowleaf GT 2013/document.json"
+      "Arrowleaf GT 2013": "cars/Arrowleaf GT 2013/document.json",
+      "Heatherbell S 1987": "cars/Heatherbell S 1987/document.json",
+      "Bogbean 2020": "cars/Bogbean 2020/document.json",
+      "Sea Holly 2024": "cars/Sea Holly 2024/document.json",
+      "Thornapple ACR 2016": "cars/Thornapple ACR 2016/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
