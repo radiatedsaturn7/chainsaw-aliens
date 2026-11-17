@@ -1,3 +1,4 @@
+import {calculateCarPerformance} from '../racing/CarPerformance.js';
 import {raceRewardQuote} from '../garage/CampaignEconomy.js';
 import {hydrateServerStorage} from '../ui/serverStorage.js';
 import {planAutoUpgrade,garageCarPerformance} from '../garage/GarageAutoUpgrade.js';
@@ -95,10 +96,12 @@ export class MenuResources {
   raceReward(ref){
     const race=this.race(ref);if(!race)return null;
     this.raceRewardCache ||= new Map();
-    const revision=`${this.garage?.revision}:${this.garage?.items.revision}`;
+    const carRef=this.game?.menuProgress?.selectedGameCar;
+    const car=carRef?this.car(carRef):null;
+    const revision=`${this.garage?.revision}:${this.garage?.items.revision}:${carRef}:${!!car}`;
     const cached=this.raceRewardCache.get(ref);
     if(cached?.race===race&&cached.revision===revision)return cached.quote;
-    const quote=raceRewardQuote(ref,race,this.garage?.progress);
+    const quote=raceRewardQuote(ref,race,this.garage?.progress,car?calculateCarPerformance(car).points:500,carRef);
     this.raceRewardCache.set(ref,{race,revision,quote});return quote;
   }
   race(ref){

@@ -65,12 +65,9 @@ export function updateCodriverEvents(state,session,dt,{enabled,paused,intro,acti
     state.damageBands[part]=band;
   }
   if(!enabled||paused){stopCodriver(state);state.pendingChatter=null;return;}
-  if(intro){
-    // The showcase supplies the first two beats; only 3, 2, 1 are HUD numbers.
-    const beat=Number(session.raceIntro?.elapsed||0)<1.8?5:4;
-    if(beat!==state.countdownBeat&&speakCodriver(state,String(beat),'countdown'))state.countdownBeat=beat;
-    return;
-  }
+  // Camera shots have their own presentation timing. All spoken numbers must
+  // use the same race clock so five/four cannot linger between camera cuts.
+  if(intro)return;
   const remaining=Number(session.countdownRemainingMs)||0;
   if(remaining>0){
     const beat=remaining>1000?Math.ceil((remaining-1000)/1000):0;

@@ -14,8 +14,9 @@ export function layerRoadside(race,{length,pose,project,ground,hasGround,definit
  const refs=[...new Set(props.map(p=>p.doodadRef))];
  const arid=refs.some(r=>/desert|sandstone|cactus|red-rock/.test(r));
  const snowy=refs.filter(r=>/snow|frozen|alpine/.test(r)).length>refs.length*.35;
- const low=(snowy?['expanded-grass-clump','frozen-bush-01']:arid?['expanded-grass-little-bluestem-01','dry-scrub-bush-01']:['expanded-grass-roadside-weeds-01','expanded-grass-woodoats-01','expanded-fern-bracken-dry-01']).filter(r=>definition(r));
- const shrub=(snowy?['frozen-bush-01','frozen-bush-02']:arid?['dry-scrub-bush-01','dry-scrub-bush-02','moki-dugway-desert-scrub']:['expanded-bush-blueberry-01','expanded-bush-mountain-laurel-01','expanded-bush-blackberry-bramble-01']).filter(r=>definition(r));
+ const pineRidge=race.source?.sceneryPalette==='pine-ridge';
+ const low=(pineRidge?['expanded-grass-little-bluestem-01','expanded-grass-little-bluestem-02','expanded-grass-roadside-weeds-01']:snowy?['expanded-grass-clump']:arid?['expanded-grass-little-bluestem-01']:['expanded-grass-roadside-weeds-01','expanded-grass-woodoats-01','expanded-fern-bracken-dry-01']).filter(r=>definition(r));
+ const shrub=(pineRidge?['dry-scrub-bush-01','dry-scrub-bush-02']:snowy?['frozen-bush-01','frozen-bush-02']:arid?['dry-scrub-bush-01','dry-scrub-bush-02','moki-dugway-desert-scrub']:['expanded-bush-blueberry-01','expanded-bush-mountain-laurel-01','expanded-bush-blackberry-bramble-01']).filter(r=>definition(r));
  const trees=refs.filter(r=>/tree|pine|spruce|oak|birch/.test(r)),rocks=refs.filter(r=>/rock|boulder/.test(r));
  const buckets=new Map(),size=12;
  const insert=(p,r)=>{const key=`${Math.floor(p.x/size)},${Math.floor(p.z/size)}`;if(!buckets.has(key))buckets.set(key,[]);buckets.get(key).push({x:p.x,z:p.z,r});};

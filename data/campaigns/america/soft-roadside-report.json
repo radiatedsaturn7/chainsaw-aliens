@@ -1,0 +1,1989 @@
+{
+  "changedDefinitions": [
+    "frozenbush",
+    "frozen-bush-01",
+    "frozen-bush-02",
+    "frozen-bush-03",
+    "ohio-river-crossing-flood-marker",
+    "roadside-snow-depth-marker-pole",
+    "dry-scrub-bush-01",
+    "dry-scrub-bush-02",
+    "dry-scrub-bush-03",
+    "expanded-grass-clump",
+    "expanded-bush-blackberry-bramble-01",
+    "expanded-bush-blueberry-01",
+    "expanded-bush-dogwood-sapling-01",
+    "expanded-bush-mountain-laurel-01",
+    "expanded-bush-willow-river-01",
+    "expanded-bush-winterberry-01",
+    "expanded-fern-bracken-dry-01",
+    "expanded-fern-christmas-01",
+    "expanded-grass-little-bluestem-01",
+    "expanded-grass-little-bluestem-02",
+    "expanded-grass-roadside-weeds-01",
+    "expanded-grass-sedge-wetland-01",
+    "expanded-grass-woodoats-01"
+  ],
+  "races": [
+    {
+      "name": "Col de Turini",
+      "changed": true,
+      "grassReplacements": 3638,
+      "overridesUpdated": 254,
+      "markers": 158,
+      "softPlants": 10935
+    },
+    {
+      "name": "Daytona Tri-Oval",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 47,
+      "markers": 0,
+      "softPlants": 2111
+    },
+    {
+      "name": "Demo Track",
+      "changed": false,
+      "grassReplacements": 0,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 0
+    },
+    {
+      "name": "Mount Washington Auto Road — point-to-point",
+      "changed": true,
+      "grassReplacements": 20273,
+      "overridesUpdated": 2095,
+      "markers": 5,
+      "softPlants": 59096
+    },
+    {
+      "name": "Mount Washington Auto Road — point-to-point Copy",
+      "changed": true,
+      "grassReplacements": 42,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 63627
+    },
+    {
+      "name": "Nurburgring Nordschleife",
+      "changed": true,
+      "grassReplacements": 9,
+      "overridesUpdated": 334,
+      "markers": 0,
+      "softPlants": 13915
+    },
+    {
+      "name": "Ouninpohja",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 200,
+      "markers": 0,
+      "softPlants": 12239
+    },
+    {
+      "name": "Studio Sprint",
+      "changed": false,
+      "grassReplacements": 0,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 0
+    },
+    {
+      "name": "Studio Sprint Copy",
+      "changed": false,
+      "grassReplacements": 0,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 0
+    },
+    {
+      "name": "Studio Sprint2",
+      "changed": false,
+      "grassReplacements": 0,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 0
+    },
+    {
+      "name": "Tower Hill Road",
+      "changed": true,
+      "grassReplacements": 3924,
+      "overridesUpdated": 11,
+      "markers": 0,
+      "softPlants": 10750
+    },
+    {
+      "name": "WeatherTech Raceway Laguna Seca",
+      "changed": true,
+      "grassReplacements": 1,
+      "overridesUpdated": 27,
+      "markers": 0,
+      "softPlants": 2109
+    },
+    {
+      "name": "buse1",
+      "changed": false,
+      "grassReplacements": 0,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 0
+    },
+    {
+      "name": "p1",
+      "changed": false,
+      "grassReplacements": 0,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 0
+    },
+    {
+      "name": "p2loadtest",
+      "changed": false,
+      "grassReplacements": 0,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 0
+    },
+    {
+      "name": "Laurel Highlands Scenic Byway",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 195,
+      "markers": 0,
+      "softPlants": 10741
+    },
+    {
+      "name": "Ohio River Crossing",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 114,
+      "markers": 7,
+      "softPlants": 9121
+    },
+    {
+      "name": "Ozark Backroads",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 126,
+      "markers": 0,
+      "softPlants": 10451
+    },
+    {
+      "name": "Data Center City",
+      "changed": true,
+      "grassReplacements": 2027,
+      "overridesUpdated": 74,
+      "markers": 0,
+      "softPlants": 6533
+    },
+    {
+      "name": "Historic Route 66",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 327,
+      "markers": 0,
+      "softPlants": 8799
+    },
+    {
+      "name": "Pikes Peak Highway",
+      "changed": true,
+      "grassReplacements": 2188,
+      "overridesUpdated": 64,
+      "markers": 0,
+      "softPlants": 6724
+    },
+    {
+      "name": "Moki Dugway",
+      "changed": true,
+      "grassReplacements": 2157,
+      "overridesUpdated": 114,
+      "markers": 0,
+      "softPlants": 5985
+    },
+    {
+      "name": "Oak Creek Canyon",
+      "changed": true,
+      "grassReplacements": 2420,
+      "overridesUpdated": 127,
+      "markers": 0,
+      "softPlants": 6558
+    },
+    {
+      "name": "Angeles Crest Highway",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 112,
+      "markers": 0,
+      "softPlants": 6611
+    },
+    {
+      "name": "RI 116 — North Smithfield Scituate",
+      "changed": true,
+      "grassReplacements": 2061,
+      "overridesUpdated": 52,
+      "markers": 0,
+      "softPlants": 6875
+    },
+    {
+      "name": "Thompson Speedway — 1.7-mile road course",
+      "changed": true,
+      "grassReplacements": 613,
+      "overridesUpdated": 7,
+      "markers": 0,
+      "softPlants": 1945
+    },
+    {
+      "name": "I-95 — Attleboro to Warwick curves",
+      "changed": true,
+      "grassReplacements": 3743,
+      "overridesUpdated": 64,
+      "markers": 0,
+      "softPlants": 12419
+    },
+    {
+      "name": "RI 102 — Victory Highway",
+      "changed": true,
+      "grassReplacements": 2277,
+      "overridesUpdated": 56,
+      "markers": 0,
+      "softPlants": 7607
+    },
+    {
+      "name": "Pachaug State Forest — public gravel access roads",
+      "changed": true,
+      "grassReplacements": 1025,
+      "overridesUpdated": 25,
+      "markers": 0,
+      "softPlants": 3403
+    },
+    {
+      "name": "Seekonk Speedway — oval",
+      "changed": true,
+      "grassReplacements": 143,
+      "overridesUpdated": 2,
+      "markers": 0,
+      "softPlants": 402
+    },
+    {
+      "name": "RI 44 — Putnam Pike Glocester",
+      "changed": true,
+      "grassReplacements": 2429,
+      "overridesUpdated": 60,
+      "markers": 0,
+      "softPlants": 8038
+    },
+    {
+      "name": "Lime Rock Park — Connecticut",
+      "changed": true,
+      "grassReplacements": 564,
+      "overridesUpdated": 12,
+      "markers": 0,
+      "softPlants": 1833
+    },
+    {
+      "name": "Palmer Motorsports Park — Massachusetts",
+      "changed": true,
+      "grassReplacements": 870,
+      "overridesUpdated": 16,
+      "markers": 0,
+      "softPlants": 2789
+    },
+    {
+      "name": "Kancamagus Highway — NH 112",
+      "changed": true,
+      "grassReplacements": 1945,
+      "overridesUpdated": 133,
+      "markers": 81,
+      "softPlants": 6216
+    },
+    {
+      "name": "Bear Notch Road — Bartlett",
+      "changed": true,
+      "grassReplacements": 1733,
+      "overridesUpdated": 152,
+      "markers": 94,
+      "softPlants": 5658
+    },
+    {
+      "name": "Hurricane Mountain Road — Conway",
+      "changed": true,
+      "grassReplacements": 1485,
+      "overridesUpdated": 108,
+      "markers": 66,
+      "softPlants": 4775
+    },
+    {
+      "name": "Crawford Notch — US 302",
+      "changed": true,
+      "grassReplacements": 2367,
+      "overridesUpdated": 177,
+      "markers": 100,
+      "softPlants": 7610
+    },
+    {
+      "name": "Pinkham Notch — NH 16",
+      "changed": true,
+      "grassReplacements": 2365,
+      "overridesUpdated": 206,
+      "markers": 133,
+      "softPlants": 7703
+    },
+    {
+      "name": "Club Motorsports — Tamworth",
+      "changed": true,
+      "grassReplacements": 810,
+      "overridesUpdated": 62,
+      "markers": 35,
+      "softPlants": 2639
+    },
+    {
+      "name": "Team O’Neil-inspired Rally Stage (2994)",
+      "changed": true,
+      "grassReplacements": 680,
+      "overridesUpdated": 49,
+      "markers": 27,
+      "softPlants": 2193
+    },
+    {
+      "name": "New Hampshire Motor Speedway — Loudon",
+      "changed": true,
+      "grassReplacements": 677,
+      "overridesUpdated": 49,
+      "markers": 30,
+      "softPlants": 1906
+    },
+    {
+      "name": "New England Dragway — Epping",
+      "changed": true,
+      "grassReplacements": 61,
+      "overridesUpdated": 9,
+      "markers": 5,
+      "softPlants": 207
+    },
+    {
+      "name": "PA 381 — Ohiopyle approach",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 195,
+      "markers": 0,
+      "softPlants": 7845
+    },
+    {
+      "name": "PA 711 — Normalville Champion",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 201,
+      "markers": 0,
+      "softPlants": 8413
+    },
+    {
+      "name": "US 40 — Chalk Hill Summit",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 210,
+      "markers": 0,
+      "softPlants": 8510
+    },
+    {
+      "name": "PA 31 — Donegal to Laurel Ridge",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 213,
+      "markers": 0,
+      "softPlants": 8286
+    },
+    {
+      "name": "County Line Road — Seven Springs",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 160,
+      "markers": 0,
+      "softPlants": 6710
+    },
+    {
+      "name": "Forbes State Forest — designated gravel roads",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 95,
+      "markers": 0,
+      "softPlants": 4101
+    },
+    {
+      "name": "Jennerstown Speedway — oval",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 16,
+      "markers": 0,
+      "softPlants": 775
+    },
+    {
+      "name": "Keystone Motorsports Park — New Alexandria",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 5,
+      "markers": 0,
+      "softPlants": 187
+    },
+    {
+      "name": "Pittsburgh International Race Complex — Wampum",
+      "changed": true,
+      "grassReplacements": 3,
+      "overridesUpdated": 75,
+      "markers": 0,
+      "softPlants": 3227
+    },
+    {
+      "name": "OH 26 — Covered Bridge Scenic Byway",
+      "changed": true,
+      "grassReplacements": 3,
+      "overridesUpdated": 98,
+      "markers": 11,
+      "softPlants": 4881
+    },
+    {
+      "name": "OH 555 — Triple Nickel",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 104,
+      "markers": 6,
+      "softPlants": 4882
+    },
+    {
+      "name": "OH 550 — Barlow approach",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 182,
+      "markers": 25,
+      "softPlants": 8010
+    },
+    {
+      "name": "OH 536 — Ohio River hills",
+      "changed": true,
+      "grassReplacements": 6,
+      "overridesUpdated": 74,
+      "markers": 6,
+      "softPlants": 3390
+    },
+    {
+      "name": "OH 676 — Western county hills",
+      "changed": true,
+      "grassReplacements": 4,
+      "overridesUpdated": 68,
+      "markers": 13,
+      "softPlants": 3796
+    },
+    {
+      "name": "Marietta–Williamstown — I-77 river bridge",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 176,
+      "markers": 22,
+      "softPlants": 9381
+    },
+    {
+      "name": "Washington County western covered-bridge gravel loop",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 67,
+      "markers": 7,
+      "softPlants": 3905
+    },
+    {
+      "name": "Ohio Valley Speedway — Washington, West Virginia",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 3,
+      "markers": 0,
+      "softPlants": 429
+    },
+    {
+      "name": "Mid-Ohio Sports Car Course — Lexington",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 42,
+      "markers": 3,
+      "softPlants": 2777
+    },
+    {
+      "name": "MO 19 — Eminence Current River",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 108,
+      "markers": 0,
+      "softPlants": 6652
+    },
+    {
+      "name": "MO 106 — Alley Spring approach",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 91,
+      "markers": 0,
+      "softPlants": 7052
+    },
+    {
+      "name": "MO 106 — Powder Mill approach",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 108,
+      "markers": 0,
+      "softPlants": 6762
+    },
+    {
+      "name": "MO V — Two Rivers access",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 56,
+      "markers": 0,
+      "softPlants": 3401
+    },
+    {
+      "name": "MO H NN — Roberts Field access",
+      "changed": true,
+      "grassReplacements": 3,
+      "overridesUpdated": 115,
+      "markers": 0,
+      "softPlants": 7318
+    },
+    {
+      "name": "Jerktail Landing gravel road",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 51,
+      "markers": 0,
+      "softPlants": 2562
+    },
+    {
+      "name": "US 60 — Winona Van Buren",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 145,
+      "markers": 0,
+      "softPlants": 9158
+    },
+    {
+      "name": "Glade Top Trail — Mark Twain National Forest",
+      "changed": true,
+      "grassReplacements": 3,
+      "overridesUpdated": 68,
+      "markers": 0,
+      "softPlants": 4426
+    },
+    {
+      "name": "Ozarks International Raceway — Gravois Mills",
+      "changed": true,
+      "grassReplacements": 6,
+      "overridesUpdated": 70,
+      "markers": 0,
+      "softPlants": 4772
+    },
+    {
+      "name": "World Wide Technology Raceway — road course",
+      "changed": true,
+      "grassReplacements": 672,
+      "overridesUpdated": 16,
+      "markers": 0,
+      "softPlants": 2341
+    },
+    {
+      "name": "World Wide Technology Raceway — oval",
+      "changed": true,
+      "grassReplacements": 466,
+      "overridesUpdated": 7,
+      "markers": 0,
+      "softPlants": 1582
+    },
+    {
+      "name": "World Wide Technology Raceway — drag strip",
+      "changed": true,
+      "grassReplacements": 50,
+      "overridesUpdated": 2,
+      "markers": 0,
+      "softPlants": 231
+    },
+    {
+      "name": "I-64 — St. Louis downtown approaches",
+      "changed": true,
+      "grassReplacements": 2538,
+      "overridesUpdated": 51,
+      "markers": 0,
+      "softPlants": 8658
+    },
+    {
+      "name": "I-70 — Stan Musial Veterans Memorial Bridge",
+      "changed": true,
+      "grassReplacements": 2109,
+      "overridesUpdated": 36,
+      "markers": 0,
+      "softPlants": 7523
+    },
+    {
+      "name": "IL 100 — Great River Road bluffs",
+      "changed": true,
+      "grassReplacements": 2003,
+      "overridesUpdated": 62,
+      "markers": 0,
+      "softPlants": 7646
+    },
+    {
+      "name": "MO 94 — Defiance Augusta",
+      "changed": true,
+      "grassReplacements": 2135,
+      "overridesUpdated": 52,
+      "markers": 0,
+      "softPlants": 7532
+    },
+    {
+      "name": "Gateway Kartplex — WWT complex",
+      "changed": true,
+      "grassReplacements": 31,
+      "overridesUpdated": 4,
+      "markers": 0,
+      "softPlants": 1107
+    },
+    {
+      "name": "Federated Auto Parts Raceway at I-55 — Pevely",
+      "changed": true,
+      "grassReplacements": 152,
+      "overridesUpdated": 1,
+      "markers": 0,
+      "softPlants": 460
+    },
+    {
+      "name": "Old Route 66 — Shamrock McLean",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 75,
+      "markers": 0,
+      "softPlants": 4094
+    },
+    {
+      "name": "Old Route 66 — Groom Conway",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 102,
+      "markers": 0,
+      "softPlants": 5583
+    },
+    {
+      "name": "Amarillo — Historic 6th Avenue alignment",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 27,
+      "markers": 0,
+      "softPlants": 2344
+    },
+    {
+      "name": "Old Route 66 — Vega Adrian",
+      "changed": true,
+      "grassReplacements": 79,
+      "overridesUpdated": 78,
+      "markers": 0,
+      "softPlants": 4686
+    },
+    {
+      "name": "Old Route 66 — Adrian Glenrio",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 97,
+      "markers": 0,
+      "softPlants": 8048
+    },
+    {
+      "name": "Palo Duro Canyon — Park Road 5",
+      "changed": true,
+      "grassReplacements": 1,
+      "overridesUpdated": 40,
+      "markers": 0,
+      "softPlants": 3725
+    },
+    {
+      "name": "Amarillo Dragway",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 5,
+      "markers": 0,
+      "softPlants": 132
+    },
+    {
+      "name": "Route 66 — Bridgeport Pony Bridge, Oklahoma",
+      "changed": true,
+      "grassReplacements": 126,
+      "overridesUpdated": 84,
+      "markers": 0,
+      "softPlants": 7410
+    },
+    {
+      "name": "Hallett Motor Racing Circuit — Jennings, Oklahoma",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 17,
+      "markers": 0,
+      "softPlants": 1835
+    },
+    {
+      "name": "Gold Camp Road — Colorado Springs",
+      "changed": true,
+      "grassReplacements": 1211,
+      "overridesUpdated": 31,
+      "markers": 0,
+      "softPlants": 3694
+    },
+    {
+      "name": "Phantom Canyon Road — Gold Belt Tour",
+      "changed": true,
+      "grassReplacements": 649,
+      "overridesUpdated": 15,
+      "markers": 0,
+      "softPlants": 2112
+    },
+    {
+      "name": "Shelf Road — Gold Belt Tour",
+      "changed": true,
+      "grassReplacements": 627,
+      "overridesUpdated": 23,
+      "markers": 0,
+      "softPlants": 2061
+    },
+    {
+      "name": "Skyline Drive — Cañon City",
+      "changed": true,
+      "grassReplacements": 961,
+      "overridesUpdated": 30,
+      "markers": 0,
+      "softPlants": 2934
+    },
+    {
+      "name": "US 24 — Ute Pass Woodland Park",
+      "changed": true,
+      "grassReplacements": 2075,
+      "overridesUpdated": 48,
+      "markers": 0,
+      "softPlants": 6716
+    },
+    {
+      "name": "CO 67 — Woodland Park Cripple Creek",
+      "changed": true,
+      "grassReplacements": 1520,
+      "overridesUpdated": 35,
+      "markers": 0,
+      "softPlants": 4934
+    },
+    {
+      "name": "Garden of the Gods — paved park road",
+      "changed": true,
+      "grassReplacements": 973,
+      "overridesUpdated": 17,
+      "markers": 0,
+      "softPlants": 2876
+    },
+    {
+      "name": "Pikes Peak International Raceway — Fountain",
+      "changed": true,
+      "grassReplacements": 569,
+      "overridesUpdated": 11,
+      "markers": 0,
+      "softPlants": 1771
+    },
+    {
+      "name": "Pueblo Motorsports Park — road course or drag strip",
+      "changed": true,
+      "grassReplacements": 755,
+      "overridesUpdated": 24,
+      "markers": 0,
+      "softPlants": 2600
+    },
+    {
+      "name": "Valley of the Gods Road — San Juan CR 242",
+      "changed": true,
+      "grassReplacements": 606,
+      "overridesUpdated": 24,
+      "markers": 0,
+      "softPlants": 1855
+    },
+    {
+      "name": "Muley Point Road — CR 241",
+      "changed": true,
+      "grassReplacements": 938,
+      "overridesUpdated": 34,
+      "markers": 0,
+      "softPlants": 2674
+    },
+    {
+      "name": "UT 316 — Goosenecks State Park Road",
+      "changed": true,
+      "grassReplacements": 959,
+      "overridesUpdated": 31,
+      "markers": 0,
+      "softPlants": 2752
+    },
+    {
+      "name": "US 163 — Mexican Hat Monument Valley approach",
+      "changed": true,
+      "grassReplacements": 2115,
+      "overridesUpdated": 81,
+      "markers": 0,
+      "softPlants": 6378
+    },
+    {
+      "name": "UT 95 — Comb Ridge Cedar Mesa",
+      "changed": true,
+      "grassReplacements": 2180,
+      "overridesUpdated": 67,
+      "markers": 0,
+      "softPlants": 6393
+    },
+    {
+      "name": "UT 276 — Halls Crossing approach",
+      "changed": true,
+      "grassReplacements": 2049,
+      "overridesUpdated": 85,
+      "markers": 0,
+      "softPlants": 6083
+    },
+    {
+      "name": "US 191 — Bluff Blanding",
+      "changed": true,
+      "grassReplacements": 2335,
+      "overridesUpdated": 75,
+      "markers": 0,
+      "softPlants": 6650
+    },
+    {
+      "name": "Shafer Trail — Canyonlands National Park",
+      "changed": true,
+      "grassReplacements": 628,
+      "overridesUpdated": 13,
+      "markers": 0,
+      "softPlants": 1667
+    },
+    {
+      "name": "Burr Trail switchbacks — Capitol Reef",
+      "changed": true,
+      "grassReplacements": 564,
+      "overridesUpdated": 27,
+      "markers": 0,
+      "softPlants": 1523
+    },
+    {
+      "name": "SR 179 — Red Rock Scenic Byway",
+      "changed": true,
+      "grassReplacements": 1252,
+      "overridesUpdated": 83,
+      "markers": 0,
+      "softPlants": 3596
+    },
+    {
+      "name": "Upper Lower Red Rock Loop Road",
+      "changed": true,
+      "grassReplacements": 865,
+      "overridesUpdated": 62,
+      "markers": 0,
+      "softPlants": 2493
+    },
+    {
+      "name": "Page Springs Road",
+      "changed": true,
+      "grassReplacements": 1276,
+      "overridesUpdated": 69,
+      "markers": 0,
+      "softPlants": 3730
+    },
+    {
+      "name": "Beaverhead Flat Road — CR 78",
+      "changed": true,
+      "grassReplacements": 1519,
+      "overridesUpdated": 75,
+      "markers": 0,
+      "softPlants": 4375
+    },
+    {
+      "name": "Boynton Pass Road FR 525 loop",
+      "changed": true,
+      "grassReplacements": 745,
+      "overridesUpdated": 40,
+      "markers": 0,
+      "softPlants": 2133
+    },
+    {
+      "name": "Schnebly Hill Road — Sedona",
+      "changed": true,
+      "grassReplacements": 560,
+      "overridesUpdated": 37,
+      "markers": 0,
+      "softPlants": 1598
+    },
+    {
+      "name": "SR 89A — Mingus Mountain Jerome",
+      "changed": true,
+      "grassReplacements": 940,
+      "overridesUpdated": 56,
+      "markers": 0,
+      "softPlants": 2597
+    },
+    {
+      "name": "Podium Club at Attesa — Casa Grande",
+      "changed": true,
+      "grassReplacements": 692,
+      "overridesUpdated": 29,
+      "markers": 0,
+      "softPlants": 1847
+    },
+    {
+      "name": "Firebird Motorsports Park — Chandler",
+      "changed": true,
+      "grassReplacements": 61,
+      "overridesUpdated": 3,
+      "markers": 0,
+      "softPlants": 169
+    },
+    {
+      "name": "Angeles Forest Highway — County N3",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 68,
+      "markers": 0,
+      "softPlants": 3940
+    },
+    {
+      "name": "Upper Big Tujunga Canyon Road",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 54,
+      "markers": 0,
+      "softPlants": 5109
+    },
+    {
+      "name": "Big Tujunga Canyon Road",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 46,
+      "markers": 0,
+      "softPlants": 4234
+    },
+    {
+      "name": "Glendora Mountain Road",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 31,
+      "markers": 0,
+      "softPlants": 2454
+    },
+    {
+      "name": "Glendora Ridge Road",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 26,
+      "markers": 0,
+      "softPlants": 2832
+    },
+    {
+      "name": "San Gabriel Canyon Road — SR 39",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 53,
+      "markers": 0,
+      "softPlants": 3726
+    },
+    {
+      "name": "Little Tujunga Canyon Road",
+      "changed": true,
+      "grassReplacements": 7,
+      "overridesUpdated": 28,
+      "markers": 0,
+      "softPlants": 2773
+    },
+    {
+      "name": "Willow Springs — Horse Thief Mile",
+      "changed": true,
+      "grassReplacements": 19,
+      "overridesUpdated": 6,
+      "markers": 0,
+      "softPlants": 1039
+    },
+    {
+      "name": "In-N-Out Burger Pomona Dragstrip",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 2,
+      "markers": 0,
+      "softPlants": 167
+    },
+    {
+      "name": "Old Staples Road",
+      "changed": false,
+      "grassReplacements": 0,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 456
+    },
+    {
+      "name": "Watkins Glen — Long Course",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 109,
+      "markers": 0,
+      "softPlants": 4069
+    },
+    {
+      "name": "Watkins Glen — Short Course",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 67,
+      "markers": 0,
+      "softPlants": 2905
+    },
+    {
+      "name": "Watkins Glen — Long — No Inner Loop",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 93,
+      "markers": 0,
+      "softPlants": 3945
+    },
+    {
+      "name": "Watkins Glen — Short — No Inner Loop",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 66,
+      "markers": 0,
+      "softPlants": 2846
+    },
+    {
+      "name": "Road America — Full Course",
+      "changed": true,
+      "grassReplacements": 1541,
+      "overridesUpdated": 34,
+      "markers": 0,
+      "softPlants": 5643
+    },
+    {
+      "name": "Road America — The Bend",
+      "changed": true,
+      "grassReplacements": 1629,
+      "overridesUpdated": 40,
+      "markers": 0,
+      "softPlants": 5609
+    },
+    {
+      "name": "Road Atlanta — Grand Prix",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 55,
+      "markers": 4,
+      "softPlants": 2981
+    },
+    {
+      "name": "Road Atlanta — Short Course",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 36,
+      "markers": 3,
+      "softPlants": 2207
+    },
+    {
+      "name": "Road Atlanta — Club Course",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 22,
+      "markers": 0,
+      "softPlants": 1300
+    },
+    {
+      "name": "Virginia International Raceway — Full Course",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 87,
+      "markers": 11,
+      "softPlants": 3917
+    },
+    {
+      "name": "Virginia International Raceway — North Course",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 46,
+      "markers": 10,
+      "softPlants": 2804
+    },
+    {
+      "name": "Virginia International Raceway — South Course",
+      "changed": true,
+      "grassReplacements": 1,
+      "overridesUpdated": 30,
+      "markers": 3,
+      "softPlants": 1915
+    },
+    {
+      "name": "Virginia International Raceway — Grand Course",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 76,
+      "markers": 8,
+      "softPlants": 4899
+    },
+    {
+      "name": "Sebring International Raceway — Full Circuit",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 62,
+      "markers": 0,
+      "softPlants": 4489
+    },
+    {
+      "name": "Sebring International Raceway — Short Circuit",
+      "changed": true,
+      "grassReplacements": 4,
+      "overridesUpdated": 35,
+      "markers": 0,
+      "softPlants": 2352
+    },
+    {
+      "name": "Sebring International Raceway — Club Circuit",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 29,
+      "markers": 0,
+      "softPlants": 1998
+    },
+    {
+      "name": "Indianapolis Motor Speedway — Oval",
+      "changed": true,
+      "grassReplacements": 660,
+      "overridesUpdated": 20,
+      "markers": 0,
+      "softPlants": 2610
+    },
+    {
+      "name": "Indianapolis Motor Speedway — Grand Prix Road Course",
+      "changed": true,
+      "grassReplacements": 971,
+      "overridesUpdated": 21,
+      "markers": 0,
+      "softPlants": 3473
+    },
+    {
+      "name": "Homestead-Miami Speedway — Oval",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 28,
+      "markers": 0,
+      "softPlants": 1828
+    },
+    {
+      "name": "Homestead-Miami Speedway — Road Course",
+      "changed": true,
+      "grassReplacements": 3,
+      "overridesUpdated": 31,
+      "markers": 0,
+      "softPlants": 2889
+    },
+    {
+      "name": "Homestead-Miami Speedway — Modified Road Course",
+      "changed": true,
+      "grassReplacements": 7,
+      "overridesUpdated": 37,
+      "markers": 0,
+      "softPlants": 2820
+    },
+    {
+      "name": "Daytona International Speedway — Sports Car Course",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 74,
+      "markers": 0,
+      "softPlants": 3865
+    },
+    {
+      "name": "Daytona International Speedway — Stock Car Road Course",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 82,
+      "markers": 0,
+      "softPlants": 4117
+    },
+    {
+      "name": "Willow Springs — Big Willow",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 29,
+      "markers": 0,
+      "softPlants": 2452
+    },
+    {
+      "name": "Willow Springs — Streets of Willow",
+      "changed": true,
+      "grassReplacements": 2,
+      "overridesUpdated": 27,
+      "markers": 0,
+      "softPlants": 1392
+    },
+    {
+      "name": "Willow Springs — Streets — Short",
+      "changed": true,
+      "grassReplacements": 8,
+      "overridesUpdated": 9,
+      "markers": 0,
+      "softPlants": 1317
+    },
+    {
+      "name": "Lime Rock Park — West Chicane",
+      "changed": true,
+      "grassReplacements": 611,
+      "overridesUpdated": 14,
+      "markers": 0,
+      "softPlants": 1862
+    },
+    {
+      "name": "Lime Rock Park — Both Chicanes",
+      "changed": true,
+      "grassReplacements": 564,
+      "overridesUpdated": 4,
+      "markers": 0,
+      "softPlants": 1820
+    },
+    {
+      "name": "Mid-Ohio Sports Car Course — Chicane Course",
+      "changed": true,
+      "grassReplacements": 6,
+      "overridesUpdated": 56,
+      "markers": 10,
+      "softPlants": 2849
+    },
+    {
+      "name": "Mid-Ohio Sports Car Course — Short Course",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 37,
+      "markers": 5,
+      "softPlants": 2071
+    },
+    {
+      "name": "Hatcher Pass — Palmer-Fishhook Climb",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 74,
+      "markers": 0,
+      "softPlants": 4231
+    },
+    {
+      "name": "Pig Trail — Arkansas 23",
+      "changed": true,
+      "grassReplacements": 3,
+      "overridesUpdated": 157,
+      "markers": 0,
+      "softPlants": 9214
+    },
+    {
+      "name": "Brandywine Valley — Montchanin Road",
+      "changed": true,
+      "grassReplacements": 2,
+      "overridesUpdated": 145,
+      "markers": 0,
+      "softPlants": 5965
+    },
+    {
+      "name": "Hana Highway — Rainforest Bends",
+      "changed": true,
+      "grassReplacements": 23,
+      "overridesUpdated": 59,
+      "markers": 0,
+      "softPlants": 4404
+    },
+    {
+      "name": "Grafton Notch — Maine 26",
+      "changed": true,
+      "grassReplacements": 2625,
+      "overridesUpdated": 239,
+      "markers": 152,
+      "softPlants": 8712
+    },
+    {
+      "name": "National Road — Sideling Hill",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 152,
+      "markers": 0,
+      "softPlants": 5921
+    },
+    {
+      "name": "Natchez Trace — Tishomingo",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 169,
+      "markers": 0,
+      "softPlants": 9810
+    },
+    {
+      "name": "Beartooth Highway — Rock Creek Climb",
+      "changed": true,
+      "grassReplacements": 2582,
+      "overridesUpdated": 62,
+      "markers": 0,
+      "softPlants": 8324
+    },
+    {
+      "name": "Barber Motorsports Park",
+      "changed": true,
+      "grassReplacements": 21,
+      "overridesUpdated": 40,
+      "markers": 0,
+      "softPlants": 2848
+    },
+    {
+      "name": "Raceway Park of the Midlands",
+      "changed": true,
+      "grassReplacements": 958,
+      "overridesUpdated": 16,
+      "markers": 0,
+      "softPlants": 3281
+    },
+    {
+      "name": "Heartland Motorsports Park",
+      "changed": true,
+      "grassReplacements": 1,
+      "overridesUpdated": 43,
+      "markers": 0,
+      "softPlants": 2994
+    },
+    {
+      "name": "NCM Motorsports Park",
+      "changed": true,
+      "grassReplacements": 1209,
+      "overridesUpdated": 23,
+      "markers": 0,
+      "softPlants": 4477
+    },
+    {
+      "name": "NOLA Motorsports Park",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 56,
+      "markers": 0,
+      "softPlants": 3497
+    },
+    {
+      "name": "GingerMan Raceway",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 38,
+      "markers": 5,
+      "softPlants": 2552
+    },
+    {
+      "name": "Brainerd — Competition Course",
+      "changed": true,
+      "grassReplacements": 936,
+      "overridesUpdated": 25,
+      "markers": 0,
+      "softPlants": 3321
+    },
+    {
+      "name": "Spring Mountain — North South",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 26,
+      "markers": 0,
+      "softPlants": 2342
+    },
+    {
+      "name": "NJMP — Thunderbolt",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 48,
+      "markers": 0,
+      "softPlants": 2581
+    },
+    {
+      "name": "Sandia Speedway — Road Course",
+      "changed": true,
+      "grassReplacements": 551,
+      "overridesUpdated": 12,
+      "markers": 0,
+      "softPlants": 1399
+    },
+    {
+      "name": "NCCAR — Road Course",
+      "changed": true,
+      "grassReplacements": 6,
+      "overridesUpdated": 40,
+      "markers": 0,
+      "softPlants": 2507
+    },
+    {
+      "name": "Theodore Roosevelt — North Unit Drive",
+      "changed": true,
+      "grassReplacements": 1762,
+      "overridesUpdated": 42,
+      "markers": 0,
+      "softPlants": 5517
+    },
+    {
+      "name": "Needles Highway — Granite Gates",
+      "changed": true,
+      "grassReplacements": 2190,
+      "overridesUpdated": 57,
+      "markers": 0,
+      "softPlants": 7017
+    },
+    {
+      "name": "Smugglers Notch — Vermont 108",
+      "changed": true,
+      "grassReplacements": 2818,
+      "overridesUpdated": 223,
+      "markers": 129,
+      "softPlants": 9110
+    },
+    {
+      "name": "Wind River Canyon — Canyon Walls",
+      "changed": true,
+      "grassReplacements": 2352,
+      "overridesUpdated": 60,
+      "markers": 0,
+      "softPlants": 7396
+    },
+    {
+      "name": "Motorsport Park Hastings",
+      "changed": true,
+      "grassReplacements": 811,
+      "overridesUpdated": 23,
+      "markers": 0,
+      "softPlants": 2520
+    },
+    {
+      "name": "Portland International Raceway",
+      "changed": true,
+      "grassReplacements": 3,
+      "overridesUpdated": 23,
+      "markers": 0,
+      "softPlants": 2259
+    },
+    {
+      "name": "Carolina Motorsports Park",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 50,
+      "markers": 7,
+      "softPlants": 2895
+    },
+    {
+      "name": "Pacific Raceways",
+      "changed": true,
+      "grassReplacements": 4,
+      "overridesUpdated": 21,
+      "markers": 0,
+      "softPlants": 2636
+    },
+    {
+      "name": "Ponderosa Pine — Idaho 21",
+      "changed": true,
+      "grassReplacements": 1136,
+      "overridesUpdated": 52,
+      "markers": 0,
+      "softPlants": 3291
+    },
+    {
+      "name": "Birmingham, AL — Landmark Run",
+      "changed": true,
+      "grassReplacements": 288,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 5167
+    },
+    {
+      "name": "Phoenix, AZ — Landmark Run",
+      "changed": true,
+      "grassReplacements": 173,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2433
+    },
+    {
+      "name": "Los Angeles, CA — Landmark Run",
+      "changed": true,
+      "grassReplacements": 51,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2277
+    },
+    {
+      "name": "Hartford, CT — Landmark Run",
+      "changed": true,
+      "grassReplacements": 80,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2389
+    },
+    {
+      "name": "Wilmington, DE — Landmark Run",
+      "changed": true,
+      "grassReplacements": 58,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2667
+    },
+    {
+      "name": "Miami, FL — Landmark Run",
+      "changed": true,
+      "grassReplacements": 100,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2401
+    },
+    {
+      "name": "Atlanta, GA — Landmark Run",
+      "changed": true,
+      "grassReplacements": 134,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 3000
+    },
+    {
+      "name": "Chicago, IL — Landmark Run",
+      "changed": true,
+      "grassReplacements": 62,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2246
+    },
+    {
+      "name": "Des Moines, IA — Landmark Run",
+      "changed": true,
+      "grassReplacements": 34,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2678
+    },
+    {
+      "name": "Louisville, KY — Landmark Run",
+      "changed": true,
+      "grassReplacements": 99,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2385
+    },
+    {
+      "name": "Baltimore, MD — Landmark Run",
+      "changed": true,
+      "grassReplacements": 72,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2603
+    },
+    {
+      "name": "Detroit, MI — Landmark Run",
+      "changed": true,
+      "grassReplacements": 115,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2818
+    },
+    {
+      "name": "Anchorage, AK — Landmark Run",
+      "changed": true,
+      "grassReplacements": 17,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2583
+    },
+    {
+      "name": "Little Rock, AR — Landmark Run",
+      "changed": true,
+      "grassReplacements": 1,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 3662
+    },
+    {
+      "name": "Boise, ID — Landmark Run",
+      "changed": true,
+      "grassReplacements": 94,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2717
+    },
+    {
+      "name": "Wichita, KS — Landmark Run",
+      "changed": true,
+      "grassReplacements": 143,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 3122
+    },
+    {
+      "name": "Portland, ME — Landmark Run",
+      "changed": true,
+      "grassReplacements": 42,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2288
+    },
+    {
+      "name": "Honolulu, HI — Landmark Run",
+      "changed": true,
+      "grassReplacements": 30,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2594
+    },
+    {
+      "name": "Indianapolis, IN — Landmark Run",
+      "changed": true,
+      "grassReplacements": 29,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2464
+    },
+    {
+      "name": "New Orleans, LA — Landmark Run",
+      "changed": true,
+      "grassReplacements": 60,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2548
+    },
+    {
+      "name": "Boston, MA — Landmark Run",
+      "changed": true,
+      "grassReplacements": 278,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 4381
+    },
+    {
+      "name": "Minneapolis, MN — Landmark Run",
+      "changed": true,
+      "grassReplacements": 66,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 3849
+    },
+    {
+      "name": "Jackson, MS — Landmark Run",
+      "changed": true,
+      "grassReplacements": 39,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2376
+    },
+    {
+      "name": "St. Louis, MO — Landmark Run",
+      "changed": true,
+      "grassReplacements": 89,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2748
+    },
+    {
+      "name": "Billings, MT — Landmark Run",
+      "changed": true,
+      "grassReplacements": 63,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2345
+    },
+    {
+      "name": "Las Vegas, NV — Landmark Run",
+      "changed": true,
+      "grassReplacements": 91,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2393
+    },
+    {
+      "name": "Manchester, NH — Landmark Run",
+      "changed": true,
+      "grassReplacements": 69,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2865
+    },
+    {
+      "name": "Newark, NJ — Landmark Run",
+      "changed": true,
+      "grassReplacements": 161,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2478
+    },
+    {
+      "name": "Albuquerque, NM — Landmark Run",
+      "changed": true,
+      "grassReplacements": 97,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2384
+    },
+    {
+      "name": "Charlotte, NC — Landmark Run",
+      "changed": true,
+      "grassReplacements": 37,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2586
+    },
+    {
+      "name": "Fargo, ND — Landmark Run",
+      "changed": true,
+      "grassReplacements": 56,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2556
+    },
+    {
+      "name": "Cleveland, OH — Landmark Run",
+      "changed": true,
+      "grassReplacements": 176,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 3773
+    },
+    {
+      "name": "Denver, CO — Landmark Run",
+      "changed": true,
+      "grassReplacements": 102,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2777
+    },
+    {
+      "name": "Omaha, NE — Landmark Run",
+      "changed": true,
+      "grassReplacements": 65,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2299
+    },
+    {
+      "name": "New York, NY — Landmark Run",
+      "changed": true,
+      "grassReplacements": 51,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2621
+    },
+    {
+      "name": "Oklahoma City, OK — Landmark Run",
+      "changed": true,
+      "grassReplacements": 170,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2687
+    },
+    {
+      "name": "San Antonio, TX — Landmark Run",
+      "changed": true,
+      "grassReplacements": 39,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2394
+    },
+    {
+      "name": "Portland, OR — Landmark Run",
+      "changed": true,
+      "grassReplacements": 24,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2712
+    },
+    {
+      "name": "Providence, RI — Landmark Run",
+      "changed": true,
+      "grassReplacements": 29,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2896
+    },
+    {
+      "name": "Philadelphia, PA — Landmark Run",
+      "changed": true,
+      "grassReplacements": 50,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2420
+    },
+    {
+      "name": "Charleston, SC — Landmark Run",
+      "changed": true,
+      "grassReplacements": 29,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2460
+    },
+    {
+      "name": "Sioux Falls, SD — Landmark Run",
+      "changed": true,
+      "grassReplacements": 15,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2572
+    },
+    {
+      "name": "Nashville, TN — Landmark Run",
+      "changed": true,
+      "grassReplacements": 139,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2683
+    },
+    {
+      "name": "Salt Lake City, UT — Landmark Run",
+      "changed": true,
+      "grassReplacements": 58,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2496
+    },
+    {
+      "name": "Burlington, VT — Landmark Run",
+      "changed": true,
+      "grassReplacements": 41,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2394
+    },
+    {
+      "name": "Richmond, VA — Landmark Run",
+      "changed": true,
+      "grassReplacements": 15,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 3599
+    },
+    {
+      "name": "Flatrock Motorclub — Club Course",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 82,
+      "markers": 12,
+      "softPlants": 4338
+    },
+    {
+      "name": "Seattle, WA — Landmark Run",
+      "changed": true,
+      "grassReplacements": 72,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 3271
+    },
+    {
+      "name": "Charleston, WV — Landmark Run",
+      "changed": true,
+      "grassReplacements": 56,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2610
+    },
+    {
+      "name": "Milwaukee, WI — Landmark Run",
+      "changed": true,
+      "grassReplacements": 93,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 2452
+    },
+    {
+      "name": "Cheyenne, WY — Landmark Run",
+      "changed": true,
+      "grassReplacements": 37,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 1519
+    },
+    {
+      "name": "Thompson Pass — Snowline Climb",
+      "changed": true,
+      "grassReplacements": 3102,
+      "overridesUpdated": 85,
+      "markers": 0,
+      "softPlants": 9855
+    },
+    {
+      "name": "Denali Highway — Tundra Gravel",
+      "changed": true,
+      "grassReplacements": 2214,
+      "overridesUpdated": 269,
+      "markers": 0,
+      "softPlants": 8554
+    },
+    {
+      "name": "Skalkaho Pass — Forest Rally",
+      "changed": true,
+      "grassReplacements": 1,
+      "overridesUpdated": 104,
+      "markers": 0,
+      "softPlants": 5797
+    },
+    {
+      "name": "Magruder Corridor — Wilderness Ridge",
+      "changed": true,
+      "grassReplacements": 10,
+      "overridesUpdated": 109,
+      "markers": 0,
+      "softPlants": 4947
+    },
+    {
+      "name": "Chief Joseph — Dead Indian Pass",
+      "changed": true,
+      "grassReplacements": 2894,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 8852
+    },
+    {
+      "name": "Tantalus — Honolulu Heights",
+      "changed": true,
+      "grassReplacements": 89,
+      "overridesUpdated": 89,
+      "markers": 0,
+      "softPlants": 6570
+    },
+    {
+      "name": "Haleakala — Volcano Ascent",
+      "changed": true,
+      "grassReplacements": 2166,
+      "overridesUpdated": 0,
+      "markers": 0,
+      "softPlants": 6400
+    },
+    {
+      "name": "Maunakea — Cinder Summit",
+      "changed": true,
+      "grassReplacements": 2212,
+      "overridesUpdated": 95,
+      "markers": 0,
+      "softPlants": 7185
+    },
+    {
+      "name": "Sandhills Journey — Open Prairie",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 743,
+      "markers": 0,
+      "softPlants": 20306
+    },
+    {
+      "name": "Grand Canyon — Desert View Drive",
+      "changed": true,
+      "grassReplacements": 2767,
+      "overridesUpdated": 246,
+      "markers": 0,
+      "softPlants": 8238
+    },
+    {
+      "name": "Grand Canyon — Diamond Creek Descent",
+      "changed": true,
+      "grassReplacements": 1735,
+      "overridesUpdated": 139,
+      "markers": 0,
+      "softPlants": 5240
+    },
+    {
+      "name": "Bayard — Road 77 to City Park",
+      "changed": true,
+      "grassReplacements": 0,
+      "overridesUpdated": 129,
+      "markers": 0,
+      "softPlants": 5008
+    }
+  ]
+}

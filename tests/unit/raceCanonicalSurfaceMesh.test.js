@@ -113,3 +113,11 @@ test('canonical race circuit closes by indexed shared station vertices', () => {
   assert.equal(mesh.stats.nonManifoldEdges, 0);
   assert.equal(mesh.triangles.every((triangle) => triangle.faceNormal.y > 0), true);
 });
+
+test('worker can omit diagnostic edge bookkeeping without changing render or physics geometry',()=>{
+ const build=collectTopologyStats=>buildRaceCanonicalSurfaceMesh({surfaceBake:{sections:[section(0),section(20)]},collectTopologyStats});
+ const audited=build(true),compact=build(false);
+ assert.ok(audited.edgeCounts.size>0);assert.equal(compact.edgeCounts.size,0);
+ assert.equal(compact.stats.topologyAudited,false);assert.equal(compact.stats.nonManifoldEdges,null);
+ assert.deepEqual(compact.vertices,audited.vertices);assert.deepEqual(compact.normals,audited.normals);assert.deepEqual(compact.triangles,audited.triangles);
+});

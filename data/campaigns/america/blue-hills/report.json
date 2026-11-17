@@ -1,0 +1,40 @@
+[
+  {
+    "id": "road-blue-hills",
+    "name": "Blue Hills \u2014 Reservation Parkways",
+    "displayName": "Blue Hills \u2014 Reservation Parkways",
+    "status": "imported",
+    "state": "Massachusetts",
+    "stateCode": "MA",
+    "location": {
+      "lat": 42.222,
+      "lon": -71.091
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 1,
+    "lengthM": 9007.41057754729,
+    "estimatedDrivingSeconds": 487,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/blue-hills/road-blue-hills.json",
+    "references": [
+      "https://www.mass.gov/doc/dcr-parkways-master-plan-2020/download",
+      "https://www.townofmilton.org/DocumentCenter/View/482/Road-Safety-Audit---Route-28-at-Chickatawbut-Road-PDF",
+      "https://bluehill.org/trails/chickatawbut-overlook/"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    },
+    "artHubStage": 3,
+    "weather": "clear",
+    "paceCapMps": 28
+  }
+]

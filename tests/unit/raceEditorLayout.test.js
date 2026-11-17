@@ -11341,45 +11341,53 @@ test('Race update loop keeps planar body and 3D contacts synced after live movem
 test('Race playtest infers looped versus point-to-point routes from endpoint connection', () => {
   const loop = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
   loop.selectedRace.type = 'destination';
+  delete loop.selectedRace.road.network; // This fixture exercises legacy node routes, not the default network.
   loop.selectedRace.road.nodes = [
     { x: 0, y: 0, elevation: 0 },
     { x: 120, y: 0, elevation: 0 },
     { x: 120, y: 90, elevation: 0 },
     { x: 0, y: 0, elevation: 0 }
   ];
+  loop.selectedRace.road.segments = Array.from({length:loop.selectedRace.road.nodes.length-1},()=>({...loop.selectedRace.road.segments[0]}));
   assert.equal(loop.getSelectedRaceRuntimeType(), 'circuit');
   loop.startPlaytest('starter-rwd');
   assert.equal(loop.playtestSession.routeRuntimeType, 'circuit');
 
   const destination = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
   destination.selectedRace.type = 'circuit';
+  delete destination.selectedRace.road.network; // This fixture exercises legacy node routes, not the default network.
   destination.selectedRace.road.nodes = [
     { x: 0, y: 0, elevation: 0 },
     { x: 180, y: 30, elevation: 0 }
   ];
+  destination.selectedRace.road.segments = Array.from({length:destination.selectedRace.road.nodes.length-1},()=>({...destination.selectedRace.road.segments[0]}));
   assert.equal(destination.getSelectedRaceRuntimeType(), 'destination');
   destination.startPlaytest('starter-rwd');
   assert.equal(destination.playtestSession.routeRuntimeType, 'destination');
 
   const nearMiss = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
   nearMiss.selectedRace.type = 'circuit';
+  delete nearMiss.selectedRace.road.network; // This fixture exercises legacy node routes, not the default network.
   nearMiss.selectedRace.road.nodes = [
     { x: 0, y: 0, elevation: 0 },
     { x: 120, y: 0, elevation: 0 },
     { x: 120, y: 90, elevation: 0 },
     { x: 8, y: 0, elevation: 0 }
   ];
+  nearMiss.selectedRace.road.segments = Array.from({length:nearMiss.selectedRace.road.nodes.length-1},()=>({...nearMiss.selectedRace.road.segments[0]}));
   assert.equal(nearMiss.getSelectedRaceRuntimeType(), 'destination');
 });
 
 test('Race playtest checkpoints advance in order from route nodes', () => {
   const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
+  delete editor.selectedRace.road.network; // This fixture exercises legacy node routes, not the default network.
   editor.selectedRace.road.nodes = [
     { x: 0, y: 0, elevation: 0, role: 'start', locked: true },
     { x: 0, y: 160, elevation: 0 },
     { x: 90, y: 260, elevation: 0 },
     { x: 160, y: 360, elevation: 0, role: 'finish' }
   ];
+  editor.selectedRace.road.segments = Array.from({length:editor.selectedRace.road.nodes.length-1},()=>({...editor.selectedRace.road.segments[0]}));
   editor.startPlaytest('starter-rwd');
 
   const firstCheckpoint = editor.playtestSession.checkpointDistances[editor.playtestSession.checkpointIndex];
@@ -11397,12 +11405,14 @@ test('Race playtest circuit laps require all checkpoints before start wrap', () 
   const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
   editor.selectedRace.type = 'circuit';
   editor.selectedRace.laps = 2;
+  delete editor.selectedRace.road.network; // This fixture exercises legacy node routes, not the default network.
   editor.selectedRace.road.nodes = [
     { x: 0, y: 0, elevation: 0, role: 'start', locked: true },
     { x: 0, y: 160, elevation: 0 },
     { x: 120, y: 160, elevation: 0 },
     { x: 0, y: 0, elevation: 0, role: 'finish' }
   ];
+  editor.selectedRace.road.segments = Array.from({length:editor.selectedRace.road.nodes.length-1},()=>({...editor.selectedRace.road.segments[0]}));
   editor.startPlaytest('starter-rwd');
   const routeLength = editor.playtestSession.routeLength;
 

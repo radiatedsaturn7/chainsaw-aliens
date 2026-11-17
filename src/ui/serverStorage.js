@@ -402,28 +402,44 @@ async function hydrateStaticDependencies(payload) {
   const visited = new Set([fileKey(payload.folder, payload.name)]);
   let pending = [payload.data];
   while (pending.length) {
-    const wanted = [];
-    const scan = value => {
+    const wanted = new Map();
+    const scan = (value, optional = false, parentKey = '') => {
       if (typeof value === 'string') {
         if (value.length > maxReferenceLength) return; // Never hash embedded MP3/font/image data URLs.
         for (const ref of references.get(value) || []) {
           const key = fileKey(ref.folder, ref.name);
-          if (!visited.has(key)) { visited.add(key); wanted.push(ref); }
+          if (wanted.has(key)) {
+            wanted.get(key).optional &&= optional && ref.folder === 'art';
+          } else if (!visited.has(key)) {
+            visited.add(key); wanted.set(key, {...ref, optional: optional && ref.folder === 'art'});
+          }
         }
       } else if (Array.isArray(value)) {
-        for (const entry of value) scan(entry);
+        for (const entry of value) scan(entry, optional, parentKey);
       } else if (value && typeof value === 'object') {
-        for (const entry of Object.values(value)) scan(entry);
+        for (const [key, entry] of Object.entries(value)) {
+          const smoke = (parentKey === 'art' && key === 'smoke')
+            || (parentKey === 'tireFx' && key !== 'asphaltSkid');
+          scan(entry, optional || smoke, key);
+        }
       }
     };
     for (const data of pending) scan(data);
     pending = [];
+    const queue = [...wanted.values()];
     let cursor = 0;
-    await Promise.all(Array.from({length: Math.min(3, wanted.length)}, async () => {
-      while (cursor < wanted.length) {
-        const {folder, name} = wanted[cursor++];
+    await Promise.all(Array.from({length: Math.min(3, queue.length)}, async () => {
+      while (cursor < queue.length) {
+        const {folder, name, optional} = queue[cursor++];
         const raw = volatileFiles.get(fileKey(folder, name));
-        const dependency = raw ? JSON.parse(raw) : await fetchStaticFile(folder, name);
+        let dependency;
+        try { dependency = raw ? JSON.parse(raw) : await fetchStaticFile(folder, name); }
+        catch (error) {
+          // Smoke can use procedural particles. Do not reject a saved car/race
+          // before the runtime even gets a chance to use that fallback.
+          if (optional) { visited.delete(fileKey(folder, name)); continue; }
+          throw error;
+        }
         if (dependency?.data) pending.push(dependency.data);
       }
     }));

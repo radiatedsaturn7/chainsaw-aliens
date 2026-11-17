@@ -8317,5 +8317,121 @@
       "surveyedStartLine": false,
       "geometrySignature": "dfab1a4a4bc1d509e642b53e3b3a17beb54ae69f512c5cefc0187e755759554e"
     }
+  },
+  {
+    "id": "road-blue-hills",
+    "name": "Blue Hills \u2014 Reservation Parkways",
+    "displayName": "Blue Hills \u2014 Reservation Parkways",
+    "status": "installed",
+    "state": "Massachusetts",
+    "stateCode": "MA",
+    "location": {
+      "lat": 42.222,
+      "lon": -71.091
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 1,
+    "lengthM": 9007.41057754729,
+    "estimatedDrivingSeconds": 487,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/blue-hills/road-blue-hills.json",
+    "references": [
+      "https://www.mass.gov/doc/dcr-parkways-master-plan-2020/download",
+      "https://www.townofmilton.org/DocumentCenter/View/482/Road-Safety-Audit---Route-28-at-Chickatawbut-Road-PDF",
+      "https://bluehill.org/trails/chickatawbut-overlook/"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    },
+    "artHubStage": 3,
+    "weather": "clear",
+    "paceCapMps": 28,
+    "raceRef": "Blue Hills \u2014 Reservation Parkways",
+    "documentPath": "races/Blue Hills %E2%80%94 Reservation Parkways/document.json",
+    "lightingPreset": "noon",
+    "hubRaceRef": "Tower Hill Road",
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "sceneryCount": 11488
+  },
+  {
+    "id": "detour-squaw-creek",
+    "name": "Squaw Creek \u2014 Highland Center",
+    "displayName": "Squaw Creek \u2014 Highland Center",
+    "status": "installed",
+    "state": "Nebraska",
+    "stateCode": "NE",
+    "location": {
+      "lat": 42.62,
+      "lon": -103.25
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 8,
+    "lengthM": 24123.329242594977,
+    "estimatedDrivingSeconds": 1340,
+    "laps": 1,
+    "surface": [
+      "asphalt",
+      "dirt",
+      "gravel"
+    ],
+    "generatedPath": "artifacts/campaign-import/squaw-creek/detour-squaw-creek.json",
+    "references": [
+      "https://tigerweb.geo.census.gov/tigerwebmain/Files/acs25/tigerweb_acs25_roads_loc_ne_045.html",
+      "https://www.anyplaceamerica.com/directory/ne/dawes-county-31045/cemeteries/highland-center-cemetery-835590/",
+      "https://www.openstreetmap.org/way/175520650",
+      "https://www.openstreetmap.org/way/175533702",
+      "https://www.openstreetmap.org/way/14068530",
+      "https://www.openstreetmap.org/way/166663413",
+      "https://outdoornebraska.gov/learn/nebraska-habitat/woodlands/"
+    ],
+    "routeReference": {
+      "routing": "Ordered GPS waypoints on connected public OSM roads; no repeated edges; service roads require explicit reviewed way IDs.",
+      "waypoints": [
+        {
+          "lat": 42.639048,
+          "lon": -103.3602382
+        },
+        {
+          "lat": 42.6390091,
+          "lon": -103.3428039
+        },
+        {
+          "lat": 42.6107396,
+          "lon": -103.1258691
+        }
+      ],
+      "allowedServiceWayIds": []
+    },
+    "artHubStage": 7,
+    "weather": "clear",
+    "palette": "pine-ridge",
+    "paceCapMps": 24,
+    "raceRef": "Squaw Creek \u2014 Highland Center",
+    "documentPath": "races/Squaw Creek %E2%80%94 Highland Center/document.json",
+    "lightingPreset": "morning",
+    "hubRaceRef": "Pikes Peak Highway",
+    "installedSurfaces": [
+      "dirt",
+      "gravel",
+      "asphalt"
+    ],
+    "sceneryCount": 21688
   }
 ]

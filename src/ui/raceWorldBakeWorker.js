@@ -211,20 +211,22 @@ export async function buildRaceTransferPackage(sourceRace = null, {
   // abort a large race that is still making progress. The absolute loading
   // deadline remains in force; this is not a periodic keep-alive timer.
   let terrainProgress=0.12;
-  editor.onRaceTerrainBuildProgress = ({phase,pass=1}) => {
+  editor.onRaceTerrainBuildProgress = detail => {
+    const {phase,pass=1}=detail;
     const progress=phase==='refining'?0.2:phase==='refine'?0.3:Math.min(0.65,0.4+0.08*pass);
     terrainProgress=Math.max(terrainProgress,progress);
-    reportProgress(terrainProgress,'world-bake');
+    reportProgress(terrainProgress,'world-bake',detail);
   };
   reportProgress(0.12, 'world-bake');
   const bake = editor.buildRaceWorldBake({
     ...(options || editor.getRacePlaytestWorldBakeOptions()),
     buildSurfaceSampler: false,
     retainTerrainCells: false,
+    collectTopologyStats: false,
     validate: false
   });
-  // Topology counts are already recorded; the worker transfers triangles,
-  // not the large diagnostic edge map. Release it before allocating packets.
+  // The worker transfers triangles, not the large diagnostic edge map.
+  // Release any map supplied by an alternate/network bake before packing.
   bake.mesh.edgeCounts?.clear();
   reportProgress(0.76, 'physics-pack');
   const packedSampler = packRaceCanonicalSurfaceMesh(bake.mesh, {

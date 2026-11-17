@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "race-track",
-  "savedAt": 1794627921535,
+  "savedAt": 1794861822826,
   "selectedRaceId": "osm-13b8ce5d5412",
   "race": {
     "id": "osm-13b8ce5d5412",
@@ -66540,11 +66540,10 @@
         "groundOffsetM": 0.082,
         "hitboxWidthM": 1.19,
         "hitboxHeightM": 0.63,
-        "weightKg": 5,
+        "weightKg": 1,
         "defaultRule": {
-          "minSpeedMph": 0,
           "behavior": "flatten",
-          "speedDrainPercent": 1,
+          "speedDrainPercent": 0,
           "damage": {
             "panels": 0,
             "suspension": 0,
@@ -66570,9 +66569,8 @@
         "hitboxHeightM": 1.26,
         "weightKg": 5,
         "defaultRule": {
-          "minSpeedMph": 0,
           "behavior": "flatten",
-          "speedDrainPercent": 1,
+          "speedDrainPercent": 0.2,
           "damage": {
             "panels": 0,
             "suspension": 0,
@@ -66596,11 +66594,10 @@
         "groundOffsetM": 0.165,
         "hitboxWidthM": 0.5525,
         "hitboxHeightM": 0.5850000000000001,
-        "weightKg": 5,
+        "weightKg": 1,
         "defaultRule": {
-          "minSpeedMph": 0,
           "behavior": "flatten",
-          "speedDrainPercent": 1,
+          "speedDrainPercent": 0,
           "damage": {
             "panels": 0,
             "suspension": 0,
@@ -66624,11 +66621,10 @@
         "groundOffsetM": 0.0312,
         "hitboxWidthM": 0.68,
         "hitboxHeightM": 0.7200000000000001,
-        "weightKg": 5,
+        "weightKg": 1,
         "defaultRule": {
-          "minSpeedMph": 0,
           "behavior": "flatten",
-          "speedDrainPercent": 1,
+          "speedDrainPercent": 0,
           "damage": {
             "panels": 0,
             "suspension": 0,
@@ -66654,9 +66650,8 @@
         "hitboxHeightM": 1.08,
         "weightKg": 5,
         "defaultRule": {
-          "minSpeedMph": 0,
           "behavior": "flatten",
-          "speedDrainPercent": 1,
+          "speedDrainPercent": 0.2,
           "damage": {
             "panels": 0,
             "suspension": 0,
@@ -66682,9 +66677,8 @@
         "hitboxHeightM": 1.08,
         "weightKg": 5,
         "defaultRule": {
-          "minSpeedMph": 0,
           "behavior": "flatten",
-          "speedDrainPercent": 1,
+          "speedDrainPercent": 0.2,
           "damage": {
             "panels": 0,
             "suspension": 0,

@@ -1,0 +1,22 @@
+[
+  {
+    "id": "road-blue-hills",
+    "name": "Blue Hills — Reservation Parkways",
+    "state": "Massachusetts",
+    "stateCode": "MA",
+    "kind": "road",
+    "lat": 42.222,
+    "lon": -71.091,
+    "selection": "Unquity|Chickatawbut",
+    "bounds": [42.19, -71.12, 42.27, -71.00],
+    "defaultWidthM": 6.8,
+    "artHubStage": 3,
+    "weather": "clear",
+    "paceCapMps": 28,
+    "references": [
+      "https://www.mass.gov/doc/dcr-parkways-master-plan-2020/download",
+      "https://www.townofmilton.org/DocumentCenter/View/482/Road-Safety-Audit---Route-28-at-Chickatawbut-Road-PDF",
+      "https://bluehill.org/trails/chickatawbut-overlook/"
+    ]
+  }
+]

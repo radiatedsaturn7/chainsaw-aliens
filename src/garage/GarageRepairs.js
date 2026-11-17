@@ -35,8 +35,9 @@ export function repairRows(garage,ref,car){
  const rows=MECHANICAL_COMPONENTS.map(d=>{
   const c=state.components[d.id],required=state.config.components[d.id]?.requiredPart||'',available=!required||garage.items.progress.bags.items[required]>0;
   const needsRepair=c.failed||c.damage>0||(d.id.startsWith('alignment_')&&Math.abs(condition.damage?.suspensionPull||0)>0)||(d.id.startsWith('tire_')&&(state.tires[d.id.slice(5)].pressureRatio<.99||state.tires[d.id.slice(5)].tread<.99));
-  const cost=needsRepair?Math.ceil((state.config.components[d.id]?.repairCost??d.cost)*Math.max(.1,c.failed?1:c.damage/100)):0;
   const tire=d.id.startsWith('tire_')?state.tires[d.id.slice(5)]:null;
+  const wear=Math.max(c.damage/100,tire?1-Math.min(1,tire.tread):0);
+  const cost=needsRepair?Math.ceil((state.config.components[d.id]?.repairCost??d.cost)*Math.max(.01,c.failed?1:wear)):0;
   const health=c.failed?0:Math.min(100-c.damage,tire?100*Math.min(1,tire.pressureRatio,tire.tread):100);
   const symptoms=c.symptom||(c.failed?'Failed':c.damage>70?'Severe wear':c.damage>25?'Worn':'Operational');
   return {id:d.id,label:({panels:'Front',panel_left:'Left',panel_right:'Right',panel_rear:'Rear',bearings:'Bearings',fans:'Fans'}[d.id]||d.label.replace('brake hydraulics','hydraulics').replace('brake pads','pads')),repair:true,value:needsRepair?Math.min(99,health):100,cost,required:needsRepair?required:'',needsRepair,enabled:true,

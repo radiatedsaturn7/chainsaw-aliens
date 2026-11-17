@@ -1,0 +1,13 @@
+{
+  "raceway-lime-west-chicane": {"part":"sport-brakes","brief":"Braking workshop: bring home a set of sport brakes."},
+  "state-me": {"part":"rally-suspension","brief":"Notch survivor: earn suspension for rougher roads."},
+  "raceway-watkins-long": {"part":"race-tires","brief":"Circuit shakedown: earn dry tarmac racing tires."},
+  "raceway-vir-full": {"part":"sport-intake","brief":"Long-course reward: a stronger intake for the next build."},
+  "raceway-sebring-full": {"part":"race-cooling","brief":"Endurance preparation: earn upgraded cooling."},
+  "raceway-road-america-full": {"part":"race-transmission","brief":"High-speed workshop: earn a race transmission."},
+  "city-ok": {"part":"sport-brakes","brief":"City precision: earn sport brakes."},
+  "detour-squaw-creek": {"part":"rally-differential","brief":"Gravel expedition: earn a rally differential."},
+  "state-id": {"part":"street-skid-plates","brief":"Backroad protection: earn underbody skid plates."},
+  "detour-diamond-creek": {"part":"offroad-suspension","brief":"Canyon expedition: earn offroad suspension."},
+  "raceway-laguna-full": {"part":"race-suspension","brief":"Corkscrew challenge: earn race suspension."}
+}

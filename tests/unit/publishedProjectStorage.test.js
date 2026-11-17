@@ -140,3 +140,22 @@ test('remote roots must be immutable GitHub commits',async()=>{
   },{documentRoot});
  }
 });
+
+test('published car and race opens tolerate failed optional smoke downloads',async()=>fixture(async({add,docs})=>{
+ add('art','Missing smoke',{frames:[[1]]});
+ docs.delete(root+'art/Missing%20smoke/document.json');
+ add('art','Body',{frames:[[1]]});
+ add('cars','Driver',{car:{art:{body:'Body',smoke:{asphalt:'Missing smoke'}}}});
+ add('races','Track',{race:{tireFx:{snowDust:{artRef:'Missing smoke'}}}});
+ assert.ok((await hydrateProjectFile('cars','Driver')).data.car);
+ assert.ok((await hydrateProjectFile('races','Track')).data.race);
+ assert.ok(loadProjectFile('art','Body'));
+}));
+
+test('an optional smoke reference cannot hide a required use of the same artwork',async()=>fixture(async({add,docs})=>{
+ add('art','Missing',{frames:[[1]]});docs.delete(root+'art/Missing/document.json');
+ add('cars','Driver',{car:{art:{smoke:{asphalt:'Missing'},body:'Missing'}}});
+ add('races','Track',{race:{tireFx:{snowDust:{artRef:'Missing'},asphaltSkid:{artRef:'Missing'}}}});
+ await assert.rejects(hydrateProjectFile('cars','Driver'),/Could not load published file/);
+ await assert.rejects(hydrateProjectFile('races','Track'),/Could not load published file/);
+}));

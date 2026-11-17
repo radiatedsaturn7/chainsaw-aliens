@@ -23,3 +23,10 @@ test('water and missing terrain never receive generated vegetation',()=>{
  const {race,helpers}=fixture();helpers.hasGround=()=>false;
  const report=layerRoadside(race,helpers);assert.equal(report.added,0);assert.equal(report.status,'space-limited');
 });
+test('Pine Ridge keeps grass and scrub under its pine canopy instead of adding eastern woodland ferns',()=>{
+ const {race,helpers}=fixture();race.source={sceneryPalette:'pine-ridge'};
+ const report=layerRoadside(race,helpers);assert.ok(report.added>0);
+ for(const p of race.scenery.filter(p=>p.ecologyLayer==='verge'||p.ecologyLayer==='shrub')){
+  assert.ok(/expanded-grass-(little-bluestem|roadside-weeds)|dry-scrub-bush/.test(p.doodadRef),p.doodadRef);
+ }
+});

@@ -2076,7 +2076,9 @@
       "Sandhills Journey — Open Prairie": "races/Sandhills Journey %E2%80%94 Open Prairie/document.json",
       "Grand Canyon — Desert View Drive": "races/Grand Canyon %E2%80%94 Desert View Drive/document.json",
       "Grand Canyon — Diamond Creek Descent": "races/Grand Canyon %E2%80%94 Diamond Creek Descent/document.json",
-      "Bayard — Road 77 to City Park": "races/Bayard %E2%80%94 Road 77 to City Park/document.json"
+      "Bayard — Road 77 to City Park": "races/Bayard %E2%80%94 Road 77 to City Park/document.json",
+      "Blue Hills — Reservation Parkways": "races/Blue Hills %E2%80%94 Reservation Parkways/document.json",
+      "Squaw Creek — Highland Center": "races/Squaw Creek %E2%80%94 Highland Center/document.json"
     },
     "settings": {
       "chainsaw-gm-soundfont-url": "settings/chainsaw-gm-soundfont-url/document.json",

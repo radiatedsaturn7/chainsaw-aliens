@@ -1,0 +1,62 @@
+[
+  {
+    "id": "detour-squaw-creek",
+    "name": "Squaw Creek \u2014 Highland Center",
+    "state": "Nebraska",
+    "stateCode": "NE",
+    "kind": "road",
+    "lat": 42.62,
+    "lon": -103.25,
+    "selection": ".*",
+    "bounds": [
+      42.58,
+      -103.42,
+      42.75,
+      -103.1
+    ],
+    "hubStage": 8,
+    "artHubStage": 7,
+    "weather": "clear",
+    "palette": "pine-ridge",
+    "paceCapMps": 24,
+    "defaultWidthM": 5.5,
+    "references": [
+      "https://tigerweb.geo.census.gov/tigerwebmain/Files/acs25/tigerweb_acs25_roads_loc_ne_045.html",
+      "https://www.anyplaceamerica.com/directory/ne/dawes-county-31045/cemeteries/highland-center-cemetery-835590/",
+      "https://www.openstreetmap.org/way/175520650",
+      "https://www.openstreetmap.org/way/175533702",
+      "https://www.openstreetmap.org/way/14068530",
+      "https://www.openstreetmap.org/way/166663413",
+      "https://outdoornebraska.gov/learn/nebraska-habitat/woodlands/"
+    ],
+    "waypoints": [
+      {
+        "lat": 42.639048,
+        "lon": -103.3602382
+      },
+      {
+        "lat": 42.6390091,
+        "lon": -103.3428039
+      },
+      {
+        "lat": 42.6107396,
+        "lon": -103.1258691
+      }
+    ],
+    "surfaceNote": "OSM maps the Sawlog eastbound connector as Burlington Road (unpaved), followed by gravel Squaw Creek Road and Table Road. Bridge decks lacking surface tags retain the importer default; these short deck surfaces are not field verified. No road geometry is invented. Widths without explicit measurements use the mapped lane count and importer estimates.",
+    "landmarkNotes": [
+      {
+        "name": "Sawlog Road junction",
+        "lat": 42.639048,
+        "lon": -103.3602382,
+        "note": "OSM names the eastbound connector Burlington Road; user calls this Squaw Creek/Sawlog."
+      },
+      {
+        "name": "Highland Center Cemetery",
+        "lat": 42.6107396,
+        "lon": -103.1258691,
+        "note": "Finish on Table Road by the mapped cemetery access; do not route through graves."
+      }
+    ]
+  }
+]

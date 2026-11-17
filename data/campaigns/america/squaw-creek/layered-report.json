@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Squaw Creek — Highland Center",
+    "baseline": 5422,
+    "target": 21688,
+    "after": 21688,
+    "added": 16266,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 9186,
+      "shrub": 4880,
+      "canopy": 2197,
+      "apex-hazard": 3
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 14242.174452729523,
+        "kind": "tree in",
+        "ref": "angeles-crest-dry-mountain-pine"
+      },
+      {
+        "id": "ecology-v2-hazard-1",
+        "distance": 18286.214295134025,
+        "kind": "rock in",
+        "ref": "gray-rock-01"
+      },
+      {
+        "id": "ecology-v2-hazard-2",
+        "distance": 22497.972496075046,
+        "kind": "tree in",
+        "ref": "angeles-crest-dry-mountain-pine"
+      }
+    ],
+    "rejected": 411
+  }
+]

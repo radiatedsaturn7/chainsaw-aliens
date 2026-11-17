@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "race-doodad",
-  "savedAt": 1794370809223,
+  "savedAt": 1794860932871,
   "doodad": {
     "id": "campaign-expanded-bush-dogwood-sapling-01",
     "name": "expanded-bush-dogwood-sapling-01",
@@ -19,7 +19,7 @@
     "weightKg": 5,
     "defaultRule": {
       "behavior": "flatten",
-      "speedDrainPercent": 1,
+      "speedDrainPercent": 0.2,
       "damage": {
         "panels": 0,
         "suspension": 0,

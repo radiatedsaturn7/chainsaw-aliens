@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Old Staples Road",
+    "baseline": 172,
+    "target": 688,
+    "after": 688,
+    "added": 516,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 286,
+      "shrub": 170,
+      "canopy": 59,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 1127.0377367938777,
+        "kind": "tree in",
+        "ref": "mostly-bare-pine-01"
+      }
+    ],
+    "rejected": 21
+  }
+]

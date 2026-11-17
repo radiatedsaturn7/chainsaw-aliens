@@ -1,1 +1,55 @@
-{"__chainsawStorage": "compact-v1", "encoding": "json-gzip-base64", "data": "H4sIAAAAAAAC/42RTU/DMAyG/0vO3dSPlW69DSEEQhNoTHBAHLLGbaOmTpWkgzH1v+MUNibBgRwixe/rx7F9YLaooeVPYKzUyPIoYI1EwXJmeAETobXgggXM8h2IpSNDtpglyTxJZot5FrBvQ35g0icVvO24rHBSGv0BONn2tp6EEQGQt0CGX3Fu3BrKvxRprwELSiq5shCw0r82tSwaBGtXLA+nCbkctJt959m2AASzp9QelS6aDbXQ3PpvUajVAhTLsVcqYG9SuJoI8XSRRbN4nh7vNGA1yKp2JEYeXxndo7gvSws+FpIu3Va/P58IaZyeMS6OhpsfTJSF5yem+qN4V5FKLwEl75Vb9wr8IFuJjx2AWHX1WHALNd9JbfyMFHcO0O/DO64Ml/gAhvqmzcyJxFtejZCOIyg77tP2ZMav9RIOsJJInnAYAmaoJrleXoPT6pbGXfqercf8d1DDMHwCbRwam0sCAAA="}
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794880497985,
+  "selectedDoodadId": "campaign-frozen-bush-01",
+  "doodad": {
+    "id": "campaign-frozen-bush-01",
+    "name": "frozen-bush-01",
+    "artRef": "frozen-bush-01",
+    "isFence": false,
+    "fenceMirrorRepeat": false,
+    "fenceThicknessM": 0.3,
+    "itemType": "scenery",
+    "unlockTrackId": "",
+    "model": null,
+    "widthM": 2.9714285714285715,
+    "heightM": 1.3,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 2.525714285714286,
+    "hitboxHeightM": 1.1700000000000002,
+    "weightKg": 5,
+    "defaultRule": {
+      "minSpeedMph": 0,
+      "behavior": "collide",
+      "speedDrainPercent": 45,
+      "damage": {
+        "panels": 14,
+        "suspension": 6,
+        "engine": 3.5
+      }
+    },
+    "rules": [
+      {
+        "minSpeedMph": 30,
+        "behavior": "flatten",
+        "speedDrainPercent": 18,
+        "damage": {
+          "panels": 2.5,
+          "suspension": 0,
+          "engine": 0
+        }
+      },
+      {
+        "minSpeedMph": 120,
+        "behavior": "fly-off",
+        "speedDrainPercent": 16,
+        "damage": {
+          "panels": 4.5,
+          "suspension": 0,
+          "engine": 0
+        }
+      }
+    ]
+  }
+}
