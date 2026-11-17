@@ -143,3 +143,5 @@ test(`${name} measured wheel wells coincide with production rig after editor rou
 import '../helpers/carCatalogPlaceholderPilotCases.js';
 
 import '../helpers/carCatalogPlaceholderWave02Cases.js';
+
+import "../helpers/carCatalogPlaceholderWave03Cases.js";

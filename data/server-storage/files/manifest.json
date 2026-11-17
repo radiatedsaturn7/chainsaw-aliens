@@ -1497,7 +1497,9 @@
       "Sanicle 1970": "cars/Sanicle 1970/document.json",
       "Starflower 20 2024": "cars/Starflower 20 2024/document.json",
       "Starflower 25 2024": "cars/Starflower 25 2024/document.json",
-      "Briar Trail 2024": "cars/Briar Trail 2024/document.json"
+      "Briar Trail 2024": "cars/Briar Trail 2024/document.json",
+      "Snowbell GT 2023": "cars/Snowbell GT 2023/document.json",
+      "Arrowleaf GT 2013": "cars/Arrowleaf GT 2013/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",

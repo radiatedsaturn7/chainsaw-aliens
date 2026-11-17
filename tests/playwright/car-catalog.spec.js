@@ -60,3 +60,5 @@ test('catalog pilot hydrates published art and renders eight body angles plus da
 import '../helpers/carCatalogPlaceholderPickerCases.js';
 
 import '../helpers/carCatalogPlaceholderWave02PickerCases.js';
+
+import "../helpers/carCatalogPlaceholderWave03PickerCases.js";
