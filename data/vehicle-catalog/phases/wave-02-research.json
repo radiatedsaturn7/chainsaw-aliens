@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "vehicles": [
+    {
+      "candidateId": "subaru-forester-2024-wilderness-us",
+      "id": "briar-trail-2024",
+      "name": "Briar Trail 2024",
+      "referenceVehicle": "2024 US Subaru Forester Wilderness, standard equipment, 2.5L AWD Lineartronic CVT; not 2025 Forester or existing Base",
+      "researchStatus": "primary-source-anchors-reviewed",
+      "source": {
+        "url": "https://www.subaru.com/content/dam/subaru/downloads/pdf/brochures/2025/2025_Forester_Brochure_120424.pdf",
+        "publisher": "Subaru of America",
+        "access": "Factory PDF text read 2026-11-17; explicit 2024 Wilderness exceptions only, not 2025 engine/mass",
+        "fields": [
+          "2.5L",
+          "182 hp at 5800 rpm",
+          "176 lb-ft at 4400 rpm",
+          "3620 lb base curb",
+          "72.2 in width",
+          "68.9 in height",
+          "104.9 in wheelbase",
+          "61.4 in tracks",
+          "9.2 in clearance",
+          "16.6 US gal",
+          "AWD CVT"
+        ]
+      },
+      "facts": {
+        "powerHp": 182,
+        "torqueLbFt": 176,
+        "powerRpm": 5800,
+        "torqueRpm": 4400,
+        "curbLb": 3620,
+        "engineDisplacementL": 2.5,
+        "widthIn": 72.2,
+        "heightIn": 68.9,
+        "wheelbaseIn": 104.9,
+        "trackFrontIn": 61.4,
+        "trackRearIn": 61.4,
+        "fuelTankUSgal": 16.6,
+        "drivetrain": "awd",
+        "transmission": "cvt",
+        "groundClearanceIn": 9.2
+      },
+      "simulationEstimates": {
+        "lengthIn": 182.7,
+        "tireSize": [
+          225,
+          60,
+          17
+        ],
+        "cvtMinRatio": 0.57,
+        "cvtMaxRatio": 4.07,
+        "finalDrive": 4.11,
+        "reverseRatio": 3.67,
+        "cruiseRpm": 1900,
+        "ratioRatePerSecond": 0.85,
+        "frontWeightDistribution": 0.58,
+        "dragCoefficient": 0.36,
+        "redlineRpm": 6300,
+        "revLimitRpm": 6500,
+        "cgHeightM": 0.67,
+        "groundClearanceM": 0.23367999999999997,
+        "suspensionTravelM": 0.21,
+        "tireGrip": 0.75,
+        "spring": 0.39,
+        "antiRollRear": 0.18,
+        "topSpeedMph": 110,
+        "zeroToSixtySec": 9.2
+      },
+      "limits": [
+        "All calibration beyond listed facts is estimated: CVT bounds/final/reverse, tire sizing, length (factory mixed-year table omits explicit Wilderness length), CG/load, redline, off-peak torque, drag/grip, rates/travel, steering/brakes, efficiency and performance. Ground clearance is a conversion of the sourced 9.2 inches.",
+        "Generic continuous CVT and AWD semantics only; no OEM X-MODE, SI-DRIVE, active torque vectoring, towing or differential controller fidelity claimed. Distinct raised off-road suspension geometry and estimated shorter gearing versus Base are intentional.",
+        "RTG-001 body and cockpit art are shared placeholders; no original art, model-specific instrument fitting or browser driving acceptance claimed."
+      ]
+    }
+  ]
+}

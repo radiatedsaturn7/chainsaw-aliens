@@ -141,3 +141,5 @@ test(`${name} measured wheel wells coincide with production rig after editor rou
 
 // Pilot cases register here so existing Vehicle Catalog CI executes them.
 import '../helpers/carCatalogPlaceholderPilotCases.js';
+
+import '../helpers/carCatalogPlaceholderWave02Cases.js';

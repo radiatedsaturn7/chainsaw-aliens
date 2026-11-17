@@ -1496,7 +1496,8 @@
       "Rampion 1987": "cars/Rampion 1987/document.json",
       "Sanicle 1970": "cars/Sanicle 1970/document.json",
       "Starflower 20 2024": "cars/Starflower 20 2024/document.json",
-      "Starflower 25 2024": "cars/Starflower 25 2024/document.json"
+      "Starflower 25 2024": "cars/Starflower 25 2024/document.json",
+      "Briar Trail 2024": "cars/Briar Trail 2024/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",

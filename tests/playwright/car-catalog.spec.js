@@ -58,3 +58,5 @@ test('catalog pilot hydrates published art and renders eight body angles plus da
 
 // Shared-art phase-2 pilot: keyboard and touch picker-to-drive acceptance.
 import '../helpers/carCatalogPlaceholderPickerCases.js';
+
+import '../helpers/carCatalogPlaceholderWave02PickerCases.js';
