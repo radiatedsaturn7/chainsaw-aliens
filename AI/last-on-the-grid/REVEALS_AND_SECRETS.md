@@ -1,4 +1,6 @@
 # Reveals and Secrets — Decision Log
+
+> **CURRENT REVEAL REVIEW:** [Revelation Map v0.1](REVELATION_MAP.md) tracks player/Rob/Cait knowledge, the Heaven complication, and the unresolved year-2994 chronology. This older decision log remains active for unresolved canon questions.
 > These are questions to decide, **not** answers already fixed.
 
 | Question | Current understanding | Decision needed |
