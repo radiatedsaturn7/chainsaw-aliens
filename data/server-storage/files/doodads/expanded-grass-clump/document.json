@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "race-doodad",
-  "savedAt": 1794880497985,
+  "savedAt": 1794892167505,
   "selectedDoodadId": "campaign-expanded-grass-clump",
   "doodad": {
     "id": "campaign-expanded-grass-clump",
@@ -20,36 +20,14 @@
     "hitboxHeightM": 0.9,
     "weightKg": 1,
     "defaultRule": {
-      "minSpeedMph": 0,
-      "behavior": "collide",
-      "speedDrainPercent": 45,
+      "behavior": "flatten",
+      "speedDrainPercent": 0,
       "damage": {
-        "panels": 14,
-        "suspension": 6,
-        "engine": 3.5
+        "panels": 0,
+        "suspension": 0,
+        "engine": 0
       }
     },
-    "rules": [
-      {
-        "minSpeedMph": 30,
-        "behavior": "flatten",
-        "speedDrainPercent": 18,
-        "damage": {
-          "panels": 2.5,
-          "suspension": 0,
-          "engine": 0
-        }
-      },
-      {
-        "minSpeedMph": 120,
-        "behavior": "fly-off",
-        "speedDrainPercent": 16,
-        "damage": {
-          "panels": 4.5,
-          "suspension": 0,
-          "engine": 0
-        }
-      }
-    ]
+    "rules": []
   }
 }

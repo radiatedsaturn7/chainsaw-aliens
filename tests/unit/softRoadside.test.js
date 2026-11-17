@@ -76,3 +76,14 @@ test('embedded track definitions cannot override softened library collisions', (
  assert.equal(race.sceneryDefinitions[2].defaultRule.behavior,'collide');
  assert.equal(softenRaceRoadside(race,()=>null).embeddedDefinitionsUpdated,0);
 });
+
+test('regional artwork retains the original shrub soft-collision policy', () => {
+ const shrub={...solid(),artRef:'regional-bush'};
+ const race={road:{width:8},scenery:[{doodadRef:'regional-bush',trackLateral:25,
+  campaignAppearance:{originalRef:'frozenbush'},previewDoodad:structuredClone(shrub)}]};
+ softenRaceRoadside(race,()=>shrub);
+ assert.equal(race.scenery[0].doodadRef,'regional-bush');
+ assert.equal(race.scenery[0].previewDoodad.defaultRule.behavior,'flatten');
+ assert.equal(race.scenery[0].previewDoodad.defaultRule.speedDrainPercent,.2);
+ assert.deepEqual(race.scenery[0].previewDoodad.defaultRule.damage,{panels:0,suspension:0,engine:0});
+});

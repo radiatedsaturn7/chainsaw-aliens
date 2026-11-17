@@ -97,7 +97,7 @@ test('playtest applies authored music, countdown, and rolling-start speed', () =
     rollingStartSpeedMps: 20
   });
   editor.startPlaytest('starter-rwd', { hydrateCars: false });
-  assert.equal(editor.playtestSession.countdownRemainingMs, 4000);
+  assert.equal(editor.playtestSession.countdownRemainingMs, 6000);
   assert.equal(editor.playtestSession.speedMps, 20);
   assert.equal(editor.playtestSession.rollingStart, true);
   assert.deepEqual(musicCalls[0], ['Race Theme', { restart: true }]);

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "race-doodad",
-  "savedAt": 1794880497985,
+  "savedAt": 1794892167471,
   "selectedDoodadId": "campaign-frozen-bush-01",
   "doodad": {
     "id": "campaign-frozen-bush-01",
@@ -20,36 +20,14 @@
     "hitboxHeightM": 1.1700000000000002,
     "weightKg": 5,
     "defaultRule": {
-      "minSpeedMph": 0,
-      "behavior": "collide",
-      "speedDrainPercent": 45,
+      "behavior": "flatten",
+      "speedDrainPercent": 0.2,
       "damage": {
-        "panels": 14,
-        "suspension": 6,
-        "engine": 3.5
+        "panels": 0,
+        "suspension": 0,
+        "engine": 0
       }
     },
-    "rules": [
-      {
-        "minSpeedMph": 30,
-        "behavior": "flatten",
-        "speedDrainPercent": 18,
-        "damage": {
-          "panels": 2.5,
-          "suspension": 0,
-          "engine": 0
-        }
-      },
-      {
-        "minSpeedMph": 120,
-        "behavior": "fly-off",
-        "speedDrainPercent": 16,
-        "damage": {
-          "panels": 4.5,
-          "suspension": 0,
-          "engine": 0
-        }
-      }
-    ]
+    "rules": []
   }
 }

@@ -31,7 +31,8 @@ export function softenRaceRoadside(race, definition) {
  const roadWidth = Math.max(Number(race.road?.width) || 7, ...widths);
  for (const sprite of race.scenery || []) {
   const ref = sprite.doodadRef || sprite.previewDoodad?.artRef || sprite.artRef;
-  const kind = roadsideKind(ref);
+  const policyRef = roadsideKind(ref) ? ref : sprite.campaignAppearance?.originalRef;
+  const kind = roadsideKind(policyRef);
   if (!kind || sprite.fenceId || sprite.ecologyLayer === 'apex-hazard' || sprite.previewDoodad?.isFence) continue;
   const def = definition(ref);
   if (!def || def.isFence) continue;
@@ -41,8 +42,8 @@ export function softenRaceRoadside(race, definition) {
   const near = sprite.trackLateral != null && Number.isFinite(lateral)
    && Math.abs(lateral) - roadWidth / 2 - Number(sprite.widthM || def.widthM || 1) / 2 <= 6;
   if (kind === 'shrub' && (near || sprite.ecologyLayer === 'verge')) {
-   const grassRef = /frozen/.test(ref) ? 'expanded-grass-clump'
-    : /dry-scrub/.test(ref) ? 'expanded-grass-little-bluestem-01' : 'expanded-grass-roadside-weeds-01';
+   const grassRef = /frozen/.test(policyRef) ? 'expanded-grass-clump'
+    : /dry-scrub/.test(policyRef) ? 'expanded-grass-little-bluestem-01' : 'expanded-grass-roadside-weeds-01';
    const grass = definition(grassRef);
    if (!grass) throw new Error(`Missing grass definition: ${grassRef}`);
    const height = Math.min(.45, Number(sprite.heightM || def.heightM) || .45);
@@ -54,7 +55,7 @@ export function softenRaceRoadside(race, definition) {
    delete sprite.model;
    sprite.ecologyLayer = 'verge';
    result.grassReplacements++;
-  } else if (sprite.previewDoodad && softenRoadsideDefinition(sprite.previewDoodad, ref)) result.overridesUpdated++;
+  } else if (sprite.previewDoodad && softenRoadsideDefinition(sprite.previewDoodad, policyRef)) result.overridesUpdated++;
   // An instance's old solid flag overrides even a corrected doodad definition.
   if (sprite.solid === true || sprite.collidable === true) result.overridesUpdated++;
   delete sprite.solid; delete sprite.collidable;
