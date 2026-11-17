@@ -1279,7 +1279,10 @@
       "catalog-rampion-1987-wheels": "art/catalog-rampion-1987-wheels/document.json",
       "catalog-sanicle-1970-body": "art/catalog-sanicle-1970-body/document.json",
       "catalog-sanicle-1970-dashboard": "art/catalog-sanicle-1970-dashboard/document.json",
-      "catalog-sanicle-1970-wheels": "art/catalog-sanicle-1970-wheels/document.json"
+      "catalog-sanicle-1970-wheels": "art/catalog-sanicle-1970-wheels/document.json",
+      "catalog-tutsan-2003-body": "art/catalog-tutsan-2003-body/document.json",
+      "catalog-tutsan-2003-dashboard": "art/catalog-tutsan-2003-dashboard/document.json",
+      "catalog-tutsan-2003-wheels": "art/catalog-tutsan-2003-wheels/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1494,7 +1497,8 @@
       "Soapwort 1995": "cars/Soapwort 1995/document.json",
       "Burnet 2005": "cars/Burnet 2005/document.json",
       "Rampion 1987": "cars/Rampion 1987/document.json",
-      "Sanicle 1970": "cars/Sanicle 1970/document.json"
+      "Sanicle 1970": "cars/Sanicle 1970/document.json",
+      "Tutsan 2003": "cars/Tutsan 2003/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
