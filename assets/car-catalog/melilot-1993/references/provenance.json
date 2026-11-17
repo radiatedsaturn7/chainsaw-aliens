@@ -1,0 +1,62 @@
+{
+  "referenceVehicle": "Juha Kankkunen / Nicky Grist,1993 Network Q RAC Rally-winning Toyota Celica ST185 Group A. Not Rod Millen1994 Unlimited prototype,roadGT-Four,Carlos Sainz special,ST205 or Nicky Grist later restored chassis.",
+  "sources": [
+    {
+      "url": "https://mag.toyota.co.uk/gr-yaris-road-trip-1000-mile-adventure-across-the-uk/",
+      "fields": [
+        "crew",
+        "1993 RAC result",
+        "Group A context"
+      ],
+      "access": "Toyota retrospective with co-driver recollections corroborates1993RAC win. Later demonstration car is not asserted the winning chassis."
+    },
+    {
+      "url": "https://toyotagazooracing.com/jp/eventexhibition/tokyoautosalon2017/lineup/historical-wrc-car/",
+      "fields": [
+        "ST185 competition dimensions",
+        "wheelbase",
+        "minimum displayed mass",
+        "displacement"
+      ],
+      "access": "Toyota2017historical competition display:4410x1745x1300mm,2525mmwheelbase,at least1200kg,1998cc. Reference model,not a1993RAC setup sheet."
+    },
+    {
+      "url": "https://www.wrc.com/en/misc/toyota-celica-turbo-4wd-gt-four",
+      "fields": [
+        "turbo four-cylinder",
+        "approximate reference power",
+        "AWD"
+      ],
+      "access": "Championship history reports turbo2.0L four around300bhp; family reference,not event-certified output."
+    }
+  ],
+  "verifiedFacts": {
+    "driver": "Juha Kankkunen",
+    "coDriver": "Nicky Grist",
+    "event": "1993 Network Q RAC Rally",
+    "achievement": "overall rally win",
+    "referencePowerBhpApprox": 300,
+    "referenceDisplacementCc": 1998,
+    "referenceDimensionsMm": [
+      4410,
+      1745,
+      1300
+    ],
+    "referenceWheelbaseMm": 2525,
+    "referenceDisplayMassMinimumKg": 1200,
+    "eventDaySetupVerified": false
+  },
+  "collection": {
+    "name": "Legends",
+    "driver": "Juha Kankkunen",
+    "event": "1993 Network Q RAC Rally",
+    "targetCollectionSize": 25
+  },
+  "estimates": [
+    "300bhp is an approximate championship family reference used as game horsepower,not certified1993RAC output.350lbft peak3500rpm,6000rpm power point,full curve,1100idle7000red7400cut,turbo response,launch and shift behavior are estimates.",
+    "1230kg running mass is an estimate above the later display reference minimum1200kg,not a verified event weight or road curb mass.59percent front,1.51mtracks,CG.5,180mmclearance,Cd.39,12.5steering,80L fuel,205/65R15 Rally tires30psi,125mph4.4sec and suspension/brakes are modeling estimates.",
+    "Six-speed gearbox count,2.8/1.95/1.5/1.2/1/.85 ratios,4.1final,3.0reverse are modeling estimates,not verified1993RAC gearing. Auto Assist automates this manual. No exact Xtrac gearset claim.",
+    "Existing fixed50percentAWD and passive limited-slip settings approximate competition traction. No active torque-vectoring,anti-lag implementation or event tire/stud changes. Generic aero remains an estimate. No runtime or race changes.",
+    "Original logo-free sage/grey2994 three-door coupe,pop-up lamps,low rear spoiler and stripped LHD H-pattern cockpit. No copied sponsor livery,logos,driver likeness or exact event-day cockpit/chassis claim. Auxiliary lamps and live retrofit gauges are original artistic choices."
+  ]
+}

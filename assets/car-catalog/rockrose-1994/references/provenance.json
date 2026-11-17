@@ -1,0 +1,58 @@
+{
+  "referenceVehicle": "Rod Millen, 1994 Toyota Celica AWD Unlimited Pikes Peak prototype, overall gravel course record 10:04.060. Not road Celica GT-S, ST185 Group A rally Celica, later Tacoma, or a verified replica of event-day setup.",
+  "sources": [
+    {
+      "url": "https://mag.toyota.co.uk/toyota-people-motorsport-legend-rod-millen/",
+      "fields": [
+        "driver",
+        "1994 result",
+        "AWD",
+        "Eagle-derived four-cylinder",
+        "reference power",
+        "underwing"
+      ],
+      "access": "Toyota interview with Millen: TRD Eagle programme four-cylinder, about850hp at altitude and underwing development. Retrospective driver report, not a homologation or event setup sheet."
+    },
+    {
+      "url": "https://ppihc.org/100-days-out-preparing-for-the-100th-running-of-the-pikes-peak-international-hill-climb/",
+      "fields": [
+        "driver",
+        "year",
+        "event result"
+      ],
+      "access": "Organizer identifies Millen and Celica Super Sport Turbo,1994 gravel record10:04.060."
+    },
+    {
+      "url": "https://www.leadfootfestival.com/leadfoot-festival/2020-competitors/",
+      "fields": [
+        "prototype lineage",
+        "reference construction"
+      ],
+      "access": "Later custodian-associated appearance lists1994 record Celica,2.1L turbo four,tube frame,custom4WD and composite body; later specification is not event-day proof."
+    }
+  ],
+  "verifiedFacts": {
+    "driver": "Rod Millen",
+    "event": "1994 Pikes Peak",
+    "achievement": "overall course record on gravel",
+    "recordTime": "10:04.060",
+    "referencePowerHpApprox": 850,
+    "powerBasis": "retrospective driver interview, approximately850hp at altitude; measurement standard and exact event boost unspecified",
+    "referenceEngine": "TRD Eagle-derived turbocharged four-cylinder",
+    "drivetrain": "AWD",
+    "eventDaySetupVerified": false
+  },
+  "collection": {
+    "name": "Legends",
+    "driver": "Rod Millen",
+    "event": "1994 Pikes Peak",
+    "targetCollectionSize": 25
+  },
+  "estimates": [
+    "850hp is a retrospective reference applied directly as game horsepower, not certified SAE/DIN output or an altitude correction.650lbft peak6000rpm,8000rpm power point,full torque curve,turbo response,1200idle8500red8800cut and launch behavior are simulation estimates.",
+    "900kg mass,50percent front weight,2.53m wheelbase,4.55x1.98x1.34m body,1.72m tracks,CG.43,130mm clearance,Cd.55,12 steering ratio,45L fuel,285/45R16 Rally tires28psi,suspension/brakes,145mph2.8sec display figures are estimates; no road-Celica curb specifications are asserted.2.1L is a later reference, not verified event-day displacement.",
+    "Five-speed gearbox count,2.8/1.95/1.5/1.18/.97 ratios,4.1final,3.2reverse and shifts are modeling choices,not verified Millen gearing. Auto Assist only automates that model.",
+    "Existing fixed50percentAWD and limited-slip settings approximate traction. Generic aero .4/.6 is not a calibration to the reported2000lb at100mph; no altitude boost control,ground-effect suction model or event tire model added. No runtime/world changes.",
+    "Original logo-free glacier-blue2994 body,wide splitter/underbody and elevated wing,empty wheel arches,period stripped LHD cockpit and live retrofit instruments. No sponsor graphics,logos,driver likeness or exact event-day appearance claim."
+  ]
+}
