@@ -66,3 +66,5 @@ import "../helpers/carCatalogPlaceholderWave03PickerCases.js";
 import "../helpers/carCatalogPlaceholderWave04PickerCases.js";
 
 import "../helpers/carCatalogPlaceholderWave05PickerCases.js";
+
+import "../helpers/carCatalogPlaceholderWave06PickerCases.js";

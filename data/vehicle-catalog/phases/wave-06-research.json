@@ -1,0 +1,324 @@
+{
+  "schemaVersion": 1,
+  "base": "4e7caa29cfdc2aafd83a4e20a1a6a331d3397a08",
+  "scope": "Three existing slots; ordinary compact/utility wave. Primary anchors with explicit provisional gaps; no slot inflation.",
+  "vehicles": [
+    {
+      "candidateId": "nissan-be-1-1987-roster-candidate",
+      "id": "pearlwort-1987",
+      "name": "Pearlwort 1987",
+      "identity": {
+        "year": 1987,
+        "make": "Nissan",
+        "model": "Be-1",
+        "trim": "BK10 standard-roof 3AT",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1987 Japan Nissan Be-1 BK10 standard-roof 3AT",
+      "sources": [
+        {
+          "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/Be_1_standardroof.html",
+          "publisher": "Nissan Motor Co.",
+          "access": "Primary manufacturer historical reference read 2026-11-17",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "transmission",
+            "gearCount",
+            "tireSize"
+          ]
+        }
+      ],
+      "facts": {
+        "powerKw": 38,
+        "publishedPowerPS": 52,
+        "torqueNm": 75,
+        "powerRpm": 6000,
+        "torqueRpm": 3600,
+        "engineDisplacementL": 0.987,
+        "curbKg": 700,
+        "lengthM": 3.635,
+        "widthM": 1.58,
+        "heightM": 1.395,
+        "wheelbaseM": 2.3,
+        "trackFrontIn": 53.74015748031496,
+        "trackRearIn": 53.1496062992126,
+        "transmission": "automatic",
+        "gearCount": 3,
+        "tireSize": [
+          165,
+          70,
+          12
+        ]
+      },
+      "simulationEstimates": {
+        "aspiration": "Naturally Aspirated",
+        "reverseRatio": 3.3,
+        "frontWeightDistribution": 0.61,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.16,
+        "dragCoefficient": 0.46,
+        "tireGrip": 0.7,
+        "spring": 0.38,
+        "antiRollRear": 0.15,
+        "suspensionTravelM": 0.2,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 350,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "fuelTankUSgal": 10.6,
+        "drivetrain": "fwd",
+        "gearRatios": [
+          2.86,
+          1.56,
+          1
+        ],
+        "finalDrive": 3.89,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "topSpeedMph": 87,
+        "zeroToSixtySec": 17,
+        "transmissionLabel": "3-speed torque-converter automatic (estimated calibration)",
+        "torqueConverterSlip": 0.1,
+        "torqueConverterMultiplication": 1.6,
+        "launchRpm": 1800,
+        "autoDownshiftRpm": 1800
+      },
+      "limits": [
+        "Nissan Heritage standard-roof production reference, not canvas-roof or custom open stadium relief car. Distinct 700kg compact body from existing Pao/Figaro/S-Cargo; not a rebadge.",
+        "Nissan labels 38kW and 52PS rounded net ratings; runtime follows 38kW. Conventional automatic approximation has estimated ratios and converter behavior, not DCT.",
+        "Every input outside facts is a provisional simulation estimate, including ratios, torque-curve interpolation, load/inertia, grip, brakes, steering, springs/dampers, aero and performance. No exact factory handling claim.",
+        "Shared RTG-001 graphics/cockpit by reference; independent driving verification and original model-specific art are pending."
+      ]
+    },
+    {
+      "candidateId": "volkswagen-beetle-1963-roster-candidate",
+      "id": "chickweed-1200-1963",
+      "name": "Chickweed 1200 1963",
+      "identity": {
+        "year": 1963,
+        "make": "Volkswagen",
+        "model": "Beetle 1200",
+        "trim": "Type 11 Export saloon 4MT, solid roof",
+        "market": "European"
+      },
+      "referenceVehicle": "1963 European Volkswagen Beetle 1200 Type 11 Export saloon 4MT, solid roof",
+      "sources": [
+        {
+          "url": "https://www.volkswagen-newsroom.com/de/motorversionen-kaefer-12001200l-steckbrief-19586",
+          "publisher": "Volkswagen AG",
+          "access": "Primary manufacturer historical reference read 2026-11-17",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL"
+          ]
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/beetle-kaefer-12001200l-1954197319731985-19584",
+          "publisher": "Volkswagen AG",
+          "access": "Primary manufacturer historical reference read 2026-11-17",
+          "fields": [
+            "export 34PS post1960 identity",
+            "transmission",
+            "gearCount"
+          ]
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/de/fahrzeugdaten-kaefer-12001200l-steckbrief-19585",
+          "publisher": "Volkswagen AG",
+          "access": "Primary manufacturer historical reference read 2026-11-17",
+          "fields": [
+            "drivetrain",
+            "family-level dimensions used as provisional geometry"
+          ]
+        }
+      ],
+      "facts": {
+        "powerKw": 25,
+        "publishedPowerPS": 34,
+        "torqueNm": 82,
+        "powerRpm": 3600,
+        "torqueRpm": 2000,
+        "engineDisplacementL": 1.192,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 4
+      },
+      "simulationEstimates": {
+        "aspiration": "Naturally Aspirated",
+        "reverseRatio": 3.3,
+        "frontWeightDistribution": 0.4,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.16,
+        "dragCoefficient": 0.46,
+        "tireGrip": 0.7,
+        "spring": 0.38,
+        "antiRollRear": 0.15,
+        "suspensionTravelM": 0.2,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 350,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "fuelTankUSgal": 10.6,
+        "curbKg": 760,
+        "lengthM": 4.07,
+        "widthM": 1.54,
+        "heightM": 1.5,
+        "wheelbaseM": 2.4,
+        "trackFrontIn": 51.4,
+        "trackRearIn": 50.8,
+        "tireSize": [
+          155,
+          80,
+          15
+        ],
+        "gearRatios": [
+          3.8,
+          2.06,
+          1.32,
+          0.89
+        ],
+        "finalDrive": 4.375,
+        "redlineRpm": 4000,
+        "revLimitRpm": 4500,
+        "topSpeedMph": 71,
+        "zeroToSixtySec": 28
+      },
+      "limits": [
+        "Export 34PS variant, not contemporary 30PS standard, later 1300/1500, modified film car or Baja racer. Manufacturer historical family dimensions are provisional for exact 1963 equipment; curb mass/tires/ratios unverified estimates.",
+        "Swing-axle geometry, camber and period cross-ply behavior are not reproduced by generic suspension.",
+        "Every input outside facts is a provisional simulation estimate, including ratios, torque-curve interpolation, load/inertia, grip, brakes, steering, springs/dampers, aero and performance. No exact factory handling claim.",
+        "Shared RTG-001 graphics/cockpit by reference; independent driving verification and original model-specific art are pending."
+      ]
+    },
+    {
+      "candidateId": "volkswagen-thing-1973-roster-candidate",
+      "id": "glasswort-181-1973",
+      "name": "Glasswort 181 1973",
+      "identity": {
+        "year": 1973,
+        "make": "Volkswagen",
+        "model": "Type 181",
+        "trim": "1600 post-update civilian 4MT",
+        "market": "European"
+      },
+      "referenceVehicle": "1973 European Volkswagen Type 181 1600 post-update civilian 4MT",
+      "sources": [
+        {
+          "url": "https://www.volkswagen-newsroom.com/de/motorversionen-typ-181-kurierwagen-steckbrief-19671",
+          "publisher": "Volkswagen AG",
+          "access": "Primary manufacturer historical reference read 2026-11-17",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "powerRpm",
+            "engineDisplacementL"
+          ]
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/de/fahrzeugdaten-typ-181-kurierwagen-steckbrief-19670",
+          "publisher": "Volkswagen AG",
+          "access": "Primary manufacturer historical reference read 2026-11-17",
+          "fields": [
+            "drivetrain",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM"
+          ]
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/de/typ-181-kurierwagen-19691980-19669",
+          "publisher": "Volkswagen AG",
+          "access": "Primary manufacturer historical reference read 2026-11-17",
+          "fields": [
+            "1973 update identity",
+            "rear semi-trailing-arm revision"
+          ]
+        }
+      ],
+      "facts": {
+        "powerKw": 35,
+        "publishedPowerPS": 48,
+        "powerRpm": 4000,
+        "engineDisplacementL": 1.584,
+        "drivetrain": "rwd",
+        "lengthM": 3.78,
+        "widthM": 1.64,
+        "heightM": 1.62,
+        "wheelbaseM": 2.4
+      },
+      "simulationEstimates": {
+        "aspiration": "Naturally Aspirated",
+        "reverseRatio": 3.3,
+        "frontWeightDistribution": 0.42,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.2,
+        "dragCoefficient": 0.58,
+        "tireGrip": 0.7,
+        "spring": 0.38,
+        "antiRollRear": 0.15,
+        "suspensionTravelM": 0.2,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 350,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "fuelTankUSgal": 10.6,
+        "torqueNm": 100,
+        "torqueLbFt": 73.75621492772656,
+        "torqueRpm": 2000,
+        "curbKg": 900,
+        "transmission": "manual",
+        "gearCount": 4,
+        "trackFrontIn": 54.3,
+        "trackRearIn": 53.5,
+        "tireSize": [
+          185,
+          80,
+          14
+        ],
+        "gearRatios": [
+          3.8,
+          2.06,
+          1.26,
+          0.88
+        ],
+        "finalDrive": 4.375,
+        "redlineRpm": 4500,
+        "revLimitRpm": 4800,
+        "topSpeedMph": 68,
+        "zeroToSixtySec": 24
+      },
+      "limits": [
+        "Historical Thing slot resolved to European post-1973-update 48PS civilian Type181, not US emissions specification, 44PS earlier portal-axle model or military equipment claim. No AWD or reduction-hub simulation.",
+        "The engine table does not separately repeat torque for the 48PS row; 100Nm/2000 is explicitly estimated, not certified for this revision. Mass, tires, ratios and exact equipment remain estimates.",
+        "Every input outside facts is a provisional simulation estimate, including ratios, torque-curve interpolation, load/inertia, grip, brakes, steering, springs/dampers, aero and performance. No exact factory handling claim.",
+        "Shared RTG-001 graphics/cockpit by reference; independent driving verification and original model-specific art are pending."
+      ]
+    }
+  ]
+}

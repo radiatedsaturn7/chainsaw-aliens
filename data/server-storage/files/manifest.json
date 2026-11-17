@@ -1506,7 +1506,10 @@
       "Thornapple ACR 2016": "cars/Thornapple ACR 2016/document.json",
       "Sandspurry Six 1970": "cars/Sandspurry Six 1970/document.json",
       "Harebell RS 1973": "cars/Harebell RS 1973/document.json",
-      "Sea Lavender GTS 1993": "cars/Sea Lavender GTS 1993/document.json"
+      "Sea Lavender GTS 1993": "cars/Sea Lavender GTS 1993/document.json",
+      "Pearlwort 1987": "cars/Pearlwort 1987/document.json",
+      "Chickweed 1200 1963": "cars/Chickweed 1200 1963/document.json",
+      "Glasswort 181 1973": "cars/Glasswort 181 1973/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
