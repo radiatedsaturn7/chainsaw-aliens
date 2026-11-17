@@ -1,4 +1,6 @@
 # Story Timeline — Draft
+
+> **OLDER TIMELINE SNAPSHOT:** For the 11-mission review sequence, see [Chapter Treatments](CHAPTER_TREATMENTS/README.md) and [Revelation Map](REVELATION_MAP.md). This file is preserved for history; some prior proposed placements (dog, other scientist) have changed. No change is canon without approval.
 > Narrative order, not necessarily the order in which ideas were invented.
 
 | Act / sequence | Event | Status | Purpose |
