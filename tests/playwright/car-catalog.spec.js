@@ -68,3 +68,5 @@ import "../helpers/carCatalogPlaceholderWave04PickerCases.js";
 import "../helpers/carCatalogPlaceholderWave05PickerCases.js";
 
 import "../helpers/carCatalogPlaceholderWave06PickerCases.js";
+// Register the two Tutsan paged-picker/input cases in staging catalog CI.
+import "../helpers/tutsanStaticPickerCases.js";
