@@ -1,4 +1,6 @@
 # Last on the Grid — Story Bible
+
+> **CURRENT REVIEW PACKAGE (2026-11-17):** [Review Dashboard](REVIEW_DASHBOARD.md) · [Narrative Blueprint v0.1](NARRATIVE_BLUEPRINT.md) · [Chapter Treatments](CHAPTER_TREATMENTS/README.md) · [Literary Companion](LITERARY_COMPANION/CHAPTER_ANALYSIS.md). This older bible remains a historical snapshot; newer ideas are **proposed**, not approved canon. In the latest review, the dead-scientist scene is mapped to Mission 07, the dog encounter is optional (Rob feeds it if retained), Cait initiates the California trip, and the ending remains deliberately reserved.
 > REVIEW DRAFT · 2026-11-13 · Not all entries are canon.
 
 ## Premise [ESTABLISHED]
