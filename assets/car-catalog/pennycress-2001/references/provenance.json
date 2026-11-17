@@ -1,0 +1,52 @@
+{
+  "referenceVehicle": "2001 United States Saturn SL1 four-door sedan, standard five-speed manual, 1.9L SOHC8v, FWD, light silver with grey cloth. Not SL2 DOHC, coupe, wagon or automatic. Representative ordinary trim, no personal-owner claim.",
+  "sources": [
+    {
+      "url": "https://saturnarchive.com/brochures/2001-Saturn-S-Series-Prestige.pdf",
+      "fields": [
+        "market and SL1 trim",
+        "engine and output RPM",
+        "manual curb mass",
+        "dimensions and tracks",
+        "tires",
+        "fuel capacity",
+        "Cd",
+        "equipment"
+      ],
+      "access": "Original factory brochure,PDF pages24/25,printed19/20,visually reviewed. SL1 column distinct from SL and SL2. Full source preserved."
+    }
+  ],
+  "verifiedFacts": {
+    "market": "US",
+    "trim": "SL1",
+    "year": 2001,
+    "powerHp": 100,
+    "powerRpm": 5000,
+    "torqueLbFt": 114,
+    "torqueRpm": 2400,
+    "displacementCc": 1901,
+    "curbWeightLbManual": 2351,
+    "wheelbaseIn": 102.4,
+    "lengthIn": 178.1,
+    "widthIn": 66.4,
+    "heightIn": 55,
+    "frontTrackIn": 56.8,
+    "rearTrackIn": 56,
+    "tires": "P185/65R14",
+    "fuelUSGal": 12.1,
+    "dragCoefficient": 0.315,
+    "brakes": "front disc/rear drum",
+    "absTractionControl": "optional, not standard"
+  },
+  "collection": {
+    "name": "First Keys",
+    "targetCollectionSize": 20
+  },
+  "estimates": [
+    "Factory100hp5000rpm and114lbft2400rpm define the curve anchors. Remaining torque curve,800idle5500red6000cut,response,shift and launch behavior are estimates.2351lb manual curb converts to1066.396kg.",
+    "Five-speed count is factory;3.25/1.95/1.25/.90/.68 ratios,4.06final,2.92reverse are explicitly estimated, not verified Saturn MP2 gearing. Auto Assist automates this same manual, not the optional factory4AT.",
+    "61percent front weight,.53mCG,140mmclearance,17.5steering ratio,30psi,suspension,damping,brake balance,105mph and10.5sec display figures are simulation estimates. No racing power or grip upgrades. Open front differential modeled with zero locking.",
+    "Factory optional ABS/traction control is not asserted standard; game-wide assists remain user controls. Generic shared moving wheel artwork is a visual simplification of factory14inch steel wheels/covers, not a tire or performance upgrade.",
+    "Original logo-free silver2994 ordinary sedan and grey cloth cabin, live retrofit digital gauges and animated steering wheel. Cabin layout and optional convenience equipment shown artistically, no exact owner-car claim. No runtime or race changes."
+  ]
+}
