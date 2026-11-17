@@ -72,3 +72,5 @@ import "../helpers/carCatalogPlaceholderWave06PickerCases.js";
 import "../helpers/tutsanStaticPickerCases.js";
 
 import "../helpers/carCatalogPlaceholderWave07PickerCases.js";
+
+import "../helpers/carCatalogPlaceholderWave08PickerCases.js";

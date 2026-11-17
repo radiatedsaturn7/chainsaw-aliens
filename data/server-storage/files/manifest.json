@@ -1516,7 +1516,13 @@
       "Tutsan 2003": "cars/Tutsan 2003/document.json",
       "Storksbill R 1987": "cars/Storksbill R 1987/document.json",
       "Shepherds Purse 1969": "cars/Shepherds Purse 1969/document.json",
-      "Ladyfern R 1990": "cars/Ladyfern R 1990/document.json"
+      "Ladyfern R 1990": "cars/Ladyfern R 1990/document.json",
+      "Brooklime 1994": "cars/Brooklime 1994/document.json",
+      "Moschatel 1973": "cars/Moschatel 1973/document.json",
+      "Fumitory 1983": "cars/Fumitory 1983/document.json",
+      "Sandwort 1988": "cars/Sandwort 1988/document.json",
+      "Water Avens 1995": "cars/Water Avens 1995/document.json",
+      "Quaking Grass 2003": "cars/Quaking Grass 2003/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",

@@ -153,3 +153,5 @@ import "../helpers/carCatalogPlaceholderWave05Cases.js";
 import "../helpers/carCatalogPlaceholderWave06Cases.js";
 
 import "../helpers/carCatalogPlaceholderWave07Cases.js";
+
+import "../helpers/carCatalogPlaceholderWave08Cases.js";
