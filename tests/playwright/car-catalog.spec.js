@@ -55,3 +55,6 @@ test('catalog pilot hydrates published art and renders eight body angles plus da
  await testInfo.attach('catalog-pilot-render-stats',{body:Buffer.from(JSON.stringify(result,null,2)),contentType:'application/json'});
  // This is an asset-render smoke test, not a claim of collision/handling QA.
 });
+
+// Register the two Tutsan paged-picker/input cases in staging catalog CI.
+import "../helpers/tutsanStaticPickerCases.js";
