@@ -5,7 +5,7 @@ import fs from 'node:fs';
 const targets=JSON.parse(fs.readFileSync(new URL('../../data/vehicle-catalog/phases/three-car-fitting-pilot.json',import.meta.url))).vehicles;
 for(const target of targets)for(const mobile of [false,true])test(`Fitting pilot ${target.name} ${mobile?'handheld touch':'desktop keyboard'} static picker initial page, later page, cockpit and real input drive`,async({playwright},info)=>{
  test.setTimeout(360000);
- const browser=await playwright.chromium.launch({chromiumSandbox:true});
+ const browser=await playwright.chromium.launch({channel:'chrome',chromiumSandbox:true});
  try {
  const context=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1280,height:720},isMobile:mobile,hasTouch:mobile});if(mobile)await context.addInitScript(()=>Object.defineProperty(navigator,'userAgentData',{value:{mobile:true}}));const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/index.html?hideFullscreenForTesting');await page.waitForFunction(()=>window.__gameReady&&window.__game?.state!=='loading');
