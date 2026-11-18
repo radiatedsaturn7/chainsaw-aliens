@@ -2,7 +2,7 @@
 **Working rules · v0.1 · 2026-11-17 · REVIEW, not approved canon**
 
 ## The story we're telling
-A human and an android drive from frozen Rhode Island to the Pacific because **Cait has chosen to see that ocean** and Rob has promised to take her. This is not a quest to save civilization. It is a road story about what it means to love, be understood, and choose someone when neither usefulness nor certainty can guarantee affection.
+In 2994, about ten years after most humans rapidly migrated into a digital “Heaven,” a remaining biological human and an android drive from frozen Rhode Island to the Pacific because **Cait has chosen to see that ocean** and Rob has promised to take her. This is not a quest to save civilization. It is a road story about what it means to love, be understood, and choose someone when neither usefulness nor certainty can guarantee affection.
 
 **Dramatic question:** Can Rob and Cait recognize a real relationship when they cannot agree on what to call it?
 **Rob's mistaken equation:** useful → needed → kept → loved. He fears being loved without being useful because he does not know what to do with a gift he cannot earn.
@@ -18,7 +18,9 @@ A human and an android drive from frozen Rhode Island to the Pacific because **C
 - **No locked outcome for Rob.** The ultimate fate and post-ocean events remain RESERVED. Do not settle them in drafts by implication.
 - **The dog, if retained, is fed by Rob.** The encounter is optional, and its presence is not canon.
 - **Locations are settings, not moral justifications.** A scene may happen at a barn or roadside garage because travelers stop there, not because that state embodies a theme.
+- **Recent technological Rapture, not ancient extinction.** The major uploads occurred across a few years, leaving Rob physically without other humans for about a decade. His memories of Evelyn are recent human memories. See [The Ascension](WORLD_LORE/THE_ASCENSION.md); exact dates and upload mechanics remain open.
 - **No mandatory world-saving objective.** Heaven is not automatically a prison or an evil simulation; some residents truly prefer it.
+- **Purgatory is a reading, not a cosmological fact.** Heaven and an abandoned outside world invite biblical parallels without proving literal damnation or salvation. A decade of neglect does not make every building ancient rubble.
 - **Do not declare whether Cait's experience equals human love.** Make room for defensible, competing readings.
 
 ## Dramatic craft requirements
