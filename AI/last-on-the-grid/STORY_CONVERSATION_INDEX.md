@@ -18,6 +18,8 @@
 | Nov 9 | Opening and postgame discussion | Scrap economy, route completion, replayability |
 | Nov 13 | Storyline archive request | Decision to establish a reviewable story bible |
 
+| Nov 18 | Ascension world-history revision | A fast, Rapture-like movement into digital Heaven over a few years; Rob outside for roughly ten years, not centuries. [Working history](WORLD_LORE/THE_ASCENSION.md); revised Heaven dialogue and visual decay rules. |
+
 ## Retrieval notes
 - Some older entries are only identifiable from summarized history. Titles marked “historical summary” may be descriptive rather than exact chat titles.
 - Preserve exact original dialogue when available; don't present remembered paraphrases as verbatim.
