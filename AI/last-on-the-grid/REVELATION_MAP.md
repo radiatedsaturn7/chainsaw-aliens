@@ -16,16 +16,18 @@
 | 11 Angeles Crest / Pacific | Their promise reaches its geographic end | RESERVED | RESERVED | Earlier map and “come back” lines can be reconsidered |
 
 ## Three revelation clocks (write these before scripting)
-1. **Last human clock.** Is Rob the last *biological* human outside Heaven? When does the player know with certainty, when does Cait know, and what evidence proves it? Mount Washington must not overexplain.
+
+**Historical clock shared by all three:** The upload migration took a few years, around ten years before the game's 2994 setting. Players should encounter evidence of a *recent* exodus (intact everyday objects, forgotten recent messages, working automation) rather than an ancient extinction.
+1. **Last human clock.** Is Rob the last *biological* human outside Heaven? When does the player know with certainty, when does Cait know, and what evidence proves it? He has been outside for roughly a decade, not centuries; Mount Washington must not overexplain.
 2. **Creation clock.** The audience may know Rob built Cait early, but the timing of learning **why**, and what his design can and cannot shape, should be precisely tracked. Do not invent a secret “love Rob” instruction merely to create a solvable twist.
-3. **Heaven clock.** Pre-06, player may suspect a rescue quest. In 06, learn some humans chose upload. Later, learn that leaving the physical world and refusing to enter Heaven can both be acts of agency. Do not use a false imprisonment plot.
+3. **Heaven clock.** Pre-06, the player may suspect a rescue quest. In 06, learn that people **chose to upload rapidly over a few years** and still live there; some remember Rob from before the exodus. Later, learn that leaving the physical world and refusing to enter Heaven can both be acts of agency. Do not use a false imprisonment plot.
 
 ## Continuity questions requiring a decision
-- **Year 2994 vs Rob's personal memories:** How can a biological human personally remember people who uploaded centuries earlier? Longevity intervention, interrupted timeline, shorter-than-assumed interval, stasis, or different dating must be chosen, plausibly foreshadowed and tested for effects on every chapter.
+- **Resolved in principle — year 2994 and Evelyn:** The mass migration was rapid and only about a decade earlier, so Rob can remember Evelyn directly without longevity technology. **Still choose** the precise start/end dates and how long Cait has been with him; see [The Ascension](WORLD_LORE/THE_ASCENSION.md).
 - Does Cait already know Rob is the last biological human, or only strongly suspect? Earlier conversations suggest she knows; verify before writing Chapter 02.
 - How long have Rob and Cait lived together before the game, and when was her first spontaneous choice?
 - What does Cait *mean* by wanting real rain? Sensory sensation, an uncontrolled world, or something she's still working out? Avoid giving her one definitive answer.
-- What makes transfer into Heaven reversible or irreversible? Does Evelyn understand the cost? Avoid falsely promising a return route.
+- What makes transfer into Heaven reversible or irreversible? Could Rob have visited it temporarily without uploading? Does Evelyn understand the cost? Avoid falsely promising a return route.
 - Does Rob know about the other scientist's design practices and realize Cait might worry about her own design?
 - Is Chapter 03 the dog scene or a different consequential encounter?
 - How does the route justify Ozark Backroads → St. Louis? A detour can be deliberate, but should be acknowledged on a map.
