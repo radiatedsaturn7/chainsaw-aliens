@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bogbean-2020",
+  "name": "Bogbean 2020",
+  "stableCarId": "saved-car:Bogbean 2020",
+  "referenceVehicle": "2020 European launch-specification Ferrari Roma coupe, 98 RON, 3.855L turbo V8 eight-speed DCT; not Spider or Amalfi",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "4c61ca344a2aef5b578dc376b1fcb9b39b2648f82bdf4bb429c0468d746d7bcb",
+    "dashboard": "639c167d07b651f943131f228e0edaa646609b47ba25d84f4086fc2b8308313b",
+    "tires": "93b1951eba39779f103eb6207d2a3322f491347e1f575aaf0fe119a030d3b59a"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

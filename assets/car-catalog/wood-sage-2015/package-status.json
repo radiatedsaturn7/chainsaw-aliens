@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "wood-sage-2015",
+  "name": "Wood Sage 2015",
+  "stableCarId": "saved-car:Wood Sage 2015",
+  "referenceVehicle": "2015 US Dodge Charger SRT Hellcat 6.2 supercharged RWD TorqueFlite 8AT, full-power red-key equivalent, standard 275/40ZR20 all-season tires",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "252da4397598b5e5088b30371e29328f2d1a0f017b9edad6ea39c2fb928b51f7",
+    "dashboard": "fe678ab571c3f8cb30dc6a73cca802c3940fb2ab5711d0f4affdb7737fbb2872",
+    "tires": "babd3934666a0ea380db2be5450d802ddea54fe79dfc0aa2dea37dbb1520de8c"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

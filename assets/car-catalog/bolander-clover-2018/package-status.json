@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bolander-clover-2018",
+  "name": "Bolander Clover 2018",
+  "stableCarId": "saved-car:Bolander Clover 2018",
+  "referenceVehicle": "2018 McLaren Senna, standardroad-legalM840TR4.0twin-turboV8seven-speedSSGMonocageIII;notGTR,LMorMSOCarbonThemewheeloption",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "bolander-clover-2018",
+  "sourceHashes": {
+    "body": "f24b94d46e327963865dd73f872b4a13ed2e95829e2e141ce5c2c71bfd0dde90",
+    "dashboard": "f42ce7dddf69455a856d4eba42a1899454c1be4563af0c064a7eda85a53edc3d",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

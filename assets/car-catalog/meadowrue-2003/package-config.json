@@ -1,0 +1,56 @@
+{
+  "id": "meadowrue-2003",
+  "name": "Meadowrue 2003",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      150,
+      480,
+      600,
+      230
+    ],
+    "wheel": [
+      450,
+      700,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://www.bmw-m.com/en/topics/magazine-article-pool/the-bmw-m5-of-1998.html",
+      "fields": [
+        "powerKw",
+        "torqueNm",
+        "torqueRpm"
+      ]
+    },
+    {
+      "url": "https://www.bmwgroup-classic.com/en/models/bmw-classics/product-description-page.ad-243-1.bmw-m5-e39.html",
+      "fields": [
+        "1998\u2013June2003 production",
+        "powerRpm",
+        "engineDisplacementL",
+        "gearCount",
+        "transmission"
+      ]
+    }
+  ]
+}

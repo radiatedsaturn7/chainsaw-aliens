@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "egyptian-clover-1986",
+  "name": "Egyptian Clover 1986",
+  "stableCarId": "saved-car:Egyptian Clover 1986",
+  "referenceVehicle": "1986 Lamborghini LM002 launch carbureted5.167V12 5MT civilian utility; European production reference, not US emissions variant or modified example",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "5824dcf95cd90cdf6ba22c051a18ada3e05221fe10e10ed90468f83aa21acefc",
+    "dashboard": "673a6547ab054bff0883cc04d7e5c488d4a523cb109e58be9bf5a31048eca5a3",
+    "tires": "88aae1d2119f565b286b47d0241f6cc7b67fe1d821b7fe2fc013bb4aec37ab34"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

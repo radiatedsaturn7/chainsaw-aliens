@@ -1,0 +1,73 @@
+{
+  "id": "lemon-clover-2008",
+  "name": "Lemon Clover 2008",
+  "stableCarId": "saved-car:Lemon Clover 2008",
+  "runtimeId": "saved-car:Lemon Clover 2008",
+  "candidateId": "fiat-bravo-active-eco-multijet105-2008-supplemental-candidate",
+  "referenceVehicle": "2008 Fiat Bravo Active EcoMultiJet105, UK five-door1.6diesel six-speed manual Ecopackage, notstandard105gearing,TJet or1.9MultiJet",
+  "identity": {
+    "year": 2008,
+    "make": "Fiat",
+    "model": "Bravo Active EcoMultiJet105",
+    "trim": "UK five-door1.6diesel six-speed manual Ecopackage, notstandard105gearing,TJet or1.9MultiJet",
+    "market": "UK"
+  },
+  "bodyClass": "hatchback",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1981,
+      793
+    ],
+    "cluster": [
+      1288,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      1506,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.media.stellantis.com/uk-en/fiat/press/new-engines-boost-bravo-appeal",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "gearCount",
+        "drivetrain"
+      ]
+    },
+    {
+      "url": "https://www.media.stellantis.com/uk-en/fiat/press/fiat-believes-all-fleets-should-use-whole-life-costs-as-a-basis-for-running-company-vehicles",
+      "fields": [
+        "identity",
+        "trim",
+        "gearCount"
+      ]
+    }
+  ]
+}

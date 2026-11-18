@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "purple-loosestrife-2021",
+  "name": "Purple Loosestrife 2021",
+  "stableCarId": "saved-car:Purple Loosestrife 2021",
+  "referenceVehicle": "2021 US Dodge Durango SRT Hellcat 6.2 supercharged AWD8AT, six seats, standard295/45ZR20 all-season runflats, Auto mode approximation",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "28545230ba5795b1d139155e81bda26492a0fec5fee73911aa6115129333607f",
+    "dashboard": "2801de2dec0555fb778912f388176d6754c18334024b08d3e9daef71567ee89d",
+    "tires": "b76321069522b4593bb623210aa0d875a81cddfe6e5651d8183d49cb75fb1e39"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "wild-carrot-1990",
+  "name": "Wild Carrot 1990",
+  "stableCarId": "saved-car:Wild Carrot 1990",
+  "referenceVehicle": "1990 United Kingdom Vauxhall Lotus Carlton production 3.6 twin-turbo RWD6MT; not1989prototype or ordinary CarltonGSi",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "88700b03822b011bb943452b800658634d8db7187ee91e9dfd38e54ac7d86146",
+    "dashboard": "1e1457c0c0565522df77d9cb00b60270165d70b235b4735c30a76af34e1cf391",
+    "tires": "11231f87342708dc00824284047a9bd68bd87fe6e294540bbf235f89af22c205"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

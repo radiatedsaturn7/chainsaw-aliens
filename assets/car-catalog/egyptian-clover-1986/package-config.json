@@ -1,0 +1,72 @@
+{
+  "id": "egyptian-clover-1986",
+  "name": "Egyptian Clover 1986",
+  "stableCarId": "saved-car:Egyptian Clover 1986",
+  "runtimeId": "saved-car:Egyptian Clover 1986",
+  "candidateId": "lamborghini-lm-002-1986-roster-candidate",
+  "referenceVehicle": "1986 Lamborghini LM002 launch carbureted5.167V12 5MT civilian utility; European production reference, not US emissions variant or modified example",
+  "identity": {
+    "year": 1986,
+    "make": "Lamborghini",
+    "model": "LM002",
+    "trim": "launch carbureted5.167V12 5MT civilian utility",
+    "market": "European non-US representative production specification"
+  },
+  "bodyClass": "four-door utility",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.lamborghini.com/en-en/news/record-breaking-lamborghini-the-anecdotes-you-dont-know",
+      "fields": [
+        "publishedPowerPS",
+        "powerRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "identity"
+      ]
+    },
+    {
+      "url": "https://www.ryland.co.uk/lamborghini/news-events/first-suv-lm002/",
+      "fields": [
+        "modelYear",
+        "drivelineArchitecture",
+        "engineDisplacementL",
+        "powerRpm"
+      ]
+    }
+  ]
+}

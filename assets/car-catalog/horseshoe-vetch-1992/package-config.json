@@ -1,0 +1,83 @@
+{
+  "id": "horseshoe-vetch-1992",
+  "name": "Horseshoe Vetch 1992",
+  "stableCarId": "saved-car:Horseshoe Vetch 1992",
+  "candidateId": "alfa-romeo-155-q4-1992-roster-candidate",
+  "referenceVehicle": "1992 Alfa Romeo155Q4 production four-door 1995cc catalytic turbo16V permanent4WD5MT, EnglishGB June1992brochure specification; notDTM/GTA orlaterwidebody",
+  "identity": {
+    "year": 1992,
+    "make": "Alfa Romeo",
+    "model": "155 Q4",
+    "trim": "1995cc catalytic turbo16V four-door permanent4WD five-speed manual; June1992GB brochure",
+    "market": "United Kingdom English-market brochure; LHD production reference"
+  },
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1220,
+      455,
+      475,
+      175
+    ],
+    "wheel": [
+      1470,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://berlinasportivo.com/magazine/alfa/brochure2.pdf",
+      "fields": [
+        "identity",
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "drivetrain",
+        "curbKg",
+        "gearRatios",
+        "finalDrive",
+        "reverseRatio",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "frontOverhangM",
+        "tireSize",
+        "frontTire",
+        "rearTire",
+        "fuelTankUSgal",
+        "topSpeedMph",
+        "aspiration"
+      ]
+    }
+  ]
+}

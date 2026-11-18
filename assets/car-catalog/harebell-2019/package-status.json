@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "harebell-2019",
+  "name": "Harebell 2019",
+  "stableCarId": "saved-car:Harebell 2019",
+  "referenceVehicle": "2019 US Hyundai Veloster N standard 250hp six-speed manual,18-inch wheels; no Performance Package",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "harebell-2019",
+  "sourceHashes": {
+    "body": "67403c25c4a62f2afb78b0a602aca5feb4ed27bb15315820c812a1a25dbdf10a",
+    "dashboard": "2e62ec660172b5d67a85882530dff96fbc6422e619fae39fb8375923244e93cd",
+    "tires": "478acc3ea8f6e09186a58b1ab48181a094fb5e4b6407123ad4e64e5379e6423d"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

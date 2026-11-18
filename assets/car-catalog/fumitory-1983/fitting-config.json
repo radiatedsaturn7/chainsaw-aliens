@@ -1,0 +1,163 @@
+{
+  "id": "fumitory-1983",
+  "name": "Fumitory 1983",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "ead7d15bc5c0dcc0871b46adbb518aa3b874e06e6c1d4e75865bf22bec9b0298",
+  "sourceDirectory": "assets/car-catalog/fumitory-1983",
+  "sourceHashes": {
+    "body": "bae9d0491925895b335df409dd93d1cbb1a2a1e0e4431af8231e11fbd7e88393",
+    "dashboard": "2cedbee77c6ee10a7ee14084caa5d136467a489f8730b4e1b439cb4b047b4951",
+    "tires": "a7055d5849c0245f36460743c000e2142bd439c1827fc538824193b19fa0ae75"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 100,
+        "y": 338,
+        "radius": 48
+      },
+      {
+        "wheel": "fr",
+        "x": 330,
+        "y": 338,
+        "radius": 48
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 664,
+        "y": 338,
+        "radius": 48
+      },
+      {
+        "wheel": "rr",
+        "x": 826,
+        "y": 298,
+        "radius": 42
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 940,
+        "y": 756,
+        "radius": 48
+      },
+      {
+        "wheel": "rr",
+        "x": 1242,
+        "y": 756,
+        "radius": 48
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 448,
+        "y": 736,
+        "radius": 36
+      },
+      {
+        "wheel": "rr",
+        "x": 612,
+        "y": 764,
+        "radius": 50
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 98,
+        "y": 766,
+        "radius": 50
+      },
+      {
+        "wheel": "rl",
+        "x": 336,
+        "y": 766,
+        "radius": 50
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1576,
+        "y": 320,
+        "radius": 50
+      },
+      {
+        "wheel": "fl",
+        "x": 1720,
+        "y": 296,
+        "radius": 40
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 960,
+        "y": 310,
+        "radius": 48
+      },
+      {
+        "wheel": "fl",
+        "x": 1258,
+        "y": 310,
+        "radius": 48
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1364,
+        "y": 736,
+        "radius": 38
+      },
+      {
+        "wheel": "fl",
+        "x": 1516,
+        "y": 778,
+        "radius": 48
+      }
+    ]
+  },
+  "wheelFit": "average",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      220,
+      504,
+      500,
+      136
+    ],
+    "wheel": [
+      546.09,
+      734,
+      256
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#eed9ae",
+    "viewportWheelScale": 2.0,
+    "gaugeBackground": "#101010"
+  },
+  "steeringWheelSource": {
+    "artRef": "ct-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementNotes": "Individually inspected half-scale body source and 992px-wide dashboard on fitting-measurement.png. Body coordinates doubled to original pixels; dashboard offset450 removed and scaled1983/992. Front/rear wheel centers inferred behind occluding bumper edges from source silhouette; diagonal and side centers measured at open arches. Art estimates only, no mechanical inference. Runtime render fitting pending. Wheel IDs follow actual native getRaceSpriteWheelRig projection: front fl screen-left, rear rr screen-left. Static v2 mobile viewport wheel side clipping corrected using native render geometry; individual opening placement and scales retained."
+}

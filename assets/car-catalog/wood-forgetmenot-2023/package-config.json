@@ -1,0 +1,76 @@
+{
+  "id": "wood-forgetmenot-2023",
+  "name": "Wood Forgetmenot 2023",
+  "stableCarId": "saved-car:Wood Forgetmenot 2023",
+  "candidateId": "lotus-emira-2023-roster-candidate",
+  "referenceVehicle": "2023 UK Lotus Emira V6 First Edition 3.456 supercharged six-speed manual; initial First Edition specification, not AMG four-cylinder or later Turbo SE",
+  "identity": {
+    "year": 2023,
+    "make": "Lotus",
+    "model": "Emira",
+    "trim": "V6 First Edition six-speed manual, Tour suspension and Goodyear road tires",
+    "market": "United Kingdom"
+  },
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1289,
+      420,
+      357,
+      135
+    ],
+    "wheel": [
+      1467,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://media.lotuscars.com/en/news-articles/lotus-confirms-full-specification-and-price-of-all-new-emira-v6-first-edition.html",
+      "fields": [
+        "identity",
+        "powerKw",
+        "publishedPowerHp",
+        "torqueNm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "revLimitRpm",
+        "dragCoefficient",
+        "topSpeedMph",
+        "zeroToSixtySec",
+        "aspiration"
+      ]
+    },
+    {
+      "url": "https://media.lotuscars.com/en/models/emira.html",
+      "fields": [
+        "platform distinction",
+        "geometry and mass corroboration only"
+      ]
+    }
+  ]
+}

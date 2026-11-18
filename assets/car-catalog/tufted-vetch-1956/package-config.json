@@ -1,0 +1,74 @@
+{
+  "id": "tufted-vetch-1956",
+  "name": "Tufted Vetch 1956",
+  "stableCarId": "saved-car:Tufted Vetch 1956",
+  "candidateId": "ford-f-100-1956-roster-candidate",
+  "referenceVehicle": "1956 US Ford F-100 standardcab110in-wheelbase6.5-foot pickup,223cuin CostCutter OHV inline-six,standard column-shift3MT/nooverdrive,3.92axle,RWD; noCustomCab,Fordomatic,V8orlongbox",
+  "identity": {
+    "year": 1956,
+    "make": "Ford",
+    "model": "F-100",
+    "trim": "US standard cab6.5-foot pickup,223CostCutterSix,standard3MT,nooverdrive,unladen",
+    "market": "United States"
+  },
+  "bodyClass": "pickup",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://cdn.shopify.com/s/files/1/0628/3352/4921/files/FordImages-1956-Ford-Light-Duty-Trucks.pdf",
+      "fields": [
+        "223I6 grossoutput",
+        "110in shortwheelbase",
+        "3MT",
+        "3.92sixmanual axle",
+        "18gal tank",
+        "18.2steering",
+        "6.70-15standardtire",
+        "solidfrontaxleleafsprings"
+      ]
+    },
+    {
+      "url": "https://fordimages.com/products/0401-6685-jpg",
+      "fields": [
+        "original brochure linkage",
+        "USmodelrange",
+        "shortversuslongbox",
+        "periodgrossbasis"
+      ]
+    }
+  ]
+}

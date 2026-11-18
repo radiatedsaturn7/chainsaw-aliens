@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "black-medick-1982",
+  "name": "Black Medick 1982",
+  "stableCarId": "saved-car:Black Medick 1982",
+  "referenceVehicle": "1982 US federal Volkswagen Pickup LX gasoline 1.7 fuel-injected inline-four, FWD standard four-speed manual, empty cargo bed; not diesel, California calibration or Sportruck.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "5fea5ff58b74b2d725ef5a303d0a61e57dab264c788cba5e42d16e77edeac031",
+    "dashboard": "99bdb20d9aabb53012d3c5c525defaef2b11f46fd4823749670817b886038586",
+    "tires": "1832e062c46b45ec0860257cc5a3267b57095b2a7b5a999d405e315106895e5a"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

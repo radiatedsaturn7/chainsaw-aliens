@@ -1,0 +1,80 @@
+{
+  "id": "broom-clover-2005",
+  "name": "Broom Clover 2005",
+  "stableCarId": "saved-car:Broom Clover 2005",
+  "runtimeId": "saved-car:Broom Clover 2005",
+  "candidateId": "toyota-solara-se-convertible-2005-us-v6-5at-supplemental",
+  "referenceVehicle": "2005 United States Toyota Camry Solara, SE convertible 3.3 V6 five-speed automatic, four seats and17-inch wheels; notSLE,coupe,four-cylinder orTRD",
+  "identity": {
+    "year": 2005,
+    "make": "Toyota",
+    "model": "Camry Solara",
+    "trim": "SE convertible 3.3 V6 five-speed automatic, four seats and17-inch wheels; notSLE,coupe,four-cylinder orTRD",
+    "market": "United States"
+  },
+  "bodyClass": "two-door four-seat soft-top convertible; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Toyota/Solara/Toyota_US%20Solara_2005.pdf",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "drivetrain",
+        "transmission",
+        "transmissionLabel",
+        "gearCount",
+        "curbKg",
+        "tireSize",
+        "groundClearanceM",
+        "fuelTankUSgal",
+        "absEnabled",
+        "tractionControlEnabled"
+      ]
+    }
+  ]
+}

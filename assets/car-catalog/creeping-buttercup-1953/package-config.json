@@ -1,0 +1,50 @@
+{
+  "id": "creeping-buttercup-1953",
+  "name": "Creeping Buttercup 1953",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      170,
+      450,
+      590,
+      180
+    ],
+    "wheel": [
+      465,
+      753,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://www.gm.com/content/dam/company/no_search/heritage-archive-docs/vehicle-information-kits/chevrolet/1953-Chevrolet-Corvette.pdf",
+      "fields": [
+        "period engine ratings and test basis",
+        "shipping mass basis",
+        "dimensions",
+        "Powerglide",
+        "axle",
+        "period tires",
+        "tank"
+      ]
+    }
+  ]
+}

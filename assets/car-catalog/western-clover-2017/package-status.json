@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "western-clover-2017",
+  "name": "Western Clover 2017",
+  "stableCarId": "saved-car:Western Clover 2017",
+  "referenceVehicle": "2017 Maserati Levante S, UKSeptember2017 petrol3.0 twin-turboV6 Q4 eight-speed automatic SUV,standard19-inch wheels;notDiesel,350CVbase,GTS,Trofeo orlaterfacelift",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "western-clover-2017",
+  "sourceHashes": {
+    "body": "8960e113e20e5db3507ed485588f2a6797215d0b01b786b3b44d3ee79bb112e9",
+    "dashboard": "be125e3525910448055458d9b5606b28b881656efa07f8cb4bc8124b772047c5",
+    "tires": "4fe63b79dee115a1a0fc243b514cb49a0101aa50d8a1e9027a1b24478ad16f00"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

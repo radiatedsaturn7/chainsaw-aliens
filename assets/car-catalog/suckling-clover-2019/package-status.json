@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "suckling-clover-2019",
+  "name": "Suckling Clover 2019",
+  "stableCarId": "saved-car:Suckling Clover 2019",
+  "referenceVehicle": "2019 Aston Martin DBS Superleggera, original2018launch/2019coupe5.2twin-turboV12 ZFeight-speedRWD2+2;notVolante,770Ultimate,DB11AMRor2008DBS",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "132e8a8b622f60148b7e41a7abdd10d956ad235b44c1057db9bb101b97234de7",
+    "dashboard": "9be36d5bfdb165165a903d0266db56868ffd0c2a2b0fb19335763c8103aa8d2b",
+    "tires": "c7cf53396eb87fddc9248dd10130f2c8bdb83d76b7f1956c66e7f945b6814609"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

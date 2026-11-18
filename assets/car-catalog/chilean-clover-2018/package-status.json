@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "chilean-clover-2018",
+  "name": "Chilean Clover 2018",
+  "stableCarId": "saved-car:Chilean Clover 2018",
+  "referenceVehicle": "2018 Morgan Aero GT, BMWN62 4.8NA V8six-speedmanual,optionalcarbonhardtopfitted representativefinaleightroadcars;notGT3racerorPlus8",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "9d336a63b7d40f9e2e393089843d87d321e0214dbf88ede9f38b74d309149aa0",
+    "dashboard": "83bb3877ba8417a477d83682a41d2423d358a15b3b4db068728571c79cd87407",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

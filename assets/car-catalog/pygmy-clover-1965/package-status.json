@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "pygmy-clover-1965",
+  "name": "Pygmy Clover 1965",
+  "stableCarId": "saved-car:Pygmy Clover 1965",
+  "referenceVehicle": "1965 United States Ford Mustang GT Coupe, GT equipment group hardtop,225-hp-reference289four-barrel,standard synchronized3MT;not271HiPo",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "pygmy-clover-1965",
+  "sourceHashes": {
+    "body": "fd938142049f2f731ed4f816e7e6d0cad033001b4d445389b6cfafb27cfa8ac7",
+    "dashboard": "b556b0953e1a2bf047fbcf154ecca4961cd9f47c122f406eb8957a3161cb1405",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    3,
+    4,
+    5,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

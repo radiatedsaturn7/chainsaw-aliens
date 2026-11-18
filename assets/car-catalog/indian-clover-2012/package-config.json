@@ -1,0 +1,77 @@
+{
+  "id": "indian-clover-2012",
+  "name": "Indian Clover 2012",
+  "stableCarId": "saved-car:Indian Clover 2012",
+  "runtimeId": "saved-car:Indian Clover 2012",
+  "candidateId": "dacia-lodgy-base-1-6-mpi85-2012-supplemental-candidate",
+  "referenceVehicle": "2012 Dacia Lodgy1.6 MPI85, Germany June2012 base five-seat petrol5MT, notseven-seatoption,LPG,diesel orTCe",
+  "identity": {
+    "year": 2012,
+    "make": "Dacia",
+    "model": "Lodgy1.6 MPI85",
+    "trim": "Germany June2012 base five-seat petrol5MT, notseven-seatoption,LPG,diesel orTCe",
+    "market": "Germany"
+  },
+  "bodyClass": "minivan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://presse.dacia.de/vielseitiger-kompaktvan-zum-erschwinglichen-preis/",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "lengthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "topSpeedMph"
+      ]
+    },
+    {
+      "url": "https://presse.dacia.de/kompaktvan-dacia-lodgy-bietet-viel-platz-ab-9990-euro/",
+      "fields": [
+        "identity",
+        "baseTrim",
+        "fiveSeatConfiguration"
+      ]
+    }
+  ]
+}

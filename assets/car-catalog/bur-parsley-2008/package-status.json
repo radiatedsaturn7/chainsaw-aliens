@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bur-parsley-2008",
+  "name": "Bur Parsley 2008",
+  "stableCarId": "saved-car:Bur Parsley 2008",
+  "referenceVehicle": "2008 France Renault Megane R26.R 2.0turbo two-seat road car six-speed manual with mechanicalfrontLSD; notF1TeamR26 orlaterMeganeIII",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "bur-parsley-2008",
+  "sourceHashes": {
+    "body": "a2d6d4d4767502d10818c3ffb3adf0cf17bb616bf027dcf355722a600dd8f5e6",
+    "dashboard": "c8c4c78780a471fa370c222157308ed90f75f3c17fcaf86f03965c8b51de5bbd",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

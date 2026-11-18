@@ -1,0 +1,65 @@
+{
+  "id": "myrtle-clover-2005",
+  "name": "Myrtle Clover 2005",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      426,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Mercedes_Benz/SLK-Class/Mercedes%20Benz_US%20SLK-Class_2005.pdf",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "finalDrive",
+        "fuelTankUSgal",
+        "tireSize",
+        "frontTire",
+        "rearTire",
+        "identity"
+      ]
+    }
+  ]
+}

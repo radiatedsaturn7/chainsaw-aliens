@@ -1,0 +1,69 @@
+{
+  "id": "marsh-bedstraw-2017",
+  "name": "Marsh Bedstraw 2017",
+  "stableCarId": "saved-car:Marsh Bedstraw 2017",
+  "candidateId": "aston-martin-db11-2017-roster-candidate",
+  "referenceVehicle": "2017 UK Aston Martin DB11 V12 Coupe5.2 twin-turbo8AT original608PS;notlaterAMR orV8",
+  "identity": {
+    "year": 2017,
+    "make": "Aston Martin",
+    "model": "DB11 V12 Coupe",
+    "trim": "original5.2twin-turboV12 eight-speedZFautomatic;notV8or2018AMR",
+    "market": "United Kingdom"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1300,
+      460,
+      450,
+      150
+    ],
+    "wheel": [
+      1500,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://media.astonmartin.com/aston-martin-db11-the-latest-in-an-illustrious-bloodline/",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "torqueNm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount"
+      ]
+    },
+    {
+      "url": "https://www.astonmartin.com/en-us/our-world/news/2017/6/28/sublime-choices-db11-now-offered-with-v8-engine",
+      "fields": [
+        "massInference"
+      ]
+    }
+  ]
+}

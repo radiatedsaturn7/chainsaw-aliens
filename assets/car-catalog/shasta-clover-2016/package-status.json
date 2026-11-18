@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "shasta-clover-2016",
+  "name": "Shasta Clover 2016",
+  "stableCarId": "saved-car:Shasta Clover 2016",
+  "referenceVehicle": "2016 United States Honda HR-V, LX2WD six-speedmanual 1.799Lgasoline,standard17-inchalloys; notAWD/CVT,EXsunroof orhybrid",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "87b3c80f352e9f2d3e468e7f94febb70a9d6d3746d0d82eb0219f5f5923609cd",
+    "dashboard": "f52e235d8455be531382d29b5ad496104003fc8efa4396664cf9346939815171",
+    "tires": "4392f6a91d552c0134e22bc21854eaa5812782ca69e64c82882527db68850ef5"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

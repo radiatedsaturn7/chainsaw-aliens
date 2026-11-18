@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "rain-clover-2012",
+  "name": "Rain Clover 2012",
+  "stableCarId": "saved-car:Rain Clover 2012",
+  "referenceVehicle": "2012 United States Hyundai Equus, Signature5.0GDI V8 RWD8AT,premiumfuel,standard19-inchstaggeredtires",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "rain-clover-2012",
+  "sourceHashes": {
+    "body": "e1e6861086254519b16ea4b15441e474dee9994ceb844a022eb3e52e0c25ee76",
+    "dashboard": "b312fe8b81d5f3f7b23bd3b910542fb1f5b437891a88bb3fa6c141309421ef7b",
+    "tires": "4d131ba5fe58d264d518073d5871be1b8c61d4b72807c445ee6ebbc32d31c380"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

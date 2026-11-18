@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "stream-clover-2012",
+  "name": "Stream Clover 2012",
+  "stableCarId": "saved-car:Stream Clover 2012",
+  "referenceVehicle": "2012 United States Hyundai Elantra Touring, GLS2.0DOHC five-door wagon5MT,base15-inchcoveredsteelwheels",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "2b29c25874fe730aadd4fe4abaea15c6c1a5a759b2685a9bb8f69600bbad8230",
+    "dashboard": "c63564faad863113c61ad064e791e5a77d0046ed017cf047573da68cbdbbb8a2",
+    "tires": "8e08370702134dd6df530948da210876c894b84bef587070e36f8306e1dd56b6"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

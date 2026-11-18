@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "knotted-clover-2015",
+  "name": "Knotted Clover 2015",
+  "stableCarId": "saved-car:Knotted Clover 2015",
+  "referenceVehicle": "2015 McLaren 570S Coupe, EuropeanlaunchM838TE3.799twin-turboV8RWD7SSG,closedroof; not570GT/Spider orGT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "61128d7d5d924336d91fa3a4a7366fd4422af241c280ba0aef69e152b6b05eff",
+    "dashboard": "0e6f52bfe9519854f59ed13c10a0fc10fae5402f46e015fc1e396602257b84cd",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

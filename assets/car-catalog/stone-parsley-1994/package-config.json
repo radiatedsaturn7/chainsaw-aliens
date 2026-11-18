@@ -1,0 +1,74 @@
+{
+  "id": "stone-parsley-1994",
+  "name": "Stone Parsley 1994",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      1064,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      1277,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://media.toyota.co.uk/wp-content/uploads/sites/5/pdf/Celica-Gen6-GT-Four-UK-launch-pack.pdf",
+      "fields": [
+        "identity",
+        "powerHp",
+        "torqueLbFt",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "groundClearanceM",
+        "dragCoefficient",
+        "frontWeightDistribution",
+        "fuelTankUSgal",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "tireSize",
+        "absEnabled"
+      ]
+    },
+    {
+      "url": "https://media.toyota.co.uk/vehicles/celica-gt-four-archive-1994/",
+      "fields": [
+        "identity"
+      ]
+    }
+  ]
+}

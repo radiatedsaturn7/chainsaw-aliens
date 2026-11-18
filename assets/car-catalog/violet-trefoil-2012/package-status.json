@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "violet-trefoil-2012",
+  "name": "Violet Trefoil 2012",
+  "stableCarId": "saved-car:Violet Trefoil 2012",
+  "referenceVehicle": "2012 United States Kia Forte, KoupEX2.0MPI ULEV156hp6MT,standard16-inchwheels",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "a767a63b26ce7f5b22f207144577f0b5dacc02092049bd13a38e14d6b203532e",
+    "dashboard": "58141354d66904982e86edf8cca7f2382fc689b1abf7fbb0d5c9241d1303226d",
+    "tires": "fc4d19259ca7f8cffa83775d3f9078ddf2e36468b6ba217024fbf3f65888d490"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

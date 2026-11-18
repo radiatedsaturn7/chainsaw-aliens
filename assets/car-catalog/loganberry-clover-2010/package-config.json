@@ -1,0 +1,68 @@
+{
+  "id": "loganberry-clover-2010",
+  "name": "Loganberry Clover 2010",
+  "stableCarId": "saved-car:Loganberry Clover 2010",
+  "runtimeId": "saved-car:Loganberry Clover 2010",
+  "candidateId": "mercedes-benz-cl600-2010-us-c216-5at",
+  "referenceVehicle": "2010 United States Mercedes-Benz CL600 C2165.5 twin-turbo V12 RWD five-speed automatic four-seat luxury coupe, standard18-inch staggered wheels; not CL5504MATIC or AMG",
+  "identity": {
+    "year": 2010,
+    "make": "Mercedes-Benz",
+    "model": "CL600",
+    "trim": "C2165.5 twin-turbo V12 RWD five-speed automatic four-seat luxury coupe, standard18-inch staggered wheels; not CL5504MATIC or AMG",
+    "market": "United States"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Mercedes_Benz/CL-Class/Mercedes%20Benz_US%20CL-Class_2010.pdf",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "identity"
+      ]
+    }
+  ]
+}

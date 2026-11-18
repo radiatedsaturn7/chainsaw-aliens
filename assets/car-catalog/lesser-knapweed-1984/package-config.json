@@ -1,0 +1,74 @@
+{
+  "id": "lesser-knapweed-1984",
+  "name": "Lesser Knapweed 1984",
+  "stableCarId": "saved-car:Lesser Knapweed 1984",
+  "runtimeId": "saved-car:Lesser Knapweed 1984",
+  "candidateId": "audi-sport-quattro-1984-roster-candidate",
+  "referenceVehicle": "1984 Germany Audi Sport quattro B2 road homologation coupe,2133cc20-valve turbo five,225kW350Nm AWD5MT;not1983showprototype,GroupBcompetition,PikesPeak orS1E2",
+  "identity": {
+    "year": 1984,
+    "make": "Audi",
+    "model": "Sport quattro",
+    "trim": "B2 road homologation 2.133L 20-valve turbo five-cylinder five-speed manual, original 306PS specification",
+    "market": "Germany"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.audi.com/de/bilder/detail/audi-sport-quattro-b2-baujahr-1984-37236",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "identity"
+      ]
+    },
+    {
+      "url": "https://www.audi.com/de/medieninformationen/dem-fahrspass-auf-der-spurquattro-antrieb-und-fahrwerk-des-audi-e-tron-14245",
+      "fields": [
+        "identity",
+        "drivetrain"
+      ]
+    }
+  ]
+}

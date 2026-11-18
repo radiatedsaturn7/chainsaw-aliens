@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "jostaberry-clover-2006",
+  "name": "Jostaberry Clover 2006",
+  "stableCarId": "saved-car:Jostaberry Clover 2006",
+  "referenceVehicle": "2006 United States Pontiac G6, GT two-doorfixed-roofcoupe3.5LX9 V6 MN5four-speedautomatic, standard17-inchalloys; notconvertible,sedan,GTP3.9 or6MT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "e28729afdaf0ce7a219fdabcb52f058607a41126679ee2be033db6ad3a334ea5",
+    "dashboard": "b7398f667afcc9a105cd6cb4063bc40b1b223429d91d80247b5db2d38668a356",
+    "tires": "bcc92963f4cfe4b0cacad0c1b2cdbbcbec137653ce33162d40011760ec3aa696"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

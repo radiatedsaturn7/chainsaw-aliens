@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "salmonberry-clover-2009",
+  "name": "Salmonberry Clover 2009",
+  "stableCarId": "saved-car:Salmonberry Clover 2009",
+  "referenceVehicle": "2009 United States Saab 9-3 Aero SportCombi2.8 turbo V6 XWD standard six-speed Sentronic automatic, standard17-inch wheels; not2.0T,FWD orTurboX",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "18eefacd2c27751c1f4fef84a9a30830d5b42afa687167d7a32d9ab73d12d487",
+    "dashboard": "847e55112283186328a6e26e82a208dfb0ff02cc1354240e2628dffb83d2fc4a",
+    "tires": "672bfea5ff74f1b0de94f2d34a45d52dbb5a3c3aadf17dbd886ab3f0b6119ce9"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

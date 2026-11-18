@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "biting-stonecrop-2012",
+  "name": "Biting Stonecrop 2012",
+  "stableCarId": "saved-car:Biting Stonecrop 2012",
+  "referenceVehicle": "2012 US Jeep Wrangler Rubicon JK two-door3.6V6 six-speedmanual,standardLT255/75R17,2H road mode and unlocked axles",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "ddab84a5b1feccc5201c74a664415927a5c4a9250d63ea9fd0f11fbfed91739a",
+    "dashboard": "f367510c188c24298d1a7838fb709ed290ced6992753cc615b9d427bc03e81d8",
+    "tires": "a40c77851099249bf5541af49ff0d018f116654fda8732a7883f1f7c95f5f633"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

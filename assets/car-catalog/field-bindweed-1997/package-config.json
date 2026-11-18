@@ -1,0 +1,51 @@
+{
+  "id": "field-bindweed-1997",
+  "name": "Field Bindweed 1997",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      426,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://www.maserati.com/it/it/brand/auto-storiche/biturbo-derivati/ghibli-cup",
+      "fields": [
+        "1995\u20131997production",
+        "1996cc",
+        "330CV6500rpm",
+        "1365kgdry",
+        "270kmh",
+        "two-doorfive-seatbody",
+        "twin-turboV6",
+        "over350Nm3250\u20136700rpm"
+      ]
+    }
+  ]
+}

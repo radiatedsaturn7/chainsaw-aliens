@@ -1,0 +1,68 @@
+{
+  "id": "fumitory-1983",
+  "name": "Fumitory 1983",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      190,
+      480,
+      540,
+      180
+    ],
+    "wheel": [
+      465,
+      735,
+      315
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f3dea4"
+  },
+  "sources": [
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/engine-versions-golf-1-gti-profile-19500",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "torqueNm",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL"
+      ]
+    },
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/vehicle-data-golf-1-gti-profile-19499",
+      "fields": [
+        "identity",
+        "drivetrain",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM"
+      ]
+    },
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/golf-1-gti-19761983-19498",
+      "fields": [
+        "transmission",
+        "gearCount",
+        "1982 standard4+E and1.8 update"
+      ]
+    }
+  ]
+}

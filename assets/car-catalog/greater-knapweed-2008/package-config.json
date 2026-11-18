@@ -1,0 +1,67 @@
+{
+  "id": "greater-knapweed-2008",
+  "name": "Greater Knapweed 2008",
+  "stableCarId": "saved-car:Greater Knapweed 2008",
+  "runtimeId": "saved-car:Greater Knapweed 2008",
+  "candidateId": "dodge-viper-srt10-acr-2008-roster-candidate",
+  "referenceVehicle": "2008 US Dodge Viper SRT10 ACR coupe,8.4V10/TR6060six-speed,standardACRwithaudio,notoptionalHardcorepackage; roadsetup rather thanmax-downforce trackextension",
+  "identity": {
+    "year": 2008,
+    "make": "Dodge",
+    "model": "Viper SRT10 ACR",
+    "trim": "US coupe,standardACRwithaudio,nooptionalHardcoredelete,streetsetup",
+    "market": "United States"
+  },
+  "bodyClass": "two-door-sports-coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      258,
+      515,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.viperclub.org/vca/threads/the-vca-and-srt-are-very-proud-to-present.607996/",
+      "fields": [
+        "SAEnetoutput",
+        "TR6060forwardgears/finaldrive",
+        "dimensions",
+        "staggeredtires",
+        "distribution",
+        "estimatedcurbconflictingunits",
+        "fuelconflictingunits",
+        "6250maximumspeed",
+        "ViscoLok"
+      ]
+    }
+  ]
+}

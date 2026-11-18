@@ -1,0 +1,61 @@
+{
+  "id": "maple-clover-2011",
+  "name": "Maple Clover 2011",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      198,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      475,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Audi/A6/Audi_US%20A6_2011.pdf",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "topSpeedMph",
+        "zeroToSixtySec",
+        "identity"
+      ]
+    }
+  ]
+}

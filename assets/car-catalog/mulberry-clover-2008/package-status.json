@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "mulberry-clover-2008",
+  "name": "Mulberry Clover 2008",
+  "stableCarId": "saved-car:Mulberry Clover 2008",
+  "referenceVehicle": "2008 United States Volvo XC90 3.2 naturally aspirated transverse inline-six FWD six-speed Geartronic, standard non-Sport chassis; not AWD or V8",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "a90cb674ce21eb6af2c37399c108cc5065c167bdebabc56427f5dedce21bba09",
+    "dashboard": "048fd2acc534625656858a1f735272f52f31123c774ded4afcdfedf8584c6b7b",
+    "tires": "0d76ef391f81c75ffdd72fd9a2265cb240aefe2e1e8bf4b2fac6d0bb8685afc1"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

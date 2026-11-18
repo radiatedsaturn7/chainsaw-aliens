@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "sainfoin-1939",
+  "name": "Sainfoin 1939",
+  "stableCarId": "saved-car:Sainfoin 1939",
+  "referenceVehicle": "1939 Maserati 8CTF, 1939-output3.0twinsuperchargedstraight-eight single-seatcompetitioncar4MT; noexactIndysetup claim",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "8c2acd8ea2484be6e551688728285196b1b1383b18c3a1f6871c245419bccd8a",
+    "dashboard": "de0db00e2e593362a6d81aaa77bb99fed009ece170564129c6301d89f04dae58",
+    "tires": "e6162ae83a57cf1b68d738a311bdf476f2648bf91cf6f0472e887f666769d496"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

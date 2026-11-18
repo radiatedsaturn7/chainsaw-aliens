@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bitter-dock-2018",
+  "name": "Bitter Dock 2018",
+  "stableCarId": "saved-car:Bitter Dock 2018",
+  "referenceVehicle": "2018 United States Dodge Durango SRT6.4HEMI AWD eight-speed TorqueFlite,standard295/45ZR20all-season tires;noHellcat orR/T",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "bbb79636af90568d38d813ac8f83badd75766c974a29a09fd843cbd1ba7c7e38",
+    "dashboard": "2238aa42433af9e7debf3943b119d8da065e526eb280097c37f18373e95b181e",
+    "tires": "11bb6fd153f3923b8cf02152a19bc8a7231685f2acfab00eb86b99b165ae20e7"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

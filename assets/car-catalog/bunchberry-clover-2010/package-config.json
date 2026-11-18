@@ -1,0 +1,85 @@
+{
+  "id": "bunchberry-clover-2010",
+  "name": "Bunchberry Clover 2010",
+  "stableCarId": "saved-car:Bunchberry Clover 2010",
+  "runtimeId": "saved-car:Bunchberry Clover 2010",
+  "candidateId": "honda-accord-crosstour-ex-2010-us-fwd-5at-supplemental",
+  "referenceVehicle": "2010 United States Honda Accord Crosstour, EX3.5V6 front-wheel-drive5AT,17-inchalloys; notEX-L,4WD orAccordsedan/coupe",
+  "identity": {
+    "year": 2010,
+    "make": "Honda",
+    "model": "Accord Crosstour",
+    "trim": "EX3.5V6 front-wheel-drive5AT,17-inchalloys; notEX-L,4WD orAccordsedan/coupe",
+    "market": "United States"
+  },
+  "bodyClass": "five-door five-seat raised fastback crossover; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1981,
+      793
+    ],
+    "cluster": [
+      277,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      475,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://hondanews.com/en-US/releases/release-5224bd1607966921675c9c004c34baa8-2010-honda-accord-crosstour-specifications-and-features",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "drivetrain",
+        "transmission",
+        "transmissionLabel",
+        "gearCount",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "curbKg",
+        "tireSize",
+        "frontWeightDistribution",
+        "redlineRpm",
+        "groundClearanceM",
+        "steeringRatio",
+        "absEnabled",
+        "tractionControlEnabled"
+      ]
+    }
+  ]
+}

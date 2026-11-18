@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "horseshoe-vetch-1992",
+  "name": "Horseshoe Vetch 1992",
+  "stableCarId": "saved-car:Horseshoe Vetch 1992",
+  "referenceVehicle": "1992 Alfa Romeo155Q4 production four-door 1995cc catalytic turbo16V permanent4WD5MT, EnglishGB June1992brochure specification; notDTM/GTA orlaterwidebody",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "028a929805a50811d88cdd1ab809f4f7524b0eabead340912437e07a597be456",
+    "dashboard": "a523f44f09568fdb6ace89ae7b5018a7334e9903469e72291dbab84679325adf",
+    "tires": "97539b80cb486b72d733478fadbd387c26edd49c2287e0edcf2a0cc859593383"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

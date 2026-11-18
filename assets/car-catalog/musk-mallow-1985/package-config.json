@@ -1,0 +1,78 @@
+{
+  "id": "musk-mallow-1985",
+  "name": "Musk Mallow 1985",
+  "stableCarId": "saved-car:Musk Mallow 1985",
+  "candidateId": "mazda-rx-7-gsl-se-1985-roster-candidate",
+  "referenceVehicle": "1985 US Mazda RX-7 GSL-SE first-generation FB 13B naturally aspirated fuel-injected rotary, five-speed manual, standard air conditioning and removable steel sunroof",
+  "identity": {
+    "year": 1985,
+    "make": "Mazda",
+    "model": "RX-7 FB",
+    "trim": "GSL-SE 13B fuel-injected 5MT, standard air conditioning, no optional power steering or leather",
+    "market": "United States"
+  },
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Mazda/RX-7/Mazda_US%20RX-7_1985.pdf",
+      "fields": [
+        "identity",
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbLb",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "lengthIn",
+        "widthIn",
+        "heightIn",
+        "wheelbaseIn",
+        "trackFrontIn",
+        "trackRearIn",
+        "groundClearanceM",
+        "fuelTankUSgal",
+        "tireSize"
+      ]
+    }
+  ]
+}

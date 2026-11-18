@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "heath-bedstraw-2019",
+  "name": "Heath Bedstraw 2019",
+  "stableCarId": "saved-car:Heath Bedstraw 2019",
+  "referenceVehicle": "2019 United States Subaru Tecnica International S209 EJ25 turbo2.457L six-speed manual AWD sedan, factory341hp specification; not ordinary WRX STI, TypeRA, S208 or Airslayer",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "fcf384e4849ae1185e9d6e8d1a094be323bf57bd1067827f07cbc464e4b5a0d8",
+    "dashboard": "a45fbc0f705f6c5db3bd5ccfbbad5f669ab544296f947b8ea18c5600630a48b2",
+    "tires": "49548028d485a2b379d22e0588f9f28e197342399f68000b445e33223f3f3487"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,86 @@
+{
+  "id": "marsh-cinquefoil-1998",
+  "name": "Marsh Cinquefoil 1998",
+  "stableCarId": "saved-car:Marsh Cinquefoil 1998",
+  "candidateId": "mitsubishi-fto-gp-version-r-1998-roster-candidate",
+  "referenceVehicle": "1998 Japan Mitsubishi FTO GPVersionR E-DE3A 1998cc6A12MIVECV6 FWD5MT1150kg; February1997\u2013August1999 version, not automatic,GPX,GPVersionRaeroseries or1999GF emissionsupdate",
+  "identity": {
+    "year": 1998,
+    "make": "Mitsubishi",
+    "model": "FTO GP Version R",
+    "trim": "Japan E-DE3A 6A12 MIVEC naturally aspirated V6 five-speed manual standard coupe, no optional equipment",
+    "market": "Japan"
+  },
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1250,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      1500,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://gazoo.com/catalog/maker/MITSUBISHI/FTO/199410/4003215/",
+      "fields": [
+        "identity",
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "reverseRatio",
+        "finalDrive",
+        "fuelTankUSgal",
+        "tireSize"
+      ]
+    },
+    {
+      "url": "https://www.mitsubishi-motors.com/en/company/history/car/",
+      "fields": [
+        "FTO identity",
+        "2.0L V6 MIVEC architecture",
+        "distinct compact coupe design"
+      ]
+    }
+  ]
+}

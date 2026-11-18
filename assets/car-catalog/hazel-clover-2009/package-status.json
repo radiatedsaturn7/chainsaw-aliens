@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "hazel-clover-2009",
+  "name": "Hazel Clover 2009",
+  "stableCarId": "saved-car:Hazel Clover 2009",
+  "referenceVehicle": "2009 United States Kia Amanti, standard3.8V6 FWD5AT,16-inchalloys,noLeather/Premiumpackages",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "e6622d394ba929fa53e3bb824968b2c4ebae1a53b65d44642de97a12bfa4878d",
+    "dashboard": "9d753b186d85faa9b148ae7730c2a96c5d414672f4620282addb56878878abc0",
+    "tires": "e9d7fff8b020086c878a4cc26a397dba61c9e5eaa2ed9f75b4482b6f6c537066"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

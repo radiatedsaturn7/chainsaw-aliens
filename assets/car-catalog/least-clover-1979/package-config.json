@@ -1,0 +1,93 @@
+{
+  "id": "least-clover-1979",
+  "name": "Least Clover 1979",
+  "stableCarId": "saved-car:Least Clover 1979",
+  "runtimeId": "saved-car:Least Clover 1979",
+  "candidateId": "toyota-fj40-1979-roster-candidate",
+  "referenceVehicle": "1979 United States Toyota Land Cruiser FJ40, US short-wheelbase hardtop 4230cc 2F six-cylinder 4MT, high-range rear-wheel-drive road configuration; not FJ55 wagon or later diesel",
+  "identity": {
+    "year": 1979,
+    "make": "Toyota",
+    "model": "Land Cruiser FJ40",
+    "trim": "US short-wheelbase hardtop 4230cc 2F six-cylinder 4MT, high-range rear-wheel-drive road configuration; not FJ55 wagon or later diesel",
+    "market": "United States"
+  },
+  "bodyClass": "two-door short-wheelbase hardtop utility SUV; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://importarchive.com/brochures/toyota/toyotalandcruiser1979_01/toyotalandcruiser1979_01_009.jpg",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "gearCount",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "publishedTire",
+        "publishedTransferHigh",
+        "publishedTransferLow"
+      ]
+    },
+    {
+      "url": "https://importarchive.com/brochure/toyotalandcruiser1979_01",
+      "fields": [
+        "year",
+        "market",
+        "hardtop body"
+      ]
+    },
+    {
+      "url": "https://pressroom.toyota.com/after-seven-decades-toyotas-legendary-land-cruiser-keeps-rolling-along/",
+      "fields": [
+        "FJ40 lineage",
+        "2F introduction",
+        "1979 US model",
+        "4-speed"
+      ]
+    }
+  ]
+}

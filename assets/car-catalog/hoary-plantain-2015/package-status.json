@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "hoary-plantain-2015",
+  "name": "Hoary Plantain 2015",
+  "stableCarId": "saved-car:Hoary Plantain 2015",
+  "referenceVehicle": "2015 Canadian Dodge Challenger SRT Hellcat6.2supercharged V8,optionalTR6060 six-speed manual,3.70 LSD,RWD,standard275/40ZR20 all-season tires;full707hpoutput,noBlackKeyrestriction",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "2c868eef646bee9db218281ac9269c352ab1bc01f3008986e83d2aac18b5503f",
+    "dashboard": "ef4c2865a62216141359ea28d8be9f7446bc519f6fef06566718d9dd78250775",
+    "tires": "dd54c17b86ae9018e56568f0b697fc775143d908e8ac020e3496a383fd46901e"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "dogwood-clover-2008",
+  "name": "Dogwood Clover 2008",
+  "stableCarId": "saved-car:Dogwood Clover 2008",
+  "referenceVehicle": "2008 United States Mercedes-Benz R350 W251 long-wheelbase 2WD rear-drive 3498cc naturally aspirated V6 seven-speed automatic, standard18-inch wheels, non-Airmatic; not R320CDI or4MATIC",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "3b4e1e7832aac09208b7dca182a0ae12c1424d3bca02d3df7f941179c98e0fab",
+    "dashboard": "aae00d212762bcb20a226ff05297d014b0971ab188edfbc6006d853dc55fb571",
+    "tires": "65243fc2c99767dcbae93d9e4c53a965c9958bb3614ef61c0db7617a2d8cf668"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

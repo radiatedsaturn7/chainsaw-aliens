@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "cloudberry-clover-2005",
+  "name": "Cloudberry Clover 2005",
+  "stableCarId": "saved-car:Cloudberry Clover 2005",
+  "referenceVehicle": "2005 Canada Lexus GX470, Canadian standard4.7VVTiV8full-time4WD5AT,eightseats,17-inch wheels; normalhigh-range road mode",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "53e09dc9cca08028b9a37b0087e07fedc08c90fe89d65b00cb48206d0fd46d93",
+    "dashboard": "e4b19bb08dc232c5bc1def22b1131c666fbff6b576f602360542db8478529975",
+    "tires": "1698b47fed4ab678e6ea24a93eb787fb85552a06e07b58968ef167bcee70b838"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

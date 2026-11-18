@@ -1,0 +1,79 @@
+{
+  "id": "pine-clover-2012",
+  "name": "Pine Clover 2012",
+  "stableCarId": "saved-car:Pine Clover 2012",
+  "runtimeId": "saved-car:Pine Clover 2012",
+  "candidateId": "volkswagen-passat-2012-us-2-5-s-5mt",
+  "referenceVehicle": "2012 US Volkswagen Passat NMS2.5S inline-five5MT standard16inchsteel wheels,withoutAppearancePackage",
+  "identity": {
+    "year": 2012,
+    "make": "Volkswagen",
+    "model": "Passat",
+    "trim": "NMS2.5S inline-five5MT standard16inchsteel wheels,withoutAppearancePackage",
+    "market": "United States"
+  },
+  "bodyClass": "sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    3,
+    4,
+    5,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Volkswagen/Passat/VW_US%20Passat_2012.pdf",
+      "fields": [
+        "powerKw",
+        "publishedPowerHp",
+        "torqueNm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "identity"
+      ]
+    },
+    {
+      "url": "https://manualzz.com/doc/54714297/volkswagen-passat-2012-service-training",
+      "fields": [
+        "engineArchitecture",
+        "powerRpmReference",
+        "torqueRpmReference",
+        "powerConversionCaution"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "sea-lavender-gts-1993",
+  "name": "Sea Lavender GTS 1993",
+  "stableCarId": "saved-car:Sea Lavender GTS 1993",
+  "referenceVehicle": "1993 European Porsche 928 GTS M28/49 G28/57 5MT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "f1f145f316fe7260284e99291117063eb55d6bf4b1082497e20f8b3492703a7d",
+    "dashboard": "8c2eba9a4c0d9e4181a08596b1ca6b69b427730dac4c06ebe90c4a3503de1aae",
+    "tires": "d71f6040347654e8e86433951c38d129a539511140a7c21bbc5af7b82216d4aa"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,163 @@
+{
+  "id": "water-crowfoot-2011",
+  "name": "Water Crowfoot 2011",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "8ab6382a813bc871fd160ba7521ad06fa081612c57dc06aefcb4bbec5eb48f00",
+  "sourceDirectory": "assets/car-catalog/water-crowfoot-2011",
+  "sourceHashes": {
+    "body": "039559796dce357f979012d66de1f2bc7b5587d85bd946cea1aa960dd63a051c",
+    "dashboard": "42a92faab86f706f63a7efb1d5f34388d1fa9358f623d49d297a4e91944d6711",
+    "tires": "e30d4a88094793b7c47daee95e2f1975aa26a6bc91b1e04095aa78ad27414807"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 94.02,
+        "y": 331.74,
+        "radius": 47.9
+      },
+      {
+        "wheel": "fr",
+        "x": 353.03,
+        "y": 331.74,
+        "radius": 47.9
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 681.216,
+        "y": 301.58,
+        "radius": 44.35
+      },
+      {
+        "wheel": "rr",
+        "x": 814.266,
+        "y": 274.97,
+        "radius": 37.254
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 963.28,
+        "y": 294.48,
+        "radius": 47.9
+      },
+      {
+        "wheel": "rr",
+        "x": 1241.8,
+        "y": 294.48,
+        "radius": 47.9
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1383.72,
+        "y": 283.84000000000003,
+        "radius": 35.480000000000004
+      },
+      {
+        "wheel": "rr",
+        "x": 1529.188,
+        "y": 299.806,
+        "radius": 42.576
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 97.57,
+        "y": 766.37,
+        "radius": 46.12
+      },
+      {
+        "wheel": "rl",
+        "x": 349.48,
+        "y": 766.37,
+        "radius": 46.12
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 679.442,
+        "y": 741.532,
+        "radius": 44.35
+      },
+      {
+        "wheel": "fl",
+        "x": 817.814,
+        "y": 713.148,
+        "radius": 37.254
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 961.51,
+        "y": 734.44,
+        "radius": 47.9
+      },
+      {
+        "wheel": "fl",
+        "x": 1245.35,
+        "y": 734.44,
+        "radius": 47.9
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1376.624,
+        "y": 713.148,
+        "radius": 37.254
+      },
+      {
+        "wheel": "fl",
+        "x": 1511.448,
+        "y": 743.306,
+        "radius": 46.124
+      }
+    ]
+  },
+  "wheelFit": "average",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      277.62,
+      485.84,
+      416.43,
+      118.98
+    ],
+    "wheel": [
+      497.84,
+      718.78,
+      426.35
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#ffe1ab",
+    "viewportWheelScale": 2.12,
+    "gaugeBackground": "#101010"
+  },
+  "steeringWheelSource": {
+    "artRef": "steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementNotes": "Measured from original PNG via 1000px gridded preview. Direct front/rear wheel centers estimated from silhouette edge and side-view radius where no explicit arch cutout exists. Engine static review required; road/motion deferred."
+}

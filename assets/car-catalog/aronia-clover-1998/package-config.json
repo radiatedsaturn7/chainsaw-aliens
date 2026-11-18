@@ -1,0 +1,71 @@
+{
+  "id": "aronia-clover-1998",
+  "name": "Aronia Clover 1998",
+  "stableCarId": "saved-car:Aronia Clover 1998",
+  "runtimeId": "saved-car:Aronia Clover 1998",
+  "candidateId": "fiat-barchetta-limited-edition-1998-supplemental-candidate",
+  "referenceVehicle": "1998 Fiat Barchetta LimitedEdition1.8 16V, Italy January1998 numbered LimitedEdition two-seat FWD roadster five-speedmanual, clothroof and15inch alloys; not1999LE or2003facelift",
+  "identity": {
+    "year": 1998,
+    "make": "Fiat",
+    "model": "Barchetta LimitedEdition1.8 16V",
+    "trim": "Italy January1998 numbered LimitedEdition two-seat FWD roadster five-speedmanual, clothroof and15inch alloys; not1999LE or2003facelift",
+    "market": "Italy"
+  },
+  "bodyClass": "roadster",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.media.stellantis.com/it-it/fiat/press/barchetta-limited-edition",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "gearCount",
+        "transmission",
+        "drivetrain",
+        "curbKg",
+        "tireSize",
+        "fuelTankUSgal",
+        "topSpeedMph",
+        "absEnabled"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,162 @@
+{
+  "id": "sea-lavender-gts-1993",
+  "name": "Sea Lavender GTS 1993",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "74b8b4f65363e172f7bea465cc75db657635e20f419670c91bc1cf0aa4442e97",
+  "sourceDirectory": "assets/car-catalog/sea-lavender-gts-1993",
+  "sourceHashes": {
+    "body": "f1f145f316fe7260284e99291117063eb55d6bf4b1082497e20f8b3492703a7d",
+    "dashboard": "8c2eba9a4c0d9e4181a08596b1ca6b69b427730dac4c06ebe90c4a3503de1aae",
+    "tires": "d71f6040347654e8e86433951c38d129a539511140a7c21bbc5af7b82216d4aa"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 105,
+        "y": 325,
+        "radius": 40
+      },
+      {
+        "wheel": "fr",
+        "x": 325,
+        "y": 325,
+        "radius": 40
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 675,
+        "y": 286,
+        "radius": 44
+      },
+      {
+        "wheel": "rr",
+        "x": 835,
+        "y": 255,
+        "radius": 33
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 990,
+        "y": 273,
+        "radius": 42
+      },
+      {
+        "wheel": "rr",
+        "x": 1245,
+        "y": 273,
+        "radius": 42
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 452,
+        "y": 708,
+        "radius": 32
+      },
+      {
+        "wheel": "rr",
+        "x": 586,
+        "y": 735,
+        "radius": 44
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 96,
+        "y": 760,
+        "radius": 40
+      },
+      {
+        "wheel": "rl",
+        "x": 337,
+        "y": 760,
+        "radius": 40
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1585,
+        "y": 283,
+        "radius": 44
+      },
+      {
+        "wheel": "fl",
+        "x": 1740,
+        "y": 253,
+        "radius": 32
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 975,
+        "y": 715,
+        "radius": 42
+      },
+      {
+        "wheel": "fl",
+        "x": 1230,
+        "y": 715,
+        "radius": 42
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1365,
+        "y": 700,
+        "radius": 32
+      },
+      {
+        "wheel": "fl",
+        "x": 1495,
+        "y": 725,
+        "radius": 44
+      }
+    ]
+  },
+  "wheelFit": "cover",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      220,
+      480,
+      540,
+      200
+    ],
+    "wheel": [
+      495,
+      640,
+      410
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#ffe1ab",
+    "viewportWheelScale": 2.1
+  },
+  "steeringWheelSource": {
+    "artRef": "steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementNotes": "Per-car original pixel-grid measurements. Source document byte-compared to recorded staging commit. Static native review only; full game, browser, road rear, motion and smoke deferred."
+}

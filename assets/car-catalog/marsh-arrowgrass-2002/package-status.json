@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "marsh-arrowgrass-2002",
+  "name": "Marsh Arrowgrass 2002",
+  "stableCarId": "saved-car:Marsh Arrowgrass 2002",
+  "referenceVehicle": "2002 UK Lotus Esprit V8 UK MY02 3.5 twin-turbo V8 five-speed manual, standard OZ Nova wheels; not US25thAnniversary or Sport350",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "4c13d5d383701c4527e321f9ba2cd5ffdf307c653d1f2bd29801c56cedb6f48e",
+    "dashboard": "20e446d1e71bae57011ed9e2150d555fe7f84015fb7528da2a59421e8b3ad7b5",
+    "tires": "f35e728f12c80ac03f0aa4a82cd6a3da3febecaa76594a1bd83973fd5679bd5d"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

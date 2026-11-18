@@ -1,0 +1,61 @@
+{
+  "id": "dark-mullein-1968",
+  "name": "Dark Mullein 1968",
+  "stableCarId": "saved-car:Dark Mullein 1968",
+  "runtimeId": "saved-car:Dark Mullein 1968",
+  "candidateId": "pontiac-firebird-1968-roster-candidate",
+  "referenceVehicle": "1968 US Pontiac Firebird Sprint, two-door coupe,250cuin OHC inline-six four-barrelSprint,optional4MT,standard3.55axle",
+  "identity": {
+    "year": 1968,
+    "make": "Pontiac",
+    "model": "Firebird Sprint",
+    "trim": "two-door coupe,250cuin OHC inline-six four-barrelSprint,optional4MT,standard3.55axle",
+    "market": "United States"
+  },
+  "bodyClass": "two-door-coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      531,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.lov2xlr8.no/brochures/pontiac/68fi/bilder/9.jpg",
+      "fields": [
+        "exactengine/transmissionselection",
+        "publishedperiodpowerandtorque",
+        "chassis/body"
+      ]
+    }
+  ]
+}

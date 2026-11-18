@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "orange-hawkweed-1991",
+  "name": "Orange Hawkweed 1991",
+  "stableCarId": "saved-car:Orange Hawkweed 1991",
+  "referenceVehicle": "1991 US GMC Syclone 4.3 turbo/intercooled V6 regular-cab pickup,4AT,full-time road AWD",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "bf96ab6c462e01da20ba7efea4462e35f8e28fe1c5935160ad86bf257eb47ebe",
+    "dashboard": "a2cf09f6e8eef68fad7abe02d271f43470ca743cdf6f6162e4741d7a2f2fd334",
+    "tires": "671616feaef219144372b435d40720965d597ab49567d749ec1c4918503e7347"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

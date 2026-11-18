@@ -1,0 +1,59 @@
+{
+  "id": "pearlwort-2021",
+  "name": "Pearlwort 2021",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      240,
+      395,
+      420,
+      145
+    ],
+    "wheel": [
+      450,
+      700,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://www.hyundai.news/uk/press-kit-archive/i20-n-2021/hyundai-motor-unveils-the-all-new-hyundai-i20-n.html",
+      "fields": [
+        "publishedPowerPS",
+        "powerKw",
+        "torqueNm",
+        "powerRpm",
+        "powerPlateauEndRpm",
+        "torqueRpm",
+        "torquePlateauEndRpm",
+        "engineDisplacementL",
+        "gearCount",
+        "transmission",
+        "tireSize",
+        "publishedWeightKg",
+        "publishedWeightBasis",
+        "steeringRatio",
+        "referenceTopSpeedKmh",
+        "referenceZeroTo100KmhSec"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "id": "arrowleaf-gt-2013",
+  "name": "Arrowleaf GT 2013",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "d56ed477d83e68d231105743e5c80a5c36fc305d6ac11947527640f77655a9d4",
+  "sourceDirectory": "assets/car-catalog/arrowleaf-gt-2013",
+  "sourceHashes": {
+    "body": "bb9a772dc6ea2f5ef94182fe397f9847cd0ecadb8b89fccc920e5f7fe7a2a408",
+    "dashboard": "1bfbf4c1ffa0989c4d2c1777eddf960c9f8205e6668265c2ff3eb6b3d32529ce",
+    "tires": "33de7b9124446428a632463a30d2c7b84ea9283eb37dfe010e23a76a965cf2eb"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 108,
+        "y": 320,
+        "radius": 28
+      },
+      {
+        "wheel": "fr",
+        "x": 335,
+        "y": 320,
+        "radius": 28
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 656,
+        "y": 311,
+        "radius": 43
+      },
+      {
+        "wheel": "rr",
+        "x": 823,
+        "y": 275,
+        "radius": 36
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 946,
+        "y": 292,
+        "radius": 40
+      },
+      {
+        "wheel": "rr",
+        "x": 1226,
+        "y": 292,
+        "radius": 41
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 450,
+        "y": 719,
+        "radius": 37
+      },
+      {
+        "wheel": "rr",
+        "x": 580,
+        "y": 752,
+        "radius": 45
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 107,
+        "y": 756,
+        "radius": 28
+      },
+      {
+        "wheel": "rl",
+        "x": 335,
+        "y": 756,
+        "radius": 28
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1569,
+        "y": 308,
+        "radius": 44
+      },
+      {
+        "wheel": "fl",
+        "x": 1729,
+        "y": 281,
+        "radius": 37
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 957,
+        "y": 742,
+        "radius": 41
+      },
+      {
+        "wheel": "fl",
+        "x": 1242,
+        "y": 738,
+        "radius": 41
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1367,
+        "y": 711,
+        "radius": 37
+      },
+      {
+        "wheel": "fl",
+        "x": 1521,
+        "y": 753,
+        "radius": 45
+      }
+    ]
+  },
+  "wheelFit": "cover",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      260,
+      525,
+      365,
+      105
+    ],
+    "wheel": [
+      440,
+      640,
+      300
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#ffcfb5",
+    "electric": false,
+    "viewportWheelScale": 1.96,
+    "gaugeBackground": "#101014"
+  },
+  "steeringWheelSource": {
+    "artRef": "ct-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementMethod": "Individual original-sheet arch measurements, followed by eight-view native static review. Head-on tread centers raised 10 source pixels and reduced per vehicle. Cockpit wheel center and viewport scale individually reviewed at 1280x720 and 390x844. Gameplay acceptance deferred.",
+  "runtimeFitted": false
+}

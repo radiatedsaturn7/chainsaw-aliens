@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "starry-clover-2018",
+  "name": "Starry Clover 2018",
+  "stableCarId": "saved-car:Starry Clover 2018",
+  "referenceVehicle": "2018 Canada Dodge Challenger SRT Demon, stock 91-octane 808 hp, 8HP90 automatic, standard one-seat specification; no 100-octane controller or Demon Crate front runners",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "9173c887c84176bd7bd7c8efc905cba016c65a1cc166a4cd1535fec7e1f7fdca",
+    "dashboard": "30cc69e83668ada428d214ba0e3679f667c4c33a01753cd9129598d5a9876e08",
+    "tires": "d688a495a00d1f2b43384e311c3b98fd2bbb562392fd55916599f46276fd5173"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

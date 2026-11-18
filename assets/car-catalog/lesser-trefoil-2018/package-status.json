@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "lesser-trefoil-2018",
+  "name": "Lesser Trefoil 2018",
+  "stableCarId": "saved-car:Lesser Trefoil 2018",
+  "referenceVehicle": "2018 Mexico MINI John Cooper Works Countryman ALL4 secondgenerationF60 1998cc turbo four-cylinder8-speedSteptronic;notR56hatch,R60firstgeneration orlater306PScar",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "9b9519a57f475bd8316ab5d26c003badf18110940bbb1a60c4a440b2618ab709",
+    "dashboard": "3a3f8d029bd1f5c3306838e789874b14613411dccb56d0d7b504c990b53a195f",
+    "tires": "07552dcc1188a82edc4a56e2afdd70f9de1d1e14e768e1eec2a4b775d14feb12"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

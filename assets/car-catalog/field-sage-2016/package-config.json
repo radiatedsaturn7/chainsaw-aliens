@@ -1,0 +1,58 @@
+{
+  "id": "field-sage-2016",
+  "name": "Field Sage 2016",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      426,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://manuals.plus/m/29c34f095e25d2d443ffc2fdd7d10fe5bfd168a50d1efd0f028f987debe8914a",
+      "fields": [
+        "6AE69 sedan/1SV",
+        "final 464 hp at 5850 rpm and 445 lb-ft at 3500 rpm",
+        "MG9 manual standard",
+        "3.73 axle with MG9",
+        "255/35ZR18 front and 275/35ZR18 rear",
+        "electronic limited-slip differential"
+      ]
+    },
+    {
+      "url": "https://www.cadillacvnet.com/tech-center/2016-2019-cadillac-ats-v/2016/2016-ats-v-preliminary-specifications.html",
+      "fields": [
+        "3564cc LF4",
+        "preliminary six-speed ratios",
+        "preliminary sedan dimensions and 51/49 distribution",
+        "preliminary 6500rpm maximum and 60.5L tank"
+      ]
+    }
+  ]
+}

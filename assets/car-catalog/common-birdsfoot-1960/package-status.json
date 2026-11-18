@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "common-birdsfoot-1960",
+  "name": "Common Birdsfoot 1960",
+  "stableCarId": "saved-car:Common Birdsfoot 1960",
+  "referenceVehicle": "1960 United States Chevrolet Corvette, standard 283 four-barrel 230-hp reference engine, standard three-speed manual and3.70 axle, soft top raised",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "6e11e341091ce2daa0fcfd30b293c00f8bf013fe7b4ca951d28ca67f95c79d2a",
+    "dashboard": "e61ee63d4d296981b24f5cfdf849d4b0a6703cbc14e47ef591a01b95de5f4807",
+    "tires": "a1a755ebd8485a51384dc980bcbac36c6a25e1c7e6e0836d8115596c491fb9a9"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

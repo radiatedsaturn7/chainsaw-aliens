@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "common-restharrow-1966",
+  "name": "Common Restharrow 1966",
+  "stableCarId": "saved-car:Common Restharrow 1966",
+  "referenceVehicle": "1966 US Chevrolet Chevy II Nova Super Sport Coupe two-door hardtop, optional275-hp327cuin four-barrel Turbo-Fire V8, optional four-speed wide-ratio2.52 first gear,3.36 rear axle, RWD; not350-hpL79, later396Nova, four-door or racing conversion.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "02a743e3116a8f5ce0a71b0dc8e3cd9837432017e823885d3842f226e9bf8902",
+    "dashboard": "737302d1d812d1265cb39c3bf24d3e82026dbcbfd9dc11480e44377f0e4e3e59",
+    "tires": "588676efaaaab6719cd789f87c70277b5a9ec2df170a5d96f7c72d967b2f9e7b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

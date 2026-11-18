@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "spotted-medick-1981",
+  "name": "Spotted Medick 1981",
+  "stableCarId": "saved-car:Spotted Medick 1981",
+  "referenceVehicle": "1981 US Volkswagen Scirocco S Mk1, 1715cc fuel-injected SOHC gasoline four-cylinder and standard five-speed manual; not later Mk2 GTX16V or Mk3 R.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "0bce94bb97c630b7a40a418909bdb89468a07bb242d985ac655114215b3746f6",
+    "dashboard": "f905f57a3e4b5c2c20e38f7742586477f9899fb9b7510af816065ba506836889",
+    "tires": "ae8cf4957b5faaaeb06d9cc21efffdf4cdd5384b8916d8c6597ab67c7c1e4d30"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

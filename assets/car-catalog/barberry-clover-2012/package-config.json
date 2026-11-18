@@ -1,0 +1,74 @@
+{
+  "id": "barberry-clover-2012",
+  "name": "Barberry Clover 2012",
+  "stableCarId": "saved-car:Barberry Clover 2012",
+  "runtimeId": "saved-car:Barberry Clover 2012",
+  "candidateId": "chevrolet-impala-ls-2012-us-3-6-supplemental",
+  "referenceVehicle": "2012 United States Chevrolet Impala, LS3.6SIDI DOHCV6 FWD six-speedautomatic,standard16-inchaluminumwheels andfrontbucketseats; notpolice,LTZ,SS or1964rear-drive",
+  "identity": {
+    "year": 2012,
+    "make": "Chevrolet",
+    "model": "Impala",
+    "trim": "LS3.6SIDI DOHCV6 FWD six-speedautomatic,standard16-inchaluminumwheels andfrontbucketseats; notpolice,LTZ,SS or1964rear-drive",
+    "market": "United States"
+  },
+  "bodyClass": "four-door-sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Chevrolet/Impala/Chevrolet_US%20Impala_2012.pdf",
+      "fields": [
+        "aspiration",
+        "transmission",
+        "engineDisplacementL",
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "drivetrain",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "fuelTankUSgal"
+      ]
+    }
+  ]
+}

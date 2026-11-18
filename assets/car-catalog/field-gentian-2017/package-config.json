@@ -1,0 +1,81 @@
+{
+  "id": "field-gentian-2017",
+  "name": "Field Gentian 2017",
+  "stableCarId": "saved-car:Field Gentian 2017",
+  "candidateId": "alfa-romeo-giulia-quadrifoglio-2017-roster-candidate",
+  "referenceVehicle": "2017 US Alfa Romeo Giulia Quadrifoglio 2.9 V6 RWD eight-speed automatic",
+  "identity": {
+    "year": 2017,
+    "make": "Alfa Romeo",
+    "model": "Giulia Quadrifoglio",
+    "trim": "US 2.9 V6 sedan, eight-speed automatic",
+    "market": "United States"
+  },
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://manualsfile.com/product/hwl8dd0ux.html",
+      "fields": [
+        "identity",
+        "powerHp",
+        "torqueNm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "curbLb",
+        "powerRpm",
+        "torqueRpm",
+        "lengthIn",
+        "widthIn",
+        "heightIn",
+        "wheelbaseIn",
+        "trackFrontIn",
+        "trackRearIn",
+        "fuelTankUSgal"
+      ]
+    },
+    {
+      "url": "https://www.manualslib.com/manual/1226308/Alfa-Romeo-Giulia-Quadrifoglio-2017.html",
+      "fields": [
+        "tireSize",
+        "frontTire",
+        "rearTire"
+      ]
+    }
+  ]
+}

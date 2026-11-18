@@ -1,0 +1,86 @@
+{
+  "id": "marsh-sowthistle-1997",
+  "name": "Marsh Sowthistle 1997",
+  "stableCarId": "saved-car:Marsh Sowthistle 1997",
+  "candidateId": "toyota-soarer-2-5-gt-t-1997-roster-candidate",
+  "referenceVehicle": "Late1997 Japan Toyota Soarer2.5GT-T JZZ30 VVT-i1JZ-GTE2.491L turbo RWD5MT standard coupe1560kg, withoutLpackage oroptionalLSD; not LexusSC400,4.0active-suspension model or earlier twin-turbo",
+  "identity": {
+    "year": 1997,
+    "make": "Toyota",
+    "model": "Soarer 2.5 GT-T",
+    "trim": "Japan JZZ30 August1997 standard coupe five-speed manual, no L package or optional LSD",
+    "market": "Japan"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1981,
+      794
+    ],
+    "cluster": [
+      1288,
+      484,
+      436,
+      111
+    ],
+    "wheel": [
+      1506,
+      754,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://toyota.jp/ucar/catalog/brand-TOYOTA/car-SOARER/199708/1000853/",
+      "fields": [
+        "identity",
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "reverseRatio",
+        "absEnabled",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "finalDrive",
+        "fuelTankUSgal",
+        "tireSize"
+      ]
+    },
+    {
+      "url": "https://toyota.jp/ucar/catalog/brand-TOYOTA/car-SOARER/",
+      "fields": [
+        "1997market identity",
+        "1JZ-GTE VVT-i turbo"
+      ]
+    }
+  ]
+}

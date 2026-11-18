@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "valley-clover-2005",
+  "name": "Valley Clover 2005",
+  "stableCarId": "saved-car:Valley Clover 2005",
+  "referenceVehicle": "2005 United States Toyota Avalon, XL3.5V6 five-speed automatic model3534, standard16-inch alloys, cloth and no optionalmoonroof; notTouring,XLS,Limited or later268hp rerating",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "valley-clover-2005",
+  "sourceHashes": {
+    "body": "6daf19cc5cba8ecf8af702cdbf99d413c97952ab7ebe7d8df4fc851a83031e5c",
+    "dashboard": "63fd9946a108feacc08b1487aa8dce8c79ecf2d12beadf8dde80114c9f966a31",
+    "tires": "a3c8ea31862185cb80f90b72c4f6ba59122be0e766047667ac7429ed415e7b91"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

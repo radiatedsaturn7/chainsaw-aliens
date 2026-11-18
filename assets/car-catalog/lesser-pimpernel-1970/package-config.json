@@ -1,0 +1,68 @@
+{
+  "id": "lesser-pimpernel-1970",
+  "name": "Lesser Pimpernel 1970",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1210,
+      505,
+      590,
+      185
+    ],
+    "wheel": [
+      1505,
+      753,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://www.honda.co.jp/auto-archive/s800/1970/s800m_sy.html",
+      "fields": [
+        "identity",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "groundClearanceM",
+        "fuelTankUSgal",
+        "gearRatios",
+        "reverseRatio",
+        "periodPublishedRatings"
+      ]
+    },
+    {
+      "url": "https://www.honda.co.jp/auto-archive/s800/",
+      "fields": [
+        "identity"
+      ]
+    }
+  ]
+}

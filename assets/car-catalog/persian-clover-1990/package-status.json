@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "persian-clover-1990",
+  "name": "Persian Clover 1990",
+  "stableCarId": "saved-car:Persian Clover 1990",
+  "referenceVehicle": "1990 Japan Subaru Legacy RS, early1990 Japan E-BC5 revisionA BC5A48D EJ20G1994cc turboAWD5MT standardRS, noABS/sunroof;notRS-RA,rallycar orlaterrevisionB",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "f1e3bc61a646d306ea261f368b49607c2f9b828fd74017beee007dcfc469882d",
+    "dashboard": "2258759856843053a2ed904a1e860ae1e7de6f79d616314b1aed17da5ea8f1f6",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

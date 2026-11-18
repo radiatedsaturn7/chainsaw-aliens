@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "mouse-ear-2005",
+  "name": "Mouse-ear 2005",
+  "stableCarId": "saved-car:Mouse-ear 2005",
+  "referenceVehicle": "2005 US Mazda Mazdaspeed MX-5 NB, US turbo 1.8 six-speed manual, standard cloth/vinyl-roof specification without Grand Touring package",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "mouse-ear-2005",
+  "sourceHashes": {
+    "body": "e9aea7e4554a8f13c51eda25bebb5410f9830de87dd95b3bdda7fa3c5ecf0d0d",
+    "dashboard": "0cf2a22ce71edf3acd3e05b5bcd809e23aacb165cf2855647fe030543d989c52",
+    "tires": "4a30794fd786fef2c987f4641a9530234498ead374ba0e4f973ce58d9ba348d7"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

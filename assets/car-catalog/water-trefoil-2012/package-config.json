@@ -1,0 +1,82 @@
+{
+  "id": "water-trefoil-2012",
+  "name": "Water Trefoil 2012",
+  "stableCarId": "saved-car:Water Trefoil 2012",
+  "runtimeId": "saved-car:Water Trefoil 2012",
+  "candidateId": "renault-kangoo-authentique-1-6-16v105-2012-supplemental-candidate",
+  "referenceVehicle": "2012 Renault Kangoo Authentique1.6 16V105, Germany standard-length five-seat passenger MPV five-speedmanual, Euro5petrol, single right slidingdoor; notGrand7-seat,Rapidcargo,be-bop,automatic or1.6 8V90",
+  "identity": {
+    "year": 2012,
+    "make": "Renault",
+    "model": "Kangoo Authentique1.6 16V105",
+    "trim": "Germany standard-length five-seat passenger MPV five-speedmanual, Euro5petrol, single right slidingdoor; notGrand7-seat,Rapidcargo,be-bop,automatic or1.6 8V90",
+    "market": "Germany"
+  },
+  "bodyClass": "minivan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://presse.renault.de/vielseitig-familienfreundlich-und-vorbildlich-sparsam/",
+      "fields": [
+        "powerHp",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "gearCount",
+        "drivetrain",
+        "lengthM",
+        "wheelbaseM",
+        "topSpeedMph"
+      ]
+    },
+    {
+      "url": "https://presse.renault.de/renault-kangoo-serienmassig-mit-esp/",
+      "fields": [
+        "identity",
+        "Euro5",
+        "Authentique",
+        "powerHp"
+      ]
+    },
+    {
+      "url": "https://presse.renault.de/vielseitig-familienfreundlich-und-vorbildlich-sparsam/",
+      "fields": [
+        "source-art-repair-reference"
+      ]
+    }
+  ]
+}

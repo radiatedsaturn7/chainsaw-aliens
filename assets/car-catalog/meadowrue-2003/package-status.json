@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "meadowrue-2003",
+  "name": "Meadowrue 2003",
+  "stableCarId": "saved-car:Meadowrue 2003",
+  "referenceVehicle": "2003 European BMW M5 E39 sedan, S62 V8 six-speed manual",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "643efe76a5de94666d57413797b9b4d129ca32ae29ae4c43e301972721c21748",
+    "dashboard": "6323ee146fa000aebecbc244e6add830ee0165606d22ab2204afb0a0933e0962",
+    "tires": "8688f67dbd899a29559c527503edc7f9374737bd2c3c961fa517ac8be6ce9b3c"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

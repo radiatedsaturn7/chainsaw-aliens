@@ -1,0 +1,54 @@
+{
+  "id": "briar-trail-2024",
+  "name": "Briar Trail 2024",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1984,
+      793
+    ],
+    "cluster": [
+      238,
+      476,
+      476,
+      159
+    ],
+    "wheel": [
+      476,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://www.subaru.com/content/dam/subaru/downloads/pdf/brochures/2025/2025_Forester_Brochure_120424.pdf",
+      "fields": [
+        "2.5L",
+        "182 hp at 5800 rpm",
+        "176 lb-ft at 4400 rpm",
+        "3620 lb base curb",
+        "72.2 in width",
+        "68.9 in height",
+        "104.9 in wheelbase",
+        "61.4 in tracks",
+        "9.2 in clearance",
+        "16.6 US gal",
+        "AWD CVT"
+      ]
+    }
+  ]
+}

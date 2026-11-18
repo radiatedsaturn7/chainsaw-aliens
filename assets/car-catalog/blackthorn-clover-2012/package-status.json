@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "blackthorn-clover-2012",
+  "name": "Blackthorn Clover 2012",
+  "stableCarId": "saved-car:Blackthorn Clover 2012",
+  "referenceVehicle": "2012 United States Chrysler 200, LX2.4 gasoline non-PZEV sedan, package24H, four-speed automatic, standard17-inch wheelcovers; not convertible,200S,V6 orsecond-generation9AT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "076dba09f0b12b2c8d3c8c98672ab2833f15ac3a4bd0a28c6f1b95b5dd306774",
+    "dashboard": "fcf5aed0e2e869c1c6cee3acef537c7ddafcd0c9c45afc4b97519ecbf4e2816a",
+    "tires": "4c87de57adc43fd0a701ce124bb066894296b76f726f3a434eb07ca176bd72fd"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

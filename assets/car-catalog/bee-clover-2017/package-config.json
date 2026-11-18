@@ -1,0 +1,72 @@
+{
+  "id": "bee-clover-2017",
+  "name": "Bee Clover 2017",
+  "stableCarId": "saved-car:Bee Clover 2017",
+  "runtimeId": "saved-car:Bee Clover 2017",
+  "candidateId": "mercedes-amg-gt-r-2017-roster-candidate",
+  "referenceVehicle": "2017 European Mercedes-AMG GT R C1904.0V8 coupe standard7DCT,not GT S/BlackSeries",
+  "identity": {
+    "year": 2017,
+    "make": "Mercedes-AMG",
+    "model": "GT R",
+    "trim": "C1904.0V8 coupe standard7DCT,not GT S/BlackSeries",
+    "market": "Germany / continental Europe"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://media.mercedes-benz.com/en/article/eb8672e7-c690-4615-84fc-37b82474fb32",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "curbKg",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "tireSize",
+        "frontTire",
+        "rearTire",
+        "identity"
+      ]
+    }
+  ]
+}

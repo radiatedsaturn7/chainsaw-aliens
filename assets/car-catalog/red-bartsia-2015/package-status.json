@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "red-bartsia-2015",
+  "name": "Red Bartsia 2015",
+  "stableCarId": "saved-car:Red Bartsia 2015",
+  "referenceVehicle": "2015 UK Jaguar XFR-S X250 four-door saloon,5.0 superchargedV8 550PS680Nm RWD eight-speed Quickshift automatic; not Sportbrake,XKR-S,F-TYPE R or laterXF generation.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "65ba118b6b65f72672ffc0a73668a8dea0fd329677096f595bc8511cdc904051",
+    "dashboard": "5f0643ebe25507bd6e84821dd4bb45adc158836c832f84ee967e82aedf5a4bd2",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

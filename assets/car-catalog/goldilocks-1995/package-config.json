@@ -1,0 +1,70 @@
+{
+  "id": "goldilocks-1995",
+  "name": "Goldilocks 1995",
+  "candidateId": "bmw-m5-1995-roster-candidate",
+  "referenceVehicle": "1995 European BMW M5 E34 3.8 S38B38 sedan, final-facelift6MT, catalyst; not Touring",
+  "identity": {
+    "year": 1995,
+    "make": "BMW",
+    "model": "M5 E34",
+    "trim": "3.8 S38B38 sedan, final-facelift6MT, catalyst; not Touring",
+    "market": "Europe"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      198,
+      484,
+      516,
+      182
+    ],
+    "wheel": [
+      456,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.bmw-m.com/en/topics/magazine-article-pool/the-bmw-m5-of-1988.html",
+      "fields": [
+        "powerKw",
+        "engineDisplacementL",
+        "gearCount",
+        "transmission"
+      ]
+    },
+    {
+      "url": "https://www.bmw-m.com/en/topics/magazine-article-pool/bmw-m5-touring-e34.html",
+      "fields": [
+        "torqueNm",
+        "torqueRpm",
+        "powerRpm"
+      ]
+    },
+    {
+      "url": "https://www.bmwgroup-classic.com/en/models/bmw-classics/product-description-page.ad-1525-1.bmw-m5-e34-340-hp.html",
+      "fields": [
+        "1995 production range"
+      ]
+    }
+  ]
+}

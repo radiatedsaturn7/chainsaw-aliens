@@ -1,0 +1,81 @@
+{
+  "id": "bladder-campion-2010",
+  "name": "Bladder Campion 2010",
+  "stableCarId": "saved-car:Bladder Campion 2010",
+  "candidateId": "bmw-m3-gts-2010-roster-candidate",
+  "referenceVehicle": "2010 German BMW M3GTS E92 4.361L naturallyaspiratedV8,two-seat roadlegalclubsport coupe,7-speedMDCT,standardrollbar,withoutoptionalAC/audio;notstandard4.0M3or2009prototype",
+  "identity": {
+    "year": 2010,
+    "make": "BMW",
+    "model": "M3 GTS",
+    "trim": "E92 4.4V8 roadlegal two-seat7DCT standardnoAC/audio",
+    "market": "Germany"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      468,
+      456,
+      167
+    ],
+    "wheel": [
+      496,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://newsroom.bmwgroup.com/emea/download/b420687f-eed2-4245-bba1-fdb96f8a0604/20260831130013216-41.pdf",
+      "fields": [
+        "identity",
+        "powerKw",
+        "torqueNm",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "curbKg",
+        "transmission",
+        "gearCount",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "lengthIn",
+        "widthIn",
+        "heightIn",
+        "wheelbaseIn",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "frontTire",
+        "rearTire",
+        "fuelTankUSgal",
+        "topSpeedMph",
+        "dragCoefficient"
+      ]
+    }
+  ]
+}

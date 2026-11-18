@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "water-crowfoot-2011",
+  "name": "Water Crowfoot 2011",
+  "stableCarId": "saved-car:Water Crowfoot 2011",
+  "referenceVehicle": "2011 Netherlands Audi RS3 Sportback 8P, standard five-door2.5TFSI five-cylinder seven-speed S tronic, no Pro Line package",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "water-crowfoot-2011",
+  "sourceHashes": {
+    "body": "039559796dce357f979012d66de1f2bc7b5587d85bd946cea1aa960dd63a051c",
+    "dashboard": "42a92faab86f706f63a7efb1d5f34388d1fa9358f623d49d297a4e91944d6711",
+    "tires": "e30d4a88094793b7c47daee95e2f1975aa26a6bc91b1e04095aa78ad27414807"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,89 @@
+{
+  "id": "forest-trefoil-2000",
+  "name": "Forest Trefoil 2000",
+  "stableCarId": "saved-car:Forest Trefoil 2000",
+  "runtimeId": "saved-car:Forest Trefoil 2000",
+  "candidateId": "audi-a2-2000-1-4-aua-5mt",
+  "referenceVehicle": "2000 continental Europe Audi A2 1.4 AUA gasoline four-cylinder 55kW EYX five-speed manual, solid roof, four seats, 175/60R15; not TDI, FSI or 3L",
+  "identity": {
+    "year": 2000,
+    "make": "Audi",
+    "model": "A2",
+    "trim": "1.4 AUA gasoline four-cylinder 55kW EYX five-speed manual, solid roof, four seats, 175/60R15; not TDI, FSI or 3L",
+    "market": "continental Europe"
+  },
+  "bodyClass": "hatchback",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.volkspage.net/technik/ssp/ssp/SSP_240.pdf",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "gearRatios",
+        "finalDrive",
+        "reverseRatio",
+        "groundClearanceM",
+        "fuelTankUSgal",
+        "topSpeedMph",
+        "tireSize",
+        "frontTire",
+        "rearTire"
+      ]
+    },
+    {
+      "url": "https://www.audi.com/en/media-releases/leading-light-25-years-audi-a2-16857",
+      "fields": [
+        "identity"
+      ]
+    }
+  ]
+}

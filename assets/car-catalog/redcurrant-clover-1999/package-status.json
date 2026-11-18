@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "redcurrant-clover-1999",
+  "name": "Redcurrant Clover 1999",
+  "stableCarId": "saved-car:Redcurrant Clover 1999",
+  "referenceVehicle": "1999 Lancia Lybra base2.0 20V, Italy June1999 four-door sedan standardLybra trim naturally aspirated2.0 inline-five five-speedmanual; notLX,StationWagon orComfortronic",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "8519c7ffd269d23f3c622a83094c863f689ff9dcf02820e3af0300df54b605c9",
+    "dashboard": "e06d18e03b86a4012117bcaab24a15e3afc10a182bcefa9dfa353c82ab12025d",
+    "tires": "68603b01e94c5a31f71605d5523c9f911d79935843404f673a9190981012233f"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

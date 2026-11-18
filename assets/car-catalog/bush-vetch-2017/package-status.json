@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bush-vetch-2017",
+  "name": "Bush Vetch 2017",
+  "stableCarId": "saved-car:Bush Vetch 2017",
+  "referenceVehicle": "2017 United States / GlobalMX5Cup Mazda MX-5 Cup, LongRoadRacingND1 sealed155hp2.0 competitionroadster,2017manualgearboxupdate; not2019ND2181hp or2020SADEV",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "c07ebdaca13d6110d2cbe7293e2af93793665bcfd14bfeb0008a002b2afae3fb",
+    "dashboard": "669ceae38408136f66d955b563547c0a11070e81928a9a95949a298d3ea8e121",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

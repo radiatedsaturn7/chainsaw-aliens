@@ -1,0 +1,61 @@
+{
+  "id": "deergrass-2020",
+  "name": "Deergrass 2020",
+  "candidateId": "jeep-gladiator-rubicon-2020-roster-candidate",
+  "referenceVehicle": "2020 US Jeep Gladiator Rubicon 3.6V6 six-speed manual Crew Cab5-foot bed; high-range road approximation",
+  "identity": {
+    "year": 2020,
+    "make": "Jeep",
+    "model": "Gladiator Rubicon",
+    "trim": "3.6V6 six-speed manual Crew Cab5-foot bed; high-range road approximation",
+    "market": "US"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      205,
+      485,
+      420,
+      165
+    ],
+    "wheel": [
+      425,
+      755,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f2eedc"
+  },
+  "sources": [
+    {
+      "url": "https://www.prnewswire.com/news-releases/all-new-2020-jeep-gladiator-the-most-capable-midsize-truck-ever-300756849.html",
+      "fields": [
+        "powerHp",
+        "torqueLbFt",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "finalDrive",
+        "referenceLowRange",
+        "referenceManualCrawlRatio",
+        "referenceTireDiameterIn"
+      ]
+    }
+  ]
+}

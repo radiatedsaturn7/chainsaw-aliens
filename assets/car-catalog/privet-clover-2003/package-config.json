@@ -1,0 +1,68 @@
+{
+  "id": "privet-clover-2003",
+  "name": "Privet Clover 2003",
+  "stableCarId": "saved-car:Privet Clover 2003",
+  "runtimeId": "saved-car:Privet Clover 2003",
+  "candidateId": "lancia-thesis-executive-3-2-2003-supplemental-candidate",
+  "referenceVehicle": "2003 Lancia Thesis Executive3.2 V6 24V, Italy June2003 unarmored luxury sedan five-speed Comfortronic automatic standardExecutive, notEmblema,Protecta,3.0 orJTD",
+  "identity": {
+    "year": 2003,
+    "make": "Lancia",
+    "model": "Thesis Executive3.2 V6 24V",
+    "trim": "Italy June2003 unarmored luxury sedan five-speed Comfortronic automatic standardExecutive, notEmblema,Protecta,3.0 orJTD",
+    "market": "Italy"
+  },
+  "bodyClass": "sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.media.stellantis.com/it-it/lancia/press/nuovi-motori-per-lancia-thesis",
+      "fields": [
+        "powerHp",
+        "engineDisplacementL",
+        "gearCount",
+        "transmission"
+      ]
+    },
+    {
+      "url": "https://www.media.stellantis.com/it-it/lancia/press/lancia-al-61-deg-salone-internazionale-di-francoforte",
+      "fields": [
+        "laterSameEngineCorroborationOnly"
+      ]
+    }
+  ]
+}

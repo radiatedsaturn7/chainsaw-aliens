@@ -1,0 +1,58 @@
+{
+  "id": "thimbleberry-clover-2007",
+  "name": "Thimbleberry Clover 2007",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      760,
+      400,
+      480,
+      130
+    ],
+    "wheel": [
+      470,
+      753,
+      360
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Saturn/Ion/Saturn_US%20Ion_2007.pdf",
+      "fields": [
+        "aspiration",
+        "engineDisplacementL",
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "fuelTankUSgal"
+      ]
+    }
+  ]
+}

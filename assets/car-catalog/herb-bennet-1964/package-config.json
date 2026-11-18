@@ -1,0 +1,76 @@
+{
+  "id": "herb-bennet-1964",
+  "name": "Herb Bennet 1964",
+  "stableCarId": "saved-car:Herb Bennet 1964",
+  "candidateId": "aston-martin-db5-1964-roster-candidate",
+  "referenceVehicle": "1964 UK Aston Martin DB5 standardSaloon3995ccDOHCstraight-six five-speedZFmanual;notVantage,Convertible,DB4 ormoderncontinuation",
+  "identity": {
+    "year": 1964,
+    "make": "Aston Martin",
+    "model": "DB5 Saloon",
+    "trim": "standard4.0straight-six five-speedZF manual; notVantageorConvertible",
+    "market": "United Kingdom"
+  },
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1309,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      1507,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.astonmartin.com/en-us/models/past-models/db5-db5-convertible",
+      "fields": [
+        "identity",
+        "publishedPowerHp",
+        "publishedTorqueLbFt",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM"
+      ]
+    },
+    {
+      "url": "https://media.astonmartin.com/the-aston-martin-db5-at-60-celebrating-six-decades-of-the-worlds-most-iconic-car",
+      "fields": [
+        "identity",
+        "publishedPowerHp",
+        "engineDisplacementL"
+      ]
+    }
+  ]
+}

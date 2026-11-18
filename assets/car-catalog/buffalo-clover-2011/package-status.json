@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "buffalo-clover-2011",
+  "name": "Buffalo Clover 2011",
+  "stableCarId": "saved-car:Buffalo Clover 2011",
+  "referenceVehicle": "2011 European Lamborghini Gallardo LP570-4 Superleggera 5.2V10 coupe e-gear standard19inch; not roadster, modified car or later special edition",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "4a42c09d8556748ff2b916cb8c079278b8b570738d49047b0689dcd522b002ea",
+    "dashboard": "ef27b0148834ca05628a7ea683fa010641c6b86cfac69aa4ce2ee6f5fc9eed80",
+    "tires": "21f25520da0ded2295c7223979caaa2ce29336cdc6e49917530415c28d58c3a3"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,61 @@
+{
+  "id": "bogmyrtle-2018",
+  "name": "Bogmyrtle 2018",
+  "candidateId": "jeep-grand-cherokee-trackhawk-2018-roster-candidate",
+  "referenceVehicle": "2018 US Jeep Grand Cherokee Trackhawk 6.2supercharged V8 eight-speed automatic, standard20-inch wheels; Auto-mode approximation",
+  "identity": {
+    "year": 2018,
+    "make": "Jeep",
+    "model": "Grand Cherokee Trackhawk",
+    "trim": "6.2supercharged V8 eight-speed automatic, standard20-inch wheels; Auto-mode approximation",
+    "market": "US"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      175,
+      480,
+      435,
+      170
+    ],
+    "wheel": [
+      400,
+      750,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e9ef"
+  },
+  "sources": [
+    {
+      "url": "https://www.prnewswire.com/news-releases/707-horsepower-2018-jeep-grand-cherokee-trackhawk-the-most-powerful-and-quickest-suv-ever-300436470.html",
+      "fields": [
+        "powerHp",
+        "torqueLbFt",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "tireSize",
+        "referenceAutoRearTorqueShare",
+        "referenceZeroToSixtySec",
+        "referenceTopSpeedMph"
+      ]
+    }
+  ]
+}

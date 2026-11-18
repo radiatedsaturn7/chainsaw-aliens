@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bilberry-clover-2005",
+  "name": "Bilberry Clover 2005",
+  "stableCarId": "saved-car:Bilberry Clover 2005",
+  "referenceVehicle": "2005 Canada Lexus SC430, Canadian standard4.3V8 RWDfive-speedautomatic retractable-hardtop,18-inchsummer tires; notRunFlat/PebbleBeach package orlater6AT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "f35e04a65cf5bc08e6e749e53191ca444bcfea130df5e1d72aa2cb8695d5196e",
+    "dashboard": "ba60eb40f6f53f449405677ba5a8fa543a3b92b81511040c8f644461d2a537cf",
+    "tires": "34aa7cdb9c2066be89a19cbb917bd6c7f25290ed641aa5d8838b6f5611fd72f6"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

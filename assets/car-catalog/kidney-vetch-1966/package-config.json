@@ -1,0 +1,62 @@
+{
+  "id": "kidney-vetch-1966",
+  "name": "Kidney Vetch 1966",
+  "stableCarId": "saved-car:Kidney Vetch 1966",
+  "runtimeId": "saved-car:Kidney Vetch 1966",
+  "candidateId": "jaguar-xj13-1966-roster-candidate",
+  "referenceVehicle": "1966 Jaguar XJ13, solemid-engine5.0DOHCV12 prototype,ZF5MT; neverraced, notroadproduction orreplica",
+  "identity": {
+    "year": 1966,
+    "make": "Jaguar",
+    "model": "XJ13",
+    "trim": "solemid-engine5.0DOHCV12 prototype,ZF5MT; neverraced, notroadproduction orreplica",
+    "market": "United Kingdom"
+  },
+  "bodyClass": "roadster",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1190,
+      571,
+      496,
+      103
+    ],
+    "wheel": [
+      1428,
+      761,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.jaguarheritage.com/vehicle-collection/1966-jaguar-xj13/",
+      "fields": [
+        "publishedClaimedPeriodBhp",
+        "engineDisplacementL",
+        "gearCount",
+        "transmission"
+      ]
+    }
+  ]
+}

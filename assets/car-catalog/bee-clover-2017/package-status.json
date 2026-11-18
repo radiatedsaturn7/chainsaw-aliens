@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bee-clover-2017",
+  "name": "Bee Clover 2017",
+  "stableCarId": "saved-car:Bee Clover 2017",
+  "referenceVehicle": "2017 European Mercedes-AMG GT R C1904.0V8 coupe standard7DCT,not GT S/BlackSeries",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "bee-clover-2017",
+  "sourceHashes": {
+    "body": "fff92b9967395bd2fabab37de589cb87ebeb0901c4ba5147c09c00818b16505d",
+    "dashboard": "2b554f0890c45a2f2cdf70e0e5788d8d6b71f1b65f321bc91185e3c20d4745af",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

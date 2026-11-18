@@ -1,0 +1,60 @@
+{
+  "id": "cup-clover-1997",
+  "name": "Cup Clover 1997",
+  "stableCarId": "saved-car:Cup Clover 1997",
+  "runtimeId": "saved-car:Cup Clover 1997",
+  "candidateId": "lamborghini-diablo-sv-1997-roster-candidate",
+  "referenceVehicle": "1997 Lamborghini Diablo SV, pre-faceliftpop-up-headlamp5.7V12RWDfive-speed withadjustablerearwing;notVT,1999SV529HP,GTorGTR",
+  "identity": {
+    "year": 1997,
+    "make": "Lamborghini",
+    "model": "Diablo SV",
+    "trim": "pre-faceliftpop-up-headlamp5.7V12RWDfive-speed withadjustablerearwing;notVT,1999SV529HP,GTorGTR",
+    "market": "UK/Europe"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.lamborghini.com/en-en/news/lamborghini-diablos-30th-anniversary-with-cesare-cremonini",
+      "fields": [
+        "publishedPowerHp",
+        "engineDisplacementL"
+      ]
+    }
+  ]
+}

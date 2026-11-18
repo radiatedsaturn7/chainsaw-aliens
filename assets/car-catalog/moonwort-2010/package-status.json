@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "moonwort-2010",
+  "name": "Moonwort 2010",
+  "stableCarId": "saved-car:Moonwort 2010",
+  "referenceVehicle": "2010 US Audi R8 Coupe5.2FSI quattro US standard V10 six-speed manual,19-inch ten-spoke wheels",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "3fdf23af31cbc68f9e740f62c806f58c8b628b608065c321b2552fa36542012e",
+    "dashboard": "7842f18e8895344e5dca74a9a6c6503d12c4c477d1c5e92bd8e92b91286c4600",
+    "tires": "a00afd800f8abe1166f4525113f16fb19937785f0538152299677f61730a3dd0"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

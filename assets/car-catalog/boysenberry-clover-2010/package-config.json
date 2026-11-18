@@ -1,0 +1,68 @@
+{
+  "id": "boysenberry-clover-2010",
+  "name": "Boysenberry Clover 2010",
+  "stableCarId": "saved-car:Boysenberry Clover 2010",
+  "runtimeId": "saved-car:Boysenberry Clover 2010",
+  "candidateId": "mercedes-benz-g550-2010-us-w463-7at",
+  "referenceVehicle": "2010 United States Mercedes-Benz G550 W463 long-wheelbase five-door5.5 naturally aspirated gasolineV8 seven-speedautomatic permanent4WD high-range, standard18inch wheels; not superchargedG55AMG",
+  "identity": {
+    "year": 2010,
+    "make": "Mercedes-Benz",
+    "model": "G550",
+    "trim": "W463 long-wheelbase five-door5.5 naturally aspirated gasolineV8 seven-speedautomatic permanent4WD high-range, standard18inch wheels; not superchargedG55AMG",
+    "market": "United States"
+  },
+  "bodyClass": "suv",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Mercedes_Benz/G-Class/Mercedes%20Benz_US%20G-Class_2010.pdf",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "identity"
+      ]
+    }
+  ]
+}

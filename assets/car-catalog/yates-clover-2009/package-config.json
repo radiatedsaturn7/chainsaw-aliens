@@ -1,0 +1,70 @@
+{
+  "id": "yates-clover-2009",
+  "name": "Yates Clover 2009",
+  "stableCarId": "saved-car:Yates Clover 2009",
+  "runtimeId": "saved-car:Yates Clover 2009",
+  "candidateId": "fiat-qubo-active-1-4-2009-supplemental-candidate",
+  "referenceVehicle": "2009 Fiat Qubo Active 1.4 8v, UK January2009 five-seat passenger MPV, petrol 1360cc five-speed manual, standard15inch wheels; not Fiorino cargo van or1.3MultiJet",
+  "identity": {
+    "year": 2009,
+    "make": "Fiat",
+    "model": "Qubo Active 1.4 8v",
+    "trim": "UK January2009 five-seat passenger MPV, petrol 1360cc five-speed manual, standard15inch wheels; not Fiorino cargo van or1.3MultiJet",
+    "market": "UK"
+  },
+  "bodyClass": "minivan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1984,
+      793
+    ],
+    "cluster": [
+      1290,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      1508,
+      753,
+      298
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.media.stellantis.com/uk-en/fiat/press/fiat-qubo-stylish-family-motoring-made-simple-press-pack",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "gearCount",
+        "drivetrain",
+        "tireSize",
+        "lengthM",
+        "fuelTankUSgal",
+        "topSpeedMph",
+        "absEnabled"
+      ]
+    }
+  ]
+}

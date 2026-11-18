@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "purple-vetch-2021",
+  "name": "Purple Vetch 2021",
+  "stableCarId": "saved-car:Purple Vetch 2021",
+  "referenceVehicle": "2021 Canada Lexus LC 500, Canadian base V8 coupe10AT,standard20inchwheels/glassroof; not500h,convertible orPerformancePackage",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "9199476c67b497c7c55c34ecb4973dd0729265fdb58ca73169df03f082bfbb3f",
+    "dashboard": "234c182c2e03c87ee103388254c1713dbf1f3ac824c7ce2339a816b61193dedd",
+    "tires": "f38bec142f2a19ca8ec27f6c77b08aaf0461ec43201aad9cdf0c302d2b8c5816"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

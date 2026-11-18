@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "hawberry-clover-2004",
+  "name": "Hawberry Clover 2004",
+  "stableCarId": "saved-car:Hawberry Clover 2004",
+  "referenceVehicle": "2004 United States Oldsmobile Bravada, base2WD4.2Vortec4200 inline-six four-speedautomatic, standard3.73axle and17-inchwheels; notSmartTrakAWD orFinal500",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "81dbf4529bab3f2570e19f28bc8923197ebaae8ff9ab4c311f1aba50974f5fb8",
+    "dashboard": "fb4fa7536a99f442308b281d876636658becd07751c30aaf3b5ea0922aba0803",
+    "tires": "96607f15a59883c8ebdaebf3a4f53ce8261fbae34ebd4cf9c1aecd2300389a72"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

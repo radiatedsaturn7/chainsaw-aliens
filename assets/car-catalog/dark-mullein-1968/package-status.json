@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "dark-mullein-1968",
+  "name": "Dark Mullein 1968",
+  "stableCarId": "saved-car:Dark Mullein 1968",
+  "referenceVehicle": "1968 US Pontiac Firebird Sprint, two-door coupe,250cuin OHC inline-six four-barrelSprint,optional4MT,standard3.55axle",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "54a32ba1d2d15a0b59779f05ff7f43c536ce9ad71f5743147dd74749cb401865",
+    "dashboard": "9e03d38d5d2258ab1487e781533b5efe7e2b76679b69260a9ce3199d5b6e8121",
+    "tires": "588676efaaaab6719cd789f87c70277b5a9ec2df170a5d96f7c72d967b2f9e7b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,78 @@
+{
+  "id": "thimble-clover-2014",
+  "name": "Thimble Clover 2014",
+  "stableCarId": "saved-car:Thimble Clover 2014",
+  "runtimeId": "saved-car:Thimble Clover 2014",
+  "candidateId": "renault-twingo-expression-sce70-2014-supplemental-candidate",
+  "referenceVehicle": "2014 Renault Twingo Expression SCe 70, Germany third-generation five-door rear-engine naturally aspirated 1.0 three-cylinder five-speed manual; non-ENERGY without start-stop",
+  "identity": {
+    "year": 2014,
+    "make": "Renault",
+    "model": "Twingo Expression SCe 70",
+    "trim": "Germany third-generation five-door rear-engine naturally aspirated 1.0 three-cylinder five-speed manual; non-ENERGY without start-stop",
+    "market": "Germany"
+  },
+  "bodyClass": "hatchback",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://presse.renault.de/neuer-twingo-mit-funf-turen-und-heckmotor/",
+      "fields": [
+        "powerHp",
+        "publishedPowerPS",
+        "engineDisplacementL",
+        "torqueNm",
+        "torqueRpm",
+        "gearCount",
+        "drivetrain",
+        "frontWeightDistribution",
+        "lengthM",
+        "wheelbaseM",
+        "topSpeedMph"
+      ]
+    },
+    {
+      "url": "https://presse.renault.de/neuer-renault-twingo-gunstiger-als-vorganger/",
+      "fields": [
+        "identity",
+        "trim",
+        "market",
+        "launchDate"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "id": "source-fig-clover-2012",
+  "name": "Fig Clover 2012",
+  "stableCarId": "saved-car:Fig Clover 2012",
+  "runtimeId": "saved-car:Fig Clover 2012",
+  "runtimeDocumentId": null,
+  "candidateId": null,
+  "referenceVehicle": "US2012 Lincoln MKS standard3.7V6,FWD,6AT. Four-door sedan,standard18-inch wheels,noEcoBoost/appearancepackage.",
+  "identity": null,
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    7,
+    6,
+    3,
+    4,
+    5,
+    2,
+    1
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      258,
+      428,
+      416,
+      127
+    ],
+    "wheel": [
+      476,
+      714,
+      377
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Lincoln/MKS/Lincoln_US%20MKS_2012.pdf",
+      "fields": [
+        "exact identity and visual configuration"
+      ]
+    }
+  ]
+}

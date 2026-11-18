@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "pearlwort-2021",
+  "name": "Pearlwort 2021",
+  "stableCarId": "saved-car:Pearlwort 2021",
+  "referenceVehicle": "2021 continental Europe Hyundai i20 N launch standard six-speed manual, without optional mechanical LSD",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "08c0f4e86d32b839ac35d9350675d1e0146fc11c85b24086bdbb9a8a7699bcf1",
+    "dashboard": "efb2129115c3b602641356888daa306313d5d42b12fbc550abf57190364f7995",
+    "tires": "9d4dee5746e27f220b9269d7fb35ba60ba82b3d1ee4de3722758dfcb4972581d"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

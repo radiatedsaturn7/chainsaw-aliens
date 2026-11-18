@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "hedge-bedstraw-2005",
+  "name": "Hedge Bedstraw 2005",
+  "stableCarId": "saved-car:Hedge Bedstraw 2005",
+  "referenceVehicle": "2005 Japan Honda NSX Type R ABA-NA2 C32B3.2 six-speed manual, standard1270kg lightweight specification; not1992NA1, NSX-R GT or standardNSX",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "07b7f1e3d14a99f5005ff3c04f64cf059e66c47bf4a0199e5497eb8432d64710",
+    "dashboard": "f544c286560490f24c717522dda2fb763d6359d08d02416075b50eb107b8065e",
+    "tires": "172e4fea2b096a41df8a74c1be193f03af2209cb023ad348dec01a6f036af441"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

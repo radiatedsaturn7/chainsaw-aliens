@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "golden-saxifrage-2003",
+  "name": "Golden Saxifrage 2003",
+  "stableCarId": "saved-car:Golden Saxifrage 2003",
+  "referenceVehicle": "2003 Europe Audi RS6 C5, standard 4.2 V8 biturbo sedan five-speed torque-converter automatic, not Avant/plus/Competition",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "002692229ebd80312d7f4a4ecb778c63a7818e6e20c44603d1c1d89942d6f244",
+    "dashboard": "faa3c33bb57ad715008fbf3f06c9a13aad8d9274a3dca26919c53c39d7544862",
+    "tires": "e31f00dae62a840a32d5f347aa3f2ba530b88c2b1073dab9e17ea74ed8e4f43c"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

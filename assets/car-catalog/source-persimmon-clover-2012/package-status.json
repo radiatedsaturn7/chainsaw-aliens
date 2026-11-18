@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "source-persimmon-clover-2012",
+  "name": "Persimmon Clover 2012",
+  "stableCarId": "saved-car:Persimmon Clover 2012",
+  "referenceVehicle": "US2012 Hyundai Genesis3.8GDI sedan,RWD,8AT. Four-door sedan,standard17-inch wheels,Hyundai-era body,notCoupe orR-Spec.",
+  "runtimeDocumentIdVerified": false,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "b8ca9ff6859f034d4a6b9d011ce59a5349153e69861bd478a162f936e0090ec9",
+    "dashboard": "f1b3a2c7762a9fc68978507958eaeb4cd4a855fea184901810873fd402605787",
+    "tires": "3d4e2ee54adfc530d17007861c44187a6e1ebb6bad4739aa8fb0a9e28ac42c9f"
+  },
+  "mapping": [
+    0,
+    7,
+    6,
+    3,
+    4,
+    5,
+    2,
+    1
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

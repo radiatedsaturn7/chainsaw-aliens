@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "great-willowherb-2006",
+  "name": "Great Willowherb 2006",
+  "stableCarId": "saved-car:Great Willowherb 2006",
+  "referenceVehicle": "2006 Germany Audi RS 4, B7 standard naturallyaspirated4.2FSIV8 quattro sedan6MT; notAvant/Cabriolet orUSMY2007",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "e2af594d9f4c2d793afc311cb3a61547a7095392c42bc3712735e9737703da24",
+    "dashboard": "03dc67d49a3a9b2c6fd55f547ed573fbedacca8158f042c9a42fe461ebdc7155",
+    "tires": "3ec13a25fcf17d5c51837b5f9924ba8e6a09c64351c326fa03148f8a72b76d06"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

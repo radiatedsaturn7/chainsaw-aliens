@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "source-whitecurrant-clover-2010",
+  "name": "Whitecurrant Clover 2010",
+  "stableCarId": "saved-car:Whitecurrant Clover 2010",
+  "referenceVehicle": "US 2010 Acura MDX base 3.7 V6 SH-AWD, 6AT. Five-door seven-seat SUV, no Technology/Advance package.",
+  "runtimeDocumentIdVerified": false,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "82778116bad793ed3184ce66da7e5cb4a4c73e2ec544f216f7a006a29704fb31",
+    "dashboard": "f0f43cafb210cff2b88c4d1758f80311612b52bcea889b42f4638dba66989747",
+    "tires": "97e2ef00b28006a2c4441afd376f12c3402a67a706f444c43f5748789f04d1ee"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

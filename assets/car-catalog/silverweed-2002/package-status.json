@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "silverweed-2002",
+  "name": "Silverweed 2002",
+  "stableCarId": "saved-car:Silverweed 2002",
+  "referenceVehicle": "2002 United States BMW Z3 M Coupe E36/8 S54B32 3246cc315hp five-speed manual; not earlier S52, European325PS, Z4M E86 or M Roadster.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "silverweed-2002",
+  "sourceHashes": {
+    "body": "786d06cda57aba92ac12bd56acaa8d08efd3abdc95959f895a24ed9e68b0f27b",
+    "dashboard": "404d5bfd18a9c4d6ea870313be1b5fd774dbc7f9abaf1a8b163ba8941a17a720",
+    "tires": "ffdfe466db33ad448bc3e4634612d3d176375da611a007f2b6385b802b5b5e5a"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

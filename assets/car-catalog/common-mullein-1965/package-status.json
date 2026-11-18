@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "common-mullein-1965",
+  "name": "Common Mullein 1965",
+  "stableCarId": "saved-car:Common Mullein 1965",
+  "referenceVehicle": "1965 US Pontiac GTO, two-door hardtop,standard389cuin four-barrel335hp reference,optionalwide-ratio4MT,standard3.23axle",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "69eafa38669ece21b105e36f94ec9db031ff7c631958385ff755992476e30512",
+    "dashboard": "95ff37b8a7f4971fbedc6178489ec6ed50c316caf12d4be23a064dca7a54b554",
+    "tires": "588676efaaaab6719cd789f87c70277b5a9ec2df170a5d96f7c72d967b2f9e7b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,63 @@
+{
+  "id": "purple-toadflax-1955",
+  "name": "Purple Toadflax 1955",
+  "stableCarId": "saved-car:Purple Toadflax 1955",
+  "candidateId": "chevrolet-150-utility-sedan-1955-roster-candidate",
+  "referenceVehicle": "1955 US Chevrolet One-Fifty Utility Sedan model1512/Fisher55-1211B, three seats, standard235.5cuin Blue Flame123 single-carburetor inline-six, three-speed manual without overdrive,3.70 axle, RWD",
+  "identity": {
+    "year": 1955,
+    "make": "Chevrolet",
+    "model": "One-Fifty Utility Sedan",
+    "trim": "1512 three-passenger two-door, standard Blue Flame 123 six and three-speed manual, no overdrive",
+    "market": "United States"
+  },
+  "bodyClass": "sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      258,
+      476,
+      476,
+      135
+    ],
+    "wheel": [
+      496,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.gm.com/content/dam/company/no_search/heritage-archive-docs/vehicle-information-kits/chevrolet/1955-Chevrolet.pdf",
+      "fields": [
+        "1512 identity",
+        "manual six curb weight and axle loads",
+        "dimensions",
+        "standard3.70 axle",
+        "period net and gross engine output",
+        "6.70-15 tires"
+      ]
+    }
+  ]
+}

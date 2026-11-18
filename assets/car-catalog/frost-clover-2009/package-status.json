@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "frost-clover-2009",
+  "name": "Frost Clover 2009",
+  "stableCarId": "saved-car:Frost Clover 2009",
+  "referenceVehicle": "2009 United States Kia Borrego, LX4.6V8 2WD6AT,standard17-inchalloywheels,unladen",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "frost-clover-2009",
+  "sourceHashes": {
+    "body": "dd713a4bd243092b71d75cbbb92a50505e2ba2d47b0ece14e2319b03bc8460fd",
+    "dashboard": "017ecdaf2c2d9a00837d6452267b714b73da752111ffa0ba73b77d0835cc97d9",
+    "tires": "aecf35a3582fbc605fb31fd155e965902e73df7c77ca87deacbdc7c5822df582"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "marionberry-clover-2004",
+  "name": "Marionberry Clover 2004",
+  "stableCarId": "saved-car:Marionberry Clover 2004",
+  "referenceVehicle": "2004 United States Oldsmobile Alero, GLS two-doorcoupe3.4SFI V6 four-speedautomatic, standard16-inchpolishedwheels; notGXfour-cylinder,sedan orFinal500",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "c33267fd676c65e16f52878ad74faaed9583bc4bd392e6de7f7a72fc21b18833",
+    "dashboard": "72c421ef25acf6db7d6d159f060a077b9e73d717d8f1a612d2f541a54a521d8b",
+    "tires": "0ae171560c3adfbdbe24e25d91d3812135675aef2712031c448c989c0c819997"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

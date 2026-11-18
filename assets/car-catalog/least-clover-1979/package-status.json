@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "least-clover-1979",
+  "name": "Least Clover 1979",
+  "stableCarId": "saved-car:Least Clover 1979",
+  "referenceVehicle": "1979 United States Toyota Land Cruiser FJ40, US short-wheelbase hardtop 4230cc 2F six-cylinder 4MT, high-range rear-wheel-drive road configuration; not FJ55 wagon or later diesel",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "5bd2e3eef27f9074cb5ab8d39e62198e19a5f54cfd0fd2eda5a22306fc737bb6",
+    "dashboard": "28b4840db5688c9b296cf9bce0a006f88e1b1f77ba6391ea6f4258b3a69cf703",
+    "tires": "74bfdb1e6da9017dedb34dd3cd4d2660a9e699cd33e0ee8fa0b9dd79adb7baef"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

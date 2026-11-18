@@ -1,0 +1,66 @@
+{
+  "id": "mouse-ear-2005",
+  "name": "Mouse-ear 2005",
+  "candidateId": "mazda-mazdaspeed-mx-5-2005-roster-candidate",
+  "referenceVehicle": "2005 US Mazda Mazdaspeed MX-5 NB, US turbo 1.8 six-speed manual, standard cloth/vinyl-roof specification without Grand Touring package",
+  "identity": {
+    "year": 2005,
+    "make": "Mazda",
+    "model": "Mazdaspeed MX-5 NB",
+    "trim": "US turbo 1.8 six-speed manual, standard cloth/vinyl-roof specification without Grand Touring package",
+    "market": "US"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      220,
+      480,
+      570,
+      210
+    ],
+    "wheel": [
+      500,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://news.mazdausa.com/vehicles",
+      "fields": [
+        "exact model-year archive"
+      ]
+    },
+    {
+      "url": "https://news.mazdausa.com/download/cur_mspeed_specs.pdf",
+      "fields": [
+        "powertrain",
+        "ratios",
+        "mass",
+        "dimensions",
+        "tires",
+        "load distribution",
+        "drag",
+        "fuel capacity"
+      ]
+    }
+  ]
+}

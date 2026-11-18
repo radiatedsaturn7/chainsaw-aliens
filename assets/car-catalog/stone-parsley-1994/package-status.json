@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "stone-parsley-1994",
+  "name": "Stone Parsley 1994",
+  "stableCarId": "saved-car:Stone Parsley 1994",
+  "referenceVehicle": "1994 UK Toyota Celica GT-Four ST205 3S-GTE E154 five-speed manual production road car, May 1994 UK launch specification",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "a20bc30ffe04dc2888c7dda5c87437e4e1bfc02aae97161af563cf47d22c5322",
+    "dashboard": "45b40806d902e6f6cfefe3ae005c316228b106669d53ec2ee5311dd049ae6b75",
+    "tires": "f24821a8ac518e1aeb225f0f4d08f62d93a4377792fddbe05995f8486f02cd19"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

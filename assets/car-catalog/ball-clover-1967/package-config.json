@@ -1,0 +1,89 @@
+{
+  "id": "ball-clover-1967",
+  "name": "Ball Clover 1967",
+  "stableCarId": "saved-car:Ball Clover 1967",
+  "runtimeId": "saved-car:Ball Clover 1967",
+  "candidateId": "chevrolet-corvette-stingray-427-1967-roster-candidate",
+  "referenceVehicle": "1967 United States Chevrolet Corvette Sting Ray427, Sport Coupe,390-hp-reference427four-barrel hydraulic-lifter engine, wide-ratio4MT,standard3.08Positraction; not435TriPower",
+  "identity": {
+    "year": 1967,
+    "make": "Chevrolet",
+    "model": "Corvette Sting Ray427",
+    "trim": "Sport Coupe,390-hp-reference427four-barrel hydraulic-lifter engine, wide-ratio4MT,standard3.08Positraction; not435TriPower",
+    "market": "United States"
+  },
+  "bodyClass": "two-door-fastback",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      531,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.lov2xlr8.no/brochures/chevy/67vette/bilder/5.jpg",
+      "fields": [
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "finalDrive",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "periodPublishedRatings"
+      ]
+    },
+    {
+      "url": "https://www.lov2xlr8.no/brochures/chevy/67vette/bilder/6.jpg",
+      "fields": [
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "finalDrive",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "periodPublishedRatings"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "id": "source-whitecurrant-clover-2010",
+  "name": "Whitecurrant Clover 2010",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      426,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://hondanews.com/en-US/releases/release-90436797ceb4d5d5fbf975004c34bb27-2010-acura-mdx-introduction",
+      "fields": [
+        "exact identity and visual configuration"
+      ]
+    }
+  ]
+}

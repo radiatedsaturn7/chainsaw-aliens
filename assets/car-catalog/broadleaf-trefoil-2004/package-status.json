@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "broadleaf-trefoil-2004",
+  "name": "Broadleaf Trefoil 2004",
+  "stableCarId": "saved-car:Broadleaf Trefoil 2004",
+  "referenceVehicle": "2004 United States Acura TSX, 2.4 i-VTEC six-speed manual without optional navigation, standard 17-inch wheels; not automatic, later 205hp revision or US Accord DX",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "b23824481daff5a9dae8385a1d21b590f0075b4e9895d1d9e6610f39dcae9a3d",
+    "dashboard": "53d450649fc40487a72411c259bc8851df277e61faa99202c54f92d2c598f3e3",
+    "tires": "a318de31aec751df8769370eb8f362f977381ac959252618f048017fbb230ab0"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

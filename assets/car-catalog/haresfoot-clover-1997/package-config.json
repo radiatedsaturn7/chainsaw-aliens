@@ -1,0 +1,66 @@
+{
+  "id": "haresfoot-clover-1997",
+  "name": "Haresfoot Clover 1997",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      198,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      475,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://manuals.plus/m/6445a80065bf9672660e463a9e7c6e2eb6577cbfc2e71f0f8e15b0c4a5c2aeb6",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "torquePlateauRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "fuelTankUSgal"
+      ]
+    },
+    {
+      "url": "https://www.auto123.com/en/new-cars/technical-specs/volvo/850/1997/base/r/",
+      "fields": [
+        "identity"
+      ]
+    }
+  ]
+}

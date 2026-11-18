@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "birdsfoot-trefoil-1995",
+  "name": "Birdsfoot Trefoil 1995",
+  "stableCarId": "saved-car:Birdsfoot Trefoil 1995",
+  "referenceVehicle": "1995 United States Nissan 240SX base S14 KA24DE naturally aspirated five-speed manual coupe, standard15-inch steel wheels, no optional ABS/LSD package; stock representative production car, not film-car replica",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "45c42585e3565b19e1fa2e35fdfca4a879c9b4f2b04ae18de102a5474683691e",
+    "dashboard": "386930c699210e6bc59590b69711544f5214a7f6972097e084ede6584e26a328",
+    "tires": "276eafd8853786db379ecd33bc311a9aa82bc464ce36672ca8d54bdaba2ad398"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

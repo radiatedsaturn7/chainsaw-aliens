@@ -1,0 +1,44 @@
+{
+  "id": "source-apricot-clover-2010",
+  "name": "Apricot Clover 2010",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1672,
+      941
+    ],
+    "cluster": [
+      201,
+      565,
+      401,
+      188
+    ],
+    "wheel": [
+      401,
+      885,
+      268
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/BMW/Z4/BMW_US%20Z4_2010.pdf",
+      "fields": [
+        "exact identity and visual configuration"
+      ]
+    }
+  ]
+}

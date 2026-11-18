@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "pineneedle-clover-2012",
+  "name": "Pineneedle Clover 2012",
+  "stableCarId": "saved-car:Pineneedle Clover 2012",
+  "referenceVehicle": "2012 United States BMW X3 F25 xDrive28i naturallyaspirated2996ccinline-six eight-speedSteptronic,standard17-inchwheels;not2013turbo2.0,xDrive35i orMsport",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "pineneedle-clover-2012",
+  "sourceHashes": {
+    "body": "b88c5041742b88d4f10326543288fc0c84cf5ae729d0ea5d9054be259f64a3ba",
+    "dashboard": "531b950b6c872728aecc32af6ab3d40b0ebc6dc24a5d25bf3c3e4fcc42664e3c",
+    "tires": "b8a1dfc2a37a3b3eaeb51d049b4e571105e0035b1f0296db9d4687aa30eadf9c"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

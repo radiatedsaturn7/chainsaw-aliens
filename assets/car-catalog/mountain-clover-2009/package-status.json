@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "mountain-clover-2009",
+  "name": "Mountain Clover 2009",
+  "stableCarId": "saved-car:Mountain Clover 2009",
+  "referenceVehicle": "2009 Pagani Zonda R, original track-only specification, notRevolucion",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "b27bdd19016cc8c92fa7dfb7cc258f4617462d628a3e78388d660134494fd92f",
+    "dashboard": "6f72bfcde0fc598b68ef39880b355c750540b2aa72150a7a9b4b39aa947bd5c4",
+    "tires": "e051ada66f5266c5bb38d2b4554dd97f50de73860436f9b5cc93f684a56e19cf"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

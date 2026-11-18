@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "common-vetch-1967",
+  "name": "Common Vetch 1967",
+  "stableCarId": "saved-car:Common Vetch 1967",
+  "referenceVehicle": "1967 Japan competition / international speed records Nissan R380A-II, GR8 1996cc inline-six record-setting long-cowl prototype, Tatsu Yokoyama October8 Yatabe reference; not 3980mm640kg JapanGP setup",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "88db4484f6e3cddfb17a46d2a88fdf9a17ab11bad19575c0377bf1bc7ae52f3d",
+    "dashboard": "ed18617712312e20cd4251b24e3490a9e9d08ee00ae40903640e2a907afa699f",
+    "tires": "275dd44aa50bc2446536dca2799f1c6c42dfc8d46f0f8fc85778a5642c6172a8"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

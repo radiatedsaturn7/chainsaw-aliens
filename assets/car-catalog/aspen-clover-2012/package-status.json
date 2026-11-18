@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "aspen-clover-2012",
+  "name": "Aspen Clover 2012",
+  "stableCarId": "saved-car:Aspen Clover 2012",
+  "referenceVehicle": "2012 United States Ford Fusion, S 2.5-liter gasoline FWD six-speed manual, standard 16-inch wheels; not Hybrid, Sport or V6",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "aspen-clover-2012",
+  "sourceHashes": {
+    "body": "f23bb866130f8d9a9ffb968f216c953c7a813e974066d90d63f065c812db1597",
+    "dashboard": "a18a69fad28cf61d0d5a39bcac9482247ca04d222aefb845d59c29f9c61ee9e3",
+    "tires": "39eb494bb3da9d4ff12c65f512a409a60527772ef6ab4589c9872184d6a93264"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

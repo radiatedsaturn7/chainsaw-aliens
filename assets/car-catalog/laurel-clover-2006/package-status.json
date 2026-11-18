@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "laurel-clover-2006",
+  "name": "Laurel Clover 2006",
+  "stableCarId": "saved-car:Laurel Clover 2006",
+  "referenceVehicle": "2006 United States Mazda MPV, LX-SV3.0V6 front-wheel-drive five-speed torque-converterautomatic,sevenseats,15-inchcoveredsteelwheels,noGFX/towingpackage; notLX/ES orMazda5",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "e29af02e051103c065e7fc51ee6a6c12fe19e52e007b44ac8a6a499b80c72a30",
+    "dashboard": "f2bc44aad036333ee8d2a368d55fa7aff8249491ed4e790d8b6aed7b4e282089",
+    "tires": "db9ad4cf5f1cb2a5d0e5bd1bc1e96730fb0201d3d2c6514f126ced39ce49ea68"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

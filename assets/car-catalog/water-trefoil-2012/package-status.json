@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "water-trefoil-2012",
+  "name": "Water Trefoil 2012",
+  "stableCarId": "saved-car:Water Trefoil 2012",
+  "referenceVehicle": "2012 Renault Kangoo Authentique1.6 16V105, Germany standard-length five-seat passenger MPV five-speedmanual, Euro5petrol, single right slidingdoor; notGrand7-seat,Rapidcargo,be-bop,automatic or1.6 8V90",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "water-trefoil-2012",
+  "sourceHashes": {
+    "body": "04c6edbbf0252f26db6d57d082e7989f3f109a27ba986809eb371d44a899a971",
+    "dashboard": "2381e30489fafef675cb7e8ee4b9d37a7be5b53815bce1b03ea6fe5f08ea71a2",
+    "tires": "3891d3357d91512e4e4a1dc03692cd6fd39326a9020464e0f386cb7dda8ce5cb"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,61 @@
+{
+  "id": "marsh-gentian-2012",
+  "name": "Marsh Gentian 2012",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      1064,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      1277,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://www.lotusdriversguide.com/Downloads/Brochures/Exige-S-Mini-Brochure-ENG%202012.pdf",
+      "fields": [
+        "identity",
+        "powerKw",
+        "torqueNm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "powerRpm",
+        "torqueRpm",
+        "tireSize",
+        "frontTire",
+        "rearDifferentialAccel"
+      ]
+    },
+    {
+      "url": "https://www.michelin.co.uk/auto/manufacturers/lotus/exige/exige-s",
+      "fields": [
+        "rearTire provisional estimate only"
+      ]
+    }
+  ]
+}

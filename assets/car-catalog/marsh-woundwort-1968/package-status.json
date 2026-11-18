@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "marsh-woundwort-1968",
+  "name": "Marsh Woundwort 1968",
+  "stableCarId": "saved-car:Marsh Woundwort 1968",
+  "referenceVehicle": "1968 Alfa Romeo 33 Stradale, original1967\u20131969 productionseries2.0NA V8 road coupe6MT; notTipo33race,prototype-specific body or2023V6/BEV",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "202cf04e023bcf2fe40f0f5e08a1360dce9752d1ec6b08c7aafdd67510ed3364",
+    "dashboard": "8b88e887d167e8fbb9ef6d26f392ce20f2e8d6d6676236bc09b99f2b3b9539b9",
+    "tires": "f25975d5228e98ac05e60db792437ee92a68eb0714c86a72510587e05f7bc1fa"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

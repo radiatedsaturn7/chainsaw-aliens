@@ -1,0 +1,64 @@
+{
+  "id": "hedge-woundwort-1953",
+  "name": "Hedge Woundwort 1953",
+  "stableCarId": "saved-car:Hedge Woundwort 1953",
+  "runtimeId": "saved-car:Hedge Woundwort 1953",
+  "candidateId": "maserati-a6gcs-53-pininfarina-berlinetta-1953-roster-candidate",
+  "referenceVehicle": "1953 Maserati A6GCS/53 Pinin Farina Berlinetta, 1953\u20131954 closed-body2.0NAstraight-six sportscar; notopenA6GCS orlaterA6G54roadGT",
+  "identity": {
+    "year": 1953,
+    "make": "Maserati",
+    "model": "A6GCS/53 Pinin Farina Berlinetta",
+    "trim": "1953\u20131954 closed-body2.0NAstraight-six sportscar; notopenA6GCS orlaterA6G54roadGT",
+    "market": "Italy/Europe"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1309,
+      595,
+      436,
+      95
+    ],
+    "wheel": [
+      1507,
+      769,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.maserati.com/it/it/brand/auto-storiche/speciali/a6gcs-berlinetta",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "powerRpm",
+        "engineDisplacementL",
+        "publishedDryKg",
+        "topSpeedMph"
+      ]
+    }
+  ]
+}

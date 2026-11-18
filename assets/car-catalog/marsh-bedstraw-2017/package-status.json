@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "marsh-bedstraw-2017",
+  "name": "Marsh Bedstraw 2017",
+  "stableCarId": "saved-car:Marsh Bedstraw 2017",
+  "referenceVehicle": "2017 UK Aston Martin DB11 V12 Coupe5.2 twin-turbo8AT original608PS;notlaterAMR orV8",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "ed337afaab1d37b298d7025ee8809cbd6f09f96da6f0cf4977c610a288552059",
+    "dashboard": "abf937ee0c0f9088f2c8a33255e711d9f7e32a6af13cc5deb20014be647af252",
+    "tires": "b6de08523e9be8ff2e30612882ab217745366f0db3f2eb751110c466829dede6"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

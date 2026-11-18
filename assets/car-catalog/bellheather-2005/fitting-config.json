@@ -1,0 +1,161 @@
+{
+  "id": "bellheather-2005",
+  "name": "Bellheather 2005",
+  "rosterCommit": "757337b575627e7d327da108e2a00951f1e8dbe1",
+  "expectedDocumentSha256": "9990bc54981f075374afd820ac370250e6e16270f3bc708480929f09dddbdf7d",
+  "sourceDirectory": "assets/car-catalog/bellheather-2005",
+  "sourceHashes": {
+    "body": "1ce0fafead8a729be3998ac307054c04fa7d3b224457ecd65dbb09e31e3c4569",
+    "dashboard": "264f6a0c82a3ff87a722b546c1045369a2b18c015707c074d293319d6838443e",
+    "tires": "0c87e99d5c839b802e2dffae09c2d4259a91c39eb2225e6f7661a177f16800a7"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 105,
+        "y": 314,
+        "radius": 23
+      },
+      {
+        "wheel": "fr",
+        "x": 339,
+        "y": 314,
+        "radius": 23
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 686,
+        "y": 278,
+        "radius": 32
+      },
+      {
+        "wheel": "rr",
+        "x": 816,
+        "y": 268,
+        "radius": 23
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 988,
+        "y": 268,
+        "radius": 34
+      },
+      {
+        "wheel": "rr",
+        "x": 1216,
+        "y": 268,
+        "radius": 34
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1400,
+        "y": 275,
+        "radius": 21
+      },
+      {
+        "wheel": "rr",
+        "x": 1527,
+        "y": 278,
+        "radius": 32
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 105,
+        "y": 740,
+        "radius": 23
+      },
+      {
+        "wheel": "rl",
+        "x": 339,
+        "y": 740,
+        "radius": 23
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 695,
+        "y": 708,
+        "radius": 31
+      },
+      {
+        "wheel": "fl",
+        "x": 821,
+        "y": 703,
+        "radius": 21
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 995,
+        "y": 705,
+        "radius": 34
+      },
+      {
+        "wheel": "fl",
+        "x": 1235,
+        "y": 704,
+        "radius": 34
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1395,
+        "y": 701,
+        "radius": 22
+      },
+      {
+        "wheel": "fl",
+        "x": 1520,
+        "y": 710,
+        "radius": 32
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      240,
+      250,
+      420,
+      180
+    ],
+    "wheel": [
+      450,
+      505,
+      570
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e4efff",
+    "viewportWheelScale": 1.92
+  },
+  "steeringWheelSource": {
+    "artRef": "ct-steeringwheel",
+    "frameIndex": 0
+  }
+}

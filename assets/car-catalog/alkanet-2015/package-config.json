@@ -1,0 +1,65 @@
+{
+  "id": "alkanet-2015",
+  "name": "Alkanet 2015",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1310,
+      440,
+      400,
+      175
+    ],
+    "wheel": [
+      1510,
+      715,
+      290
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://fliphtml5.com/gwvb/zcsl/",
+      "fields": [
+        "publishedPowerPS",
+        "powerKw",
+        "torqueNm",
+        "powerRpm",
+        "torqueRpm",
+        "torquePlateauEndRpm",
+        "engineDisplacementL",
+        "curbKg",
+        "curbBasis",
+        "transmission",
+        "gearCount",
+        "drivetrain",
+        "tireSize",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "referenceZeroTo62MphSec",
+        "referenceTopSpeedMph",
+        "fuelTankLitres"
+      ]
+    }
+  ]
+}

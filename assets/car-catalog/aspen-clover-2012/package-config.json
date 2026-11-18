@@ -1,0 +1,70 @@
+{
+  "id": "aspen-clover-2012",
+  "name": "Aspen Clover 2012",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      198,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      475,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Ford/Fusion/Ford_US%20Fusion_2012.pdf",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "tireSize",
+        "fuelTankUSgal"
+      ]
+    },
+    {
+      "url": "https://www.yumpu.com/en/document/view/11539111/2012-ford-fusion-technical-specifications",
+      "fields": [
+        "engineDisplacementL",
+        "gearRatios",
+        "finalDrive",
+        "curbKg",
+        "trackFrontIn",
+        "trackRearIn",
+        "frontWeightDistribution",
+        "steeringRatio"
+      ]
+    }
+  ]
+}

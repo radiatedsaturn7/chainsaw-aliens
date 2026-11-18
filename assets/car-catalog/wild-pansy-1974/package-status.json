@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "wild-pansy-1974",
+  "name": "Wild Pansy 1974",
+  "stableCarId": "saved-car:Wild Pansy 1974",
+  "referenceVehicle": "1974 US federal Toyota Corolla SR-5 1588cc OHV coupe five-speed manual, flared body and175/70HR13 tires; not California, laterTE37 or AE86",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "2af0d6c25db31f74d41645e3fc4db9ad792b017333d44d968011cb33837384e5",
+    "dashboard": "76b95e3a6d577a8351c6af7d19f4a3434580dc3c9cd58e767c2b9e2c0b8bcb2c",
+    "tires": "6a0c55521780410f409bedd25ff7d6a70c93fb84027b1a5637394c64e798e3e6"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

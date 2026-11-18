@@ -1,0 +1,165 @@
+{
+  "id": "bogbean-2020",
+  "name": "Bogbean 2020",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "fa0b0ef70bf29a0ad148f67d444a354a0d24edec16207e3ab07304263475a49a",
+  "sourceDirectory": "assets/car-catalog/bogbean-2020",
+  "sourceHashes": {
+    "body": "4c61ca344a2aef5b578dc376b1fcb9b39b2648f82bdf4bb429c0468d746d7bcb",
+    "dashboard": "639c167d07b651f943131f228e0edaa646609b47ba25d84f4086fc2b8308313b",
+    "tires": "93b1951eba39779f103eb6207d2a3322f491347e1f575aaf0fe119a030d3b59a"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 107,
+        "y": 309,
+        "radius": 28
+      },
+      {
+        "wheel": "fr",
+        "x": 334,
+        "y": 309,
+        "radius": 28
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 677,
+        "y": 296,
+        "radius": 45
+      },
+      {
+        "wheel": "rr",
+        "x": 838,
+        "y": 254,
+        "radius": 36
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 977,
+        "y": 282,
+        "radius": 41
+      },
+      {
+        "wheel": "rr",
+        "x": 1250,
+        "y": 282,
+        "radius": 41
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 472,
+        "y": 711,
+        "radius": 36
+      },
+      {
+        "wheel": "rr",
+        "x": 607,
+        "y": 741,
+        "radius": 45
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 108,
+        "y": 739,
+        "radius": 28
+      },
+      {
+        "wheel": "rl",
+        "x": 335,
+        "y": 739,
+        "radius": 28
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1597,
+        "y": 291,
+        "radius": 44
+      },
+      {
+        "wheel": "fl",
+        "x": 1734,
+        "y": 261,
+        "radius": 36
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 972,
+        "y": 727,
+        "radius": 42
+      },
+      {
+        "wheel": "fl",
+        "x": 1242,
+        "y": 726,
+        "radius": 42
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1374,
+        "y": 699,
+        "radius": 37
+      },
+      {
+        "wheel": "fl",
+        "x": 1540,
+        "y": 740,
+        "radius": 45
+      }
+    ]
+  },
+  "wheelFit": "cover",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      255,
+      505,
+      350,
+      100
+    ],
+    "wheel": [
+      425,
+      625,
+      290
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#ffe3b0",
+    "electric": false,
+    "viewportWheelScale": 1.93,
+    "gaugeBackground": "#101014"
+  },
+  "steeringWheelSource": {
+    "artRef": "steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementMethod": "Individual original-sheet arch measurements, followed by eight-view native static review. Head-on tread centers raised 10 source pixels and reduced per vehicle. Cockpit wheel center and viewport scale individually reviewed at 1280x720 and 390x844. Gameplay acceptance deferred.",
+  "runtimeFitted": false
+}

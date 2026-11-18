@@ -1,0 +1,163 @@
+{
+  "id": "yellow-wort-2013",
+  "name": "Yellow Wort 2013",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "c707ab6c8dc3dd8669aa29f154f5a3ce6f9db0a1007daab19fc8724ee9e72830",
+  "sourceDirectory": "assets/car-catalog/yellow-wort-2013",
+  "sourceHashes": {
+    "body": "4404bfe1aac5e7b11bfba023c7ebc890d1cf7ab3eb65ef03ff7bb5f9a8c4e6c9",
+    "dashboard": "d708e02596d08d4d2e57e420325909d2a000b82e08a50ca01ca3b762834965ef",
+    "tires": "6492652c4b8617d677cdbdd436eb79be4dd940504add4125256d626e3cc5a6ec"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 72.73,
+        "y": 312.22,
+        "radius": 44.35
+      },
+      {
+        "wheel": "fr",
+        "x": 322.87,
+        "y": 312.22,
+        "radius": 44.35
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 635.092,
+        "y": 290.936,
+        "radius": 42.576
+      },
+      {
+        "wheel": "rr",
+        "x": 801.848,
+        "y": 271.422,
+        "radius": 37.254
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 945.54,
+        "y": 280.29,
+        "radius": 40.8
+      },
+      {
+        "wheel": "rr",
+        "x": 1213.42,
+        "y": 280.29,
+        "radius": 40.8
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1374.85,
+        "y": 274.97,
+        "radius": 35.480000000000004
+      },
+      {
+        "wheel": "rr",
+        "x": 1534.51,
+        "y": 292.71,
+        "radius": 42.576
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 70.96,
+        "y": 773.46,
+        "radius": 44.35
+      },
+      {
+        "wheel": "rl",
+        "x": 328.19,
+        "y": 773.46,
+        "radius": 44.35
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 649.284,
+        "y": 743.306,
+        "radius": 40.802
+      },
+      {
+        "wheel": "fl",
+        "x": 807.17,
+        "y": 716.696,
+        "radius": 35.480000000000004
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 963.28,
+        "y": 727.34,
+        "radius": 40.8
+      },
+      {
+        "wheel": "fl",
+        "x": 1241.8,
+        "y": 727.34,
+        "radius": 40.8
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1381.946,
+        "y": 727.34,
+        "radius": 35.480000000000004
+      },
+      {
+        "wheel": "fl",
+        "x": 1532.736,
+        "y": 753.95,
+        "radius": 44.35
+      }
+    ]
+  },
+  "wheelFit": "average",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      257.79,
+      495.75,
+      376.77,
+      128.9
+    ],
+    "wheel": [
+      474.18,
+      722.58,
+      396.6
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#ffe1ab",
+    "viewportWheelScale": 2.02,
+    "gaugeBackground": "#101010"
+  },
+  "steeringWheelSource": {
+    "artRef": "steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementNotes": "Measured from original PNG via 1000px gridded preview. Direct front/rear wheel centers estimated from silhouette edge and side-view radius where no explicit arch cutout exists. Engine static review required; road/motion deferred."
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "dew-clover-2012",
+  "name": "Dew Clover 2012",
+  "stableCarId": "saved-car:Dew Clover 2012",
+  "referenceVehicle": "2012 United States BMW 328i F30 sedan2.0TwinPower Turbo four-cylinder RWDsix-speed manual,standard17-inchalloys,nonSportLine/noincreasedlimiter;notE90six-cylinder or335i",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "1efe9f0d30e7552bfb240de9606952595064f9d673e34f1b9ad2fe1755ffa658",
+    "dashboard": "7a3d154930b2042763a235f6fd71083691877bf2a42bcf3e41b5cdc30b73ef05",
+    "tires": "a3cf7922704263029096e0297051535611d5364e0d970a78f7259f082bae3dea"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

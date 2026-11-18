@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "river-clover-2013",
+  "name": "River Clover 2013",
+  "stableCarId": "saved-car:River Clover 2013",
+  "referenceVehicle": "2013 Dacia Logan MCV Essentiel1.2 16V75, Germany second-generation five-seat estate basepetrol5MT, notfirstgenerationseven-seater,LPG,TCe,diesel orStepway",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "5b7e0bc299a71553a7d3bbf1da5643cfd7482f39e0eb19204bd96dc28f6604a1",
+    "dashboard": "7b3d6c4369f107c0532d3957b3546c6a1071dfe2a836895ee6791b1578c68d23",
+    "tires": "276eafd8853786db379ecd33bc311a9aa82bc464ce36672ca8d54bdaba2ad398"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

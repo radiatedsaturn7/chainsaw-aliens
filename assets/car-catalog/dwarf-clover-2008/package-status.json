@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "dwarf-clover-2008",
+  "name": "Dwarf Clover 2008",
+  "stableCarId": "saved-car:Dwarf Clover 2008",
+  "referenceVehicle": "2008 European Lamborghini Reventon 650CV closed coupe 6-speed e-gear; not roadster, modified car or later special edition",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "74cc7271ca12b91af00893b4b92b7ee676f230750a3ef51545f43f5be5604688",
+    "dashboard": "a1197a5fc5a3678198cbcd89732e42ea33c5746814f47993ecc1c39ce478f19d",
+    "tires": "747c726176c79ea5373f6e98859ce4c22998501e367eea650e7a25264ae4a553"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

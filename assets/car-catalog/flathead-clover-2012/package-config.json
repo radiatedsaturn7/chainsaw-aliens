@@ -1,0 +1,66 @@
+{
+  "id": "flathead-clover-2012",
+  "name": "Flathead Clover 2012",
+  "stableCarId": "saved-car:Flathead Clover 2012",
+  "runtimeId": "saved-car:Flathead Clover 2012",
+  "candidateId": "hyundai-elantra-gls-2012-us-6mt-canonical-candidate",
+  "referenceVehicle": "2012 United States Hyundai Elantra, GLS1.8DOHC sedan6MT,base15-inchcoveredsteelwheels,nonPZEV148hp specification",
+  "identity": {
+    "year": 2012,
+    "make": "Hyundai",
+    "model": "Elantra",
+    "trim": "GLS1.8DOHC sedan6MT,base15-inchcoveredsteelwheels,nonPZEV148hp specification",
+    "market": "United States"
+  },
+  "bodyClass": "four-door-sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Hyundai/Elantra/Hyundai_US%20Elantra_2012.pdf",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "absEnabled",
+        "tractionControlEnabled",
+        "engineDisplacementL",
+        "powerHp",
+        "gearCount"
+      ]
+    }
+  ]
+}

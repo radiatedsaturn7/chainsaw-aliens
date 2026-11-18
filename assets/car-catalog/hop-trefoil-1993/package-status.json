@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "hop-trefoil-1993",
+  "name": "Hop Trefoil 1993",
+  "stableCarId": "saved-car:Hop Trefoil 1993",
+  "referenceVehicle": "1993 Japan Nissan Skyline GT-R V-spec E-BNR32 RB26DETT2568cc twin-turbo inline-six AWD5MT road coupe; February1993\u2013August1993 catalog version",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "30f788229aa96bb3d910d6dfbf68f6e2a07e486da852c3bb6aac7af09ecba76b",
+    "dashboard": "ec5baa7ce00dd4c027dc78086ab2bba23a7a5bc560679aeb478cce7fc570df5e",
+    "tires": "d0bd8d4459ad5e49c4c7aab39c2c3e29e3b5a8bbeb82859168aec1eb06933f93"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

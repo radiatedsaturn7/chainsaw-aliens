@@ -1,0 +1,57 @@
+{
+  "id": "brooklime-1994",
+  "name": "Brooklime 1994",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1250,
+      470,
+      580,
+      215
+    ],
+    "wheel": [
+      1510,
+      740,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f3dea4"
+  },
+  "sources": [
+    {
+      "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/silvia_ks_s14.html",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "torqueNm",
+        "powerRpm",
+        "torqueRpm",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "engineFamily"
+      ]
+    }
+  ]
+}

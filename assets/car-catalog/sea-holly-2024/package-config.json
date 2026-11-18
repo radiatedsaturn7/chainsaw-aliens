@@ -1,0 +1,55 @@
+{
+  "id": "sea-holly-2024",
+  "name": "Sea Holly 2024",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      426,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://www.mustangdriver.com/feature-articles/ho-ho-ho-horsepower",
+      "fields": [
+        "powerHp",
+        "torqueLbFt",
+        "engineDisplacementL",
+        "redlineRpm",
+        "transmission",
+        "gearCount"
+      ]
+    },
+    {
+      "url": "https://www.fromtheroad.ford.com/ca/en/articles/2022/ford-introduces-mustang-dark-horse",
+      "fields": [
+        "six-speed TREMEC manual standard; optional ten-speed not selected"
+      ]
+    }
+  ]
+}

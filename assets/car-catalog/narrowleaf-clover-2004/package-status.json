@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "narrowleaf-clover-2004",
+  "name": "Narrowleaf Clover 2004",
+  "stableCarId": "saved-car:Narrowleaf Clover 2004",
+  "referenceVehicle": "2004 United States Acura TL, 3.2 VTEC V6 six-speed manual, no navigation, standard all-season17-inch tires; not optional high-performance tires, automatic or later SAE rerating",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "74f2e8274998ff1f74f5ede05ca651af75c351443725be0819b6db12249836da",
+    "dashboard": "b1e1aa5e55996c6350416b4f17cb68760a14d3a3b536b145a8026c04210a48ac",
+    "tires": "8484c2b6b1d9b3509725ca0d2e249929069e52ad20bd0c82bba41c1dffc9f5f4"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,48 @@
+{
+  "id": "red-trefoil-2000",
+  "name": "Red Trefoil 2000",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1269,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      1526,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://www.lotuscars.com/en/lotus-story/road-cars/340r",
+      "fields": [
+        "powerHp",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "publishedMassKg"
+      ]
+    }
+  ]
+}

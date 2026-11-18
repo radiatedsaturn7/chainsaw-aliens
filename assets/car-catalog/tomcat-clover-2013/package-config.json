@@ -1,0 +1,77 @@
+{
+  "id": "tomcat-clover-2013",
+  "name": "Tomcat Clover 2013",
+  "stableCarId": "saved-car:Tomcat Clover 2013",
+  "runtimeId": "saved-car:Tomcat Clover 2013",
+  "candidateId": "dacia-sandero-base-1-2-16v75-2013-supplemental-candidate",
+  "referenceVehicle": "2013 Dacia Sandero 1.2 16V75, Germany second-generation base five-door petrol five-speed manual, not Stepway, LPG, TCe90 or diesel",
+  "identity": {
+    "year": 2013,
+    "make": "Dacia",
+    "model": "Sandero 1.2 16V75",
+    "trim": "Germany second-generation base five-door petrol five-speed manual, not Stepway, LPG, TCe90 or diesel",
+    "market": "Germany"
+  },
+  "bodyClass": "hatchback",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://presse.dacia.de/neuer-dacia-sandero-gunstigster-neuwagen-deutschlands/",
+      "fields": [
+        "powerHp",
+        "publishedPowerPS",
+        "engineDisplacementL"
+      ]
+    },
+    {
+      "url": "https://presse.dacia.de/neuer-dacia-sandero-und-sandero-stepway-feiern-premiere-in-paris/",
+      "fields": [
+        "identity",
+        "modelGeneration",
+        "GermanJanuary2013Launch"
+      ]
+    },
+    {
+      "url": "https://presse.dacia.de/gunstig-und-umweltschonend/",
+      "fields": [
+        "suggestedEstimates.torqueNm",
+        "suggestedEstimates.powerRpm",
+        "suggestedEstimates.torqueRpm"
+      ]
+    }
+  ]
+}

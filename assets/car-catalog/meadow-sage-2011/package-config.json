@@ -1,0 +1,57 @@
+{
+  "id": "meadow-sage-2011",
+  "name": "Meadow Sage 2011",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1269,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      1526,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://manuals.plus/m/e8cd0b53cc11b27ba8992e7f91f6b63752cf534fda890dda1687d8662cc2b656",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "torquePlateauEndRpm",
+        "engineDisplacementL",
+        "curbKg",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "fuelTankUSgal",
+        "tireSize",
+        "absEnabled"
+      ]
+    }
+  ]
+}

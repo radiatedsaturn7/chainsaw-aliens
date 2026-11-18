@@ -1,0 +1,75 @@
+{
+  "id": "lark-clover-2009",
+  "name": "Lark Clover 2009",
+  "stableCarId": "saved-car:Lark Clover 2009",
+  "runtimeId": "saved-car:Lark Clover 2009",
+  "candidateId": "audi-a4-avant-2009-us-2-0t-quattro-6at",
+  "referenceVehicle": "2009 United States Audi A4 Avant B8 Premium2.0TFSI211hp quattro six-speedTiptronic wagon,standard17-inchwheels;not3.2sedan,manualsedan,CVT orRS4",
+  "identity": {
+    "year": 2009,
+    "make": "Audi",
+    "model": "A4 Avant",
+    "trim": "B8 Premium2.0TFSI211hp quattro six-speedTiptronic wagon,standard17-inchwheels;not3.2sedan,manualsedan,CVT orRS4",
+    "market": "United States"
+  },
+  "bodyClass": "wagon",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Audi/A4/Audi_US%20A4_2009.pdf",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "trackFrontIn",
+        "trackRearIn",
+        "topSpeedMph",
+        "zeroToSixtySec",
+        "identity"
+      ]
+    }
+  ]
+}

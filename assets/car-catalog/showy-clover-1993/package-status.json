@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "showy-clover-1993",
+  "name": "Showy Clover 1993",
+  "stableCarId": "saved-car:Showy Clover 1993",
+  "referenceVehicle": "1993 European Porsche 911 Turbo S Leichtbau 9643.3 turbo lightweight roadcoupe5MT,not3.6Flachbau",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "showy-clover-1993",
+  "sourceHashes": {
+    "body": "e918e238b9214198774498802f27b99e2fb8eb4869c60144bc198aa9ae13f071",
+    "dashboard": "d0f362a826f84cada4585d9fa46c07056c1d3d9f83c4a5e1e035ec8a40354c45",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

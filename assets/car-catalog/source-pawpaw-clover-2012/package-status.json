@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "source-pawpaw-clover-2012",
+  "name": "Pawpaw Clover 2012",
+  "stableCarId": "saved-car:Pawpaw Clover 2012",
+  "referenceVehicle": "US2012 Hyundai Genesis Coupe base2.0T,RWD,6MT. Two-door coupe,standard18-inch wheels,2012BODY,not2013update orR-Spec.",
+  "runtimeDocumentIdVerified": false,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "7a725840853bfa6a7d0ec6d8593f2cf92a4b4b10090e2e600bb414dbb71612bc",
+    "dashboard": "40778c908d23fb11dcd43aa99cead2a07b7d3ce491be12c051b9d9b33db8d297",
+    "tires": "317fed7af1029b082dfc01e22a671bbd2c57a00d8be434abd019859a80bdb6a5"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    3,
+    4,
+    5,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

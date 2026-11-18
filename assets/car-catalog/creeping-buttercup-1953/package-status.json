@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "creeping-buttercup-1953",
+  "name": "Creeping Buttercup 1953",
+  "stableCarId": "saved-car:Creeping Buttercup 1953",
+  "referenceVehicle": "1953 US Chevrolet Corvette model2934, Blue Flame235.5cuin naturally aspirated inline-six, Powerglide2AT RWD roadster, top down",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "3b5da4153ce06ae9dff1d9491f8d56b236871947273ba5864652e15ce1ab0788",
+    "dashboard": "b519c5bbcd3c86a74c72da15798943d0aa3f84a7c9f72f58a72bf4726511e78e",
+    "tires": "fb59f95b7fbab4fee1585ef247361264fcd85b45d9651a91b8ec9a515ca8c392"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

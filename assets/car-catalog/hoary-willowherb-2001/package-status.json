@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "hoary-willowherb-2001",
+  "name": "Hoary Willowherb 2001",
+  "stableCarId": "saved-car:Hoary Willowherb 2001",
+  "referenceVehicle": "2001 UK Audi RS 4 Avant, B5 standard2.7biturboV6 quattro six-speed manual wagon, RHD; notSportconversion orB7",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "ec21698b3f615aa477bb48f00ecc2967cafbfa750fc941bb7519b4884659bd73",
+    "dashboard": "d1369cc5b03d96977a5be13745bd3da40299da6fef1ea21ff7f0e894610a7039",
+    "tires": "e62b5ac4631fc5589fde8e05d255341917979c07ac4c2993c5e599c08a95ac8e"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

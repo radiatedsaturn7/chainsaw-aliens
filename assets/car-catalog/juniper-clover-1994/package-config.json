@@ -1,0 +1,68 @@
+{
+  "id": "juniper-clover-1994",
+  "name": "Juniper Clover 1994",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      426,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://hondanews.com/en-US/releases/release-e46df9ca68e3cc556866f8004c34ca27-1994-acura-legend-coupe-specifications",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "gearCount",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "tireSize",
+        "redlineRpm",
+        "revLimitRpm",
+        "frontWeightDistribution",
+        "groundClearanceM",
+        "dragCoefficient",
+        "fuelTankUSgal",
+        "steeringRatio",
+        "absEnabled"
+      ]
+    }
+  ]
+}

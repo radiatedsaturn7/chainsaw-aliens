@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "black-trefoil-2005",
+  "name": "Black Trefoil 2005",
+  "stableCarId": "saved-car:Black Trefoil 2005",
+  "referenceVehicle": "2005 United States Volkswagen Touareg V6 3.2gasoline six-speed Tiptronic4XMOTION,standard steel springs17-inch wheels,nooptionalair/rearlocker",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "black-trefoil-2005",
+  "sourceHashes": {
+    "body": "9a2549a1e95943e6eff5536ff4ab1aa12d3b1769df2e246deb130c05100d4fa8",
+    "dashboard": "a7c99cc59a5452062d2ab7b8b35447ca793578bb4d482821cfe0b6d5f1a9b10d",
+    "tires": "4113dc713532283ff8537463cc769bd435a7df2b0745d4fc7ca3c7416dfa05a9"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

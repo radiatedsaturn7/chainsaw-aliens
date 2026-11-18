@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "slender-birdsfoot-1953",
+  "name": "Slender Birdsfoot 1953",
+  "stableCarId": "saved-car:Slender Birdsfoot 1953",
+  "referenceVehicle": "1953 Jaguar C-type, 1953 works Le Mans specification 3.4 triple-Weber disc-brake competition roadster; not SU/drum customer XKC045 or modern continuation",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "ddd80ccfed56434ed9165ea3074b7b6d49022d0e1c2188d2ecfc68861974edea",
+    "dashboard": "2348a7cb2d1118e697e9765cbbdb2e8cadf09aec4069397e67373ab5107db84d",
+    "tires": "fa98be7776a058b56f3d5efa36a87d1a5a14fcd43af3a9f7d29a839efc9b8c00"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

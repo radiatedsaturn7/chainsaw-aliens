@@ -1,0 +1,161 @@
+{
+  "id": "alkanet-2015",
+  "name": "Alkanet 2015",
+  "rosterCommit": "757337b575627e7d327da108e2a00951f1e8dbe1",
+  "expectedDocumentSha256": "32d1ffac2d87d3bc73f66f62794f3ef710d8884a3ef31123c4b9ad8ba49d5241",
+  "sourceDirectory": "assets/car-catalog/alkanet-2015",
+  "sourceHashes": {
+    "body": "5caf3e0c128ae8794010b67f4b1cf3485d6947f9da3da92717942f5fec0e015d",
+    "dashboard": "8dbbccd204ce3d24aaf85e9a433fc32911a8acaa30fd1939493109baee9aee4f",
+    "tires": "6dd1f665745af45ce696d6a224b9c399f099661318622bb19e684a960db342c3"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 96,
+        "y": 332,
+        "radius": 24
+      },
+      {
+        "wheel": "fr",
+        "x": 341,
+        "y": 332,
+        "radius": 24
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 665,
+        "y": 309,
+        "radius": 39
+      },
+      {
+        "wheel": "rr",
+        "x": 829,
+        "y": 282,
+        "radius": 31
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 957,
+        "y": 724,
+        "radius": 51
+      },
+      {
+        "wheel": "rr",
+        "x": 1252,
+        "y": 724,
+        "radius": 51
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 461,
+        "y": 709,
+        "radius": 31
+      },
+      {
+        "wheel": "rr",
+        "x": 621,
+        "y": 736,
+        "radius": 44
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 99,
+        "y": 753,
+        "radius": 24
+      },
+      {
+        "wheel": "rl",
+        "x": 340,
+        "y": 753,
+        "radius": 24
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1573,
+        "y": 307,
+        "radius": 42
+      },
+      {
+        "wheel": "fl",
+        "x": 1734,
+        "y": 281,
+        "radius": 30
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 956,
+        "y": 296,
+        "radius": 48
+      },
+      {
+        "wheel": "fl",
+        "x": 1253,
+        "y": 296,
+        "radius": 48
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1374,
+        "y": 713,
+        "radius": 32
+      },
+      {
+        "wheel": "fl",
+        "x": 1541,
+        "y": 747,
+        "radius": 42
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1310,
+      440,
+      400,
+      175
+    ],
+    "wheel": [
+      1510,
+      710,
+      590
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e4efff",
+    "viewportWheelScale": 1.95
+  },
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  }
+}

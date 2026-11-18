@@ -1,0 +1,60 @@
+{
+  "id": "meadow-saffron-2014",
+  "name": "Meadow Saffron 2014",
+  "candidateId": "lexus-is-350-f-sport-2014-roster-candidate",
+  "referenceVehicle": "2014 US Lexus IS 350 F SPORT, RWD 3.5 V6 eight-speed automatic, standard F SPORT package",
+  "identity": {
+    "year": 2014,
+    "make": "Lexus",
+    "model": "IS 350 F SPORT",
+    "trim": "RWD 3.5 V6 eight-speed automatic, standard F SPORT package",
+    "market": "United States"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://pressroom.lexus.com/lexus-third-generation-is-sport-sedan-2014/",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "drivetrain"
+      ]
+    }
+  ]
+}

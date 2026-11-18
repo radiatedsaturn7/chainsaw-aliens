@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "musk-mallow-1985",
+  "name": "Musk Mallow 1985",
+  "stableCarId": "saved-car:Musk Mallow 1985",
+  "referenceVehicle": "1985 US Mazda RX-7 GSL-SE first-generation FB 13B naturally aspirated fuel-injected rotary, five-speed manual, standard air conditioning and removable steel sunroof",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "2de0178357d6ee48ee7b090203eda7a57e8bb9bd1c5809d1ca7ac0f15e45e857",
+    "dashboard": "d97ed2e7d51792af6b814f15cc91faf42af9b79c8e3ec1d92d411340c6b54be8",
+    "tires": "0dc3e6f42f88ecf7cdbfe442c55806bb360d441de8993837951f2993e2fa3c89"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

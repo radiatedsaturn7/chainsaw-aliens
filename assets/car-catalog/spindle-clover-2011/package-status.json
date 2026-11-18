@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "spindle-clover-2011",
+  "name": "Spindle Clover 2011",
+  "stableCarId": "saved-car:Spindle Clover 2011",
+  "referenceVehicle": "2011 United States Buick Regal, CXL2.4 naturallyaspirated direct-injection FWD six-speedautomatic, standard18-inchalloys; notTurbo,GS,eAssist orInsignia-badgedduplicate",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "de1fb1cc390ce974e95b8e89f9147a5959fd09b58b5aa5a4923fe52bcbe675ae",
+    "dashboard": "18dbeeb646bcb67887ef315aef7d8be24ee07feac4ef51c17118d72a94cb56f3",
+    "tires": "27778fe163d8a560d6ade6f51c22c3d1083b0fe6f8b3a542ae255643da3f1333"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "soft-trefoil-2005",
+  "name": "Soft Trefoil 2005",
+  "stableCarId": "saved-car:Soft Trefoil 2005",
+  "referenceVehicle": "2005 United States Volkswagen New Beetle GL hardtop three-door2.0SOHC8-valve gasoline five-speedmanual,standard16-inchcoveredsteelwheels,noGLSsunroof;notTDI,1.8T orCabriolet",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "soft-trefoil-2005",
+  "sourceHashes": {
+    "body": "14ea6b812b1d6ead6346c5c3f913ff605e209599f379887ddeef828175db6563",
+    "dashboard": "69c7612904fe167aaf0b84150156200441d1b58a160e5397ea5775c9df27c1a0",
+    "tires": "4a72c3e9c93d64da3acb66444e977549812555b9197b1b7a0e970dfe4bc6963f"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

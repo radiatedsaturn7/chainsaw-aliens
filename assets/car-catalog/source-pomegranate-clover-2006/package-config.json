@@ -1,0 +1,54 @@
+{
+  "id": "source-pomegranate-clover-2006",
+  "name": "Pomegranate Clover 2006",
+  "stableCarId": "saved-car:Pomegranate Clover 2006",
+  "runtimeId": "saved-car:Pomegranate Clover 2006",
+  "runtimeDocumentId": null,
+  "candidateId": null,
+  "referenceVehicle": "Germany June2006 Renault Vel Satis base2.0dCi150FAP,6MT. Tall five-door executive hatchback,base trim,notInitiale173 orV6.",
+  "identity": null,
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    3,
+    4,
+    5,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      396,
+      397,
+      111
+    ],
+    "wheel": [
+      476,
+      714,
+      377
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://presse.renault.de/ab-werk-mit-partikelfilter/",
+      "fields": [
+        "exact identity and visual configuration"
+      ]
+    }
+  ]
+}

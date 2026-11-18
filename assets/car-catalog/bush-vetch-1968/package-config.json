@@ -1,0 +1,65 @@
+{
+  "id": "bush-vetch-1968",
+  "name": "Bush Vetch 1968",
+  "stableCarId": "saved-car:Bush Vetch 1968",
+  "runtimeId": "saved-car:Bush Vetch 1968",
+  "candidateId": "plymouth-barracuda-formula-s-1968-roster-candidate",
+  "referenceVehicle": "1968 US Plymouth Barracuda Formula S340 V8 fastback, four-speedmanual3.23openrearaxle;not383,notlaterE-bodyCuda orHemiSuperStock",
+  "identity": {
+    "year": 1968,
+    "make": "Plymouth",
+    "model": "Barracuda Formula S",
+    "trim": "340four-barrel V8 fastback,standard4MT,standard3.23openaxle,no383",
+    "market": "United States"
+  },
+  "bodyClass": "two-door-fastback-coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      258,
+      539,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.lov2xlr8.no/brochures/plymouth/68bar/bilder/6.jpg",
+      "fields": [
+        "340FormulaS275hp5000/340lbft3200",
+        "4MT2.66/1.91/1.39/1",
+        "standard3.23axle",
+        "fastbackgeometry",
+        "E70x14tires",
+        "18gal",
+        "FormulaSidentity"
+      ]
+    }
+  ]
+}

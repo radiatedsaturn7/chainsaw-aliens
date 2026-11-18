@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "holly-clover-2010",
+  "name": "Holly Clover 2010",
+  "stableCarId": "saved-car:Holly Clover 2010",
+  "referenceVehicle": "2010 United States Mazda CX-7, sTouringDISI2.3turbo front-wheel-drive six-speed torque-converterautomatic,standard18-inchalloys; not2.5i5AT,AWD orGrandTouring19inch",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "4028b67acdb665f03a3ff848d2a49fd3f1664057d965b503b996adce825e3cf3",
+    "dashboard": "2cdef730537f8a985783a8cdfb398bf9ae5074e1f3f346857541e9d1648168dc",
+    "tires": "18da610e15b6e375f6d3547da20f47d234d6d81451e07fc79a26adc3f8e61978"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

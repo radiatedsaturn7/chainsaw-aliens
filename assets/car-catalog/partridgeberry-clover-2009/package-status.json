@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "partridgeberry-clover-2009",
+  "name": "Partridgeberry Clover 2009",
+  "stableCarId": "saved-car:Partridgeberry Clover 2009",
+  "referenceVehicle": "2009 United States Toyota Venza, February2009USbase2.7four-cylinderFWDsix-speedautomatic,19-inchalloys,nooptionalpanoramicroof; notV6,AWD or2021hybrid",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "98d6f03f5881cad3869715f083496d957f154f9c47cd57ebc42e771d0161e945",
+    "dashboard": "de49459246256a6e7706ed97cf3dcbabf8d45a61bf054c3f6b5b03a8504e5fb6",
+    "tires": "93f102fd87ca4fbf6132cba88a58c3241a1cfe39d97e0d2b0d17a2f3984fa9f2"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

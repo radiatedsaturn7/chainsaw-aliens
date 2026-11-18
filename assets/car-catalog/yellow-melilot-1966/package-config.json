@@ -1,0 +1,81 @@
+{
+  "id": "yellow-melilot-1966",
+  "name": "Yellow Melilot 1966",
+  "stableCarId": "saved-car:Yellow Melilot 1966",
+  "candidateId": "ford-lotus-cortina-1966-candidate",
+  "referenceVehicle": "1966 US-export Ford Lotus Cortina Mk I 1558 cc twin-cam two-door sedan, four-speed manual, 4.125 rear axle, leaf-spring rear suspension; October 1965 USA factory brochure configuration, not earlier A-frame or competition car.",
+  "identity": {
+    "year": 1966,
+    "make": "Ford",
+    "model": "Lotus Cortina",
+    "trim": "US-export Mk I two-door sedan, 1558 cc twin-cam, 4MT, 4.125 axle, leaf-spring rear",
+    "market": "United States"
+  },
+  "bodyClass": "sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      220,
+      490,
+      550,
+      185
+    ],
+    "wheel": [
+      490,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://www.lotuscortinainfo.com/wp-content/uploads/2011/04/30.1-66-USA-Mk-1-4-Brochure-Lotus-Cortina-small.jpg",
+      "fields": [
+        "1558cc engine",
+        "gross horsepower and net torque distinction",
+        "curb1857lb",
+        "overall forward ratios and4.125 axle",
+        "geometry/tracks",
+        "6.00x13 tires",
+        "leaf spring rear",
+        "steering",
+        "ground clearance"
+      ]
+    },
+    {
+      "url": "https://www.lotuscortinainfo.com/",
+      "fields": [
+        "October1965 USA brochure dating for1966 export specification"
+      ]
+    },
+    {
+      "url": "https://www.lotuscars.com/en/lotus-story/road-cars/cortina",
+      "fields": [
+        "Type28 MkI1963-1966 production",
+        "1558cc twin-cam",
+        "four-speed",
+        "standard versusSE/race distinction"
+      ]
+    }
+  ]
+}

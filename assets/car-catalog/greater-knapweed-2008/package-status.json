@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "greater-knapweed-2008",
+  "name": "Greater Knapweed 2008",
+  "stableCarId": "saved-car:Greater Knapweed 2008",
+  "referenceVehicle": "2008 US Dodge Viper SRT10 ACR coupe,8.4V10/TR6060six-speed,standardACRwithaudio,notoptionalHardcorepackage; roadsetup rather thanmax-downforce trackextension",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "11c7189baaa8c982078462dd3df8511cf9f19a84669186118708dd132affa965",
+    "dashboard": "35db492b9fe116f4e2304b4c7a1192ac47b9c8a80cc56899e75f468e50f65e59",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

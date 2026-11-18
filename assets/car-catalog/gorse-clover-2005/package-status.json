@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "gorse-clover-2005",
+  "name": "Gorse Clover 2005",
+  "stableCarId": "saved-car:Gorse Clover 2005",
+  "referenceVehicle": "2005 United States Toyota Tundra, base regular cab long bed 4x2 4.0 V6 six-speed manual, standard 16-inch wheels; no V8, Access Cab, Double Cab or TRD package",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "23bc0c790ab9c89a306a7f00f754923da31e60da2f04f788d134d3cff163117a",
+    "dashboard": "178dc56d58929cc660cbf592836cc6bcba68d2b4c1fc92106660bb950973b785",
+    "tires": "24d8695c5024253247b3618adf11af8e181f41021c4911b9c3080d00e2f47b7b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

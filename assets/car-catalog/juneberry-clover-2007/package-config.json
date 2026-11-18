@@ -1,0 +1,71 @@
+{
+  "id": "juneberry-clover-2007",
+  "name": "Juneberry Clover 2007",
+  "stableCarId": "saved-car:Juneberry Clover 2007",
+  "runtimeId": "saved-car:Juneberry Clover 2007",
+  "candidateId": "volvo-s40-2007-us-2-4i-5mt",
+  "referenceVehicle": "2007 United States Volvo S40 2.4i naturally aspirated inline-five FWD standard five-speed manual sedan, ordinary chassis; not T5,T5AWD orGeartronic",
+  "identity": {
+    "year": 2007,
+    "make": "Volvo",
+    "model": "S40",
+    "trim": "2.4i naturally aspirated inline-five FWD standard five-speed manual sedan, ordinary chassis; not T5,T5AWD orGeartronic",
+    "market": "United States"
+  },
+  "bodyClass": "sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Volvo/S40/Volvo_US%20S40_2007.pdf",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "zeroToSixtySec",
+        "topSpeedMph",
+        "fuelTankUSgal",
+        "identity"
+      ]
+    }
+  ]
+}

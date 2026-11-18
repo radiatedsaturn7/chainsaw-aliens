@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "hedge-woundwort-1953",
+  "name": "Hedge Woundwort 1953",
+  "stableCarId": "saved-car:Hedge Woundwort 1953",
+  "referenceVehicle": "1953 Maserati A6GCS/53 Pinin Farina Berlinetta, 1953\u20131954 closed-body2.0NAstraight-six sportscar; notopenA6GCS orlaterA6G54roadGT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "7a47beee4b9d398384a3efd4af60e56e833d02f2f8c7828d5e43faa4ad9ab5c0",
+    "dashboard": "50e180bc25e55ea9e7e407496f133aebd786401cdd4f888031e373361c1e7312",
+    "tires": "fa98be7776a058b56f3d5efa36a87d1a5a14fcd43af3a9f7d29a839efc9b8c00"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,64 @@
+{
+  "id": "goldentuft-1993",
+  "name": "Goldentuft 1993",
+  "candidateId": "renault-clio-williams-1993-roster-candidate",
+  "referenceVehicle": "1993 France Renault Clio Williams, first-series European 2.0 naturally aspirated three-door road car, five-speed manual; not rally Group A/N",
+  "identity": {
+    "year": 1993,
+    "make": "Renault",
+    "model": "Clio Williams",
+    "trim": "first-series European 2.0 naturally aspirated three-door road car, five-speed manual; not rally Group A/N",
+    "market": "France"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      490,
+      550,
+      180
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#a3cdff"
+  },
+  "sources": [
+    {
+      "url": "https://theoriginals.renault.com/es/clio-williams",
+      "fields": [
+        "powerKw",
+        "engineDisplacementL",
+        "dimensions",
+        "drivetrain",
+        "1993-1995 production"
+      ]
+    },
+    {
+      "url": "https://www.renaultgroup.com/magazine/nos-actualites-groupe/renault-clio-notre-histoire-vos-histoires/",
+      "fields": [
+        "1993 introduction",
+        "150 metric horsepower"
+      ]
+    }
+  ]
+}

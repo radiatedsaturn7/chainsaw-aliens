@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "spruce-clover-2012",
+  "name": "Spruce Clover 2012",
+  "stableCarId": "saved-car:Spruce Clover 2012",
+  "referenceVehicle": "2012 United States Ford Expedition, XL standard-wheelbase 5.4-liter V8 gasoline 4x2 six-speed automatic, standard open3.31 axle and17-inch wheels; not EL,4x4 or tow package",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "spruce-clover-2012",
+  "sourceHashes": {
+    "body": "c5a7da21e7161b85f46555943d46611c66e1f3146087dc4fa6888ecaa058e904",
+    "dashboard": "6b08b4c239bc415b7cd9a049e7620f43840b1266b7c468586b9ea7608d5b11b3",
+    "tires": "52bdda5713f2456515c19753c26670a5de106b3ec797b00d1940bc80803ba616"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

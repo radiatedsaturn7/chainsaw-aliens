@@ -1,0 +1,70 @@
+{
+  "id": "berseem-clover-1967",
+  "name": "Berseem Clover 1967",
+  "stableCarId": "saved-car:Berseem Clover 1967",
+  "runtimeId": "saved-car:Berseem Clover 1967",
+  "candidateId": "lamborghini-miura-p400-1967-roster-candidate",
+  "referenceVehicle": "1967 Lamborghini Miura P400 original350CV transverse mid-engine V12 5MT, not S/SV; European production reference, not US emissions variant or modified example",
+  "identity": {
+    "year": 1967,
+    "make": "Lamborghini",
+    "model": "Miura P400",
+    "trim": "original350CV transverse mid-engine V12 5MT, not S/SV",
+    "market": "European non-US representative production specification"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      531,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.lamborghini.com/en-en/history/miura",
+      "fields": [
+        "publishedPowerPS",
+        "powerRpm",
+        "aspiration",
+        "identity"
+      ]
+    },
+    {
+      "url": "https://www.lamborghini.com/es-en/noticias/lamborghini-miura-first-supercar-history",
+      "fields": [
+        "torqueReference",
+        "fiveSpeedManual",
+        "weightCaution"
+      ]
+    }
+  ]
+}

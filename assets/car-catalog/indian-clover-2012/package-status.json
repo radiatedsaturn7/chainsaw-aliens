@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "indian-clover-2012",
+  "name": "Indian Clover 2012",
+  "stableCarId": "saved-car:Indian Clover 2012",
+  "referenceVehicle": "2012 Dacia Lodgy1.6 MPI85, Germany June2012 base five-seat petrol5MT, notseven-seatoption,LPG,diesel orTCe",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "3edb40a4d99c3d40cb96e0d1e181d0172ef4795af4729d07ac1537868eb97339",
+    "dashboard": "96dfe47e306c8c5b8ab5dddee55bcff8255b3e8c08af743348c10d5cc75da1f4",
+    "tires": "276eafd8853786db379ecd33bc311a9aa82bc464ce36672ca8d54bdaba2ad398"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

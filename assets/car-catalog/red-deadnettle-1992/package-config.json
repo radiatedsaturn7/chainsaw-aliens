@@ -1,0 +1,91 @@
+{
+  "id": "red-deadnettle-1992",
+  "name": "Red Deadnettle 1992",
+  "stableCarId": "saved-car:Red Deadnettle 1992",
+  "runtimeId": "saved-car:Red Deadnettle 1992",
+  "candidateId": "toyota-celica-gt-four-rc-st185-1992-roster-candidate",
+  "referenceVehicle": "1992 Japan Toyota Celica GT-Four RC Japan E-ST185H 3S-GTE1998cc water-to-airintercooledturbo roadhomologation5MT; September1991\u2013October1993 catalog configuration, notRACrally orUKCarlosSainz",
+  "identity": {
+    "year": 1992,
+    "make": "Toyota",
+    "model": "Celica GT-Four RC",
+    "trim": "Japan E-ST185H 3S-GTE1998cc water-to-airintercooledturbo roadhomologation5MT; September1991\u2013October1993 catalog configuration, notRACrally orUKCarlosSainz",
+    "market": "Japan"
+  },
+  "bodyClass": "three-door five-seat liftback coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1230,
+      470,
+      470,
+      160
+    ],
+    "wheel": [
+      1470,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://gazoo.com/catalog/maker/TOYOTA/CELICA/198909/10002212/",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "reverseRatio",
+        "finalDrive",
+        "fuelTankUSgal"
+      ]
+    },
+    {
+      "url": "https://toyota.jp/ucar/catalog/brand-TOYOTA/car-CELICA/199109/10002212/",
+      "fields": [
+        "identity",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn"
+      ]
+    }
+  ]
+}

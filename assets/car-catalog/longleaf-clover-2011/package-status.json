@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "longleaf-clover-2011",
+  "name": "Longleaf Clover 2011",
+  "stableCarId": "saved-car:Longleaf Clover 2011",
+  "referenceVehicle": "2011 US Volkswagen Jetta S2.0SOHC8-valve gasoline sedan5MT standard15inch steel wheels,notSE2.5/GLI/TDI",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "70989d1b14e936003703ec21923e3f7b99df8c2ea341b7944bc8471297c05463",
+    "dashboard": "7ce483172ae36085142078b11d02da6fe131c3c6e9240f92df798b065c806974",
+    "tires": "6681bd2abee6a032f29d78c7e019d42c6d41a31cda84eaa6fcdd96ed85dc64ee"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

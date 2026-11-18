@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "lush-clover-2005",
+  "name": "Lush Clover 2005",
+  "stableCarId": "saved-car:Lush Clover 2005",
+  "referenceVehicle": "2005 Fiat Croma Dynamic2.2 16V, UK launch five-door high-roof estate/crossover, petrol5MT, standard16inch wheels; notautomatic,diesel oroldCroma",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "bb2edc4f5e681b8439235932243fed7590f84b799bec9385f2ae5008676b4e6f",
+    "dashboard": "6c4b996a0f85711a45545f3463056730fab73644bfcc3dd3f7e5cd010c6cd017",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,67 @@
+{
+  "id": "bur-medick-1967",
+  "name": "Bur Medick 1967",
+  "stableCarId": "saved-car:Bur Medick 1967",
+  "runtimeId": "saved-car:Bur Medick 1967",
+  "candidateId": "aston-martin-dbs-1967-roster-candidate",
+  "referenceVehicle": "1967 Aston Martin DBS, original standard3995cc straight-six coupe ZF5MT; notVantage,V8 or2008V12DBS",
+  "identity": {
+    "year": 1967,
+    "make": "Aston Martin",
+    "model": "DBS",
+    "trim": "original standard3995cc straight-six coupe ZF5MT; notVantage,V8 or2008V12DBS",
+    "market": "UK/Europe"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1289,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      1507,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.astonmartin.com/en/models/past-models/dbs",
+      "fields": [
+        "engineDisplacementL",
+        "publishedPowerBhp",
+        "publishedPowerRpm",
+        "gearCount",
+        "transmission",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "publishedMassKg"
+      ]
+    }
+  ]
+}

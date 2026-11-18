@@ -1,0 +1,63 @@
+{
+  "id": "saxifrage-1995",
+  "name": "Saxifrage 1995",
+  "candidateId": "bmw-850csi-1995-roster-candidate",
+  "referenceVehicle": "1995 European BMW 850CSi E31 S70 V12 six-speed manual European coupe; not850i/Ci or M8 prototype",
+  "identity": {
+    "year": 1995,
+    "make": "BMW",
+    "model": "850CSi E31",
+    "trim": "S70 V12 six-speed manual European coupe; not850i/Ci or M8 prototype",
+    "market": "Europe"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      198,
+      484,
+      516,
+      182
+    ],
+    "wheel": [
+      456,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.press.bmwgroup.com/south-africa/article/detail/T0182584EN/timelessly-alluring%3A-25-years-of-the-bmw-8-series",
+      "fields": [
+        "powerKw",
+        "torqueNm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount"
+      ]
+    },
+    {
+      "url": "https://www.bmwgroup-classic.com/en/models/bmw-classics/product-description-page.ad-213-1.bmw-850csi.html",
+      "fields": [
+        "1992\u20131996 production range"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "slender-speedwell-1997",
+  "name": "Slender Speedwell 1997",
+  "stableCarId": "saved-car:Slender Speedwell 1997",
+  "referenceVehicle": "1997 Japan Mitsubishi GTO Twin Turbo MR August1997 E-Z15A 6G72 2972cc twin-turbo V6 AWD6MT road coupe, standard fixed roof, not regularTwinTurbo4WS or US3000GT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "1d013282c7a8176d9ca3eabb4747318d6bf4627bad87bdaeb16194c17977d7a1",
+    "dashboard": "fffee4ce909809ec427c0ae5a9e1485d827c8db07f7cfbbab101680a1632d2d8",
+    "tires": "743d71ab9e91f8ce636f6d194bebdf7f9ad877e96ea6648574f5eab7afe96201"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

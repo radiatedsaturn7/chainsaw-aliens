@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "oak-clover-2011",
+  "name": "Oak Clover 2011",
+  "stableCarId": "saved-car:Oak Clover 2011",
+  "referenceVehicle": "2011 United States Audi A8 D4 short-wheelbase4.2FSI naturallyaspiratedV8 quattro8-speedTiptronic,standard19-inchwheels,noSportRearDifferential;notA8L,W12orS8",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "oak-clover-2011",
+  "sourceHashes": {
+    "body": "c3db62656f2674f7ce0dbf666118e91a81ce46ecbf8f812f3262a84285af0fae",
+    "dashboard": "fe022c505503a772a0137da1b72fbe056bc603e4b9a728d12fee651b46b942a4",
+    "tires": "9969a568ecb94711ce1ee8bd68a316047272f547a8798cf77bdb86e94e09c589"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

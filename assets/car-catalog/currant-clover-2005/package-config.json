@@ -1,0 +1,69 @@
+{
+  "id": "currant-clover-2005",
+  "name": "Currant Clover 2005",
+  "stableCarId": "saved-car:Currant Clover 2005",
+  "runtimeId": "saved-car:Currant Clover 2005",
+  "candidateId": "nissan-quest-base-2005-us-4at-supplemental",
+  "referenceVehicle": "2005 United States Nissan Quest, new3.5BaseVQ35FWDfour-speedautomatic sevenseats16-inchsteel wheels,noSkyView/DVD; notSL5AT orSE17inch",
+  "identity": {
+    "year": 2005,
+    "make": "Nissan",
+    "model": "Quest",
+    "trim": "new3.5BaseVQ35FWDfour-speedautomatic sevenseats16-inchsteel wheels,noSkyView/DVD; notSL5AT orSE17inch",
+    "market": "United States"
+  },
+  "bodyClass": "five-door seven-seat sliding-door minivan; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      815,
+      290,
+      340,
+      85
+    ],
+    "wheel": [
+      490,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://usa.nissannews.com/en-US/releases/release-2929687cfb04499c8d3da63d29135902-2005-nissan-quest-press-kit-3",
+      "fields": [
+        "powerHp",
+        "torqueLbFt",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "transmissionLabel",
+        "gearCount",
+        "tireSize",
+        "absEnabled",
+        "tractionControlEnabled"
+      ]
+    }
+  ]
+}

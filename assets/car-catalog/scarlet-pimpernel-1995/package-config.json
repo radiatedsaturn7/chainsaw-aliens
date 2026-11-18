@@ -1,0 +1,89 @@
+{
+  "id": "scarlet-pimpernel-1995",
+  "name": "Scarlet Pimpernel 1995",
+  "stableCarId": "saved-car:Scarlet Pimpernel 1995",
+  "candidateId": "toyota-mr2-gt-1995-roster-candidate",
+  "referenceVehicle": "1995 UK Toyota MR2 GT SW20 2.0 naturally aspirated 173bhp five-speed manual, standard glass sunroof; not Japanese turbo GT, GT T-Bar or AW11/Spyder",
+  "identity": {
+    "year": 1995,
+    "make": "Toyota",
+    "model": "MR2 GT SW20",
+    "trim": "UK naturally aspirated GT 5MT with removable glass sunroof, not T-Bar",
+    "market": "United Kingdom"
+  },
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1289,
+      476,
+      456,
+      135
+    ],
+    "wheel": [
+      1507,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://media.toyota.co.uk/wp-content/uploads/sites/5/pdf/MR2-Gen2-new-engine.pdf",
+      "fields": [
+        "identity",
+        "powerHp",
+        "torqueLbFt",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "groundClearanceM",
+        "dragCoefficient",
+        "fuelTankUSgal",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "tireSize",
+        "rearTireSize",
+        "steeringRatio",
+        "absEnabled"
+      ]
+    },
+    {
+      "url": "https://media.toyota.co.uk/vehicles/mr2-archive-1994/",
+      "fields": [
+        "identity"
+      ]
+    }
+  ]
+}

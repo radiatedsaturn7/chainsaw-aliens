@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "saskatoon-clover-2008",
+  "name": "Saskatoon Clover 2008",
+  "stableCarId": "saved-car:Saskatoon Clover 2008",
+  "referenceVehicle": "2008 United States BMW 650i E63 Coupe4.8 naturally aspirated V8 standard six-speed manual, standard18inch all-season wheels, nonSport; not Convertible,M6 orSportAutomatic",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "c395f1537252be033f45e0caba1ddfe49021fb82a7739d3f88740dd684ccd361",
+    "dashboard": "a02595e6ad8eaae054b61c4b9d3e6aa941639b33f24a080648049c2e91737cf1",
+    "tires": "0d1d66821e94a46e798858f08838ad5d4994e7d1aa438c4324338c8239f6a0b3"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

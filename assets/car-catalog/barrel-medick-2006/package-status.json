@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "barrel-medick-2006",
+  "name": "Barrel Medick 2006",
+  "stableCarId": "saved-car:Barrel Medick 2006",
+  "referenceVehicle": "2006 Koenigsegg CCX standard 4.7 supercharged V8 six-speed manual removable-hardtop",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "4ec433b9e1aef4230d7a907fe0cbea3596aa967ec465617e4fb205cef6a6d860",
+    "dashboard": "c1bf846547caee4cdf0ba4d3e962b01339b003e29c201a47e497279441a5869a",
+    "tires": "50ca06f8526d45e53724ff12292a4154e7e66da5a61c9add2b945aeace6d8fc9"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

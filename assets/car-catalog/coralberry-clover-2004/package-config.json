@@ -1,0 +1,58 @@
+{
+  "id": "coralberry-clover-2004",
+  "name": "Coralberry Clover 2004",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      240,
+      410,
+      490,
+      170
+    ],
+    "wheel": [
+      470,
+      753,
+      360
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Chevrolet/Colorado/Chevrolet_US%20Colorado_2004.pdf",
+      "fields": [
+        "aspiration",
+        "engineDisplacementL",
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "tireSize",
+        "fuelTankUSgal"
+      ]
+    }
+  ]
+}

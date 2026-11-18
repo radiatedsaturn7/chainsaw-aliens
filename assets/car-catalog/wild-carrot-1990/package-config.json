@@ -1,0 +1,66 @@
+{
+  "id": "wild-carrot-1990",
+  "name": "Wild Carrot 1990",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1269,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      1526,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://lotusomega.info/wp-content/uploads/199009_LotusCarlton.pdf",
+      "fields": [
+        "powerKw",
+        "publishedPowerHp",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "transmission",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "tireSize",
+        "frontTire",
+        "rearTire",
+        "fuelTankUSgal",
+        "absEnabled"
+      ]
+    },
+    {
+      "url": "https://www.media.stellantis.com/uk-en/vauxhall/press/vauxhall-lotus-carlton",
+      "fields": [
+        "identity",
+        "engineDisplacementL"
+      ]
+    }
+  ]
+}

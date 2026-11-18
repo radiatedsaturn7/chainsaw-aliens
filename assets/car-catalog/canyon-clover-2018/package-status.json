@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "canyon-clover-2018",
+  "name": "Canyon Clover 2018",
+  "stableCarId": "saved-car:Canyon Clover 2018",
+  "referenceVehicle": "2018 United States Hyundai Accent, SE fifth-generation sedan1.6GDI6MT standard15-inch coveredsteel wheels; not SEL/Limited,automatic,olderMPI orKiaRio",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "cdd6c5800d528bf41a8c46e65ecc2e6c8dc3308afe9eb0ad482de0453f1c337f",
+    "dashboard": "f29964360d67c512fd3fdd109df4c24dcf7349234a3cde194bcc1c21aa1de723",
+    "tires": "2469008af6ee3598a5b709a470b6fc3c89797c85f565cf26d09625db44cd9030"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

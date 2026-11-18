@@ -1,0 +1,107 @@
+{
+  "id": "bithynian-vetch-1970",
+  "name": "Bithynian Vetch 1970",
+  "stableCarId": "saved-car:Bithynian Vetch 1970",
+  "runtimeId": "saved-car:Bithynian Vetch 1970",
+  "candidateId": "amc-rebel-the-machine-1970-roster-candidate",
+  "referenceVehicle": "1970 United States AMC Rebel The Machine, 390 four-barrel V8, standard four-speed floor shift and3.54 axle; non-California",
+  "identity": {
+    "year": 1970,
+    "make": "AMC",
+    "model": "Rebel The Machine",
+    "trim": "390 four-barrel V8, standard four-speed floor shift and3.54 axle; non-California",
+    "market": "United States"
+  },
+  "bodyClass": "two-door-hardtop",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1984,
+      793
+    ],
+    "cluster": [
+      278,
+      531,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      298
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.lov2xlr8.no/brochures/amc/70am/bilder/19.jpg",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "engineDisplacementL",
+        "gearCount",
+        "finalDrive",
+        "lengthM",
+        "widthM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "fuelTankUSgal",
+        "periodPublishedRatings"
+      ]
+    },
+    {
+      "url": "https://www.lov2xlr8.no/brochures/amc/70am/bilder/20.jpg",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "engineDisplacementL",
+        "gearCount",
+        "finalDrive",
+        "lengthM",
+        "widthM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "fuelTankUSgal",
+        "periodPublishedRatings"
+      ]
+    },
+    {
+      "url": "https://www.lov2xlr8.no/brochures/amc/70am/bilder/21.jpg",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "engineDisplacementL",
+        "gearCount",
+        "finalDrive",
+        "lengthM",
+        "widthM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "fuelTankUSgal",
+        "periodPublishedRatings"
+      ]
+    }
+  ]
+}

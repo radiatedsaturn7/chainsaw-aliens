@@ -1,0 +1,64 @@
+{
+  "id": "subterranean-clover-2020",
+  "name": "Subterranean Clover 2020",
+  "stableCarId": "saved-car:Subterranean Clover 2020",
+  "runtimeId": "saved-car:Subterranean Clover 2020",
+  "candidateId": "mclaren-gt-2020-roster-candidate",
+  "referenceVehicle": "2020 McLaren GT, originalEuropean4.0M840TEtwin-turboV8two-seatgrandtourer7SSG; notGTS or570GT",
+  "identity": {
+    "year": 2020,
+    "make": "McLaren",
+    "model": "GT",
+    "trim": "originalEuropean4.0M840TEtwin-turboV8two-seatgrandtourer7SSG; notGTS or570GT",
+    "market": "Europe/United Kingdom"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      515,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.eurokarsgroup.com/newsroom/asia-premiere-of-the-new-mclaren-gt-superlight-grand-touring-the-mclaren-way",
+      "fields": [
+        "620metricPS",
+        "630Nm",
+        "4.0twin-turboV8",
+        "1530kgDIN",
+        "2019enddeliveries",
+        "MonoCellII-Ttouringstructure"
+      ]
+    }
+  ]
+}

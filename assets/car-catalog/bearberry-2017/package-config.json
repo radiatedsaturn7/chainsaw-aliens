@@ -1,0 +1,63 @@
+{
+  "id": "bearberry-2017",
+  "name": "Bearberry 2017",
+  "candidateId": "ram-2500-power-wagon-2017-roster-candidate",
+  "referenceVehicle": "2017 US Ram 2500 Power Wagon Crew Cab6.4 V8 66RFE6AT, standard trim; high-range road approximation",
+  "identity": {
+    "year": 2017,
+    "make": "Ram",
+    "model": "2500 Power Wagon",
+    "trim": "Crew Cab6.4 V8 66RFE6AT, standard trim; high-range road approximation",
+    "market": "US"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      250,
+      480,
+      430,
+      170
+    ],
+    "wheel": [
+      470,
+      750,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#dcebd4"
+  },
+  "sources": [
+    {
+      "url": "https://www.prnewswire.com/news-releases/new-2017-ram-power-wagon----the-ultimate-off-road-truck-benefits-from-new-design-300217453.html",
+      "fields": [
+        "powerHp",
+        "torqueLbFt",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "finalDrive",
+        "publishedFirstGearRatio",
+        "referenceLowRange",
+        "referenceTireDiameterIn"
+      ]
+    }
+  ]
+}

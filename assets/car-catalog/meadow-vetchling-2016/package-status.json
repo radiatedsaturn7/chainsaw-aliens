@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "meadow-vetchling-2016",
+  "name": "Meadow Vetchling 2016",
+  "stableCarId": "saved-car:Meadow Vetchling 2016",
+  "referenceVehicle": "2016 United Kingdom Vauxhall Corsa E VXR standard 17-inch wheels, 6MT, no Performance Pack, normal continuous boost",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "eb892626ada7def6c80eea3647b4596cd90dd9c3eb703103c81fea123f6a43f5",
+    "dashboard": "6707abe30fb7d2f6e73ef323c7f180a5baae68fa7e69d3e3e901911d286945f0",
+    "tires": "eced8095dba195c46a01699499185f8e5053c54d4faa1994ca9021e3c82dbc81"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

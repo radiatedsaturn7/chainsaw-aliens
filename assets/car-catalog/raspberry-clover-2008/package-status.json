@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "raspberry-clover-2008",
+  "name": "Raspberry Clover 2008",
+  "stableCarId": "saved-car:Raspberry Clover 2008",
+  "referenceVehicle": "2008 United States Volvo S80 second-generation V8 AWD4.4 naturally aspirated transverse V8 six-speed Geartronic, standard passive chassis; not T6,3.2 or optional FOUR-C",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "7f9807d4febaa8395d79beeafd41d71c02e0c5370524487be69371c94e6a76d3",
+    "dashboard": "196ad952f83ded8d4787481fa2df19dd68fdf5bbc2a48793a304a0a43c7e9288",
+    "tires": "3bc5c627f1d4963ff194613346adaf97c473d67aae798b706838ce4677458c12"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

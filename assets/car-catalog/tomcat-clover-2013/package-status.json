@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "tomcat-clover-2013",
+  "name": "Tomcat Clover 2013",
+  "stableCarId": "saved-car:Tomcat Clover 2013",
+  "referenceVehicle": "2013 Dacia Sandero 1.2 16V75, Germany second-generation base five-door petrol five-speed manual, not Stepway, LPG, TCe90 or diesel",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "6f301123b5528645035c8f17c5e89d86eeb0d042b0b2db26a85b8eeb58c4beab",
+    "dashboard": "aa3d50d5fb70063fc6d4e5699be6865e507c5f9fb8de18951b77c3d50b811b0f",
+    "tires": "276eafd8853786db379ecd33bc311a9aa82bc464ce36672ca8d54bdaba2ad398"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

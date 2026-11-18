@@ -1,0 +1,57 @@
+{
+  "id": "bogbean-2020",
+  "name": "Bogbean 2020",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      426,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://www.mediawire.co.za/news/release/d4111aa7-85e0-11ed-9e8c-049226d40405/d5516907-85e0-11ed-9e8c-049226d40405",
+      "fields": [
+        "powerKw",
+        "publishedPowerCV",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "publishedDryKg",
+        "drivetrain",
+        "transmission",
+        "gearCount"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "slender-trefoil-2003",
+  "name": "Slender Trefoil 2003",
+  "stableCarId": "saved-car:Slender Trefoil 2003",
+  "referenceVehicle": "2003 Renault Avantime Privil\u00e8ge3.0V6, Germany early2003 L7X naturallyaspiratedV6 PK6six-speedmanual, factory17-inch tires, panoramicglassroof; notturbo,diesel,automatic orEspace",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "slender-trefoil-2003",
+  "sourceHashes": {
+    "body": "18967a4e69187c6213000a39ba02a18be5367f16e969daf3022e9efd0e07ec25",
+    "dashboard": "21e4f7f4151b2332a5070a25fabc054973a3e67628f1d19330873dea2edd6d4a",
+    "tires": "1cbfa5c13139b2762dd65c12fee42b4e92b673f9e2f92ad1bec8b70a37aa5fdf"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

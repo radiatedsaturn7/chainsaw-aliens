@@ -1,0 +1,80 @@
+{
+  "id": "cloudberry-clover-2005",
+  "name": "Cloudberry Clover 2005",
+  "stableCarId": "saved-car:Cloudberry Clover 2005",
+  "runtimeId": "saved-car:Cloudberry Clover 2005",
+  "candidateId": "lexus-gx470-base-2005-ca-5at-supplemental",
+  "referenceVehicle": "2005 Canada Lexus GX470, Canadian standard4.7VVTiV8full-time4WD5AT,eightseats,17-inch wheels; normalhigh-range road mode",
+  "identity": {
+    "year": 2005,
+    "make": "Lexus",
+    "model": "GX470",
+    "trim": "Canadian standard4.7VVTiV8full-time4WD5AT,eightseats,17-inch wheels; normalhigh-range road mode",
+    "market": "Canada"
+  },
+  "bodyClass": "five-door eight-seat body-on-frame SUV; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      230,
+      470,
+      470,
+      175
+    ],
+    "wheel": [
+      490,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://toyotacanada.scene7.com/is/content/toyotacanada/specs_2005_GX470pdf-1",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "transmission",
+        "transmissionLabel",
+        "gearCount",
+        "absEnabled",
+        "drivetrain",
+        "curbKg",
+        "tireSize",
+        "groundClearanceM",
+        "fuelTankUSgal",
+        "tractionControlEnabled"
+      ]
+    }
+  ]
+}

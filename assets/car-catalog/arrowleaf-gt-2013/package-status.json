@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "arrowleaf-gt-2013",
+  "name": "Arrowleaf GT 2013",
+  "stableCarId": "saved-car:Arrowleaf GT 2013",
+  "referenceVehicle": "2013 US Dodge Dart GT, 2.4L Tigershark MultiAir2, six-speed manual sedan; not SE/SXT, proposed R/T or optional automatic",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "bb9a772dc6ea2f5ef94182fe397f9847cd0ecadb8b89fccc920e5f7fe7a2a408",
+    "dashboard": "1bfbf4c1ffa0989c4d2c1777eddf960c9f8205e6668265c2ff3eb6b3d32529ce",
+    "tires": "33de7b9124446428a632463a30d2c7b84ea9283eb37dfe010e23a76a965cf2eb"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,163 @@
+{
+  "id": "ladyfern-r-1990",
+  "name": "Ladyfern R 1990",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "51fb019e694185689994fcc103543e4ddf447fe5bb3310bba2c27ce16f2a340a",
+  "sourceDirectory": "assets/car-catalog/ladyfern-r-1990",
+  "sourceHashes": {
+    "body": "bc41fdfaeace886f4cc339454c6788f43a0fce05cacaebb1611f3cb4b25e26f6",
+    "dashboard": "f03624488196be0f214d8ee875dc96ecfa9f5479b6ec5f0264b081a4c438d526",
+    "tires": "425e4d3353ae7477ac9610376bdca31055d578a8753c54464ffa22b8c2b0f3ae"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 98,
+        "y": 328,
+        "radius": 46
+      },
+      {
+        "wheel": "fr",
+        "x": 342,
+        "y": 328,
+        "radius": 46
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 642,
+        "y": 328,
+        "radius": 44
+      },
+      {
+        "wheel": "rr",
+        "x": 810,
+        "y": 294,
+        "radius": 40
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 940,
+        "y": 744,
+        "radius": 46
+      },
+      {
+        "wheel": "rr",
+        "x": 1226,
+        "y": 744,
+        "radius": 46
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 454,
+        "y": 726,
+        "radius": 34
+      },
+      {
+        "wheel": "rr",
+        "x": 587,
+        "y": 754,
+        "radius": 48
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 96,
+        "y": 756,
+        "radius": 50
+      },
+      {
+        "wheel": "rl",
+        "x": 340,
+        "y": 756,
+        "radius": 50
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1590,
+        "y": 322,
+        "radius": 46
+      },
+      {
+        "wheel": "fl",
+        "x": 1728,
+        "y": 292,
+        "radius": 36
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 966,
+        "y": 310,
+        "radius": 48
+      },
+      {
+        "wheel": "fl",
+        "x": 1260,
+        "y": 310,
+        "radius": 48
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1354,
+        "y": 710,
+        "radius": 34
+      },
+      {
+        "wheel": "fl",
+        "x": 1504,
+        "y": 750,
+        "radius": 48
+      }
+    ]
+  },
+  "wheelFit": "average",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1259,
+      470,
+      440,
+      110
+    ],
+    "wheel": [
+      1449.8,
+      676,
+      260
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#eed9ae",
+    "viewportWheelScale": 1.95,
+    "gaugeBackground": "#101010"
+  },
+  "steeringWheelSource": {
+    "artRef": "steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementNotes": "Individually inspected half-scale body source and 992px-wide dashboard on fitting-measurement.png. Body coordinates doubled to original pixels; dashboard offset450 removed and scaled1983/992. Front/rear wheel centers inferred behind occluding bumper edges from source silhouette; diagonal and side centers measured at open arches. Art estimates only, no mechanical inference. Runtime render fitting pending. Wheel IDs follow actual native getRaceSpriteWheelRig projection: front fl screen-left, rear rr screen-left. Static v2 mobile viewport wheel side clipping corrected using native render geometry; individual opening placement and scales retained."
+}

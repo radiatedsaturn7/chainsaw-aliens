@@ -1,0 +1,70 @@
+{
+  "id": "longstalk-clover-2012",
+  "name": "Longstalk Clover 2012",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      270,
+      430,
+      430,
+      180
+    ],
+    "wheel": [
+      485,
+      753,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://www.allcarindex.com/blog/official-lamborghini-aventador-lp700-4-in-all-its-glory",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "gearCount",
+        "publishedDryWeightKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "frontTire",
+        "rearTire",
+        "frontWeightDistribution",
+        "fuelTankUSgal"
+      ]
+    },
+    {
+      "url": "https://preowned.lamborghini.com/en_gb/vdp/25133587-2012-Aventador-LP-700-4",
+      "fields": [
+        "modelYear"
+      ]
+    }
+  ]
+}

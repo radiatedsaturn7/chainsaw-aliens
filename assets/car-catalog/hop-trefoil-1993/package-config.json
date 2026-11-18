@@ -1,0 +1,90 @@
+{
+  "id": "hop-trefoil-1993",
+  "name": "Hop Trefoil 1993",
+  "stableCarId": "saved-car:Hop Trefoil 1993",
+  "candidateId": "nissan-skyline-gt-r-v-spec-1993-roster-candidate",
+  "referenceVehicle": "1993 Japan Nissan Skyline GT-R V-spec E-BNR32 RB26DETT2568cc twin-turbo inline-six AWD5MT road coupe; February1993\u2013August1993 catalog version",
+  "identity": {
+    "year": 1993,
+    "make": "Nissan",
+    "model": "Skyline GT-R V-spec",
+    "trim": "Japan E-BNR32 road coupe RB26DETT twin-turbo 5MT; February1993 V-spec, not V-specII or competition",
+    "market": "Japan"
+  },
+  "bodyClass": "two-door four-seat road coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1250,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      1500,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/skyline_gt-r_1989.html",
+      "fields": [
+        "engineDisplacementL",
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "aspiration",
+        "generation",
+        "ATTESA E-TS architecture"
+      ]
+    },
+    {
+      "url": "https://gazoo.com/catalog/maker/NISSAN/SKYLINE/198905/1507323/",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "reverseRatio",
+        "finalDrive",
+        "fuelTankUSgal",
+        "tireSize"
+      ]
+    }
+  ]
+}

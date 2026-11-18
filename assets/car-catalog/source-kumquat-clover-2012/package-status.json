@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "source-kumquat-clover-2012",
+  "name": "Kumquat Clover 2012",
+  "stableCarId": "saved-car:Kumquat Clover 2012",
+  "referenceVehicle": "US2012 Hyundai Santa Fe GLS2.4,FWD,6AT. Five-door SUV,standard17-inch wheels,retain2012generation,notV6/AWD.",
+  "runtimeDocumentIdVerified": false,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "c51a0b28aca38667dba954d6693ad953e1b66ae8b2ff0fafcdaaa0ca352a3671",
+    "dashboard": "758cb093bd680e1c17dd2e9099e0d623e2c835e58925ce36632107ab092bf522",
+    "tires": "1403dedfcb79c5cc7384b40a69b2b108a91ff8f213740f60d120607c6215b621"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "chokeberry-clover-1999",
+  "name": "Chokeberry Clover 1999",
+  "stableCarId": "saved-car:Chokeberry Clover 1999",
+  "referenceVehicle": "1999 Fiat Coupe20V TurboPlus, Italy November1999 two-door four-seat front-drive2.0turbo inline-five six-speedmanual225/45R16, standardPlusbrace/Recaroseats; not16VTurbo,NAorLimitedEdition",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "9edd5d75fe5615d08191f50337db9d5b8cc0971c1dd747b52fe31a357385176b",
+    "dashboard": "26446cb61edf68cc66bf1a3e60c57c820f9e323999117ff0ffc326cdf3ea9ff0",
+    "tires": "267d84de46217d722021ebc35e258b5ed1741d53ef844c97312a445597aa32d0"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

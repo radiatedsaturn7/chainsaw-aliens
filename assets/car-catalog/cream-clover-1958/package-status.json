@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "cream-clover-1958",
+  "name": "Cream Clover 1958",
+  "stableCarId": "saved-car:Cream Clover 1958",
+  "referenceVehicle": "1958 UK MG MGA Twin Cam high-compression open two-seater RHD 4MT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "b917b06267dc87d8de5e16b3c7dc4e2bdf3688eef7f4cbbfac67b7f8cc035a9c",
+    "dashboard": "6d05db7a1ab5da18e035df0059ecbbbf25c608adae5990d7a42142636ba1df5c",
+    "tires": "ac303cc36b966a1d800da640360edb66b6cd0ceca27eaa0895840ac8b8e3ae26"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

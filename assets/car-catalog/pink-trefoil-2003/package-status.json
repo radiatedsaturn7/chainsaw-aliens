@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "pink-trefoil-2003",
+  "name": "Pink Trefoil 2003",
+  "stableCarId": "saved-car:Pink Trefoil 2003",
+  "referenceVehicle": "2003 United States Honda Pilot, LX VTM-4 3.5 V6 five-speed automatic, eight seats, standard steel wheels; not EX or later generation",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "86f14a1c28900b32bf89fbdf5e8b781cd7379a466e63c0c230ce31e7ab9f08f6",
+    "dashboard": "f213dcfa74c3d4a90b01155343c8fe5cf27107943e663d12dda40fca9afc6401",
+    "tires": "1ff7480d6d5f41472a04e0e7a852167ed3af7538e15e6990172fb8874d9af505"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,72 @@
+{
+  "id": "white-melilot-1997",
+  "name": "White Melilot 1997",
+  "mapping": [
+    0,
+    1,
+    6,
+    3,
+    4,
+    5,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      1064,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      1277,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://www.mitsubishi-motors.com/en/company/history/car/",
+      "fields": [
+        "1997 road Evolution identity",
+        "3.5L V6 MIVEC architecture",
+        "wider body",
+        "independent suspension"
+      ]
+    },
+    {
+      "url": "https://gazoo.com/catalog/maker/MITSUBISHI/PAJERO/199101/4004226/",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "reverseRatio",
+        "finalDrive",
+        "fuelTankUSgal",
+        "tireSize"
+      ]
+    }
+  ]
+}

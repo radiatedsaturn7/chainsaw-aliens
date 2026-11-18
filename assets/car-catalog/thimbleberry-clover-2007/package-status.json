@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "thimbleberry-clover-2007",
+  "name": "Thimbleberry Clover 2007",
+  "stableCarId": "saved-car:Thimbleberry Clover 2007",
+  "referenceVehicle": "2007 United States Saturn Ion, 2 sedan2.2 naturallyaspirated five-speedmanual, standardcoveredwheels; notquad-coupe,RedLine,2.4 orautomatic",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "c54d025864b82336aaaf95ea03fcf01c95fce4d957a0eff62f4cdb755ba1f69b",
+    "dashboard": "31c96eded4985372d8a6b895c6e7221cb2c48676c4ca54e86e3285a82c696ca7",
+    "tires": "6feba52b40eefa834240a97b3ae8a167d1252b342f27ec61819b7de22c420d54"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

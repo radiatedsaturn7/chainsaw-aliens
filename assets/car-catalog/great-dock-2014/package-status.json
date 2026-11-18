@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "great-dock-2014",
+  "name": "Great Dock 2014",
+  "stableCarId": "saved-car:Great Dock 2014",
+  "referenceVehicle": "2014 United States Cadillac CTS-V Wagon6.2LSA superchargedV8 rear-drive six-speed manual;not CTS-VSedan or2005LS6",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "a9769b50aa1a527f83753ed1abeb737a7ec8355bb6dd64231557c27ae5c612b4",
+    "dashboard": "d53ef605bcce82044344dcf13673152b80b36cd807441e21aa7f014dbfbea6a7",
+    "tires": "9b377567ddcf33cb3eadf136e7e2361a7b2d1da652e1cfb7fb49f7646415feee"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

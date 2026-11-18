@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "glade-clover-2005",
+  "name": "Glade Clover 2005",
+  "stableCarId": "saved-car:Glade Clover 2005",
+  "referenceVehicle": "2005 United States Nissan Armada, SE5.6V8 rear-wheel-drive five-speed automatic, eight-seat bench, standard18-inch alloys, no Tow orOffRoadpackage",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "glade-clover-2005",
+  "sourceHashes": {
+    "body": "1ae0080d21bdf1da94ce51c316d8a1b6c46a20abcb98fd61c2df3b10e685e588",
+    "dashboard": "0e527a0659ded4c21d31d0ddb5bfe96afbc3f4b95952fa7bfb1d8fed0ff8ee0a",
+    "tires": "129f46c1fdaf89d2c8df56cebd667d6bee52975fbd6e92715ff23ca6f932cdcd"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

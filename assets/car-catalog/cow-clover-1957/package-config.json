@@ -1,0 +1,61 @@
+{
+  "id": "cow-clover-1957",
+  "name": "Cow Clover 1957",
+  "stableCarId": "saved-car:Cow Clover 1957",
+  "runtimeId": "saved-car:Cow Clover 1957",
+  "candidateId": "porsche-356a-speedster-1957-roster-candidate",
+  "referenceVehicle": "1957 European Porsche 356A1600 Speedster standard60PS pushrod4MT openbody,not1600Super/Carrera",
+  "identity": {
+    "year": 1957,
+    "make": "Porsche",
+    "model": "356A1600 Speedster",
+    "trim": "standard60PS pushrod4MT openbody,not1600Super/Carrera",
+    "market": "Germany / continental Europe"
+  },
+  "bodyClass": "roadster",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.porsche.com/usa/accessoriesandservice/classic/models/356/356-a/",
+      "fields": [
+        "publishedPowerPS",
+        "aspiration",
+        "identity"
+      ]
+    }
+  ]
+}

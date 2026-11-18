@@ -1,0 +1,40 @@
+Local art integration candidate
+
+446 source packages: body/dashboard/tires PNGs preserved byte-for-byte. Native
+JSON is deterministic output, intentionally omitted to avoid duplicate payload.
+Run build-car-source-package.mjs per package before native-package audits. Source
+markers truthfully say native-regeneration-required. 46 fitting-config.json files
+retain measured anchors and input document SHA; resolve sourceDirectory from the
+repository root and reject stale roster hashes.
+
+3 preserved pilots carry renderer-ready native art bundles and hash-bound art-only overlays, not duplicated PNGs
+or vehicle documents. Review these overlays against exact roster IDs before any
+separately authorized integration; never replace vehicle physics from art data.
+211 prior originals remain untouched in the common base.
+
+Run reconcile-art-roster.py --art-root ART --roster-root ROSTER first. 400 new
+packages still require runtime fitting; 31 source-prefixed keys require verified
+car.id bindings and corresponding confirmed identity-index updates. No guessed
+IDs. prepare-runtime-overlay.mjs requires exact document bytes/SHA/roster commit,
+source hashes, mapping, two measured wheel anchors per view, wheelFit and individual
+cockpit calibration. Output outside production storage.
+
+Native decoding requires Python3 with Pillow and Node24. Renderer additionally
+requires @napi-rs/canvas0.1.100 and DejaVu fonts; they are not vendored here. Existing
+common-base scripts/src imports are required. No root dependency changes.
+
+Source review is not gameplay acceptance. Verify native imports/manifest, fixed
+rear camera/smoke, wheel ground contact, steering color/size and RPM/gear through
+the wheel opening in a supported sandboxed browser. Preserve Yaris WRX wheel-size,
+Bentham LED-count and Harebell door checks. Current workspace Chromium aborts at
+sandbox launch; no alternative Playwright binaries are installed.
+
+No private reports/logs, previews, backups, manufacturer reference downloads,
+Library identifiers, signed URL query strings, archive bytes or live vehicle/
+manifest changes are added. Public source URL paths and image authenticity
+provenance are retained. This branch is local-only and is not authorization to
+publish, merge or overwrite the combined roster.
+
+Pilot preserved-native directories can be passed directly to the native renderer
+with their exact base vehicle document and common-base shared art dependencies.
+Their source PNGs are retained in canonical pilot workspaces, not duplicated here.

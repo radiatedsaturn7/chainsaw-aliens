@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "blackcurrant-clover-1998",
+  "name": "Blackcurrant Clover 1998",
+  "stableCarId": "saved-car:Blackcurrant Clover 1998",
+  "referenceVehicle": "1998 Lancia Y LS1.2 16V, Italy March1998 three-door compact hatchback five-speed manual productionLS without Geneva accessorypack, not8vECVT,LX orlaterYpsilon",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "259737e38ea70116bee0712d4b64435eacc02dcc3d1dec28d758af34155a41fe",
+    "dashboard": "1a590db58cd5cd34fa2af9a214ed118f9d188671076cefdc1160a1c50a935e8e",
+    "tires": "419c4b612e4e592f8179f9ae6e63d6adf05ea500a869cd8b77cc489d3af2937a"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

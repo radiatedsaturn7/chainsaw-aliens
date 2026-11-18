@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "dune-clover-2010",
+  "name": "Dune Clover 2010",
+  "stableCarId": "saved-car:Dune Clover 2010",
+  "referenceVehicle": "2010 United Kingdom BMW 520d Touring F11 launch four-cylinder turbo-diesel estate six-speed manual RWD, standard chassis; no M Sport, xDrive or eight-speed automatic",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "5955a2ab913ca309e49ecb08d481bc6bb163e516e833a15c85dbc907e1ddad84",
+    "dashboard": "e5858947c83f869fcc9dc1aea9ba59484df69740049dec80b100955d18e5b14d",
+    "tires": "acf2f7d6d00f72035205add7b58ad800de49b169d6695124d0fe4263869d5eca"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

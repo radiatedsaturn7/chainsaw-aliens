@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "water-forgetmenot-2008",
+  "name": "Water Forgetmenot 2008",
+  "stableCarId": "saved-car:Water Forgetmenot 2008",
+  "referenceVehicle": "2008 UK Aston Martin DBS coupe 2+0 5.935L naturally aspirated V12 six-speed manual; not DBS Volante, later DBS Superleggera or DB11",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "water-forgetmenot-2008",
+  "sourceHashes": {
+    "body": "85a214e001a2e56bf81f7185ccbcc7cf6beb91e39f95b64625a1ac28d932f992",
+    "dashboard": "92be984978613653df724af2bd375659cfa3f5ddf91492c7b455a657266573f3",
+    "tires": "4fa7a5afa9ee59803e216d95696672b980266126fee651455e42cc977f04a8d5"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

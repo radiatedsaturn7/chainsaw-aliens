@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "field-bindweed-1997",
+  "name": "Field Bindweed 1997",
+  "stableCarId": "saved-car:Field Bindweed 1997",
+  "referenceVehicle": "1997 Italian/European Maserati Ghibli Cup AM336 two-door road coupe,1996cc330metricCV twin-turboV6,RWD6MT; not2.8Cup,ordinaryGhibliGT,OpenCup racer or laterfour-doorGhibli.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "9b7be1f403f80454f593f74f267f6417b3799c20368eeda174b5fd3d73b50e1c",
+    "dashboard": "b875cb54ef8d8b2e4ddf0b6cc7244ca8c5857bd2b47937104438b73888fddd0a",
+    "tires": "3ab1b0ca663f19cd2b26c65ce5a0cecbe2a938f7a10eafa62090dcd3d3bb7bdc"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

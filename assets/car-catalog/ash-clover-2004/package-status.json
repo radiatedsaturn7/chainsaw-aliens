@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "ash-clover-2004",
+  "name": "Ash Clover 2004",
+  "stableCarId": "saved-car:Ash Clover 2004",
+  "referenceVehicle": "2004 United States Toyota Sienna, CE seven-passenger3.3V6 front-wheel-drive five-speed automatic,standard16-inchcoveredsteelwheels; not8-seat4175lb,AWD,LE/XLE orlater3.5",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "ash-clover-2004",
+  "sourceHashes": {
+    "body": "90b923cea3970aa6277e73cdc00b12014582385b970249ccf5e8fcc04e0f92ce",
+    "dashboard": "2ca6ca56af653db278c2fd37fa3d95b2d0ac5e806117e564751da2342ae974fc",
+    "tires": "913baa6e05d71e6b06b74f5453328839b05f5ea4fea0a5f22f0166e7d6355d5a"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

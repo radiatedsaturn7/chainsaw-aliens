@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "spearleaf-clover-1988",
+  "name": "Spearleaf Clover 1988",
+  "stableCarId": "saved-car:Spearleaf Clover 1988",
+  "referenceVehicle": "1988 Lamborghini Countach LP5000 Quattrovalvole, European downdraftcarbureted5.2V12five-speed;notUS420CVinjection,25thAnniversaryorLP500prototype",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "2be9e75cfc376a54d7b17c79d01500136e35f14739080abf5763805a298e6f77",
+    "dashboard": "aee9dcd6fd46fe510800ef3867c536f922aad01c66d936c70e96ae4fe0fd02e0",
+    "tires": "e63bf31a0d06da060572c02882b9bc1609c649193a6673d3e84260611f35e78d"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

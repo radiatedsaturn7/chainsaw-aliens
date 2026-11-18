@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "knotted-figwort-1991",
+  "name": "Knotted Figwort 1991",
+  "stableCarId": "saved-car:Knotted Figwort 1991",
+  "referenceVehicle": "1991 Japan Toyota Chaser GT Twin Turbo E-JZX81 1JZ-GTE2491cc pre-VVT-i twin-turbo RWD ECT-S4AT; August1990\u2013October1992 configuration, not JZX100TourerV ormanualconversion",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "609277fc03b674e786af8b05ca2dc35f25dce751e2381f77b07441ccae9826e7",
+    "dashboard": "61139eb46777903727554a0162a7c0d2ffd8d65f6f2b376da46aae1c7e34ea39",
+    "tires": "22dd39dc7b059191d99679608fcf74f8a47cf71401e55653b6b79b6ce9a15e61"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

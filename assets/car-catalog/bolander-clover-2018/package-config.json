@@ -1,0 +1,69 @@
+{
+  "id": "bolander-clover-2018",
+  "name": "Bolander Clover 2018",
+  "stableCarId": "saved-car:Bolander Clover 2018",
+  "runtimeId": "saved-car:Bolander Clover 2018",
+  "candidateId": "mclaren-senna-2018-roster-candidate",
+  "referenceVehicle": "2018 McLaren Senna, standardroad-legalM840TR4.0twin-turboV8seven-speedSSGMonocageIII;notGTR,LMorMSOCarbonThemewheeloption",
+  "identity": {
+    "year": 2018,
+    "make": "McLaren",
+    "model": "Senna",
+    "trim": "standardroad-legalM840TR4.0twin-turboV8seven-speedSSGMonocageIII;notGTR,LMorMSOCarbonThemewheeloption",
+    "market": "UK/Europe"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://a3.myautoworld.com/46593/",
+      "fields": [
+        "powerHp",
+        "publishedPowerPS",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "torquePlateauEndRpm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "publishedDryKg",
+        "topSpeedMph"
+      ]
+    }
+  ]
+}

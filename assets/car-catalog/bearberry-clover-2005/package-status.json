@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bearberry-clover-2005",
+  "name": "Bearberry Clover 2005",
+  "stableCarId": "saved-car:Bearberry Clover 2005",
+  "referenceVehicle": "2005 Canada Lexus ES330, Canadian base 3.3 V6 FWD 5AT,16-inch wheels,no Luxury/Appearance/AVS package",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "1064d62f6323535718d3585f722e091f7995763476c8c244f351ea97dd674c01",
+    "dashboard": "a988eaff8e2b2fe96b4856fee4a1ae9124de8ed95a47ca9cd847f4c20cbf791a",
+    "tires": "15ea4f6d0d64823e1cca0742b529689b0b4dd14b3977af589621daeed4dc5616"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

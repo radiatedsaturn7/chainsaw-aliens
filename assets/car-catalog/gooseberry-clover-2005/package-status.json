@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "gooseberry-clover-2005",
+  "name": "Gooseberry Clover 2005",
+  "stableCarId": "saved-car:Gooseberry Clover 2005",
+  "referenceVehicle": "2005 United States Nissan Titan, XE Crew Cab4x2 VK56V8five-speedautomatic,bench six seats,17-inchsteel wheels,noTrac/OffRoad/towingpackage",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "gooseberry-clover-2005",
+  "sourceHashes": {
+    "body": "972c8c416ec2521cd17da66f37e5204a421acd23dcabf9a51dad93585eecaf8a",
+    "dashboard": "73b610e2ced5bdb3439d875edcba14d818256affb2627feac2c0dabca51f58dd",
+    "tires": "ea28ce8eb1b94904edbd84eae6082c5969377cdc272b7f27dbce143f10af26f2"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

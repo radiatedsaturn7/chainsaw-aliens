@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "field-forgetmenot-2004",
+  "name": "Field Forgetmenot 2004",
+  "stableCarId": "saved-car:Field Forgetmenot 2004",
+  "referenceVehicle": "2004 United States Subaru Impreza WRX STi GD sedan, 2.5L turbo flat-four, 300hp, factory six-speed manual AWD; not Japanese 2.0L STi, later S209 or competition Airslayer",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "88b93d55adfd6db1bf98f7c6e24f5c01af98853c62f6e5476b9bddd2e37b82ff",
+    "dashboard": "0f13b23d3ea5c578600f476ec1e8f75fd29db4756d01b7c0170c59e62a3e3b40",
+    "tires": "e332475ca8007ec45119e6253f13245630589fa3e3cf1d64e1fe7d233f75498e"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

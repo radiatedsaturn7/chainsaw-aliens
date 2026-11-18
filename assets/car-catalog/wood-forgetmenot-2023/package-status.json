@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "wood-forgetmenot-2023",
+  "name": "Wood Forgetmenot 2023",
+  "stableCarId": "saved-car:Wood Forgetmenot 2023",
+  "referenceVehicle": "2023 UK Lotus Emira V6 First Edition 3.456 supercharged six-speed manual; initial First Edition specification, not AMG four-cylinder or later Turbo SE",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "12722477a99d6314df734caf8bf9edffb92a87ddd8e09fb088d128ddd7bc5378",
+    "dashboard": "f361fbabb36004a101d75ec358025aab67a73f3a44150e8cf0b1412aa10004ef",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

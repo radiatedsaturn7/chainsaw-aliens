@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "chokecherry-clover-2010",
+  "name": "Chokecherry Clover 2010",
+  "stableCarId": "saved-car:Chokecherry Clover 2010",
+  "referenceVehicle": "2010 SEAT Alhambra Style1.4TSI150, Sweden November2010 second-generation standardfive-seat passengerMPV optional6DSG frontdrive, nooptionalthirdrow; notReference,TDI,Sharanorfirstgeneration",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "ac7ecf18377e3f2aafd595c9662261d888a6f8ca1c990dc369d89813788a4e72",
+    "dashboard": "e94a7bd6dfe1f086e5fe22af974881d2e35cead718116065115218e5d9d34774",
+    "tires": "d04d7469f8e7f15d1392a59b5044f584db44f590f4b4dc421b13048ca1fac7a3"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

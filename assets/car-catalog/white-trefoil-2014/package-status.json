@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "white-trefoil-2014",
+  "name": "White Trefoil 2014",
+  "stableCarId": "saved-car:White Trefoil 2014",
+  "referenceVehicle": "2014 United States Kia Cadenza, Premium3.3GDI V6 FWD6AT,standard18-inchwheels,noluxury/technology packages",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "77eeb0b0a02d35e15f37453d60512a9d33bee364e47e164cdc0698fa2baf6d54",
+    "dashboard": "49352b760a4c30d1796e69e8a54bf8b235891d703c6f5417173d7d74bedb7584",
+    "tires": "9313c7209fa87b8159c9d9aa6e520a36671a68ed76c155ccbda4f9f4feba207e"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

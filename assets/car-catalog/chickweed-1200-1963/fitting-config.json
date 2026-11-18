@@ -1,0 +1,162 @@
+{
+  "id": "chickweed-1200-1963",
+  "name": "Chickweed 1200 1963",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "c263abba0b45f0b0a8fda4a69aba7d9a3e757185b6ae350f3d97c30876f34da4",
+  "sourceDirectory": "assets/car-catalog/chickweed-1200-1963",
+  "sourceHashes": {
+    "body": "a2b28b6c31d8fd64aea0d7d1a3d9ed21c7ebda4cff8aea9c78c664f5b4220b1a",
+    "dashboard": "d31dfe56a6aa0c5bbf5903ff364498711b56b0c34d2f7022e109bcf12599c796",
+    "tires": "35b24ecea6f409f2f717d7827549503decc96ff8e033b3223b70875df176c8ed"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 112,
+        "y": 345,
+        "radius": 40
+      },
+      {
+        "wheel": "fr",
+        "x": 329,
+        "y": 345,
+        "radius": 40
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 650,
+        "y": 327,
+        "radius": 42
+      },
+      {
+        "wheel": "rr",
+        "x": 801,
+        "y": 290,
+        "radius": 31
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 926,
+        "y": 323,
+        "radius": 49
+      },
+      {
+        "wheel": "rr",
+        "x": 1200,
+        "y": 320,
+        "radius": 48
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1343,
+        "y": 295,
+        "radius": 29
+      },
+      {
+        "wheel": "rr",
+        "x": 1509,
+        "y": 325,
+        "radius": 40
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 112,
+        "y": 780,
+        "radius": 40
+      },
+      {
+        "wheel": "rl",
+        "x": 331,
+        "y": 780,
+        "radius": 40
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 678,
+        "y": 748,
+        "radius": 33
+      },
+      {
+        "wheel": "fl",
+        "x": 814,
+        "y": 716,
+        "radius": 25
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 960,
+        "y": 746,
+        "radius": 49
+      },
+      {
+        "wheel": "fl",
+        "x": 1248,
+        "y": 745,
+        "radius": 49
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1374,
+        "y": 719,
+        "radius": 31
+      },
+      {
+        "wheel": "fl",
+        "x": 1494,
+        "y": 755,
+        "radius": 43
+      }
+    ]
+  },
+  "wheelFit": "cover",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      220,
+      490,
+      550,
+      185
+    ],
+    "wheel": [
+      490,
+      793,
+      400
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#ffe1ab",
+    "viewportWheelScale": 2.15
+  },
+  "steeringWheelSource": {
+    "artRef": "steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementNotes": "Per-car original pixel-grid measurements. Source document byte-compared to recorded staging commit. Static native review only; full game, browser, road rear, motion and smoke deferred."
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "clary-sage-2010",
+  "name": "Clary Sage 2010",
+  "stableCarId": "saved-car:Clary Sage 2010",
+  "referenceVehicle": "2010 UK Audi TT RS Coupe 2.5 TFSI quattro 6MT, standard 18-inch wheels",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "clary-sage-2010",
+  "sourceHashes": {
+    "body": "ab82286c0162e1fc126c6610580159ae18f563b107cdf557c47378923f7a45a2",
+    "dashboard": "b7f6b08f6bf66a98833cb1447bd607c88a0d4ef42b9803ed55d0c715614f842f",
+    "tires": "084cc75d87042fd075ae3595e580ef3efb0f896e5a75152c4e35963fa2419e56"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

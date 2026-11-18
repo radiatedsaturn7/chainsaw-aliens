@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "alsike-clover-1930",
+  "name": "Alsike Clover 1930",
+  "stableCarId": "saved-car:Alsike Clover 1930",
+  "referenceVehicle": "1930 Bentley 4\u00bd Litre Supercharged Blower, roadgoingVandenPlas openfour-seat tourer,GH6951heritagereference; notBirkin220bhpracer ormoderncontinuation",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "b3136d30a4200b922fdfd8771a34523504e64e956be3aa0483a2a2a4152c74fe",
+    "dashboard": "412956bb243294e5d37abb4f2d0fc32cd0cd2dbb5f32320d0e5559c1adb9e389",
+    "tires": "dc9895aeb0fd86d1fd0135826e524a8969079781779cd6e75b5c0a624c255081"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

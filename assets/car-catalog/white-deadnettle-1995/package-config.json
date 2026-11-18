@@ -1,0 +1,87 @@
+{
+  "id": "white-deadnettle-1995",
+  "name": "White Deadnettle 1995",
+  "stableCarId": "saved-car:White Deadnettle 1995",
+  "runtimeId": "saved-car:White Deadnettle 1995",
+  "candidateId": "mitsubishi-lancer-evolution-iii-gsr-1995-roster-candidate",
+  "referenceVehicle": "1995 Japan Mitsubishi Lancer Evolution III GSR February1995 E-CE9A 4G63turbo5MT road sedan, nooptional sunroof; notRS,racecar orlaterCT9A",
+  "identity": {
+    "year": 1995,
+    "make": "Mitsubishi",
+    "model": "Lancer Evolution III GSR",
+    "trim": "February1995 E-CE9A 4G63turbo5MT road sedan, nooptional sunroof; notRS,racecar orlaterCT9A",
+    "market": "Japan"
+  },
+  "bodyClass": "four-door five-seat compact sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1981,
+      793
+    ],
+    "cluster": [
+      1288,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      1506,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://gazoo.com/catalog/maker/MITSUBISHI/LANCER/199110/4005896/",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "reverseRatio",
+        "finalDrive",
+        "fuelTankUSgal"
+      ]
+    },
+    {
+      "url": "https://www.mitsubishi-motors.com/en/company/history/car/",
+      "fields": [
+        "EvolutionIII identity",
+        "1995 introduction",
+        "4G63architecture",
+        "270PS generation output"
+      ]
+    }
+  ]
+}

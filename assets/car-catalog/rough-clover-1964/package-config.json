@@ -1,0 +1,69 @@
+{
+  "id": "rough-clover-1964",
+  "name": "Rough Clover 1964",
+  "stableCarId": "saved-car:Rough Clover 1964",
+  "runtimeId": "saved-car:Rough Clover 1964",
+  "candidateId": "chevrolet-impala-super-sport-409-1964-roster-candidate",
+  "referenceVehicle": "1964 United States Chevrolet Impala Super Sport409, SportCoupehardtop,optional340-hp409four-barrelV8,optionalwide-ratio4MT,3.36axle;not400/425hp",
+  "identity": {
+    "year": 1964,
+    "make": "Chevrolet",
+    "model": "Impala Super Sport409",
+    "trim": "SportCoupehardtop,optional340-hp409four-barrelV8,optionalwide-ratio4MT,3.36axle;not400/425hp",
+    "market": "United States"
+  },
+  "bodyClass": "two-door-hardtop-coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      220,
+      490,
+      550,
+      185
+    ],
+    "wheel": [
+      490,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://www.lov2xlr8.no/brochures/chevy/64chevy/bilder/2.jpg",
+      "fields": [
+        "exactyear/market/model/engine",
+        "advertisedoutput",
+        "gearboxavailability"
+      ]
+    },
+    {
+      "url": "https://www.lov2xlr8.no/brochures/chevy/64chevy/bilder/16.jpg",
+      "fields": [
+        "exactyear/market/model/engine",
+        "advertisedoutput",
+        "gearboxavailability"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bayberry-clover-2017",
+  "name": "Bayberry Clover 2017",
+  "stableCarId": "saved-car:Bayberry Clover 2017",
+  "referenceVehicle": "2017 Skoda Rapid Spaceback Active1.0TSI95, continentalEurope May2017 facelift basicfive-door hatch70kWfive-speedmanual14inch wheels solidroof; notliftback,MonteCarlo,DSG orpanoramicStyle",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "bayberry-clover-2017",
+  "sourceHashes": {
+    "body": "c4405466bdb59434961e66c9e50597842b20297cb2f71617dd4e53924a2bb405",
+    "dashboard": "02d1ceb87021912e61ae7c5a427f216fc5352b05fb966e3d7081de4e37796dae",
+    "tires": "65ca7d875364ad38fb32127df4e4ba90048c5f7c6862e42c5f67d59ca1ed7228"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

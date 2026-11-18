@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "source-plum-clover-2008",
+  "name": "Plum Clover 2008",
+  "stableCarId": "saved-car:Plum Clover 2008",
+  "referenceVehicle": "US 2008 BMW550i E60,4.8V8,6MT,non-Sport. Ordinary four-door sedan,notM5.",
+  "runtimeDocumentIdVerified": false,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "3a3f4a832a800bfd4b2e37c81eb5cf84a7fdda0940ce7478685470828371a8ec",
+    "dashboard": "a13ee95794111c4d4066ce00b5f0aefcbbb25cb9376703644e6fcf593e4f6a66",
+    "tires": "a4e863f59ded1562afa0199888984c288ffcb14af01be38499b9f24d162d7e5b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,61 @@
+{
+  "id": "seaside-clover-2014",
+  "name": "Seaside Clover 2014",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      250,
+      460,
+      470,
+      180
+    ],
+    "wheel": [
+      485,
+      753,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://www.carbodydesign.com/2013/12/lamborghini-reveals-the-huracan-lp-610-4/",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "gearCount",
+        "publishedWeightKg"
+      ]
+    },
+    {
+      "url": "https://www.lamborghini.com/ko-en/%EB%89%B4%EC%8A%A4/huracan-revolution-a-story-of-technology-and-innovation",
+      "fields": [
+        "modelYear",
+        "powerRpm",
+        "transmission"
+      ]
+    }
+  ]
+}

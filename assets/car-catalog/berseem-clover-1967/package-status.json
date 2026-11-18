@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "berseem-clover-1967",
+  "name": "Berseem Clover 1967",
+  "stableCarId": "saved-car:Berseem Clover 1967",
+  "referenceVehicle": "1967 Lamborghini Miura P400 original350CV transverse mid-engine V12 5MT, not S/SV; European production reference, not US emissions variant or modified example",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "f638d0fc82210a9a90e93cef6b3e1f1d06f7772cc380de6e0d4800b747fc0d44",
+    "dashboard": "d1d6fd98cc48e0f1f141be5894a7c526ff4d735f29a7a91b229a518e5d0889e7",
+    "tires": "f25975d5228e98ac05e60db792437ee92a68eb0714c86a72510587e05f7bc1fa"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

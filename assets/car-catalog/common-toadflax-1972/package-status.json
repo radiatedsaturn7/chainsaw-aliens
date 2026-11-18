@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "common-toadflax-1972",
+  "name": "Common Toadflax 1972",
+  "stableCarId": "saved-car:Common Toadflax 1972",
+  "referenceVehicle": "1972 US Chevrolet K10 Custom KS10734 short115in-wheelbase Fleetside pickup,250cuin naturally aspirated inline-six, standard three-speed column manual,3.73axles, NewProcess205 operated in high-range2H RWD, unladen",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "common-toadflax-1972",
+  "sourceHashes": {
+    "body": "55d6ebbbe44216a7a430e18eaff887aaa8bc1594f6db91dacd98242f39191418",
+    "dashboard": "00e515ed08e47f72944c0b006d4fe35e06d19838df82ce77df13f5f698576ad4",
+    "tires": "cb7b06da6853b2ef918085463d573b7906f99f809ffdac2dc2b0aabfc854801d"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

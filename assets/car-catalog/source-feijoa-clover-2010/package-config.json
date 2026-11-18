@@ -1,0 +1,54 @@
+{
+  "id": "source-feijoa-clover-2010",
+  "name": "Feijoa Clover 2010",
+  "stableCarId": "saved-car:Feijoa Clover 2010",
+  "runtimeId": "saved-car:Feijoa Clover 2010",
+  "runtimeDocumentId": null,
+  "candidateId": null,
+  "referenceVehicle": "Germany September2010 Renault Wind Dynamique TCe100,1.2turbo,5MT. Two-seat coupe-roadster with ROTATING HARDTOP,notGordini or1.6 133.",
+  "identity": null,
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    3,
+    4,
+    5,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      357,
+      404,
+      297,
+      119
+    ],
+    "wheel": [
+      476,
+      714,
+      377
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://presse.renault.de/neuer-renault-wind-startet-ab-16900-euro/",
+      "fields": [
+        "exact identity and visual configuration"
+      ]
+    }
+  ]
+}

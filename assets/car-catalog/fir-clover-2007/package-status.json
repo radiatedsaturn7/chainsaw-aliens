@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "fir-clover-2007",
+  "name": "Fir Clover 2007",
+  "stableCarId": "saved-car:Fir Clover 2007",
+  "referenceVehicle": "2007 United States Ford Five Hundred, SEL 3.0-liter Duratec DOHC V6 FWD six-speed automatic, standard17-inch wheels; not AWD CVT or Limited",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "fir-clover-2007",
+  "sourceHashes": {
+    "body": "b11b80521da4ce2996ed9263b7f1050e5f48cb0245565e6330a21e7fdb1ef3a7",
+    "dashboard": "ecaeca61d1e8ade29729225a70377ada9c4551247dfdeae1929da06e86260129",
+    "tires": "1ad1f8191d33f63a9f0a4b63fb83b3bc9c1a871f326f7949eb837e873f21906d"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

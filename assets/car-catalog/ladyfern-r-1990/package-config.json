@@ -1,0 +1,66 @@
+{
+  "id": "ladyfern-r-1990",
+  "name": "Ladyfern R 1990",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1260,
+      430,
+      470,
+      150
+    ],
+    "wheel": [
+      1500,
+      700,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#d7f5da"
+  },
+  "sources": [
+    {
+      "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/Pulsar_GTI-R.html",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "torqueNm",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "drivetrain"
+      ]
+    },
+    {
+      "url": "https://www2.nissan.co.jp/HERITAGE/DETAIL/420.html",
+      "fields": [
+        "1990 road identity",
+        "curbKg",
+        "engine anchors"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "id": "common-mallow-2006",
+  "name": "Common Mallow 2006",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      2172,
+      724
+    ],
+    "cluster": [
+      261,
+      434,
+      521,
+      145
+    ],
+    "wheel": [
+      521,
+      681,
+      348
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Hummer/H1/Hummer_US%20H1_2006.pdf",
+      "fields": [
+        "engine",
+        "mass/wagon basis",
+        "gears",
+        "2.56 axle and1.92 portal hubs",
+        "geometry",
+        "tires",
+        "tank",
+        "suspension",
+        "standard Torsen versus optional ELocker"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "id": "common-mullein-1965",
+  "name": "Common Mullein 1965",
+  "stableCarId": "saved-car:Common Mullein 1965",
+  "runtimeId": "saved-car:Common Mullein 1965",
+  "candidateId": "pontiac-gto-1965-roster-candidate",
+  "referenceVehicle": "1965 US Pontiac GTO, two-door hardtop,standard389cuin four-barrel335hp reference,optionalwide-ratio4MT,standard3.23axle",
+  "identity": {
+    "year": 1965,
+    "make": "Pontiac",
+    "model": "GTO",
+    "trim": "two-door hardtop,standard389cuin four-barrel335hp reference,optionalwide-ratio4MT,standard3.23axle",
+    "market": "United States"
+  },
+  "bodyClass": "two-door-hardtop-coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      258,
+      539,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.lov2xlr8.no/brochures/pontiac/65pp/bilder/9.jpg",
+      "fields": [
+        "exactengine/transmissionselection",
+        "publishedperiodpowerandtorque",
+        "chassis/body"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "hill-trefoil-2009",
+  "name": "Hill Trefoil 2009",
+  "stableCarId": "saved-car:Hill Trefoil 2009",
+  "referenceVehicle": "2009 Renault Laguna Grandtour Emotion2.0 16V140, Germany June2009 five-door estate specialedition basedExpression, naturallyaspiratedpetrol six-speedmanual, ordinarytwo-wheelsteering; notGT4Control,coupe,hatch orlaterE85",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "hill-trefoil-2009",
+  "sourceHashes": {
+    "body": "cd998b7fa5998b697a8c67e028bcfdd48f023522045b77aadc821bd74e055aeb",
+    "dashboard": "9dd84f57f87fa77401442432de204cd839b0422909190c6c15a081db69afe5d7",
+    "tires": "4a389ca20ff1bc3a0490a2b9333ee92d80719ea9fb4961d8911838da88f7fded"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

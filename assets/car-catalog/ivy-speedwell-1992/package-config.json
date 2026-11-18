@@ -1,0 +1,85 @@
+{
+  "id": "ivy-speedwell-1992",
+  "name": "Ivy Speedwell 1992",
+  "stableCarId": "saved-car:Ivy Speedwell 1992",
+  "candidateId": "mitsubishi-galant-vr-4-1992-roster-candidate",
+  "referenceVehicle": "1992 Japan Mitsubishi Galant VR-4 May1992 seventh-generation E-E84A 6A12 1998cc twin-turbo V6 AWD4AT, not sixth-generation E39A4G63 or manual240PS",
+  "identity": {
+    "year": 1992,
+    "make": "Mitsubishi",
+    "model": "Galant VR-4",
+    "trim": "May1992 seventh-generation E-E84A 6A12 1998cc twin-turbo V6 AWD4AT, not sixth-generation E39A4G63 or manual240PS",
+    "market": "Japan"
+  },
+  "bodyClass": "four-door five-seat sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1220,
+      470,
+      530,
+      175
+    ],
+    "wheel": [
+      1470,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://gazoo.com/catalog/maker/MITSUBISHI/GALANT/199205/4004007/",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "reverseRatio",
+        "finalDrive",
+        "fuelTankUSgal"
+      ]
+    },
+    {
+      "url": "https://www.mitsubishi-motors.com/en/company/history/car/",
+      "fields": [
+        "generation",
+        "engine architecture",
+        "drivetrain architecture"
+      ]
+    }
+  ]
+}

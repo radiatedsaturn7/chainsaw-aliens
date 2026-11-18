@@ -1,0 +1,165 @@
+{
+  "id": "starflower-20-2024",
+  "name": "Starflower 20 2024",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "f1f0f0eac18b02b9103bae16490f1b72273440e4ba4dcdb1f0c43403424fea13",
+  "sourceDirectory": "assets/car-catalog/starflower-20-2024",
+  "sourceHashes": {
+    "body": "7b608b41a30bc631d2d4dfe62ef114cad4855c970b0c9de893fdc41eb718e1dd",
+    "dashboard": "725bdf61d5881a3e8dfc603260ca96b491bde3ed6ccfd09d19d84f56a88f7409",
+    "tires": "67db37c7b7b383c9ebcfe9a5312246d2379ee056d32e167811873e3319ac8403"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 100,
+        "y": 320,
+        "radius": 30
+      },
+      {
+        "wheel": "fr",
+        "x": 333,
+        "y": 320,
+        "radius": 30
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 654,
+        "y": 316,
+        "radius": 45
+      },
+      {
+        "wheel": "rr",
+        "x": 826,
+        "y": 286,
+        "radius": 38
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 961,
+        "y": 735,
+        "radius": 45
+      },
+      {
+        "wheel": "rr",
+        "x": 1235,
+        "y": 735,
+        "radius": 45
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 457,
+        "y": 724,
+        "radius": 38
+      },
+      {
+        "wheel": "rr",
+        "x": 627,
+        "y": 745,
+        "radius": 46
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 100,
+        "y": 750,
+        "radius": 30
+      },
+      {
+        "wheel": "rl",
+        "x": 334,
+        "y": 750,
+        "radius": 30
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1570,
+        "y": 309,
+        "radius": 45
+      },
+      {
+        "wheel": "fl",
+        "x": 1728,
+        "y": 288,
+        "radius": 37
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 975,
+        "y": 302,
+        "radius": 45
+      },
+      {
+        "wheel": "fl",
+        "x": 1254,
+        "y": 302,
+        "radius": 45
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1373,
+        "y": 718,
+        "radius": 38
+      },
+      {
+        "wheel": "fl",
+        "x": 1525,
+        "y": 748,
+        "radius": 47
+      }
+    ]
+  },
+  "wheelFit": "cover",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      235,
+      520,
+      470,
+      110
+    ],
+    "wheel": [
+      470,
+      565,
+      300
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e5edff",
+    "electric": false,
+    "viewportWheelScale": 1.94,
+    "gaugeBackground": "#101014"
+  },
+  "steeringWheelSource": {
+    "artRef": "steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementMethod": "Individual original-sheet arch measurements, followed by eight-view native static review. Head-on tread centers raised 10 source pixels and reduced per vehicle. Cockpit wheel center and viewport scale individually reviewed at 1280x720 and 390x844. Gameplay acceptance deferred.",
+  "runtimeFitted": false
+}

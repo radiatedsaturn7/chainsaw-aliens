@@ -1,0 +1,52 @@
+{
+  "id": "thornapple-acr-2016",
+  "name": "Thornapple ACR 2016",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1672,
+      941
+    ],
+    "cluster": [
+      201,
+      565,
+      401,
+      188
+    ],
+    "wheel": [
+      401,
+      885,
+      268
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://www.prnewswire.com/news-releases/dodge-viper-powers-into-2016-with-new-acr-model-expanded-custom-options-and-industry-exclusive-colors-300105302.html",
+      "fields": [
+        "powerHp",
+        "torqueLbFt",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "finalDrive",
+        "frontWeightDistribution",
+        "frontTire",
+        "rearTire"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "id": "dogwood-clover-2008",
+  "name": "Dogwood Clover 2008",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      426,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Mercedes_Benz/Mercedes%20Benz_US%20G_GL_ML_R-Class_2008.pdf",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "lengthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "finalDrive",
+        "fuelTankUSgal",
+        "tireSize",
+        "frontTire",
+        "rearTire",
+        "identity"
+      ]
+    }
+  ]
+}

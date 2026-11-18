@@ -1,0 +1,71 @@
+{
+  "id": "alsike-clover-1930",
+  "name": "Alsike Clover 1930",
+  "stableCarId": "saved-car:Alsike Clover 1930",
+  "runtimeId": "saved-car:Alsike Clover 1930",
+  "candidateId": "bentley-blower-4-1-2-litre-supercharged-1930-roster-candidate",
+  "referenceVehicle": "1930 Bentley 4\u00bd Litre Supercharged Blower, roadgoingVandenPlas openfour-seat tourer,GH6951heritagereference; notBirkin220bhpracer ormoderncontinuation",
+  "identity": {
+    "year": 1930,
+    "make": "Bentley",
+    "model": "4\u00bd Litre Supercharged Blower",
+    "trim": "roadgoingVandenPlas openfour-seat tourer,GH6951heritagereference; notBirkin220bhpracer ormoderncontinuation",
+    "market": "Europe/United Kingdom"
+  },
+  "bodyClass": "roadster",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1309,
+      539,
+      436,
+      119
+    ],
+    "wheel": [
+      1507,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.bentleymedia.com/en/heritage-collection/1930-demonstrator-blower-gh6951",
+      "fields": [
+        "August1930",
+        "VandenPlasopenfour-seater",
+        "4398cc",
+        "175bhp3500rpm",
+        "Dtypegearbox"
+      ]
+    },
+    {
+      "url": "https://www.bentleymotors.com/us/en/about-bentley/history-and-heritage.html",
+      "fields": [
+        "1930roadBlower175bhp",
+        "AmherstVillierssupercharger",
+        "distinctionfromSpeedSix"
+      ]
+    }
+  ]
+}

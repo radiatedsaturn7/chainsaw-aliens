@@ -1,0 +1,73 @@
+{
+  "id": "narrowleaf-vetch-1967",
+  "name": "Narrowleaf Vetch 1967",
+  "stableCarId": "saved-car:Narrowleaf Vetch 1967",
+  "runtimeId": "saved-car:Narrowleaf Vetch 1967",
+  "candidateId": "honda-ra300-1967-roster-candidate",
+  "referenceVehicle": "1967 Japan / international Formula One Honda RA300, John Surtees1967 ItalianGP winning reference, Lola T130 monocoque / RA273E V12 five-speed, no aerodynamic wings",
+  "identity": {
+    "year": 1967,
+    "make": "Honda",
+    "model": "RA300",
+    "trim": "John Surtees1967 ItalianGP winning reference, Lola T130 monocoque / RA273E V12 five-speed, no aerodynamic wings",
+    "market": "Japan / international Formula One"
+  },
+  "bodyClass": "open-wheel single-seat mid-engine Grand Prix car; non-production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      714,
+      539,
+      555,
+      127
+    ],
+    "wheel": [
+      992,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://global.honda/en/F1/machine/1967_HondaRA300/",
+      "fields": [
+        "publishedPeriodPowerPS",
+        "powerRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "gearCount",
+        "lengthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "groundClearanceM",
+        "curbKg",
+        "fuelTankUSgal",
+        "publishedFrontTire",
+        "publishedRearTire"
+      ]
+    }
+  ]
+}

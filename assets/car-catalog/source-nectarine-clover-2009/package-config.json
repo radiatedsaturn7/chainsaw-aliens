@@ -1,0 +1,44 @@
+{
+  "id": "source-nectarine-clover-2009",
+  "name": "Nectarine Clover 2009",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1672,
+      941
+    ],
+    "cluster": [
+      201,
+      565,
+      401,
+      188
+    ],
+    "wheel": [
+      401,
+      885,
+      268
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Audi/A5/Audi_US%20A5_2009.pdf",
+      "fields": [
+        "exact identity and visual configuration"
+      ]
+    }
+  ]
+}

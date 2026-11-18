@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "tufted-vetch-2014",
+  "name": "Tufted Vetch 2014",
+  "stableCarId": "saved-car:Tufted Vetch 2014",
+  "referenceVehicle": "2014 Japan / international concept Infiniti Q50 Eau Rouge, March2014 functional3.799L twin-turboV6 AWD7-speed prototype,50:50split; notJanuaryenginelessorroadQ50",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "b776355a50c64693345c53a8186b63190e08b694fb91f585d12a207e65c078b8",
+    "dashboard": "61fb15b6fa4bc08762c801201564c5653d788d6a832f16d3e55c1cb0efc5f865",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "ground-ivy-1973",
+  "name": "Ground Ivy 1973",
+  "stableCarId": "saved-car:Ground Ivy 1973",
+  "referenceVehicle": "1973 United States Mazda RX-3 Coupe US1973 stocktwo-door12A twinrotor four-speedmanual,unoptionedcoupe; notJapaneseSavannaGT5MT,sedan,wagon orracecar",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "8b8f8716bc75c0b988baca79ea3b2cfbb2ec99a7b752bef3716e2e3c11d727f4",
+    "dashboard": "391a1cb35b419703bdd56ce5bcbdfd94f9ff2873bc184e637327c97060a5850c",
+    "tires": "4fca5a85ab7320eb5f38c08803020482dd573f79bb49bfa894e61eefc75a53c7"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,80 @@
+{
+  "id": "gorse-clover-2005",
+  "name": "Gorse Clover 2005",
+  "stableCarId": "saved-car:Gorse Clover 2005",
+  "runtimeId": "saved-car:Gorse Clover 2005",
+  "candidateId": "toyota-tundra-base-2005-us-regular-cab-v6-rwd-6mt-supplemental",
+  "referenceVehicle": "2005 United States Toyota Tundra, base regular cab long bed 4x2 4.0 V6 six-speed manual, standard 16-inch wheels; no V8, Access Cab, Double Cab or TRD package",
+  "identity": {
+    "year": 2005,
+    "make": "Toyota",
+    "model": "Tundra",
+    "trim": "base regular cab long bed 4x2 4.0 V6 six-speed manual, standard 16-inch wheels; no V8, Access Cab, Double Cab or TRD package",
+    "market": "United States"
+  },
+  "bodyClass": "two-door three-seat full-size pickup; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Toyota/Tundra/Toyota_US%20Tundra_2005.pdf",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "drivetrain",
+        "transmission",
+        "transmissionLabel",
+        "gearCount",
+        "finalDrive",
+        "curbKg",
+        "tireSize",
+        "groundClearanceM",
+        "fuelTankUSgal",
+        "absEnabled"
+      ]
+    }
+  ]
+}

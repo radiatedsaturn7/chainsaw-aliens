@@ -1,0 +1,68 @@
+{
+  "id": "laurel-clover-2006",
+  "name": "Laurel Clover 2006",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      426,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://news.mazdausa.com/download/SPECS-MPV-06.pdf",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "transmission",
+        "transmissionLabel",
+        "gearCount",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "publishedFamilyBaseCurbKg",
+        "tireSize",
+        "redlineRpm",
+        "groundClearanceM",
+        "fuelTankUSgal",
+        "steeringRatio",
+        "absEnabled"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "yellow-vetchling-2016",
+  "name": "Yellow Vetchling 2016",
+  "stableCarId": "saved-car:Yellow Vetchling 2016",
+  "referenceVehicle": "2016 Aston Martin Vulcan, originalcustomertrack-only7.0NA V12,six-speedsequential,fullpower; not2017AMRPro/RMLroadconversion",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "32cb7db72496863b548cfd233be076de55431d1b15cbb911308f017704899203",
+    "dashboard": "99a9f4bbb229e414fa193dc92705b2d84e9576cde37b784b4273541401a16fe6",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,84 @@
+{
+  "id": "field-pennywort-2011",
+  "name": "Field Pennywort 2011",
+  "stableCarId": "saved-car:Field Pennywort 2011",
+  "candidateId": "volkswagen-scirocco-r-2011-roster-candidate",
+  "referenceVehicle": "2011 Germany Volkswagen Scirocco III R 2.0TSI195kW front-wheel drive six-speed manual; not R-Line, Australian188kW or2014facelift206kW",
+  "identity": {
+    "year": 2011,
+    "make": "Volkswagen",
+    "model": "Scirocco III R",
+    "trim": "German-market 2.0 TSI195kW six-speed manual, pre-facelift",
+    "market": "Germany"
+  },
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/engine-versions-scirocco-3-profile-19656",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "torquePlateauEndRpm",
+        "engineDisplacementL"
+      ]
+    },
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/vehicle-data-scirocco-3-profile-19655",
+      "fields": [
+        "identity",
+        "drivetrain"
+      ]
+    },
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/the-volkswagen-r-models-15258/volkswagen-r-the-history-15267",
+      "fields": [
+        "gearCount",
+        "transmission"
+      ]
+    },
+    {
+      "url": "https://www.auto-preisliste.de/download-preislisten-aller-marken/71-volkswagen-vw/2740-vw-scirocco-iii-2008-2017/40090-2010-10-preisliste-vw-scirocco-r",
+      "fields": [
+        "2011marketidentitycorroborationonly"
+      ]
+    }
+  ]
+}

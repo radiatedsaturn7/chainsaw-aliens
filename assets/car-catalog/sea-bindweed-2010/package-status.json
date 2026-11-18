@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "sea-bindweed-2010",
+  "name": "Sea Bindweed 2010",
+  "stableCarId": "saved-car:Sea Bindweed 2010",
+  "referenceVehicle": "2010 European Maserati GranTurismo S Automatic four-seat coupe,4.7L naturally aspiratedV8 RWD ZF six-speed torque-converter automatic; notMCShift automatedmanual,MCStradale orGranCabrio.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "38272a8339311d89e504c78dd145cdba0edef9d06356db221e839df7e22f3fc7",
+    "dashboard": "a12040041b940a6f0ab49b3453d004403507c650bc088be380b6bb71aba90467",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

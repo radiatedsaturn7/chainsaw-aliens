@@ -1,0 +1,74 @@
+{
+  "id": "little-burclover-2011",
+  "name": "Little Burclover 2011",
+  "stableCarId": "saved-car:Little Burclover 2011",
+  "runtimeId": "saved-car:Little Burclover 2011",
+  "candidateId": "mclaren-12c-coup-2011-roster-candidate",
+  "referenceVehicle": "2011 McLaren MP4-12C, European launch coupe600PS seven-speedSSG standardPZero tires andDIN1434kg; not625PSupdate,Spider,GT3 orlightweightdryweight",
+  "identity": {
+    "year": 2011,
+    "make": "McLaren",
+    "model": "MP4-12C",
+    "trim": "European launch coupe600PS seven-speedSSG standardPZero tires andDIN1434kg; not625PSupdate,Spider,GT3 orlightweightdryweight",
+    "market": "UK/Europe"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      531,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.allcarindex.com/blog/official-performance-data-and-technical-specification-for-new-mclaren-mp4-12c-announced",
+      "fields": [
+        "powerHp",
+        "publishedPowerPS",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "torquePlateauEndRpm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "frontWeightDistribution",
+        "topSpeedMph"
+      ]
+    }
+  ]
+}

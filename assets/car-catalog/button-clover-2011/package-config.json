@@ -1,0 +1,93 @@
+{
+  "id": "button-clover-2011",
+  "name": "Button Clover 2011",
+  "stableCarId": "saved-car:Button Clover 2011",
+  "runtimeId": "saved-car:Button Clover 2011",
+  "candidateId": "koenigsegg-agera-2011-roster-candidate",
+  "referenceVehicle": "2011 Koenigsegg Agera standard 5.0 twin-turbo V8 seven-speed paddle-shift; not R/S/RS",
+  "identity": {
+    "year": 2011,
+    "make": "Koenigsegg",
+    "model": "Agera",
+    "trim": "standard 5.0 twin-turbo V8 seven-speed paddle-shift; not R/S/RS",
+    "market": "Sweden / international factory specification"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      531,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.koenigsegg.com/technical-specifications-agera",
+      "fields": [
+        "powerHp",
+        "torqueNm",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "gearCount",
+        "aspiration",
+        "tireSize",
+        "rearTireSize",
+        "groundClearanceM",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "frontWeightDistribution",
+        "curbKg",
+        "publishedDryWeightKg",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "frontOverhangM",
+        "redlineRpm",
+        "fuelTankUSgal"
+      ]
+    },
+    {
+      "url": "https://www.koenigsegg.com/model/agera",
+      "fields": [
+        "identity",
+        "variant distinction"
+      ]
+    },
+    {
+      "url": "https://www.koenigsegg.com/index.php/history",
+      "fields": [
+        "generation chronology"
+      ]
+    }
+  ]
+}

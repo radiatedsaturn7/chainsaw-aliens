@@ -1,0 +1,72 @@
+{
+  "id": "yellow-bartsia-2018",
+  "name": "Yellow Bartsia 2018",
+  "stableCarId": "saved-car:Yellow Bartsia 2018",
+  "candidateId": "land-rover-range-rover-velar-first-edition-2018-roster-candidate",
+  "referenceVehicle": "2018 UK Range Rover Velar P380 First Edition L560,3.0 superchargedV6 380metricPS450Nm AWD8AT,22inch wheels, road-height air suspension; notD300diesel,P250fourcylinder,RangeRoverSport orSVAutobiographyV8.",
+  "identity": {
+    "year": 2018,
+    "make": "Land Rover",
+    "model": "Range Rover Velar",
+    "trim": "UK launch-generation P380 First Edition supercharged3.0V6 AWD8AT, road-height air suspension",
+    "market": "United Kingdom"
+  },
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1250,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      1500,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://media.jlr.com/range-rover/en-gb/news/2017/03/introducing-range-rover-velar",
+      "fields": [
+        "P380FirstEditionUK",
+        "380metricPS",
+        "powerRpm",
+        "torqueNm",
+        "engineDisplacementL",
+        "gearCount",
+        "geometry",
+        "topSpeedMph"
+      ]
+    },
+    {
+      "url": "https://manuals.plus/m/6c6aaec12a713f1595d5a88b0fe752c129ba79e336b9aa7f5676e4e72594d5ba",
+      "fields": [
+        "2018modelyear",
+        "FirstEdition"
+      ]
+    }
+  ]
+}
