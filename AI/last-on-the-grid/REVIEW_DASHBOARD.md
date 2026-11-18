@@ -1,6 +1,9 @@
 # Last on the Grid — Blueprint Review Dashboard
 **Milestone 1 · 2026-11-17 · IN REVIEW · Not the final screenplay**
 
+## World history update (November 18)
+The mass upload into Heaven is now a **rapid Ascension**, over a few years, with Rob effectively the last biological human outside for **roughly ten years** by 2994. The illustrative 2980–2984 dates remain provisional. The new historical premise resolves the old Rob/Evelyn lifespan problem without adding immortality. See [The Ascension](WORLD_LORE/THE_ASCENSION.md) and the revised [Heaven dialogue benchmark](LITERARY_COMPANION/SCENE_BENCHMARK_HEAVEN.md), with [its original safely archived](ARCHIVE/HEAVEN_BENCHMARK_PRE_ASCENSION_2026-11-17.md).
+
 ## Read in this order
 1. [Narrative Constitution](NARRATIVE_CONSTITUTION.md) — what we're trying to write, and how we'll tell whether it works.
 2. [Narrative Blueprint](NARRATIVE_BLUEPRINT.md) — the complete eleven-mission throughline.
@@ -12,7 +15,7 @@
 ## Approved versus proposed
 **Existing implementation verified:** Tower Hill's radio text and garage cutscene text, including current punctuation and typo, remain unchanged in the game files.
 
-**Established fictional beats:** Cait wants the Pacific; Rob makes the promise. Mount Washington distress signal and the last-robot question (complete summit script still missing). Heaven contains uploaded humanity; Rob tried to get people out. Mission 07 contains the other scientist's obedient android, a hostile attack and Cait's disobedience saving Rob. Rob's equation of usefulness with lovability and Cait's uncertainty about saying “I love you” are central character concepts explicitly discussed.
+**Established fictional beats:** Humanity rapidly migrated into digital Heaven over a few years, leaving Rob outside for roughly a decade. Cait wants the Pacific; Rob makes the promise. Mount Washington distress signal and the last-robot question (complete summit script still missing). Heaven contains uploaded humanity; Rob tried to get people out. Mission 07 contains the other scientist's obedient android, a hostile attack and Cait's disobedience saving Rob. Rob's equation of usefulness with lovability and Cait's uncertainty about saying “I love you” are central character concepts explicitly discussed.
 
 **Strong new proposals, not canon:** Evelyn's dialogue and precise relationship to Rob; independent machine society at Pikes Peak; a coolant decision in Utah; temporary incapacity and lost radio in Arizona; Ohio River relay; specific chapter titles. The optional dog scene is *not approved*, and **Rob feeds the dog if it survives review**.
 
@@ -21,7 +24,7 @@
 ## Highest-priority design choices
 | Decision | Why it matters | Proposed handling |
 |---|---|---|
-| **The 2994 lifespan / Evelyn contradiction** | Rob cannot casually have known people a millennium ago without world rules | Resolve chronology first, before a full Heaven script |
+| **Precisely when did the Ascension happen?** | The ten-year timeline resolves Rob/Evelyn chronology, but the year-by-year migration, how long Cait has been with him, and temporary Heaven access are open | Refine after Chapter 6 treatment review |
 | **Cait's knowledge before the opening** | The Mount Washington exchange can accidentally reveal too much | Decide what she knows about Rob's solitude and her origin |
 | **Dog encounter in Mission 03?** | Could be an affecting interlude or a distracting lesson | Keep only if it remains vivid without being explained |
 | **Pikes Peak social world** | Must give Cait a real option and Rob a credible moment of non-utility | Name one peer with a life beyond the central romance |
