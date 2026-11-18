@@ -5,7 +5,7 @@
 What does it mean to carry out a perfect service long after the people it was meant to serve are gone?
 
 ## Beginning
-The route to the next supply network runs through an automated distribution district along the Ozark backroads. Trucks still circulate. Rail arms lift pallets. An electronic sign politely warns drivers to expect a delivery delay of seventy-four years. A dispatcher offers assistance, provided they have an account from a dead civilization.
+The route to the next supply network runs through an automated distribution district along the Ozark backroads. Trucks still circulate. Rail arms lift pallets. An electronic sign politely warns drivers their delivery is overdue by 3,470 days. A dispatcher offers assistance, provided they have an account registered to a human who has long since uploaded into Heaven.
 
 Cait is fascinated by the engineering and annoyed by its rules; Rob likes an old-fashioned mechanical system he can outsmart. Their arguments are about *getting through*, not existential significance. Let them misread the system, get stuck, curse, and laugh.
 
