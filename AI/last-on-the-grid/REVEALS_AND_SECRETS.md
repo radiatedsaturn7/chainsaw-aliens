@@ -8,10 +8,13 @@
 | Is Rob the last human? | Strong central premise | Exact proof and reveal scene |
 | Did Rob build Cait because he was lonely? | Strong central premise | How much Cait knows; timing of player reveal |
 | Why does Cait want Mount Washington? | She wants to go; Rob thinks it pointless | What emotional meaning the climb carries |
-| Why did Rob avoid upload? | Data Center City raises this | Choice, rejection, distrust, or another reason |
+| Why did Rob avoid upload? | He personally witnessed a rapid Ascension only ~10 years ago; he refused invitations, and friends refused to return outside | His internal reasons and any temporary visits into Heaven remain open |
 | What is the ocean promise? | Cait sees the Pacific, then may leave | What was said before opening; why it matters to each |
 | Does Rob die? | Ending concept includes his death | Exact circumstances and timing |
 | Does Cait rebuild him? | Long epilogue concept discussed | Whether reconstruction succeeds and what “same person” means |
+
+## Historical premise (updated November 18)
+The older lifespan puzzle is resolved at the working-story level: humans uploaded over a few years shortly before 2994, not centuries earlier. Rob can have known Evelyn personally during those events. See [The Ascension](WORLD_LORE/THE_ASCENSION.md) for provisional dates and what remains unsettled. The biblical **Rapture / Purgatory** interpretation stays an interpretive layer, not a literal supernatural answer.
 
 ## Foreshadowing principles
 1. Show Rob's avoidance before explaining it.
