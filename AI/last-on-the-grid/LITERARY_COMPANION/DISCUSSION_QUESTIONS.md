@@ -19,7 +19,7 @@
 
 **05 Machine City:** Is repeated labor without customers necessarily meaningless? Can working robots form new purposes without being humanlike? Does the scene set up the scientist encounter without simply announcing the connection?
 
-**06 Heaven:** Who, if anyone, abandoned whom? Does perfection eliminate some forms of living while making others possible? Does Cait's insistence on physical rain reveal preference, fear or stubbornness? Could Evelyn be right about her own happiness?
+**06 Heaven:** Who, if anyone, abandoned whom? How does a mass departure over only a few years compare with a Rapture, and is Rob's outside life a purgatory or a deliberate choice? Does perfection eliminate some forms of living while making others possible? Does Cait's insistence on physical rain reveal preference, fear or stubbornness? Could Evelyn be right about her own happiness?
 
 **07 The Other Scientist:** What do the android's easy loving words prove? What does Cait's disobedience prove—and what does it leave unknowable? How do we avoid reducing the other android to a shocking prop?
 
