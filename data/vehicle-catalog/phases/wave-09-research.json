@@ -1,0 +1,369 @@
+{
+  "schemaVersion": 1,
+  "base": "bfa148e1e35415fcc953e16d7f4906b3724aa03d",
+  "scope": "Three distinct existing candidate slots with period factory evidence; no660-slot inflation.",
+  "vehicles": [
+    {
+      "candidateId": "audi-r8-coup-5-2-fsi-quattro-2010-roster-candidate",
+      "id": "moonwort-2010",
+      "name": "Moonwort 2010",
+      "identity": {
+        "year": 2010,
+        "make": "Audi",
+        "model": "R8 Coupe5.2FSI quattro",
+        "trim": "US standard V10 six-speed manual,19-inch ten-spoke wheels",
+        "market": "US"
+      },
+      "referenceVehicle": "2010 US Audi R8 Coupe5.2FSI quattro US standard V10 six-speed manual,19-inch ten-spoke wheels",
+      "facts": {
+        "powerHp": 525,
+        "torqueLbFt": 391,
+        "powerRpm": 8000,
+        "torqueRpm": 6500,
+        "engineDisplacementL": 5.2,
+        "transmission": "manual",
+        "gearCount": 6,
+        "drivetrain": "awd",
+        "frontTire": [
+          235,
+          35,
+          19
+        ],
+        "rearTire": [
+          295,
+          30,
+          19
+        ],
+        "publishedMaxEngineRpm": 8700,
+        "referenceZeroToSixtySec": 3.7,
+        "referenceTopSpeedMph": 196,
+        "referenceFrontTorqueShareRange": [
+          0.15,
+          0.3
+        ]
+      },
+      "simulationEstimates": {
+        "drivetrain": "awd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.43,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.03,
+        "spring": 0.6,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.1,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 240,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "aspiration": "Naturally Aspirated",
+        "curbKg": 1620,
+        "lengthM": 4.435,
+        "widthM": 1.93,
+        "heightM": 1.252,
+        "wheelbaseM": 2.65,
+        "trackFrontIn": 64.48818897637796,
+        "trackRearIn": 62.795275590551185,
+        "tireSize": [
+          235,
+          35,
+          19
+        ],
+        "gearRatios": [
+          4.373,
+          2.709,
+          1.878,
+          1.411,
+          1.126,
+          0.929
+        ],
+        "finalDrive": 3.08,
+        "frontWeightDistribution": 0.44,
+        "centerDifferentialBalance": 0.85,
+        "redlineRpm": 8500,
+        "revLimitRpm": 8700,
+        "topSpeedMph": 196,
+        "zeroToSixtySec": 3.7,
+        "fuelTankUSgal": 23.8
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Audi/R8/Audi_US%20R8_2010.pdf",
+          "publisher": "Audi of America",
+          "fields": [
+            "powerHp",
+            "torqueLbFt",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "drivetrain",
+            "referenceZeroToSixtySec",
+            "referenceTopSpeedMph",
+            "referenceFrontTorqueShareRange"
+          ],
+          "access": "Factory brochure mirror downloaded/read; coupe5.2 Engine/Performance section, not Spyder. Copyright2009. Read2026-11-17."
+        },
+        {
+          "url": "https://www.yumpu.com/en/document/view/50460496/audi-order-guide-model-year-2010-usa-invoice-i-am-audi",
+          "publisher": "Audi of America",
+          "fields": [
+            "2010US model42352T",
+            "frontTire",
+            "rearTire",
+            "publishedMaxEngineRpm"
+          ],
+          "access": "Original2010 US order guide mirrored; indexed text of page46, revised2009-10-16, standard10-spoke wheels; read2026-11-17."
+        }
+      ],
+      "limits": [
+        "Not4.2V8, Spyder, R tronic, GT, V10plus or European PS rating. US printed525hp is retained as hp without deriving it from525PS. Order guide establishes exact2010 manual model.",
+        "1620kg, dimensions and gearing are provisional estimates pending exact US manual curb/geometry/gear table. Estimated85% rear-share baseline (the game parameter is rear share) approximates only one endpoint of published15:85\u201330:70 behavior; no dynamic viscous coupling/magnetic-ride emulation. Source8700rpm maximum adopted as provisional limiter, not proof of intervention threshold.",
+        "All values outside facts are simulation estimates: individual gear ratios/final drive, interpolated torque envelope, drivetrain efficiency, steering/brake balance, weight distribution, body inertia, grip, springs/dampers, aero, unsourced dimensions and performance. Generic suspension does not replicate OEM kinematics or electronic controls.",
+        "Shared RTG-001 art/cockpit references only; original vehicle graphics and independently verified keyboard/touch driving remain pending."
+      ]
+    },
+    {
+      "candidateId": "audi-s1-2015-roster-candidate",
+      "id": "alkanet-2015",
+      "name": "Alkanet 2015",
+      "identity": {
+        "year": 2015,
+        "make": "Audi",
+        "model": "S1 quattro",
+        "trim": "UK three-door6MT standard17-inch wheels",
+        "market": "UK"
+      },
+      "referenceVehicle": "2015 UK Audi S1 quattro UK three-door6MT standard17-inch wheels",
+      "facts": {
+        "publishedPowerPS": 231,
+        "powerKw": 169.90021124999998,
+        "torqueNm": 370,
+        "powerRpm": 6000,
+        "torqueRpm": 1600,
+        "torquePlateauEndRpm": 3000,
+        "engineDisplacementL": 1.984,
+        "curbKg": 1315,
+        "curbBasis": "Factory unladen without driver, Directive80/1268/EEC",
+        "transmission": "manual",
+        "gearCount": 6,
+        "drivetrain": "awd",
+        "tireSize": [
+          215,
+          40,
+          17
+        ],
+        "lengthM": 3.975,
+        "widthM": 1.74,
+        "heightM": 1.417,
+        "wheelbaseM": 2.469,
+        "trackFrontIn": 58.031496062992126,
+        "trackRearIn": 57.16535433070867,
+        "referenceZeroTo62MphSec": 5.8,
+        "referenceTopSpeedMph": 155,
+        "fuelTankLitres": 45
+      },
+      "simulationEstimates": {
+        "drivetrain": "awd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.92,
+        "spring": 0.54,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.816,
+        "rearDifferentialAccel": 0.1,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 240,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "aspiration": "Turbocharged",
+        "gearRatios": [
+          3.77,
+          2.09,
+          1.47,
+          1.1,
+          0.9250000000000002,
+          0.7583333333333334
+        ],
+        "finalDrive": 3.45,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 5.6,
+        "fuelTankUSgal": 11.887742356116679
+      },
+      "sources": [
+        {
+          "url": "https://fliphtml5.com/gwvb/zcsl/",
+          "publisher": "Audi UK",
+          "fields": [
+            "publishedPowerPS",
+            "powerKw",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "torquePlateauEndRpm",
+            "engineDisplacementL",
+            "curbKg",
+            "curbBasis",
+            "transmission",
+            "gearCount",
+            "drivetrain",
+            "tireSize",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "referenceZeroTo62MphSec",
+            "referenceTopSpeedMph",
+            "fuelTankLitres"
+          ],
+          "access": "Original April2015 A1/S1 Pricing and Specification Guide mirrored as text; pp30 equipment,85 S1 (not p88Sportback),91 dimensions.231PS converted to kW, not treated as mechanicalhp. Read2026-11-17."
+        }
+      ],
+      "limits": [
+        "Exact UK three-door1315kg, not1340kg five-door Sportback, A1quattro256PS, tuned S1, or1985 rally Sport quattro. Body dimensions exclude mirrors/aerial.",
+        "Generic fixed50:50 AWD and estimated single-final6MT do not reproduce clutch-control distribution, dual-output transmission details, adaptive dampers or drive-select. Torque plateau simplified to a single low-rpm anchor.",
+        "All values outside facts are simulation estimates: individual gear ratios/final drive, interpolated torque envelope, drivetrain efficiency, steering/brake balance, weight distribution, body inertia, grip, springs/dampers, aero, unsourced dimensions and performance. Generic suspension does not replicate OEM kinematics or electronic controls.",
+        "Shared RTG-001 art/cockpit references only; original vehicle graphics and independently verified keyboard/touch driving remain pending."
+      ]
+    },
+    {
+      "candidateId": "volkswagen-golf-r-2010-roster-candidate",
+      "id": "marsh-mallow-r-2010",
+      "name": "Marsh Mallow R 2010",
+      "identity": {
+        "year": 2010,
+        "make": "Volkswagen",
+        "model": "Golf VI R",
+        "trim": "German three-door EA1132.0TSI6MT",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2010 Germany Volkswagen Golf VI R German three-door EA1132.0TSI6MT",
+      "facts": {
+        "powerKw": 199,
+        "publishedPowerPS": 270,
+        "torqueNm": 350,
+        "powerRpm": 6000,
+        "torqueRpm": 2500,
+        "torquePlateauEndRpm": 5000,
+        "engineDisplacementL": 1.984,
+        "publishedKerbKg": 1521,
+        "publishedMassBasisNote": "Press table labels1521kg kerb; footnote states3-door,68kg driver,7kg cargo,90percent fuel. Runtime driver-free mass is an explicit estimate.",
+        "transmission": "manual",
+        "gearCount": 6,
+        "drivetrain": "awd",
+        "tireSize": [
+          225,
+          40,
+          18
+        ],
+        "lengthM": 4.212,
+        "widthM": 1.779,
+        "heightM": 1.461,
+        "referenceZeroTo100KmhSec": 5.7,
+        "referenceTopSpeedKmh": 250,
+        "fuelTankLitres": 60
+      },
+      "simulationEstimates": {
+        "drivetrain": "awd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.96,
+        "spring": 0.56,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.1,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 240,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "aspiration": "Turbocharged",
+        "curbKg": 1446,
+        "wheelbaseM": 2.578,
+        "trackFrontIn": 60.629921259842526,
+        "trackRearIn": 59.4488188976378,
+        "gearRatios": [
+          3.36,
+          2.09,
+          1.47,
+          1.1,
+          0.91,
+          0.76
+        ],
+        "finalDrive": 3.94,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 5.5,
+        "fuelTankUSgal": 15.850323141488905
+      },
+      "sources": [
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/the-golf-r-international-driving-presentation-ellmau-2010-2348/download",
+          "publisher": "Volkswagen AG",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "torquePlateauEndRpm",
+            "engineDisplacementL",
+            "publishedKerbKg",
+            "publishedMassBasisNote",
+            "transmission",
+            "gearCount",
+            "drivetrain",
+            "tireSize",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "referenceZeroTo100KmhSec",
+            "referenceTopSpeedKmh",
+            "fuelTankLitres"
+          ],
+          "access": "Official January2010 German-market launch press pack; manual column on PDFp14 (printed13) plus engine/AWD sections. Read2026-11-17."
+        }
+      ],
+      "limits": [
+        "Not DSG1541kg column, five-door1786mm width, MkIV R32 VR6 or existing2015 FWD GTI.2.0turbo MkVI is a different engine/body generation from QuakingGrass2003.",
+        "Runtime1446kg is a transparent provisional driver/cargo-excluded estimate (1521 minus75), not a separately sourced curb figure. Wheelbase/track and single-final ratios remain estimates. Generic fixed50:50 AWD does not replicate Haldex or DCC; rated torque plateau simplified to one anchor.",
+        "All values outside facts are simulation estimates: individual gear ratios/final drive, interpolated torque envelope, drivetrain efficiency, steering/brake balance, weight distribution, body inertia, grip, springs/dampers, aero, unsourced dimensions and performance. Generic suspension does not replicate OEM kinematics or electronic controls.",
+        "Shared RTG-001 art/cockpit references only; original vehicle graphics and independently verified keyboard/touch driving remain pending."
+      ]
+    }
+  ],
+  "deferred": [
+    {
+      "candidateId": "audi-rs-4-avant-2001-roster-candidate",
+      "reason": "Exact period B5 factory table not retrieved; do not substitute later RS4."
+    },
+    {
+      "candidateId": "audi-rs-4-2006-roster-candidate",
+      "reason": "Brochure mirror returned HTML rather than PDF; no implementation from inaccessible source."
+    }
+  ]
+}

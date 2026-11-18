@@ -1,0 +1,216 @@
+{
+  "schemaVersion": 1,
+  "base": "f256e3726d7b0c01bb136f0fba1817cdd5ad2190",
+  "scope": "Two distinct existing Audi slots: C5 V8 sedan and8P five-cylinder hatchback.",
+  "vehicles": [
+    {
+      "candidateId": "audi-rs-6-2003-roster-candidate",
+      "id": "golden-saxifrage-2003",
+      "name": "Golden Saxifrage 2003",
+      "identity": {
+        "year": 2003,
+        "make": "Audi",
+        "model": "RS6 C5",
+        "trim": "standard 4.2 V8 biturbo sedan five-speed torque-converter automatic, not Avant/plus/Competition",
+        "market": "Europe"
+      },
+      "referenceVehicle": "2003 Europe Audi RS6 C5, standard 4.2 V8 biturbo sedan five-speed torque-converter automatic, not Avant/plus/Competition",
+      "facts": {
+        "powerKw": 330.97443749999996,
+        "torqueNm": 560,
+        "engineDisplacementL": 4.2,
+        "transmission": "automatic",
+        "gearCount": 5
+      },
+      "simulationEstimates": {
+        "drivetrain": "awd",
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.53,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.98,
+        "spring": 0.56,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0.08,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 180,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "aspiration": "Turbocharged",
+        "wheelWellAware": true,
+        "curbKg": 1840,
+        "lengthM": 4.858,
+        "widthM": 1.85,
+        "heightM": 1.425,
+        "wheelbaseM": 2.759,
+        "trackFrontIn": 62.2,
+        "trackRearIn": 62.6,
+        "tireSize": [
+          255,
+          40,
+          18
+        ],
+        "gearRatios": [
+          3.57,
+          2.2,
+          1.51,
+          1,
+          0.8
+        ],
+        "finalDrive": 3.197,
+        "frontWeightDistribution": 0.6,
+        "centerDifferentialBalance": 0.5,
+        "powerRpm": 6000,
+        "torqueRpm": 3500,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 4.7,
+        "fuelTankUSgal": 21.7,
+        "transmissionLabel": "5-speed torque-converter automatic (estimated calibration)",
+        "torqueConverterSlip": 0.07,
+        "torqueConverterMultiplication": 1.7,
+        "launchRpm": 2200
+      },
+      "sources": [
+        {
+          "url": "https://www.audi-mediacenter.com/de/pressemitteilungen/20-jahre-vier-generationen-audi-rs-6-ueberlegene-performance-im-alltagsgewand-14768",
+          "publisher": "Audi AG",
+          "fields": [
+            "powerKw",
+            "torqueNm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "C5 sedan identity"
+          ],
+          "access": "Factory history distinguishes first2002-generation sedan/Avant450PS,560Nm and five-stage torque-converter transmission from later480PS plus and manual475PS Competition.2003 chosen within C5 production generation. Read2026-11-17 from official indexed release."
+        }
+      ],
+      "limits": [
+        "Not the2003 racing Competition,480PS plus, laterV10C6 or modernV8C7. Rounded4.2L retained; no exact displacement claim.",
+        "No diagonal hydraulic DRC or Torsen torque-bias emulation; generic dampers and fixed50percent rear torque share.1840kg and individual ratios provisional, not a verified2003 trim sheet.",
+        "All parameters outside verifiedFacts are explicit simulation estimates: mass basis, dimensions, gearing, rpm anchors, load/torque distribution, grip, suspension, brake/steering balance, torque interpolation and performance. Generic wheel-well-aware collider is not a measured shell.",
+        "Shared RTG-001 exterior/cockpit references only. No new original art or independently accepted desktop/touch drive."
+      ]
+    },
+    {
+      "candidateId": "audi-rs-3-sportback-2011-roster-candidate",
+      "id": "water-crowfoot-2011",
+      "name": "Water Crowfoot 2011",
+      "identity": {
+        "year": 2011,
+        "make": "Audi",
+        "model": "RS3 Sportback 8P",
+        "trim": "standard five-door2.5TFSI five-cylinder seven-speed S tronic, no Pro Line package",
+        "market": "Netherlands"
+      },
+      "referenceVehicle": "2011 Netherlands Audi RS3 Sportback 8P, standard five-door2.5TFSI five-cylinder seven-speed S tronic, no Pro Line package",
+      "facts": {
+        "powerKw": 250,
+        "torqueNm": 450,
+        "engineDisplacementL": 2.48,
+        "transmission": "automatic",
+        "gearCount": 7,
+        "drivetrain": "awd",
+        "trackFrontIn": 61.5748031496063,
+        "trackRearIn": 60.15748031496064,
+        "tireSize": [
+          235,
+          35,
+          19
+        ],
+        "frontTire": [
+          235,
+          35,
+          19
+        ],
+        "rearTire": [
+          225,
+          35,
+          19
+        ]
+      },
+      "simulationEstimates": {
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.53,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.98,
+        "spring": 0.56,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0.08,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 120,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "aspiration": "Turbocharged",
+        "wheelWellAware": true,
+        "curbKg": 1575,
+        "lengthM": 4.302,
+        "widthM": 1.794,
+        "heightM": 1.402,
+        "wheelbaseM": 2.578,
+        "gearRatios": [
+          3.56,
+          2.53,
+          1.59,
+          1.15,
+          0.93,
+          0.76,
+          0.62
+        ],
+        "finalDrive": 4.06,
+        "frontWeightDistribution": 0.61,
+        "centerDifferentialBalance": 0.4,
+        "powerRpm": 6000,
+        "torqueRpm": 3500,
+        "redlineRpm": 6800,
+        "revLimitRpm": 7000,
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 4.5,
+        "fuelTankUSgal": 15.9,
+        "transmissionLabel": "7-speed dual-clutch automatic (estimated effective ratios)",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "launchRpm": 2500
+      },
+      "sources": [
+        {
+          "url": "https://nieuws.audi.nl/audi-presenteert-audi-rs3/",
+          "publisher": "Audi Netherlands",
+          "fields": [
+            "identity",
+            "powerKw",
+            "torqueNm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "drivetrain",
+            "tracks",
+            "tires"
+          ],
+          "access": "November2010 factory launch explicitly schedules Netherlands April2011 introduction. Standard7-speed dual clutch and wider front235/35R19 versus rear225/35R19.1575kg published without mass convention; provisional runtime estimate. Torque plateau1600-5300rpm; single runtime anchor estimated. Read2026-11-17 from official indexed release."
+        }
+      ],
+      "limits": [
+        "Not the TT RS coupe, later8V400PS, RS3 sedan or LMS race car. Standard model selected, noProLine equipment mass claim.",
+        "Adaptive multi-plate quattro coupling simplified to fixed40percent rear share; no factory launch-control or separate gearbox-output-shaft model. Seven effective forward ratios and final drive are estimates, notDQ500 hardware ratios.",
+        "All parameters outside verifiedFacts are explicit simulation estimates: mass basis, dimensions, gearing, rpm anchors, load/torque distribution, grip, suspension, brake/steering balance, torque interpolation and performance. Generic wheel-well-aware collider is not a measured shell.",
+        "Shared RTG-001 exterior/cockpit references only. No new original art or independently accepted desktop/touch drive."
+      ]
+    }
+  ],
+  "deferred": [
+    {
+      "candidateId": "audi-rs-4-avant-2001-roster-candidate",
+      "reason": "Factory retrospective verifies280kW/2.7L but linked period technical source unavailable; defer exact trim/mass/torque confirmation rather than assert secondary figures."
+    }
+  ]
+}

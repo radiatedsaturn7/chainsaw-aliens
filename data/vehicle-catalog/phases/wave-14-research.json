@@ -1,0 +1,212 @@
+{
+  "schemaVersion": 1,
+  "base": "c5ee28f59f7d9deb88a070c7d74ee39095cdb3e5",
+  "scope": "Two distinct existing Volvo candidate slots; factory anchors and explicit estimates.",
+  "vehicles": [
+    {
+      "candidateId": "volvo-c30-polestar-2013-roster-candidate",
+      "id": "wood-sorrel-2013",
+      "name": "Wood Sorrel 2013",
+      "identity": {
+        "year": 2013,
+        "make": "Volvo",
+        "model": "C30 Polestar Limited Edition",
+        "trim": "US limited-production T5 R-Design-based hatchback, standard six-speed manual; not AWD concept",
+        "market": "US"
+      },
+      "referenceVehicle": "2013 US Volvo C30 Polestar Limited Edition, US limited-production T5 R-Design-based hatchback, standard six-speed manual; not AWD concept",
+      "facts": {
+        "powerHp": 250,
+        "torqueLbFt": 273,
+        "engineDisplacementL": 2.5,
+        "transmission": "manual",
+        "gearCount": 6
+      },
+      "simulationEstimates": {
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.32,
+        "tireGrip": 0.96,
+        "spring": 0.53,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 240,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "aspiration": "Turbocharged",
+        "wheelWellAware": true,
+        "drivetrain": "fwd",
+        "curbKg": 1470,
+        "lengthM": 4.266,
+        "widthM": 1.782,
+        "heightM": 1.447,
+        "wheelbaseM": 2.64,
+        "trackFrontIn": 60.4,
+        "trackRearIn": 60.3,
+        "tireSize": [
+          205,
+          50,
+          17
+        ],
+        "gearRatios": [
+          3.38,
+          1.91,
+          1.27,
+          0.95,
+          0.78,
+          0.65
+        ],
+        "finalDrive": 4.0,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "powerRpm": 5500,
+        "torqueRpm": 3000,
+        "topSpeedMph": 149,
+        "zeroToSixtySec": 6.0,
+        "fuelTankUSgal": 15.9
+      },
+      "sources": [
+        {
+          "url": "https://www.volvocars.com/us/media/press-releases/BAC5EB4A3B6F3CB1/",
+          "publisher": "Volvo Cars",
+          "fields": [
+            "powerHp",
+            "torqueLbFt",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "identity"
+          ],
+          "access": "September 2012 model-year launch: 250 US units; selected standard manual, not optional five-speed automatic. 17-inch wheels, sport chassis and software upgrade distinguish existing 2008 Snowdrop T5. Read 2026-11-17 from official indexed release."
+        }
+      ],
+      "limits": [
+        "Not the existing 2008 standard C30 T5 Snowdrop, not a software-only retrospective identity claim and not the AWD Polestar concept. FWD layout and all unverified rpm/ratio/mass inputs remain estimates. Generic traction control does not reproduce DSTC.",
+        "All inputs outside verifiedFacts are simulation estimates, including mass, geometry, ratios, final drive, torque-curve interpolation, load distribution, drag, grip, suspension, steering/brake balance and performance. Generic wheel-well-aware collider is not a measured shell.",
+        "Shared RTG-001 exterior/cockpit references only; original art and independent keyboard/touch drive verification remain pending."
+      ]
+    },
+    {
+      "candidateId": "volvo-v60-polestar-2015-roster-candidate",
+      "id": "sea-lavender-2015",
+      "name": "Sea Lavender 2015",
+      "identity": {
+        "year": 2015,
+        "make": "Volvo",
+        "model": "V60 Polestar",
+        "trim": "first-generation T6 six-cylinder estate, six-speed automatic; not later four-cylinder/eight-speed",
+        "market": "UK"
+      },
+      "referenceVehicle": "2015 UK Volvo V60 Polestar, first-generation T6 six-cylinder estate, six-speed automatic; not later four-cylinder/eight-speed",
+      "facts": {
+        "powerKw": 257,
+        "torqueNm": 500,
+        "transmission": "automatic",
+        "gearCount": 6,
+        "tireSize": [
+          245,
+          35,
+          20
+        ]
+      },
+      "simulationEstimates": {
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.32,
+        "tireGrip": 1.02,
+        "spring": 0.62,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.1,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 180,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "aspiration": "Turbocharged",
+        "wheelWellAware": true,
+        "drivetrain": "awd",
+        "engineDisplacementL": 2.953,
+        "curbKg": 1822,
+        "lengthM": 4.635,
+        "widthM": 1.865,
+        "heightM": 1.484,
+        "wheelbaseM": 2.776,
+        "trackFrontIn": 62.5,
+        "trackRearIn": 62.4,
+        "gearRatios": [
+          4.15,
+          2.37,
+          1.56,
+          1.16,
+          0.86,
+          0.69
+        ],
+        "finalDrive": 3.33,
+        "frontWeightDistribution": 0.58,
+        "redlineRpm": 6300,
+        "revLimitRpm": 6500,
+        "powerRpm": 5700,
+        "torqueRpm": 2800,
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 4.8,
+        "fuelTankUSgal": 17.8,
+        "centerDifferentialBalance": 0.45,
+        "transmissionLabel": "6-speed torque-converter automatic (estimated calibration)",
+        "torqueConverterSlip": 0.07,
+        "torqueConverterMultiplication": 1.7,
+        "launchRpm": 2400
+      },
+      "sources": [
+        {
+          "url": "https://www.volvocars.com/uk/media/press-releases/9E5AB179295ACD5A/",
+          "publisher": "Volvo Cars",
+          "fields": [
+            "powerKw",
+            "torqueNm",
+            "transmission",
+            "gearCount",
+            "tireSize"
+          ],
+          "access": "Original production launch technical basis. Unqualified published 1822 kg adopted only as provisional runtime mass; rpm anchors not asserted exact. Read 2026-11-17 from official indexed release."
+        },
+        {
+          "url": "https://www.volvocars.com/uk/media/press-releases/456803EDC09D524B/",
+          "publisher": "Volvo Cars",
+          "fields": [
+            "2015 production identity"
+          ],
+          "access": "September 2015 manufacturer account confirms current 350-horsepower T6 estate production. Read 2026-11-17 from official indexed release."
+        },
+        {
+          "url": "https://www.volvocars.com/uk/media/press-releases/83BA1A515DAEF4CD/",
+          "publisher": "Volvo Cars",
+          "fields": [
+            "source conflict"
+          ],
+          "access": "May 2014 overview gives 5250/3000 rpm vs launch 5700/2800. Rated 257 kW/500 Nm agree; rpm inputs explicitly estimated pending exact-year calibration proof. Read 2026-11-17 from official indexed release."
+        }
+      ],
+      "limits": [
+        "No later 2016-announced 1969cc twincharged four-cylinder/8AT values. Factory 257 kW controls conversion rather than ambiguous 350 HP label.",
+        "AWD uses an estimated fixed 45 percent rear share, not adaptive BorgWarner coupling, curve-hold or launch-control emulation. No active damper emulation.",
+        "All inputs outside verifiedFacts are simulation estimates, including mass, geometry, ratios, final drive, torque-curve interpolation, load distribution, drag, grip, suspension, steering/brake balance and performance. Generic wheel-well-aware collider is not a measured shell.",
+        "Shared RTG-001 exterior/cockpit references only; original art and independent keyboard/touch drive verification remain pending."
+      ]
+    }
+  ],
+  "deferred": [
+    {
+      "candidateId": "volvo-850-r-1997-roster-candidate",
+      "reason": "Existing Larch Turbo is 1995 T-5R automatic, not exact R; defer until year/market/manual-versus-automatic output corroboration."
+    }
+  ]
+}

@@ -1,0 +1,329 @@
+{
+  "schemaVersion": 1,
+  "base": "b79a5741f7af8ccffdf12af8c3120cf93b3c7fdb",
+  "scope": "Three existing slots; distinct Japanese lightweight performance configurations with primary specification anchors.",
+  "vehicles": [
+    {
+      "candidateId": "honda-nsx-r-1992-roster-candidate",
+      "id": "adderstongue-1992",
+      "name": "Adderstongue 1992",
+      "identity": {
+        "year": 1992,
+        "make": "Honda",
+        "model": "NSX Type R NA1",
+        "trim": "C30A 3.0 V6 five-speed manual, standard lightweight specification without optional air conditioning/audio",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1992 Japan Honda NSX Type R NA1, C30A 3.0 V6 five-speed manual, standard lightweight specification without optional air conditioning/audio",
+      "facts": {
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 1230,
+        "lengthM": 4.43,
+        "widthM": 1.81,
+        "heightM": 1.16,
+        "groundClearanceM": 0.125,
+        "finalDrive": 4.235,
+        "powerKw": 205.93965,
+        "powerRpm": 7300,
+        "torqueNm": 294.1995,
+        "torqueRpm": 5400,
+        "engineDisplacementL": 3.0
+      },
+      "simulationEstimates": {
+        "cgHeightM": 0.42,
+        "dragCoefficient": 0.33,
+        "tireGrip": 0.96,
+        "spring": 0.62,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.14,
+        "frontOverhangM": 0.75,
+        "rearDifferentialAccel": 0.3,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 240,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "aspiration": "Naturally Aspirated",
+        "wheelWellAware": true,
+        "drivetrain": "rwd",
+        "wheelbaseM": 2.53,
+        "trackFrontIn": 59.4488188976378,
+        "trackRearIn": 60.23622047244095,
+        "tireSize": [
+          205,
+          50,
+          15
+        ],
+        "frontTire": [
+          205,
+          50,
+          15
+        ],
+        "rearTire": [
+          225,
+          50,
+          16
+        ],
+        "gearRatios": [
+          3.071,
+          1.952,
+          1.4,
+          1.033,
+          0.771
+        ],
+        "reverseRatio": 3.186,
+        "frontWeightDistribution": 0.42,
+        "redlineRpm": 8000,
+        "revLimitRpm": 8200,
+        "topSpeedMph": 168,
+        "zeroToSixtySec": 4.9,
+        "fuelTankUSgal": 18.5
+      },
+      "sources": [
+        {
+          "url": "https://global.honda/jp/news/1992/4921126.html",
+          "publisher": "Honda Motor Co.",
+          "fields": [
+            "identity",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "groundClearanceM",
+            "finalDrive",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "Original November 1992 Type R release, changed specifications table and standard-versus-option distinctions. Read 2026-11-17."
+        },
+        {
+          "url": "https://global.honda/jp/news/1990/4900913.html",
+          "publisher": "Honda Motor Co.",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL"
+          ],
+          "access": "Original Japanese C30A five-speed engine basis: net 280 PS and 30.0 kgf-m, converted to kW/Nm. Type R release documents balance refinement, not an increased rated output; no automatic 265 PS values. Read 2026-11-17."
+        }
+      ],
+      "limits": [
+        "Distinct from existing US1991 Acura NSX Lunaria 30: lighter Japanese Type R, revised final drive and suspension. Not 2002 3.2 six-speed R or R GT.",
+        "Engine anchors use the underlying Japanese 3.0 five-speed specification; exact installed curve remains estimated. Individual ratios, tires and dimensions not expressly in the Type R changed-spec table stay provisional. No OEM VTEC control or measured LSD preload emulation.",
+        "All parameters outside verifiedFacts are simulation estimates: unsourced geometry, load distribution, steering/brake balance, damping, grip, torque interpolation, differential response, aerodynamic forces and performance. Wheel-well-aware compound collider is generic, not a measured shell.",
+        "Shared RTG-001 art/cockpit references only. No new original art or independent keyboard/touch drive acceptance."
+      ]
+    },
+    {
+      "candidateId": "honda-cr-x-sir-1991-roster-candidate",
+      "id": "whitlowgrass-1991",
+      "name": "Whitlowgrass 1991",
+      "identity": {
+        "year": 1991,
+        "make": "Honda",
+        "model": "CR-X SiR EF8",
+        "trim": "late-generation B16A 5MT, solid roof, no power steering, air conditioning, optional ALB or LSD",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1991 Japan Honda CR-X SiR EF8, late-generation B16A 5MT, solid roof, no power steering, air conditioning, optional ALB or LSD",
+      "facts": {
+        "transmission": "manual",
+        "gearCount": 5,
+        "powerKw": 117.6798,
+        "powerRpm": 7600,
+        "torqueNm": 152.003075,
+        "torqueRpm": 7000,
+        "engineDisplacementL": 1.595,
+        "curbKg": 970,
+        "lengthM": 3.8,
+        "widthM": 1.675,
+        "heightM": 1.27,
+        "wheelbaseM": 2.3,
+        "trackFrontIn": 56.69291338582677,
+        "trackRearIn": 56.88976377952756,
+        "groundClearanceM": 0.15,
+        "gearRatios": [
+          3.166,
+          2.052,
+          1.416,
+          1.103,
+          0.87
+        ],
+        "reverseRatio": 3,
+        "finalDrive": 4.266,
+        "tireSize": [
+          195,
+          60,
+          14
+        ],
+        "fuelTankUSgal": 11.887742356116679
+      },
+      "simulationEstimates": {
+        "cgHeightM": 0.46,
+        "dragCoefficient": 0.33,
+        "tireGrip": 0.96,
+        "spring": 0.48,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.14,
+        "frontOverhangM": 0.75,
+        "rearDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 240,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "aspiration": "Naturally Aspirated",
+        "wheelWellAware": true,
+        "drivetrain": "fwd",
+        "frontWeightDistribution": 0.62,
+        "redlineRpm": 8000,
+        "revLimitRpm": 8200,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 7.0
+      },
+      "sources": [
+        {
+          "url": "https://www.honda.co.jp/auto-archive/cr-x/1992/sir_sy.html",
+          "publisher": "Honda Motor Co.",
+          "fields": [
+            "engine",
+            "dimensions",
+            "mass",
+            "ratios",
+            "tires",
+            "fuel capacity"
+          ],
+          "access": "Factory terminal EF8 SiR technical archive explicitly dated February 1992. Base no-option 970kg column; net PS/kgf-m conversions. Applied as late-generation reference, not proof of every 1991 build detail. Read 2026-11-17."
+        },
+        {
+          "url": "https://global.honda/jp/news/1989/4890921.html",
+          "publisher": "Honda Motor Co.",
+          "fields": [
+            "SiR production introduction",
+            "optional ALB and LSD"
+          ],
+          "access": "September1989 launch confirms B16A VTEC SiR, 195/60R14 and optional assistance/differential; not the 1992 del Sol. Read 2026-11-17."
+        }
+      ],
+      "limits": [
+        "1991 slot modeled using the late-generation factory archive ending February1992; Honda warns equipment may vary by year. Exact 1991 build-date certification remains unverified and is not claimed.",
+        "Not existing US1991 non-VTEC D16A6 CRX Si Cinder. No later del Sol170PS or Civic170PS substitution. Open front differential and no ALB selected; no separate VTEC actuator simulation.",
+        "All parameters outside verifiedFacts are simulation estimates: unsourced geometry, load distribution, steering/brake balance, damping, grip, torque interpolation, differential response, aerodynamic forces and performance. Wheel-well-aware compound collider is generic, not a measured shell.",
+        "Shared RTG-001 art/cockpit references only. No new original art or independent keyboard/touch drive acceptance."
+      ]
+    },
+    {
+      "candidateId": "mazda-mazdaspeed-mx-5-2005-roster-candidate",
+      "id": "mouse-ear-2005",
+      "name": "Mouse-ear 2005",
+      "identity": {
+        "year": 2005,
+        "make": "Mazda",
+        "model": "Mazdaspeed MX-5 NB",
+        "trim": "US turbo 1.8 six-speed manual, standard cloth/vinyl-roof specification without Grand Touring package",
+        "market": "US"
+      },
+      "referenceVehicle": "2005 US Mazda Mazdaspeed MX-5 NB, US turbo 1.8 six-speed manual, standard cloth/vinyl-roof specification without Grand Touring package",
+      "facts": {
+        "transmission": "manual",
+        "gearCount": 6,
+        "drivetrain": "rwd",
+        "powerHp": 178,
+        "powerRpm": 6000,
+        "torqueLbFt": 166,
+        "torqueRpm": 4500,
+        "engineDisplacementL": 1.8,
+        "curbKg": 1147.13510373,
+        "lengthM": 3.9547799999999995,
+        "widthM": 1.6789399999999999,
+        "heightM": 1.2191999999999998,
+        "wheelbaseM": 2.26568,
+        "trackFrontIn": 55.7,
+        "trackRearIn": 56.7,
+        "frontWeightDistribution": 0.52,
+        "dragCoefficient": 0.375,
+        "gearRatios": [
+          3.76,
+          2.269,
+          1.645,
+          1.258,
+          1,
+          0.843
+        ],
+        "finalDrive": 4.1,
+        "tireSize": [
+          205,
+          40,
+          17
+        ],
+        "redlineRpm": 6500,
+        "fuelTankUSgal": 12.7,
+        "absEnabled": true
+      },
+      "simulationEstimates": {
+        "cgHeightM": 0.43,
+        "tireGrip": 0.96,
+        "spring": 0.56,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.14,
+        "frontOverhangM": 0.75,
+        "rearDifferentialAccel": 0.25,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 240,
+        "tractionControlEnabled": false,
+        "aspiration": "Turbocharged",
+        "wheelWellAware": true,
+        "groundClearanceM": 0.11,
+        "reverseRatio": 3.564,
+        "revLimitRpm": 6700,
+        "topSpeedMph": 127,
+        "zeroToSixtySec": 6.5
+      },
+      "sources": [
+        {
+          "url": "https://news.mazdausa.com/vehicles?item=129",
+          "publisher": "Mazda North American Operations",
+          "fields": [
+            "exact model-year archive"
+          ],
+          "access": "Official 2005 archive links specification deck. Read 2026-11-17."
+        },
+        {
+          "url": "https://news.mazdausa.com/download/cur_mspeed_specs.pdf",
+          "publisher": "Mazda North American Operations",
+          "fields": [
+            "powertrain",
+            "ratios",
+            "mass",
+            "dimensions",
+            "tires",
+            "load distribution",
+            "drag",
+            "fuel capacity"
+          ],
+          "access": "2005 deck revised June4,2004, pages4,9-11. PDF saved/text extracted; page9 visually inspected. Mazdaspeed column kept separate from naturally aspirated Miata/LS. Read 2026-11-17."
+        }
+      ],
+      "limits": [
+        "Distinct turbo NB generation from existing1990 NA 1.6 Lark; not a color/package clone. No VVT fitted to turbo engine per factory deck.",
+        "Factory deck prints reverse0.0564, visibly confirmed but physically implausible. Runtime3.564 is explicitly estimated, not silently corrected or treated as sourced. Published laden4in clearance is not used as curb clearance. Generic LSD and pressure/damper calibration approximate factory hardware.",
+        "All parameters outside verifiedFacts are simulation estimates: unsourced geometry, load distribution, steering/brake balance, damping, grip, torque interpolation, differential response, aerodynamic forces and performance. Wheel-well-aware compound collider is generic, not a measured shell.",
+        "Shared RTG-001 art/cockpit references only. No new original art or independent keyboard/touch drive acceptance."
+      ]
+    }
+  ],
+  "deferred": [
+    {
+      "candidateId": "honda-s800-1970-roster-candidate",
+      "reason": "Exact1970 market/trim primary specifications not established; no build."
+    },
+    {
+      "candidateId": "honda-prelude-type-sh-2000-roster-candidate",
+      "reason": "Existing2001 basePrelude; distinctive ATTS cannot be represented faithfully by a badge-only configuration. Deferred."
+    }
+  ]
+}

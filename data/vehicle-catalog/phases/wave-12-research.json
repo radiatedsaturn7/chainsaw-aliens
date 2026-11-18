@@ -1,0 +1,324 @@
+{
+  "schemaVersion": 1,
+  "base": "bb8a470cd498885cef99ba4e3c1b8fd2c6f78d21",
+  "scope": "Three distinct existing SUV/pickup slots; road-mode approximations only.",
+  "vehicles": [
+    {
+      "candidateId": "ram-2500-power-wagon-2017-roster-candidate",
+      "id": "bearberry-2017",
+      "name": "Bearberry 2017",
+      "identity": {
+        "year": 2017,
+        "make": "Ram",
+        "model": "2500 Power Wagon",
+        "trim": "Crew Cab6.4 V8 66RFE6AT, standard trim; high-range road approximation",
+        "market": "US"
+      },
+      "referenceVehicle": "2017 US Ram 2500 Power Wagon Crew Cab6.4 V8 66RFE6AT, standard trim; high-range road approximation",
+      "facts": {
+        "powerHp": 410,
+        "torqueLbFt": 429,
+        "powerRpm": 5600,
+        "torqueRpm": 4000,
+        "engineDisplacementL": 6.4,
+        "transmission": "automatic",
+        "gearCount": 6,
+        "finalDrive": 4.1,
+        "publishedFirstGearRatio": 3.23,
+        "referenceLowRange": 2.64,
+        "referenceTireDiameterIn": 33
+      },
+      "simulationEstimates": {
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.86,
+        "groundClearanceM": 0.3,
+        "dragCoefficient": 0.42,
+        "tireGrip": 0.83,
+        "spring": 0.48,
+        "antiRollRear": 0.22,
+        "suspensionTravelM": 0.25,
+        "frontOverhangM": 0.95,
+        "rearDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 350,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "aspiration": "Naturally Aspirated",
+        "redlineRpm": 6000,
+        "revLimitRpm": 6200,
+        "torqueConverterSlip": 0.08,
+        "torqueConverterMultiplication": 1.7,
+        "launchRpm": 1700,
+        "drivetrain": "rwd",
+        "gearRatios": [
+          3.23,
+          1.837,
+          1.41,
+          1,
+          0.816,
+          0.625
+        ],
+        "transmissionLabel": "66RFE6-speed torque-converter automatic; estimated ratios/calibration",
+        "curbKg": 3170,
+        "lengthM": 6.028,
+        "widthM": 2.009,
+        "heightM": 2.057,
+        "wheelbaseM": 3.782,
+        "trackFrontIn": 68.3,
+        "trackRearIn": 68.1,
+        "tireSize": [
+          285,
+          70,
+          17
+        ],
+        "frontWeightDistribution": 0.57,
+        "fuelTankUSgal": 32,
+        "topSpeedMph": 106,
+        "zeroToSixtySec": 8.5,
+        "wheelWellAware": true
+      },
+      "sources": [
+        {
+          "url": "https://www.prnewswire.com/news-releases/new-2017-ram-power-wagon----the-ultimate-off-road-truck-benefits-from-new-design-300217453.html",
+          "publisher": "FCA US LLC, manufacturer release distributed by PRNewswire",
+          "fields": [
+            "powerHp",
+            "torqueLbFt",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "finalDrive",
+            "publishedFirstGearRatio",
+            "referenceLowRange",
+            "referenceTireDiameterIn"
+          ],
+          "access": "Full manufacturer release read2026-11-17; specific year and variant, not later revisions."
+        }
+      ],
+      "limits": [
+        "Not Tradesman package, Cummins diesel, later8AT or Ram1500. RWD simulates an unlocked, high-range road condition of its part-time transfer case; no claim to represent engaged4WD or its locking axles.",
+        "No low-range selection, winch, articulation/SmartBar or cylinder-deactivation emulation.33-inch source is not a full tire-code confirmation;285/70R17 is provisional. First ratio3.23 and axle4.10 sourced; remaining transmission ratios estimated.",
+        "Only facts are source-confirmed. All other simulation parameters are estimates: curb mass, body geometry, tire grip, torque-envelope interpolation, unspecified ratios, converter calibration, steering/brakes, load distribution, suspension and aero. Generic collision body does not reproduce cargo-bed geometry, live-axle kinematics, cargo/towing or payload dynamics.",
+        "Shared RTG-001 artwork/cockpit references only; no new original art or independent desktop/touch drive acceptance claimed.",
+        "Wheel-well-aware compound collision geometry uses the existing engine wheel-envelope cutouts; clearance margins remain estimated, not measured bodywork. This avoids an unbroken lower-body box crossing the suspension-to-tread path."
+      ]
+    },
+    {
+      "candidateId": "jeep-gladiator-rubicon-2020-roster-candidate",
+      "id": "deergrass-2020",
+      "name": "Deergrass 2020",
+      "identity": {
+        "year": 2020,
+        "make": "Jeep",
+        "model": "Gladiator Rubicon",
+        "trim": "3.6V6 six-speed manual Crew Cab5-foot bed; high-range road approximation",
+        "market": "US"
+      },
+      "referenceVehicle": "2020 US Jeep Gladiator Rubicon 3.6V6 six-speed manual Crew Cab5-foot bed; high-range road approximation",
+      "facts": {
+        "powerHp": 285,
+        "torqueLbFt": 260,
+        "engineDisplacementL": 3.6,
+        "transmission": "manual",
+        "gearCount": 6,
+        "finalDrive": 4.1,
+        "referenceLowRange": 4,
+        "referenceManualCrawlRatio": 84.2,
+        "referenceTireDiameterIn": 33
+      },
+      "simulationEstimates": {
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.78,
+        "groundClearanceM": 0.25,
+        "dragCoefficient": 0.42,
+        "tireGrip": 0.83,
+        "spring": 0.48,
+        "antiRollRear": 0.22,
+        "suspensionTravelM": 0.25,
+        "frontOverhangM": 0.95,
+        "rearDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 300,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "aspiration": "Naturally Aspirated",
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "launchRpm": 1700,
+        "drivetrain": "rwd",
+        "gearRatios": [
+          5.13,
+          2.63,
+          1.53,
+          1,
+          0.81,
+          0.72
+        ],
+        "powerRpm": 6400,
+        "torqueRpm": 4400,
+        "curbKg": 2290,
+        "lengthM": 5.539,
+        "widthM": 1.875,
+        "heightM": 1.905,
+        "wheelbaseM": 3.487,
+        "trackFrontIn": 64.4,
+        "trackRearIn": 64.4,
+        "tireSize": [
+          285,
+          70,
+          17
+        ],
+        "frontWeightDistribution": 0.55,
+        "fuelTankUSgal": 22,
+        "topSpeedMph": 97,
+        "zeroToSixtySec": 8.3,
+        "wheelWellAware": true
+      },
+      "sources": [
+        {
+          "url": "https://www.prnewswire.com/news-releases/all-new-2020-jeep-gladiator-the-most-capable-midsize-truck-ever-300756849.html",
+          "publisher": "FCA US LLC, manufacturer release distributed by PRNewswire",
+          "fields": [
+            "powerHp",
+            "torqueLbFt",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "finalDrive",
+            "referenceLowRange",
+            "referenceManualCrawlRatio",
+            "referenceTireDiameterIn"
+          ],
+          "access": "Full manufacturer release read2026-11-17; specific year and variant, not later revisions."
+        }
+      ],
+      "limits": [
+        "Not diesel, optional8AT, Sport3.73 axle or later Mojave. RWD is only a high-range road approximation with axles unlocked; Rock-Trac low range, locking differentials and electronic sway-bar disconnect are absent.",
+        "Published84.2 crawl ratio is reference only, never applied as road gearing. First5.13 is inferred approximately from84.2/(4*4.1), not independently verified; other ratios and33-inch-equivalent tire code estimated.",
+        "Only facts are source-confirmed. All other simulation parameters are estimates: curb mass, body geometry, tire grip, torque-envelope interpolation, unspecified ratios, converter calibration, steering/brakes, load distribution, suspension and aero. Generic collision body does not reproduce cargo-bed geometry, live-axle kinematics, cargo/towing or payload dynamics.",
+        "Shared RTG-001 artwork/cockpit references only; no new original art or independent desktop/touch drive acceptance claimed.",
+        "Wheel-well-aware compound collision geometry uses the existing engine wheel-envelope cutouts; clearance margins remain estimated, not measured bodywork. This avoids an unbroken lower-body box crossing the suspension-to-tread path."
+      ]
+    },
+    {
+      "candidateId": "jeep-grand-cherokee-trackhawk-2018-roster-candidate",
+      "id": "bogmyrtle-2018",
+      "name": "Bogmyrtle 2018",
+      "identity": {
+        "year": 2018,
+        "make": "Jeep",
+        "model": "Grand Cherokee Trackhawk",
+        "trim": "6.2supercharged V8 eight-speed automatic, standard20-inch wheels; Auto-mode approximation",
+        "market": "US"
+      },
+      "referenceVehicle": "2018 US Jeep Grand Cherokee Trackhawk 6.2supercharged V8 eight-speed automatic, standard20-inch wheels; Auto-mode approximation",
+      "facts": {
+        "powerHp": 707,
+        "torqueLbFt": 645,
+        "engineDisplacementL": 6.2,
+        "transmission": "automatic",
+        "gearCount": 8,
+        "tireSize": [
+          295,
+          45,
+          20
+        ],
+        "referenceAutoRearTorqueShare": 0.6,
+        "referenceZeroToSixtySec": 3.5,
+        "referenceTopSpeedMph": 180
+      },
+      "simulationEstimates": {
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.66,
+        "groundClearanceM": 0.2,
+        "dragCoefficient": 0.42,
+        "tireGrip": 0.97,
+        "spring": 0.6,
+        "antiRollRear": 0.22,
+        "suspensionTravelM": 0.25,
+        "frontOverhangM": 0.95,
+        "rearDifferentialAccel": 0.15,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 400,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "aspiration": "Supercharged",
+        "redlineRpm": 6000,
+        "revLimitRpm": 6200,
+        "torqueConverterSlip": 0.08,
+        "torqueConverterMultiplication": 1.7,
+        "launchRpm": 1700,
+        "drivetrain": "awd",
+        "gearRatios": [
+          4.714,
+          3.143,
+          2.106,
+          1.667,
+          1.285,
+          1,
+          0.839,
+          0.667
+        ],
+        "finalDrive": 3.7,
+        "transmissionLabel": "8-speed torque-converter automatic; estimated ratios and Auto calibration",
+        "powerRpm": 6000,
+        "torqueRpm": 4800,
+        "curbKg": 2433,
+        "lengthM": 4.822,
+        "widthM": 1.943,
+        "heightM": 1.724,
+        "wheelbaseM": 2.915,
+        "trackFrontIn": 65.4,
+        "trackRearIn": 64.8,
+        "frontWeightDistribution": 0.54,
+        "centerDifferentialBalance": 0.6,
+        "fuelTankUSgal": 24.6,
+        "topSpeedMph": 180,
+        "zeroToSixtySec": 3.5,
+        "wheelWellAware": true
+      },
+      "sources": [
+        {
+          "url": "https://www.prnewswire.com/news-releases/707-horsepower-2018-jeep-grand-cherokee-trackhawk-the-most-powerful-and-quickest-suv-ever-300436470.html",
+          "publisher": "FCA US LLC, manufacturer release distributed by PRNewswire",
+          "fields": [
+            "powerHp",
+            "torqueLbFt",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "tireSize",
+            "referenceAutoRearTorqueShare",
+            "referenceZeroToSixtySec",
+            "referenceTopSpeedMph"
+          ],
+          "access": "Full manufacturer release read2026-11-17; specific year and variant, not later revisions."
+        }
+      ],
+      "limits": [
+        "Not naturally aspirated SRT, Trailhawk or a707PS global rating. Fixed60% rear torque share approximates Auto mode only; it does not reproduce adaptive Quadra-Trac, five drive modes or electronic rear LSD.",
+        "Reference3.5s/180mph is a manufacturer claim, not simulation validation. No launch control, active damping, adaptive shift logic or track160ms claim. Generic estimated rear-LSD lock and converter behavior remain provisional.",
+        "Only facts are source-confirmed. All other simulation parameters are estimates: curb mass, body geometry, tire grip, torque-envelope interpolation, unspecified ratios, converter calibration, steering/brakes, load distribution, suspension and aero. Generic collision body does not reproduce cargo-bed geometry, live-axle kinematics, cargo/towing or payload dynamics.",
+        "Shared RTG-001 artwork/cockpit references only; no new original art or independent desktop/touch drive acceptance claimed.",
+        "Wheel-well-aware compound collision geometry uses the existing engine wheel-envelope cutouts; clearance margins remain estimated, not measured bodywork. This avoids an unbroken lower-body box crossing the suspension-to-tread path."
+      ]
+    }
+  ],
+  "deferred": [
+    {
+      "candidateId": "jeep-grand-cherokee-srt-2014-roster-candidate",
+      "reason": "Deferred in favor of distinct pickup bodies rather than another same-platform SUV in this wave."
+    },
+    {
+      "candidateId": "ford-f-150-1986-xlt-lariat-candidate",
+      "reason": "Period trim/powertrain source not established this wave; not implemented from name alone."
+    }
+  ]
+}

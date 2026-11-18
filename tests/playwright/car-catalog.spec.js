@@ -77,3 +77,23 @@ import "../helpers/carCatalogPlaceholderWave08PickerCases.js";
 
 // Full navigation coverage remains separate from each car's bounded setup and real drive.
 import '../helpers/carCatalogPickerTraversalCases.js';
+
+import '../helpers/carCatalogPlaceholderWave09PickerCases.js';
+
+import '../helpers/carCatalogPlaceholderWave10PickerCases.js';
+
+import '../helpers/carCatalogPlaceholderWave11PickerCases.js';
+
+import '../helpers/carCatalogPlaceholderWave12PickerCases.js';
+
+import '../helpers/carCatalogPlaceholderWave13PickerCases.js';
+
+import '../helpers/carCatalogPlaceholderWave14PickerCases.js';
+
+import '../helpers/carCatalogPlaceholderWave15PickerCases.js';
+
+import '../helpers/carCatalogPlaceholderWave16PickerCases.js';
+
+import '../helpers/carCatalogPlaceholderWave17PickerCases.js';
+
+import '../helpers/carCatalogPlaceholderWave18PickerCases.js';
