@@ -4,8 +4,8 @@
   "name": "Mirabelle Clover 1966",
   "stableCarId": "saved-car:Mirabelle Clover 1966",
   "referenceVehicle": "Japan1966 Datsun Truck1300,520,J-series1299cc,column-shift4MT. Two-door regular-cab compact pickup,three seats,EMPTY BED,not320or620.",
-  "runtimeDocumentIdVerified": false,
-  "runtimeDocumentId": null,
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "mirabelle-clover-1966",
   "sourceHashes": {
     "body": "18f4083018db65709a1ea056a78016618bfc9b4a7e00f20b41370c5cf6daad38",
     "dashboard": "806c2f398a2cbfff6fb0c7f0e0e009f8512cb17c801da7fcd7572c44f9aff52c",
@@ -23,5 +23,6 @@
   ],
   "status": "source-ready-native-regeneration-required",
   "productionIntegrated": false,
-  "gameplayAccepted": false
+  "gameplayAccepted": false,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
 }

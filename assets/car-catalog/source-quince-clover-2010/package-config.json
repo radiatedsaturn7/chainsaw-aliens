@@ -40,5 +40,9 @@
         "exact identity and visual configuration"
       ]
     }
-  ]
+  ],
+  "runtimeDocumentId": "quince-clover-2010",
+  "runtimeDocumentIdVerified": true,
+  "stableCarId": "saved-car:Quince Clover 2010",
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
 }

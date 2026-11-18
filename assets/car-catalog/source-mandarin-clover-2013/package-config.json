@@ -3,7 +3,7 @@
   "name": "Mandarin Clover 2013",
   "stableCarId": "saved-car:Mandarin Clover 2013",
   "runtimeId": "saved-car:Mandarin Clover 2013",
-  "runtimeDocumentId": null,
+  "runtimeDocumentId": "mandarin-clover-2013",
   "candidateId": null,
   "referenceVehicle": "Germany January2013 Opel Adam base1.2naturallyaspirated,5MT. Three-door four-seat hatchback,baseAdam,notJam/Glam/Slam orlaterturbo.",
   "identity": null,
@@ -50,5 +50,7 @@
         "exact identity and visual configuration"
       ]
     }
-  ]
+  ],
+  "runtimeDocumentIdVerified": true,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
 }

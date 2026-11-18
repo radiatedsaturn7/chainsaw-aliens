@@ -3,7 +3,7 @@
   "name": "Feijoa Clover 2010",
   "stableCarId": "saved-car:Feijoa Clover 2010",
   "runtimeId": "saved-car:Feijoa Clover 2010",
-  "runtimeDocumentId": null,
+  "runtimeDocumentId": "feijoa-clover-2010",
   "candidateId": null,
   "referenceVehicle": "Germany September2010 Renault Wind Dynamique TCe100,1.2turbo,5MT. Two-seat coupe-roadster with ROTATING HARDTOP,notGordini or1.6 133.",
   "identity": null,
@@ -50,5 +50,7 @@
         "exact identity and visual configuration"
       ]
     }
-  ]
+  ],
+  "runtimeDocumentIdVerified": true,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
 }

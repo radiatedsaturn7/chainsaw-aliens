@@ -3,7 +3,7 @@
   "name": "Olive Clover 2007",
   "stableCarId": "saved-car:Olive Clover 2007",
   "runtimeId": "saved-car:Olive Clover 2007",
-  "runtimeDocumentId": null,
+  "runtimeDocumentId": "olive-clover-2007",
   "candidateId": null,
   "referenceVehicle": "Germany July2007 Fiat Linea Active1.4 8V,5MT. Four-door sedan,baseActive trim,notT-Jet orMultijet.",
   "identity": null,
@@ -50,5 +50,7 @@
         "exact identity and visual configuration"
       ]
     }
-  ]
+  ],
+  "runtimeDocumentIdVerified": true,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
 }

@@ -4,8 +4,8 @@
   "name": "Feijoa Clover 2010",
   "stableCarId": "saved-car:Feijoa Clover 2010",
   "referenceVehicle": "Germany September2010 Renault Wind Dynamique TCe100,1.2turbo,5MT. Two-seat coupe-roadster with ROTATING HARDTOP,notGordini or1.6 133.",
-  "runtimeDocumentIdVerified": false,
-  "runtimeDocumentId": null,
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "feijoa-clover-2010",
   "sourceHashes": {
     "body": "78738b86dd2a63b0e3d6048b167719691d01b329c8b7049851c0906a5b20bb13",
     "dashboard": "8473f1250f162e7d64e7e971f30d4461aa28adb8762619b65d51c4354fbecfb6",
@@ -23,5 +23,6 @@
   ],
   "status": "source-ready-native-regeneration-required",
   "productionIntegrated": false,
-  "gameplayAccepted": false
+  "gameplayAccepted": false,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
 }

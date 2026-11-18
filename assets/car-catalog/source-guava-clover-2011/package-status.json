@@ -4,8 +4,8 @@
   "name": "Guava Clover 2011",
   "stableCarId": "saved-car:Guava Clover 2011",
   "referenceVehicle": "Germany2011 Renault Latitude Initiale2.0 16V140,M4Rpetrol,6MT. Four-door executive sedan,Initiale cabin,notdiesel/CVT orSamsung-badged substitute.",
-  "runtimeDocumentIdVerified": false,
-  "runtimeDocumentId": null,
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "guava-clover-2011",
   "sourceHashes": {
     "body": "a12f4739a14d5df8cdb520ac13be51ae5ad81e79fde945fb6d4c7f9d2581fcbf",
     "dashboard": "9e475f7c15383fddd68ccd9cd6e57acc338afc1dc8fb2a2e06b7a12b1a03a657",
@@ -23,5 +23,6 @@
   ],
   "status": "source-ready-native-regeneration-required",
   "productionIntegrated": false,
-  "gameplayAccepted": false
+  "gameplayAccepted": false,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
 }

@@ -4,8 +4,8 @@
   "name": "Damson Clover 1970",
   "stableCarId": "saved-car:Damson Clover 1970",
   "referenceVehicle": "Japan1970 Nissan Laurel2000GX KPC30,G20 twin-carb,4MT. Pillarless two-door hardtop,five seats,VINYL ROOF.",
-  "runtimeDocumentIdVerified": false,
-  "runtimeDocumentId": null,
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "damson-clover-1970",
   "sourceHashes": {
     "body": "2079573f2f629cfb7e8be2b21f21237712d7c517ec8ecbafdbfd0aa69e0490e7",
     "dashboard": "2e2f39a676355839c6f136bd084623b6da4dea791628cc56b38c632d189b71c8",
@@ -23,5 +23,6 @@
   ],
   "status": "source-ready-native-regeneration-required",
   "productionIntegrated": false,
-  "gameplayAccepted": false
+  "gameplayAccepted": false,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
 }

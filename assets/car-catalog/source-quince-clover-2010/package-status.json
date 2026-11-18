@@ -4,8 +4,8 @@
   "name": "Quince Clover 2010",
   "stableCarId": "saved-car:Quince Clover 2010",
   "referenceVehicle": "US2010 Volvo V70 3.2FWD,federal235hp,6-speedGeartronic. Ordinary five-door station wagon,NOT raised/claddedXC70.",
-  "runtimeDocumentIdVerified": false,
-  "runtimeDocumentId": null,
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "quince-clover-2010",
   "sourceHashes": {
     "body": "3bb879319c572405d023adf6e928f2c07745f16d2ac13d37cff337747b6b70cf",
     "dashboard": "7ca085c65da1bf6c7d36a4c0c1a56e708ad5d67a8b0c9c6d639a0688481bf25e",
@@ -23,5 +23,6 @@
   ],
   "status": "source-ready-native-regeneration-required",
   "productionIntegrated": false,
-  "gameplayAccepted": false
+  "gameplayAccepted": false,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
 }

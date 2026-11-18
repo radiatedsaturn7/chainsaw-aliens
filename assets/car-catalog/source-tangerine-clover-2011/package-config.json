@@ -3,7 +3,7 @@
   "name": "Tangerine Clover 2011",
   "stableCarId": "saved-car:Tangerine Clover 2011",
   "runtimeId": "saved-car:Tangerine Clover 2011",
-  "runtimeDocumentId": null,
+  "runtimeDocumentId": "tangerine-clover-2011",
   "candidateId": null,
   "referenceVehicle": "Europe2011 Kia Picanto TA1.25Kappa,five-door,5MT,non-ISG.14-inch wheels,noinventednationaltrim. Mirror2012page contains2011launchdossier.",
   "identity": null,
@@ -50,5 +50,7 @@
         "exact identity and visual configuration"
       ]
     }
-  ]
+  ],
+  "runtimeDocumentIdVerified": true,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
 }

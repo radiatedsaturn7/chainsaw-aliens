@@ -4,8 +4,8 @@
   "name": "Clementine Clover 2010",
   "stableCarId": "saved-car:Clementine Clover 2010",
   "referenceVehicle": "UK2010 Vauxhall Meriva S1.4 16V100,5MT. Second-generation five-seat mini-MPV,REAR-HINGED FLEXDOORS,RHD,noSEpanoramicroof.",
-  "runtimeDocumentIdVerified": false,
-  "runtimeDocumentId": null,
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "clementine-clover-2010",
   "sourceHashes": {
     "body": "c918f9ae395765e5dc619b09203d25b32c27d1f76b57ecfd1ecbc254bd889a3f",
     "dashboard": "25ca226eb2b6cce8b8cff8c486cc45976cfe0321e5a094b08c8f2df7be45e08d",
@@ -23,5 +23,6 @@
   ],
   "status": "source-ready-native-regeneration-required",
   "productionIntegrated": false,
-  "gameplayAccepted": false
+  "gameplayAccepted": false,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
 }

@@ -4,8 +4,8 @@
   "name": "Pomelo Clover 2007",
   "stableCarId": "saved-car:Pomelo Clover 2007",
   "referenceVehicle": "US2007 Chrysler Pacifica Touring FWD29T,4.0V6,6-speedAutoStick. Original five-door crossover wagon,standard17-inch wheels,NOT laterminivan orSignaturepackage.",
-  "runtimeDocumentIdVerified": false,
-  "runtimeDocumentId": null,
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "pomelo-clover-2007",
   "sourceHashes": {
     "body": "5dd09b4f391ef34033910bdd8dfe53eb90b2e099e5090f85b03bb5b08290c54f",
     "dashboard": "bca606e0dd3f877d033245e4527e2cf67edf4699c3c1b256ad5a8e0acecea264",
@@ -23,5 +23,6 @@
   ],
   "status": "source-ready-native-regeneration-required",
   "productionIntegrated": false,
-  "gameplayAccepted": false
+  "gameplayAccepted": false,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
 }

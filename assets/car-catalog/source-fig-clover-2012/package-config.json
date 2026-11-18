@@ -3,7 +3,7 @@
   "name": "Fig Clover 2012",
   "stableCarId": "saved-car:Fig Clover 2012",
   "runtimeId": "saved-car:Fig Clover 2012",
-  "runtimeDocumentId": null,
+  "runtimeDocumentId": "fig-clover-2012",
   "candidateId": null,
   "referenceVehicle": "US2012 Lincoln MKS standard3.7V6,FWD,6AT. Four-door sedan,standard18-inch wheels,noEcoBoost/appearancepackage.",
   "identity": null,
@@ -50,5 +50,7 @@
         "exact identity and visual configuration"
       ]
     }
-  ]
+  ],
+  "runtimeDocumentIdVerified": true,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
 }

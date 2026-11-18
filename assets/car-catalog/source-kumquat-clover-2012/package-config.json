@@ -3,7 +3,7 @@
   "name": "Kumquat Clover 2012",
   "stableCarId": "saved-car:Kumquat Clover 2012",
   "runtimeId": "saved-car:Kumquat Clover 2012",
-  "runtimeDocumentId": null,
+  "runtimeDocumentId": "kumquat-clover-2012",
   "candidateId": null,
   "referenceVehicle": "US2012 Hyundai Santa Fe GLS2.4,FWD,6AT. Five-door SUV,standard17-inch wheels,retain2012generation,notV6/AWD.",
   "identity": null,
@@ -50,5 +50,7 @@
         "exact identity and visual configuration"
       ]
     }
-  ]
+  ],
+  "runtimeDocumentIdVerified": true,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
 }

@@ -4,8 +4,8 @@
   "name": "Apple Clover 2003",
   "stableCarId": "saved-car:Apple Clover 2003",
   "referenceVehicle": "US 2003 Acura CL Type-S 3.2 V6, 6MT, non-navigation. Two-door four-seat luxury coupe; manual cockpit.",
-  "runtimeDocumentIdVerified": false,
-  "runtimeDocumentId": null,
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "apple-clover-2003",
   "sourceHashes": {
     "body": "34f24fe24ddb2fc28ea0f94873fc01f686d328b6d51d512ddf55cde7eec4da51",
     "dashboard": "b9d7569b5ad7693980a296371496cb99c8e4331863ccebadfd53e90adf18f51f",
@@ -23,5 +23,6 @@
   ],
   "status": "source-ready-native-regeneration-required",
   "productionIntegrated": false,
-  "gameplayAccepted": false
+  "gameplayAccepted": false,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
 }
