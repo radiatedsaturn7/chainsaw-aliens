@@ -18,6 +18,12 @@
 | Ending | Separation, death, return and possible reconstruction | PROPOSED | Grief, choice and persistence |
 | Postgame | More routes, races, upgrades and customization | DESIGN GOAL | Keep the racing game worth returning to |
 
+## World-history anchor (updated November 18)
+- **~2980–2984 (draft dates):** Heaven adoption becomes mass migration, a technological Rapture unfolding in only a few years.
+- **~2984–2994:** Rob is effectively the last biological human outside, not an ancient immortal. Cait is created sometime during this interval; her exact age/history are not yet established.
+- **2994:** Main story takes place. Localized ice, storms and a decade without maintenance damage infrastructure; many houses should still look relatively intact.
+- **See:** [The Ascension](WORLD_LORE/THE_ASCENSION.md) and the updated [Heaven treatment](CHAPTER_TREATMENTS/06-data-center-city.md).
+
 ## Reveal schedule — deliberately undecided
 - **Rob's status as the last human:** choose when and how the audience confirms it.
 - **Cait's creation and Rob's loneliness:** foreshadow through behavior; avoid blunt exposition.
