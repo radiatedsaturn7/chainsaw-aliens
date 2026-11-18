@@ -1,0 +1,1261 @@
+{
+  "schemaVersion": 1,
+  "base": "547dd4e688b636c37caf0b07e1bd230079b0ce2e",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "toyota-sienna-ce-2004-us-seven-seat-fwd-5at-supplemental",
+      "identity": {
+        "year": 2004,
+        "make": "Toyota",
+        "model": "Sienna",
+        "trim": "CE seven-passenger3.3V6 front-wheel-drive five-speed automatic,standard16-inchcoveredsteelwheels; not8-seat4175lb,AWD,LE/XLE orlater3.5",
+        "market": "United States"
+      },
+      "referenceVehicle": "2004 United States Toyota Sienna, CE seven-passenger3.3V6 front-wheel-drive five-speed automatic,standard16-inchcoveredsteelwheels; not8-seat4175lb,AWD,LE/XLE orlater3.5",
+      "bodyClass": "five-door seven-seat minivan with sliding rear doors; production",
+      "facts": {
+        "powerHp": 230,
+        "powerRpm": 5600,
+        "torqueLbFt": 242,
+        "torqueRpm": 3600,
+        "engineDisplacementL": 3.3,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 5.08,
+        "widthM": 1.9659600000000002,
+        "heightM": 1.7500600000000002,
+        "wheelbaseM": 3.03022,
+        "trackFrontIn": 65.6,
+        "trackRearIn": 66.9,
+        "transmission": "automatic",
+        "gearCount": 5,
+        "curbKg": 1868.8005644,
+        "tireSize": [
+          215,
+          65,
+          16
+        ],
+        "groundClearanceM": 0.17526,
+        "dragCoefficient": 0.3,
+        "fuelTankUSgal": 20,
+        "absEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Toyota/Sienna/Toyota_US%20Sienna_2004.pdf",
+          "publisher": "Toyota original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "tireSize",
+            "groundClearanceM",
+            "dragCoefficient",
+            "fuelTankUSgal",
+            "absEnabled"
+          ],
+          "access": "OriginalUS2004factoryeBrochure finalspecpage read2026-11-18: exactCE7passenger4120lb not8passenger4175.230hp5600/242lbft3600, allgeometry/tires documented.5ATratios/finalareestimates."
+        }
+      ],
+      "limits": [
+        "NooptionVSCclaim; selectedbase rear-drum/ABSconfiguration. Payload andpassenger massnotincluded.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "lungwort-2005",
+            "alias": "Lungwort 2005",
+            "reference": "2005 HondaOdysseyEX3.5V6 FWD5AT",
+            "documentId": "lungwort-2005",
+            "runtimeId": "saved-car:Lungwort 2005",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "selfheal-2005",
+            "alias": "Selfheal 2005",
+            "reference": "2005 DodgeGrandCaravanSE3.3V6 FWD4AT",
+            "documentId": "selfheal-2005",
+            "runtimeId": "saved-car:Selfheal 2005",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No Sienna identity in554nativecatalog. XL20Toyota3MZV6minivan distinct fromOdysseyJ35 andGrandCaravanOHV3.3, notbadge/yearpadding.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Toyota/Sienna/Toyota_US%20Sienna_2004.pdf"
+        ]
+      },
+      "name": "Ash Clover 2004",
+      "id": "ash-clover-2004",
+      "simulationEstimates": {
+        "reverseRatio": 3.378,
+        "cgHeightM": 0.64,
+        "tireGrip": 0.83,
+        "spring": 0.43,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 430,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 8.8,
+        "drivetrain": "fwd",
+        "finalDrive": 3.478,
+        "gearRatios": [
+          4.235,
+          2.36,
+          1.517,
+          1.047,
+          0.756
+        ],
+        "transmissionLabel": "5-speed automatic (estimated shift calibration)"
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "toyota-highlander-base-2004-us-2-4-fwd-4at-supplemental",
+      "identity": {
+        "year": 2004,
+        "make": "Toyota",
+        "model": "Highlander",
+        "trim": "base2.4four-cylinder front-wheel-drive four-speed automatic,five seats,nooptionalroofrack or3rdrow; not3.3V6,Limited,4WD orhybrid",
+        "market": "United States"
+      },
+      "referenceVehicle": "2004 United States Toyota Highlander, base2.4four-cylinder front-wheel-drive four-speed automatic,five seats,nooptionalroofrack or3rdrow; not3.3V6,Limited,4WD orhybrid",
+      "bodyClass": "five-door five-seat midsize crossover; production",
+      "facts": {
+        "powerHp": 160,
+        "powerRpm": 5700,
+        "torqueLbFt": 165,
+        "torqueRpm": 4000,
+        "engineDisplacementL": 2.4,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 4.68884,
+        "widthM": 1.82626,
+        "heightM": 1.6789399999999999,
+        "wheelbaseM": 2.7152600000000002,
+        "trackFrontIn": 62.2,
+        "trackRearIn": 61.6,
+        "transmission": "automatic",
+        "gearCount": 4,
+        "curbKg": 1596.6451424000002,
+        "tireSize": [
+          225,
+          70,
+          16
+        ],
+        "groundClearanceM": 0.17526,
+        "dragCoefficient": 0.34,
+        "fuelTankUSgal": 19.1,
+        "absEnabled": true,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Toyota/Highlander/Toyota_US%20Highlander_2004.pdf",
+          "publisher": "Toyota original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "tireSize",
+            "groundClearanceM",
+            "dragCoefficient",
+            "fuelTankUSgal",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "OriginalUS2004factoryeBrochure table read2026-11-18: first2WDcolumn3520lb/fiveseats (3570thirdrow),160hp5700/165lbft4000;4ATnotV6five-speed. Secondcolumnheadingrepeats2WDbutcorresponds4WD; onlyfirstused."
+        }
+      ],
+      "limits": [
+        "Transmissionratios/final,CG,balance,redline andperformanceexplicitestimates. GenerictractioncontrolnotexactVSC/SnowMode.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "marjoram-2003",
+            "alias": "Marjoram 2003",
+            "reference": "2003 ToyotaCamryLE2.4FWD4AT",
+            "documentId": "marjoram-2003",
+            "runtimeId": "saved-car:Marjoram 2003",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "stonepod-2006",
+            "alias": "Stonepod 2006",
+            "reference": "2006 HondaElementEX2WD2.4manual",
+            "documentId": "stonepod-2006",
+            "runtimeId": "saved-car:Stonepod 2006",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No Highlander/Klugeridentity found. XU20tallfive-seatSUVbody andchassis differfromCamrysedan despite2AZenginefamily; notCamrybadgevariant.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Toyota/Highlander/Toyota_US%20Highlander_2004.pdf"
+        ]
+      },
+      "name": "Birch Clover 2004",
+      "id": "birch-clover-2004",
+      "simulationEstimates": {
+        "reverseRatio": 3.145,
+        "cgHeightM": 0.63,
+        "tireGrip": 0.83,
+        "spring": 0.43,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 440,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 6000,
+        "revLimitRpm": 6300,
+        "topSpeedMph": 109,
+        "zeroToSixtySec": 11.2,
+        "drivetrain": "fwd",
+        "finalDrive": 2.923,
+        "gearRatios": [
+          3.943,
+          2.197,
+          1.413,
+          1.02
+        ],
+        "transmissionLabel": "4-speed automatic (estimated shift calibration)"
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "toyota-sequoia-sr5-2005-us-5at-rwd-supplemental",
+      "identity": {
+        "year": 2005,
+        "make": "Toyota",
+        "model": "Sequoia",
+        "trim": "SR5rear-wheel-drive4.7VVT-iV8 five-speed automatic,eightseats,standard24570R16,nooptionalrack orSportPackage; not4WD/Limited",
+        "market": "United States"
+      },
+      "referenceVehicle": "2005 United States Toyota Sequoia, SR5rear-wheel-drive4.7VVT-iV8 five-speed automatic,eightseats,standard24570R16,nooptionalrack orSportPackage; not4WD/Limited",
+      "bodyClass": "five-door eight-seat full-size body-on-frame SUV; production",
+      "facts": {
+        "powerHp": 282,
+        "powerRpm": 5400,
+        "torqueLbFt": 325,
+        "torqueRpm": 3400,
+        "engineDisplacementL": 4.7,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 5.17906,
+        "widthM": 1.8491199999999999,
+        "heightM": 1.85928,
+        "wheelbaseM": 2.9997399999999996,
+        "trackFrontIn": 65.9,
+        "trackRearIn": 67.3,
+        "transmission": "automatic",
+        "gearCount": 5,
+        "curbKg": 2211.2628037500003,
+        "tireSize": [
+          245,
+          70,
+          16
+        ],
+        "groundClearanceM": 0.254,
+        "fuelTankUSgal": 26.4,
+        "absEnabled": true,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Toyota/Sequoia/Toyota_US%20Sequoia_2005.pdf",
+          "publisher": "Toyota original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "tireSize",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "Original2005USfactorybrochure specpage read2026-11-18. ExactSR5RWD4875lb vs5000fourWD. Publishedno-rackstandardtirewidth72.8in,height73.2in,24570R16. Period282hp/325lbft notlaterrerating. Ratios/finalnotpublishedhere."
+        }
+      ],
+      "limits": [
+        "Factorywidthvarieswithtires/rack; selectedbasepublishedcolumn, notLimited75.2in. GenericTRACnotexactVSC; no4WD/airleveling/towing.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "glade-clover-2005",
+            "alias": "Glade Clover 2005",
+            "reference": "2005 NissanArmadaSE5.6V8RWD5AT",
+            "documentId": "glade-clover-2005",
+            "runtimeId": "saved-car:Glade Clover 2005",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoSequoia/Tundraidentity found. ToyotaUCK35 2UZV8body-on-frame live-rear-axleSUV distinctfromArmadaVK56independentrearSUV andLandCruiserFJ40.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Toyota/Sequoia/Toyota_US%20Sequoia_2005.pdf"
+        ]
+      },
+      "name": "Alder Clover 2005",
+      "id": "alder-clover-2005",
+      "simulationEstimates": {
+        "reverseRatio": 3.224,
+        "cgHeightM": 0.78,
+        "dragCoefficient": 0.4,
+        "tireGrip": 0.78,
+        "spring": 0.61,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.22,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.03,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 450,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 5600,
+        "revLimitRpm": 5900,
+        "topSpeedMph": 110,
+        "zeroToSixtySec": 8.4,
+        "drivetrain": "rwd",
+        "finalDrive": 4.1,
+        "gearRatios": [
+          3.52,
+          2.042,
+          1.4,
+          1,
+          0.716
+        ],
+        "transmissionLabel": "5-speed automatic (estimated shift calibration)"
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "infiniti-m45-base-2003-us-5at-supplemental",
+      "identity": {
+        "year": 2003,
+        "make": "Infiniti",
+        "model": "M45",
+        "trim": "Y34standard4.5V8 rear-wheel-drive five-speed automatic,basewithoutComfortConvenience/Premium/TechnologyPackages; not2006Y50 orJapaneseV6Gloria",
+        "market": "United States"
+      },
+      "referenceVehicle": "2003 United States Infiniti M45, Y34standard4.5V8 rear-wheel-drive five-speed automatic,basewithoutComfortConvenience/Premium/TechnologyPackages; not2006Y50 orJapaneseV6Gloria",
+      "bodyClass": "four-door five-seat midsize luxury sedan; production",
+      "facts": {
+        "powerHp": 340,
+        "engineDisplacementL": 4.5,
+        "aspiration": "Naturally Aspirated",
+        "transmission": "automatic",
+        "gearCount": 5
+      },
+      "sources": [
+        {
+          "url": "https://global.nissannews.com/ja-JP/releases/020329-01",
+          "publisher": "Nissan factory announcement (Japanese)",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL",
+            "aspiration",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "NissanMarch2002Japaneseannouncement confirmsUS2003M45and340hpV8; productiontiming/4.5RWD5ATconfirmedbyattributedInfinitiaugust2002pricingrelease mirroredAutochannel. USarchive403notclaimedread. Othernumericvaluesexplicitestimated."
+        },
+        {
+          "url": "https://www.theautochannel.com/news/2002/08/22/146123.html",
+          "publisher": "Infiniti manufacturer production-pricing release, contemporary attributed mirror",
+          "fields": [
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "identity",
+            "drivetrain"
+          ],
+          "access": "Read2026-11-18:August22 2002manufacturerannouncement,October4US2003sale,340hp4.5RWD5AT. Notindependentreview."
+        }
+      ],
+      "limits": [
+        "1747kg estimatedbaseunladenmass; sourceanchor sufficientforidentity/output, remaininggeometryandgearingexplicitestimates. Noexactchassis-electronics claim.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "magnolia-40-1990",
+            "alias": "Magnolia 40 1990",
+            "reference": "1990 LexusLS4004.0V8RWD4AT",
+            "documentId": "magnolia-40-1990",
+            "runtimeId": "saved-car:Magnolia 40 1990",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoM45/Y34Gloria/Cedricidentity found. NarrowerY34sport-luxurysedan distinctfromF50Q45flagship body/wheelbase/platform, thoughVK45engineand5ATrelated; notrebadgedduplicate.",
+        "evidence": [
+          "https://global.nissannews.com/ja-JP/releases/020329-01",
+          "https://www.theautochannel.com/news/2002/08/22/146123.html"
+        ]
+      },
+      "name": "Elm Clover 2003",
+      "id": "elm-clover-2003",
+      "simulationEstimates": {
+        "reverseRatio": 2.37,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.32,
+        "tireGrip": 0.83,
+        "spring": 0.43,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.08,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 400,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "fuelTankUSgal": 21.1,
+        "topSpeedMph": 147,
+        "zeroToSixtySec": 6.0,
+        "drivetrain": "rwd",
+        "finalDrive": 3.357,
+        "gearRatios": [
+          3.54,
+          2.264,
+          1.471,
+          1,
+          0.834
+        ],
+        "powerRpm": 6400,
+        "torqueLbFt": 333,
+        "torqueRpm": 4000,
+        "curbKg": 1747,
+        "lengthM": 5.0088799999999996,
+        "widthM": 1.77038,
+        "heightM": 1.46304,
+        "wheelbaseM": 2.79908,
+        "trackFrontIn": 59.8,
+        "trackRearIn": 60.2,
+        "tireSize": [
+          235,
+          45,
+          18
+        ],
+        "transmissionLabel": "5-speed automatic (estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "audi-a3-2010-us-tdi-premium-6dct",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2010,
+        "make": "Audi",
+        "model": "A3",
+        "trim": "8P five-door TDI Premium2.0commonrail diesel six-speedS-tronic FWD,standard17-inchwheels,noOpenSky;notgasoline,quattro orRS3",
+        "market": "United States"
+      },
+      "referenceVehicle": "2010 United States Audi A3 8P five-door TDI Premium2.0commonrail diesel six-speedS-tronic FWD,standard17-inchwheels,noOpenSky;notgasoline,quattro orRS3",
+      "bodyClass": "hatchback",
+      "facts": {
+        "powerKw": 104.39798207999999,
+        "powerRpm": 4200,
+        "torqueNm": 319.973035728,
+        "torqueRpm": 1750,
+        "engineDisplacementL": 2,
+        "aspiration": "Turbocharged",
+        "drivetrain": "fwd",
+        "transmission": "automatic",
+        "gearCount": 6,
+        "lengthM": 4.2900599999999995,
+        "widthM": 1.76276,
+        "heightM": 1.4223999999999999,
+        "wheelbaseM": 2.5781,
+        "trackFrontIn": 60.3,
+        "trackRearIn": 59.3,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 8.9,
+        "tireSize": [
+          225,
+          45,
+          17
+        ],
+        "frontTire": [
+          225,
+          45,
+          17
+        ],
+        "rearTire": [
+          225,
+          45,
+          17
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Audi/A3/Audi_US%20A3_2010.pdf",
+          "publisher": "Audi original US factory brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "topSpeedMph",
+            "zeroToSixtySec",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "identity"
+          ],
+          "access": "Original2010brochurePDF23 TDIcolumn:140hp4200rpm236lb-ft1750\u20132500,6-speedS-tronicFWDonly;geometry,8.9s0\u201360/130mph. Premiumequipment225/45R17."
+        }
+      ],
+      "limits": [
+        "Supplementary sourced identity consumes an existing open canonical660 reservation; historical list unchanged.",
+        "All suggestedEstimates are explicitly modeling estimates, not factory values. No driving/test/finished-art success claimed.",
+        "1505kg curb,gear ratios/final andtank areestimates. Nativegearsetnormalizedtoonefinaldrive;notclaimedfactoryDQ250outputshaftspecification.",
+        "US140hp convertedmechanically;do notuse103kW140PSEuropeanrating. Perioddieselemissionsmarketingisnotadopted asvalidatedfact. TorqueRPMstartofplateau.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "water-crowfoot-2011",
+            "alias": "Water Crowfoot 2011",
+            "referenceVehicle": "2011 Netherlands Audi RS3 Sportback 8P, standard five-door2.5TFSI five-cylinder seven-speed S tronic, no Pro Line package",
+            "documentId": "water-crowfoot-2011",
+            "runtimeId": "saved-car:Water Crowfoot 2011",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "redwood-clover-2012",
+            "alias": "Redwood Clover 2012",
+            "referenceVehicle": "2012 US Volkswagen Golf Mk6TDI CleanDiesel four-door2.0commonrail6MT standard17inchalloy,notGTD/GTI/R",
+            "documentId": "redwood-clover-2012",
+            "runtimeId": "saved-car:Redwood Clover 2012",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Ordinary8PdieselFWDdualclutch differsfromRS3five-cylinderAWD7DCT. RelatedGolfTDIhasmanualanddifferentbody; exactAudiDCT combination hasnotbeenadded.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Audi/A3/Audi_US%20A3_2010.pdf"
+        ]
+      },
+      "name": "Rowan Clover 2010",
+      "id": "rowan-clover-2010",
+      "simulationEstimates": {
+        "reverseRatio": 3.989,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 4500,
+        "revLimitRpm": 4800,
+        "fuelTankUSgal": 14.5,
+        "curbKg": 1505,
+        "gearRatios": [
+          3.462,
+          2.05,
+          1.3,
+          0.902,
+          0.719,
+          0.595
+        ],
+        "finalDrive": 4.118,
+        "transmissionLabel": "6-speed dual-clutch S tronic approximation",
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 94.399999976926
+          },
+          {
+            "rpm": 1750,
+            "torqueLbFt": 235.999999942315
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 235.999999942315
+          },
+          {
+            "rpm": 4200,
+            "torqueLbFt": 175.06666676473634
+          },
+          {
+            "rpm": 4800,
+            "torqueLbFt": 141.59999996538897
+          }
+        ]
+      }
+    },
+    {
+      "candidateId": "audi-a6-2011-us-3-0t-premium-quattro-6at",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2011,
+        "make": "Audi",
+        "model": "A6",
+        "trim": "C6 facelift3.0TFSI superchargedV6 Premiumquattro sedan6-speedTiptronic,standardnonSportchassis;not3.2CVT,4.2,S6orRS6",
+        "market": "United States"
+      },
+      "referenceVehicle": "2011 United States Audi A6 C6 facelift3.0TFSI superchargedV6 Premiumquattro sedan6-speedTiptronic,standardnonSportchassis;not3.2CVT,4.2,S6orRS6",
+      "bodyClass": "sedan",
+      "facts": {
+        "powerKw": 223.70996159999999,
+        "powerRpm": 5100,
+        "torqueNm": 420.30356388,
+        "torqueRpm": 2500,
+        "engineDisplacementL": 3,
+        "aspiration": "Supercharged",
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "gearCount": 6,
+        "lengthM": 4.9276,
+        "widthM": 1.8541999999999998,
+        "heightM": 1.45796,
+        "wheelbaseM": 2.84226,
+        "trackFrontIn": 63.5,
+        "trackRearIn": 63.7,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 5.9
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Audi/A6/Audi_US%20A6_2011.pdf",
+          "publisher": "Audi original US factory brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "topSpeedMph",
+            "zeroToSixtySec",
+            "identity"
+          ],
+          "access": "Original2011USPDF59 shows3.0TFSI supercharged300hp5100rpm310lb-ft2500\u20135100,quattro6AT,sedan5.9s0\u201360/130mph;A6geometrydistinctS6pairedvalues."
+        }
+      ],
+      "limits": [
+        "Supplementary sourced identity consumes an existing open canonical660 reservation; historical list unchanged.",
+        "All suggestedEstimates are explicitly modeling estimates, not factory values. No driving/test/finished-art success claimed.",
+        "1840kg curb,tires,ratios andfuelcapacity areestimates. TFSI badgehereusesmechanicalsupercharger,not turbo.",
+        "Fixed40:60AWDandnativefixedsuspension approximatequattroandstandardchassis; noactive differentialorairsuspensionclaim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "golden-saxifrage-2003",
+            "alias": "Golden Saxifrage 2003",
+            "referenceVehicle": "2003 Europe Audi RS6 C5, standard 4.2 V8 biturbo sedan five-speed torque-converter automatic, not Avant/plus/Competition",
+            "documentId": "golden-saxifrage-2003",
+            "runtimeId": "saved-car:Golden Saxifrage 2003",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "field-pansy-2009",
+            "alias": "Field Pansy 2009",
+            "referenceVehicle": "2009 continental Europe Audi RS 6, C6 standard5.0 V10 biturbo sedan quattro6AT,standard19inch wheels and250km/h limiter; notAvant/plus",
+            "documentId": "field-pansy-2009",
+            "runtimeId": "saved-car:Field Pansy 2009",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "C6ordinarysupercharged3.0V6distinctfromC6RS6twin-turboV10andC5RS6V8; differentmass/torquecurve,notyear-onlysameengine.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Audi/A6/Audi_US%20A6_2011.pdf"
+        ]
+      },
+      "name": "Maple Clover 2011",
+      "id": "maple-clover-2011",
+      "simulationEstimates": {
+        "reverseRatio": 3.403,
+        "cgHeightM": 0.54,
+        "groundClearanceM": 0.125,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.56,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "fuelTankUSgal": 21.1,
+        "curbKg": 1840,
+        "tireSize": [
+          245,
+          40,
+          18
+        ],
+        "frontTire": [
+          245,
+          40,
+          18
+        ],
+        "rearTire": [
+          245,
+          40,
+          18
+        ],
+        "gearRatios": [
+          4.171,
+          2.34,
+          1.521,
+          1.143,
+          0.867,
+          0.691
+        ],
+        "finalDrive": 3.204,
+        "centerDifferentialBalance": 0.6,
+        "transmissionLabel": "6-speed torque-converter Tiptronic approximation"
+      }
+    },
+    {
+      "candidateId": "audi-a8-2011-us-4-2-fsi-swb-8at",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2011,
+        "make": "Audi",
+        "model": "A8",
+        "trim": "D4 short-wheelbase4.2FSI naturallyaspiratedV8 quattro8-speedTiptronic,standard19-inchwheels,noSportRearDifferential;notA8L,W12orS8",
+        "market": "United States"
+      },
+      "referenceVehicle": "2011 United States Audi A8 D4 short-wheelbase4.2FSI naturallyaspiratedV8 quattro8-speedTiptronic,standard19-inchwheels,noSportRearDifferential;notA8L,W12orS8",
+      "bodyClass": "sedan",
+      "facts": {
+        "powerKw": 277.400352384,
+        "powerRpm": 6800,
+        "torqueNm": 444.708286944,
+        "torqueRpm": 3500,
+        "engineDisplacementL": 4.2,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "gearCount": 8,
+        "lengthM": 5.135879999999999,
+        "heightM": 1.4605,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 5.7,
+        "tireSize": [
+          255,
+          45,
+          19
+        ],
+        "frontTire": [
+          255,
+          45,
+          19
+        ],
+        "rearTire": [
+          255,
+          45,
+          19
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Audi/A8/Audi_US%20A8_2011.pdf",
+          "publisher": "Audi original US factory brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "heightM",
+            "topSpeedMph",
+            "zeroToSixtySec",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "identity"
+          ],
+          "access": "Original2011USPDF34:A84.2FSI372hp6800rpm328lb-ft3500rpm,8ATquattro,5.7s0\u201360A8not5.8A8L;19-inch255/45standardequipment;drawing202.2inSWB57.5height."
+        }
+      ],
+      "limits": [
+        "Supplementary sourced identity consumes an existing open canonical660 reservation; historical list unchanged.",
+        "All suggestedEstimates are explicitly modeling estimates, not factory values. No driving/test/finished-art success claimed.",
+        "2010kgcurb,tracks,width,wheelbase,gearset andtank areestimates. US372hp retainednotEuropean372PS.",
+        "Factoryadaptivelycontrolledairsuspensionrepresentedbyfixednativeparameters;fixed40:60AWDapproximation,nooptionalactive rear differential.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [],
+        "distinction": "NoA8referencefound in554catalog. AluminumD4luxurysedan4.2NAV8eight-speed distinctfromsteelD1PhaetonW12five-speed andF01BMW740iturboRWD.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Audi/A8/Audi_US%20A8_2011.pdf"
+        ]
+      },
+      "name": "Oak Clover 2011",
+      "id": "oak-clover-2011",
+      "simulationEstimates": {
+        "reverseRatio": 3.317,
+        "cgHeightM": 0.55,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.56,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "fuelTankUSgal": 23.8,
+        "curbKg": 2010,
+        "widthM": 1.949,
+        "wheelbaseM": 2.992,
+        "trackFrontIn": 64.7,
+        "trackRearIn": 64.4,
+        "gearRatios": [
+          4.714,
+          3.143,
+          2.106,
+          1.667,
+          1.285,
+          1,
+          0.839,
+          0.667
+        ],
+        "finalDrive": 2.85,
+        "centerDifferentialBalance": 0.6,
+        "transmissionLabel": "8-speed torque-converter Tiptronic approximation"
+      }
+    },
+    {
+      "candidateId": "bmw-x3-2012-us-xdrive28i-3-0-8at",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2012,
+        "make": "BMW",
+        "model": "X3",
+        "trim": "F25 xDrive28i naturallyaspirated2996ccinline-six eight-speedSteptronic,standard17-inchwheels;not2013turbo2.0,xDrive35i orMsport",
+        "market": "United States"
+      },
+      "referenceVehicle": "2012 United States BMW X3 F25 xDrive28i naturallyaspirated2996ccinline-six eight-speedSteptronic,standard17-inchwheels;not2013turbo2.0,xDrive35i orMsport",
+      "bodyClass": "suv",
+      "facts": {
+        "powerKw": 178.96796928,
+        "powerRpm": 6600,
+        "torqueNm": 299.635766508,
+        "torqueRpm": 2750,
+        "engineDisplacementL": 2.996,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "gearCount": 8,
+        "curbKg": 1865.17182544,
+        "frontWeightDistribution": 0.499,
+        "gearRatios": [
+          4.71,
+          3.14,
+          2.11,
+          1.67,
+          1.29,
+          1,
+          0.84,
+          0.67
+        ],
+        "finalDrive": 3.73,
+        "reverseRatio": 3.3,
+        "fuelTankUSgal": 17.7,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 6.7,
+        "tireSize": [
+          245,
+          55,
+          17
+        ],
+        "frontTire": [
+          245,
+          55,
+          17
+        ],
+        "rearTire": [
+          245,
+          55,
+          17
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/BMW/X3/BMW_US%20X3_2012.pdf",
+          "publisher": "BMW original US factory brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "frontWeightDistribution",
+            "gearRatios",
+            "finalDrive",
+            "reverseRatio",
+            "fuelTankUSgal",
+            "topSpeedMph",
+            "zeroToSixtySec",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "identity"
+          ],
+          "access": "Original2012UStechnicalpp62\u201363/PDF32 visuallyreviewed x3spec.png.28ifirstcolumn4112lb49.9/50.1,2996cc240hp6600rpm221lb-ft2750\u20134000,8ATratios3.73final245/55R17/17.7gal."
+        }
+      ],
+      "limits": [
+        "Supplementary sourced identity consumes an existing open canonical660 reservation; historical list unchanged.",
+        "All suggestedEstimates are explicitly modeling estimates, not factory values. No driving/test/finished-art success claimed.",
+        "FactoryUSunladen4112lbusedascurb,noEU75kgsubtraction. Geometry,clearance,CG/redlineestimated.",
+        "Fixed40:60AWDapproximation notadaptive xDriveclutchcontrol;standardchassis,noDynamicDamperControlclaim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "alpine-trefoil-2010",
+            "alias": "Alpine Trefoil 2010",
+            "referenceVehicle": "2010 Germany BMW X1 E84 sDrive18i 2.0 naturally aspirated gasoline RWD6MT, standard17-inch steel wheels; not xDrive or later turbo/F48",
+            "documentId": "alpine-trefoil-2010",
+            "runtimeId": "saved-car:Alpine Trefoil 2010",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "F25midsizeAWD3.0NAsix/8AT mechanicallydistinctfromE84X1RWD2.0four/6MT; notbadge-onlysameengine.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/BMW/X3/BMW_US%20X3_2012.pdf"
+        ]
+      },
+      "name": "Pineneedle Clover 2012",
+      "id": "pineneedle-clover-2012",
+      "simulationEstimates": {
+        "cgHeightM": 0.64,
+        "groundClearanceM": 0.212,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "lengthM": 4.648,
+        "widthM": 1.881,
+        "heightM": 1.661,
+        "wheelbaseM": 2.81,
+        "trackFrontIn": 63.6,
+        "trackRearIn": 64.3,
+        "centerDifferentialBalance": 0.6,
+        "transmissionLabel": "8-speed torque-converter Steptronic approximation"
+      }
+    },
+    {
+      "candidateId": "mercedes-benz-glk350-2010-us-rwd-7at",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2010,
+        "make": "Mercedes-Benz",
+        "model": "GLK350",
+        "trim": "X204 baseRWD3.5gasolineV6 seven-speedautomatic,standard19-inchwheels,noPremiumorAppearancePackage;not4MATIC,diesel orAMG",
+        "market": "United States"
+      },
+      "referenceVehicle": "2010 United States Mercedes-Benz GLK350 X204 baseRWD3.5gasolineV6 seven-speedautomatic,standard19-inchwheels,noPremiumorAppearancePackage;not4MATIC,diesel orAMG",
+      "bodyClass": "suv",
+      "facts": {
+        "powerKw": 199.847565696,
+        "powerRpm": 6000,
+        "torqueNm": 349.80103058400005,
+        "torqueRpm": 2400,
+        "engineDisplacementL": 3.498,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "gearCount": 7,
+        "finalDrive": 3.46,
+        "fuelTankUSgal": 17.4,
+        "lengthM": 4.52628,
+        "heightM": 1.69926,
+        "wheelbaseM": 2.7559,
+        "tireSize": [
+          235,
+          50,
+          19
+        ],
+        "frontTire": [
+          235,
+          50,
+          19
+        ],
+        "rearTire": [
+          235,
+          50,
+          19
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Mercedes_Benz/GLK-Class/Mercedes%20Benz_US%20GLK-Class_2010.pdf",
+          "publisher": "Mercedes-Benz original US factory brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "finalDrive",
+            "fuelTankUSgal",
+            "lengthM",
+            "heightM",
+            "wheelbaseM",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "identity"
+          ],
+          "access": "Original2010USbrochurePDF31 specification:3498cc268hp6000rpm258lb-ft2400\u20135000,RWDoroptional4MATIC,7AT,rear3.46versusAWD3.67;17.4galtank235/50R19;178.2L108.5WB66.9height."
+        }
+      ],
+      "limits": [
+        "Supplementary sourced identity consumes an existing open canonical660 reservation; historical list unchanged.",
+        "All suggestedEstimates are explicitly modeling estimates, not factory values. No driving/test/finished-art success claimed.",
+        "1830kgcurb,width,tracks,gearset,redline andperformance areestimates. Brochure6.5sclaimnotusedaspreciseRWDfactbecauseconfiguration-specificbasisunclear.",
+        "AGILITYCONTROLselectivedampingapproximatedwithfixednativesuspension;noactivecontrolimplementation.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "white-clover-2004",
+            "alias": "White Clover 2004",
+            "referenceVehicle": "Early2004 German Mercedes-Benz C32AMG W203 type203.065 M112.961 supercharged3.2V6 sedan standard5AT;not wagon,USrating,C55or500E",
+            "documentId": "white-clover-2004",
+            "runtimeId": "saved-car:White Clover 2004",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "FirstX204GLK compactSUVwithNAV6RWD7AT, distinctfromW203C32superchargedsedan5AT andotherMercedescompetition/performancecars;exactRWDvariantnotduplicated.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Mercedes_Benz/GLK-Class/Mercedes%20Benz_US%20GLK-Class_2010.pdf"
+        ]
+      },
+      "name": "Cedar Clover 2010",
+      "id": "cedar-clover-2010",
+      "simulationEstimates": {
+        "reverseRatio": 3.416,
+        "cgHeightM": 0.65,
+        "groundClearanceM": 0.2,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 6.7,
+        "curbKg": 1830,
+        "widthM": 1.84,
+        "trackFrontIn": 61.7,
+        "trackRearIn": 62.0,
+        "gearRatios": [
+          4.377,
+          2.859,
+          1.921,
+          1.368,
+          1,
+          0.82,
+          0.728
+        ],
+        "transmissionLabel": "7-speed torque-converter automatic approximation"
+      }
+    }
+  ],
+  "deferred": [
+    {
+      "candidateId": "infiniti-q45-base-2002-us-5at-supplemental",
+      "reason": "Available factory spec table explicitly preliminary; final production table corroboration pending. Preserve prep without reservation."
+    }
+  ],
+  "laterTestingReview": {
+    "finding": "25 existing placeholder automatic transmission display labels use generic DCT approximation; compare to individual source before later testing completion. No dynamic defect inferred and existing cars unchanged. New intake uses neutral automatic label unless specific source supports DCT.",
+    "affectedAliases": [
+      "Bogbean 2020",
+      "Meadow Sage 2011",
+      "Ivy Speedwell 1992",
+      "Knotted Figwort 1991",
+      "Starry Clover 2018",
+      "Purple Vetch 2021",
+      "Tufted Vetch 2014",
+      "Golden Clover 2015",
+      "Caucasian Clover 2014",
+      "Running Clover 2002",
+      "Pink Trefoil 2003",
+      "Scarlet Trefoil 1997",
+      "Woolly Trefoil 1996",
+      "Island Clover 2006",
+      "Copper Trefoil 2012",
+      "White Trefoil 2014",
+      "Valley Clover 2005",
+      "Glade Clover 2005",
+      "Brook Clover 2012",
+      "Frost Clover 2009",
+      "Rain Clover 2012",
+      "Fern Clover 2007",
+      "Rush Clover 2008",
+      "Hazel Clover 2009",
+      "Willow Clover 2012"
+    ]
+  }
+}

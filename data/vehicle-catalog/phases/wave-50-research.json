@@ -1,0 +1,1356 @@
+{
+  "schemaVersion": 1,
+  "base": "8281a231daa56463447695c921e680c49665547a",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "honda-civic-dx-sedan-2006-us-5mt-supplemental",
+      "identity": {
+        "year": 2006,
+        "make": "Honda",
+        "model": "Civic",
+        "trim": "US DX four-door sedan R18 1.799L SOHC i-VTEC5MT, standard15-inch covered steel wheels; not coupe,Si,Hybrid,GX,automatic or latergeneration",
+        "market": "United States"
+      },
+      "referenceVehicle": "2006 United States Honda Civic, US DX four-door sedan R18 1.799L SOHC i-VTEC5MT, standard15-inch covered steel wheels; not coupe,Si,Hybrid,GX,automatic or latergeneration",
+      "bodyClass": "four-door five-seat compact sedan; production",
+      "facts": {
+        "powerHp": 140,
+        "powerRpm": 6300,
+        "torqueLbFt": 128,
+        "torqueRpm": 4300,
+        "engineDisplacementL": 1.799,
+        "aspiration": "Naturally Aspirated",
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "gearRatios": [
+          3.143,
+          1.87,
+          1.235,
+          0.949,
+          0.727
+        ],
+        "reverseRatio": 3.308,
+        "finalDrive": 4.294,
+        "redlineRpm": 6800,
+        "curbKg": 1192.04074836,
+        "lengthM": 4.48818,
+        "widthM": 1.7526,
+        "heightM": 1.4351,
+        "wheelbaseM": 2.70002,
+        "trackFrontIn": 59,
+        "trackRearIn": 60.2,
+        "tireSize": [
+          195,
+          65,
+          15
+        ],
+        "frontWeightDistribution": 0.6,
+        "fuelTankUSgal": 13.2,
+        "steeringRatio": 13.73
+      },
+      "sources": [
+        {
+          "url": "https://hondanews.com/en-US/releases/release-591334b5ff2cd7fdfabb17004c34c1b5-2006-honda-civic-sedan-and-civic-hybrid-specifications",
+          "publisher": "American Honda official 2006 Civic Sedan specifications, August29 2005",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "redlineRpm",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "frontWeightDistribution",
+            "fuelTankUSgal",
+            "steeringRatio"
+          ],
+          "access": "Opened2026-11-18, DX/manual column only. SAE net output under revised2004J1349;2628lb MT versus2690lb AT. Factory ratios,dimensions,195/65R15 and60/40 distribution. Arithmetic imperial-to-metric conversions."
+        }
+      ],
+      "limits": [
+        "Plain ICE DX sedan; no hybrid IMA or CVT semantics and no Si hardware. Standard body with modest covered wheels for later art.",
+        "Factory manual curb mass excludes occupants/load; modeled drivetrain losses,torquecurve,rev-cut,CG,clearance,drag,tiregrip,suspension and performance are estimates. ABS/TC booleans are provisional calibration estimates rather than claims from this specification table.",
+        "Supplemental exact identity requires explicit canonical reservation within660; not an amendment or expansion of historical candidate list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "cinder-si-1991",
+            "alias": "Cinder Si 1991",
+            "reference": "1991US HondaCRXSi1.6two-seater5MT",
+            "documentId": "cinder-si-1991",
+            "runtimeId": "saved-car:Cinder Si 1991",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "woodrush-2005",
+            "alias": "Woodrush 2005",
+            "reference": "2005Canadian ToyotaCorollaCE1.8sedan5MT",
+            "documentId": "woodrush-2005",
+            "runtimeId": "saved-car:Woodrush 2005",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "honda-civic-type-r-2023",
+            "alias": "2023 Honda Civic Type R",
+            "reference": "2023 HondaCivicTypeR systemtemplate, excludedfromplayablecount",
+            "documentId": "honda-civic-type-r-2023",
+            "runtimeId": "saved-car:2023 Honda Civic Type R",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No2006DX/R18eighth-generation sedan reference found in nativecatalog or authoredtests/docs search. Distinct ordinary R18sedan from oldCRXSi and excluded2023turboTypeRtemplate; oldDahlia1993delSolSi is separatebody/engine and stays excluded.",
+        "evidence": [
+          "https://hondanews.com/en-US/releases/release-591334b5ff2cd7fdfabb17004c34c1b5-2006-honda-civic-sedan-and-civic-hybrid-specifications"
+        ]
+      },
+      "name": "Hollyleaf Clover 2006",
+      "id": "hollyleaf-clover-2006",
+      "simulationEstimates": {
+        "cgHeightM": 0.51,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.31,
+        "tireGrip": 0.83,
+        "spring": 0.44,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 360,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "revLimitRpm": 7000,
+        "topSpeedMph": 123,
+        "zeroToSixtySec": 8.5,
+        "transmissionLabel": "5-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "nissan-versa-1-6-s-sedan-2012-us-5mt-supplemental",
+      "identity": {
+        "year": 2012,
+        "make": "Nissan",
+        "model": "Versa",
+        "trim": "US1.6S N17 four-door sedan HR16DE gasoline5MT, base15-inch steel wheels/fullcovers; not CVT,SV,SL or carryover1.8hatchback",
+        "market": "United States"
+      },
+      "referenceVehicle": "2012 United States Nissan Versa, US1.6S N17 four-door sedan HR16DE gasoline5MT, base15-inch steel wheels/fullcovers; not CVT,SV,SL or carryover1.8hatchback",
+      "bodyClass": "four-door five-seat subcompact sedan; production",
+      "facts": {
+        "powerHp": 109,
+        "powerRpm": 6000,
+        "torqueLbFt": 107,
+        "torqueRpm": 4400,
+        "engineDisplacementL": 1.598,
+        "aspiration": "Naturally Aspirated",
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.39,
+          1.03,
+          0.82
+        ],
+        "reverseRatio": 3.55,
+        "finalDrive": 4.07,
+        "curbKg": 1065.9420695000001,
+        "lengthM": 4.45516,
+        "widthM": 1.69418,
+        "heightM": 1.51384,
+        "wheelbaseM": 2.60096,
+        "trackFrontIn": 58.3,
+        "trackRearIn": 58.5,
+        "tireSize": [
+          185,
+          65,
+          15
+        ],
+        "dragCoefficient": 0.31,
+        "fuelTankUSgal": 10.8,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "steeringRatio": 16.8,
+        "publishedFrontAxleLb": 1370,
+        "publishedRearAxleLb": 980,
+        "publishedRoundedWeightDistribution": "59/41",
+        "publishedMaximumEngineSpeedRpm": 6500
+      },
+      "sources": [
+        {
+          "url": "https://usa.nissannews.com/en-US/releases/US-2012-nissan-versa-press-kit",
+          "publisher": "Nissan USA official 2012 Versa press kit and specifications",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "dragCoefficient",
+            "fuelTankUSgal",
+            "absEnabled",
+            "tractionControlEnabled",
+            "steeringRatio",
+            "publishedFrontAxleLb",
+            "publishedRearAxleLb",
+            "publishedRoundedWeightDistribution",
+            "publishedMaximumEngineSpeedRpm"
+          ],
+          "access": "Opened2026-11-18. S M/T column2350lb; do not use2415lb CVT. Published axleloads1370/980 differ fromrounded59/41 family line; modeledfrontshare arithmetic1370/2350 is explicitestimate. Factorymanualratios are rounded2decimalpublication. Engine,dimensions,tires,Cd,ABS/TCS andfuel fromtable."
+        },
+        {
+          "url": "https://usa.nissannews.com/en-US/releases/nissan-anounces-u-s-pricing-for-all-new-2012-versa-sedan",
+          "publisher": "Nissan USA July11 2011 official pricing release",
+          "fields": [
+            "2012US1.6S5MT identity",
+            "HR16DE",
+            "109hp107lbft"
+          ],
+          "access": "Opened2026-11-18. ConfirmsmanualavailableonSonly andseparatesCVT trims; noCVTgearingborrowed."
+        }
+      ],
+      "limits": [
+        "Factorycurb2350lb is exact Smanual column,notGVWR3389lb orCVT trim. NativegenericICE/manual semantics used.",
+        "Manualbase cabin lacks SV/SL tachometer in factoryinstrumentation table; any sharedRTG tachometer is placeholder instrumentation, not an authentic finished VersaS cabin.",
+        "Frontweightfraction derivedfrompublishedaxleloads ratherthanrounded59/41 line. RemainingCG,clearance,redline,performance,torquecurve andtransienthandling estimates. GenericTC doesnotreproducefullVDC control.",
+        "Supplemental identity requires canonical reservation within660; no inflation of historical backlog.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Factory maximum engine speed6500rpm anchors modeled redline/limiter6500; exact fuel-cut behavior unverified.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "sentinel-sedan-2024",
+            "alias": "2024 Sentinel Sedan",
+            "reference": "2024US NissanSentraS2.0CVT",
+            "documentId": "sentinel-sedan-2024",
+            "runtimeId": "saved-car:2024 Sentinel Sedan",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "woodrush-2005",
+            "alias": "Woodrush 2005",
+            "reference": "2005Canadian ToyotaCorollaCE1.8sedan5MT",
+            "documentId": "woodrush-2005",
+            "runtimeId": "saved-car:Woodrush 2005",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoVersa/N17/HR16DE2012 sedan found in currentnativecatalog or authoredtests/docs. Distinct compactVplatform1.6manual from largerSentraB18 2.0CVT; notbase-versus-sportpadding or CVTrebadge.",
+        "evidence": [
+          "https://usa.nissannews.com/en-US/releases/US-2012-nissan-versa-press-kit",
+          "https://usa.nissannews.com/en-US/releases/nissan-anounces-u-s-pricing-for-all-new-2012-versa-sedan"
+        ]
+      },
+      "name": "Bighead Clover 2012",
+      "id": "bighead-clover-2012",
+      "simulationEstimates": {
+        "cgHeightM": 0.54,
+        "groundClearanceM": 0.15,
+        "tireGrip": 0.81,
+        "spring": 0.4,
+        "antiRollRear": 0.22,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.82,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.02,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 400,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.5829787234042553,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6500,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 9.6,
+        "transmissionLabel": "5-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "ford-focus-s-sedan-2012-us-5mt-canonical-candidate",
+      "identity": {
+        "year": 2012,
+        "make": "Ford",
+        "model": "Focus",
+        "trim": "US S four-door sedan2.0Ti-VCTGDI five-speedmanual,base15-inchcoveredsteelwheels",
+        "market": "United States"
+      },
+      "referenceVehicle": "2012 United States Ford Focus, US S four-door sedan2.0Ti-VCTGDI five-speedmanual,base15-inchcoveredsteelwheels",
+      "bodyClass": "four-door-sedan",
+      "artIdentity": "Third-generation globalFocus four-door sedan,angledheadlamps,trapezoidlowergrille,small15-inchcoveredwheels,plainclothinterior;notSTorhatchback.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "absEnabled": true,
+        "engineDisplacementL": 2,
+        "powerHp": 160,
+        "transmission": "manual",
+        "gearCount": 5
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Ford/Focus/Ford_US%20Focus_2012.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "rearDifferentialAccel",
+            "frontDifferentialAccel",
+            "absEnabled",
+            "engineDisplacementL",
+            "powerHp",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Brochureanchors160hp2.0Ti-VCTGDI,US Ssedan5MT15-inchcoveredwheels;torque/RPM,mass,geometry,ratios/tireprofileandperformanceareexplicitengineeringestimates pendingdetailedfactorytable. NoPowerShiftDCT,STturbo,electric orSFEpackage. Noimplementationofbrake-basedtorquevectoringoractivegrilleshutters.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Aster 170 2003",
+            "documentId": "aster-170-2003",
+            "runtimeId": "saved-car:Aster 170 2003",
+            "reference": "2003 US Ford Focus SVT ZX3 three-door hatchback, standard six-speed manual, LHD, standard wheels; no European Appearance Package",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Groundsel 2002",
+            "documentId": "groundsel-2002",
+            "runtimeId": "saved-car:Groundsel 2002",
+            "reference": "2002 mainland-US Ford Focus SE four-door sedan,1988cc SOHC SPI inline4,standard iB5 five-speed manual,FWD,LHD. Not ZX3,SVT,ZTS,Zetec,ST,wagon or SE Comfort.",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Third-generationglobalFocusGDI160hpindependentControlBladerear differsfrom2002SOHCSPI110hpGroundselsedanand2003SVTZX3performancehatch/6MT;notyearorbadgepadding.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Ford/Focus/Ford_US%20Focus_2012.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "White-tip Clover 2012",
+      "id": "white-tip-clover-2012",
+      "simulationEstimates": {
+        "reverseRatio": 3.73,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.3,
+        "tireGrip": 0.8,
+        "spring": 0.46,
+        "antiRollRear": 0.17,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.88,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 6600,
+        "revLimitRpm": 6800,
+        "fuelTankUSgal": 12.4,
+        "topSpeedMph": 120,
+        "zeroToSixtySec": 8.5,
+        "steeringRatio": 20,
+        "powerRpm": 6500,
+        "torqueLbFt": 146,
+        "torqueRpm": 4450,
+        "curbKg": 1320,
+        "lengthM": 4.534,
+        "widthM": 1.824,
+        "heightM": 1.466,
+        "wheelbaseM": 2.649,
+        "trackFrontIn": 61.2,
+        "trackRearIn": 60.8,
+        "tireSize": [
+          195,
+          65,
+          15
+        ],
+        "gearRatios": [
+          3.67,
+          2.14,
+          1.45,
+          1.03,
+          0.81
+        ],
+        "finalDrive": 3.82
+      }
+    },
+    {
+      "candidateId": "buick-lesabre-custom-2002-us-4at-canonical-candidate",
+      "identity": {
+        "year": 2002,
+        "make": "Buick",
+        "model": "LeSabre",
+        "trim": "US Custom3800SeriesII naturallyaspiratedV6 four-speedautomatic,standard15-inchcoveredsteelwheels,noGranTouringpackage",
+        "market": "United States"
+      },
+      "referenceVehicle": "2002 United States Buick LeSabre, US Custom3800SeriesII naturallyaspiratedV6 four-speedautomatic,standard15-inchcoveredsteelwheels,noGranTouringpackage",
+      "bodyClass": "four-door-sedan",
+      "artIdentity": "Large roundedfront-driveH-body sedan,formalnotchback,widehorizontalheadlamps,smallcovered15-inchwheels,clothfrontbench,columnselector;notCenturyorParkAvenueUltra.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "absEnabled": true,
+        "engineDisplacementL": 3.8,
+        "powerHp": 205,
+        "powerRpm": 5200,
+        "torqueLbFt": 230,
+        "torqueRpm": 4000,
+        "transmission": "automatic",
+        "gearCount": 4,
+        "fuelTankUSgal": 18.5,
+        "tractionControlEnabled": false
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Buick/LeSabre/Buick_US%20LeSabre_2002.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "rearDifferentialAccel",
+            "frontDifferentialAccel",
+            "absEnabled",
+            "engineDisplacementL",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "transmission",
+            "gearCount",
+            "fuelTankUSgal",
+            "tractionControlEnabled"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Factoryanchors205hp5200/230lbft4000,3800SeriesII,FWD4AT,15-inchsteelwheels,18.5gal,standardABS;Customtractioncontroloptional,omitted. Geometry,mass,gear/finalratios,tireprofile,performanceestimatednotfactoryclaims. Four-wheelindependent/automaticrear-levelcontrolsource;runtimeusesordinarypassivesuspensionapproximation,noautomaticlevelling.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [],
+        "distinction": "NoLeSabreinallnativeprovenanceorwave49packets. Distinctfull-sizeH-body3800SeriesII3.8V6frompendingWoodbetonyCentury3.1W-body;doesnotduplicateorreplacependingBuick. NoequivalencewithRWDCapricewagon.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Buick/LeSabre/Buick_US%20LeSabre_2002.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Running Clover 2002",
+      "id": "running-clover-2002",
+      "simulationEstimates": {
+        "reverseRatio": 2.38,
+        "cgHeightM": 0.54,
+        "groundClearanceM": 0.137,
+        "dragCoefficient": 0.33,
+        "tireGrip": 0.77,
+        "spring": 0.32,
+        "antiRollRear": 0.08,
+        "suspensionTravelM": 0.2,
+        "frontOverhangM": 1.1,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 330,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 5700,
+        "revLimitRpm": 5900,
+        "topSpeedMph": 110,
+        "zeroToSixtySec": 8.8,
+        "steeringRatio": 20,
+        "curbKg": 1620,
+        "lengthM": 5.08,
+        "widthM": 1.867,
+        "heightM": 1.448,
+        "wheelbaseM": 2.85,
+        "trackFrontIn": 62.3,
+        "trackRearIn": 62.3,
+        "tireSize": [
+          215,
+          70,
+          15
+        ],
+        "gearRatios": [
+          2.92,
+          1.57,
+          1,
+          0.71
+        ],
+        "finalDrive": 2.86
+      }
+    },
+    {
+      "candidateId": "volkswagen-jetta-2011-us-s-2-0-5mt",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2011,
+        "make": "Volkswagen",
+        "model": "Jetta",
+        "trim": "S2.0SOHC8-valve gasoline sedan5MT standard15inch steel wheels,notSE2.5/GLI/TDI",
+        "market": "United States"
+      },
+      "bodyClass": "sedan",
+      "referenceVehicle": "2011 US Volkswagen Jetta S2.0SOHC8-valve gasoline sedan5MT standard15inch steel wheels,notSE2.5/GLI/TDI",
+      "facts": {
+        "powerKw": 85.75548528,
+        "publishedPowerHp": 115,
+        "torqueNm": 169.47724350000001,
+        "engineDisplacementL": 2,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "lengthM": 4.628,
+        "widthM": 1.778,
+        "heightM": 1.453
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Volkswagen/Jetta/VW_US%20Jetta_2011.pdf",
+          "publisher": "Volkswagen of America original sales brochure, public archive scan",
+          "fields": [
+            "powerKw",
+            "publishedPowerHp",
+            "torqueNm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "identity"
+          ],
+          "access": "Original PDF downloaded/read2026-11-18; exact2011US model/trim equipment table and performance anchors; preservedJetta2011.pdf locally."
+        }
+      ],
+      "limits": [
+        "Supplementary exact identity requires canonical reservation consuming an existing open660position; historical backlog must not grow.",
+        "All suggestedEstimates values are explicit modeling estimates, including curb mass where no exact factory mass anchor was obtained. No test or driving success claimed; referenced RTG001 art only.",
+        "US brochure115hp converted using mechanicalhp,125lb-ft toNm; RPM values remain estimates because brochureomits them. Exact1984cc remainsrounded2L. No erroneous secondaryDOHC description adopted: factoryexplicitSOHC8valve.",
+        "Tire195/65R15,gearset,1272kgrunningmass andtracks are estimates requiring technicalsheet corroboration; factory only anchors15inchsteel fitment.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "woodbine-1995",
+            "alias": "Woodbine 1995",
+            "referenceVehicle": "1995 United States Volkswagen Jetta GLS, stock 2.0-liter naturally aspirated SOHC gasoline inline-four, front-wheel drive, five-speed manual, LHD. Not GLX VR6, European Vento engine mix, automatic, or modified film vehicle.",
+            "documentId": "woodbine-1995",
+            "runtimeId": "saved-car:Woodbine 1995",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NewcompactsedanMk6 body/platform/wheelbase andrear torsionbeam chassis,2011base2.0calibration andmodern safety mass differ from1995Mk3GLS; not filmJetta or merelyanother1995trim. Existingnamedfilm lead remains unresolved.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Volkswagen/Jetta/VW_US%20Jetta_2011.pdf"
+        ]
+      },
+      "name": "Longleaf Clover 2011",
+      "id": "longleaf-clover-2011",
+      "simulationEstimates": {
+        "reverseRatio": 3.18,
+        "cgHeightM": 0.54,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6000,
+        "revLimitRpm": 6200,
+        "fuelTankUSgal": 14.5,
+        "topSpeedMph": 118,
+        "zeroToSixtySec": 10.6,
+        "curbKg": 1272,
+        "wheelbaseM": 2.652,
+        "trackFrontIn": 60.7,
+        "trackRearIn": 60.6,
+        "tireSize": [
+          195,
+          65,
+          15
+        ],
+        "frontTire": [
+          195,
+          65,
+          15
+        ],
+        "rearTire": [
+          195,
+          65,
+          15
+        ],
+        "gearRatios": [
+          3.455,
+          1.955,
+          1.281,
+          0.881,
+          0.673
+        ],
+        "finalDrive": 3.933,
+        "powerRpm": 5200,
+        "torqueRpm": 4000
+      }
+    },
+    {
+      "candidateId": "volkswagen-passat-2012-us-2-5-s-5mt",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2012,
+        "make": "Volkswagen",
+        "model": "Passat",
+        "trim": "NMS2.5S inline-five5MT standard16inchsteel wheels,withoutAppearancePackage",
+        "market": "United States"
+      },
+      "bodyClass": "sedan",
+      "referenceVehicle": "2012 US Volkswagen Passat NMS2.5S inline-five5MT standard16inchsteel wheels,withoutAppearancePackage",
+      "facts": {
+        "powerKw": 126.76897824,
+        "publishedPowerHp": 170,
+        "torqueNm": 239.979776796,
+        "engineDisplacementL": 2.5,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "lengthM": 4.868,
+        "widthM": 1.835,
+        "heightM": 1.487
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Volkswagen/Passat/VW_US%20Passat_2012.pdf",
+          "publisher": "Volkswagen of America original sales brochure, public archive scan",
+          "fields": [
+            "powerKw",
+            "publishedPowerHp",
+            "torqueNm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "identity"
+          ],
+          "access": "Original PDF downloaded/read2026-11-18; exact2012US model/trim equipment table and performance anchors; preservedPassat2012.pdf locally."
+        },
+        {
+          "url": "https://manualzz.com/doc/54714297/volkswagen-passat-2012-service-training",
+          "publisher": "Volkswagen Group of America SelfStudyProgram890113 public mirror",
+          "fields": [
+            "engineArchitecture",
+            "powerRpmReference",
+            "torqueRpmReference",
+            "powerConversionCaution"
+          ],
+          "access": "Factorytraining:2480ccinline5,170hp(125kW)5700rpm,177lb-ft(240Nm)4250rpm. Conflictingpowerunitpair explicitlynotmixed;USbrochurehp anchorsruntime."
+        }
+      ],
+      "limits": [
+        "Supplementary exact identity requires canonical reservation consuming an existing open660position; historical backlog must not grow.",
+        "All suggestedEstimates values are explicit modeling estimates, including curb mass where no exact factory mass anchor was obtained. No test or driving success claimed; referenced RTG001 art only.",
+        "Brochure prints wheelbase110.4in with inconsistent2083mm parenthetical. Runtime2.80416m usesinchconversion asexplicitestimate, not silently trustingmetrictypo.",
+        "2.5engine training SSP lists170hp alongside125kW, an inconsistentPS-style conversion. SelectedUSretail170hp\u2192126.769kW anchoredtoUSbrochure; SSP125kW not asserted as equivalent. Torque/RPM anddisplacement refinement retainedestimates unless separatelyverified.",
+        "Estimated1439kg is modeledmanual runningmass,notfactorydryweight. Gears,tires,CG,tracks andperformance estimates.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "woodbine-1995",
+            "alias": "Woodbine 1995",
+            "referenceVehicle": "1995 United States Volkswagen Jetta GLS, stock 2.0-liter naturally aspirated SOHC gasoline inline-four, front-wheel drive, five-speed manual, LHD. Not GLX VR6, European Vento engine mix, automatic, or modified film vehicle.",
+            "documentId": "woodbine-1995",
+            "runtimeId": "saved-car:Woodbine 1995",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoPassatnative reference/inspiration. NMSmid-size sedan2.5NAfivecylinder,long110.4inchwheelbase andindependentrear suspension differs fromcompactJetta2.0four andGolfhatch. NotEuropeanB7TSI/TDI.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Volkswagen/Passat/VW_US%20Passat_2012.pdf"
+        ]
+      },
+      "name": "Pine Clover 2012",
+      "id": "pine-clover-2012",
+      "simulationEstimates": {
+        "reverseRatio": 3.18,
+        "cgHeightM": 0.54,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6000,
+        "revLimitRpm": 6500,
+        "fuelTankUSgal": 18.5,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 8.2,
+        "curbKg": 1439,
+        "wheelbaseM": 2.80416,
+        "trackFrontIn": 62.1,
+        "trackRearIn": 61.0,
+        "tireSize": [
+          215,
+          60,
+          16
+        ],
+        "frontTire": [
+          215,
+          60,
+          16
+        ],
+        "rearTire": [
+          215,
+          60,
+          16
+        ],
+        "gearRatios": [
+          3.778,
+          2.118,
+          1.36,
+          1.029,
+          0.837
+        ],
+        "finalDrive": 3.65,
+        "powerRpm": 5700,
+        "torqueRpm": 4250
+      }
+    },
+    {
+      "candidateId": "volkswagen-golf-2012-us-tdi-4door-6mt",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2012,
+        "make": "Volkswagen",
+        "model": "Golf",
+        "trim": "Mk6TDI CleanDiesel four-door2.0commonrail6MT standard17inchalloy,notGTD/GTI/R",
+        "market": "United States"
+      },
+      "bodyClass": "hatchback",
+      "referenceVehicle": "2012 US Volkswagen Golf Mk6TDI CleanDiesel four-door2.0commonrail6MT standard17inchalloy,notGTD/GTI/R",
+      "facts": {
+        "powerKw": 104.39798207999999,
+        "publishedPowerHp": 140,
+        "torqueNm": 319.973035728,
+        "engineDisplacementL": 2,
+        "aspiration": "Turbocharged diesel",
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "lengthM": 4.21,
+        "widthM": 1.786,
+        "heightM": 1.479,
+        "wheelbaseM": 2.578
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Volkswagen/Golf/VW_US%20Golf_2012.pdf",
+          "publisher": "Volkswagen of America original sales brochure, public archive scan",
+          "fields": [
+            "powerKw",
+            "publishedPowerHp",
+            "torqueNm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "identity"
+          ],
+          "access": "Original PDF downloaded/read2026-11-18; exact2012US model/trim equipment table and performance anchors; preservedGolf2012.pdf locally."
+        }
+      ],
+      "limits": [
+        "Supplementary exact identity requires canonical reservation consuming an existing open660position; historical backlog must not grow.",
+        "All suggestedEstimates values are explicit modeling estimates, including curb mass where no exact factory mass anchor was obtained. No test or driving success claimed; referenced RTG001 art only.",
+        "USretail140hpconverted104.398kW; no substitution ofEuropean140PS103kW. Torque236lb-ftconverted319.973Nm. RPM valuesestimatedpendingoriginaltechnicalsheet.",
+        "Factorybrochure explicitly6MTand17inchalloy forTDI;225/45R17size and1375kgfour-door manualmass are estimates. DualfinaldriveOEMgearbox simplified intooneeffectivefinal3.45 withestimatedratios,notclaimedfactorygearset.",
+        "GenericICEdieseltorquecurve only; noemissions-system or certification-fidelity claim. Brochurehistoricalemissionsmarketing not adopted asverifiedemissions fact.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "scabious-2015",
+            "alias": "Scabious 2015",
+            "referenceVehicle": "2015 US Volkswagen Golf GTI S two-door, standard210 SAEhp 2.0TSI, six-speed manual. No Performance Package, DSG, four-door, Golf R or later engine rating.",
+            "documentId": "scabious-2015",
+            "runtimeId": "saved-car:Scabious 2015",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "marsh-mallow-r-2010",
+            "alias": "Marsh Mallow R 2010",
+            "referenceVehicle": "2010 Germany Volkswagen Golf VI R German three-door EA1132.0TSI6MT",
+            "documentId": "marsh-mallow-r-2010",
+            "runtimeId": "saved-car:Marsh Mallow R 2010",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Mk6GolfRexisting isAWDhigh-outputgasoline; thisordinaryFWDcommonrailturbodiesel haslowRPMtorque,6MTdieselratios anddifferentmass/traction. Not badge/year paddingor laterGTD. Factory140hp and236lb-ft anchors retained.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Volkswagen/Golf/VW_US%20Golf_2012.pdf"
+        ]
+      },
+      "name": "Redwood Clover 2012",
+      "id": "redwood-clover-2012",
+      "simulationEstimates": {
+        "reverseRatio": 3.18,
+        "cgHeightM": 0.54,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 4500,
+        "revLimitRpm": 4800,
+        "fuelTankUSgal": 14.5,
+        "topSpeedMph": 129,
+        "zeroToSixtySec": 8.5,
+        "curbKg": 1375,
+        "trackFrontIn": 60.7,
+        "trackRearIn": 59.6,
+        "tireSize": [
+          225,
+          45,
+          17
+        ],
+        "frontTire": [
+          225,
+          45,
+          17
+        ],
+        "rearTire": [
+          225,
+          45,
+          17
+        ],
+        "gearRatios": [
+          3.769,
+          2.087,
+          1.324,
+          0.977,
+          0.975,
+          0.814
+        ],
+        "finalDrive": 3.45,
+        "powerRpm": 4000,
+        "torqueRpm": 1750,
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 94.399999976926
+          },
+          {
+            "rpm": 1750,
+            "torqueLbFt": 235.999999942315
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 235.999999942315
+          },
+          {
+            "rpm": 4000,
+            "torqueLbFt": 183.82000010297315
+          },
+          {
+            "rpm": 4800,
+            "torqueLbFt": 141.59999996538897
+          }
+        ]
+      }
+    },
+    {
+      "candidateId": "renault-twingo-expression-sce70-2014-supplemental-candidate",
+      "bodyClass": "hatchback",
+      "identity": {
+        "year": 2014,
+        "make": "Renault",
+        "model": "Twingo Expression SCe 70",
+        "trim": "Germany third-generation five-door rear-engine naturally aspirated 1.0 three-cylinder five-speed manual; non-ENERGY without start-stop",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2014 Renault Twingo Expression SCe 70, Germany third-generation five-door rear-engine naturally aspirated 1.0 three-cylinder five-speed manual; non-ENERGY without start-stop",
+      "facts": {
+        "powerHp": 70.0287250126,
+        "publishedPowerPS": 71,
+        "engineDisplacementL": 1.0,
+        "torqueNm": 91,
+        "torqueRpm": 2850,
+        "gearCount": 5,
+        "drivetrain": "rwd",
+        "frontWeightDistribution": 0.45,
+        "lengthM": 3.59,
+        "wheelbaseM": 2.49,
+        "topSpeedMph": 93.82705002783743
+      },
+      "sources": [
+        {
+          "url": "https://presse.renault.de/neuer-twingo-mit-funf-turen-und-heckmotor/?lang=deu",
+          "publisher": "Renault Deutschland factory September2014 launch dossier",
+          "fields": [
+            "powerHp",
+            "publishedPowerPS",
+            "engineDisplacementL",
+            "torqueNm",
+            "torqueRpm",
+            "gearCount",
+            "drivetrain",
+            "frontWeightDistribution",
+            "lengthM",
+            "wheelbaseM",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        },
+        {
+          "url": "https://presse.renault.de/neuer-renault-twingo-gunstiger-als-vorganger/?lang=deu",
+          "publisher": "Renault Deutschland July2014 factory pricing release",
+          "fields": [
+            "identity",
+            "trim",
+            "market",
+            "launchDate"
+          ],
+          "access": "Read web2026-11-18: Expression SCe70, September2014 deliveries; ENERGY alternative starts Dynamique."
+        }
+      ],
+      "limits": [
+        "71 metric PS converted70.0287hp; SCe70 marketing suffix is not70 mechanical hp. Factory rounded1.0litre retained rather than unsupported exact999cc. Factory0\u201310014.5sec is not0\u201360; runtime14sec explicitly estimated. Factory states45:55 axle distribution; exact loaded-condition basis unknown. Running mass900kg is a simulation estimate excluding driver, not ADAC EU939kg recast as curb. Tires, exact width/height/tracks, powerRPM and ratios are provisional; no verified trim-specific homologation table.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Supplemental reservation only: not an implemented count or extra slot beyond canonical660. Parent must reserve before generation.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Sorrel 133 2008",
+            "documentId": "sorrel-2008",
+            "runtimeId": "saved-car:Sorrel 133 2008",
+            "reference": "Sorrel1332008: front-engine FWD1.6 TwingoII Renaultsport",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Vesper V6 2003",
+            "documentId": "vesper-v6-2003",
+            "runtimeId": "saved-car:Vesper V6 2003",
+            "reference": "VesperV62003: rear-mid-engine3.0V6 two-seat Clio",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Entirely different TwingoIII rear-engine RWD five-door city-car platform and naturally aspirated triple; not same-generation trim padding of front-engine Sorrel.",
+        "evidence": [
+          "https://presse.renault.de/neuer-twingo-mit-funf-turen-und-heckmotor/?lang=deu"
+        ],
+        "audit": "Audited fresh wave49 native catalog including all catalogProvenance/inspiration/referenceVehicle fields plus completed49 variety intake. Supplemental identity requires explicit canonical660 reservation; historical660 file untouched. No matching exact ordinary variant found."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Thimble Clover 2014",
+      "id": "thimble-clover-2014",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.53,
+        "groundClearanceM": 0.16,
+        "dragCoefficient": 0.35,
+        "tireGrip": 0.8,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.63,
+        "rearDifferentialAccel": 0.05,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 9.246021832535195,
+        "zeroToSixtySec": 14,
+        "bodyClass": "hatchback",
+        "transmission": "manual",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 6000,
+        "curbKg": 900,
+        "widthM": 1.647,
+        "heightM": 1.557,
+        "trackFrontIn": 57.2,
+        "trackRearIn": 56.3,
+        "tireSize": [
+          165,
+          65,
+          15
+        ],
+        "frontTire": [
+          165,
+          65,
+          15
+        ],
+        "rearTire": [
+          185,
+          60,
+          15
+        ],
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.32,
+          0.97,
+          0.76
+        ],
+        "finalDrive": 4.5,
+        "transmissionLabel": "five-speed manual, estimated internal ratios"
+      }
+    },
+    {
+      "candidateId": "dacia-sandero-base-1-2-16v75-2013-supplemental-candidate",
+      "bodyClass": "hatchback",
+      "identity": {
+        "year": 2013,
+        "make": "Dacia",
+        "model": "Sandero 1.2 16V75",
+        "trim": "Germany second-generation base five-door petrol five-speed manual, not Stepway, LPG, TCe90 or diesel",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2013 Dacia Sandero 1.2 16V75, Germany second-generation base five-door petrol five-speed manual, not Stepway, LPG, TCe90 or diesel",
+      "facts": {
+        "powerHp": 73.974005295,
+        "publishedPowerPS": 75,
+        "engineDisplacementL": 1.2
+      },
+      "sources": [
+        {
+          "url": "https://presse.dacia.de/neuer-dacia-sandero-gunstigster-neuwagen-deutschlands/?lang=deu",
+          "publisher": "Dacia Deutschland factory October2012 launch pricing",
+          "fields": [
+            "powerHp",
+            "publishedPowerPS",
+            "engineDisplacementL"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        },
+        {
+          "url": "https://presse.dacia.de/neuer-dacia-sandero-und-sandero-stepway-feiern-premiere-in-paris/?lang=deu",
+          "publisher": "Dacia Deutschland Paris2012 factory launch",
+          "fields": [
+            "identity",
+            "modelGeneration",
+            "GermanJanuary2013Launch"
+          ],
+          "access": "Read web2026-11-18."
+        },
+        {
+          "url": "https://presse.dacia.de/gunstig-und-umweltschonend/?lang=deu",
+          "publisher": "Dacia Deutschland2009 predecessor engine release",
+          "fields": [
+            "suggestedEstimates.torqueNm",
+            "suggestedEstimates.powerRpm",
+            "suggestedEstimates.torqueRpm"
+          ],
+          "access": "Read web2026-11-18; predecessor engine context only, not treated as verified2013 calibration."
+        }
+      ],
+      "limits": [
+        "75metricPS converted73.974hp; 55kW is rounded factory companion. Factory explicitly verifies January2013 German new-generation launch and base1.2; secondary geometry/mass, 107Nm and RPM are modeling estimates rather than asserted2013 factory specifications. The earlier2009 factory engine description supports plausibility only, not proof of exact2013 calibration. No LPG/Stepway mass or output substituted. All elapsed performance, ratios and tire/load/suspension fields provisional.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Supplemental reservation only: not an implemented count or extra slot beyond canonical660. Parent must reserve before generation.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Restharrow 2013",
+            "documentId": "restharrow-2013",
+            "runtimeId": "saved-car:Restharrow 2013",
+            "reference": "Restharrow2013: first-generation Duster dCi110diesel4x4 six-speed SUV",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Basic petrol FWD five-door hatchback, not existing diesel4x4 Duster utility platform; entirely different body/engine/driveline and ordinary-use dynamic target.",
+        "evidence": [
+          "https://presse.dacia.de/neuer-dacia-sandero-gunstigster-neuwagen-deutschlands/?lang=deu"
+        ],
+        "audit": "Audited fresh wave49 native catalog including all catalogProvenance/inspiration/referenceVehicle fields plus completed49 variety intake. Supplemental identity requires explicit canonical660 reservation; historical660 file untouched. No matching exact ordinary variant found."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Tomcat Clover 2013",
+      "id": "tomcat-clover-2013",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.16,
+        "dragCoefficient": 0.35,
+        "tireGrip": 0.8,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.83,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6000,
+        "revLimitRpm": 6300,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 13.20860261790742,
+        "topSpeedMph": 100,
+        "zeroToSixtySec": 13.9,
+        "bodyClass": "hatchback",
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 5500,
+        "torqueNm": 107,
+        "torqueRpm": 4250,
+        "curbKg": 1010,
+        "lengthM": 4.057,
+        "widthM": 1.733,
+        "heightM": 1.523,
+        "wheelbaseM": 2.589,
+        "trackFrontIn": 58.8,
+        "trackRearIn": 58.2,
+        "tireSize": [
+          185,
+          65,
+          15
+        ],
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.32,
+          0.97,
+          0.76
+        ],
+        "finalDrive": 4.5,
+        "transmissionLabel": "five-speed manual, estimated internal ratios",
+        "torqueLbFt": 78.91914997266743
+      }
+    },
+    {
+      "candidateId": "fiat-qubo-active-1-4-2009-supplemental-candidate",
+      "bodyClass": "minivan",
+      "identity": {
+        "year": 2009,
+        "make": "Fiat",
+        "model": "Qubo Active 1.4 8v",
+        "trim": "UK January2009 five-seat passenger MPV, petrol 1360cc five-speed manual, standard15inch wheels; not Fiorino cargo van or1.3MultiJet",
+        "market": "UK"
+      },
+      "referenceVehicle": "2009 Fiat Qubo Active 1.4 8v, UK January2009 five-seat passenger MPV, petrol 1360cc five-speed manual, standard15inch wheels; not Fiorino cargo van or1.3MultiJet",
+      "facts": {
+        "powerHp": 73,
+        "powerRpm": 5200,
+        "torqueNm": 118,
+        "torqueRpm": 2600,
+        "engineDisplacementL": 1.36,
+        "gearCount": 5,
+        "drivetrain": "fwd",
+        "tireSize": [
+          185,
+          65,
+          15
+        ],
+        "lengthM": 3.96,
+        "fuelTankUSgal": 11.887742356116679,
+        "topSpeedMph": 96,
+        "absEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/uk-en/fiat/press/fiat-qubo-stylish-family-motoring-made-simple-press-pack",
+          "publisher": "Fiat UK factory January2009 press pack",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "gearCount",
+            "drivetrain",
+            "tireSize",
+            "lengthM",
+            "fuelTankUSgal",
+            "topSpeedMph",
+            "absEnabled"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "Factory73bhp literal used without metricPS reinterpretation. Technical table1360cc118Nm petrol column used, not1248cc190Nm diesel. Factory0\u201362mph16.2s translated only to explicitly estimated0\u201360 target15.6s. Factory prose claims1.68m width, inconsistent with typical Qubo body; do not promote this questionable width to fact. Width1.716/height1.735/wheelbase2.513 and running mass1210kg are explicit provisional model values pending dimensional/mass table. Factory confirms Active standard185/65R15; Dynamic195/55R16 excluded. No ESP claimed standard; ABS/EBD are factory standard.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Supplemental reservation only: not an implemented count or extra slot beyond canonical660. Parent must reserve before generation.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Podmoss 2005",
+            "documentId": "podmoss-2005",
+            "runtimeId": "saved-car:Podmoss 2005",
+            "reference": "Podmoss2005: FiatMultipla1.6Active six-seat wide MPV",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Small narrow five-seat sliding-door passenger MPV on small-car derived platform with1360cc8valve petrol; not wide six-seat Multipla1.6, and no existing Fiorino/Qubo/Nemo/Bipper duplicate found.",
+        "evidence": [
+          "https://www.media.stellantis.com/uk-en/fiat/press/fiat-qubo-stylish-family-motoring-made-simple-press-pack"
+        ],
+        "audit": "Audited fresh wave49 native catalog including all catalogProvenance/inspiration/referenceVehicle fields plus completed49 variety intake. Supplemental identity requires explicit canonical660 reservation; historical660 file untouched. No matching exact ordinary variant found."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Yates Clover 2009",
+      "id": "yates-clover-2009",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.61,
+        "groundClearanceM": 0.16,
+        "dragCoefficient": 0.36,
+        "tireGrip": 0.8,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.83,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6000,
+        "revLimitRpm": 6300,
+        "aspiration": "Naturally aspirated",
+        "zeroToSixtySec": 15.6,
+        "bodyClass": "minivan",
+        "transmission": "manual",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "curbKg": 1210,
+        "widthM": 1.716,
+        "heightM": 1.735,
+        "wheelbaseM": 2.513,
+        "trackFrontIn": 57.8,
+        "trackRearIn": 57.6,
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.32,
+          0.97,
+          0.76
+        ],
+        "finalDrive": 4.5,
+        "transmissionLabel": "five-speed manual, estimated internal ratios"
+      }
+    }
+  ],
+  "deferred": []
+}

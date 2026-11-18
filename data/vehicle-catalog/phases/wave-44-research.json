@@ -1,0 +1,1538 @@
+{
+  "schemaVersion": 1,
+  "base": "c5b8c62fa349c5af94a8a569ea0dae23871cf7c5",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "mazda-furai-2008-roster-candidate",
+      "identity": {
+        "year": 2008,
+        "make": "Mazda",
+        "model": "Furai",
+        "trim": "functional Courage C65-based three-rotor E100 concept, Detroit2008 debut; not787B or production RX-8",
+        "market": "Japan / US concept debut"
+      },
+      "referenceVehicle": "2008 Japan / US concept debut Mazda Furai, functional Courage C65-based three-rotor E100 concept, Detroit2008 debut; not787B or production RX-8",
+      "bodyClass": "two-seat closed mid-engine track concept; non-production",
+      "facts": {
+        "powerHp": 450,
+        "publishedFuel": "E100 ethanol",
+        "publishedEngine": "three-rotor rotary",
+        "publishedChassis": "Courage C65 ALMS-derived"
+      },
+      "sources": [
+        {
+          "url": "https://newsroom.mazda.com/en/publicity/release/2007/200712/071212.html",
+          "publisher": "Mazda official December2007 announcement for January2008 debut",
+          "fields": [
+            "powerHp",
+            "publishedFuel",
+            "publishedEngine",
+            "publishedChassis"
+          ],
+          "access": "Read2026-11-18. Confirms2008 debut, functional CourageC65 chassis,450hp three-rotor and E100 fuel; no full numeric chassis table."
+        },
+        {
+          "url": "https://www.cardesignnews.com/cars/ccotw-mazda-furai-2008/452817",
+          "publisher": "Car Design News, secondary retrospective",
+          "fields": [
+            "estimated geometry/mass anchors",
+            "six-speed/RWD layout corroboration"
+          ],
+          "access": "Read2026-11-18. Reports4563x1956x977mm,2790WB,675kg,midengine six-speed Xtrac. All are retained as modeling estimates pending primary technical sheet."
+        }
+      ],
+      "limits": [
+        "675kg is secondary-reported curb basis adopted as an estimate, not a verified Mazda weigh-in. RPM,torque,tracks,metric tire,gears and final drive estimated.",
+        "E100 is the documented combustion fuel, not hybrid or electric. Generic engine/fuel model cannot reproduce ethanol consumption/thermal behavior or rotary combustion; no new fuel-system feature.",
+        "Six-speed sequential approximated through existing manual shifting. No exact aero map or original body/wheel fidelity claimed.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "butterbur-1991",
+            "alias": "Butterbur 1991",
+            "reference": "1991 Mazda787B four-rotor LeMans race car",
+            "documentId": "butterbur-1991",
+            "runtimeId": "saved-car:Butterbur 1991",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "rotarypetal-2011",
+            "alias": "Rotarypetal 2011",
+            "reference": "2011 RX8 Sport road two-rotor",
+            "documentId": "rotarypetal-2011",
+            "runtimeId": "saved-car:Rotarypetal 2011",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "rotorveil-1993",
+            "alias": "Rotorveil 1993",
+            "reference": "1993 FD RX7 twin-turbo road coupe",
+            "documentId": "rotorveil-1993",
+            "runtimeId": "saved-car:Rotorveil 1993",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No Furai/CourageC65 identity found. Three-rotor naturally aspirated E100 functional concept with C65 prototype architecture differs from four-rotor787B and road two-rotor coupes; not an RX8 rebadge.",
+        "evidence": [
+          "https://newsroom.mazda.com/en/publicity/release/2007/200712/071212.html",
+          "https://www.cardesignnews.com/cars/ccotw-mazda-furai-2008/452817"
+        ]
+      },
+      "name": "Zigzag Clover 2008",
+      "id": "zigzag-clover-2008",
+      "simulationEstimates": {
+        "reverseRatio": 3.0,
+        "cgHeightM": 0.3,
+        "groundClearanceM": 0.09,
+        "dragCoefficient": 0.37,
+        "tireGrip": 1.2,
+        "spring": 0.7,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.15,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.35,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 220,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.44,
+        "redlineRpm": 9500,
+        "revLimitRpm": 9800,
+        "aspiration": "Naturally Aspirated",
+        "fuelTankUSgal": 23,
+        "topSpeedMph": 190,
+        "zeroToSixtySec": 3.4,
+        "transmission": "manual",
+        "gearCount": 6,
+        "drivetrain": "rwd",
+        "finalDrive": 4.1,
+        "gearRatios": [
+          2.7,
+          1.95,
+          1.5,
+          1.2,
+          1,
+          0.85
+        ],
+        "engineDisplacementL": 1.962,
+        "powerRpm": 9000,
+        "torqueLbFt": 285,
+        "torqueRpm": 7000,
+        "curbKg": 675,
+        "lengthM": 4.563,
+        "widthM": 1.956,
+        "heightM": 0.977,
+        "wheelbaseM": 2.79,
+        "trackFrontIn": 63.0,
+        "trackRearIn": 62.5,
+        "tireSize": [
+          280,
+          40,
+          18
+        ]
+      }
+    },
+    {
+      "candidateId": "honda-ridgeline-baja-trophy-truck-2015-roster-candidate",
+      "identity": {
+        "year": 2015,
+        "make": "Honda",
+        "model": "Ridgeline Baja Race Truck",
+        "trim": "HPD/Proctor Racing Group tube-frame Class2 Baja1000 debut, HR35TT twin-turbo V6; not production2017Ridgeline or later truck update",
+        "market": "United States / Mexico SCORE competition"
+      },
+      "referenceVehicle": "2015 United States / Mexico SCORE competition Honda Ridgeline Baja Race Truck, HPD/Proctor Racing Group tube-frame Class2 Baja1000 debut, HR35TT twin-turbo V6; not production2017Ridgeline or later truck update",
+      "bodyClass": "two-seat rear-engine tube-frame desert racing pickup silhouette; non-production",
+      "facts": {
+        "powerHp": 550,
+        "engineDisplacementL": 3.5,
+        "aspiration": "Turbocharged",
+        "publishedEngine": "HPD HR35TT twin-turbo V6",
+        "publishedStructure": "tube-frame Unlimited Class2"
+      },
+      "sources": [
+        {
+          "url": "https://hondanews.com/en-US/honda-racing/releases/release-f979ce4e6f02402b981220057b3291b8-honda-ridgeline-baja-race-truck-conquers-baja-1000",
+          "publisher": "American Honda official November23 2015 race report",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL",
+            "aspiration",
+            "publishedEngine",
+            "publishedStructure"
+          ],
+          "access": "Read2026-11-18.2015Class2 Baja1000 victory;550hp approximately,3.5HR35TT and non-production tube frame. No claim of overall victory."
+        },
+        {
+          "url": "https://tfltruck.com/2015/11/honda-ridgeline-desert-racer-finishes-the-2015-score-baja-1000/",
+          "publisher": "The Fast Lane Truck, contemporary secondary report",
+          "fields": [
+            "estimated wheelbase/tracks/tire anchors",
+            "Albins ST6 and rear-engine corroboration"
+          ],
+          "access": "Read2026-11-18.125inWB,84.5intracks,37inGeneralGrabber,AlbinsST6. Geometry retained as explicitly secondary-backed estimates; mass not reported."
+        }
+      ],
+      "limits": [
+        "550hp is factory approximate output, not certified SAE-net power. Torque and RPM entirely modeling estimates.2200kg is estimated unladen ready-to-run mass, not published measurement or loaded race weight.",
+        "RWD six-speed model approximates rear-engine desert drivetrain; exact ratios/final unverified.315/80R17 approximates37inch tire outside diameter, not actual branded race size.",
+        "Suspension travel and ride height bounded for existing generic simulation, not faithful long-travel multi-link shock geometry. No claim of desert endurance, pit stops or event-day setup.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "sycamore-rt-2017",
+            "alias": "Sycamore RT 2017",
+            "reference": "2017 stock RidgelineRT FWD naturally aspirated V6 unibody pickup",
+            "documentId": "sycamore-rt-2017",
+            "runtimeId": "saved-car:Sycamore RT 2017",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "dustjack-v8",
+            "alias": "Dustjack V8",
+            "reference": "LocalMotorsRallyFighter front-engine LS3 offroad road build",
+            "documentId": "dustjack-v8",
+            "runtimeId": "saved-car:Dustjack V8",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No HPD HR35TT Baja tube-frame identity found. Existing Sycamore is naturally aspirated front-engine FWD road truck; this rear-engine twin-turbo competition chassis shares styling/engine-block lineage only, not mechanical configuration.",
+        "evidence": [
+          "https://hondanews.com/en-US/honda-racing/releases/release-f979ce4e6f02402b981220057b3291b8-honda-ridgeline-baja-race-truck-conquers-baja-1000",
+          "https://tfltruck.com/2015/11/honda-ridgeline-desert-racer-finishes-the-2015-score-baja-1000/"
+        ]
+      },
+      "name": "Hungarian Clover 2015",
+      "id": "hungarian-clover-2015",
+      "simulationEstimates": {
+        "reverseRatio": 3.0,
+        "cgHeightM": 0.76,
+        "groundClearanceM": 0.36,
+        "dragCoefficient": 0.65,
+        "tireGrip": 0.88,
+        "spring": 0.52,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.34,
+        "frontOverhangM": 1.0,
+        "rearDifferentialAccel": 0.7,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 220,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.42,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7300,
+        "fuelTankUSgal": 65,
+        "topSpeedMph": 125,
+        "zeroToSixtySec": 6.0,
+        "transmission": "manual",
+        "gearCount": 6,
+        "drivetrain": "rwd",
+        "finalDrive": 5.5,
+        "gearRatios": [
+          2.8,
+          2.05,
+          1.55,
+          1.23,
+          1,
+          0.84
+        ],
+        "powerRpm": 6500,
+        "torqueLbFt": 500,
+        "torqueRpm": 4500,
+        "curbKg": 2200,
+        "lengthM": 5.2,
+        "widthM": 2.4,
+        "heightM": 1.95,
+        "wheelbaseM": 3.175,
+        "trackFrontIn": 84.5,
+        "trackRearIn": 84.5,
+        "tireSize": [
+          315,
+          80,
+          17
+        ]
+      }
+    },
+    {
+      "candidateId": "subaru-wrx-sti-arx-supercar-2018-roster-candidate",
+      "identity": {
+        "year": 2018,
+        "make": "Subaru",
+        "model": "WRX STI ARX Supercar",
+        "trim": "VT18x 2018 Americas Rallycross four-door competition build,45mm-restrictor configuration; not roadSTI,VT21x or unrestricted Airslayer",
+        "market": "United States / international ARX competition"
+      },
+      "referenceVehicle": "2018 United States / international ARX competition Subaru WRX STI ARX Supercar, VT18x 2018 Americas Rallycross four-door competition build,45mm-restrictor configuration; not roadSTI,VT21x or unrestricted Airslayer",
+      "bodyClass": "four-door wide-body rallycross sedan; non-production competition conversion",
+      "facts": {
+        "powerHp": 600,
+        "aspiration": "Turbocharged",
+        "drivetrain": "awd",
+        "publishedEngine": "turbocharged Subaru Boxer",
+        "publishedCompetition": "2018 Americas Rallycross",
+        "publishedTeam": "Subaru Rally Team USA / Vermont SportsCar"
+      },
+      "sources": [
+        {
+          "url": "https://www.prnewswire.com/news-releases/subaru-to-enter-the-new-americas-rallycross-championship-300653480.html",
+          "publisher": "Subaru of America official May23 2018 release via PRNewswire",
+          "fields": [
+            "powerHp",
+            "aspiration",
+            "drivetrain",
+            "publishedEngine",
+            "publishedCompetition",
+            "publishedTeam"
+          ],
+          "access": "Read2026-11-18. Exact2018ARX,VermontSportsCar,600hp and Boxer/AWD identity; no numerical engine torque/RPM/dimensions table."
+        },
+        {
+          "url": "https://dirtfish.com/tech/2018-subaru-wrx-sti-arx-supercar-vt18x-specs/",
+          "publisher": "DirtFish, contemporary technical report and Subaru team partner",
+          "fields": [
+            "estimated torque/mass/transmission/fuel anchors"
+          ],
+          "access": "Read2026-11-18. VT18x approx600bhp680lbft,1325kg minimum WITH DRIVER,SADEV6-speed,45mm restrictor,25+L cell. Values not factory-certified and represented as estimates where not corroborated by official release."
+        }
+      ],
+      "limits": [
+        "1325kg maps regulation minimum WITH DRIVER to generic simulation mass; not curb weight or measured event-ready mass. Fuel25L is lower-bound capacity estimate from25+L description.",
+        "Torque680lbft is contemporary technical-report estimate; displacement2.0L and RPM/geometry/gears/tire explicit modeling estimates. No copied2021VT21x1300kg minimum.",
+        "Fixed50percent generic AWD and passive differential approximations cannot recreate launch control,anti-lag,competition driveline or team setup. No active aero or exact sub2sec acceleration claim.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "sti-airslayer",
+            "alias": "STI Airslayer",
+            "reference": "Existing unrestricted STI Airslayer aero/gymkhana-time-attack concept",
+            "documentId": "sti-airslayer",
+            "runtimeId": "saved-car:STI Airslayer",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "heath-bedstraw-2019",
+            "alias": "Heath Bedstraw 2019",
+            "reference": "2019 S209 road EJ25",
+            "documentId": "heath-bedstraw-2019",
+            "runtimeId": "saved-car:Heath Bedstraw 2019",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "field-forgetmenot-2004",
+            "alias": "Field Forgetmenot 2004",
+            "reference": "2004 US road STi2.5",
+            "documentId": "field-forgetmenot-2004",
+            "runtimeId": "saved-car:Field Forgetmenot 2004",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "knapweed-1995",
+            "alias": "Knapweed 1995",
+            "reference": "1995 ImprezaGroupA rally championship car",
+            "documentId": "knapweed-1995",
+            "runtimeId": "saved-car:Knapweed 1995",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No2018ARX/VT18x restrictor-era rallycross identity found. Not roadSTI or 1995GroupA; distinct regulated600hp/1325kg rallycross setup versus unrestricted Airslayer aerodynamic time-attack/gymkhana machine. Do not import later2021NRX specification.",
+        "evidence": [
+          "https://www.prnewswire.com/news-releases/subaru-to-enter-the-new-americas-rallycross-championship-300653480.html",
+          "https://dirtfish.com/tech/2018-subaru-wrx-sti-arx-supercar-vt18x-specs/"
+        ]
+      },
+      "name": "Woolly Clover 2018",
+      "id": "woolly-clover-2018",
+      "simulationEstimates": {
+        "reverseRatio": 3.0,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.17,
+        "dragCoefficient": 0.43,
+        "tireGrip": 1.2,
+        "spring": 0.65,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.22,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.65,
+        "frontDifferentialAccel": 0.5,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 220,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.55,
+        "redlineRpm": 7500,
+        "revLimitRpm": 7800,
+        "fuelTankUSgal": 6.60430130895371,
+        "topSpeedMph": 135,
+        "zeroToSixtySec": 2.2,
+        "transmission": "manual",
+        "gearCount": 6,
+        "finalDrive": 4.8,
+        "gearRatios": [
+          2.6,
+          1.9,
+          1.5,
+          1.23,
+          1.04,
+          0.9
+        ],
+        "engineDisplacementL": 2.0,
+        "powerRpm": 6500,
+        "torqueLbFt": 680,
+        "torqueRpm": 4500,
+        "curbKg": 1325,
+        "lengthM": 4.595,
+        "widthM": 1.9,
+        "heightM": 1.47,
+        "wheelbaseM": 2.65,
+        "trackFrontIn": 64.5,
+        "trackRearIn": 64.5,
+        "tireSize": [
+          245,
+          40,
+          17
+        ],
+        "centerDifferentialBalance": 0.5
+      }
+    },
+    {
+      "candidateId": "dodge-challenger-srt-demon-2018-roster-candidate",
+      "identity": {
+        "year": 2018,
+        "make": "Dodge",
+        "model": "Challenger SRT Demon",
+        "trim": "stock 91-octane 808 hp, 8HP90 automatic, standard one-seat specification; no 100-octane controller or Demon Crate front runners",
+        "market": "Canada"
+      },
+      "referenceVehicle": "2018 Canada Dodge Challenger SRT Demon, stock 91-octane 808 hp, 8HP90 automatic, standard one-seat specification; no 100-octane controller or Demon Crate front runners",
+      "bodyClass": "two-door-coupe",
+      "artIdentity": "Wide flared modern Challenger coupe, large hood scoop, 18-inch wide tires at all four corners; no sponsor or brand marks.",
+      "facts": {
+        "engineDisplacementL": 6.166,
+        "aspiration": "Supercharged",
+        "powerHp": 808,
+        "powerRpm": 6300,
+        "torqueLbFt": 717,
+        "torqueRpm": 4500,
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "gearCount": 8,
+        "gearRatios": [
+          4.71,
+          3.14,
+          2.1,
+          1.67,
+          1.29,
+          1,
+          0.84,
+          0.67
+        ],
+        "reverseRatio": 3.32,
+        "finalDrive": 3.09,
+        "curbKg": 1939.56097412,
+        "lengthM": 5.0165,
+        "widthM": 2.0015199999999997,
+        "heightM": 1.4605,
+        "wheelbaseM": 2.95148,
+        "trackFrontIn": 65.8,
+        "trackRearIn": 65.7,
+        "tireSize": [
+          315,
+          40,
+          18
+        ],
+        "fuelTankUSgal": 18.49204366507039,
+        "frontWeightDistribution": 0.58,
+        "dragCoefficient": 0.376,
+        "groundClearanceM": 0.1152,
+        "revLimitRpm": 6500
+      },
+      "sources": [
+        {
+          "url": "https://www.fcapresskit.ca/2018/Contents/Text/PDFs/Dodge/Challenger_ChallengerSRT/CN_2018_DG_Challenger_ChallengerSRT_SP.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "engineDisplacementL",
+            "aspiration",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "fuelTankUSgal",
+            "frontWeightDistribution",
+            "dragCoefficient",
+            "groundClearanceM",
+            "revLimitRpm"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        },
+        {
+          "url": "https://blog.stellantisnorthamerica.com/2017/06/08/creating-the-dodge-challenger-srt-demon-v-8/",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "engineDisplacementL",
+            "aspiration",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "fuelTankUSgal",
+            "frontWeightDistribution",
+            "dragCoefficient",
+            "groundClearanceM",
+            "revLimitRpm"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Factory table labels mass Base Weight: 4276 lb /1939 kg, standard one-seat configuration. Runtime curb uses exact pounds conversion, not generic Hellcat mass. Source dimensions have rounded/conflicting inch/mm conversions; use printed inches consistently except ground clearance.",
+        "808 hp/717 lb-ft are SAE net 91-octane figures. Exclude 840 hp/770 lb-ft 100-octane-controller tune. Maximum engine speed6500 used as limiter approximation.",
+        "No transbrake, torque reserve, chiller, wheelie, drag-strip launch or adaptive modes simulated. 3.5s/168mph are ordinary-surface modeling estimates, not factory record claims.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Meadow Buttercup 2012",
+            "documentId": "meadow-buttercup-2012",
+            "runtimeId": "saved-car:Meadow Buttercup 2012",
+            "reference": "2012 Canadian Dodge Challenger SRT8 392 6.4 naturally aspirated HEMI RWD TR6060 six-speed manual, standard245/45ZR20 all-season tires",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Hoary Plantain 2015",
+            "documentId": "hoary-plantain-2015",
+            "runtimeId": "saved-car:Hoary Plantain 2015",
+            "reference": "2015 Canadian Dodge Challenger SRT Hellcat6.2supercharged V8,optionalTR6060 six-speed manual,3.70 LSD,RWD,standard275/40ZR20 all-season tires;full707hpoutput,noBlackKeyrestriction",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Demon is absent from native catalog and wave43 intake. Material engine change (62 percent new versus Hellcat), 808 hp stock calibration, 8AT versus existing 2015 Hellcat 6MT, wide 315/40R18 drag radials and distinct curb/distribution; not year/badge padding.",
+        "evidence": [
+          "https://www.fcapresskit.ca/2018/Contents/Text/PDFs/Dodge/Challenger_ChallengerSRT/CN_2018_DG_Challenger_ChallengerSRT_SP.pdf",
+          "https://blog.stellantisnorthamerica.com/2017/06/08/creating-the-dodge-challenger-srt-demon-v-8/"
+        ]
+      },
+      "name": "Starry Clover 2018",
+      "id": "starry-clover-2018",
+      "simulationEstimates": {
+        "cgHeightM": 0.54,
+        "tireGrip": 1.05,
+        "spring": 0.48,
+        "antiRollRear": 0.22,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.35,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 180,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "redlineRpm": 6400,
+        "topSpeedMph": 168,
+        "zeroToSixtySec": 3.5,
+        "steeringRatio": 20
+      }
+    },
+    {
+      "candidateId": "ford-mustang-boss-302-1969-roster-candidate",
+      "identity": {
+        "year": 1969,
+        "make": "Ford",
+        "model": "Mustang Boss 302",
+        "trim": "SportsRoof, standard four-speed ratios, standard 3.50 conventional axle, manual steering",
+        "market": "United States"
+      },
+      "referenceVehicle": "1969 United States Ford Mustang Boss 302, SportsRoof, standard four-speed ratios, standard 3.50 conventional axle, manual steering",
+      "bodyClass": "two-door-fastback",
+      "artIdentity": "1969 first-generation SportsRoof fastback, long hood, four front lamps, modest front air dam and rear spoiler, 15-inch steel wheels; no later Mustang body.",
+      "facts": {
+        "engineDisplacementL": 4.948893328,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 4,
+        "gearRatios": [
+          2.78,
+          1.93,
+          1.36,
+          1
+        ],
+        "reverseRatio": 2.78,
+        "finalDrive": 3.5,
+        "curbKg": 1474.1752025,
+        "lengthM": 4.7599599999999995,
+        "widthM": 1.8237199999999998,
+        "heightM": 1.28016,
+        "wheelbaseM": 2.7432,
+        "trackFrontIn": 59.5,
+        "trackRearIn": 59.5,
+        "frontWeightDistribution": 0.56,
+        "steeringRatio": 16,
+        "periodPublishedRatings": {
+          "advertisedPowerHp": 290,
+          "powerRpm": 5800,
+          "advertisedTorqueLbFt": 290,
+          "torqueRpm": 4300,
+          "ratingBasis": "Factory explicitly labels Brake HP (Gross) and Torque (Gross), not modern SAE net"
+        }
+      },
+      "sources": [
+        {
+          "url": "https://www.lov2xlr8.no/brochures/ford/69b302/bilder/6.jpg",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "frontWeightDistribution",
+            "steeringRatio",
+            "periodPublishedRatings"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Installed240hp/250lbft are engineering estimates, not a mathematical gross-to-net conversion. Preserve printed290gross/290gross separately.",
+        "F60x15 original bias tires approximated by225/60R15; exact radial equivalence not claimed. Standard factory gearbox column2.78/1.93/1.36/1 selected, not optional2.32 close-ratio column. Standard conventional axle chosen, no optional Traction-Lok claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Ironbloom GT 2005",
+            "documentId": "ironbloom-gt-2005",
+            "runtimeId": "saved-car:Ironbloom GT 2005",
+            "reference": "US2005 Ford Mustang GT Coupe Deluxe T82/130A, conventional TR3650 5MT, standard17in wheels; no optional equipment",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Sea Holly 2024",
+            "documentId": "sea-holly-2024",
+            "runtimeId": "saved-car:Sea Holly 2024",
+            "reference": "2024 US Ford Mustang Dark Horse standard six-speed TREMEC manual, premium fuel, no Handling Package; not European 453 PS or GTD",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Mouseear Hawkweed 1986",
+            "documentId": "mouseear-hawkweed-1986",
+            "runtimeId": "saved-car:Mouseear Hawkweed 1986",
+            "reference": "1986 US Ford Mustang SVO 2.3 EFI intercooled turbo hatchback,5MT,standard equipment,noCompetitionPrep",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No first-generation Boss302 in audited catalog/wave43. Small-block pushrod high-revving302, four-speed and 1969 chassis differ from modular2005GT, turboSVO and modernDarkHorse.",
+        "evidence": [
+          "https://www.lov2xlr8.no/brochures/ford/69b302/bilder/6.jpg"
+        ]
+      },
+      "name": "Hop Clover 1969",
+      "id": "hop-clover-1969",
+      "simulationEstimates": {
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.45,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "fuelTankUSgal": 20,
+        "topSpeedMph": 120,
+        "zeroToSixtySec": 7.1,
+        "powerHp": 240,
+        "powerRpm": 5800,
+        "torqueLbFt": 250,
+        "torqueRpm": 4300,
+        "tireSize": [
+          225,
+          60,
+          15
+        ],
+        "transmissionLabel": "4-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "chevrolet-corvette-1960-roster-candidate",
+      "identity": {
+        "year": 1960,
+        "make": "Chevrolet",
+        "model": "Corvette",
+        "trim": "standard 283 four-barrel 230-hp reference engine, standard three-speed manual and3.70 axle, soft top raised",
+        "market": "United States"
+      },
+      "referenceVehicle": "1960 United States Chevrolet Corvette, standard 283 four-barrel 230-hp reference engine, standard three-speed manual and3.70 axle, soft top raised",
+      "bodyClass": "two-door-roadster",
+      "artIdentity": "1960 C1 roadster with quad headlights, rounded rear fenders, side coves, chrome bumpers and15-inch covered wheels; soft top raised. Not1953 six-cylinder or C2.",
+      "facts": {
+        "engineDisplacementL": 4.637539112,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 3,
+        "gearRatios": [
+          2.21,
+          1.32,
+          1
+        ],
+        "reverseRatio": 2.51,
+        "finalDrive": 3.7,
+        "lengthM": 4.5008799999999995,
+        "widthM": 1.8491199999999999,
+        "heightM": 1.31064,
+        "wheelbaseM": 2.5907999999999998,
+        "trackFrontIn": 57,
+        "trackRearIn": 59,
+        "fuelTankUSgal": 16.4,
+        "groundClearanceM": 0.14986,
+        "steeringRatio": 21,
+        "periodPublishedRatings": {
+          "advertisedPowerHp": 230,
+          "ratingBasis": "Period advertised horsepower; brochure does not print modern net test standard. Not asserted SAE net."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://www.lov2xlr8.no/brochures/chevy/60vt/bilder/7.jpg",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "fuelTankUSgal",
+            "groundClearanceM",
+            "steeringRatio",
+            "periodPublishedRatings"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Brochure230hp is period advertised only; installed185hp/245lbft and peakRPM are explicit estimates. No unsupported torque factory claim.",
+        "Mass1360kg is estimated operating curb, not shipping/dry. 6.70x15 tire approximated205/75R15. Standard open axle and standard drum brakes, not RPO687 racing brakes or optional fuel injection.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Lobelia 2005",
+            "documentId": "lobelia-2005",
+            "runtimeId": "saved-car:Lobelia 2005",
+            "reference": "US2005 Chevrolet Corvette C6 base hatchback coupe, LS2 6.0V8 and standard Tremec T56 six-speed manual; not Z51 Sport Package, convertible, Z06 or automatic",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Creeping Buttercup 1953",
+            "documentId": "creeping-buttercup-1953",
+            "runtimeId": "saved-car:Creeping Buttercup 1953",
+            "reference": "1953 US Chevrolet Corvette model2934, Blue Flame235.5cuin naturally aspirated inline-six, Powerglide2AT RWD roadster, top down",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "1960 C1 V8/3MT absent from current catalog/wave43. Compared1953 C1 BlueFlame235.5 six/Powerglide, materially different283V8/manual drivetrain, four-headlamp body, suspension/stabilizer specification. C6 has unrelated6.0V8/rear-transaxle/independent-rear chassis.",
+        "evidence": [
+          "https://www.lov2xlr8.no/brochures/chevy/60vt/bilder/7.jpg"
+        ]
+      },
+      "name": "Common Birdsfoot 1960",
+      "id": "common-birdsfoot-1960",
+      "simulationEstimates": {
+        "cgHeightM": 0.5,
+        "dragCoefficient": 0.45,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.52,
+        "redlineRpm": 5200,
+        "revLimitRpm": 5500,
+        "topSpeedMph": 110,
+        "zeroToSixtySec": 9.2,
+        "powerHp": 185,
+        "powerRpm": 4800,
+        "torqueLbFt": 245,
+        "torqueRpm": 3000,
+        "curbKg": 1360,
+        "tireSize": [
+          205,
+          75,
+          15
+        ],
+        "transmissionLabel": "3-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "mercedes-benz-w154-1939-roster-candidate",
+      "identity": {
+        "year": 1939,
+        "make": "Mercedes-Benz",
+        "model": "W154",
+        "trim": "GrandPrix open-wheel single-seater M163 two-stage supercharged3.0V12, representative470PS7500rpm racefuel specification",
+        "market": "European Grand Prix competition"
+      },
+      "bodyClass": "open-wheel race car",
+      "referenceVehicle": "1939 Mercedes-Benz W154 GrandPrix M1633.0V12 two-stageRoots supercharged RWD5MT; not1938M154,recordstreamliner,hillclimb45Ltank orW165",
+      "facts": {
+        "publishedPowerPS": 470,
+        "powerRpm": 7500,
+        "torqueNm": 490.3325,
+        "torqueRpm": 5000,
+        "engineDisplacementL": 2.963,
+        "aspiration": "Supercharged",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "lengthM": 4.25,
+        "widthM": 1.75,
+        "heightM": 1.01,
+        "wheelbaseM": 2.73,
+        "trackFrontIn": 58.07086614173229,
+        "trackRearIn": 55.59055118110236,
+        "fuelTankUSgal": 61.55208819944858,
+        "publishedWeightKg": 981,
+        "periodPublishedRatings": {
+          "publishedPowerPS": 470,
+          "ratingBasis": "Historical factory or custodian rating; exact test standard unresolved. Installed output is an estimate, not a certified modern net conversion."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://mercedes-benz-archive.com/marsClassic/en/instance/ko/Mercedes-Benz-Grand-Prix-racing-car-W-154-1939.xhtml?oid=6826&grp=R_TECH_DATA",
+          "publisher": "Mercedes-Benz AG publicclassicarchive exact1939W154 technicaldata",
+          "fields": [
+            "identity",
+            "publishedPowerPS",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "fuelTankUSgal",
+            "publishedWeightKg"
+          ],
+          "access": "Read originaltechnicalHTML2026-11-18; retainedw154.html/w154.txt. M1632963cc,two-stageRoots; output483hp7800rpm or470hp7500rpmracefuel;50mkg5000rpm; max8000rpm. Tableexplicitly saysratiosdependonrace. Published981kg weighed-ready basis,949kg after listedfluid/partsubtractions,850kgwithouttires; notsimply850kgcurb."
+        }
+      ],
+      "limits": [
+        "Select470metricPS interpretation of historicalGermanhp field ratherthanmaximum483;345.68kW runtime is explicit conversion/modelingchoice. No modernSAEnet certification claimed. Ratedoutput depends on periodalcohol-basedracingfuel;existingICEruntime approximatesratedcurve,notfuelchemistry.",
+        "981kg is publishedweighingbasiswithspecificexclusionslistedbyfactory; modeled981kg ready-car mass isestimate,notassertedmoderncurb orfull233Lfuelstate.",
+        "Originalfront5.50x19/rear7.00x19 lower-speedtires modeledwith approximate140/90R19 and180/90R19 metricgeometry; theseareNOTperiodradialfitments. Factoryhigher-speedsetup6.50x19/7.00x22 notselected.",
+        "Allgear/final/reverseratiosdependonrace and are explicitestimates;sameforCG,axleweight,clearance,acceleration andgenericgrip/aero. Existingruntime retains ordinaryfour-wheelICE dynamics; noauthenticcrossply,drumfade,methanolconsumptionordriver-exposurephysics.",
+        "Noevent,driver,paintschemeorwinningchassis asserted. SharedRTG001placeholderart cannotyetportray exposedwheels/body.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data.",
+        "Historical output basis is not certified modern net; estimated installed output remains separate."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "goldilocks-1955",
+            "alias": "Goldilocks 1955",
+            "referenceVehicle": "Stirling Moss / Denis Jenkinson, Mercedes-Benz 300 SLR W196 S #722, winner of the Mille Miglia on 1 May 1955. Open two-seat competition car, not road 300 SL, Uhlenhaut coupe or modern SLR McLaren.",
+            "documentId": "goldilocks-1955",
+            "runtimeId": "saved-car:Goldilocks 1955",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoW154/M163incomplete400-carreferenceaudit. Frontengine3LsuperchargedV12GrandPrixsingle-seater fundamentallydiffersfrom1955Mercedes300SLRsportscar androadMercedesmodels. Not1938raceor1939record/hillclimbvariants.",
+        "evidence": [
+          "https://mercedes-benz-archive.com/marsClassic/en/instance/ko/Mercedes-Benz-Grand-Prix-racing-car-W-154-1939.xhtml?oid=6826&grp=R_TECH_DATA"
+        ]
+      },
+      "name": "Fenugreek 1939",
+      "id": "fenugreek-1939",
+      "simulationEstimates": {
+        "reverseRatio": 3,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.48,
+        "redlineRpm": 7800,
+        "revLimitRpm": 8000,
+        "topSpeedMph": 205,
+        "zeroToSixtySec": 5.1,
+        "powerKw": 345.6844125,
+        "curbKg": 981,
+        "tireSize": [
+          140,
+          90,
+          19
+        ],
+        "frontTire": [
+          140,
+          90,
+          19
+        ],
+        "rearTire": [
+          180,
+          90,
+          19
+        ],
+        "gearRatios": [
+          2.8,
+          1.95,
+          1.5,
+          1.2,
+          1
+        ],
+        "finalDrive": 3.05,
+        "powerHp": 463.5704331911796
+      }
+    },
+    {
+      "candidateId": "porsche-906-carrera-6-1966-roster-candidate",
+      "identity": {
+        "year": 1966,
+        "make": "Porsche",
+        "model": "906 Carrera6",
+        "trim": "two-litre naturallyaspirated flat-six customer sports-racing coupe, RevsInstitute906125 technicalreference",
+        "market": "International sports-car competition"
+      },
+      "bodyClass": "race coupe",
+      "referenceVehicle": "1966 Porsche906Carrera6 short-body2.0 aircooledflat-six midengineRWD racingcoupe, custodian906125 specificationreference;not906/8hillclimb,longtail,injected906E orlater2.4conversion",
+      "facts": {
+        "publishedPowerHp": 210,
+        "powerRpm": 8000,
+        "engineDisplacementL": 1.991,
+        "aspiration": "Naturally aspirated",
+        "publishedWeightKg": 616.8856232,
+        "wheelbaseM": 2.286,
+        "periodPublishedRatings": {
+          "publishedPowerHp": 210,
+          "ratingBasis": "Historical factory or custodian rating; exact test standard unresolved. Installed output is an estimate, not a certified modern net conversion."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://revsinstitute.org/vehicle/1966-porsche-906-carrera-6",
+          "publisher": "RevsInstitute directcustodian collectionrecord906125",
+          "fields": [
+            "identity",
+            "publishedPowerHp",
+            "powerRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "publishedWeightKg",
+            "wheelbaseM"
+          ],
+          "access": "Read2026-11-18:1966Carrera6,1991ccaircooledmidshipflat-six,210hp8000rpm,1360lb,90inwheelbase,serial906125. Directcustodianprimaryreference; currentrestoredspecificationnotguaranteedevent-dayconfiguration."
+        },
+        {
+          "url": "https://newsroom.porsche.com/en/2026/history/porsche-congratulates-valentin-schaeffer-43423.html",
+          "publisher": "PorscheAG factoryhistoricalaccount",
+          "fields": [
+            "identity",
+            "sixCylinderRaceEngine"
+          ],
+          "access": "FactoryconfirmsSchaffer1966leadershipanddevelopmentof906Carrera6six-cylinder racingengine; nottechnicalpower/weightcorroboration."
+        }
+      ],
+      "limits": [
+        "Custodian210hp has unspecifiedmetric/imperialteststandard; runtime154.45kW uses210metricPSinterpretation as explicitestimate,notverifiedSAEvalue. Torque196Nm6000rpm andcurve are estimates.",
+        "1360lbweight and90inwheelbase arecustodianpublishedroundedvalues; weightbasis fuel/driver unspecified. Modeled617kg isestimate usingretainedcustodianreference,notaveragingconflicting580/675kgclaims.",
+        "Bodygeometry,5MT/ratios/final/reverse,tirefitment,weightdistribution,CG,clearance,tank,redline andperformance are allestimates unless separatelylistedfacts. No donor2.4L or8-cylinderfiguresmixedin.",
+        "GenericexistingICE/racingdynamicsapproximation only; notexactperiodcrossply,aeroorhistoricgearing. Noevent/driverawardclaim;sharedRTG001artplaceholderonly.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data.",
+        "Historical output basis is not certified modern net; estimated installed output remains separate."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "houndstongue-1982",
+            "alias": "Houndstongue 1982",
+            "referenceVehicle": "Jacky Ickx / Derek Bell, 1982 Le Mans overall-winning Porsche 956 #1 Group C long-tail. Not 956B, 962, 917 or road conversion.",
+            "documentId": "houndstongue-1982",
+            "runtimeId": "saved-car:Houndstongue 1982",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "sanicle-1970",
+            "alias": "Sanicle 1970",
+            "referenceVehicle": "Hans Herrmann / Richard Attwood, Porsche Salzburg Porsche917 KH #23, chassis917-023, overall winner1970 Le Mans24Hours. Short-tail4.5L, not1971 winner, longtail or later turboCan-Am.",
+            "documentId": "sanicle-1970",
+            "runtimeId": "saved-car:Sanicle 1970",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No906orCarrera6referenceincomplete400catalog. Sanicle1970is4.5Lflat12Porsche917KH;Houndstongue1982isGroupC956turbo. This1966two-litrenaturallyaspiratedflat-six,tubular-framecoupe isdistinctmechanicallyandstructurally,notbadge/yearpadding.",
+        "evidence": [
+          "https://revsinstitute.org/vehicle/1966-porsche-906-carrera-6",
+          "https://newsroom.porsche.com/en/2026/history/porsche-congratulates-valentin-schaeffer-43423.html"
+        ]
+      },
+      "name": "Lucerne 1966",
+      "id": "lucerne-1966",
+      "simulationEstimates": {
+        "reverseRatio": 2.64,
+        "cgHeightM": 0.36,
+        "groundClearanceM": 0.11,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.43,
+        "redlineRpm": 8200,
+        "revLimitRpm": 8500,
+        "fuelTankUSgal": 26.4,
+        "topSpeedMph": 161.6,
+        "zeroToSixtySec": 5.6,
+        "powerKw": 154.45,
+        "torqueNm": 196,
+        "torqueRpm": 6000,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 617,
+        "lengthM": 4.113,
+        "widthM": 1.68,
+        "heightM": 0.98,
+        "trackFrontIn": 52.67716535433071,
+        "trackRearIn": 55.19685039370079,
+        "tireSize": [
+          185,
+          70,
+          15
+        ],
+        "frontTire": [
+          185,
+          70,
+          15
+        ],
+        "rearTire": [
+          225,
+          60,
+          15
+        ],
+        "gearRatios": [
+          2.5,
+          1.72,
+          1.32,
+          1.04,
+          0.82
+        ],
+        "finalDrive": 4.429,
+        "torqueLbFt": 144.56218125834405,
+        "powerHp": 207.12086173795205
+      }
+    },
+    {
+      "candidateId": "maserati-8ctf-1939-roster-candidate",
+      "bodyClass": "roadster",
+      "identity": {
+        "year": 1939,
+        "make": "Maserati",
+        "model": "8CTF",
+        "trim": "1939-output3.0twinsuperchargedstraight-eight single-seatcompetitioncar4MT; noexactIndysetup claim",
+        "market": "Italy/competition"
+      },
+      "referenceVehicle": "1939 Maserati 8CTF, 1939-output3.0twinsuperchargedstraight-eight single-seatcompetitioncar4MT; noexactIndysetup claim",
+      "facts": {
+        "publishedPowerPS": 365,
+        "engineDisplacementL": 2.9914,
+        "transmission": "manual",
+        "gearCount": 4,
+        "publishedMassKg": 780,
+        "topSpeedMph": 180.19764574882683,
+        "periodPublishedRatings": {
+          "publishedPowerPS": 365,
+          "ratingBasis": "Historical factory or custodian rating; exact test standard unresolved. Installed output is an estimate, not a certified modern net conversion."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://www.maserati.com/es/es/noticias/80-anos-de-victoria-en-las-500-millas-de-indianapolis",
+          "publisher": "MaseratifactorySpanishhistoricaltechnicaltable",
+          "fields": [
+            "publishedPowerPS",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "publishedMassKg",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian historical text read2026-11-18; selected variant distinguished from successors and race results."
+        }
+      ],
+      "limits": [
+        "Factory365CVis1939historicalcompetitionoutput; gross/net/accessorybasisunknown. Retainedpublishedmetricnumber; installed345hpexplicitestimate, notcertifiednetconversion.",
+        "780kgpublishedbasisundefined;870kgwet/racefuel targetestimated. Openwheel single-seatbody representedbyroadsterenum/sharedplaceholder, notclaimtoaccuratelydepictwheelcoverage. NoasymmetricalIndysetupadded.",
+        "Every suggestedEstimates value is provisional unless separately present in facts. No exactevent/chassis calibration, measuredgameplay, originalart or modernhomologation claim. Shared RTG-001 placeholder.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data.",
+        "Historical output basis is not certified modern net; estimated installed output remains separate."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Water Figwort 1961",
+            "documentId": "water-figwort-1961",
+            "runtimeId": "saved-car:Water Figwort 1961",
+            "reference": "MaseratiTipo61fourcylindersportsracer",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Hedge Woundwort 1953",
+            "documentId": "hedge-woundwort-1953",
+            "runtimeId": "saved-car:Hedge Woundwort 1953",
+            "reference": "MaseratiA6GCSclosedstraight-six",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Prewaropen-wheelsingle-seater twin-superchargedstraight-eight versuspostwarsportsracers; notsharedbody/yearvariant.",
+        "evidence": [
+          "https://www.maserati.com/es/es/noticias/80-anos-de-victoria-en-las-500-millas-de-indianapolis"
+        ],
+        "audit": "Audited fullwave43nativecatalogplusfourwave43newrows; noexactmatch. Finalwave44refreshedinventorypending whenprepared; existing660slotconfirmedpreviousfullbacklog."
+      },
+      "name": "Sainfoin 1939",
+      "id": "sainfoin-1939",
+      "simulationEstimates": {
+        "reverseRatio": 2.6,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.17,
+        "dragCoefficient": 0.55,
+        "tireGrip": 0.7,
+        "spring": 0.4,
+        "antiRollRear": 0.04,
+        "suspensionTravelM": 0.18,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 650,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.52,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "aspiration": "Supercharged",
+        "fuelTankUSgal": 39.6,
+        "zeroToSixtySec": 6.5,
+        "bodyClass": "roadster",
+        "drivetrain": "rwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerHp": 345,
+        "powerRpm": 6300,
+        "torqueNm": 450,
+        "torqueRpm": 4500,
+        "curbKg": 870,
+        "lengthM": 4.1,
+        "widthM": 1.52,
+        "heightM": 1.2,
+        "wheelbaseM": 2.72,
+        "trackFrontIn": 53.1,
+        "trackRearIn": 53.1,
+        "tireSize": [
+          185,
+          80,
+          19
+        ],
+        "frontTire": [
+          185,
+          80,
+          19
+        ],
+        "rearTire": [
+          205,
+          80,
+          19
+        ],
+        "gearRatios": [
+          2.5,
+          1.65,
+          1.2,
+          1
+        ],
+        "finalDrive": 3.6,
+        "transmissionLabel": "four-speedcompetition manual; ratiosestimated",
+        "torqueLbFt": 331.9029671747695
+      }
+    },
+    {
+      "candidateId": "jaguar-xj13-1966-roster-candidate",
+      "bodyClass": "roadster",
+      "identity": {
+        "year": 1966,
+        "make": "Jaguar",
+        "model": "XJ13",
+        "trim": "solemid-engine5.0DOHCV12 prototype,ZF5MT; neverraced, notroadproduction orreplica",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "1966 Jaguar XJ13, solemid-engine5.0DOHCV12 prototype,ZF5MT; neverraced, notroadproduction orreplica",
+      "facts": {
+        "publishedClaimedPeriodBhp": 502,
+        "engineDisplacementL": 5.0,
+        "gearCount": 5,
+        "transmission": "manual",
+        "periodPublishedRatings": {
+          "publishedClaimedPeriodBhp": 502,
+          "ratingBasis": "Historical factory or custodian rating; exact test standard unresolved. Installed output is an estimate, not a certified modern net conversion."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://www.jaguarheritage.com/vehicle-collection/1966-jaguar-xj13/",
+          "publisher": "JaguarDaimlerHeritageTrust,custodianoftheoriginal",
+          "fields": [
+            "publishedClaimedPeriodBhp",
+            "engineDisplacementL",
+            "gearCount",
+            "transmission"
+          ],
+          "access": "Factory/custodian historical text read2026-11-18; selected variant distinguished from successors and race results."
+        }
+      ],
+      "limits": [
+        "Custodian502BHPperiodengineclaim gross/netstandardunspecified; installed480hpestimated, notcertifiednet. Exact5.0displacementroundedfactorybasis.",
+        "1100kgrunning-fuelmass estimated, noverifiedbasis. Source180mph wascalculatedpotential, notmeasuredtop-speed; displaytargetestimate. Custodianpost-crashrestorationdetailsnotassertedasoriginal1966set-up.",
+        "Every suggestedEstimates value is provisional unless separately present in facts. No exactevent/chassis calibration, measuredgameplay, originalart or modernhomologation claim. Shared RTG-001 placeholder.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data.",
+        "Historical output basis is not certified modern net; estimated installed output remains separate."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Blackthorn 1986",
+            "documentId": "blackthorn-1986",
+            "runtimeId": "saved-car:Blackthorn 1986",
+            "reference": "JaguarXJ6frontstraight-sixsedan",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Wood Avens 2015",
+            "documentId": "wood-avens-2015",
+            "runtimeId": "saved-car:Wood Avens 2015",
+            "reference": "F-TYPERfrontsuperchargedV8",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "One-offmid-enginefour-cam5LV12 LeMansdevelopmentprototype, no relationtoXJsedanmechanics orF-TYPER. Explicitlyneverraced; no fabricatedvictory.",
+        "evidence": [
+          "https://www.jaguarheritage.com/vehicle-collection/1966-jaguar-xj13/"
+        ],
+        "audit": "Audited fullwave43nativecatalogplusfourwave43newrows; noexactmatch. Finalwave44refreshedinventorypending whenprepared; existing660slotconfirmedpreviousfullbacklog."
+      },
+      "name": "Kidney Vetch 1966",
+      "id": "kidney-vetch-1966",
+      "simulationEstimates": {
+        "reverseRatio": 2.5,
+        "cgHeightM": 0.37,
+        "groundClearanceM": 0.1,
+        "dragCoefficient": 0.38,
+        "tireGrip": 0.93,
+        "spring": 0.5,
+        "antiRollRear": 0.15,
+        "suspensionTravelM": 0.18,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 450,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.4,
+        "redlineRpm": 7800,
+        "revLimitRpm": 8000,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 26.4,
+        "topSpeedMph": 180,
+        "zeroToSixtySec": 4.6,
+        "bodyClass": "roadster",
+        "drivetrain": "rwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerHp": 480,
+        "powerRpm": 7600,
+        "torqueNm": 525,
+        "torqueRpm": 6000,
+        "curbKg": 1100,
+        "lengthM": 4.48,
+        "widthM": 1.854,
+        "heightM": 0.965,
+        "wheelbaseM": 2.41,
+        "trackFrontIn": 56.0,
+        "trackRearIn": 56.0,
+        "tireSize": [
+          205,
+          70,
+          15
+        ],
+        "frontTire": [
+          205,
+          70,
+          15
+        ],
+        "rearTire": [
+          245,
+          60,
+          15
+        ],
+        "gearRatios": [
+          2.4,
+          1.6,
+          1.18,
+          0.92,
+          0.75
+        ],
+        "finalDrive": 4.1,
+        "transmissionLabel": "ZFfive-speedmanual; ratiosestimated",
+        "torqueLbFt": 387.22012837056445
+      }
+    },
+    {
+      "candidateId": "aston-martin-vulcan-2016-roster-candidate",
+      "bodyClass": "coupe",
+      "identity": {
+        "year": 2016,
+        "make": "Aston Martin",
+        "model": "Vulcan",
+        "trim": "originalcustomertrack-only7.0NA V12,six-speedsequential,fullpower; not2017AMRPro/RMLroadconversion",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "2016 Aston Martin Vulcan, originalcustomertrack-only7.0NA V12,six-speedsequential,fullpower; not2017AMRPro/RMLroadconversion",
+      "facts": {
+        "powerHp": 820
+      },
+      "sources": [
+        {
+          "url": "https://media.astonmartin.com/aston-martin-vulcan-amr-pro-wildest-ever-aston-martin-taken-to-new-extremes/?lang=eng",
+          "publisher": "AstonMartin2017factoryretrospectiveonoriginalVulcan",
+          "fields": [
+            "powerHp"
+          ],
+          "access": "Factory/custodian historical text read2026-11-18; selected variant distinguished from successors and race results."
+        }
+      ],
+      "limits": [
+        "Factoryexplicitlyconfirms820BHPoriginal24carsdeliveredthroughout2016.2017AMRProaero/gearing notused. No2015preproduction800+figuremixing.",
+        "1400kgrunningmassestimated;7L,engineRPM/torque,geometry/tires/gearing/aero andperformance allprovisional. Sequentialmappedexistingautomaticwithzero-converter,notDCTornewsequentialruntime. Aero coefficients are estimates, notmappedfactorydownforce.",
+        "Every suggestedEstimates value is provisional unless separately present in facts. No exactevent/chassis calibration, measuredgameplay, originalart or modernhomologation claim. Shared RTG-001 placeholder.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Spiny Restharrow 2001",
+            "documentId": "spiny-restharrow-2001",
+            "runtimeId": "saved-car:Spiny Restharrow 2001",
+            "reference": "VanquishNAv12roadGT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Yellow Vetchling 2013",
+            "documentId": "yellow-vetchling-2013",
+            "runtimeId": "saved-car:Yellow Vetchling 2013",
+            "reference": "V12VantageSroadcoupe",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Dedicatedcarbon-monocoquetrack-only7LV12platform withsequentialtransaxle andtrackaero, notVantage/VanquishroadGT orAMRProbadgevariant.",
+        "evidence": [
+          "https://media.astonmartin.com/aston-martin-vulcan-amr-pro-wildest-ever-aston-martin-taken-to-new-extremes/?lang=eng"
+        ],
+        "audit": "Audited fullwave43nativecatalogplusfourwave43newrows; noexactmatch. Finalwave44refreshedinventorypending whenprepared; existing660slotconfirmedpreviousfullbacklog."
+      },
+      "name": "Yellow Vetchling 2016",
+      "id": "yellow-vetchling-2016",
+      "simulationEstimates": {
+        "reverseRatio": 2.8,
+        "cgHeightM": 0.41,
+        "groundClearanceM": 0.09,
+        "dragCoefficient": 0.5,
+        "tireGrip": 1.15,
+        "spring": 0.65,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.12,
+        "frontOverhangM": 1.0,
+        "rearDifferentialAccel": 0.45,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0.1,
+        "aeroRear": 0.14,
+        "shiftTimeMs": 90,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.48,
+        "redlineRpm": 8000,
+        "revLimitRpm": 8200,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 26.4,
+        "topSpeedMph": 200,
+        "zeroToSixtySec": 3.0,
+        "bodyClass": "coupe",
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "gearCount": 6,
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "engineDisplacementL": 7.0,
+        "powerRpm": 7750,
+        "torqueNm": 780,
+        "torqueRpm": 6500,
+        "curbKg": 1400,
+        "lengthM": 4.807,
+        "widthM": 2.063,
+        "heightM": 1.235,
+        "wheelbaseM": 2.791,
+        "trackFrontIn": 66.5,
+        "trackRearIn": 65.9,
+        "tireSize": [
+          305,
+          30,
+          19
+        ],
+        "frontTire": [
+          305,
+          30,
+          19
+        ],
+        "rearTire": [
+          345,
+          30,
+          19
+        ],
+        "gearRatios": [
+          2.7,
+          2.0,
+          1.56,
+          1.28,
+          1.08,
+          0.92
+        ],
+        "finalDrive": 3.8,
+        "transmissionLabel": "six-speedsequential approximatedbyautomaticselector",
+        "torqueLbFt": 575.2984764362672
+      }
+    }
+  ],
+  "deferred": []
+}

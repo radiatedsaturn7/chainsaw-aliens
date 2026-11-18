@@ -1,0 +1,1234 @@
+{
+  "schemaVersion": 1,
+  "base": "bed98b1f00687449352a14b7354f1adbb7eaffdb",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "honda-prelude-si-1994-roster-candidate",
+      "identity": {
+        "year": 1994,
+        "make": "Honda",
+        "model": "Prelude Si",
+        "trim": "Japan E-BA8 F22B 2.156L non-VTEC 2WS five-speed manual; September 1994 specification",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1994 Japan Honda Prelude Si E-BA8 2WS F22B 2156cc non-VTEC naturally aspirated DOHC16 inline-four FWD5MT; not US 2.3 Si, VTEC Si-VTEC, BA9 4WS or fifth-generation H22A4",
+      "bodyClass": "two-door four-seat coupe",
+      "facts": {
+        "powerKw": 117.6798,
+        "powerRpm": 6000,
+        "torqueNm": 201.036325,
+        "torqueRpm": 5000,
+        "engineDisplacementL": 2.156,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "lengthM": 4.44,
+        "widthM": 1.765,
+        "heightM": 1.29,
+        "wheelbaseM": 2.55,
+        "trackFrontIn": 60.03937007874016,
+        "trackRearIn": 59.645669291338585,
+        "reverseRatio": 3.0,
+        "finalDrive": 4.062,
+        "fuelTankUSgal": 15.850323141488905,
+        "tireSize": [
+          195,
+          60,
+          15
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.honda.co.jp/auto-archive/prelude/1996/si_sy.html",
+          "publisher": "Honda official archived fourth-generation specifications, explicitly as of October1996",
+          "fields": [
+            "engineDisplacementL",
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "generation gearbox reference"
+          ],
+          "access": "Read2026-11-18. 160PS/6000 and20.5kgm/5000 explicitly net, converted to kW/Nm. Later same-generation primary corroboration, not a1994 brochure. BA8 base5MT1210kg, AC1230kg and AC+ABS1240kg."
+        },
+        {
+          "url": "https://gazoo.com/catalog/maker/HONDA/PRELUDE/199109/2003149/",
+          "publisher": "Toyota GAZOO historical Honda catalog, secondary compilation, not Honda factory engineering data",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "reverseRatio",
+            "finalDrive",
+            "fuelTankUSgal",
+            "tireSize"
+          ],
+          "access": "Read2026-11-18. Exact September1994 Si E-BA8 5MT entry gives1220kg, matching engine/dimensions/tires, reverse3/final4.062. Equipment and mass differ from later Honda archive."
+        }
+      ],
+      "limits": [
+        "Japan Si is explicitly selected for this market-unspecified backlog slot. Do not substitute the US H23A1 2.3L Si or claim this reproduces a game-list market identity.",
+        "1220kg is a selected mass estimate anchored to exact1994 GAZOO; later Honda base1210kg/options1230\u20131240kg disagree. Exact option package unresolved; no AC/sunroof/wheel-alloy claim.",
+        "Forward ratios are estimated carryover from October1996 Honda BA8 table, not independently verified for September1994. ABS disabled as optional-equipment selection; no4WS, ATTS, LSD or VTEC claim.",
+        "All suggestedEstimates plus unsourced torque interpolation, losses, steering/braking/transients and performance are simulation assumptions. Shared RTG-001 placeholder; no finished original art or independent driving claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "iris-22-2001",
+            "alias": "Iris 22 2001",
+            "reference": "US2001 fifth-generation Prelude base H22A4 VTEC5MT",
+            "documentId": "iris-22-2001",
+            "runtimeId": "saved-car:Iris 22 2001",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Fourth-generation BA8 shorter2550mm platform, F22B non-VTEC160PS and different geometry/gearing/mass versus existing fifth-generation2001 H22A4 VTEC200hp. No other Prelude source identity found in current catalog; not a year-only reissue.",
+        "evidence": [
+          "https://www.honda.co.jp/auto-archive/prelude/1996/si_sy.html",
+          "https://gazoo.com/catalog/maker/HONDA/PRELUDE/199109/2003149/",
+          "https://hondanews.com/en-US/releases/release-ff82699f1c3527fa113578004c34c897-2001-honda-prelude-specifications"
+        ]
+      },
+      "name": "Heal-all 1994",
+      "id": "heal-all-1994",
+      "simulationEstimates": {
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.145,
+        "dragCoefficient": 0.33,
+        "tireGrip": 0.92,
+        "spring": 0.5,
+        "antiRollRear": 0.29,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.94,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 8.8,
+        "curbKg": 1220,
+        "gearRatios": [
+          3.307,
+          1.809,
+          1.269,
+          0.966,
+          0.787
+        ]
+      }
+    },
+    {
+      "candidateId": "nissan-skyline-gt-r-v-spec-1993-roster-candidate",
+      "identity": {
+        "year": 1993,
+        "make": "Nissan",
+        "model": "Skyline GT-R V-spec",
+        "trim": "Japan E-BNR32 road coupe RB26DETT twin-turbo 5MT; February1993 V-spec, not V-specII or competition",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1993 Japan Nissan Skyline GT-R V-spec E-BNR32 RB26DETT2568cc twin-turbo inline-six AWD5MT road coupe; February1993\u2013August1993 catalog version",
+      "bodyClass": "two-door four-seat road coupe",
+      "facts": {
+        "powerKw": 206,
+        "powerRpm": 6800,
+        "torqueNm": 353,
+        "torqueRpm": 4400,
+        "engineDisplacementL": 2.568,
+        "aspiration": "Turbocharged",
+        "drivetrain": "awd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 1500,
+        "lengthM": 4.545,
+        "widthM": 1.755,
+        "heightM": 1.355,
+        "wheelbaseM": 2.615,
+        "trackFrontIn": 58.267716535433074,
+        "trackRearIn": 58.267716535433074,
+        "reverseRatio": 3.369,
+        "finalDrive": 4.111,
+        "fuelTankUSgal": 19.020387769786687,
+        "tireSize": [
+          225,
+          50,
+          17
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/skyline_gt-r_1989.html",
+          "publisher": "Nissan official Heritage Collection no210,1989 road BNR32",
+          "fields": [
+            "engineDisplacementL",
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "aspiration",
+            "generation",
+            "ATTESA E-TS architecture"
+          ],
+          "access": "Read2026-11-18. Primary road-engine anchors206kW6800/353Nm4400,5MT. This earlier non-V-spec is1430kg,1340mm high and225/50R16; those variant values are NOT used for1993 V-spec."
+        },
+        {
+          "url": "https://gazoo.com/catalog/maker/NISSAN/SKYLINE/198905/1507323/",
+          "publisher": "Toyota GAZOO historical Nissan catalog; secondary compilation, not Nissan factory engineering data",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "reverseRatio",
+            "finalDrive",
+            "fuelTankUSgal",
+            "tireSize"
+          ],
+          "access": "Read2026-11-18. Exact February1993 V-spec1500kg,1355mm high,225/50R17,5MT, reverse3.369/final4.111; engine matches primary1989 road reference."
+        }
+      ],
+      "limits": [
+        "1500kg is exact1993 V-spec historical catalog vehicle-weight basis, not1989 base1430kg or race weight. Variant-specific numerical geometry/tire/gearing relies on clearly identified secondary GAZOO.",
+        "Generic AWD uses estimated fixed65 percent rear torque share and generic limited-slip parameters. It does not reproduce ATTESA E-TS variable rear-biased transfer, Super HICAS rear steering, or factory ABS control calibration.",
+        "Forward ratios,redline/limiter,grip/load/CG/suspension/brakes,torque interpolation/losses and performance are estimates.112mph is a display target, not claim of implemented Japanese speed governor.",
+        "Nissan heritage1992 no239 ZexelGroupN400PS race page rejected as wrong setup. No transplanted400PS/1240kg. Shared RTG-001 placeholders and no independent drive/original-art claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "heartsease-1991",
+            "alias": "Heartsease 1991",
+            "reference": "1991 Richards/Skaife Bathurst R32 GroupA race winner",
+            "documentId": "heartsease-1991",
+            "runtimeId": "saved-car:Heartsease 1991",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "stormline-2002",
+            "alias": "Stormline 2002",
+            "reference": "2002 R34 GT-R V-specII Nur6MT",
+            "documentId": "stormline-2002",
+            "runtimeId": "saved-car:Stormline 2002",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "storksbill-r-1987",
+            "alias": "Storksbill R 1987",
+            "reference": "1987 R31GTS-R RB20DET-R road5MT",
+            "documentId": "storksbill-r-1987",
+            "runtimeId": "saved-car:Storksbill R 1987",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "moschatel-1973",
+            "alias": "Moschatel 1973",
+            "reference": "1973 KPGC110S20 road",
+            "documentId": "moschatel-1973",
+            "runtimeId": "saved-car:Moschatel 1973",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Current R32 identity is a high-output stripped GroupA competition build, not a1500kg280PS road V-spec. New road R32 differs in production engine calibration, road tires/gearing/mass; R34 Nur is later platform6MT, R31 is RWD2.0 and1973S20 is naturally aspirated. No exact R32road V-spec in current provenance.",
+        "evidence": [
+          "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/skyline_gt-r_1989.html",
+          "https://gazoo.com/catalog/maker/NISSAN/SKYLINE/198905/1507323/"
+        ]
+      },
+      "name": "Hop Trefoil 1993",
+      "id": "hop-trefoil-1993",
+      "simulationEstimates": {
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.4,
+        "tireGrip": 1.0,
+        "spring": 0.6,
+        "antiRollRear": 0.33,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.94,
+        "rearDifferentialAccel": 0.32,
+        "frontDifferentialAccel": 0.1,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.58,
+        "redlineRpm": 8000,
+        "revLimitRpm": 8200,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 5.5,
+        "centerDifferentialBalance": 0.65,
+        "gearRatios": [
+          3.214,
+          1.925,
+          1.302,
+          1,
+          0.752
+        ]
+      }
+    },
+    {
+      "candidateId": "mitsubishi-montero-evolution-1997-roster-candidate",
+      "identity": {
+        "year": 1997,
+        "make": "Mitsubishi",
+        "model": "Pajero Evolution",
+        "trim": "Japan E-V55W 6G74 3.5L MIVEC road homologation three-door 5MT, October1997",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1997 Japan Mitsubishi Pajero Evolution E-V55W road homologation SUV, 3496cc6G74MIVEC naturally aspiratedV6,5MT,1970kg; Montero Evolution backlog label resolved to Japanese Pajero, not2005MPR11 Dakarprototype",
+      "bodyClass": "three-door five-seat short-wheelbase road SUV",
+      "facts": {
+        "powerKw": 206,
+        "powerRpm": 6500,
+        "torqueNm": 348.1,
+        "torqueRpm": 3000,
+        "engineDisplacementL": 3.496,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "awd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 1970,
+        "lengthM": 4.075,
+        "widthM": 1.875,
+        "heightM": 1.915,
+        "wheelbaseM": 2.42,
+        "trackFrontIn": 62.5984251968504,
+        "trackRearIn": 62.5984251968504,
+        "reverseRatio": 3.553,
+        "finalDrive": 4.636,
+        "fuelTankUSgal": 19.812903926861132,
+        "tireSize": [
+          265,
+          70,
+          16
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.mitsubishi-motors.com/en/company/history/car/",
+          "publisher": "Mitsubishi Motors official vehicle history,1991 Pajero section",
+          "fields": [
+            "1997 road Evolution identity",
+            "3.5L V6 MIVEC architecture",
+            "wider body",
+            "independent suspension"
+          ],
+          "access": "Read2026-11-18. Factory history explicitly adds road Evolution in1997 forDakar entry requirements. Typical standardPajero dimensions not used. History calls engine GDI; exactvariant catalog instead says ECI-multi. Fuel-system conflict preserved; noGDI simulation claim."
+        },
+        {
+          "url": "https://gazoo.com/catalog/maker/MITSUBISHI/PAJERO/199101/4004226/",
+          "publisher": "Toyota GAZOO historical Mitsubishi catalog; secondary compilation, not Mitsubishi factory engineering data",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "reverseRatio",
+            "finalDrive",
+            "fuelTankUSgal",
+            "tireSize"
+          ],
+          "access": "Read2026-11-18. Exact October1997 E-V55W manual entry1970kg;280PS206kW6500rpm/348.1Nm3000rpm,265/70R16,5MT reverse3.553/final4.636. Do not use automaticmass or raceprototype."
+        }
+      ],
+      "limits": [
+        "Backlog uses export-family Montero label; exact implemented identity is Japanese-market Pajero Evolution. No unsupported USmarket availability claim.",
+        "Primary history anchors1997 roadmodel,MIVECV6,widenedbody and independent suspension; all exact numerical variant data is secondary GAZOO. Factoryhistory GDI wording conflicts with exactcatalog ECI-multi; do not assert direct-injection fidelity.",
+        "Selected permanent generic AWD approximates high-range4H only with estimated50percentrear share. No selectable2H,locked4H,lowrange,SuperSelect transfercase controls or faithful hybridLSD claimed.",
+        "All suggestedEstimates including forwardratios,redline,CG/distribution,clearance,suspension,diffs,ABSchoice,performance are provisional. Generic chassis does not reproduce factory wheel articulation. Shared RTG-001 artwork only; no finished originalart or independent driving claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "burnet-2005",
+            "alias": "Burnet 2005",
+            "reference": "Peterhansel/Cottret2005Dakarwinning Pajero/MonteroEvolution MPR11 SuperProductionprototype",
+            "documentId": "burnet-2005",
+            "runtimeId": "saved-car:Burnet 2005",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Existing Burnet is purpose-built2005Dakar competitionprototype. Selected1997road V55W is a1970kg five-seat short-wheelbase production homologation SUV with3.5MIVEC androad265/70R16; it is not the same vehicle or a year-only tune. Nativecatalog and authoredprovenance exclude an existing1997roadEvolution.",
+        "evidence": [
+          "https://www.mitsubishi-motors.com/en/company/history/car/",
+          "https://gazoo.com/catalog/maker/MITSUBISHI/PAJERO/199101/4004226/"
+        ]
+      },
+      "name": "White Melilot 1997",
+      "id": "white-melilot-1997",
+      "simulationEstimates": {
+        "cgHeightM": 0.71,
+        "groundClearanceM": 0.245,
+        "dragCoefficient": 0.48,
+        "tireGrip": 0.86,
+        "spring": 0.51,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.23,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0.15,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 8.0,
+        "centerDifferentialBalance": 0.5,
+        "gearRatios": [
+          3.952,
+          2.238,
+          1.398,
+          1,
+          0.761
+        ]
+      }
+    },
+    {
+      "candidateId": "ford-lotus-cortina-1966-candidate",
+      "identity": {
+        "year": 1966,
+        "make": "Ford",
+        "model": "Lotus Cortina",
+        "trim": "US-export Mk I two-door sedan, 1558 cc twin-cam, 4MT, 4.125 axle, leaf-spring rear",
+        "market": "United States"
+      },
+      "referenceVehicle": "1966 US-export Ford Lotus Cortina Mk I 1558 cc twin-cam two-door sedan, four-speed manual, 4.125 rear axle, leaf-spring rear suspension; October 1965 USA factory brochure configuration, not earlier A-frame or competition car.",
+      "facts": {
+        "engineDisplacementL": 1.558,
+        "aspiration": "Naturally aspirated",
+        "torqueLbFt": 108,
+        "torqueRpm": 4000,
+        "periodPublishedRatings": {
+          "grossPowerHp": 115,
+          "powerRpm": 5700,
+          "netTorqueLbFt": 108,
+          "torqueRpm": 4000,
+          "ratingBasis": "Brochure explicitly labels Max. Gross B.H.P. 115 at5700 and Max.Net Torque108 lb-ft at4000; no net horsepower or modern SAE J1349 certification supplied."
+        },
+        "curbKg": 842.32103109,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "transmissionLabel": "Four-speed all-synchromesh floor manual; axle4.125",
+        "gearCount": 4,
+        "publishedOverallRatios": [
+          12.26,
+          8.291,
+          5.763,
+          4.125
+        ],
+        "finalDrive": 4.125,
+        "lengthM": 4.27482,
+        "widthM": 1.5875,
+        "heightM": 1.35636,
+        "wheelbaseM": 2.4892,
+        "trackFrontIn": 51.5,
+        "trackRearIn": 50.5,
+        "groundClearanceM": 0.13462,
+        "steeringRatio": 15.1
+      },
+      "sources": [
+        {
+          "url": "https://www.lotuscortinainfo.com/wp-content/uploads/2011/04/30.1-66-USA-Mk-1-4-Brochure-Lotus-Cortina-small.jpg",
+          "publisher": "Original Ford USA Cortina modified for Ford by Lotus sales brochure, archived by LotusCortinaInfo",
+          "fields": [
+            "1558cc engine",
+            "gross horsepower and net torque distinction",
+            "curb1857lb",
+            "overall forward ratios and4.125 axle",
+            "geometry/tracks",
+            "6.00x13 tires",
+            "leaf spring rear",
+            "steering",
+            "ground clearance"
+          ],
+          "access": "2026-11-18 original factory specifications image visually inspected at full image resolution; no OCR."
+        },
+        {
+          "url": "https://www.lotuscortinainfo.com/?page_id=914",
+          "publisher": "LotusCortinaInfo original-brochure archive",
+          "fields": [
+            "October1965 USA brochure dating for1966 export specification"
+          ],
+          "access": "Archive identifies 1965USA brochure October1965; filenames66USA. Date attribution is archive metadata, not claimed legible factory model-year imprint."
+        },
+        {
+          "url": "https://www.lotuscars.com/en/lotus-story/road-cars/cortina",
+          "publisher": "Lotus Cars manufacturer history",
+          "fields": [
+            "Type28 MkI1963-1966 production",
+            "1558cc twin-cam",
+            "four-speed",
+            "standard versusSE/race distinction"
+          ],
+          "access": "Manufacturer history read; generic105bhp/826kg not substituted for US brochure115gross/1857lb."
+        }
+      ],
+      "limits": [
+        "Factory115hp is explicitly GROSS; runtime100hp is a separately labeled installed-output estimate, not a mathematical gross-to-net conversion. Factory108lb-ft is explicitly period NET, not modern SAE J1349.",
+        "1857lb=842.32103109kg is brochure curb weight, not generic826kg early car or racing minimum. Rear suspension explicitly leaf springs, not early A-frame.",
+        "Forward gearbox ratios computed from printed overall ratios divided by factory4.125 axle; reverse3.32 is estimated.",
+        "Factory6.00x13 four-ply nylon bias tires approximated by165/80R13; modern radial construction/loaded rolling radius are not reproduced.",
+        "Fuel9.6gallons source has no explicit US/Imperial label despite US export brochure.11.53USgal is an explicit Imperial-to-US interpretation estimate; not a verified factory US capacity.",
+        "Redline/cutoff, performance, power interpolation, mass distribution, CG, grip, normalized spring/roll/brake values, shift timing, reverse ratio and overhang are simulation estimates. Shared RTG001 graphics; no new art or drive verification.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Primrose ST 2005",
+            "documentId": "primrose-st-2005",
+            "runtimeId": "saved-car:Primrose ST 2005",
+            "reference": "Germany January-September2005 Ford Fiesta ST150 three-door5MT FWD LHD, standard16-inch wheels",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Milkwort 1999",
+            "documentId": "milkwort-1999",
+            "runtimeId": "saved-car:Milkwort 1999",
+            "reference": "1999 United States Ford Escort LX four-door sedan,2.0L SOHC8v split-port injection,standard5MT,FWD,manual windows/mirrors,cloth seats,14inch covers. Not ZX2,SE Sport,wagon,European Escort or personal-owner replica.",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Kidney Vetch 1959",
+            "documentId": "kidney-vetch-1959",
+            "runtimeId": "saved-car:Kidney Vetch 1959",
+            "reference": "1959 Ford Anglia105E US-export two-door saloon,997ccOHV pre-crossflow inline-four,standard8.9:1compression,4MT/4.125axle,RWD,LHD; July1959USbrochure L9373/759/USA,not1198Super,100Esidevalve,vanorlowcompressionoption",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Full357-entry native catalog searched for Cortina/Type28 and no matching production reference found. Versus1959Anglia: distinct larger body/wheelbase, twin-cam1558 engine, higher output, all-synchromesh gearbox and servo front discs. ExistingEscortLX/FiestaST are decades-later FWD layouts, not Lotus Cortina aliases. No old-eleven model overlap.",
+        "evidence": [
+          "https://www.lotuscortinainfo.com/wp-content/uploads/2011/04/30.1-66-USA-Mk-1-4-Brochure-Lotus-Cortina-small.jpg",
+          "https://www.lotuscars.com/en/lotus-story/road-cars/cortina"
+        ]
+      },
+      "name": "Yellow Melilot 1966",
+      "id": "yellow-melilot-1966",
+      "simulationEstimates": {
+        "reverseRatio": 3.32,
+        "cgHeightM": 0.49,
+        "dragCoefficient": 0.46,
+        "tireGrip": 0.76,
+        "spring": 0.48,
+        "antiRollRear": 0.19,
+        "suspensionTravelM": 0.15,
+        "frontOverhangM": 0.75,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.52,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "fuelTankUSgal": 11.53,
+        "topSpeedMph": 105,
+        "zeroToSixtySec": 10.5,
+        "powerHp": 100,
+        "powerRpm": 5700,
+        "gearRatios": [
+          2.972121212121212,
+          2.009939393939394,
+          1.3970909090909092,
+          1
+        ],
+        "tireSize": [
+          165,
+          80,
+          13
+        ]
+      }
+    },
+    {
+      "candidateId": "audi-rs-7-sportback-2013-roster-candidate",
+      "identity": {
+        "year": 2013,
+        "make": "Audi",
+        "model": "RS 7 Sportback",
+        "trim": "Netherlandslaunch4.0TFSIquattro8-speedtiptronic, standard20-inch/air suspension,250kmh limiter",
+        "market": "Netherlands"
+      },
+      "referenceVehicle": "2013 Netherlands Audi RS7Sportback C74.0TFSI560PSquattro8AT four-seatfive-door;notlater605PSperformance orC8",
+      "facts": {
+        "powerKw": 412,
+        "publishedPowerPS": 560,
+        "powerRpm": 5700,
+        "torqueNm": 700,
+        "torqueRpm": 1750,
+        "engineDisplacementL": 4.0,
+        "transmission": "automatic",
+        "gearCount": 8,
+        "drivetrain": "awd",
+        "dragCoefficient": 0.3,
+        "aspiration": "Twin turbocharged"
+      },
+      "sources": [
+        {
+          "url": "https://nieuws.audi.nl/de-nieuwe-audi-rs-7-sportback/",
+          "publisher": "Audi Netherlands factory16July2013launchrelease",
+          "fields": [
+            "identity",
+            "powerKw",
+            "publishedPowerPS",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "drivetrain",
+            "dragCoefficient",
+            "aspiration"
+          ],
+          "access": "Read2026-11-18. NetherlandsdeliveriesOctober2013.412kW5700\u20136700,700Nm1750\u20135500;standard8tiptronic,20inch,air suspension,40:60quattro,250kmh limiter. Engine4.0nominal; notclaim3993ccfromthispage."
+        }
+      ],
+      "limits": [
+        "1995kg isestimatedrunningmass withunverifieddriver/fuelbasis. Individualratios/finaldrive,tiresizesbeyondfactory20inch,geometry,loadsplit/CG,limitsandhandlingareestimates.",
+        "Powerandtorqueplateauspreservedasprimaryanchors; smoothcurvebetweenpointsestimated. Fixed.6rearshare approximatesfactoryvariablequattro,notbrakevectoring,optionalrear sportdiff,airheightcontrolorCylinderOnDemand.",
+        "Factory3.9s0\u2013100notclaimed0\u201360;modeled3.7s0\u201360estimate. SharedRTG001only,nodrive/artcompletionclaim.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "field-pansy-2009",
+            "alias": "Field Pansy 2009",
+            "referenceVehicle": "2009 continental Europe Audi RS 6, C6 standard5.0 V10 biturbo sedan quattro6AT,standard19inch wheels and250km/h limiter; notAvant/plus",
+            "documentId": "field-pansy-2009",
+            "runtimeId": "saved-car:Field Pansy 2009",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "golden-saxifrage-2003",
+            "alias": "Golden Saxifrage 2003",
+            "referenceVehicle": "2003 Europe Audi RS6 C5, standard 4.2 V8 biturbo sedan five-speed torque-converter automatic, not Avant/plus/Competition",
+            "documentId": "golden-saxifrage-2003",
+            "runtimeId": "saved-car:Golden Saxifrage 2003",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "RS7C7newfive-doorliftback4.0hot-Vtwinturbo8AT vsC6RS65.0V10sedan6AT andC5RS64.2V8sedan5AT. Differentplatform/body/engine/transmission,notbadge/yearpadding. NoRS7foundinactualcatalog.",
+        "evidence": [
+          "https://nieuws.audi.nl/de-nieuwe-audi-rs-7-sportback/"
+        ]
+      },
+      "name": "Field Madder 2013",
+      "id": "field-madder-2013",
+      "simulationEstimates": {
+        "reverseRatio": 3.317,
+        "cgHeightM": 0.53,
+        "groundClearanceM": 0.12,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.56,
+        "redlineRpm": 6700,
+        "revLimitRpm": 7000,
+        "fuelTankUSgal": 19.8,
+        "topSpeedMph": 155.34,
+        "zeroToSixtySec": 3.7,
+        "curbKg": 1995,
+        "lengthM": 5.012,
+        "widthM": 1.911,
+        "heightM": 1.419,
+        "wheelbaseM": 2.915,
+        "trackFrontIn": 64.4,
+        "trackRearIn": 64.3,
+        "tireSize": [
+          275,
+          35,
+          20
+        ],
+        "frontTire": [
+          275,
+          35,
+          20
+        ],
+        "rearTire": [
+          275,
+          35,
+          20
+        ],
+        "gearRatios": [
+          4.714,
+          3.143,
+          2.106,
+          1.667,
+          1.285,
+          1,
+          0.839,
+          0.667
+        ],
+        "finalDrive": 3.076,
+        "centerDifferentialBalance": 0.6,
+        "transmissionLabel": "8-speed torque-converter automatic approximation",
+        "torqueConverterSlip": 0.035,
+        "torqueConverterMultiplication": 1.7,
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 206.5174017976344
+          },
+          {
+            "rpm": 1750,
+            "torqueLbFt": 516.2935044940859
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 516.2935044940859
+          },
+          {
+            "rpm": 5700,
+            "torqueLbFt": 509.07645298173185
+          },
+          {
+            "rpm": 7000,
+            "torqueLbFt": 309.7761026964516
+          }
+        ]
+      }
+    },
+    {
+      "candidateId": "audi-rs-4-avant-2013-roster-candidate",
+      "identity": {
+        "year": 2013,
+        "make": "Audi",
+        "model": "RS 4 Avant",
+        "trim": "UKB8standard4.2FSIV8quattro7-speedStronic,19-inch,withoutoptionalDRC/sportdifferential",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "2013 UK Audi RS4Avant B84.163LNAhighrevV8 quattro7-speedS tronicwagon standard19-inch;notB5turbo,B7manualsedan orlaterB9V6",
+      "facts": {
+        "powerKw": 331,
+        "publishedPowerPS": 450,
+        "powerRpm": 8250,
+        "torqueNm": 430,
+        "torqueRpm": 4000,
+        "engineDisplacementL": 4.163,
+        "transmission": "automatic",
+        "gearCount": 7,
+        "drivetrain": "awd",
+        "tireSize": [
+          265,
+          35,
+          19
+        ],
+        "frontTire": [
+          265,
+          35,
+          19
+        ],
+        "rearTire": [
+          265,
+          35,
+          19
+        ],
+        "aspiration": "Naturally aspirated"
+      },
+      "sources": [
+        {
+          "url": "https://media.manuals.plus/m/bf2d7a9d0d9314bc475ae8a0840bb812e806508b82fa47a1a0956da61134d42c",
+          "publisher": "AudiUK originalPricingandSpecificationGuidevalidMay2013,documentreproduction indexedManualsPlus",
+          "fields": [
+            "identity",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "Readindexedoriginalguide2026-11-18; titleexplicitMay2013UK. NoOCRorbulkdownload. Year/marketanchoronly; detailedpower/chassisfromfactorylaunchbelow."
+        },
+        {
+          "url": "https://audi.media-corner.ch/fr/press/la-nouvelle-audi-rs-4-avant",
+          "publisher": "AudiSwitzerlandofficialmediafactory20February2012B8launch",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "drivetrain",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "aspiration"
+          ],
+          "access": "Readfullfactorytext2026-11-18;331kW8250,430Nm4000\u20136000,4163cc,7Stronicquattro40:60,standard265/35R19,optionalDRCandrear sportdiff. SameB8launchmechanicalspecappliedtoexactMay2013UKguide; notlaterB9."
+        }
+      ],
+      "limits": [
+        "1795kg provisionalrunningmass estimate; exactUKdriver/fuelbasisnotverified. International2013brochurelists1870kgunladen butfootnotebasisunread,so noassertionofverified75kgdriverdeduction.",
+        "Sameengine/7DCTfamilyasexistingRS5disclosed. B8Avant isdifferentbody/platformwheelbase/cargo/weightandnewgenerationfromB7RS4manualsedan; notmerelybadgeortransmissioncopy.",
+        "Gearratios/final,geometry,loadsplit,CG,revlimit,aeroandsimulationcalibrationremainestimates. FixedAWDandgenericDCTomitproprietarycrown-geardiff/brakevectoring/launchcontrol. NooptionalDRCorsportrear differentialselected.",
+        "Factory4.7sec0\u2013100notasserted0\u201360;sharedRTG001artandnobrowserverificationclaim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "hoary-willowherb-2001",
+            "alias": "Hoary Willowherb 2001",
+            "referenceVehicle": "2001 UK Audi RS 4 Avant, B5 standard2.7biturboV6 quattro six-speed manual wagon, RHD; notSportconversion orB7",
+            "documentId": "hoary-willowherb-2001",
+            "runtimeId": "saved-car:Hoary Willowherb 2001",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "great-willowherb-2006",
+            "alias": "Great Willowherb 2006",
+            "referenceVehicle": "2006 Germany Audi RS 4, B7 standard naturallyaspirated4.2FSIV8 quattro sedan6MT; notAvant/Cabriolet orUSMY2007",
+            "documentId": "great-willowherb-2006",
+            "runtimeId": "saved-car:Great Willowherb 2006",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "meadow-sage-2011",
+            "alias": "Meadow Sage 2011",
+            "referenceVehicle": "2011 UK Audi RS5 Coupe 4.2 FSI quattro 7-speed S tronic, standard 19-inch wheels",
+            "documentId": "meadow-sage-2011",
+            "runtimeId": "saved-car:Meadow Sage 2011",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "B8Avant replacesB5twinturboV6manualarchitectureandB7NAmanualgeneration withlongerwheelbasewagon/7DCT. RS5shares4.2highrevV8and7DCTbutshortertwo-doorcoupebody; thisispracticalAvantplatform notcosmeticRS5badgevariant.",
+        "evidence": [
+          "https://media.manuals.plus/m/bf2d7a9d0d9314bc475ae8a0840bb812e806508b82fa47a1a0956da61134d42c",
+          "https://audi.media-corner.ch/fr/press/la-nouvelle-audi-rs-4-avant"
+        ]
+      },
+      "name": "Wild Madder 2013",
+      "id": "wild-madder-2013",
+      "simulationEstimates": {
+        "reverseRatio": 2.944,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.56,
+        "redlineRpm": 8250,
+        "revLimitRpm": 8500,
+        "fuelTankUSgal": 16.11,
+        "topSpeedMph": 155.34,
+        "zeroToSixtySec": 4.5,
+        "curbKg": 1795,
+        "lengthM": 4.719,
+        "widthM": 1.85,
+        "heightM": 1.416,
+        "wheelbaseM": 2.813,
+        "trackFrontIn": 62.9,
+        "trackRearIn": 62.1,
+        "gearRatios": [
+          3.692,
+          2.15,
+          1.406,
+          1.025,
+          0.787,
+          0.625,
+          0.519
+        ],
+        "finalDrive": 4.375,
+        "centerDifferentialBalance": 0.6,
+        "transmissionLabel": "7-speed dual-clutch automatic approximation",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1
+      }
+    },
+    {
+      "candidateId": "jaguar-xfr-s-2015-roster-candidate",
+      "identity": {
+        "year": 2015,
+        "make": "Jaguar",
+        "model": "XFR-S",
+        "trim": "UK X250 5.0 superchargedV8 saloon RWD8AT, standard small bootlid spoiler",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "2015 UK Jaguar XFR-S X250 four-door saloon,5.0 superchargedV8 550PS680Nm RWD eight-speed Quickshift automatic; not Sportbrake,XKR-S,F-TYPE R or laterXF generation.",
+      "facts": {
+        "powerKw": 404.5243125,
+        "publishedPowerPS": 550,
+        "torqueNm": 680,
+        "powerRpm": 6500,
+        "torqueRpm": 2500,
+        "torquePlateauEndRpm": 5500,
+        "engineDisplacementL": 5,
+        "transmission": "automatic",
+        "gearCount": 8,
+        "topSpeedMph": 186
+      },
+      "sources": [
+        {
+          "url": "https://media.jlr.com/jaguar/news/2012/11/jaguar-xfr-s-unveiled-los-angeles-auto-show-2012",
+          "publisher": "Jaguar Land Rover factory press release",
+          "fields": [
+            "550metricPS",
+            "torqueNm",
+            "engineDisplacementL",
+            "gearCount",
+            "topSpeedMph",
+            "RWDsaloonidentity"
+          ],
+          "access": "Launch28November2012 fulltext;550PS680Nm,8speed,4.4sec0\u201360 and186mph; sourcepowerconverted to404.524kW, not550imperialhp."
+        },
+        {
+          "url": "https://media.jlr.com/corporate/news/2014/02/jaguars-2015-model-year-xf-range-be-unveiled-geneva-international-motor-show-2014",
+          "publisher": "Jaguar Land Rover factory2015MY XF range release",
+          "fields": [
+            "2015MYXFRSsaloon",
+            "powerRpm",
+            "torqueRpm",
+            "torquePlateauEndRpm"
+          ],
+          "access": "2015range explicitly retainsXFR-Ssaloon4.4sec and saysSportbrake shares550PS680Nm engine.6500power/2500\u20135500torque anchors from same-engine table, not mass/chassis borrowed fromestate."
+        }
+      ],
+      "limits": [
+        "1987kg curb reference is provisional, fuel/driver/options convention unverified. Full dimensions/gearing/final drive/tire sizes and tank supplied as explicit estimates pending trim-specific technicalsheet.",
+        "Small bootlid spoiler selected; no claim of exact68percent lift reduction or active aero under generic model. Fixed passive suspension and LSD approximate adaptive damping and active e-diff; no controlsoftware reproduction.",
+        "4.4sec0\u201360 is factoryclaim target, not achievedruntimeproof. Other dynamic parameters,CG/load distribution/grip, RPMlimits and converterbehavior estimated. Sameengine peakRPM corroboration fromSportbrake release explicitlylinked tosaloon; estateweight/suspension not used.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "White Stonecrop 2012",
+            "documentId": "white-stonecrop-2012",
+            "runtimeId": "saved-car:White Stonecrop 2012",
+            "reference": "Jaguar XKR-S5.0 supercharged two-door coupe6AT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Wood Avens 2015",
+            "documentId": "wood-avens-2015",
+            "runtimeId": "saved-car:Wood Avens 2015",
+            "reference": "US F-TYPE R5.0 supercharged two-seat coupe8AT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Curled Dock 2015",
+            "documentId": "curled-dock-2015",
+            "runtimeId": "saved-car:Curled Dock 2015",
+            "reference": "Jaguar XE S3.0superchargedV6 compactsedan8AT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Blackthorn 1986",
+            "documentId": "blackthorn-1986",
+            "runtimeId": "saved-car:Blackthorn 1986",
+            "reference": "Jaguar XJ6SeriesIII4.2sedan3AT",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "X250four-door executive saloon has differentbody/wheelbase/mass and8speed fromXKR-S, full rear seating andlongerchassis thanF-TYPE R, andV8 versus smallerXE SV6. Sameenginefamily noted, not a trim/year duplicate.",
+        "evidence": [
+          "https://media.jlr.com/jaguar/news/2012/11/jaguar-xfr-s-unveiled-los-angeles-auto-show-2012",
+          "https://media.jlr.com/corporate/news/2014/02/jaguars-2015-model-year-xf-range-be-unveiled-geneva-international-motor-show-2014"
+        ],
+        "audit": "Refreshed357native entries includingwave37 plus tests/unit/docs exactreferences searched. NoXFR-S orotherXF implementation. Existingbacklogslot retained."
+      },
+      "name": "Red Bartsia 2015",
+      "id": "red-bartsia-2015",
+      "simulationEstimates": {
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.55,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.18,
+        "frontOverhangM": 0.88,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 180,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.52,
+        "redlineRpm": 6800,
+        "revLimitRpm": 7000,
+        "aspiration": "Supercharged",
+        "fuelTankUSgal": 18.5,
+        "zeroToSixtySec": 4.4,
+        "curbKg": 1987,
+        "lengthM": 4.961,
+        "widthM": 1.939,
+        "heightM": 1.46,
+        "wheelbaseM": 2.909,
+        "trackFrontIn": 63.1,
+        "trackRearIn": 62.8,
+        "tireSize": [
+          265,
+          35,
+          20
+        ],
+        "frontTire": [
+          265,
+          35,
+          20
+        ],
+        "rearTire": [
+          295,
+          30,
+          20
+        ],
+        "gearRatios": [
+          4.714,
+          3.143,
+          2.106,
+          1.667,
+          1.285,
+          1,
+          0.839,
+          0.667
+        ],
+        "finalDrive": 2.56,
+        "transmissionLabel": "eight-speed torque-converter automatic",
+        "torqueConverterSlip": 0.05,
+        "torqueConverterMultiplication": 1.8,
+        "drivetrain": "rwd"
+      }
+    },
+    {
+      "candidateId": "land-rover-range-rover-velar-first-edition-2018-roster-candidate",
+      "identity": {
+        "year": 2018,
+        "make": "Land Rover",
+        "model": "Range Rover Velar",
+        "trim": "UK launch-generation P380 First Edition supercharged3.0V6 AWD8AT, road-height air suspension",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "2018 UK Range Rover Velar P380 First Edition L560,3.0 superchargedV6 380metricPS450Nm AWD8AT,22inch wheels, road-height air suspension; notD300diesel,P250fourcylinder,RangeRoverSport orSVAutobiographyV8.",
+      "facts": {
+        "powerKw": 279.489525,
+        "publishedPowerPS": 380,
+        "powerRpm": 6500,
+        "torqueNm": 450,
+        "engineDisplacementL": 3,
+        "transmission": "automatic",
+        "gearCount": 8,
+        "lengthIn": 189.09448818897638,
+        "widthIn": 75.98425196850394,
+        "heightIn": 65.55118110236221,
+        "topSpeedMph": 155
+      },
+      "sources": [
+        {
+          "url": "https://media.jlr.com/range-rover/en-gb/news/2017/03/introducing-range-rover-velar",
+          "publisher": "Jaguar Land Rover UK factory launchtechnicalrelease",
+          "fields": [
+            "P380FirstEditionUK",
+            "380metricPS",
+            "powerRpm",
+            "torqueNm",
+            "engineDisplacementL",
+            "gearCount",
+            "geometry",
+            "topSpeedMph"
+          ],
+          "access": "Readfulltechnicaltext18November2026:380PS6500,450Nm,ZF8AT,FirstEditionP380 UKprice,22inchwheels,one-model-yearoffering. Geometrytable4803x1930x1665mm. Powerconverted279.489525kW;not380SAEhp.251mmclearance isMAXairheight,not roadheight."
+        },
+        {
+          "url": "https://manuals.plus/m/6c6aaec12a713f1595d5a88b0fe752c129ba79e336b9aa7f5676e4e72594d5ba",
+          "publisher": "Jaguar Land Rover factory2018 Velar brochure archive",
+          "fields": [
+            "2018modelyear",
+            "FirstEdition"
+          ],
+          "access": "FactorybrochuretitleNEW RANGE ROVER VELAR2018;FirstEdition explicitly included. US/globaledition used for modelyear corroboration only, not to mixUS horsepower withUKPS."
+        }
+      ],
+      "limits": [
+        "1950kg is a provisional equippedFirstEdition mass, not factoryminimumbasecurb or2550kgGVW; driver/fuel/options basis remainsunverified.",
+        "UK launchspec P380 FirstEdition retained for2018 first-model-year slot; no latevariant orlaterengineupdate. 3.0L source is nominal; exact2995cc not independentlyverified.",
+        "Wheelbase/tracks,265/40R22tires,torqueRPM,gears/finaldrive/tank androadheight.20m estimated. Airsuspension modeledfixedroadheight: do notuse251mmmaximumclearance asnormalstance.",
+        "Fixed0.60rear torque share approximatesdynamicIDD underload, notfactoryfixedsplit. TerrainResponse,variablecoupler,rearactivelock,rideheight andbrakevectoring not fully simulated. GenericexistingAWD/TConly; nonewfeatures.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Greater Trefoil 2015",
+            "documentId": "greater-trefoil-2015",
+            "runtimeId": "saved-car:Greater Trefoil 2015",
+            "reference": "Range Rover SportSVR5.0superchargedV8 permanent4WD",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Curled Dock 2015",
+            "documentId": "curled-dock-2015",
+            "runtimeId": "saved-car:Curled Dock 2015",
+            "reference": "Jaguar XE S3.0superchargedV6 RWDsedan",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Gorse 2015",
+            "documentId": "gorse-2015",
+            "runtimeId": "saved-car:Gorse 2015",
+            "reference": "Defender90diesel body-on-frame utility",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "VelarL560 aluminiumSUV withP380V6, differentbody/wheelbase/mass andon-demandAWD versusSportSVRV8 permanent4WD orDefenderdiesel. XErelatedAJ126enginefamily butdifferentcalibration/SUVbody/AWD purpose. FirstEdition is onlyVelar represented, notadditionalbadge-onlytrim.",
+        "evidence": [
+          "https://media.jlr.com/range-rover/en-gb/news/2017/03/introducing-range-rover-velar"
+        ],
+        "audit": "357currentnativecatalogentries andtests/docs checked; noVelar. Exactexisting660slot confirmed; priorSportSVRnotcountedassamemodel."
+      },
+      "name": "Yellow Bartsia 2018",
+      "id": "yellow-bartsia-2018",
+      "simulationEstimates": {
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.64,
+        "groundClearanceM": 0.2,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.9,
+        "spring": 0.55,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.22,
+        "frontOverhangM": 0.834,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 180,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.52,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "aspiration": "Supercharged",
+        "fuelTankUSgal": 16.65,
+        "zeroToSixtySec": 5.3,
+        "curbKg": 1950,
+        "wheelbaseM": 2.874,
+        "trackFrontIn": 64.6,
+        "trackRearIn": 65.4,
+        "tireSize": [
+          265,
+          40,
+          22
+        ],
+        "frontTire": [
+          265,
+          40,
+          22
+        ],
+        "rearTire": [
+          265,
+          40,
+          22
+        ],
+        "gearRatios": [
+          4.714,
+          3.143,
+          2.106,
+          1.667,
+          1.285,
+          1,
+          0.839,
+          0.667
+        ],
+        "finalDrive": 3.73,
+        "transmissionLabel": "eight-speed torque-converter automatic",
+        "torqueConverterSlip": 0.05,
+        "torqueConverterMultiplication": 1.8,
+        "drivetrain": "awd",
+        "centerDifferentialBalance": 0.6,
+        "torqueRpm": 3500
+      }
+    }
+  ],
+  "deferred": []
+}

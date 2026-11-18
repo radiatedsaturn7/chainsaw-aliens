@@ -1,0 +1,977 @@
+{
+  "schemaVersion": 1,
+  "base": "0c3856b9ee05060fae661886067ce1767682a64c",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "mercedes-benz-e-55-amg-wagon-2006-roster-candidate",
+      "identity": {
+        "year": 2006,
+        "make": "Mercedes-Benz",
+        "model": "E 55 AMG Wagon",
+        "trim": "S211 type211.276 standard5AT pre-May2006",
+        "market": "Germany"
+      },
+      "referenceVehicle": "Early2006 German Mercedes-Benz E55AMG S211 type211.276 stationwagon,supercharged M113.9905.439L V8,RWD5AT;notS210naturallyaspirated,E63,sedan,USweightsorold500E",
+      "facts": {
+        "powerKw": 350,
+        "torqueNm": 700,
+        "powerRpm": 6100,
+        "torqueRpm": 2650,
+        "engineDisplacementL": 5.439,
+        "curbKg": 1990,
+        "transmission": "automatic",
+        "gearCount": 5,
+        "gearRatios": [
+          3.6,
+          2.19,
+          1.4,
+          1,
+          0.83
+        ],
+        "reverseRatio": 3.17,
+        "finalDrive": 2.65,
+        "lengthIn": 191.7716535433071,
+        "widthIn": 71.73228346456693,
+        "heightIn": 58.46456692913386,
+        "wheelbaseIn": 112.36220472440945,
+        "trackFrontIn": 61.37795275590552,
+        "trackRearIn": 61.102362204724415,
+        "tireSize": [
+          245,
+          40,
+          18
+        ],
+        "frontTire": [
+          245,
+          40,
+          18
+        ],
+        "rearTire": [
+          265,
+          35,
+          18
+        ],
+        "fuelTankUSgal": 21.133764188651874,
+        "topSpeedMph": 155.3427980593335
+      },
+      "sources": [
+        {
+          "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/E-55-AMG-station-wagon.xhtml?oid=5471",
+          "publisher": "Mercedes-Benz official archive S211 E55AMG technicalrecord",
+          "fields": [
+            "identity",
+            "powerKw",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "curbKg",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "fuelTankUSgal",
+            "topSpeedMph"
+          ],
+          "access": "Read2026-11-17. Mainproduction09/2003\u201305/2006;Feb2006price supports exactyear.1990kg EC92/21 includes68kgdriver,7kgbaggage,90percentfuel; retaineddirectly.700Nm plateau2650\u20134500rpm.350kW anchor,not476mechanicalhp.0\u20131004.8sec not0\u201360."
+        }
+      ],
+      "limits": [
+        "Air suspension level control and electrohydraulicSBC are approximated with existing passive suspension/brake simulation;no new runtime systems.",
+        "Source1990kgEC wagonmass not US1854kg or sedanmass. All nonfacts are estimates includingCG/loadsplit,drag,grip,torquecurve,converter,shift,differential calibration and0\u201360.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Sea Campion 2006",
+      "id": "sea-campion-2006",
+      "simulationEstimates": {
+        "cgHeightM": 0.54,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.32,
+        "tireGrip": 1.03,
+        "spring": 0.57,
+        "antiRollRear": 0.26,
+        "suspensionTravelM": 0.18,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.52,
+        "redlineRpm": 6400,
+        "revLimitRpm": 6600,
+        "aspiration": "Supercharged",
+        "zeroToSixtySec": 4.6,
+        "drivetrain": "rwd",
+        "transmissionLabel": "5-speed torque-converter automatic",
+        "torqueConverterSlip": 0.05,
+        "torqueConverterMultiplication": 1.7
+      }
+    },
+    {
+      "candidateId": "bmw-m3-gts-2010-roster-candidate",
+      "identity": {
+        "year": 2010,
+        "make": "BMW",
+        "model": "M3 GTS",
+        "trim": "E92 4.4V8 roadlegal two-seat7DCT standardnoAC/audio",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2010 German BMW M3GTS E92 4.361L naturallyaspiratedV8,two-seat roadlegalclubsport coupe,7-speedMDCT,standardrollbar,withoutoptionalAC/audio;notstandard4.0M3or2009prototype",
+      "facts": {
+        "powerKw": 331,
+        "torqueNm": 440,
+        "powerRpm": 8300,
+        "torqueRpm": 3750,
+        "engineDisplacementL": 4.361,
+        "curbKg": 1530,
+        "transmission": "automatic",
+        "gearCount": 7,
+        "gearRatios": [
+          4.78,
+          3.056,
+          2.153,
+          1.678,
+          1.39,
+          1.203,
+          1
+        ],
+        "reverseRatio": 4.454,
+        "finalDrive": 3.154,
+        "lengthIn": 182.8740157480315,
+        "widthIn": 71.0236220472441,
+        "heightIn": 54.60629921259843,
+        "wheelbaseIn": 108.66141732283465,
+        "trackFrontIn": 60.86614173228347,
+        "trackRearIn": 60.59055118110236,
+        "tireSize": [
+          255,
+          35,
+          19
+        ],
+        "frontTire": [
+          255,
+          35,
+          19
+        ],
+        "rearTire": [
+          285,
+          30,
+          19
+        ],
+        "fuelTankUSgal": 16.642839298563352,
+        "topSpeedMph": 189.51821363238685,
+        "dragCoefficient": 0.34
+      },
+      "sources": [
+        {
+          "url": "https://newsroom.bmwgroup.com/emea/download/b420687f-eed2-4245-bba1-fdb96f8a0604/20260831130013216-41.pdf",
+          "publisher": "BMW May2010 Allclear given for marketlaunch of BMWM3GTS factorytechnicalrelease",
+          "fields": [
+            "identity",
+            "powerKw",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "curbKg",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "fuelTankUSgal",
+            "topSpeedMph",
+            "dragCoefficient"
+          ],
+          "access": "FactoryPDF pp5\u20137 technicaltable parsed2026-11-17.1530kgDIN vs1605kgEU;selectDIN explicitly.331kW anchor not450mechanicalhp. Finalproduction1530 replaces2009prelaunch under1500target. GearboxDCTnotconverter.0\u20131004.4sec not0\u201360. Technicaldata ACEAmarkets withGermanweights."
+        }
+      ],
+      "limits": [
+        "Distinct4.361L increasedstroke engine,1530kgDIN two-seatclubsportbody,7DCT andcoilovers vs existing1680kgUS4.0M3manual;notbadge-onlyvariant.",
+        "Existingautomatic path modelsDCT withzero converter slip/multiplication1;does not claim exactdualclutchcontrol. Adjustableaero/coilovers fixedestimatedconfiguration.",
+        "All nonfacts simulationvalues estimates includingCG/loadsplit,grip,aerodownforce,differentialcalibration,limiter/shift/torquecurve and0\u201360.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Bladder Campion 2010",
+      "id": "bladder-campion-2010",
+      "simulationEstimates": {
+        "cgHeightM": 0.45,
+        "groundClearanceM": 0.11,
+        "tireGrip": 1.15,
+        "spring": 0.69,
+        "antiRollRear": 0.34,
+        "suspensionTravelM": 0.13,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.15,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0.06,
+        "aeroRear": 0.1,
+        "shiftTimeMs": 100,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.5,
+        "redlineRpm": 8400,
+        "revLimitRpm": 8500,
+        "aspiration": "Naturally aspirated",
+        "zeroToSixtySec": 4.2,
+        "drivetrain": "rwd",
+        "transmissionLabel": "7-speed dual-clutch (existing automatic approximation)",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1
+      }
+    },
+    {
+      "candidateId": "mazda-rx-7-gsl-se-1985-roster-candidate",
+      "identity": {
+        "year": 1985,
+        "make": "Mazda",
+        "model": "RX-7 FB",
+        "trim": "GSL-SE 13B fuel-injected 5MT, standard air conditioning, no optional power steering or leather",
+        "market": "United States"
+      },
+      "referenceVehicle": "1985 US Mazda RX-7 GSL-SE first-generation FB 13B naturally aspirated fuel-injected rotary, five-speed manual, standard air conditioning and removable steel sunroof",
+      "facts": {
+        "powerHp": 135,
+        "powerRpm": 6000,
+        "torqueLbFt": 133,
+        "torqueRpm": 2750,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbLb": 2575,
+        "gearRatios": [
+          3.622,
+          2.186,
+          1.419,
+          1,
+          0.711
+        ],
+        "reverseRatio": 3.493,
+        "finalDrive": 4.08,
+        "lengthIn": 170.1,
+        "widthIn": 65.7,
+        "heightIn": 49.6,
+        "wheelbaseIn": 95.3,
+        "trackFrontIn": 55.9,
+        "trackRearIn": 55.1,
+        "groundClearanceM": 0.14478,
+        "fuelTankUSgal": 16.6,
+        "tireSize": [
+          205,
+          60,
+          14
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Mazda/RX-7/Mazda_US%20RX-7_1985.pdf",
+          "publisher": "Mazda original United States 1985 RX-7 brochure, mirrored Auto-Brochures",
+          "fields": [
+            "identity",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbLb",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "tireSize"
+          ],
+          "access": "Read2026-11-17. Printed/PDFpages16-17 visually verified. SAE-net135hp/133lbft explicitly13B GSL-SE; table 5-speed/SE gives fifth.807/.711 and final3.909/4.080. GSL-SE2575lb separately identified, ACstandard unlikeothertrims. 80cuin displacement rounded in brochure;1.308L conventional13B figure used as nominal equivalent."
+        }
+      ],
+      "limits": [
+        "Actual native catalogProvenance and authored tests/docs searched for GSL-SE,1985RX7 and FB. Only Rotorveil1993FD turbo and Butterbur787B competition references exist; first-generation naturally aspirated live-axle FB is distinct.",
+        "Factory curb column explicitly GSL-SE2575lb; do not add generic55lb AC option again because GSL-SEequipment lists ACstandard. Optional power steering and leather are excluded.",
+        "Rotary1308cc nominal chamber-volume convention is not a piston-engine equivalent displacement. Use existing combustion abstraction with rotary high-rpm calibration; no unsupported special rotary simulation claims.",
+        "Factory LSD is standard on GSL-SE; its native locking coefficient, CG/loadsplit, redline/limiter, drag, suspension and grip are estimates. 8000rpm tachometer span is not a verified redline.",
+        "Selected205/60VR14 PirelliP6 standard tires, not base165HR13 orGSL195/70HR13. Period removable steel sunroof kept closed.",
+        "Factory brochure rounds displacement to80cuin;1.308L nominal13B chamber volume is retained as modeling estimate, not claimed as exact cc printed in this source.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Musk Mallow 1985",
+      "id": "musk-mallow-1985",
+      "simulationEstimates": {
+        "cgHeightM": 0.46,
+        "dragCoefficient": 0.36,
+        "tireGrip": 0.94,
+        "spring": 0.46,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.98,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.5,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "aspiration": "Naturally aspirated",
+        "topSpeedMph": 124,
+        "zeroToSixtySec": 8.1,
+        "engineDisplacementL": 1.308,
+        "transmissionLabel": "5-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "hummer-h1-alpha-2006-roster-candidate",
+      "identity": {
+        "year": 2006,
+        "make": "HUMMER",
+        "model": "H1 Alpha",
+        "trim": "four-door wagon, standard wheels/GSA tires, no Adventure Package or winch; high-range full-time 4WD",
+        "market": "United States"
+      },
+      "referenceVehicle": "2006 US HUMMER H1 Alpha four-door wagon, standard wheels/GSA tires, no Adventure Package or winch; high-range full-time 4WD",
+      "facts": {
+        "powerHp": 300,
+        "torqueLbFt": 520,
+        "powerRpm": 3000,
+        "torqueRpm": 1600,
+        "engineDisplacementL": 6.6,
+        "aspiration": "Turbocharged diesel",
+        "curbKg": 3680.44849018,
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "transmissionLabel": "Allison M74 1000 five-speed automatic; high-range approximation",
+        "gearCount": 5,
+        "gearRatios": [
+          3.1,
+          1.81,
+          1.41,
+          1,
+          0.71
+        ],
+        "reverseRatio": 4.49,
+        "axleRatio": 2.56,
+        "hubReduction": 1.92,
+        "finalDrive": 4.9152,
+        "lengthIn": 184.5,
+        "widthIn": 86.5,
+        "heightIn": 77,
+        "wheelbaseIn": 130,
+        "trackFrontIn": 71.6,
+        "trackRearIn": 71.6,
+        "groundClearanceM": 0.4064,
+        "publishedTire": "37x12.5R17",
+        "fuelTankUSgal": 51.5,
+        "absEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Hummer/H1/Hummer_US%20H1_2006.pdf",
+          "publisher": "GM/HUMMER original2006US H1 Alpha brochure, archive mirror",
+          "fields": [
+            "engine",
+            "mass/wagon basis",
+            "gears",
+            "2.56 axle and1.92 portal hubs",
+            "geometry",
+            "tires",
+            "tank",
+            "suspension",
+            "standard Torsen versus optional ELocker"
+          ],
+          "access": "2026-11-17 downloaded original four-pagePDF; details page2 rendered and visually verified; warranty explicitlyUS"
+        }
+      ],
+      "limits": [
+        "Distinct from H3 Teasel and other small SUVs.8114lb wagon excludes winch/options, not7847lb open-top.",
+        "2.56 axle alone is WRONG for wheel-speed calculation: finalDrive4.9152 folds1.92 geared hubs into high-range final; do not multiply reduction twice.",
+        "37x12.5R17 converted to317.5/80R17 is geometric diameter representation, not a factory metric tire marking; grip/pressure estimates.",
+        "Fixed high range and approximate Torsen/AWD only; no low-range selector, CTIS, portal physics or TT4 brake-controller fidelity claimed.",
+        "Factory torque peak1600rpm precedes builder fixed1800rpm sample; ensure curve points sorted and no artificial torque jump.",
+        "Torque curve, CG, inertia, grip, spring/damper rates, launch/shift logic and unspecified dynamics are estimates. Shared RTG-001 art only; no new original art or actual driving claimed.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Common Mallow 2006",
+      "id": "common-mallow-2006",
+      "simulationEstimates": {
+        "cgHeightM": 0.9,
+        "dragCoefficient": 0.68,
+        "tireGrip": 0.75,
+        "spring": 0.52,
+        "antiRollRear": 0.22,
+        "suspensionTravelM": 0.32,
+        "frontOverhangM": 0.65,
+        "rearDifferentialAccel": 0.2,
+        "frontDifferentialAccel": 0.2,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.49,
+        "redlineRpm": 3200,
+        "revLimitRpm": 3400,
+        "topSpeedMph": 90,
+        "zeroToSixtySec": 14,
+        "torqueConverterSlip": 0.08,
+        "torqueConverterMultiplication": 1.7,
+        "tireSize": [
+          317.5,
+          80,
+          17
+        ],
+        "centerDifferentialBalance": 0.5,
+        "launchRpm": 1200,
+        "autoDownshiftRpm": 1000,
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 208
+          },
+          {
+            "rpm": 1600,
+            "torqueLbFt": 520
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 510
+          },
+          {
+            "rpm": 3000,
+            "torqueLbFt": 520
+          },
+          {
+            "rpm": 3400,
+            "torqueLbFt": 312
+          }
+        ]
+      }
+    },
+    {
+      "candidateId": "dodge-durango-srt-hellcat-2021-roster-candidate",
+      "identity": {
+        "year": 2021,
+        "make": "Dodge",
+        "model": "Durango SRT Hellcat",
+        "trim": "6.2 supercharged AWD8AT, six seats, standard295/45ZR20 all-season runflats, Auto mode approximation",
+        "market": "United States"
+      },
+      "referenceVehicle": "2021 US Dodge Durango SRT Hellcat 6.2 supercharged AWD8AT, six seats, standard295/45ZR20 all-season runflats, Auto mode approximation",
+      "facts": {
+        "powerHp": 710,
+        "torqueLbFt": 645,
+        "powerRpm": 6100,
+        "torqueRpm": 4300,
+        "engineDisplacementL": 6.166,
+        "aspiration": "Supercharged",
+        "publishedEstimatedCurbLb": 5710,
+        "curbKg": 2590.0124327000003,
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "transmissionLabel": "8HP95 TorqueFlite8AT approximation",
+        "gearCount": 8,
+        "gearRatios": [
+          4.71,
+          3.14,
+          2.11,
+          1.67,
+          1.29,
+          1,
+          0.84,
+          0.67
+        ],
+        "reverseRatio": 3.3,
+        "finalDrive": 3.7,
+        "lengthM": 5.104,
+        "widthM": 1.94,
+        "heightM": 1.831,
+        "wheelbaseM": 3.042,
+        "trackFrontIn": 64.44881889763779,
+        "trackRearIn": 64.76377952755905,
+        "tireSize": [
+          295,
+          45,
+          20
+        ],
+        "fuelTankUSgal": 24.6,
+        "dragCoefficient": 0.38,
+        "steeringRatio": 16.7,
+        "revLimitRpm": 6100,
+        "absEnabled": true,
+        "centerDifferentialBalance": 0.6,
+        "frontDifferentialAccel": 0,
+        "rearDifferentialAccel": 0
+      },
+      "sources": [
+        {
+          "url": "https://device.report/m/4129922b4ad59c8e73acafc7a8b0504b5077e5b1bf5d0e7ced07bd812bc9341f.pdf",
+          "publisher": "FCA original2021 Durango/DurangoSRT NorthAmerica specification sheet, archivedPDF",
+          "fields": [
+            "engine",
+            "8HP95 gears",
+            "MP3010 Auto40:60 and conventional axle differentials",
+            "Hellcat dimensions",
+            "manufacturer estimated curb mass",
+            "tires",
+            "tank",
+            "drag"
+          ],
+          "access": "2026-11-17 read factoryPDF pages3,5-10; unit inconsistencies handled in limits"
+        },
+        {
+          "url": "https://stellcmsdev.iconinteract.com/newsrelease/22164/Press%2BKit%3A%2B2021%2BSRT%2BLineup",
+          "publisher": "Stellantis factory2021SRT presskit",
+          "fields": [
+            "710hp645lbft",
+            "supercharged6.2",
+            "8AT",
+            "2021US production variant"
+          ],
+          "access": "2026-11-17 read"
+        }
+      ],
+      "limits": [
+        "Mechanically distinct from existing2018 naturally aspirated6.4 DurangoSRT.",
+        "Factory mistakenly prints645lbft as637Nm; use645lbft=874.5Nm, not copied637.5710lb vs2590kg rounded pair: derive2590.0124327kg fromlbs.",
+        "Metric geometry selected consistently; inch pairs sometimes rounded inconsistently. Factory height includes antenna.",
+        "Factory limits6100rpm with peak6100; preserve disclosed basis rather than inserting6400from392.",
+        "Fixed40:60 front/rear Auto approximate AWD; runtime centerDifferentialBalance is REAR share, so0.6; no dynamically selected Snow/Sport/Track transfer mapping or adaptive damping reproduction.",
+        "Factory3.5s/180mph are reference targets, not measured simulation results.",
+        "Torque curve, CG, inertia, grip, spring/damper rates, launch/shift logic and unspecified dynamics are estimates. Shared RTG-001 art only; no new original art or actual driving claimed.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Purple Loosestrife 2021",
+      "id": "purple-loosestrife-2021",
+      "simulationEstimates": {
+        "cgHeightM": 0.75,
+        "groundClearanceM": 0.2,
+        "tireGrip": 0.92,
+        "spring": 0.52,
+        "antiRollRear": 0.22,
+        "suspensionTravelM": 0.21,
+        "frontOverhangM": 0.93,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 250,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 6000,
+        "topSpeedMph": 180,
+        "zeroToSixtySec": 3.5,
+        "torqueConverterSlip": 0.08,
+        "torqueConverterMultiplication": 1.7,
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 258
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 483.75
+          },
+          {
+            "rpm": 4300,
+            "torqueLbFt": 645
+          },
+          {
+            "rpm": 6000,
+            "torqueLbFt": 621.4866666666667
+          },
+          {
+            "rpm": 6100,
+            "torqueLbFt": 611.2983606557377
+          }
+        ]
+      }
+    },
+    {
+      "candidateId": "dodge-magnum-srt8-2008-roster-candidate",
+      "identity": {
+        "year": 2008,
+        "make": "Dodge",
+        "model": "Magnum SRT8",
+        "trim": "6.1 naturally aspirated RWD5AT wagon with press-release documented staggered GoodyearF1 tires",
+        "market": "United States"
+      },
+      "referenceVehicle": "2008 US Dodge Magnum SRT8 6.1 naturally aspirated RWD5AT wagon with press-release documented staggered GoodyearF1 tires",
+      "facts": {
+        "powerHp": 425,
+        "torqueLbFt": 420,
+        "engineDisplacementL": 6.1,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "transmissionLabel": "W5A580 five-speed automatic approximation",
+        "gearCount": 5,
+        "frontTire": [
+          245,
+          45,
+          20
+        ],
+        "rearTire": [
+          255,
+          45,
+          20
+        ],
+        "tireSize": [
+          245,
+          45,
+          20
+        ],
+        "absEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://seriouswheels.com/2008-dodge-magnum-srt8.htm",
+          "publisher": "DaimlerChrysler January9 2007 factory press release reproduced by SeriousWheels",
+          "fields": [
+            "2008SRT8 identity",
+            "425hp420lbft6.1",
+            "5AT",
+            "245/45ZR20front255/45ZR20rearF1",
+            "lowerSRTsuspension/Brembo"
+          ],
+          "access": "2026-11-17 read clearly attributed manufacturer release; original factoryAug31media endpoint7395 returned403"
+        }
+      ],
+      "limits": [
+        "Distinct from Hemlock2005 MagnumRT5.7. Not cosmetic year padding: larger6.1SRTengine/brakes/lower chassis.",
+        "Detailed factoryspec endpoint https://media.stellantisnorthamerica.com/download.do?id=7367 returned403; mass,geometry,ratios,RPM andtuning retained as explicit estimates, not claimed verified.",
+        "Select factory press-release documented staggeredF1 fitment; do not claim these are universal standard2008 all-season tires.",
+        "RWD and fixed suspension approximation; no exact ESP/controller behavior.",
+        "Torque curve, CG, inertia, grip, spring/damper rates, launch/shift logic and unspecified dynamics are estimates. Shared RTG-001 art only; no new original art or actual driving claimed.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Yellow Loosestrife 2008",
+      "id": "yellow-loosestrife-2008",
+      "simulationEstimates": {
+        "reverseRatio": 3.17,
+        "cgHeightM": 0.55,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.358,
+        "tireGrip": 0.92,
+        "spring": 0.52,
+        "antiRollRear": 0.22,
+        "suspensionTravelM": 0.21,
+        "frontOverhangM": 0.93,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 6400,
+        "revLimitRpm": 6500,
+        "fuelTankUSgal": 19,
+        "topSpeedMph": 170,
+        "zeroToSixtySec": 5.1,
+        "torqueConverterSlip": 0.08,
+        "torqueConverterMultiplication": 1.7,
+        "curbKg": 1932,
+        "powerRpm": 6000,
+        "torqueRpm": 4800,
+        "gearRatios": [
+          3.59,
+          2.19,
+          1.41,
+          1,
+          0.83
+        ],
+        "finalDrive": 3.06,
+        "lengthM": 5.022,
+        "widthM": 1.882,
+        "heightM": 1.471,
+        "wheelbaseM": 3.048,
+        "trackFrontIn": 63,
+        "trackRearIn": 63.1
+      }
+    },
+    {
+      "candidateId": "vauxhall-corsa-vxr-2016-roster-candidate",
+      "identity": {
+        "year": 2016,
+        "make": "Vauxhall",
+        "model": "Corsa E VXR",
+        "trim": "standard 17-inch wheels, 6MT, no Performance Pack, normal continuous boost",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "2016 United Kingdom Vauxhall Corsa E VXR standard 17-inch wheels, 6MT, no Performance Pack, normal continuous boost",
+      "facts": {
+        "powerKw": 152,
+        "powerRpm": 5800,
+        "torqueNm": 245,
+        "torqueRpm": 1900,
+        "torquePlateauEndRpm": 5800,
+        "engineDisplacementL": 1.598,
+        "transmission": "manual",
+        "gearCount": 6,
+        "drivetrain": "fwd",
+        "gearRatios": [
+          3.82,
+          2.16,
+          1.48,
+          1.07,
+          0.88,
+          0.74
+        ],
+        "finalDrive": 4.18,
+        "tireSize": [
+          215,
+          45,
+          17
+        ],
+        "absEnabled": true,
+        "curbKg": 1218,
+        "lengthM": 4.036,
+        "widthM": 1.736,
+        "wheelbaseM": 2.51,
+        "fuelTankUSgal": 11.887742356116679
+      },
+      "sources": [
+        {
+          "url": "https://automobilisto.de/uk/archive/vauxhall/corsa-nova/vrx-2015-uk.pdf",
+          "publisher": "Original Vauxhall UK March2015 Corsa VXR brochure, archived PDF",
+          "fields": [
+            "torqueNm",
+            "torqueRpm",
+            "torquePlateauEndRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "drivetrain",
+            "gearRatios",
+            "finalDrive",
+            "tireSize",
+            "absEnabled"
+          ],
+          "access": "Original technical p6 read. Normal245Nm;280Nm available only5seconds. Ratios,finaldrive,standard tires sourced here. Older151kW/205PS power is superseded in this packet by exact2016 factory manual152kW; no claim of engine revision."
+        },
+        {
+          "url": "https://www.vauxhall.co.uk/content/dam/vauxhall/Home/PDFs/owners/owners-manuals/corsa/corsa-owners-manual-january-2016.pdf",
+          "publisher": "Vauxhall official January2016 owner manual KTA-2764/4-VX-en",
+          "fields": [
+            "identity",
+            "powerKw",
+            "powerRpm",
+            "engineDisplacementL",
+            "torqueNm",
+            "torqueRpm",
+            "torquePlateauEndRpm",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "wheelbaseM",
+            "fuelTankUSgal"
+          ],
+          "access": "Official PDF reached from Vauxhall owner-manual index. Printedp243/PDFp245 third column explicitly B16LER / salesdesignationVXR /1598cc /152kW5800rpm /245Nm1900-5800rpm. Exactyear primary table takes precedence overMarch2015 sales brochure151kW. Printedp247 B16LER3doorwithAC1293kg; p74 defines ECkerb as68kgdriver+7kgluggage+90percentfuel. Derived unoccupied mass1293-75=1218kg. p248 VXR4036x1736mm/WB2510mm; p24945Lfuel."
+        }
+      ],
+      "limits": [
+        "No fixed280Nm overboost: use normal245Nm continuously; timed boost transient is not implemented. Standard open differential; optional Drexler LSD/18-inch Performance Pack excluded. Koni frequency-selective damping approximated by fixed setup.",
+        "Mass1218kg is derived from exact2016 ECkerb1293kg withairconditioning, subtracting68kgdriver+7kgluggage; retains90percentfuel and fluids. Not fulltank or measured testcar mass. Height,tracks,reverse,redline,CG,aero,grip and acceleration remain estimates.",
+        "ExactJanuary2016 VXR/B16LER factory manual152kW5800rpm is chosen as authoritative power anchor. OlderMarch2015 brochure151kW/205PS is retained as a documented publication discrepancy, not a second runtime anchor or proven engine upgrade. Ratios and standard tire configuration remain March2015 carryover references.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Meadow Vetchling 2016",
+      "id": "meadow-vetchling-2016",
+      "simulationEstimates": {
+        "reverseRatio": 3.5,
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.64,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "aspiration": "Turbocharged",
+        "topSpeedMph": 143,
+        "zeroToSixtySec": 6.8,
+        "heightM": 1.479,
+        "trackFrontIn": 58.4,
+        "trackRearIn": 57.7,
+        "transmissionLabel": "6-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "renault-megane-r-s-250-2010-roster-candidate",
+      "identity": {
+        "year": 2010,
+        "make": "Renault",
+        "model": "Megane III R.S.250",
+        "trim": "three-door Coupe Sport chassis 6MT, no Cup package or LSD",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2010 Germany Renault Megane III R.S.250 three-door Coupe Sport chassis 6MT, no Cup package or LSD",
+      "facts": {
+        "powerKw": 184,
+        "publishedPowerPS": 250,
+        "powerRpm": 5500,
+        "torqueNm": 340,
+        "torqueRpm": 3000,
+        "engineDisplacementL": 2.0,
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 6
+      },
+      "sources": [
+        {
+          "url": "https://presse.renault.de/preiswerter-kompaktsportwagen/?lang=deu",
+          "publisher": "Renault Germany factory21October2009 production release",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "drivetrain",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "German launch November2009 establishes pre-facelift250 production technical basis.184kW5500,340Nm3000,2.0turbo6MT. Cup package optional, includes235/40R18 and mechanical LSD; excluded from base Sport choice."
+        },
+        {
+          "url": "https://presse.renault.de/dynamik-a-la-francaise/?lang=deu",
+          "publisher": "Renault Germany factory technical introduction2009",
+          "fields": [
+            "identity",
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "Factory corroboration for pre-facelift2.0turbo250 specification; not later265/275 or2018rear-steer280."
+        }
+      ],
+      "limits": [
+        "2010 identity uses established November2009 German production launch specification; no exact2010 price-sheet has been inspected. Year continuity is explicit inference, not a claim of2010 factory document.",
+        "All mass1387kg unladen without driver, dimensions,tires,ratios/final,cutoffs,distribution,CG,aero and chassis tuning are provisional estimates; selected release supplies no mass basis.2.0litre is rounded source figure.",
+        "Base Sport chassis and open front differential chosen. Do not apply optional Cup LSD or235/40R18tires to base vehicle; simulated base225/40R18 is an estimate. Not earlier stripped R26.R or later1.8four-wheel-steering RS280.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Bitter Vetch 2010",
+      "id": "bitter-vetch-2010",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.64,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "aspiration": "Turbocharged",
+        "fuelTankUSgal": 15.85,
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 6.0,
+        "curbKg": 1387,
+        "lengthM": 4.299,
+        "widthM": 1.848,
+        "heightM": 1.435,
+        "wheelbaseM": 2.636,
+        "trackFrontIn": 62.7,
+        "trackRearIn": 60.9,
+        "tireSize": [
+          225,
+          40,
+          18
+        ],
+        "gearRatios": [
+          3.36,
+          1.95,
+          1.32,
+          0.98,
+          0.76,
+          0.64
+        ],
+        "finalDrive": 4.19
+      }
+    }
+  ],
+  "deferred": [
+    {
+      "candidate": "Nissan S-Cargo1989",
+      "alias": "Catchfly1989",
+      "reason": "Exact existing body/engine/3AT"
+    },
+    {
+      "candidate": "Nissan Pao1989",
+      "alias": "Pimpernel1989",
+      "reason": "Exact existing model/3AT"
+    },
+    {
+      "candidate": "Nissan Figaro1991",
+      "alias": "Marigold1991",
+      "reason": "Exactexisting"
+    },
+    {
+      "candidate": "Toyota Sera1991",
+      "alias": "Glasswing1990",
+      "reason": "Same generation5E-FHE5MT base;yearpadding rejected"
+    }
+  ]
+}

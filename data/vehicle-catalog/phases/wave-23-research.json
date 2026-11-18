@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 1,
+  "base": "92036323f27ab34d138d502f5b063af8f1fb5908",
+  "scope": "Distinct five-door Renault turbo hatchbacks; EDC B-segment and manual C-segment. No runtime changes.",
+  "vehicles": [
+    {
+      "candidateId": "renault-clio-r-s-200-edc-2013-roster-candidate",
+      "id": "lesser-stitchwort-2013",
+      "name": "Lesser Stitchwort 2013",
+      "identity": {
+        "year": 2013,
+        "make": "Renault",
+        "model": "Clio R.S. 200 EDC",
+        "trim": "French-market Sport chassis five-door, standard six-speed EDC, not Cup or Trophy",
+        "market": "France"
+      },
+      "referenceVehicle": "2013 Renault Clio R.S. 200 EDC, French-market Sport chassis five-door, standard six-speed EDC, not Cup or Trophy",
+      "facts": {
+        "powerKw": 147.09975,
+        "torqueNm": 240,
+        "engineDisplacementL": 1.6,
+        "transmission": "automatic",
+        "gearCount": 6
+      },
+      "simulationEstimates": {
+        "drivetrain": "fwd",
+        "reverseRatio": 3.6,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.99,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 180,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.62,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "curbKg": 1204,
+        "lengthM": 4.09,
+        "widthM": 1.732,
+        "heightM": 1.432,
+        "wheelbaseM": 2.589,
+        "trackFrontIn": 59.2,
+        "trackRearIn": 59.1,
+        "tireSize": [
+          205,
+          45,
+          17
+        ],
+        "gearRatios": [
+          4.0,
+          2.43,
+          1.67,
+          1.21,
+          0.97,
+          0.77
+        ],
+        "finalDrive": 3.9,
+        "powerRpm": 6000,
+        "torqueRpm": 1750,
+        "aspiration": "Turbocharged",
+        "fuelTankUSgal": 11.9,
+        "topSpeedMph": 143,
+        "zeroToSixtySec": 6.8,
+        "frontDifferentialAccel": 0,
+        "transmissionLabel": "Six-speed EDC dual-clutch approximation; estimated individual ratios",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1
+      },
+      "sources": [
+        {
+          "url": "https://media.alpinecars.com/nouvelle-renault-clio-rs-200-edc-tarifs-et-equipements/?lang=fra",
+          "publisher": "Renault Group factory press release",
+          "fields": [
+            "powerKw",
+            "torqueNm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "Read 2026-11-17. French ch converted as metric PS using 0.73549875 kW/PS, not SAE horsepower. Factory confirms Sport/Cup distinction and chosen transmission availability."
+        }
+      ],
+      "limits": [
+        "Distinct from Vervain 2011 naturally aspirated three-door 6MT, Vesper V6 and Clio Williams. No R.S. Drive modes, launch control or brake-vectoring emulation claimed.",
+        "All values outside verifiedFacts are simulation estimates: mass, dimensions, individual ratios/final drive, rpm curve, tires, aero, traction and performance targets.",
+        "Original 660 identity slot retained; no new slot inflation or year-only duplicate. Shared RTG-001 art references only; original art and independent browser drives pending."
+      ]
+    },
+    {
+      "candidateId": "renault-megane-r-s-2018-roster-candidate",
+      "id": "greater-burnet-2018",
+      "name": "Greater Burnet 2018",
+      "identity": {
+        "year": 2018,
+        "make": "Renault",
+        "model": "Megane R.S. 280",
+        "trim": "Belgian-market Sport chassis five-door with manual gearbox; not Cup or Trophy",
+        "market": "Belgium"
+      },
+      "referenceVehicle": "2018 Renault Megane R.S. 280, Belgian-market Sport chassis five-door with manual gearbox; not Cup or Trophy",
+      "facts": {
+        "powerKw": 205.93965,
+        "torqueNm": 390,
+        "engineDisplacementL": 1.8,
+        "transmission": "manual",
+        "gearCount": 6
+      },
+      "simulationEstimates": {
+        "drivetrain": "fwd",
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.99,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 230,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.62,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "curbKg": 1407,
+        "lengthM": 4.372,
+        "widthM": 1.875,
+        "heightM": 1.445,
+        "wheelbaseM": 2.669,
+        "trackFrontIn": 63.6,
+        "trackRearIn": 62.7,
+        "tireSize": [
+          235,
+          40,
+          18
+        ],
+        "gearRatios": [
+          3.73,
+          2.11,
+          1.48,
+          1.14,
+          0.91,
+          0.76
+        ],
+        "finalDrive": 4.19,
+        "powerRpm": 6000,
+        "torqueRpm": 3000,
+        "aspiration": "Turbocharged",
+        "fuelTankUSgal": 13.2,
+        "topSpeedMph": 158,
+        "zeroToSixtySec": 5.9,
+        "frontDifferentialAccel": 0
+      },
+      "sources": [
+        {
+          "url": "https://be.media.renaultgroup.com/nouvelle-renault-megane-rs-la-performance-a-letat-pur-pour-les-passionnes-de-conduite-sportive/?lang=bel",
+          "publisher": "Renault Group factory press release",
+          "fields": [
+            "powerKw",
+            "torqueNm",
+            "engineDisplacementL",
+            "transmission"
+          ],
+          "access": "Read 2026-11-17. French ch converted as metric PS using 0.73549875 kW/PS, not SAE horsepower. Factory confirms Sport/Cup distinction and chosen transmission availability."
+        },
+        {
+          "url": "https://media.alpinecars.com/renault-revele-la-nouvelle-megane-rs-au-salon-international-de-lautomobile-de-francfort-2017/?lang=fra",
+          "publisher": "Renault factory Frankfurt launch release, 12 September 2017",
+          "fields": [
+            "gearCount"
+          ],
+          "access": "Read 2026-11-17: new Megane RS offered six-speed manual or six-speed EDC; Cup Torsen distinguished; Trophy 300 deferred to late2018."
+        }
+      ],
+      "limits": [
+        "Factory 4CONTROL rear steering and hydraulic bump stops are not simulated; conventional front steering and generic dampers are explicit fidelity limits. Sport chassis selection uses open front differential; no Cup Torsen claim.",
+        "All values outside verifiedFacts are simulation estimates: mass, dimensions, individual ratios/final drive, rpm curve, tires, aero, traction and performance targets.",
+        "Original 660 identity slot retained; no new slot inflation or year-only duplicate. Shared RTG-001 art references only; original art and independent browser drives pending."
+      ]
+    }
+  ],
+  "deferred": [
+    {
+      "candidateId": "toyota-corolla-sr5-1974-roster-candidate",
+      "reason": "Original US brochure preview too small to verify power/torque; preserved public previews in local QA. No JDM engine figures substituted."
+    },
+    {
+      "candidateId": "toyota-sera-1991-roster-candidate",
+      "reason": "Existing Glasswing 1990 Sera; no year-only duplicate."
+    },
+    {
+      "candidateId": "mazda-mazdaspeed-mx-5-2005-roster-candidate",
+      "reason": "Existing Mouse-ear 2005 exact trim."
+    },
+    {
+      "candidateId": "toyota-mr2-sc-1989-roster-candidate",
+      "reason": "Existing Glowmoth SC 1988; no year-only duplicate."
+    }
+  ]
+}

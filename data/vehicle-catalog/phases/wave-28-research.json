@@ -1,0 +1,853 @@
+{
+  "schemaVersion": 1,
+  "base": "4cb7b2615e3acd41dd8c9409d2622d747ad9c75a",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime or race edits.",
+  "vehicles": [
+    {
+      "candidateId": "mercedes-benz-190e-2-5-16-evolution-ii-1990-roster-candidate",
+      "identity": {
+        "year": 1990,
+        "make": "Mercedes-Benz",
+        "model": "190 E 2.5-16 Evolution II",
+        "trim": "W201 type201.036 catalyst road homologation sedan, standard5MT",
+        "market": "Germany"
+      },
+      "referenceVehicle": "1990 Germany Mercedes-Benz 190 E 2.5-16 Evolution II W201 type201.036 catalyst road sedan, standard five-speed manual; not DTM or EvoI",
+      "facts": {
+        "powerKw": 173,
+        "torqueNm": 245,
+        "engineDisplacementL": 2.463,
+        "powerRpm": 7200,
+        "torqueRpm": 5000,
+        "curbKg": 1340,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "gearRatios": [
+          4.08,
+          2.52,
+          1.77,
+          1.26,
+          1
+        ],
+        "reverseRatio": 4.16,
+        "finalDrive": 3.46,
+        "lengthM": 4.543,
+        "widthM": 1.72,
+        "heightM": 1.342,
+        "wheelbaseM": 2.665,
+        "trackFrontIn": 58.031496062992126,
+        "trackRearIn": 57.20472440944882,
+        "tireSize": [
+          245,
+          40,
+          17
+        ],
+        "fuelTankUSgal": 18.49204366507039,
+        "absEnabled": true,
+        "revLimitRpm": 7700
+      },
+      "sources": [
+        {
+          "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/190-E-25-16-Evolution-II.xhtml?oid=5505",
+          "publisher": "Mercedes-Benz Classic factory technical archive",
+          "fields": [
+            "powerKw",
+            "torqueNm",
+            "engineDisplacementL",
+            "powerRpm",
+            "torqueRpm",
+            "curbKg",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "fuelTankUSgal",
+            "absEnabled"
+          ],
+          "access": "Full technical table read2026-11-17. 1340kgDIN70020 ready-to-drive includes fuel/spare/tools.173kW anchor rather than treating235metricPS as SAEhp.245Nm plateau5000-6000; modeled peakstart5000. Actual factorygears and3.46axle retained. Trackmm and70L converted."
+        },
+        {
+          "url": "https://media.mercedes-benz.com/en/article/4e61dcd8-fd75-47ca-830c-056734a165c2",
+          "publisher": "Mercedes-Benz factory anniversary release12March2020",
+          "fields": [
+            "identity",
+            "revLimitRpm"
+          ],
+          "access": "Confirms1990roadEvoII,502cars,173kW and governed maximum7700rpm. Race results do not supply road-car engine output."
+        }
+      ],
+      "limits": [
+        "Hydropneumatic level control represented by fixed estimated suspension, not an active system. Generic rear locking approximation does not reproduce proprietary ASD control. Adjustable aero represented by fixed estimated downforce.",
+        "Original factory ratios and DIN mass retained; steering, CG/load split, grip, engine torque curve and performance targets remain estimates. Not a DTM race specification.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-drive completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Wood Speedwell 1990",
+      "id": "wood-speedwell-1990",
+      "simulationEstimates": {
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.3,
+        "tireGrip": 1.02,
+        "spring": 0.58,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0.02,
+        "aeroRear": 0.08,
+        "shiftTimeMs": 280,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 7500,
+        "aspiration": "Naturally aspirated",
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 6.9,
+        "transmissionLabel": "5-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "mazda-mx-5-2013-roster-candidate",
+      "identity": {
+        "year": 2013,
+        "make": "Mazda",
+        "model": "MX-5 Miata",
+        "trim": "Sport NC soft-top 5MT, no Convenience Package",
+        "market": "United States"
+      },
+      "referenceVehicle": "2013 US Mazda MX-5 Miata Sport NC 2.0 five-speed manual, vinyl soft top; not Club, PRHT or automatic",
+      "facts": {
+        "powerHp": 167,
+        "torqueLbFt": 140,
+        "powerRpm": 7000,
+        "torqueRpm": 5000,
+        "engineDisplacementL": 1.999,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbLb": 2447,
+        "redlineRpm": 7200,
+        "tireSize": [
+          205,
+          50,
+          16
+        ],
+        "lengthIn": 157.3,
+        "widthIn": 67.7,
+        "heightIn": 49.0,
+        "wheelbaseIn": 91.7,
+        "trackFrontIn": 58.7,
+        "trackRearIn": 58.9,
+        "fuelTankUSgal": 12.7,
+        "dragCoefficient": 0.34,
+        "frontWeightDistribution": 0.52,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "rearDifferentialAccel": 0
+      },
+      "sources": [
+        {
+          "url": "https://news.mazdausa.com/vehicles-2013-mx-5-miata",
+          "publisher": "Mazda North American Operations factory 2013 press kit",
+          "fields": [
+            "identity",
+            "powerHp",
+            "torqueLbFt",
+            "powerRpm",
+            "torqueRpm",
+            "transmission",
+            "gearCount",
+            "curbLb",
+            "redlineRpm",
+            "tireSize",
+            "drivetrain",
+            "dragCoefficient",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "Read2026-11-17. Sport is explicitly2447lb/5MT/205-50R16. Club-only manual suspension package adds LSD; no Club hardware borrowed."
+        },
+        {
+          "url": "https://news.mazdausa.com/download/2013-MX-5-Miata-Specifications.pdf",
+          "publisher": "MNAO 2013 MX-5 specification deck, issue6August2012",
+          "fields": [
+            "engineDisplacementL",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "fuelTankUSgal",
+            "frontWeightDistribution"
+          ],
+          "access": "Final specification page parsed2026-11-17. Carries a stale2012table heading within2013deck; exact2013press release corroborates selected power, mass and trim. Dimensions/52:48 and12.7gal are table data; ratios kept estimates to avoid flattened-column ambiguity."
+        }
+      ],
+      "limits": [
+        "NC Sport no factory LSD or Bilstein Club suspension; retain open rear differential. Ordinary 2.0L naturally aspirated roadster, distinct from existing NA1990 and NB2005turbo.",
+        "Exact individual ratios, rev limiter, CG, unladen ground clearance, transient handling, aero loads and performance targets require explicit simulation estimates. Factory laden ground clearance is not silently treated as unloaded geometry.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-drive completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Red Campion 2013",
+      "id": "red-campion-2013",
+      "simulationEstimates": {
+        "reverseRatio": 3.758,
+        "cgHeightM": 0.44,
+        "groundClearanceM": 0.13,
+        "tireGrip": 0.98,
+        "spring": 0.5,
+        "antiRollRear": 0.24,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.8,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "wheelWellAware": true,
+        "revLimitRpm": 7400,
+        "aspiration": "Naturally aspirated",
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 7.0,
+        "gearRatios": [
+          3.136,
+          1.888,
+          1.33,
+          1,
+          0.814
+        ],
+        "finalDrive": 4.1
+      }
+    },
+    {
+      "candidateId": "mazda-mx-5-2016-roster-candidate",
+      "identity": {
+        "year": 2016,
+        "make": "Mazda",
+        "model": "MX-5 Miata",
+        "trim": "Sport ND soft-top 6MT, standard16inch wheels, no Club package",
+        "market": "United States"
+      },
+      "referenceVehicle": "2016 US Mazda MX-5 Miata Sport ND 2.0 SKYACTIV-G six-speed manual, cloth soft top; not Club, Grand Touring or RF",
+      "facts": {
+        "powerHp": 155,
+        "torqueLbFt": 148,
+        "powerRpm": 6000,
+        "torqueRpm": 4600,
+        "engineDisplacementL": 1.998,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "curbLb": 2332,
+        "redlineRpm": 6800,
+        "tireSize": [
+          195,
+          50,
+          16
+        ],
+        "lengthIn": 154.1,
+        "widthIn": 68.3,
+        "heightIn": 48.6,
+        "wheelbaseIn": 90.9,
+        "trackFrontIn": 58.9,
+        "trackRearIn": 59.17,
+        "fuelTankUSgal": 11.89,
+        "frontWeightDistribution": 0.53,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "rearDifferentialAccel": 0,
+        "steeringRatio": 15.5,
+        "gearRatios": [
+          5.087,
+          2.991,
+          2.035,
+          1.594,
+          1.286,
+          1
+        ],
+        "reverseRatio": 4.696,
+        "finalDrive": 2.866
+      },
+      "sources": [
+        {
+          "url": "https://news.mazdausa.com/download/2016_Mazda_MX-5_Press_Kit.pdf",
+          "publisher": "MNAO original2016 MX-5 press kit and specification deck April28 2015",
+          "fields": [
+            "powerHp",
+            "torqueLbFt",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbLb",
+            "redlineRpm",
+            "tireSize",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "fuelTankUSgal",
+            "frontWeightDistribution",
+            "absEnabled",
+            "tractionControlEnabled",
+            "rearDifferentialAccel",
+            "steeringRatio",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive"
+          ],
+          "access": "Read2026-11-17. PDFp3anchors155hp/148lbft/2332lb; p30technical table supplies SAE powerRPM/torqueRPM,1998cc,6800redline,6MT column ratios/reverse/final,53:47curb distribution,dimensions and11.89USgal. Sport standard16inch195/50 tires, no Club-only LSD/Bilsteins. Unlike standalone8-page spec deck, complete press kit includes final technical page."
+        },
+        {
+          "url": "https://news.mazdausa.com/2015-08-06-2016-mazda-lineup/",
+          "publisher": "MNAO factory2016 lineup release6August2015",
+          "fields": [
+            "identity",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "gearCount",
+            "transmission",
+            "rearDifferentialAccel"
+          ],
+          "access": "Explicit North American2.0 and Sport6MT, Club-only LSD corroborates open Sport. Not Japanese1.5 or later181hpND2."
+        }
+      ],
+      "limits": [
+        "Independent generation/engine/gearbox/geometry versus2013NC and existingNA/NB, not year-only duplication. Standard open differential and non-Bilstein Sport suspension.",
+        "Factory53:47curb distribution used rather than marketing50:50driver-loaded goal. Rev limiter, CG, body clearance, aero coefficient/loads, grip, damping and performance targets remain explicit estimates.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-drive completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "White Campion 2016",
+      "id": "white-campion-2016",
+      "simulationEstimates": {
+        "cgHeightM": 0.42,
+        "groundClearanceM": 0.125,
+        "dragCoefficient": 0.35,
+        "tireGrip": 0.99,
+        "spring": 0.48,
+        "antiRollRear": 0.23,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "wheelWellAware": true,
+        "revLimitRpm": 7000,
+        "aspiration": "Naturally aspirated",
+        "topSpeedMph": 133,
+        "zeroToSixtySec": 6.3,
+        "transmissionLabel": "6-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "hyundai-i30-n-2020-roster-candidate",
+      "identity": {
+        "year": 2020,
+        "make": "Hyundai",
+        "model": "i30 N Performance",
+        "trim": "German five-door hatch,2.0T-GDI202kW six-speed manual,standard cloth/manual seats,no optional packages",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2020 Germany Hyundai i30 N Performance five-door hatch,2.0T-GDI202kW six-speed manual,pre-facelift; not Fastback or2021DCT",
+      "facts": {
+        "powerKw": 202,
+        "torqueNm": 353,
+        "powerRpm": 6000,
+        "torqueRpm": 1450,
+        "torquePlateauEndRpm": 4700,
+        "engineDisplacementL": 1.998,
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "lengthM": 4.335,
+        "widthM": 1.795,
+        "heightM": 1.447,
+        "wheelbaseM": 2.65,
+        "trackFrontIn": 61.259842519685044,
+        "trackRearIn": 61.5748031496063,
+        "frontOverhangM": 0.905,
+        "groundClearanceM": 0.132,
+        "tireSize": [
+          235,
+          35,
+          19
+        ],
+        "fuelTankUSgal": 13.20860261790742,
+        "publishedMassKgMin": 1504,
+        "publishedMassKgMax": 1584,
+        "publishedMassBasis": "EC type approval with full tank and75kg driver; equipment dependent",
+        "publishedTopSpeedKmh": 250,
+        "publishedZeroTo100KmhSec": 6.1
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-preisliste.de/download-preislisten-aller-marken/32-hyundai/1725-hyundai-i30-pd-2017/41541-2020-07-preisliste-hyundai-i30-n?tmpl=component",
+          "publisher": "Hyundai Motor Deutschland original i30N brochure,June2020 edition HMDADX19-18122019/6.500/0620; archived forJuly2020 prices",
+          "fields": [
+            "powerKw",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "torquePlateauEndRpm",
+            "engineDisplacementL",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "frontOverhangM",
+            "groundClearanceM",
+            "tireSize",
+            "fuelTankUSgal",
+            "publishedMassKgMin",
+            "publishedMassKgMax",
+            "publishedMassBasis",
+            "publishedTopSpeedKmh",
+            "publishedZeroTo100KmhSec"
+          ],
+          "access": "Downloaded original scanned28-pagePDF via its Download form2026-11-17. Visually checked technical pp26-27,tires p24,dimensions p25,eLSD p19,date p28. Archive titleJuly2020; original document footerJune2020. 202kW/275PS,not275mechanicalhp.353Nm sustained versus378Nm temporary overboost. Mass range includes75kgdriver andfulltank."
+        }
+      ],
+      "limits": [
+        "1429kg is a representative lower-bound mass estimate derived from1504kgEC minus75kgdriver; not a separately published trim-specific curb measurement. No optional comfort/nav/panoramicroof package assumed.",
+        "Exact individual gearbox/finaldrive,redline,CG,load distribution,grip and suspension coefficients remain estimates. Generic front differential locking only approximates factory N Corner Carving eLSD; no proprietary active control or launch/revmatching model claim.",
+        "Use353Nm sustained; do not hold378Nm overboost continuously. Torque1450rpm selects start of verified1450-4700rpm plateau. Do not mix2021facelift280PS/392Nm/DCT specs.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-drive completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Basil Thyme 2020",
+      "id": "basil-thyme-2020",
+      "simulationEstimates": {
+        "reverseRatio": 3.5,
+        "cgHeightM": 0.51,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.08,
+        "spring": 0.61,
+        "antiRollRear": 0.32,
+        "suspensionTravelM": 0.17,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.32,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.62,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "aspiration": "Turbocharged",
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 6.0,
+        "curbKg": 1429,
+        "gearRatios": [
+          3.615,
+          2.048,
+          1.37,
+          1.032,
+          0.893,
+          0.794
+        ],
+        "finalDrive": 4.15
+      }
+    },
+    {
+      "candidateId": "volkswagen-scirocco-r-2011-roster-candidate",
+      "identity": {
+        "year": 2011,
+        "make": "Volkswagen",
+        "model": "Scirocco III R",
+        "trim": "German-market 2.0 TSI195kW six-speed manual, pre-facelift",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2011 Germany Volkswagen Scirocco III R 2.0TSI195kW front-wheel drive six-speed manual; not R-Line, Australian188kW or2014facelift206kW",
+      "facts": {
+        "powerKw": 195,
+        "publishedPowerPS": 265,
+        "powerRpm": 6000,
+        "torqueNm": 350,
+        "torqueRpm": 2500,
+        "torquePlateauEndRpm": 5000,
+        "engineDisplacementL": 1.984,
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 6
+      },
+      "sources": [
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/engine-versions-scirocco-3-profile-19656",
+          "publisher": "Volkswagen AG factory archive",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "torquePlateauEndRpm",
+            "engineDisplacementL"
+          ],
+          "access": "Reviewed2026-11-17; R2.0TSI row expressly195kW265PS6000rpm350Nm2500-5000 through2009-2014, includes2011. Not Australian188kW/330Nm."
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/vehicle-data-scirocco-3-profile-19655",
+          "publisher": "Volkswagen AG factory archive",
+          "fields": [
+            "identity",
+            "drivetrain"
+          ],
+          "access": "Factory Type13 R195kW production2009-2014 and front drive/transverse engine. Listed1810mm wheelbase evidently repeats width, so geometry not accepted as verified."
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/the-volkswagen-r-models-15258/volkswagen-r-the-history-15267",
+          "publisher": "Volkswagen AG R history",
+          "fields": [
+            "gearCount",
+            "transmission"
+          ],
+          "access": "Original Scirocco R195kW/350Nm offered manual6speed or6DSG. Selectmanual; genericnon-activechassis approximation."
+        },
+        {
+          "url": "https://www.auto-preisliste.de/download-preislisten-aller-marken/71-volkswagen-vw/2740-vw-scirocco-iii-2008-2017/40090-2010-10-preisliste-vw-scirocco-r?start=60",
+          "publisher": "Archived Volkswagen R GmbH price-list index",
+          "fields": [
+            "2011marketidentitycorroborationonly"
+          ],
+          "access": "Index identifies German SciroccoR TechnikundPreise dated7October2010 validMY2011. PDFunavailable0B; no numeric specification derivedfromunreadPDF."
+        }
+      ],
+      "limits": [
+        "Allmass,dimensions,ratios,finaldrive,tires,aero,CG,weightdistribution,redline,suspensionandperformancevaluesnotinverifiedFactsareestimates. Factoryarchivewheelbase1810mmnotused;knowninconsistencyretained.",
+        "XDLbrake-basedinterventionandadaptivechassisnotreproduced;genericopenfrontdifferential/fixedsuspension. No4MOTION:ScirroccoRfrontdrive,unlikeexistingGolfR. Distinctbody/chassis,notbadge-onlyGolfclone.",
+        "Exact2011identitysupportedbyfactory2009-2014productionrangeandmodel-yearpricelistindex;laterfaceliftandAustralianratingexcluded.",
+        "Individual gearing is an explicitly estimated effective single-final-drive approximation; do not import raw split-final-drive ratios without normalization.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-drive completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Field Pennywort 2011",
+      "id": "field-pennywort-2011",
+      "simulationEstimates": {
+        "reverseRatio": 3.99,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.05,
+        "spring": 0.58,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "aspiration": "Turbocharged",
+        "fuelTankUSgal": 14.5,
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 5.8,
+        "curbKg": 1344,
+        "lengthM": 4.248,
+        "widthM": 1.81,
+        "heightM": 1.394,
+        "wheelbaseM": 2.578,
+        "trackFrontIn": 61.6,
+        "trackRearIn": 62.0,
+        "tireSize": [
+          235,
+          40,
+          18
+        ],
+        "gearRatios": [
+          3.36,
+          2.09,
+          1.48,
+          1.1,
+          0.87,
+          0.72
+        ],
+        "finalDrive": 3.94
+      }
+    },
+    {
+      "candidateId": "bmw-m3-2008-roster-candidate",
+      "identity": {
+        "year": 2008,
+        "make": "BMW",
+        "model": "M3",
+        "trim": "US Coupe six-speed manual standard wheels",
+        "market": "United States"
+      },
+      "referenceVehicle": "2008 US BMW M3 Coupe E92 4.0 naturally aspirated V8 six-speed manual; not E46, DCT, sedan or convertible",
+      "facts": {
+        "powerHp": 414,
+        "powerRpm": 8300,
+        "torqueLbFt": 295,
+        "torqueRpm": 3900,
+        "engineDisplacementL": 3.999,
+        "curbKg": 1680,
+        "lengthIn": 181.81102362204726,
+        "widthIn": 71.0236220472441,
+        "heightIn": 55.82677165354331,
+        "wheelbaseIn": 108.70078740157481,
+        "trackFrontIn": 60.629921259842526,
+        "trackRearIn": 60.59055118110236,
+        "frontWeightDistribution": 0.488,
+        "dragCoefficient": 0.31,
+        "gearRatios": [
+          4.055,
+          2.396,
+          1.582,
+          1.192,
+          1,
+          0.872
+        ],
+        "reverseRatio": 3.677,
+        "finalDrive": 3.85,
+        "transmission": "manual",
+        "gearCount": 6,
+        "tireSize": [
+          245,
+          40,
+          18
+        ],
+        "frontTire": [
+          245,
+          40,
+          18
+        ],
+        "rearTire": [
+          265,
+          40,
+          18
+        ],
+        "fuelTankUSgal": 16.642839298563352,
+        "zeroToSixtySec": 4.7,
+        "topSpeedMph": 155
+      },
+      "sources": [
+        {
+          "url": "https://newsroom.bmwgroup.com/americas/download/703033a9-613d-4d98-9861-64031dfb7d07/20260728123812599-36.pdf",
+          "publisher": "BMW U.S. Press Information: Technical Data 2008 BMW M3 Coupe",
+          "fields": [
+            "identity",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "curbKg",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "frontWeightDistribution",
+            "dragCoefficient",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "transmission",
+            "gearCount",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "fuelTankUSgal",
+            "zeroToSixtySec",
+            "topSpeedMph"
+          ],
+          "access": "Factory PDF directly retrieved; pdftotext table checked and first page visually reviewed2026-11-17. US SAEhp basis. Dimensions converted from metric columns; fuel liters converted. Curb kg used directly. M3 facts span pages1-2."
+        }
+      ],
+      "limits": [
+        "Catalog audit found existing E46M3, E39/E34M5, E30 competition M3 but no E92M3 or E60M5 reference. Candidate IDs exact in660 backlog.",
+        "All unlisted dynamics estimates: redline/rev limiter, idle, engine curve shape, CG, clearance, suspension, tire grip, brake bias, differential calibration, transient steering, shift time. RWD/NA drivetrain intended; factory torque curve and differential dynamics not reproduced. Shared RTG-001 placeholder art.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-drive completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Wall Speedwell 2008",
+      "id": "wall-speedwell-2008",
+      "simulationEstimates": {
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.13,
+        "tireGrip": 1.08,
+        "spring": 0.59,
+        "antiRollRear": 0.31,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.91,
+        "rearDifferentialAccel": 0.35,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "redlineRpm": 8400,
+        "revLimitRpm": 8500,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmissionLabel": "6-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "bmw-m5-2009-roster-candidate",
+      "identity": {
+        "year": 2009,
+        "make": "BMW",
+        "model": "M5",
+        "trim": "US Sedan six-speed manual standard wheels",
+        "market": "United States"
+      },
+      "referenceVehicle": "2009 US BMW M5 Sedan E60 5.0 naturally aspirated V10 six-speed manual; not E39/E34 or SMG",
+      "facts": {
+        "powerHp": 500,
+        "powerRpm": 7750,
+        "torqueLbFt": 383,
+        "torqueRpm": 6100,
+        "engineDisplacementL": 4.999,
+        "curbKg": 1820,
+        "lengthIn": 191.45669291338584,
+        "widthIn": 72.67716535433071,
+        "heightIn": 57.83464566929134,
+        "wheelbaseIn": 113.74015748031496,
+        "trackFrontIn": 62.20472440944882,
+        "trackRearIn": 61.653543307086615,
+        "frontWeightDistribution": 0.522,
+        "dragCoefficient": 0.31,
+        "gearRatios": [
+          4.055,
+          2.396,
+          1.582,
+          1.192,
+          1,
+          0.872
+        ],
+        "reverseRatio": 3.677,
+        "finalDrive": 3.62,
+        "transmission": "manual",
+        "gearCount": 6,
+        "tireSize": [
+          255,
+          40,
+          19
+        ],
+        "frontTire": [
+          255,
+          40,
+          19
+        ],
+        "rearTire": [
+          285,
+          35,
+          19
+        ],
+        "fuelTankUSgal": 18.49204366507039,
+        "zeroToSixtySec": 4.5,
+        "topSpeedMph": 155
+      },
+      "sources": [
+        {
+          "url": "https://newsroom.bmwgroup.com/americas/download/ddf6b76d-705c-4804-ad54-c9715e58ff7d/20260728123808150-740.pdf",
+          "publisher": "BMW U.S. Press Information: Technical Data 2009 BMW M5 Sedan",
+          "fields": [
+            "identity",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "curbKg",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "frontWeightDistribution",
+            "dragCoefficient",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "transmission",
+            "gearCount",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "fuelTankUSgal",
+            "zeroToSixtySec",
+            "topSpeedMph"
+          ],
+          "access": "Factory PDF directly retrieved; pdftotext table checked and first page visually reviewed2026-11-17. US SAEhp basis. Dimensions converted from metric columns; fuel liters converted. Curb kg used directly. M5 uses left manual6speed column only; not right SMG7speed."
+        }
+      ],
+      "limits": [
+        "Catalog audit found existing E46M3, E39/E34M5, E30 competition M3 but no E92M3 or E60M5 reference. Candidate IDs exact in660 backlog.",
+        "All unlisted dynamics estimates: redline/rev limiter, idle, engine curve shape, CG, clearance, suspension, tire grip, brake bias, differential calibration, transient steering, shift time. RWD/NA drivetrain intended; factory torque curve and differential dynamics not reproduced. Shared RTG-001 placeholder art.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-drive completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Heath Speedwell 2009",
+      "id": "heath-speedwell-2009",
+      "simulationEstimates": {
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.13,
+        "tireGrip": 1.09,
+        "spring": 0.57,
+        "antiRollRear": 0.29,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.95,
+        "rearDifferentialAccel": 0.4,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "redlineRpm": 8250,
+        "revLimitRpm": 8350,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmissionLabel": "6-speed manual (factory ratios; estimated shift calibration)"
+      }
+    }
+  ],
+  "deferred": [
+    {
+      "candidateId": "honda-cr-x-sir-1991-roster-candidate",
+      "reason": "Exact existing Whitlowgrass1991"
+    },
+    {
+      "candidateId": "honda-nsx-r-1992-roster-candidate",
+      "reason": "Exact existing Adderstongue1992"
+    },
+    {
+      "candidateId": "honda-prelude-type-sh-2000-roster-candidate",
+      "reason": "ATTS fidelity unproven and near existing base2001Iris; not selected"
+    }
+  ]
+}

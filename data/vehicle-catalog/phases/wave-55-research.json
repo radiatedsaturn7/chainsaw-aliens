@@ -1,0 +1,1221 @@
+{
+  "schemaVersion": 1,
+  "base": "38612ce54faf7c8ad02ad2e40a39c14f15e5ab08",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "volkswagen-lupo-2002-gti-6mt-de",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2002,
+        "make": "Volkswagen",
+        "model": "Lupo",
+        "trim": "GTI1.6 16V six-speed manual three-door,standard15-inch wheels; not earlier5MT,FSI or3L",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2002 Germany Volkswagen Lupo GTI1.6 16V six-speed manual three-door,standard15-inch wheels; not earlier5MT,FSI or3L",
+      "bodyClass": "hatchback",
+      "facts": {
+        "powerKw": 92,
+        "powerRpm": 6500,
+        "torqueNm": 152,
+        "torqueRpm": 3000,
+        "engineDisplacementL": 1.598,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "lengthM": 3.527,
+        "widthM": 1.639,
+        "heightM": 1.44,
+        "wheelbaseM": 2.323,
+        "topSpeedMph": 127.38109440865345
+      },
+      "sources": [
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/engine-versions-lupo-profile-19706",
+          "publisher": "Volkswagen Classic factory archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL"
+          ],
+          "access": "GTI1.6 16V1598cc92kW6500rpm152Nm3000rpm."
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/lupo-19982005-19704",
+          "publisher": "Volkswagen Classic factory archive",
+          "fields": [
+            "identity",
+            "transmission",
+            "gearCount",
+            "topSpeedMph"
+          ],
+          "access": "GTI introduced2000;2001 explicitly standard six-speed update;205-width15-inch wheels and205km/h,8.2s0\u2013100. Select2002 to avoid within-2001transition."
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/vehicle-data-lupo-profile-19705",
+          "publisher": "Volkswagen Classic factory archive",
+          "fields": [
+            "identity",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "drivetrain"
+          ],
+          "access": "GTI2000\u20132005;front transverse FWD;explicitGTI3527\u00d71639\u00d71440mm,WB2323."
+        }
+      ],
+      "limits": [
+        "Exact supplementary identity requires an existing open canonical660 reservation, not expansion of the historical list.",
+        "All suggestedEstimates are modeling estimates, not factory facts. Shared RTG001 art; no driving, test or original-art success claimed.",
+        "Published92kW preferred over rounded125PS.978kg curb is a driver-excluded estimate, not verified exact-option mass.",
+        "Factory confirms205-width15-inch wheels, not aspect45; aspect, gearbox ratios,tracks,massbalance,CG andtransients estimated.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "fumitory-1983",
+            "alias": "Fumitory 1983",
+            "referenceVehicle": "1983 Volkswagen Golf I GTI German1.8 standard three-door 4+E manual",
+            "documentId": "fumitory-1983",
+            "runtimeId": "saved-car:Fumitory 1983",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "roundhead-clover-2011",
+            "alias": "Roundhead Clover 2011",
+            "referenceVehicle": "2011 Germany Volkswagen up! take up! two-side-door/three-door hatch 1.0 MPI44kW five-speed manual, non-BlueMotion, standard14-inch steel wheels; not75PS, ASG, CNG or electric",
+            "documentId": "roundhead-clover-2011",
+            "runtimeId": "saved-car:Roundhead Clover 2011",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "rock-clover-2002",
+            "alias": "Rock Clover 2002",
+            "referenceVehicle": "2002 Germany Volkswagen Polo 9N1 Basis five-door1.9SDI ASY naturally aspirated diesel, 02T five-speed manual standard chassis; notTDI,9N3 orGTI",
+            "documentId": "rock-clover-2002",
+            "runtimeId": "saved-car:Rock Clover 2002",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Distinct smaller6X body and high-rev1.6four-cylinder6MT lightweight GTI, not9N1.9SDI Polo,three-cylinder up or1983GolfGTI.",
+        "evidence": [
+          "https://www.volkswagen-newsroom.com/en/engine-versions-lupo-profile-19706",
+          "https://www.volkswagen-newsroom.com/en/lupo-19982005-19704",
+          "https://www.volkswagen-newsroom.com/en/vehicle-data-lupo-profile-19705"
+        ]
+      },
+      "name": "Blue Trefoil 2002",
+      "id": "blue-trefoil-2002",
+      "simulationEstimates": {
+        "reverseRatio": 3.182,
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.115,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.62,
+        "redlineRpm": 6800,
+        "revLimitRpm": 7000,
+        "fuelTankUSgal": 8.981849780177047,
+        "zeroToSixtySec": 7.8,
+        "curbKg": 978,
+        "trackFrontIn": 55.9,
+        "trackRearIn": 54.7,
+        "tireSize": [
+          205,
+          45,
+          15
+        ],
+        "frontTire": [
+          205,
+          45,
+          15
+        ],
+        "rearTire": [
+          205,
+          45,
+          15
+        ],
+        "gearRatios": [
+          3.769,
+          2.095,
+          1.387,
+          1.026,
+          0.813,
+          0.673
+        ],
+        "finalDrive": 4.188
+      }
+    },
+    {
+      "candidateId": "volkswagen-phaeton-2005-us-w12-5at",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2005,
+        "make": "Volkswagen",
+        "model": "Phaeton",
+        "trim": "W12 US long-wheelbase five-seat sedan,6.0NA five-speed Tiptronic4MOTION,standardconfiguration; notV8,EuropeanSWB orlater450PS",
+        "market": "United States"
+      },
+      "referenceVehicle": "2005 United States Volkswagen Phaeton W12 US long-wheelbase five-seat sedan,6.0NA five-speed Tiptronic4MOTION,standardconfiguration; notV8,EuropeanSWB orlater450PS",
+      "bodyClass": "sedan",
+      "facts": {
+        "powerKw": 313.19394624,
+        "powerRpm": 6000,
+        "torqueNm": 550.462086888,
+        "engineDisplacementL": 6,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "gearCount": 5,
+        "lengthM": 5.173979999999999,
+        "widthM": 1.90246,
+        "heightM": 1.45034,
+        "wheelbaseM": 2.9997399999999996,
+        "trackFrontIn": 64.1,
+        "trackRearIn": 63.5
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Volkswagen/Phaeton/VW_US%20Phaeton_2005.pdf",
+          "publisher": "Volkswagen factory publication, original US brochure in public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn"
+          ],
+          "access": "Original2005US brochure read:PhaetonW12 column420hp6000rpm406lb-ft,6.0L,5AT and4MOTION,118.1inWB/203.7inlength. V8six-speed column excluded."
+        }
+      ],
+      "limits": [
+        "Exact supplementary identity requires an existing open canonical660 reservation, not expansion of the historical list.",
+        "All suggestedEstimates are modeling estimates, not factory facts. Shared RTG001 art; no driving, test or original-art success claimed.",
+        "US420hp converted mechanically to313.194kW; do not substitute European420PS309kW orlater450PS.",
+        "2449kg curb andtorqueRPM are estimates. Tirefitment,ratios anddynamics unverified; factoryadaptive air suspension approximated by fixed native suspension. AWD fixed50:50 approximation,notexactTorsenbehavior.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "pine-clover-2012",
+            "alias": "Pine Clover 2012",
+            "referenceVehicle": "2012 US Volkswagen Passat NMS2.5S inline-five5MT standard16inchsteel wheels,withoutAppearancePackage",
+            "documentId": "pine-clover-2012",
+            "runtimeId": "saved-car:Pine Clover 2012",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "New D1 longitudinalW12 AWD luxury sedan withlongwheelbase and5AT, fundamentally distinct from NMS Passat transverse2.5FWDmanual. Audit found noPhaeton.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Volkswagen/Phaeton/VW_US%20Phaeton_2005.pdf"
+        ]
+      },
+      "name": "Green Trefoil 2005",
+      "id": "green-trefoil-2005",
+      "simulationEstimates": {
+        "reverseRatio": 4.096,
+        "cgHeightM": 0.55,
+        "groundClearanceM": 0.128,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.56,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "fuelTankUSgal": 23.8,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 5.9,
+        "curbKg": 2449,
+        "tireSize": [
+          255,
+          45,
+          18
+        ],
+        "frontTire": [
+          255,
+          45,
+          18
+        ],
+        "rearTire": [
+          255,
+          45,
+          18
+        ],
+        "gearRatios": [
+          3.571,
+          2.2,
+          1.505,
+          1,
+          0.804
+        ],
+        "finalDrive": 3.65,
+        "torqueRpm": 3250,
+        "centerDifferentialBalance": 0.5,
+        "transmissionLabel": "5-speed torque-converter automatic approximation"
+      }
+    },
+    {
+      "candidateId": "volkswagen-touareg-2005-us-v6-6at",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2005,
+        "make": "Volkswagen",
+        "model": "Touareg",
+        "trim": "V6 3.2gasoline six-speed Tiptronic4XMOTION,standard steel springs17-inch wheels,nooptionalair/rearlocker",
+        "market": "United States"
+      },
+      "referenceVehicle": "2005 United States Volkswagen Touareg V6 3.2gasoline six-speed Tiptronic4XMOTION,standard steel springs17-inch wheels,nooptionalair/rearlocker",
+      "bodyClass": "suv",
+      "facts": {
+        "powerKw": 178.96796928,
+        "torqueNm": 309.126492144,
+        "engineDisplacementL": 3.2,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "gearCount": 6,
+        "lengthM": 4.754879999999999,
+        "widthM": 1.9278600000000001,
+        "heightM": 1.7271999999999998,
+        "wheelbaseM": 2.85496,
+        "tireSize": [
+          255,
+          60,
+          17
+        ],
+        "frontTire": [
+          255,
+          60,
+          17
+        ],
+        "rearTire": [
+          255,
+          60,
+          17
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Volkswagen/Touareg/VW_US%20Touareg_2005.pdf",
+          "publisher": "Volkswagen factory publication, original US brochure in public archive",
+          "fields": [
+            "powerKw",
+            "torqueNm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "tireSize",
+            "frontTire",
+            "rearTire"
+          ],
+          "access": "Original2005US brochure V6column3.2L240hp228lb-ft,6AT4XMOTION,standard steel springs,255/60R17;body112.4inWB187.2L75.9W68.0H. V8 andoptionalair excluded."
+        }
+      ],
+      "limits": [
+        "Exact supplementary identity requires an existing open canonical660 reservation, not expansion of the historical list.",
+        "All suggestedEstimates are modeling estimates, not factory facts. Shared RTG001 art; no driving, test or original-art success claimed.",
+        "2315kg curb,engineRPM andratios are estimates; factory240UShp used,notEuropean220PSlaunch orlater280hp3.6FSI.",
+        "Nativefixed50:50AWD approximateshigh-range open-centerroaduse; no low-range orlocking controls oradaptive torquedistribution reproduced. This limitation mustremainvisible inprovenance.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "trailglass-2024",
+            "alias": "Trailglass 2024",
+            "referenceVehicle": "2024 Volkswagen Tiguan S FWD US, seven seats, 17-inch standard wheels",
+            "documentId": "trailglass-2024",
+            "runtimeId": "saved-car:Trailglass 2024",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "cicely-2010",
+            "alias": "Cicely 2010",
+            "referenceVehicle": "Carlos Sainz / Lucas Cruz, 2010 Dakar-winning Volkswagen Race Touareg 2 TDI prototype. Not Race Touareg 3, 2011 winner or road Touareg.",
+            "documentId": "cicely-2010",
+            "runtimeId": "saved-car:Cicely 2010",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Road7L steel-spring3.2gasoline6AT heavyweightSUV versusCicelydiesel Dakarprototype; also longitudinal4XMOTION architecture unlikecompacttransverseTiguanFWD.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Volkswagen/Touareg/VW_US%20Touareg_2005.pdf"
+        ]
+      },
+      "name": "Black Trefoil 2005",
+      "id": "black-trefoil-2005",
+      "simulationEstimates": {
+        "reverseRatio": 3.394,
+        "cgHeightM": 0.72,
+        "groundClearanceM": 0.237,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "fuelTankUSgal": 26.4,
+        "topSpeedMph": 124,
+        "zeroToSixtySec": 9.8,
+        "curbKg": 2315,
+        "trackFrontIn": 65.2,
+        "trackRearIn": 65.7,
+        "gearRatios": [
+          4.148,
+          2.37,
+          1.556,
+          1.155,
+          0.859,
+          0.686
+        ],
+        "finalDrive": 4.556,
+        "powerRpm": 6200,
+        "torqueRpm": 3200,
+        "centerDifferentialBalance": 0.5,
+        "transmissionLabel": "6-speed torque-converter automatic approximation"
+      }
+    },
+    {
+      "candidateId": "volkswagen-cc-2013-us-sport-6mt",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2013,
+        "make": "Volkswagen",
+        "model": "CC",
+        "trim": "Sport2.0TSI six-speedmanual,standard17-inchVerme wheels,nonRLine;notSportPlusDSG,Lux,V6 or4MOTION",
+        "market": "United States"
+      },
+      "referenceVehicle": "2013 United States Volkswagen CC Sport2.0TSI six-speedmanual,standard17-inchVerme wheels,nonRLine;notSportPlusDSG,Lux,V6 or4MOTION",
+      "bodyClass": "sedan",
+      "facts": {
+        "powerKw": 149.1399744,
+        "torqueNm": 280.654315236,
+        "engineDisplacementL": 2,
+        "aspiration": "Turbocharged",
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 6
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Volkswagen/CC/VW_US%20CC_2013.pdf",
+          "publisher": "Volkswagen factory publication, original US brochure in public archive",
+          "fields": [
+            "powerKw",
+            "torqueNm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "Original2013USbrochure Sportequipment explicitly2.0TSI200hp,6MT,17-inchVerme;engineeringtable207lb-ft;SportPlusDSG/Lux/V6excluded."
+        }
+      ],
+      "limits": [
+        "Exact supplementary identity requires an existing open canonical660 reservation, not expansion of the historical list.",
+        "All suggestedEstimates are modeling estimates, not factory facts. Shared RTG001 art; no driving, test or original-art success claimed.",
+        "FactoryUS200hp/207lb-ft retained; RPM,1505kg curb,dimensions andtireprofile are estimates. Sport6MTavailable explicitly, noimaginedmanualLux.",
+        "Six forward ratios are a normalized single-final-drive simulation estimate; actual gearbox may use different output-shaft finals. Do not claimtheestimatedratio array is factory02Qspecification.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "scabious-2015",
+            "alias": "Scabious 2015",
+            "referenceVehicle": "2015 US Volkswagen Golf GTI S two-door, standard210 SAEhp 2.0TSI, six-speed manual. No Performance Package, DSG, four-door, Golf R or later engine rating.",
+            "documentId": "scabious-2015",
+            "runtimeId": "saved-car:Scabious 2015",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "pine-clover-2012",
+            "alias": "Pine Clover 2012",
+            "referenceVehicle": "2012 US Volkswagen Passat NMS2.5S inline-five5MT standard16inchsteel wheels,withoutAppearancePackage",
+            "documentId": "pine-clover-2012",
+            "runtimeId": "saved-car:Pine Clover 2012",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "CC low-roofPQ46 four-doorbody and2.0turbo6MT distinctfromUSNMS2.5NA Passat andcompactGolfVII GTI; notsimplyrebadged2012NMS.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Volkswagen/CC/VW_US%20CC_2013.pdf"
+        ]
+      },
+      "name": "Sweet Trefoil 2013",
+      "id": "sweet-trefoil-2013",
+      "simulationEstimates": {
+        "reverseRatio": 3.99,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.125,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "fuelTankUSgal": 18.5,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 6.9,
+        "curbKg": 1505,
+        "lengthM": 4.802,
+        "widthM": 1.855,
+        "heightM": 1.417,
+        "wheelbaseM": 2.711,
+        "trackFrontIn": 61.1,
+        "trackRearIn": 61.4,
+        "tireSize": [
+          235,
+          45,
+          17
+        ],
+        "frontTire": [
+          235,
+          45,
+          17
+        ],
+        "rearTire": [
+          235,
+          45,
+          17
+        ],
+        "gearRatios": [
+          3.36,
+          2.09,
+          1.47,
+          1.1,
+          0.87,
+          0.73
+        ],
+        "finalDrive": 3.94,
+        "powerRpm": 5100,
+        "torqueRpm": 1700,
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 82.79999997976137
+          },
+          {
+            "rpm": 1700,
+            "torqueLbFt": 206.9999999494034
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 206.9999999494034
+          },
+          {
+            "rpm": 5100,
+            "torqueLbFt": 205.96078442910158
+          },
+          {
+            "rpm": 6800,
+            "torqueLbFt": 124.19999996964202
+          }
+        ]
+      }
+    },
+    {
+      "candidateId": "volkswagen-new-beetle-2005-us-gl-2-0-5mt",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2005,
+        "make": "Volkswagen",
+        "model": "New Beetle",
+        "trim": "GL hardtop three-door2.0SOHC8-valve gasoline five-speedmanual,standard16-inchcoveredsteelwheels,noGLSsunroof;notTDI,1.8T orCabriolet",
+        "market": "United States"
+      },
+      "referenceVehicle": "2005 United States Volkswagen New Beetle GL hardtop three-door2.0SOHC8-valve gasoline five-speedmanual,standard16-inchcoveredsteelwheels,noGLSsunroof;notTDI,1.8T orCabriolet",
+      "bodyClass": "hatchback",
+      "facts": {
+        "powerKw": 85.75548528,
+        "engineDisplacementL": 2,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "tireSize": [
+          205,
+          55,
+          16
+        ],
+        "frontTire": [
+          205,
+          55,
+          16
+        ],
+        "rearTire": [
+          205,
+          55,
+          16
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Volkswagen/Beetle/VW_US%20Beetle_2005.pdf",
+          "publisher": "Volkswagen factory publication, original US brochure in public archive",
+          "fields": [
+            "powerKw",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "tireSize",
+            "frontTire",
+            "rearTire"
+          ],
+          "access": "Original2005US NewBeetle hardtopGL equipmenttable (beforeCabrioletsection):2.0L8valve115hp standard,5MT standard,205/55R16coveredsteel. TDIoptional;1.8TnotGLstandard."
+        }
+      ],
+      "limits": [
+        "Exact supplementary identity requires an existing open canonical660 reservation, not expansion of the historical list.",
+        "All suggestedEstimates are modeling estimates, not factory facts. Shared RTG001 art; no driving, test or original-art success claimed.",
+        "Brochure does notanchor torque/RPM/curb;170Nm2600rpm and1279kg driver-excluded curb areexplicitestimates,notverifiedspecs.115UShp convertedto85.755kW.",
+        "Bodydimensions,gearing andtransientshandling estimated. OriginalbrochurecontainsbothhardtopandCabriolet;GLhardtop selected.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "woodbine-1995",
+            "alias": "Woodbine 1995",
+            "referenceVehicle": "1995 United States Volkswagen Jetta GLS, stock 2.0-liter naturally aspirated SOHC gasoline inline-four, front-wheel drive, five-speed manual, LHD. Not GLX VR6, European Vento engine mix, automatic, or modified film vehicle.",
+            "documentId": "woodbine-1995",
+            "runtimeId": "saved-car:Woodbine 1995",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "chickweed-1200-1963",
+            "alias": "Chickweed 1200 1963",
+            "referenceVehicle": "1963 European Volkswagen Beetle 1200 Type 11 Export saloon 4MT, solid roof",
+            "documentId": "chickweed-1200-1963",
+            "runtimeId": "saved-car:Chickweed 1200 1963",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "longleaf-clover-2011",
+            "alias": "Longleaf Clover 2011",
+            "referenceVehicle": "2011 US Volkswagen Jetta S2.0SOHC8-valve gasoline sedan5MT standard15inch steel wheels,notSE2.5/GLI/TDI",
+            "documentId": "longleaf-clover-2011",
+            "runtimeId": "saved-car:Longleaf Clover 2011",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "PQ34 front-enginewater-cooledFWD retrohatch is mechanicallydifferentfromChickweed rearaircooledBeetle; also differentplatform/bodyfromMk3Jetta orMk6Jetta despiteordinary2.0eight-valveenginefamily.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Volkswagen/Beetle/VW_US%20Beetle_2005.pdf"
+        ]
+      },
+      "name": "Soft Trefoil 2005",
+      "id": "soft-trefoil-2005",
+      "simulationEstimates": {
+        "reverseRatio": 3.6,
+        "cgHeightM": 0.55,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6000,
+        "revLimitRpm": 6300,
+        "fuelTankUSgal": 14.5,
+        "topSpeedMph": 115,
+        "zeroToSixtySec": 10.5,
+        "curbKg": 1279,
+        "lengthM": 4.081,
+        "widthM": 1.724,
+        "heightM": 1.498,
+        "wheelbaseM": 2.515,
+        "trackFrontIn": 59.4,
+        "trackRearIn": 58.8,
+        "gearRatios": [
+          3.778,
+          2.118,
+          1.458,
+          1.029,
+          0.837
+        ],
+        "finalDrive": 4.235,
+        "powerRpm": 5200,
+        "torqueNm": 170,
+        "torqueRpm": 2600,
+        "torqueLbFt": 125.38556537713515
+      }
+    },
+    {
+      "candidateId": "renault-avantime-privilege-v6-2003-supplemental-candidate",
+      "bodyClass": "coupe",
+      "identity": {
+        "year": 2003,
+        "make": "Renault",
+        "model": "Avantime Privil\u00e8ge3.0V6",
+        "trim": "Germany early2003 L7X naturallyaspiratedV6 PK6six-speedmanual, factory17-inch tires, panoramicglassroof; notturbo,diesel,automatic orEspace",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2003 Renault Avantime Privil\u00e8ge3.0V6, Germany early2003 L7X naturallyaspiratedV6 PK6six-speedmanual, factory17-inch tires, panoramicglassroof; notturbo,diesel,automatic orEspace",
+      "facts": {
+        "powerHp": 204.1682546142,
+        "powerRpm": 6000,
+        "torqueNm": 280,
+        "torqueRpm": 3750,
+        "engineDisplacementL": 3.0,
+        "gearCount": 6,
+        "drivetrain": "fwd",
+        "tireSize": [
+          235,
+          50,
+          17
+        ],
+        "topSpeedMph": 136.70166229221346
+      },
+      "sources": [
+        {
+          "url": "https://presse.renault.de/wesentliche-merkmale-des-avantime/?lang=deu",
+          "publisher": "RenaultDeutschland factorydossier",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "gearCount",
+            "drivetrain",
+            "tireSize",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "Factory207metricPS converted204.168hp. SourcePRP60/02dated13Dec2002 explicitlycoversMarch2003automaticavailability; chosenmanualearly2003. Published1816kg leer hasundefinedDIN/EU/driverbasis: runtime1816kg retainedasprovisionalrunningmass, notverifiedDIN. Rounded3.0retainedratherthanunverified2946cc. Geometry/tracks/gearratios/0\u201360 areestimates; factory0\u20131008.6not0\u201360.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Podmoss 2005",
+            "documentId": "podmoss-2005",
+            "runtimeId": "saved-car:Podmoss 2005",
+            "reference": "FiatMultipla1.6six-seatMPV",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Water Trefoil 2012",
+            "documentId": "water-trefoil-2012",
+            "runtimeId": "saved-car:Water Trefoil 2012",
+            "reference": "Kangoo1.6passengerMPV",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Large pillarless two-door high-roof spacecoupe, bespokeMatra construction and3.0V6six-speed, notsamebodyaspracticalMPVs.",
+        "evidence": [
+          "https://presse.renault.de/wesentliche-merkmale-des-avantime/?lang=deu"
+        ],
+        "audit": "Freshwave54native518 allcatalogProvenance/inspiration/referenceVehiclefields audited. NoAvantime/Espace/Scenic/Laguna exactmodel. PriorrelatedMPVs listed. Supplementalcanonical660reservationrequired, nothistoricalbacklogexpansion."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Slender Trefoil 2003",
+      "id": "slender-trefoil-2003",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.58,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.63,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 21.133764188651874,
+        "zeroToSixtySec": 8.3,
+        "bodyClass": "coupe",
+        "transmission": "manual",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "curbKg": 1816,
+        "lengthM": 4.642,
+        "widthM": 1.834,
+        "heightM": 1.627,
+        "wheelbaseM": 2.702,
+        "trackFrontIn": 59,
+        "trackRearIn": 58.5,
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.32,
+          0.97,
+          0.76,
+          0.62
+        ],
+        "finalDrive": 4.1,
+        "transmissionLabel": "6-speedmanual estimatedratios"
+      }
+    },
+    {
+      "candidateId": "renault-espace-celsium-tce170-2012-supplemental-candidate",
+      "bodyClass": "minivan",
+      "identity": {
+        "year": 2012,
+        "make": "Renault",
+        "model": "Espace CelsiumTCe170",
+        "trim": "Germany January2012 standard-length five-seat EspaceIV petrolturbo six-speedmanual, notGrand,optionalrearrowseats,automatic,diesel orlatercrossover",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2012 Renault Espace CelsiumTCe170, Germany January2012 standard-length five-seat EspaceIV petrolturbo six-speedmanual, notGrand,optionalrearrowseats,automatic,diesel orlatercrossover",
+      "facts": {
+        "powerHp": 167.674412002,
+        "torqueNm": 270,
+        "torqueRpm": 3250,
+        "engineDisplacementL": 2.0,
+        "gearCount": 6,
+        "drivetrain": "fwd",
+        "topSpeedMph": 127.38109440865345
+      },
+      "sources": [
+        {
+          "url": "https://presse.renault.de/unverwechselbar-und-vielseitig/?lang=deu",
+          "publisher": "RenaultDeutschland factorydossier",
+          "fields": [
+            "powerHp",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "gearCount",
+            "drivetrain",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "170metricPS converted167.674hp. FactoryTCe170six-speed/270Nm3250 explicitlyverified. Basefive-seatconfiguration retained, additionalseatpackageoptional. Runningmass1770kg excludingdriver, tires,geometry/powerRPM/gearing areexplicitestimates pendingtrim-specifictable. Factory0\u20131009.7sec;0\u2013609.3estimated. Noexactseat-removalweightdynamicsimplemented.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Water Trefoil 2012",
+            "documentId": "water-trefoil-2012",
+            "runtimeId": "saved-car:Water Trefoil 2012",
+            "reference": "Kangoo1.6compactslidingdoorMPV",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Slender Trefoil 2003",
+            "documentId": "slender-trefoil-2003",
+            "runtimeId": "saved-car:Slender Trefoil 2003",
+            "reference": "wave54two-doorV6spacecoupe",
+            "scope": "same-wave"
+          }
+        ],
+        "distinction": "Full-size conventionalfive-door EspaceIV turboMPV withindividualremovablerearseats versuscompactKangoo orbespoketwo-doorAvantime; noGrandlengthdoublecount.",
+        "evidence": [
+          "https://presse.renault.de/unverwechselbar-und-vielseitig/?lang=deu"
+        ],
+        "audit": "Freshwave54native518 allcatalogProvenance/inspiration/referenceVehiclefields audited. NoAvantime/Espace/Scenic/Laguna exactmodel. PriorrelatedMPVs listed. Supplementalcanonical660reservationrequired, nothistoricalbacklogexpansion."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Trailing Trefoil 2012",
+      "id": "trailing-trefoil-2012",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.63,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Turbocharged",
+        "fuelTankUSgal": 21.92628034572632,
+        "zeroToSixtySec": 9.3,
+        "bodyClass": "minivan",
+        "transmission": "manual",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 5000,
+        "curbKg": 1770,
+        "lengthM": 4.661,
+        "widthM": 1.86,
+        "heightM": 1.728,
+        "wheelbaseM": 2.803,
+        "trackFrontIn": 59,
+        "trackRearIn": 58.5,
+        "tireSize": [
+          225,
+          55,
+          17
+        ],
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.32,
+          0.97,
+          0.76,
+          0.62
+        ],
+        "finalDrive": 4.1,
+        "transmissionLabel": "6-speedmanual estimatedratios"
+      }
+    },
+    {
+      "candidateId": "renault-scenic-authentique-1-6-2013-supplemental-candidate",
+      "bodyClass": "minivan",
+      "identity": {
+        "year": 2013,
+        "make": "Renault",
+        "model": "Sc\u00e9nic Authentique1.6 16V110",
+        "trim": "Germany May2013 short-body five-seat faceliftScenicIII naturallyaspiratedpetrol six-speedmanual; notGrand,Xmod,ENERGYturbo,CVT orEDC",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2013 Renault Sc\u00e9nic Authentique1.6 16V110, Germany May2013 short-body five-seat faceliftScenicIII naturallyaspiratedpetrol six-speedmanual; notGrand,Xmod,ENERGYturbo,CVT orEDC",
+      "facts": {
+        "powerHp": 108.49520776600001,
+        "torqueNm": 151,
+        "torqueRpm": 4250,
+        "engineDisplacementL": 1.6,
+        "gearCount": 6,
+        "drivetrain": "fwd",
+        "wheelbaseM": 2.703,
+        "trackFrontIn": 60.86614173228347,
+        "trackRearIn": 60.90551181102362,
+        "topSpeedMph": 114.95367056390678
+      },
+      "sources": [
+        {
+          "url": "https://presse.renault.de/neue-scenic-generation-setzt-effizienz-bestmarken/?lang=deu",
+          "publisher": "RenaultDeutschland factorydossier",
+          "fields": [
+            "powerHp",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "gearCount",
+            "drivetrain",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "110metricPS converted108.495hp. Factory explicitlylistsbase1.6six-speed andAuthentiqueequipment. Tracks/wheelbase primary; othergeometry/runningmass1330kg excludingdriver/tires/powerRPM/gearing estimated. Factory0\u201310011.7s doesnotcertifyruntime0\u20136011.3. NoGrand/XmoddimensionsorCVTused.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Creek Clover 2009",
+            "documentId": "creek-clover-2009",
+            "runtimeId": "saved-car:Creek Clover 2009",
+            "reference": "Modus1.2shortBsegmentMPV",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Water Trefoil 2012",
+            "documentId": "water-trefoil-2012",
+            "runtimeId": "saved-car:Water Trefoil 2012",
+            "reference": "Kangoo1.6slidingdoorMPV",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Purpose-built compactfive-seatMPV third-generationplatform/body withsix-speed1.6, notBsegmentModus orcommercial-derivedKangoobody; sharedenginefamilyacknowledged.",
+        "evidence": [
+          "https://presse.renault.de/neue-scenic-generation-setzt-effizienz-bestmarken/?lang=deu"
+        ],
+        "audit": "Freshwave54native518 allcatalogProvenance/inspiration/referenceVehiclefields audited. NoAvantime/Espace/Scenic/Laguna exactmodel. PriorrelatedMPVs listed. Supplementalcanonical660reservationrequired, nothistoricalbacklogexpansion."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Rock Trefoil 2013",
+      "id": "rock-trefoil-2013",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.58,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 15.850323141488905,
+        "zeroToSixtySec": 11.3,
+        "bodyClass": "minivan",
+        "transmission": "manual",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 6000,
+        "curbKg": 1330,
+        "lengthM": 4.366,
+        "widthM": 1.845,
+        "heightM": 1.64,
+        "tireSize": [
+          205,
+          60,
+          16
+        ],
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.32,
+          0.97,
+          0.76,
+          0.62
+        ],
+        "finalDrive": 4.1,
+        "transmissionLabel": "6-speedmanual estimatedratios"
+      }
+    },
+    {
+      "candidateId": "renault-laguna-grandtour-emotion-2-0-2009-supplemental-candidate",
+      "bodyClass": "wagon",
+      "identity": {
+        "year": 2009,
+        "make": "Renault",
+        "model": "Laguna Grandtour Emotion2.0 16V140",
+        "trim": "Germany June2009 five-door estate specialedition basedExpression, naturallyaspiratedpetrol six-speedmanual, ordinarytwo-wheelsteering; notGT4Control,coupe,hatch orlaterE85",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2009 Renault Laguna Grandtour Emotion2.0 16V140, Germany June2009 five-door estate specialedition basedExpression, naturallyaspiratedpetrol six-speedmanual, ordinarytwo-wheelsteering; notGT4Control,coupe,hatch orlaterE85",
+      "facts": {
+        "powerHp": 138.084809884,
+        "torqueNm": 195,
+        "torqueRpm": 3750,
+        "engineDisplacementL": 2.0,
+        "gearCount": 6,
+        "drivetrain": "fwd",
+        "topSpeedMph": 126.13835202417879
+      },
+      "sources": [
+        {
+          "url": "https://presse.renault.de/top-bei-sicherheit-qualitat-und-umweltschutz-1/?lang=deu",
+          "publisher": "RenaultDeutschland factorydossier",
+          "fields": [
+            "powerHp",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "gearCount",
+            "drivetrain",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        },
+        {
+          "url": "https://presse.renault.de/laguna-jetzt-schon-ab-17900-euro-erhaltlich/?lang=deu",
+          "publisher": "RenaultDeutschlandJune2009factoryEmotionrelease",
+          "fields": [
+            "identity",
+            "exactEngineBodyTrim"
+          ],
+          "access": "Readweb2026-11-18;2.0 16V140explicitlyGrandtour."
+        }
+      ],
+      "limits": [
+        "140metricPS converted138.085hp. December2008factoryfamilytechnicalreference pairedwithJune2009exactEmotiontrimrelease. FactoryGrandtour0\u20131009.3sec,203kmh; runtime0\u2013608.9estimate. Allmass1445kgexcludingdriver/geometry/tires/powerRPM/gearratios provisional. No4Control modeled because ordinaryEmotionselected.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Lush Clover 2005",
+            "documentId": "lush-clover-2005",
+            "runtimeId": "saved-car:Lush Clover 2005",
+            "reference": "FiatCroma2.2highroofestate",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "River Clover 2013",
+            "documentId": "river-clover-2013",
+            "runtimeId": "saved-car:River Clover 2013",
+            "reference": "River Clover 2013 / LoganMCV1.2wagon",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Dsegmentlow-roofGrandtour estate with2.0chain-driveNissan/Renaultalliancefour versusCromahighroof2.2 orbudgetBplatformLoganwagon; noLagunaGT/hatchvariantpadding.",
+        "evidence": [
+          "https://presse.renault.de/top-bei-sicherheit-qualitat-und-umweltschutz-1/?lang=deu"
+        ],
+        "audit": "Freshwave54native518 allcatalogProvenance/inspiration/referenceVehiclefields audited. NoAvantime/Espace/Scenic/Laguna exactmodel. PriorrelatedMPVs listed. Supplementalcanonical660reservationrequired, nothistoricalbacklogexpansion."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Hill Trefoil 2009",
+      "id": "hill-trefoil-2009",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.51,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 17.435355455637797,
+        "zeroToSixtySec": 8.9,
+        "bodyClass": "wagon",
+        "transmission": "manual",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 6000,
+        "curbKg": 1445,
+        "lengthM": 4.801,
+        "widthM": 1.811,
+        "heightM": 1.445,
+        "wheelbaseM": 2.758,
+        "trackFrontIn": 59,
+        "trackRearIn": 58.5,
+        "tireSize": [
+          205,
+          60,
+          16
+        ],
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.32,
+          0.97,
+          0.76,
+          0.62
+        ],
+        "finalDrive": 4.1,
+        "transmissionLabel": "6-speedmanual estimatedratios"
+      }
+    }
+  ],
+  "deferred": []
+}

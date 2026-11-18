@@ -1,0 +1,1363 @@
+{
+  "schemaVersion": 1,
+  "base": "d6f4d7a3aafd9340774321d061ae82d799d11ddb",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "lexus-es330-base-2005-ca-5at-supplemental",
+      "identity": {
+        "year": 2005,
+        "make": "Lexus",
+        "model": "ES330",
+        "trim": "Canadian base 3.3 V6 FWD 5AT,16-inch wheels,no Luxury/Appearance/AVS package",
+        "market": "Canada"
+      },
+      "referenceVehicle": "2005 Canada Lexus ES330, Canadian base 3.3 V6 FWD 5AT,16-inch wheels,no Luxury/Appearance/AVS package",
+      "bodyClass": "four-door five-seat luxury sedan; production",
+      "facts": {
+        "powerHp": 225,
+        "powerRpm": 5600,
+        "torqueLbFt": 240,
+        "torqueRpm": 3600,
+        "engineDisplacementL": 3.3,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 4.855,
+        "widthM": 1.81,
+        "heightM": 1.44,
+        "wheelbaseM": 2.72,
+        "trackFrontIn": 60.82677165354331,
+        "trackRearIn": 60.43307086614173,
+        "transmission": "automatic",
+        "transmissionLabel": "5-speed automatic",
+        "gearCount": 5,
+        "absEnabled": true,
+        "drivetrain": "fwd",
+        "curbKg": 1575,
+        "tireSize": [
+          215,
+          60,
+          16
+        ],
+        "groundClearanceM": 0.155,
+        "dragCoefficient": 0.28,
+        "fuelTankUSgal": 18.49204366507039,
+        "tractionControlEnabled": false
+      },
+      "sources": [
+        {
+          "url": "https://toyotacanada.scene7.com/is/content/toyotacanada/05LexusES330_E_specspdf-1",
+          "publisher": "Lexus Canada original manufacturer specification sheet",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "transmission",
+            "transmissionLabel",
+            "gearCount",
+            "absEnabled",
+            "drivetrain",
+            "curbKg",
+            "tireSize",
+            "groundClearanceM",
+            "dragCoefficient",
+            "fuelTankUSgal",
+            "tractionControlEnabled"
+          ],
+          "access": "Factory2005Canadianbase table read2026-11-18.1575kgbasecurb; optionalTRAC/AVSand17inch notinstalled.225hp preferred over inconsistent166kW printed conversion."
+        }
+      ],
+      "limits": [
+        "Factorybasecurb notoptionloadedweight. Gearing,redline andperformance estimates. Nooptionaladaptive suspension.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "marjoram-2003",
+            "alias": "Marjoram 2003",
+            "reference": "2003 CamryLE2.4four-cylinderautomatic",
+            "documentId": "marjoram-2003",
+            "runtimeId": "saved-car:Marjoram 2003",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "scarlet-trefoil-1997",
+            "alias": "Scarlet Trefoil 1997",
+            "reference": "1997 AcuraRL3.5V6FWDsedan",
+            "documentId": "scarlet-trefoil-1997",
+            "runtimeId": "saved-car:Scarlet Trefoil 1997",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No ES identity found. XV30-derived luxury body with3.3V6 differs from existing2.4four-cylinderCamryLE andAcura longitudinalV6; not merely badge-only equal-powertrain trim.",
+        "evidence": [
+          "https://toyotacanada.scene7.com/is/content/toyotacanada/05LexusES330_E_specspdf-1"
+        ]
+      },
+      "name": "Bearberry Clover 2005",
+      "id": "bearberry-clover-2005",
+      "simulationEstimates": {
+        "reverseRatio": 3.145,
+        "cgHeightM": 0.5,
+        "tireGrip": 0.84,
+        "spring": 0.43,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 410,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6000,
+        "revLimitRpm": 6300,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 7.2,
+        "finalDrive": 3.291,
+        "gearRatios": [
+          3.943,
+          2.197,
+          1.413,
+          1.02,
+          0.703
+        ]
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "lexus-rx330-base-2005-ca-awd-5at-supplemental",
+      "identity": {
+        "year": 2005,
+        "make": "Lexus",
+        "model": "RX330",
+        "trim": "Canadian standard3.3V6 full-timeAWD5AT,17-inchall-season wheels,coil suspension; noair-suspensionpackage",
+        "market": "Canada"
+      },
+      "referenceVehicle": "2005 Canada Lexus RX330, Canadian standard3.3V6 full-timeAWD5AT,17-inchall-season wheels,coil suspension; noair-suspensionpackage",
+      "bodyClass": "five-door five-seat luxury crossover; production",
+      "facts": {
+        "powerHp": 230,
+        "powerRpm": 5600,
+        "torqueLbFt": 242,
+        "torqueRpm": 3600,
+        "engineDisplacementL": 3.3,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 4.73,
+        "widthM": 1.845,
+        "heightM": 1.68,
+        "wheelbaseM": 2.715,
+        "trackFrontIn": 62.00787401574804,
+        "trackRearIn": 61.22047244094489,
+        "transmission": "automatic",
+        "transmissionLabel": "5-speed automatic",
+        "gearCount": 5,
+        "absEnabled": true,
+        "drivetrain": "awd",
+        "curbKg": 1844,
+        "tireSize": [
+          225,
+          65,
+          17
+        ],
+        "groundClearanceM": 0.18,
+        "dragCoefficient": 0.35,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://toyotacanada.scene7.com/is/content/toyotacanada/05LexusRX330_E_specspdf-1",
+          "publisher": "Lexus Canada original manufacturer specification sheet",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "transmission",
+            "transmissionLabel",
+            "gearCount",
+            "absEnabled",
+            "drivetrain",
+            "curbKg",
+            "tireSize",
+            "groundClearanceM",
+            "dragCoefficient",
+            "tractionControlEnabled"
+          ],
+          "access": "Official2005CanadaPDF read2026-11-18.1844kgbase,230hp,242lbft. Parenthetical181Nm is inconsistent with242lbft; retainEnglish242lbft ratherthanincorrectconversion."
+        }
+      ],
+      "limits": [
+        "GenericAWD with estimated50percentrearshare; noexact torque-distributioncontrolorairheightclaim.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "fern-clover-2007",
+            "alias": "Fern Clover 2007",
+            "reference": "2007 AcuraRDX2.3turboAWD",
+            "documentId": "fern-clover-2007",
+            "runtimeId": "saved-car:Fern Clover 2007",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "tamarisk-2024",
+            "alias": "Tamarisk 2024",
+            "reference": "2024 MazdaCX90turboAWD",
+            "documentId": "tamarisk-2024",
+            "runtimeId": "saved-car:Tamarisk 2024",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoRXidentity found. XU30naturallyaspiratedV6AWDfive-seat body differs from prior2.4FWDHighlander andturboRDX; noRXhybrid.",
+        "evidence": [
+          "https://toyotacanada.scene7.com/is/content/toyotacanada/05LexusRX330_E_specspdf-1"
+        ]
+      },
+      "name": "Lingonberry Clover 2005",
+      "id": "lingonberry-clover-2005",
+      "simulationEstimates": {
+        "reverseRatio": 3.378,
+        "cgHeightM": 0.64,
+        "tireGrip": 0.83,
+        "spring": 0.43,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.57,
+        "redlineRpm": 6000,
+        "revLimitRpm": 6300,
+        "fuelTankUSgal": 19.2,
+        "topSpeedMph": 124,
+        "zeroToSixtySec": 8.0,
+        "finalDrive": 3.478,
+        "gearRatios": [
+          4.235,
+          2.36,
+          1.517,
+          1.047,
+          0.756
+        ],
+        "centerDifferentialBalance": 0.5
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "lexus-gx470-base-2005-ca-5at-supplemental",
+      "identity": {
+        "year": 2005,
+        "make": "Lexus",
+        "model": "GX470",
+        "trim": "Canadian standard4.7VVTiV8full-time4WD5AT,eightseats,17-inch wheels; normalhigh-range road mode",
+        "market": "Canada"
+      },
+      "referenceVehicle": "2005 Canada Lexus GX470, Canadian standard4.7VVTiV8full-time4WD5AT,eightseats,17-inch wheels; normalhigh-range road mode",
+      "bodyClass": "five-door eight-seat body-on-frame SUV; production",
+      "facts": {
+        "powerHp": 270,
+        "powerRpm": 5400,
+        "torqueLbFt": 330,
+        "torqueRpm": 3400,
+        "engineDisplacementL": 4.7,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 4.78,
+        "widthM": 1.88,
+        "heightM": 1.895,
+        "wheelbaseM": 2.79,
+        "trackFrontIn": 62.40157480314961,
+        "trackRearIn": 62.40157480314961,
+        "transmission": "automatic",
+        "transmissionLabel": "5-speed automatic",
+        "gearCount": 5,
+        "absEnabled": true,
+        "drivetrain": "awd",
+        "curbKg": 2150,
+        "tireSize": [
+          265,
+          65,
+          17
+        ],
+        "groundClearanceM": 0.21,
+        "fuelTankUSgal": 22.982968555158912,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://toyotacanada.scene7.com/is/content/toyotacanada/specs_2005_GX470pdf-1",
+          "publisher": "Lexus Canada original manufacturer specification sheet",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "transmission",
+            "transmissionLabel",
+            "gearCount",
+            "absEnabled",
+            "drivetrain",
+            "curbKg",
+            "tireSize",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "tractionControlEnabled"
+          ],
+          "access": "Official2005CanadianGX470PDF read2026-11-18 explicitly270hp5400/330lbft3400 and2150kgbase. Values retained fromexactmarket/yearsheet, notsubstitutedUS282hptable."
+        }
+      ],
+      "limits": [
+        "FactoryAVS/rearair leveling represented by fixed estimated effective springs andnormalheight; noheightcontrol,HAC,DAC,centerlockorlow-range simulation. Estimatedrearshare.60notverifiedfactorysplit.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "least-clover-1979",
+            "alias": "Least Clover 1979",
+            "reference": "1979 LandCruiserFJ40six-cylinder4MT",
+            "documentId": "least-clover-1979",
+            "runtimeId": "saved-car:Least Clover 1979",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "alder-clover-2005",
+            "alias": "Alder Clover 2005",
+            "reference": "2005 SequoiaSR5V8RWD5AT",
+            "documentId": "alder-clover-2005",
+            "runtimeId": "saved-car:Alder Clover 2005",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoPrado/GX identity found. J120 shorter-wheelbase full-time4WD SUV distinct from largeSequoiaRWD andclassicFJ40. LX470badge-relative deliberatelynotadded.",
+        "evidence": [
+          "https://toyotacanada.scene7.com/is/content/toyotacanada/specs_2005_GX470pdf-1"
+        ]
+      },
+      "name": "Cloudberry Clover 2005",
+      "id": "cloudberry-clover-2005",
+      "simulationEstimates": {
+        "reverseRatio": 3.224,
+        "cgHeightM": 0.75,
+        "dragCoefficient": 0.38,
+        "tireGrip": 0.81,
+        "spring": 0.55,
+        "antiRollRear": 0.22,
+        "suspensionTravelM": 0.23,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 450,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 5400,
+        "revLimitRpm": 5700,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 8.6,
+        "finalDrive": 3.727,
+        "gearRatios": [
+          3.52,
+          2.042,
+          1.4,
+          1,
+          0.716
+        ],
+        "centerDifferentialBalance": 0.6
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "nissan-titan-xe-2005-us-crew-cab-rwd-5at-supplemental",
+      "identity": {
+        "year": 2005,
+        "make": "Nissan",
+        "model": "Titan",
+        "trim": "XE Crew Cab4x2 VK56V8five-speedautomatic,bench six seats,17-inchsteel wheels,noTrac/OffRoad/towingpackage",
+        "market": "United States"
+      },
+      "referenceVehicle": "2005 United States Nissan Titan, XE Crew Cab4x2 VK56V8five-speedautomatic,bench six seats,17-inchsteel wheels,noTrac/OffRoad/towingpackage",
+      "bodyClass": "four-door six-seat full-size pickup; production",
+      "facts": {
+        "powerHp": 305,
+        "torqueLbFt": 379,
+        "engineDisplacementL": 5.6,
+        "aspiration": "Naturally Aspirated",
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "transmissionLabel": "5-speed automatic",
+        "gearCount": 5,
+        "absEnabled": true,
+        "tireSize": [
+          245,
+          75,
+          17
+        ],
+        "fuelTankUSgal": 28
+      },
+      "sources": [
+        {
+          "url": "https://usa.nissannews.com/en-US/releases/2005-nissan-titan-crew-cab-press-kit-2",
+          "publisher": "Nissan original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "torqueLbFt",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "transmissionLabel",
+            "gearCount",
+            "absEnabled",
+            "tireSize",
+            "fuelTankUSgal"
+          ],
+          "access": "Nissan2005CrewCabfactorypresskit accessibleindexedtext read2026-11-18. ExactXE4x2/4x4availability,305hp379lbft5AT17inchwheels28gal. Migrationdate2010 doesnotchange2005modelreference. Geometry,mass,RPM/gears explicitlyestimated, notclaimedpresskitmeasurements."
+        }
+      ],
+      "limits": [
+        "4953lb is provisionalXEcrewRWDcurb estimate, notfactoryverifiedtrimweight. Nooffroadlocker/ABLS/VDCclaim.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "glade-clover-2005",
+            "alias": "Glade Clover 2005",
+            "reference": "2005 ArmadaSE5.6RWD5AT",
+            "documentId": "glade-clover-2005",
+            "runtimeId": "saved-car:Glade Clover 2005",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "buckwheat-1997",
+            "alias": "Buckwheat 2.4 1997",
+            "reference": "1997 Tacoma2.4manualpickup",
+            "documentId": "buckwheat-1997",
+            "runtimeId": "saved-car:Buckwheat 2.4 1997",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Titan FAlphaVK56sharesenginefamilywithArmada but pickuphasseparatebed,long139.8inchestimatedwheelbase andliveleafrear versusArmadaindependentrearSUV. Notbadge-onlyequalbody.",
+        "evidence": [
+          "https://usa.nissannews.com/en-US/releases/2005-nissan-titan-crew-cab-press-kit-2"
+        ]
+      },
+      "name": "Gooseberry Clover 2005",
+      "id": "gooseberry-clover-2005",
+      "simulationEstimates": {
+        "reverseRatio": 2.613,
+        "cgHeightM": 0.76,
+        "groundClearanceM": 0.254,
+        "dragCoefficient": 0.45,
+        "tireGrip": 0.78,
+        "spring": 0.57,
+        "antiRollRear": 0.18,
+        "suspensionTravelM": 0.24,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.1,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 430,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.56,
+        "redlineRpm": 5800,
+        "revLimitRpm": 6100,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 7.5,
+        "finalDrive": 2.937,
+        "gearRatios": [
+          3.827,
+          2.368,
+          1.52,
+          1,
+          0.834
+        ],
+        "lengthM": 5.694679999999999,
+        "widthM": 2.0015199999999997,
+        "heightM": 1.8948399999999999,
+        "wheelbaseM": 3.55092,
+        "trackFrontIn": 67.9,
+        "trackRearIn": 67.9,
+        "curbKg": 2246.64300861,
+        "powerRpm": 4900,
+        "torqueRpm": 3600
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "nissan-quest-base-2005-us-4at-supplemental",
+      "identity": {
+        "year": 2005,
+        "make": "Nissan",
+        "model": "Quest",
+        "trim": "new3.5BaseVQ35FWDfour-speedautomatic sevenseats16-inchsteel wheels,noSkyView/DVD; notSL5AT orSE17inch",
+        "market": "United States"
+      },
+      "referenceVehicle": "2005 United States Nissan Quest, new3.5BaseVQ35FWDfour-speedautomatic sevenseats16-inchsteel wheels,noSkyView/DVD; notSL5AT orSE17inch",
+      "bodyClass": "five-door seven-seat sliding-door minivan; production",
+      "facts": {
+        "powerHp": 240,
+        "torqueLbFt": 242,
+        "engineDisplacementL": 3.5,
+        "aspiration": "Naturally Aspirated",
+        "drivetrain": "fwd",
+        "transmission": "automatic",
+        "transmissionLabel": "4-speed automatic",
+        "gearCount": 4,
+        "tireSize": [
+          225,
+          65,
+          16
+        ],
+        "absEnabled": true,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://usa.nissannews.com/en-US/releases/release-2929687cfb04499c8d3da63d29135902-2005-nissan-quest-press-kit-3",
+          "publisher": "Nissan original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "torqueLbFt",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "transmissionLabel",
+            "gearCount",
+            "tireSize",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "Factory2005Questpresskit read2026-11-18 explicitlynewbase3.5,240hp242lbft,VQ35FWD4AT,22565R16,standardTCS/ABS; SLgets5AT. Geometry,curb,RPM/gears estimatedpendingfactorytable."
+        }
+      ],
+      "limits": [
+        "4012lb is explicit provisionalbasecurb estimate, notsourceverifiedmass. OldLupin remainsseparate. NooptionalVDCclaim.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "lungwort-2005",
+            "alias": "Lungwort 2005",
+            "reference": "2005 HondaOdysseyEX3.5V65AT",
+            "documentId": "lungwort-2005",
+            "runtimeId": "saved-car:Lungwort 2005",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Third-generationV42FF-LVQ35Quest distinct from oldunpublishedLupin1994V40QuestXE3.0Ford/Nissanjoint-platformvan; differentplatform,body,powertrain. Notduplicateold11. No currentQuestidentity.",
+        "evidence": [
+          "https://usa.nissannews.com/en-US/releases/release-2929687cfb04499c8d3da63d29135902-2005-nissan-quest-press-kit-3"
+        ]
+      },
+      "name": "Currant Clover 2005",
+      "id": "currant-clover-2005",
+      "simulationEstimates": {
+        "reverseRatio": 2.272,
+        "cgHeightM": 0.64,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.8,
+        "spring": 0.46,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 440,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 6400,
+        "revLimitRpm": 6700,
+        "fuelTankUSgal": 20,
+        "topSpeedMph": 116,
+        "zeroToSixtySec": 8.5,
+        "finalDrive": 4.095,
+        "gearRatios": [
+          2.785,
+          1.545,
+          1,
+          0.694
+        ],
+        "lengthM": 5.184139999999999,
+        "widthM": 1.9710399999999997,
+        "heightM": 1.778,
+        "wheelbaseM": 3.1496,
+        "trackFrontIn": 67.3,
+        "trackRearIn": 67.3,
+        "curbKg": 1819.8125884400001,
+        "powerRpm": 5800,
+        "torqueRpm": 4400
+      }
+    },
+    {
+      "candidateId": "volvo-s80-2008-us-v8-awd-6at",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2008,
+        "make": "Volvo",
+        "model": "S80",
+        "trim": "second-generation V8 AWD4.4 naturally aspirated transverse V8 six-speed Geartronic, standard passive chassis; not T6,3.2 or optional FOUR-C",
+        "market": "United States"
+      },
+      "referenceVehicle": "2008 United States Volvo S80 second-generation V8 AWD4.4 naturally aspirated transverse V8 six-speed Geartronic, standard passive chassis; not T6,3.2 or optional FOUR-C",
+      "bodyClass": "sedan",
+      "facts": {
+        "powerKw": 231.912660192,
+        "powerRpm": 5950,
+        "torqueNm": 440.6408331,
+        "torqueRpm": 3950,
+        "engineDisplacementL": 4.4,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "gearCount": 6,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 6,
+        "fuelTankUSgal": 18.5
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Volvo/S80/Volvo_US%20S80_2008.pdf",
+          "publisher": "Volvo original factory US brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "topSpeedMph",
+            "zeroToSixtySec",
+            "fuelTankUSgal",
+            "identity"
+          ],
+          "access": "Original PDF downloaded and technical text reviewed; retained S80.pdf/.txt in wave64 scratch."
+        }
+      ],
+      "limits": [
+        "Supplemental exact identity consumes an open canonical660 slot, not historical-list growth.",
+        "All suggestedEstimates explicitly estimated; no test, driving or original-art claim.",
+        "Brochure PDF36 explicitly V8 six-speed auto,311hp5950 and325lb-ft3950. Do not borrow XC90 V8 rpm.",
+        "1900kg is unladen modeled estimate, not a trim-specific published weight. Wheel fitment/ratios/geometry estimated.",
+        "Fixed AWD distribution approximates adaptive clutch; no FOUR-C or active steering simulation.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "sea-lavender-2015",
+            "alias": "Sea Lavender 2015",
+            "referenceVehicle": "2015 UK Volvo V60 Polestar, first-generation T6 six-cylinder estate, six-speed automatic; not later four-cylinder/eight-speed",
+            "documentId": "sea-lavender-2015",
+            "runtimeId": "saved-car:Sea Lavender 2015",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "P3 luxury sedan with transverse naturally aspirated V8 differs from existing turbo-six V60 Polestar estate in body, engine and chassis.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Volvo/S80/Volvo_US%20S80_2008.pdf"
+        ]
+      },
+      "name": "Raspberry Clover 2008",
+      "id": "raspberry-clover-2008",
+      "simulationEstimates": {
+        "reverseRatio": 3.394,
+        "cgHeightM": 0.54,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.58,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "curbKg": 1900,
+        "lengthM": 4.85,
+        "widthM": 1.862,
+        "heightM": 1.491,
+        "wheelbaseM": 2.835,
+        "trackFrontIn": 62.1,
+        "trackRearIn": 62,
+        "tireSize": [
+          245,
+          40,
+          18
+        ],
+        "frontTire": [
+          245,
+          40,
+          18
+        ],
+        "rearTire": [
+          245,
+          40,
+          18
+        ],
+        "gearRatios": [
+          4.148,
+          2.37,
+          1.556,
+          1.155,
+          0.859,
+          0.686
+        ],
+        "finalDrive": 3.329,
+        "centerDifferentialBalance": 0.35,
+        "transmissionLabel": "6-speed torque-converter Geartronic approximation"
+      }
+    },
+    {
+      "candidateId": "volvo-xc90-2008-us-3-2-fwd-6at",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2008,
+        "make": "Volvo",
+        "model": "XC90",
+        "trim": "3.2 naturally aspirated transverse inline-six FWD six-speed Geartronic, standard non-Sport chassis; not AWD or V8",
+        "market": "United States"
+      },
+      "referenceVehicle": "2008 United States Volvo XC90 3.2 naturally aspirated transverse inline-six FWD six-speed Geartronic, standard non-Sport chassis; not AWD or V8",
+      "bodyClass": "suv",
+      "facts": {
+        "powerKw": 175.23946992,
+        "powerRpm": 6200,
+        "torqueNm": 319.973035728,
+        "torqueRpm": 1500,
+        "engineDisplacementL": 3.2,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "transmission": "automatic",
+        "gearCount": 6,
+        "topSpeedMph": 118,
+        "fuelTankUSgal": 21,
+        "groundClearanceM": 0.21844
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Volvo/XC90/Volvo_US%20XC90_2008.pdf",
+          "publisher": "Volvo original factory US brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "topSpeedMph",
+            "fuelTankUSgal",
+            "groundClearanceM",
+            "identity"
+          ],
+          "access": "Original PDF downloaded and technical text reviewed; retained XC90.pdf/.txt in wave64 scratch."
+        }
+      ],
+      "limits": [
+        "Supplemental exact identity consumes an open canonical660 slot, not historical-list growth.",
+        "All suggestedEstimates explicitly estimated; no test, driving or original-art claim.",
+        "PDF36 explicitly3.2 FWD/AWD options,235hp6200,236lb-ft1500\u20134500, six-speedautomatic. Uses published torque-band lower endpoint without inventing flat curve.",
+        "2050kg unladen estimate, not published trim weight. Seating/load modeled unladen; no specific optional third-row package claim.",
+        "Geometry, wheels, gear ratios, acceleration and handling estimates.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "snowdrop-t5-2008",
+            "alias": "Snowdrop T5 2008",
+            "referenceVehicle": "US2008 Volvo C30 T5 Version1.0 standard six-speed manual FWD LHD, no Custom Build options",
+            "documentId": "snowdrop-t5-2008",
+            "runtimeId": "saved-car:Snowdrop T5 2008",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Large P2 SUV naturally aspirated inline-six/FWD automatic versus C30 compact P1 turbo-five/manual hatch, not badge-only variant.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Volvo/XC90/Volvo_US%20XC90_2008.pdf"
+        ]
+      },
+      "name": "Mulberry Clover 2008",
+      "id": "mulberry-clover-2008",
+      "simulationEstimates": {
+        "reverseRatio": 3.394,
+        "cgHeightM": 0.68,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "zeroToSixtySec": 9.2,
+        "curbKg": 2050,
+        "lengthM": 4.807,
+        "widthM": 1.898,
+        "heightM": 1.781,
+        "wheelbaseM": 2.858,
+        "trackFrontIn": 64.3,
+        "trackRearIn": 63.9,
+        "tireSize": [
+          235,
+          65,
+          17
+        ],
+        "frontTire": [
+          235,
+          65,
+          17
+        ],
+        "rearTire": [
+          235,
+          65,
+          17
+        ],
+        "gearRatios": [
+          4.148,
+          2.37,
+          1.556,
+          1.155,
+          0.859,
+          0.686
+        ],
+        "finalDrive": 4.06,
+        "transmissionLabel": "6-speed torque-converter Geartronic approximation",
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 94.399999976926
+          },
+          {
+            "rpm": 1500,
+            "torqueLbFt": 235.999999942315
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 235.999999942315
+          },
+          {
+            "rpm": 6200,
+            "torqueLbFt": 199.0677420469986
+          },
+          {
+            "rpm": 6700,
+            "torqueLbFt": 141.59999996538897
+          }
+        ]
+      }
+    },
+    {
+      "candidateId": "saab-9-5-2011-us-turbo4-6mt",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2011,
+        "make": "Saab",
+        "model": "9-5",
+        "trim": "second-generation Turbo4 base sedan2.0 twin-scroll turbo four FWD standard six-speed manual; not Premium automatic,Turbo6XWD or Aero",
+        "market": "United States"
+      },
+      "referenceVehicle": "2011 United States Saab 9-5 second-generation Turbo4 base sedan2.0 twin-scroll turbo four FWD standard six-speed manual; not Premium automatic,Turbo6XWD or Aero",
+      "bodyClass": "sedan",
+      "facts": {
+        "powerKw": 164.05397184,
+        "powerRpm": 5300,
+        "torqueNm": 349.80103058400005,
+        "torqueRpm": 2500,
+        "engineDisplacementL": 1.998,
+        "aspiration": "Turbocharged",
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "lengthM": 5.009,
+        "heightM": 1.466,
+        "wheelbaseM": 2.837,
+        "topSpeedMph": 130,
+        "fuelTankUSgal": 18
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Saab/9-5/Saab_US%209-5_2011.pdf",
+          "publisher": "Saab original factory US brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "heightM",
+            "wheelbaseM",
+            "topSpeedMph",
+            "fuelTankUSgal",
+            "identity"
+          ],
+          "access": "Original PDF downloaded and technical text reviewed; retained Saab95.pdf/.txt in wave64 scratch."
+        }
+      ],
+      "limits": [
+        "Supplemental exact identity consumes an open canonical660 slot, not historical-list growth.",
+        "All suggestedEstimates explicitly estimated; no test, driving or original-art claim.",
+        "Factory feature grid explicitly standard6MT FWD Turbo4.",
+        "Published1885\u20131975kg is family range, not manual Turbo4 proof; modeled1840kg expressly estimated, not source correction.",
+        "Factory83.2in width includes mirrors by size interpretation; body width1.868m estimated instead. Ratios,tires,track,redline,dynamics estimates.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "valerian-turbo-1992",
+            "alias": "Valerian Turbo 1992",
+            "referenceVehicle": "US 1992 Saab 900 Turbo three-door hatchback, 2.0 DOHC16 intercooled turbo with APC and three-way catalyst/Lambda, five-speed manual; not convertible or1993 Commemorative Edition",
+            "documentId": "valerian-turbo-1992",
+            "runtimeId": "saved-car:Valerian Turbo 1992",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Modern EpsilonII large sedan transverse turbo-four six-speed manual distinct from classic900 longitudinal-engine hatch5MT.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Saab/9-5/Saab_US%209-5_2011.pdf"
+        ]
+      },
+      "name": "Blackberry Clover 2011",
+      "id": "blackberry-clover-2011",
+      "simulationEstimates": {
+        "reverseRatio": 3.75,
+        "cgHeightM": 0.54,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "zeroToSixtySec": 7.8,
+        "curbKg": 1840,
+        "widthM": 1.868,
+        "trackFrontIn": 62.4,
+        "trackRearIn": 62.4,
+        "tireSize": [
+          225,
+          55,
+          17
+        ],
+        "frontTire": [
+          225,
+          55,
+          17
+        ],
+        "rearTire": [
+          225,
+          55,
+          17
+        ],
+        "gearRatios": [
+          3.917,
+          2.04,
+          1.321,
+          0.954,
+          0.755,
+          0.623
+        ],
+        "finalDrive": 3.76
+      }
+    },
+    {
+      "candidateId": "audi-q7-2010-us-tdi-premium-6at",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2010,
+        "make": "Audi",
+        "model": "Q7",
+        "trim": "3.0TDI Premium turbo-diesel V6 quattro six-speed Tiptronic, standard steel-spring chassis; not gasoline3.6/4.2 or later eight-speed",
+        "market": "United States"
+      },
+      "referenceVehicle": "2010 United States Audi Q7 3.0TDI Premium turbo-diesel V6 quattro six-speed Tiptronic, standard steel-spring chassis; not gasoline3.6/4.2 or later eight-speed",
+      "bodyClass": "suv",
+      "facts": {
+        "powerKw": 167.7824712,
+        "powerRpm": 3750,
+        "torqueNm": 550.462086888,
+        "torqueRpm": 1750,
+        "engineDisplacementL": 3.0,
+        "aspiration": "Turbocharged diesel",
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "gearCount": 6,
+        "zeroToSixtySec": 8.5,
+        "topSpeedMph": 130,
+        "fuelTankUSgal": 26.4,
+        "lengthM": 5.08762,
+        "widthM": 1.9837399999999998,
+        "heightM": 1.73736,
+        "wheelbaseM": 3.00228,
+        "trackFrontIn": 65,
+        "trackRearIn": 66
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Audi/Q7/Audi_US%20Q7_2010.pdf",
+          "publisher": "Audi original factory US brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "zeroToSixtySec",
+            "topSpeedMph",
+            "fuelTankUSgal",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "identity"
+          ],
+          "access": "Original PDF downloaded and technical text reviewed; retained Q7.pdf/.txt in wave64 scratch."
+        }
+      ],
+      "limits": [
+        "Supplemental exact identity consumes an open canonical660 slot, not historical-list growth.",
+        "All suggestedEstimates explicitly estimated; no test, driving or original-art claim.",
+        "PDF technical table explicitly225hp3750/406lb-ft1750, six-speed automatic.",
+        "2470kg unladen estimate; tires/ratios/dynamics estimated. Fixed42:58 approximates torque-sensing center diff, not dynamic redistribution.",
+        "No historical clean-diesel marketing or emissions-compliance claims reproduced.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "black-trefoil-2005",
+            "alias": "Black Trefoil 2005",
+            "referenceVehicle": "2005 United States Volkswagen Touareg V6 3.2gasoline six-speed Tiptronic4XMOTION,standard steel springs17-inch wheels,nooptionalair/rearlocker",
+            "documentId": "black-trefoil-2005",
+            "runtimeId": "saved-car:Black Trefoil 2005",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "hawthorn-clover-2011",
+            "alias": "Hawthorn Clover 2011",
+            "referenceVehicle": "2011 United States BMW X5 E70 xDrive35d twin-turbo diesel inline-six six-speed automatic, standard255/55R18 wheels; not gasoline35i/50i eight-speed or MY2012 carryover",
+            "documentId": "hawthorn-clover-2011",
+            "runtimeId": "saved-car:Hawthorn Clover 2011",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Large seven-seat Q7 diesel V6/6AT differs from related-platform short-wheelbase Touareg gasoline3.2 and BMW X5 inline-six diesel; distinct wheelbase, body, engine and torque.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Audi/Q7/Audi_US%20Q7_2010.pdf"
+        ]
+      },
+      "name": "Dewberry Clover 2010",
+      "id": "dewberry-clover-2010",
+      "simulationEstimates": {
+        "reverseRatio": 3.394,
+        "cgHeightM": 0.7,
+        "groundClearanceM": 0.2,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.55,
+        "redlineRpm": 4500,
+        "revLimitRpm": 4700,
+        "curbKg": 2470,
+        "tireSize": [
+          255,
+          55,
+          18
+        ],
+        "frontTire": [
+          255,
+          55,
+          18
+        ],
+        "rearTire": [
+          255,
+          55,
+          18
+        ],
+        "gearRatios": [
+          4.148,
+          2.37,
+          1.556,
+          1.155,
+          0.859,
+          0.686
+        ],
+        "finalDrive": 3.7,
+        "centerDifferentialBalance": 0.58,
+        "transmissionLabel": "6-speed torque-converter Tiptronic approximation",
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 162.3999999603049
+          },
+          {
+            "rpm": 1750,
+            "torqueLbFt": 405.99999990076225
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 405.99999990076225
+          },
+          {
+            "rpm": 3750,
+            "torqueLbFt": 315.1200001765254
+          },
+          {
+            "rpm": 4700,
+            "torqueLbFt": 243.59999994045734
+          }
+        ]
+      }
+    },
+    {
+      "candidateId": "saab-9-3-2009-us-aero-sportcombi-xwd-6at",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2009,
+        "make": "Saab",
+        "model": "9-3",
+        "trim": "Aero SportCombi2.8 turbo V6 XWD standard six-speed Sentronic automatic, standard17-inch wheels; not2.0T,FWD orTurboX",
+        "market": "United States"
+      },
+      "referenceVehicle": "2009 United States Saab 9-3 Aero SportCombi2.8 turbo V6 XWD standard six-speed Sentronic automatic, standard17-inch wheels; not2.0T,FWD orTurboX",
+      "bodyClass": "wagon",
+      "facts": {
+        "powerKw": 208.79596415999998,
+        "powerRpm": 5000,
+        "torqueNm": 399.96629466,
+        "torqueRpm": 1900,
+        "engineDisplacementL": 2.8,
+        "aspiration": "Turbocharged",
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "gearCount": 6,
+        "lengthM": 4.67106,
+        "heightM": 1.49606,
+        "wheelbaseM": 2.67462,
+        "trackFrontIn": 60,
+        "trackRearIn": 59.3,
+        "fuelTankUSgal": 16
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Saab/9-3/Saab_US%209-3_2009.pdf",
+          "publisher": "Saab original factory US brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "fuelTankUSgal",
+            "identity"
+          ],
+          "access": "Original PDF downloaded and technical text reviewed; retained Saab93.pdf/.txt in wave64 scratch."
+        }
+      ],
+      "limits": [
+        "Supplemental exact identity consumes an open canonical660 slot, not historical-list growth.",
+        "All suggestedEstimates explicitly estimated; no test, driving or original-art claim.",
+        "PDF9 Aero grid explicitly V6, XWD/eLSD and standard6AT;6MT optional.",
+        "Factory oddly prints2.8-liter(2892cc); retain rounded2.8L only, do not claim exact cc.",
+        "Base SportCombi3490lb not AeroXWD trim-specific;1730kg estimate instead.",
+        "Fixed AWD and passive differential approximation; no adaptive XWD/eLSD reproduction. Width,tires,gearing and performance estimates.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "valerian-turbo-1992",
+            "alias": "Valerian Turbo 1992",
+            "referenceVehicle": "US 1992 Saab 900 Turbo three-door hatchback, 2.0 DOHC16 intercooled turbo with APC and three-way catalyst/Lambda, five-speed manual; not convertible or1993 Commemorative Edition",
+            "documentId": "valerian-turbo-1992",
+            "runtimeId": "saved-car:Valerian Turbo 1992",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "EpsilonI turbo-V6 AWD automatic wagon differs from classic900 turbo-four FWDmanual hatch and proposed larger EpsilonII9-5turbo-four manual sedan.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Saab/9-3/Saab_US%209-3_2009.pdf"
+        ]
+      },
+      "name": "Salmonberry Clover 2009",
+      "id": "salmonberry-clover-2009",
+      "simulationEstimates": {
+        "reverseRatio": 3.394,
+        "cgHeightM": 0.54,
+        "groundClearanceM": 0.125,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.58,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 6.5,
+        "curbKg": 1730,
+        "widthM": 1.802,
+        "tireSize": [
+          225,
+          50,
+          17
+        ],
+        "frontTire": [
+          225,
+          50,
+          17
+        ],
+        "rearTire": [
+          225,
+          50,
+          17
+        ],
+        "gearRatios": [
+          4.148,
+          2.37,
+          1.556,
+          1.155,
+          0.859,
+          0.686
+        ],
+        "finalDrive": 3.2,
+        "centerDifferentialBalance": 0.45,
+        "transmissionLabel": "6-speed torque-converter Sentronic approximation"
+      }
+    }
+  ],
+  "deferred": []
+}

@@ -1,0 +1,619 @@
+{
+  "schemaVersion": 1,
+  "base": "5fda934703a16b4f3ebd22c57c05aa5b87133178",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "acura-rdx-base-2007-us-5at-supplemental",
+      "identity": {
+        "year": 2007,
+        "make": "Acura",
+        "model": "RDX",
+        "trim": "base2.3turbo five-speed automatic AWD without TechnologyPackage, standard18-inchalloys; not laterV6 orFWD",
+        "market": "United States"
+      },
+      "referenceVehicle": "2007 United States Acura RDX, base2.3turbo five-speed automatic AWD without TechnologyPackage, standard18-inchalloys; not laterV6 orFWD",
+      "bodyClass": "five-door five-seat compact luxury crossover; production",
+      "facts": {
+        "powerHp": 240,
+        "powerRpm": 6000,
+        "torqueLbFt": 260,
+        "torqueRpm": 4500,
+        "engineDisplacementL": 2.3,
+        "aspiration": "Turbocharged",
+        "lengthM": 4.589779999999999,
+        "widthM": 1.8694399999999998,
+        "heightM": 1.65608,
+        "wheelbaseM": 2.6492199999999997,
+        "trackFrontIn": 61.9,
+        "trackRearIn": 62.6,
+        "transmission": "automatic",
+        "gearCount": 5,
+        "gearRatios": [
+          2.697,
+          1.606,
+          1.071,
+          0.766,
+          0.612
+        ],
+        "reverseRatio": 1.889,
+        "finalDrive": 4.533,
+        "curbKg": 1780,
+        "tireSize": [
+          235,
+          55,
+          18
+        ],
+        "redlineRpm": 6800,
+        "frontWeightDistribution": 0.57,
+        "groundClearanceM": 0.13,
+        "fuelTankUSgal": 18,
+        "steeringRatio": 15.1,
+        "absEnabled": true,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://hondanews.com/en-US/releases/release-ed6378ed11342895495063004c34bfa7-2007-acura-rdx-specifications",
+          "publisher": "Acura original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "curbKg",
+            "tireSize",
+            "redlineRpm",
+            "frontWeightDistribution",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "steeringRatio",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "Factory2007 specification read2026-11-18: base1780kg versusTechnology1785;full-loadclearance130mm, exactpublished output/gears/body/tires. Manufacturer13.5psi maximumboost documented but not separately calibrated."
+        }
+      ],
+      "limits": [
+        "GenericAWD35percentrear is an explicit model approximation; SH-AWD active left-right torque vectoring, overdrive and clutch control are not reproduced. No exacthandlingfidelityclaim.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "stonepod-2006",
+            "alias": "Stonepod 2006",
+            "reference": "2006 HondaElementEX2WD2.4manual",
+            "documentId": "stonepod-2006",
+            "runtimeId": "saved-car:Stonepod 2006",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No RDX native identity found. TurboK23 luxurycompact AWD crossover differs from naturallyaspiratedElement/CRV, V6Pilot andTSXsedan.",
+        "evidence": [
+          "https://hondanews.com/en-US/releases/release-ed6378ed11342895495063004c34bfa7-2007-acura-rdx-specifications"
+        ]
+      },
+      "name": "Fern Clover 2007",
+      "id": "fern-clover-2007",
+      "simulationEstimates": {
+        "cgHeightM": 0.64,
+        "dragCoefficient": 0.36,
+        "tireGrip": 0.86,
+        "spring": 0.51,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.1,
+        "frontDifferentialAccel": 0.08,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "wheelWellAware": true,
+        "revLimitRpm": 7100,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 7.1,
+        "drivetrain": "awd",
+        "centerDifferentialBalance": 0.35
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "mazda-tribute-i-sport-2008-us-5mt-fwd-supplemental",
+      "identity": {
+        "year": 2008,
+        "make": "Mazda",
+        "model": "Tribute",
+        "trim": "iSport2.3gasoline front-wheel-drive five-speed manual, standard16-inch alloys; notHybrid,V6,automatic or4WD",
+        "market": "United States"
+      },
+      "referenceVehicle": "2008 United States Mazda Tribute, iSport2.3gasoline front-wheel-drive five-speed manual, standard16-inch alloys; notHybrid,V6,automatic or4WD",
+      "bodyClass": "five-door five-seat compact crossover; production",
+      "facts": {
+        "powerHp": 153,
+        "powerRpm": 5800,
+        "torqueLbFt": 152,
+        "torqueRpm": 4250,
+        "engineDisplacementL": 2.3,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 4.44246,
+        "widthM": 1.8059399999999999,
+        "heightM": 1.71958,
+        "wheelbaseM": 2.61874,
+        "trackFrontIn": 61.1,
+        "trackRearIn": 60.4,
+        "gearCount": 5,
+        "gearRatios": [
+          3.5,
+          1.944,
+          1.258,
+          0.947,
+          0.809
+        ],
+        "reverseRatio": 3.374,
+        "finalDrive": 4.133,
+        "curbKg": 1466.4641322100001,
+        "tireSize": [
+          235,
+          70,
+          16
+        ],
+        "groundClearanceM": 0.21589999999999998,
+        "fuelTankUSgal": 16.5,
+        "frontOverhangM": 0.8610599999999999,
+        "absEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://news.mazdausa.com/download/2008-Tribute-Spec.pdf",
+          "publisher": "Mazda original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "curbKg",
+            "tireSize",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "frontOverhangM",
+            "absEnabled"
+          ],
+          "access": "FactoryUS2008 TributeSpec pp7,16-17 read2026-11-18. iSportonly5MT availability;3233lb2WDmanual versus3300AT.153hp/152lbftgasengine, not133hpHEV.4.133manualfinal is distinct from printed2.93rearaxle field for4WD."
+        }
+      ],
+      "limits": [
+        "Steeringratio,weightbalance,redline,grip andtransients are estimates. Generictractioncontrol doesnotimplementfactoryrollstabilitylogic.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "stonepod-2006",
+            "alias": "Stonepod 2006",
+            "reference": "2006 HondaElementEX2WD2.4manual",
+            "documentId": "stonepod-2006",
+            "runtimeId": "saved-car:Stonepod 2006",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No Tribute/FordEscape/MercuryMariner reference found in native provenance or current packets. CD2ordinary2.3manualcompactSUV differs from Elementbody and MazdaMPVs. No additional badge-twin reservation.",
+        "evidence": [
+          "https://news.mazdausa.com/download/2008-Tribute-Spec.pdf"
+        ]
+      },
+      "name": "Sedge Clover 2008",
+      "id": "sedge-clover-2008",
+      "simulationEstimates": {
+        "cgHeightM": 0.65,
+        "dragCoefficient": 0.4,
+        "tireGrip": 0.8,
+        "spring": 0.46,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "topSpeedMph": 108,
+        "zeroToSixtySec": 10.5,
+        "transmission": "manual",
+        "drivetrain": "fwd",
+        "transmissionLabel": "5-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "mazda-cx-9-sport-2008-us-6at-fwd-supplemental",
+      "identity": {
+        "year": 2008,
+        "make": "Mazda",
+        "model": "CX-9",
+        "trim": "Sport3.7V6 front-wheel-drive six-speed automatic, sevenseats,standard18-inchalloys,noaccessoryroofrails ormoonroof; notAWD,GrandTouring20inch orlater2.5turbo",
+        "market": "United States"
+      },
+      "referenceVehicle": "2008 United States Mazda CX-9, Sport3.7V6 front-wheel-drive six-speed automatic, sevenseats,standard18-inchalloys,noaccessoryroofrails ormoonroof; notAWD,GrandTouring20inch orlater2.5turbo",
+      "bodyClass": "five-door seven-seat large crossover; production",
+      "facts": {
+        "powerHp": 273,
+        "powerRpm": 6250,
+        "torqueLbFt": 270,
+        "torqueRpm": 4250,
+        "engineDisplacementL": 3.726,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 5.07492,
+        "widthM": 1.93548,
+        "heightM": 1.7271999999999998,
+        "wheelbaseM": 2.87528,
+        "trackFrontIn": 65.1,
+        "trackRearIn": 64.7,
+        "transmission": "automatic",
+        "gearCount": 6,
+        "gearRatios": [
+          4.148,
+          2.37,
+          1.555,
+          1.154,
+          0.859,
+          0.685
+        ],
+        "reverseRatio": 3.393,
+        "finalDrive": 3.464,
+        "curbKg": 1955.89029944,
+        "tireSize": [
+          245,
+          60,
+          18
+        ],
+        "redlineRpm": 6500,
+        "dragCoefficient": 0.36,
+        "fuelTankUSgal": 20.1,
+        "steeringRatio": 16.3,
+        "frontOverhangM": 1.06426,
+        "topSpeedMph": 119.3,
+        "absEnabled": true,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://news.mazdausa.com/download/2008-CX-9-Spec.pdf",
+          "publisher": "Mazda original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "curbKg",
+            "tireSize",
+            "redlineRpm",
+            "dragCoefficient",
+            "fuelTankUSgal",
+            "steeringRatio",
+            "frontOverhangM",
+            "topSpeedMph",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "FactoryUS2008specdeck revised10/03/07 pp2,9-10:273hp6250/270lbft4250,4312lbFWDcurbwithAC vs4528AWD. Exact6ATgears,119.3mph,Cd.36and18inchdimensions. Curb is factoryFWDfamilybase, not measured option-specificSport."
+        }
+      ],
+      "limits": [
+        "FactorycurbusedasbaseSportapproximation; nooptionpayload. Groundclearance andweightbalanceestimated; genericTCSnotexactDSC/RSCcontrol.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "tamarisk-2024",
+            "alias": "Tamarisk 2024",
+            "reference": "2024 MazdaCX90 3.3TurboSelectAWD8AT",
+            "documentId": "tamarisk-2024",
+            "runtimeId": "saved-car:Tamarisk 2024",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "bellflower-2006",
+            "alias": "Bellflower 2006",
+            "reference": "2006 Mazda5Sport2.3manualMPV",
+            "documentId": "bellflower-2006",
+            "runtimeId": "saved-car:Bellflower 2006",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No CX9identity found. FirstgenerationFord-derived transverse3.7V6 FWD6AT three-rowcrossover differs fromCX90longitudinalturbo3.3AWD8AT andMazda5compactslidingdoorMPV.",
+        "evidence": [
+          "https://news.mazdausa.com/download/2008-CX-9-Spec.pdf"
+        ]
+      },
+      "name": "Rush Clover 2008",
+      "id": "rush-clover-2008",
+      "simulationEstimates": {
+        "cgHeightM": 0.69,
+        "groundClearanceM": 0.2,
+        "tireGrip": 0.82,
+        "spring": 0.53,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 400,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.57,
+        "revLimitRpm": 6800,
+        "zeroToSixtySec": 8.1,
+        "drivetrain": "fwd"
+      }
+    },
+    {
+      "candidateId": "kia-amanti-2009-us-38-5at-canonical-candidate",
+      "identity": {
+        "year": 2009,
+        "make": "Kia",
+        "model": "Amanti",
+        "trim": "standard3.8V6 FWD5AT,16-inchalloys,noLeather/Premiumpackages",
+        "market": "United States"
+      },
+      "referenceVehicle": "2009 United States Kia Amanti, standard3.8V6 FWD5AT,16-inchalloys,noLeather/Premiumpackages",
+      "bodyClass": "four-door-sedan",
+      "artIdentity": "GHopulentroundedfour-doorsedan,fourroundheadlampforms,tallformalroof,16-inchalloys,wood-styletrimandclothseats;notCadenzaorK900.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "transmission": "automatic",
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "engineDisplacementL": 3.8,
+        "powerHp": 264,
+        "torqueLbFt": 260,
+        "gearCount": 5,
+        "wheelbaseM": 2.79908,
+        "heightM": 1.4859,
+        "tireSize": [
+          225,
+          60,
+          16
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.kiamedia.com/us/en/media/pressreleases/3588/2009-kia-amanti",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "absEnabled",
+            "tractionControlEnabled",
+            "engineDisplacementL",
+            "powerHp",
+            "torqueLbFt",
+            "gearCount",
+            "wheelbaseM",
+            "heightM",
+            "tireSize"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Factoryreleaseanchors264hp260lbft,3.8V6,five-speed,110.2WB58.5height225/60R16. PeakRPM,exactratios,mass,othergeometryandperformanceestimates. StandardnoLeather/Premiumpackages;do notcopy17-inchoptions.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [],
+        "distinction": "GHfrontdrive3.8MPI/5AT olderformalbody anddoublewishbonefront distinctfromVG3.3GDICadenza/6ATMacPhersonfront. NoAmanti/Opirusnativecounterpartfound.",
+        "evidence": [
+          "https://www.kiamedia.com/us/en/media/pressreleases/3588/2009-kia-amanti"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Hazel Clover 2009",
+      "id": "hazel-clover-2009",
+      "simulationEstimates": {
+        "reverseRatio": 3.81,
+        "cgHeightM": 0.53,
+        "groundClearanceM": 0.165,
+        "dragCoefficient": 0.33,
+        "tireGrip": 0.78,
+        "spring": 0.37,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.19,
+        "frontOverhangM": 0.94,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 310,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "fuelTankUSgal": 18.5,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 7.1,
+        "steeringRatio": 20,
+        "powerRpm": 6000,
+        "torqueRpm": 4500,
+        "gearRatios": [
+          3.79,
+          2.06,
+          1.42,
+          1.03,
+          0.73
+        ],
+        "finalDrive": 3.33,
+        "curbKg": 1708,
+        "lengthM": 5.0,
+        "widthM": 1.85,
+        "trackFrontIn": 62.6,
+        "trackRearIn": 62.4
+      }
+    },
+    {
+      "candidateId": "hyundai-veracruz-gls-2012-us-fwd-6at-canonical-candidate",
+      "identity": {
+        "year": 2012,
+        "make": "Hyundai",
+        "model": "Veracruz",
+        "trim": "GLS3.8MPI V6 FWD6AT,standard17-inchalloys,sevenseats",
+        "market": "United States"
+      },
+      "referenceVehicle": "2012 United States Hyundai Veracruz, GLS3.8MPI V6 FWD6AT,standard17-inchalloys,sevenseats",
+      "bodyClass": "five-door-suv",
+      "artIdentity": "ENroundedthree-rowcrossover,longsweptheadlights,highroundedtailgate,17-inchalloys,clothGLScabin;notSantaFe,Sorento orBorrego.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "transmission": "automatic",
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "engineDisplacementL": 3.8,
+        "powerHp": 260,
+        "gearCount": 6
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Hyundai/Veracruz/Hyundai_US%20Veracruz_2012.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "absEnabled",
+            "tractionControlEnabled",
+            "engineDisplacementL",
+            "powerHp",
+            "gearCount"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "FactorybrochureanchorsGLS3.8DOHC260hp6AT17-inchalloysFWDandsevenseats. Torque/RPM,mass,dimensions,tiresizeprofile,ratiosandperformanceexplicitestimates,notmanufacturerclaims. NoAWDlock oractiveelectronicmountsimulation.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [],
+        "distinction": "ENlarger3.8V6six-speedFWDthree-rowcrossover distinctfromXM3.5Sorento andHM4.6RWDladderframeBorrego. NoVeracruz/ix55nativecounterpartfound.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Hyundai/Veracruz/Hyundai_US%20Veracruz_2012.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Willow Clover 2012",
+      "id": "willow-clover-2012",
+      "simulationEstimates": {
+        "reverseRatio": 3.39,
+        "cgHeightM": 0.66,
+        "groundClearanceM": 0.205,
+        "dragCoefficient": 0.39,
+        "tireGrip": 0.78,
+        "spring": 0.37,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.19,
+        "frontOverhangM": 0.94,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 310,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "fuelTankUSgal": 20.6,
+        "topSpeedMph": 120,
+        "zeroToSixtySec": 8.4,
+        "steeringRatio": 20,
+        "powerRpm": 6000,
+        "torqueLbFt": 257,
+        "torqueRpm": 4500,
+        "gearRatios": [
+          4.14,
+          2.37,
+          1.55,
+          1.15,
+          0.85,
+          0.69
+        ],
+        "finalDrive": 3.2,
+        "curbKg": 1935,
+        "lengthM": 4.84,
+        "widthM": 1.945,
+        "heightM": 1.75,
+        "wheelbaseM": 2.805,
+        "trackFrontIn": 65.7,
+        "trackRearIn": 65.7,
+        "tireSize": [
+          245,
+          65,
+          17
+        ]
+      }
+    }
+  ],
+  "deferred": [
+    {
+      "candidateId": "kia-rondo-ex-2008-us-24-4at-canonical-candidate",
+      "reason": "Primary brochure confirms engine/EX/body but not exactfour-speed automatic availability; identity held without canonical reservation."
+    }
+  ]
+}

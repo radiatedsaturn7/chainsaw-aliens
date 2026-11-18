@@ -1,0 +1,849 @@
+{
+  "schemaVersion": 1,
+  "base": "d032d958db94dafb1a7249ad51c0ced44b4de991",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "honda-accord-crosstour-ex-2010-us-fwd-5at-supplemental",
+      "identity": {
+        "year": 2010,
+        "make": "Honda",
+        "model": "Accord Crosstour",
+        "trim": "EX3.5V6 front-wheel-drive5AT,17-inchalloys; notEX-L,4WD orAccordsedan/coupe",
+        "market": "United States"
+      },
+      "referenceVehicle": "2010 United States Honda Accord Crosstour, EX3.5V6 front-wheel-drive5AT,17-inchalloys; notEX-L,4WD orAccordsedan/coupe",
+      "bodyClass": "five-door five-seat raised fastback crossover; production",
+      "facts": {
+        "powerHp": 271,
+        "powerRpm": 6200,
+        "torqueLbFt": 254,
+        "torqueRpm": 5000,
+        "engineDisplacementL": 3.471,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 4.9987200000000005,
+        "widthM": 1.89738,
+        "heightM": 1.66878,
+        "wheelbaseM": 2.79654,
+        "trackFrontIn": 64.9,
+        "trackRearIn": 64.9,
+        "drivetrain": "fwd",
+        "transmission": "automatic",
+        "transmissionLabel": "5-speed automatic",
+        "gearCount": 5,
+        "gearRatios": [
+          2.697,
+          1.606,
+          1.071,
+          0.766,
+          0.612
+        ],
+        "reverseRatio": 1.889,
+        "finalDrive": 4.533,
+        "curbKg": 1747.2378092400002,
+        "tireSize": [
+          225,
+          65,
+          17
+        ],
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 6800,
+        "groundClearanceM": 0.15239999999999998,
+        "steeringRatio": 15.2,
+        "absEnabled": true,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://hondanews.com/en-US/releases/release-5224bd1607966921675c9c004c34baa8-2010-honda-accord-crosstour-specifications-and-features",
+          "publisher": "Honda original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "drivetrain",
+            "transmission",
+            "transmissionLabel",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "curbKg",
+            "tireSize",
+            "frontWeightDistribution",
+            "redlineRpm",
+            "groundClearanceM",
+            "steeringRatio",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "Factory2010EXtable read2026-11-18 exact3852lb2WD,59percentfront,allfive ratios and4.533final,271SAEnethp. EX-L3887/4070notused."
+        }
+      ],
+      "limits": [
+        "VCM/activeengine-mount behavior notsimulated; genericfull-cylinderengine approximation.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "marestail-2003",
+            "alias": "Marestail 2003",
+            "reference": "2003 AccordDX2.4manualsedan",
+            "documentId": "marestail-2003",
+            "runtimeId": "saved-car:Marestail 2003",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "redbud-v6-2007",
+            "alias": "Redbud V6 2007",
+            "reference": "2007 AccordV6manualcoupe",
+            "documentId": "redbud-v6-2007",
+            "runtimeId": "saved-car:Redbud V6 2007",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "pink-trefoil-2003",
+            "alias": "Pink Trefoil 2003",
+            "reference": "2003 PilotLXAWD",
+            "documentId": "pink-trefoil-2003",
+            "runtimeId": "saved-car:Pink Trefoil 2003",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoCrosstouridentityfound. Raisedfastbackliftgatebody with3.5V6automatic differs from2.4manualAccordsedan,3.0manualcoupe andthree-rowPilot; noequalbodyyearpadding.",
+        "evidence": [
+          "https://hondanews.com/en-US/releases/release-5224bd1607966921675c9c004c34baa8-2010-honda-accord-crosstour-specifications-and-features"
+        ]
+      },
+      "name": "Bunchberry Clover 2010",
+      "id": "bunchberry-clover-2010",
+      "simulationEstimates": {
+        "cgHeightM": 0.61,
+        "dragCoefficient": 0.35,
+        "tireGrip": 0.84,
+        "spring": 0.49,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "wheelWellAware": true,
+        "revLimitRpm": 7000,
+        "fuelTankUSgal": 18.5,
+        "topSpeedMph": 125,
+        "zeroToSixtySec": 7.2
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "toyota-venza-base-2009-us-2-7-fwd-6at-supplemental",
+      "identity": {
+        "year": 2009,
+        "make": "Toyota",
+        "model": "Venza",
+        "trim": "February2009USbase2.7four-cylinderFWDsix-speedautomatic,19-inchalloys,nooptionalpanoramicroof; notV6,AWD or2021hybrid",
+        "market": "United States"
+      },
+      "referenceVehicle": "2009 United States Toyota Venza, February2009USbase2.7four-cylinderFWDsix-speedautomatic,19-inchalloys,nooptionalpanoramicroof; notV6,AWD or2021hybrid",
+      "bodyClass": "five-door five-seat crossover wagon; production",
+      "facts": {
+        "powerHp": 182,
+        "powerRpm": 5800,
+        "torqueLbFt": 182,
+        "torqueRpm": 4200,
+        "engineDisplacementL": 2.7,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 4.8006,
+        "widthM": 1.905,
+        "wheelbaseM": 2.77622,
+        "trackFrontIn": 64.2,
+        "trackRearIn": 64.4,
+        "curbKg": 1705.5073112,
+        "tireSize": [
+          245,
+          55,
+          19
+        ],
+        "drivetrain": "fwd",
+        "transmission": "automatic",
+        "transmissionLabel": "6-speed automatic",
+        "gearCount": 6,
+        "fuelTankUSgal": 17.7,
+        "absEnabled": true,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Toyota/Venza/Toyota_US%20Venza_2009.pdf",
+          "publisher": "Toyota original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "curbKg",
+            "tireSize",
+            "drivetrain",
+            "transmission",
+            "transmissionLabel",
+            "gearCount",
+            "fuelTankUSgal",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "OriginalToyota2009USbrochure produced02.03.09 read2026-11-18:2.7FWDavailableFebruary2009,182hp/182lbft,3760lbexactpowertraincurb,6AT19inchwheels. Height/gearsnotinreadtableexplicitestimates."
+        }
+      ],
+      "limits": [
+        "No optionalroof/towingpayload massincluded. Gearing,groundclearance,heightandredline explicitlyestimated.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "marjoram-2003",
+            "alias": "Marjoram 2003",
+            "reference": "2003 CamryLE2.4sedan",
+            "documentId": "marjoram-2003",
+            "runtimeId": "saved-car:Marjoram 2003",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "alder-clover-2005",
+            "alias": "Alder Clover 2005",
+            "reference": "2005 SequoiaV8RWD",
+            "documentId": "alder-clover-2005",
+            "runtimeId": "saved-car:Alder Clover 2005",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoVenzaidentityfound. First-generationAGV10five-seatwagon/crossover body and2.7/6AT differ fromCamry2.4sedan andHighlander2.4/4ATtallerSUV; nothybrid orbadgeclone.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Toyota/Venza/Toyota_US%20Venza_2009.pdf"
+        ]
+      },
+      "name": "Partridgeberry Clover 2009",
+      "id": "partridgeberry-clover-2009",
+      "simulationEstimates": {
+        "reverseRatio": 4.148,
+        "cgHeightM": 0.59,
+        "groundClearanceM": 0.205,
+        "dragCoefficient": 0.33,
+        "tireGrip": 0.86,
+        "spring": 0.49,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "topSpeedMph": 115,
+        "zeroToSixtySec": 9.3,
+        "finalDrive": 4.356,
+        "gearRatios": [
+          3.3,
+          1.9,
+          1.42,
+          1,
+          0.713,
+          0.608
+        ],
+        "heightM": 1.6103599999999998
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "subaru-tribeca-base-2008-us-five-seat-5at-supplemental",
+      "identity": {
+        "year": 2008,
+        "make": "Subaru",
+        "model": "Tribeca",
+        "trim": "USbase3.6flat-sixAWDfive-speedautomatic,five seats,nooptionalthirdrow,roofrails ormoonroof; notLimited/olderB9three-liter",
+        "market": "United States"
+      },
+      "referenceVehicle": "2008 United States Subaru Tribeca, USbase3.6flat-sixAWDfive-speedautomatic,five seats,nooptionalthirdrow,roofrails ormoonroof; notLimited/olderB9three-liter",
+      "bodyClass": "five-door five-seat midsize crossover; production",
+      "facts": {
+        "powerHp": 256,
+        "powerRpm": 6000,
+        "torqueLbFt": 247,
+        "torqueRpm": 4400,
+        "engineDisplacementL": 3.6,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 4.8641,
+        "heightM": 1.68656,
+        "wheelbaseM": 2.74828,
+        "trackFrontIn": 62.2,
+        "trackRearIn": 62.1,
+        "curbKg": 1872.8828957300002,
+        "tireSize": [
+          255,
+          55,
+          18
+        ],
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "transmissionLabel": "5-speed automatic",
+        "gearCount": 5,
+        "centerDifferentialBalance": 0.55,
+        "dragCoefficient": 0.38,
+        "groundClearanceM": 0.21336,
+        "absEnabled": true,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Subaru/Tribeca/Subaru_US%20Tribeca_2008.pdf",
+          "publisher": "Subaru original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "curbKg",
+            "tireSize",
+            "drivetrain",
+            "transmission",
+            "transmissionLabel",
+            "gearCount",
+            "centerDifferentialBalance",
+            "dragCoefficient",
+            "groundClearanceM",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "OriginalSubaru2008USbrochure read2026-11-18.4129lbfootnote explicitlybaseTribeca; thirdrowseatingoptional. FactorynormalVTD45front/55rear,256hp6000/247lbft4400. Printed88.8inwidthincludesmirrors; bodywidth73.9estimatednotmistakenmirrorwidth."
+        }
+      ],
+      "limits": [
+        "GenericAWDnominalrear.55only; noexactVTDactiveclutchcontrolclaim. FactorybasecurbnotsevenseatLimitedweight.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "campion-1992",
+            "alias": "Campion 1992",
+            "reference": "1992 SubaruSVX3.3flat-sixAWDcoupe",
+            "documentId": "campion-1992",
+            "runtimeId": "saved-car:Campion 1992",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "calamint-2003",
+            "alias": "Calamint 2003",
+            "reference": "2003 SubaruBaja2.5flat-fourmanualpickup",
+            "documentId": "calamint-2003",
+            "runtimeId": "saved-car:Calamint 2003",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoTribecaidentityfound. WXfamilyraisedfive-seatSUV3.6flat-six5AT differs fromSVXcoupe andBajafour-cylinderpickup. NoB9samegenerationsecondentry.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Subaru/Tribeca/Subaru_US%20Tribeca_2008.pdf"
+        ]
+      },
+      "name": "Wineberry Clover 2008",
+      "id": "wineberry-clover-2008",
+      "simulationEstimates": {
+        "reverseRatio": 2.37,
+        "cgHeightM": 0.61,
+        "tireGrip": 0.85,
+        "spring": 0.51,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.2,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 400,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "fuelTankUSgal": 16.9,
+        "topSpeedMph": 124,
+        "zeroToSixtySec": 8.3,
+        "finalDrive": 3.583,
+        "gearRatios": [
+          3.54,
+          2.264,
+          1.471,
+          1,
+          0.834
+        ],
+        "widthM": 1.8770600000000002
+      }
+    },
+    {
+      "candidateId": "mercedes-benz-cl600-2010-us-c216-5at",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2010,
+        "make": "Mercedes-Benz",
+        "model": "CL600",
+        "trim": "C2165.5 twin-turbo V12 RWD five-speed automatic four-seat luxury coupe, standard18-inch staggered wheels; not CL5504MATIC or AMG",
+        "market": "United States"
+      },
+      "referenceVehicle": "2010 United States Mercedes-Benz CL600 C2165.5 twin-turbo V12 RWD five-speed automatic four-seat luxury coupe, standard18-inch staggered wheels; not CL5504MATIC or AMG",
+      "bodyClass": "coupe",
+      "facts": {
+        "powerKw": 380.30693472,
+        "powerRpm": 5000,
+        "torqueNm": 829.7605841760001,
+        "torqueRpm": 1800,
+        "engineDisplacementL": 5.5,
+        "aspiration": "Twin-turbocharged",
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "gearCount": 5
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Mercedes_Benz/CL-Class/Mercedes%20Benz_US%20CL-Class_2010.pdf",
+          "publisher": "Mercedes-Benz original factory US brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "identity"
+          ],
+          "access": "Original PDF downloaded and technical text reviewed; retained CL2010.pdf/.txt in wave64 scratch."
+        }
+      ],
+      "limits": [
+        "Supplemental exact identity consumes an open canonical660 slot, not historical-list growth.",
+        "All suggestedEstimates explicitly estimated; no test, driving or original-art claim.",
+        "Factory table explicitly510hp5000,612lb-ft1800\u20133500,five-speedautomatic andRWD. Uses rounded5.5L only.",
+        "2210kg modeled unladen mass, geometry/tires beyond verified18inchrim, ratios and performance estimates.",
+        "Standard ActiveBodyControl represented by passive chassis approximation, not adaptive hydraulic roll/pitch control.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "sea-plantain-2009",
+            "alias": "Sea Plantain 2009",
+            "referenceVehicle": "2009 German Mercedes-Benz SL 65 AMG Black Series R230230.479 M275.9835.980L biturboV12 fixedroofcoupe5AT,notstandardSL65roadster",
+            "documentId": "sea-plantain-2009",
+            "runtimeId": "saved-car:Sea Plantain 2009",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "C216 full-size four-seat luxury coupe5.5V12 differs from R230 two-seat6.0V12 SL65BlackSeries fixed-roof performance car in displacement, body, mass and chassis.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Mercedes_Benz/CL-Class/Mercedes%20Benz_US%20CL-Class_2010.pdf"
+        ]
+      },
+      "name": "Loganberry Clover 2010",
+      "id": "loganberry-clover-2010",
+      "simulationEstimates": {
+        "reverseRatio": 3.167,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 6000,
+        "revLimitRpm": 6200,
+        "fuelTankUSgal": 23.8,
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 4.5,
+        "curbKg": 2210,
+        "lengthM": 5.065,
+        "widthM": 1.871,
+        "heightM": 1.419,
+        "wheelbaseM": 2.955,
+        "trackFrontIn": 63.0,
+        "trackRearIn": 63.3,
+        "tireSize": [
+          255,
+          45,
+          18
+        ],
+        "frontTire": [
+          255,
+          45,
+          18
+        ],
+        "rearTire": [
+          275,
+          45,
+          18
+        ],
+        "gearRatios": [
+          3.595,
+          2.186,
+          1.405,
+          1,
+          0.831
+        ],
+        "finalDrive": 2.65,
+        "transmissionLabel": "5-speed torque-converter automatic approximation"
+      }
+    },
+    {
+      "candidateId": "mercedes-benz-g550-2010-us-w463-7at",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2010,
+        "make": "Mercedes-Benz",
+        "model": "G550",
+        "trim": "W463 long-wheelbase five-door5.5 naturally aspirated gasolineV8 seven-speedautomatic permanent4WD high-range, standard18inch wheels; not superchargedG55AMG",
+        "market": "United States"
+      },
+      "referenceVehicle": "2010 United States Mercedes-Benz G550 W463 long-wheelbase five-door5.5 naturally aspirated gasolineV8 seven-speedautomatic permanent4WD high-range, standard18inch wheels; not superchargedG55AMG",
+      "bodyClass": "suv",
+      "facts": {
+        "powerKw": 284.857351104,
+        "powerRpm": 6000,
+        "torqueNm": 530.124817668,
+        "torqueRpm": 2800,
+        "engineDisplacementL": 5.5,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "gearCount": 7
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Mercedes_Benz/G-Class/Mercedes%20Benz_US%20G-Class_2010.pdf",
+          "publisher": "Mercedes-Benz original factory US brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "identity"
+          ],
+          "access": "Original PDF downloaded and technical text reviewed; retained G2010.pdf/.txt in wave64 scratch."
+        }
+      ],
+      "limits": [
+        "Supplemental exact identity consumes an open canonical660 slot, not historical-list growth.",
+        "All suggestedEstimates explicitly estimated; no test, driving or original-art claim.",
+        "Factory table confirms382hp6000,391lb-ft2800\u20134800,seven-speedautomatic,2-speedtransfercase andthree lockable differentials.",
+        "Only ordinary high-range4WD modeled: no user-selectable low range or three differential locks; fixed50:50approximation.",
+        "2530kg unladen mass, geometry, gearing, tires beyond18inchrim and performance explicitly estimated; no shared runtime expansion.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "cedar-clover-2010",
+            "alias": "Cedar Clover 2010",
+            "referenceVehicle": "2010 United States Mercedes-Benz GLK350 X204 baseRWD3.5gasolineV6 seven-speedautomatic,standard19-inchwheels,noPremiumorAppearancePackage;not4MATIC,diesel orAMG",
+            "documentId": "cedar-clover-2010",
+            "runtimeId": "saved-car:Cedar Clover 2010",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "gorse-2015",
+            "alias": "Gorse 2015",
+            "referenceVehicle": "2015 UK/European RHD Land Rover Defender90 Station Wagon2.2 diesel6MT, factory optional235/85R16 HD steel wheels, high range; not110,130,new2020Defender or limited150PSedition",
+            "documentId": "gorse-2015",
+            "runtimeId": "saved-car:Gorse 2015",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Rigid-axle ladder-frame petrolV8 G-Class differs from unibodyV6 GLK and short-wheelbase dieselmanual Defender90 in structure, engine, wheelbase and transmission.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Mercedes_Benz/G-Class/Mercedes%20Benz_US%20G-Class_2010.pdf"
+        ]
+      },
+      "name": "Boysenberry Clover 2010",
+      "id": "boysenberry-clover-2010",
+      "simulationEstimates": {
+        "reverseRatio": 3.42,
+        "cgHeightM": 0.82,
+        "groundClearanceM": 0.21,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "fuelTankUSgal": 25.4,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 6.0,
+        "curbKg": 2530,
+        "lengthM": 4.662,
+        "widthM": 1.76,
+        "heightM": 1.951,
+        "wheelbaseM": 2.85,
+        "trackFrontIn": 59.6,
+        "trackRearIn": 59.6,
+        "tireSize": [
+          265,
+          60,
+          18
+        ],
+        "frontTire": [
+          265,
+          60,
+          18
+        ],
+        "rearTire": [
+          265,
+          60,
+          18
+        ],
+        "gearRatios": [
+          4.38,
+          2.86,
+          1.92,
+          1.37,
+          1,
+          0.82,
+          0.73
+        ],
+        "finalDrive": 4.375,
+        "centerDifferentialBalance": 0.5,
+        "transmissionLabel": "7-speed torque-converter automatic, high-range approximation"
+      }
+    },
+    {
+      "candidateId": "mercedes-benz-e350-bluetec-2011-us-luxury-7at",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2011,
+        "make": "Mercedes-Benz",
+        "model": "E350 BlueTEC",
+        "trim": "W212 Luxury sedan3.0 turbo-dieselV6 RWD seven-speedautomatic, comfort-tuned chassis standard17inch wheels; not gasolineE350,Sport,4MATIC orwagon",
+        "market": "United States"
+      },
+      "referenceVehicle": "2011 United States Mercedes-Benz E350 BlueTEC W212 Luxury sedan3.0 turbo-dieselV6 RWD seven-speedautomatic, comfort-tuned chassis standard17inch wheels; not gasolineE350,Sport,4MATIC orwagon",
+      "bodyClass": "sedan",
+      "facts": {
+        "powerKw": 156.59697312,
+        "powerRpm": 3800,
+        "torqueNm": 542.3271792,
+        "torqueRpm": 1600,
+        "engineDisplacementL": 3.0,
+        "aspiration": "Turbocharged diesel",
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "gearCount": 7,
+        "lengthM": 4.869179999999999,
+        "heightM": 1.4706599999999999,
+        "wheelbaseM": 2.87528,
+        "publishedWeightKg": 1841.1314298300001
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Mercedes_Benz/E-Class/Mercedes%20Benz_US%20E-Class_2011.pdf",
+          "publisher": "Mercedes-Benz original factory US brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "publishedWeightKg",
+            "lengthM",
+            "heightM",
+            "wheelbaseM",
+            "identity"
+          ],
+          "access": "Original PDF downloaded and technical text reviewed; retained E2011.pdf/.txt in wave64 scratch."
+        }
+      ],
+      "limits": [
+        "Supplemental exact identity consumes an open canonical660 slot, not historical-list growth.",
+        "All suggestedEstimates explicitly estimated; no test, driving or original-art claim.",
+        "Factory specifies210hp3800,400lb-ft1600\u20132400,seven-speedautomatic,RWD and4059lb model-specific curb. Luxury versusSport mass not differentiated;4059lb is model reference, not equipment-exact weighing.",
+        "No emissions-compliance or clean-diesel claims adopted. AGILITYCONTROL damper behavior approximated passively.",
+        "Width excluding mirrors, tracks, tires beyond17inchrim, gearing, fuelcapacity and performance estimates.",
+        "Published4059lb is E350BlueTEC model reference;1841kg selected Luxury curb remains estimate because equipment basis is not separated.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "twayblade-1984",
+            "alias": "Twayblade 1984",
+            "referenceVehicle": "1984 continental European Mercedes-Benz 300 TD Turbodiesel S123 type123.193, OM617.952 2998cc turbo indirect-injection diesel five, RWD standard four-speed automatic with post-September1981 ratios, LHD steel14inch wheels. Not NorthAmerican emissions variant, non-turbo300TD, sedan300D,300SD or300SL.",
+            "documentId": "twayblade-1984",
+            "runtimeId": "saved-car:Twayblade 1984",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "sea-campion-2006",
+            "alias": "Sea Campion 2006",
+            "referenceVehicle": "Early2006 German Mercedes-Benz E55AMG S211 type211.276 stationwagon,supercharged M113.9905.439L V8,RWD5AT;notS210naturallyaspirated,E63,sedan,USweightsorold500E",
+            "documentId": "sea-campion-2006",
+            "runtimeId": "saved-car:Sea Campion 2006",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Modern common-rail turbodieselV6 seven-speed sedan differs from S123 indirect-injection diesel-five4AT wagon and S211superchargedV8AMG wagon; different chassis, engine and body.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Mercedes_Benz/E-Class/Mercedes%20Benz_US%20E-Class_2011.pdf"
+        ]
+      },
+      "name": "Tayberry Clover 2011",
+      "id": "tayberry-clover-2011",
+      "simulationEstimates": {
+        "reverseRatio": 3.42,
+        "cgHeightM": 0.53,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 4500,
+        "revLimitRpm": 4700,
+        "fuelTankUSgal": 21.1,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 6.7,
+        "widthM": 1.854,
+        "trackFrontIn": 62.2,
+        "trackRearIn": 63.0,
+        "tireSize": [
+          245,
+          45,
+          17
+        ],
+        "frontTire": [
+          245,
+          45,
+          17
+        ],
+        "rearTire": [
+          245,
+          45,
+          17
+        ],
+        "gearRatios": [
+          4.38,
+          2.86,
+          1.92,
+          1.37,
+          1,
+          0.82,
+          0.73
+        ],
+        "finalDrive": 2.47,
+        "transmissionLabel": "7-speed torque-converter automatic approximation",
+        "curbKg": 1841,
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 159.99999996089153
+          },
+          {
+            "rpm": 1600,
+            "torqueLbFt": 399.9999999022288
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 399.9999999022288
+          },
+          {
+            "rpm": 3800,
+            "torqueLbFt": 290.2421054257471
+          },
+          {
+            "rpm": 4700,
+            "torqueLbFt": 234.66382991868917
+          }
+        ]
+      }
+    }
+  ],
+  "deferred": []
+}

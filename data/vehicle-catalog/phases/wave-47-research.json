@@ -1,0 +1,684 @@
+{
+  "schemaVersion": 1,
+  "base": "ad3fc8c5ab8283c5f5e98227c6b08826c501e800",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "mg-mg3-2015-candidate",
+      "identity": {
+        "year": 2015,
+        "make": "MG",
+        "model": "MG3",
+        "trim": "ThailandMarch2015 base1.5C five-doorhatchback RHD VTi-TECH four-cylinder SeleMatic5-speedAMT, solidroof; notUKmanual,Xsunroof,Xross orlaterhybrid",
+        "market": "Thailand"
+      },
+      "referenceVehicle": "2015 Thailand MG MG3, ThailandMarch2015 base1.5C five-doorhatchback RHD VTi-TECH four-cylinder SeleMatic5-speedAMT, solidroof; notUKmanual,Xsunroof,Xross orlaterhybrid",
+      "bodyClass": "five-door five-seat compact hatchback; production",
+      "facts": {
+        "powerKw": 77.9628675,
+        "powerRpm": 6000,
+        "torqueNm": 135,
+        "torqueRpm": 4500,
+        "engineDisplacementL": 1.5,
+        "aspiration": "Naturally Aspirated",
+        "gearCount": 5,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "publishedPowerPS": 106,
+        "publishedTransmission": "five-speed SeleMatic automatedmanual",
+        "publishedFuelCompatibility": "E85 gasohol"
+      },
+      "sources": [
+        {
+          "url": "https://www.saicmotor.com/e/latest_news/mg/44784.shtml",
+          "publisher": "SAIC Motor official March23 2015 Thailand launch release",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "gearCount",
+            "absEnabled",
+            "tractionControlEnabled",
+            "publishedPowerPS",
+            "publishedTransmission",
+            "publishedFuelCompatibility"
+          ],
+          "access": "Read2026-11-18. Exactbase1.5C announced alongsideD/X;106PS6000 and135Nm4500,5-speedSeleMatic,E85compatibility,ABS/TCS. powerKw is arithmeticPSconversion, not directlyquotedkW."
+        },
+        {
+          "url": "https://device.report/m/e90b9faa9452f4617984a7beb7a3569cfd4d4c07ae8ad73fe476bae659d46f04",
+          "publisher": "MG originalUKbrochure October2013 print, mirroredbydevice.report",
+          "fields": [
+            "estimatedrelated-family gearing anchor"
+          ],
+          "access": "Read2026-11-18. UKmanual5ratios3.462/1.952/1.323/.973/.795,reverse3.455,final4.118. AdoptedonlyasAMTmodelingestimates; do nottransplantUK137Nm4750intoThai135Nm4500."
+        }
+      ],
+      "limits": [
+        "1195kg is an estimated unladen baseThaiAMT hatch mass, not a verifiedfactoryweigh-in. Geometry/tracks/tire dimensions are conservative family estimates pendingexactThai technicalsheet.",
+        "Existing automatic shifting is a coarse SeleMaticAMT approximation;500ms estimatedshift delay, no claimoftorqueconverter,exactclutchactuation,creeporhillstart logic.",
+        "E85compatibility is sourcefact,not a hybrid/EVpowertrain. Genericfuelmodel doesnot reproduceethanolconsumption ormapchanges. ABS/TC approximate ordinaryfunctions; no preciseESC/CBC/MSR calibration.",
+        "Allremainingtorquecurve/redline/handling/aero/performance estimates; sharedRTG001body isplaceholder, nofinishedartordriveverification.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "knotgrass-2004",
+            "alias": "Knotgrass 2004",
+            "reference": "2004HyundaiAccentGL1.6FWD5MT",
+            "documentId": "knotgrass-2004",
+            "runtimeId": "saved-car:Knotgrass 2004",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "zinnia-16-2010",
+            "alias": "Zinnia 16 2010",
+            "reference": "2010KiaSoulbase1.6FWD5MT",
+            "documentId": "zinnia-16-2010",
+            "runtimeId": "saved-car:Zinnia 16 2010",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "pipit-100-2007",
+            "alias": "Pipit 100 2007",
+            "reference": "2007FiatPanda100HP6MT",
+            "documentId": "pipit-100-2007",
+            "runtimeId": "saved-car:Pipit 100 2007",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoMG3/SAIC15serieshatchback identity found. Chinese/Thai-developed1.5AMTordinaryfive-dooradds distinctmarket/platform andtransmission ratherthanHyundai/Kiabadgevariant; exactThai trim/output retained.",
+        "evidence": [
+          "https://www.saicmotor.com/e/latest_news/mg/44784.shtml",
+          "https://device.report/m/e90b9faa9452f4617984a7beb7a3569cfd4d4c07ae8ad73fe476bae659d46f04"
+        ]
+      },
+      "name": "Golden Clover 2015",
+      "id": "golden-clover-2015",
+      "simulationEstimates": {
+        "reverseRatio": 3.455,
+        "cgHeightM": 0.53,
+        "groundClearanceM": 0.145,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.84,
+        "spring": 0.42,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.18,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 500,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "fuelTankUSgal": 11.887742356116679,
+        "topSpeedMph": 106,
+        "zeroToSixtySec": 12.5,
+        "transmission": "automatic",
+        "drivetrain": "fwd",
+        "finalDrive": 4.118,
+        "gearRatios": [
+          3.462,
+          1.952,
+          1.323,
+          0.973,
+          0.795
+        ],
+        "curbKg": 1195,
+        "lengthM": 4.018,
+        "widthM": 1.728,
+        "heightM": 1.517,
+        "wheelbaseM": 2.52,
+        "trackFrontIn": 59.251968503937015,
+        "trackRearIn": 58.77952755905512,
+        "tireSize": [
+          185,
+          65,
+          15
+        ]
+      }
+    },
+    {
+      "candidateId": "lotus-340r-2000-roster-candidate",
+      "bodyClass": "roadster",
+      "identity": {
+        "year": 2000,
+        "make": "Lotus",
+        "model": "340R",
+        "trim": "standard road177bhp RoverK-series1.8 five-speed,openbody;not190bhptrackupgradeorExpose",
+        "market": "UK/Europe"
+      },
+      "referenceVehicle": "2000 Lotus 340R, standard road177bhp RoverK-series1.8 five-speed,openbody;not190bhptrackupgradeorExpose",
+      "facts": {
+        "powerHp": 177,
+        "engineDisplacementL": 1.796,
+        "transmission": "manual",
+        "gearCount": 5,
+        "publishedMassKg": 601
+      },
+      "sources": [
+        {
+          "url": "https://www.lotuscars.com/en/lotus-story/road-cars/340r",
+          "publisher": "Lotus factory heritage",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "publishedMassKg"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "Factory601kg weightbasisunspecified, runningmass660kgestimated; do notclaim dryequalscurb. Standard177bhp selected, notoptional190bhp tracktune. Geometry,tires,ratios,torque/RPM/performance estimates. SharedRTGbody cannotvisuallyreproduce exposedwheelsskeleton; data-generationplaceholderonly.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Marsh Gentian 2012",
+            "documentId": "marsh-gentian-2012",
+            "runtimeId": "saved-car:Marsh Gentian 2012",
+            "reference": "ExigeS3.5V6closedcoupe",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Wood Forgetmenot 2023",
+            "documentId": "wood-forgetmenot-2023",
+            "runtimeId": "saved-car:Wood Forgetmenot 2023",
+            "reference": "EmiraV6GT",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Minimal open-wheel/open-body RoverK-series naturallyaspiratedfive-speed roadster, materiallydifferent fromToyotaV6closedcars andlaterToyotaSC2-Eleven.",
+        "evidence": [
+          "https://www.lotuscars.com/en/lotus-story/road-cars/340r"
+        ],
+        "audit": "Allnativecatalogfields includinginspiration/referenceVehicle read fromthe generation-time catalog snapshot; wave45/46intakes also checked; noexactLotusmatch. Finalfresh47catalogcheckpending ifnotyetgenerated."
+      },
+      "name": "Red Trefoil 2000",
+      "id": "red-trefoil-2000",
+      "simulationEstimates": {
+        "reverseRatio": 3.0,
+        "cgHeightM": 0.36,
+        "groundClearanceM": 0.11,
+        "dragCoefficient": 0.55,
+        "tireGrip": 1.0,
+        "spring": 0.57,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0.01,
+        "aeroRear": 0.02,
+        "shiftTimeMs": 380,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.39,
+        "redlineRpm": 8000,
+        "revLimitRpm": 8200,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 8.5,
+        "topSpeedMph": 133,
+        "zeroToSixtySec": 4.4,
+        "bodyClass": "roadster",
+        "drivetrain": "rwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 7800,
+        "torqueNm": 172,
+        "torqueRpm": 6750,
+        "curbKg": 660,
+        "lengthM": 3.62,
+        "widthM": 1.7,
+        "heightM": 1.14,
+        "wheelbaseM": 2.3,
+        "trackFrontIn": 57.0,
+        "trackRearIn": 59.0,
+        "tireSize": [
+          195,
+          50,
+          15
+        ],
+        "frontTire": [
+          195,
+          50,
+          15
+        ],
+        "rearTire": [
+          225,
+          45,
+          16
+        ],
+        "gearRatios": [
+          2.923,
+          1.75,
+          1.308,
+          1.033,
+          0.848
+        ],
+        "finalDrive": 4.2,
+        "transmissionLabel": "five-speedmanual estimatedratios",
+        "torqueLbFt": 126.86068967568968
+      }
+    },
+    {
+      "candidateId": "lotus-2-eleven-2009-roster-candidate",
+      "bodyClass": "roadster",
+      "identity": {
+        "year": 2009,
+        "make": "Lotus",
+        "model": "2-Eleven",
+        "trim": "standard252bhp supercharged1796ccToyota road-goingUKSVA six-speed,original2007\u20132010spec;notGT4,NAorCircuitCarprototype",
+        "market": "UK/Europe"
+      },
+      "referenceVehicle": "2009 Lotus 2-Eleven, standard252bhp supercharged1796ccToyota road-goingUKSVA six-speed,original2007\u20132010spec;notGT4,NAorCircuitCarprototype",
+      "facts": {
+        "powerHp": 252,
+        "publishedPowerPS": 255,
+        "powerRpm": 8000,
+        "torqueNm": 242,
+        "torqueRpm": 7000,
+        "engineDisplacementL": 1.796,
+        "gearCount": 6,
+        "transmission": "manual",
+        "publishedMassKg": 670,
+        "topSpeedMph": 155
+      },
+      "sources": [
+        {
+          "url": "https://www.lotuscars.com/en/lotus-story/road-cars/2-eleven",
+          "publisher": "Lotus factory heritage",
+          "fields": [
+            "powerHp",
+            "publishedPowerPS",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "gearCount",
+            "transmission",
+            "publishedMassKg",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        },
+        {
+          "url": "https://gglotus.org/ggrace/2-eleven/2-eleven.htm",
+          "publisher": "Lotus6March2007factoryrelease mirrored byGoldenGateLotusClub",
+          "fields": [
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "topSpeedMph",
+            "UKSVAidentity",
+            "factoryEstimatedZeroToSixtySec"
+          ],
+          "access": "Readweb2026-11-18."
+        }
+      ],
+      "limits": [
+        "Factory2007\u20132010productionrange covers2009slot; nofictional2009uniqueupgrade.670kg massbasisunspecified;720kg runningmassestimate.3.8s wasfactoryestimated0\u201360, notmeasurement. Geometry/tires/gearing/aeromodel estimated; originalsingle-planeroadwing, notGT4racekit. Launch/variableTCsimplified.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Marsh Gentian 2012",
+            "documentId": "marsh-gentian-2012",
+            "runtimeId": "saved-car:Marsh Gentian 2012",
+            "reference": "ExigeS3.5V6closedcoupe",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Red Trefoil 2000",
+            "id": "lotus-340r-2000-roster-candidate",
+            "documentId": "red-trefoil-2000",
+            "runtimeId": "saved-car:Red Trefoil 2000",
+            "scope": "same-wave"
+          }
+        ],
+        "distinction": "SuperchargedToyotaVVTL-ifour-cylinder six-speed, dedicatedlightweightcore-matbody andtrackchassis; notRover340Rbody/engineorExigeV6.",
+        "evidence": [
+          "https://www.lotuscars.com/en/lotus-story/road-cars/2-eleven"
+        ],
+        "audit": "Allnativecatalogfields includinginspiration/referenceVehicle read fromthe generation-time catalog snapshot; wave45/46intakes also checked; noexactLotusmatch. Finalfresh47catalogcheckpending ifnotyetgenerated."
+      },
+      "name": "Purple Trefoil 2009",
+      "id": "purple-trefoil-2009",
+      "simulationEstimates": {
+        "reverseRatio": 3.25,
+        "cgHeightM": 0.36,
+        "groundClearanceM": 0.105,
+        "dragCoefficient": 0.5,
+        "tireGrip": 1.05,
+        "spring": 0.6,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0.025,
+        "aeroRear": 0.045,
+        "shiftTimeMs": 350,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.38,
+        "redlineRpm": 8000,
+        "revLimitRpm": 8200,
+        "aspiration": "Supercharged",
+        "fuelTankUSgal": 10.6,
+        "zeroToSixtySec": 3.8,
+        "bodyClass": "roadster",
+        "drivetrain": "rwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "curbKg": 720,
+        "lengthM": 3.82,
+        "widthM": 1.735,
+        "heightM": 1.112,
+        "wheelbaseM": 2.3,
+        "trackFrontIn": 57.4,
+        "trackRearIn": 59.3,
+        "tireSize": [
+          195,
+          50,
+          16
+        ],
+        "frontTire": [
+          195,
+          50,
+          16
+        ],
+        "rearTire": [
+          225,
+          45,
+          17
+        ],
+        "gearRatios": [
+          3.166,
+          2.05,
+          1.481,
+          1.166,
+          0.916,
+          0.815
+        ],
+        "finalDrive": 4.529,
+        "transmissionLabel": "six-speedmanual estimatedratios"
+      }
+    },
+    {
+      "candidateId": "lotus-evora-s-2011-roster-candidate",
+      "bodyClass": "coupe",
+      "identity": {
+        "year": 2011,
+        "make": "Lotus",
+        "model": "Evora S",
+        "trim": "UK/European original3.456superchargedV6 six-speedmanual2+2GT standard18/19wheels;notIPS,400,GT430orGTE",
+        "market": "UK/Europe"
+      },
+      "referenceVehicle": "2011 Lotus Evora S, UK/European original3.456superchargedV6 six-speedmanual2+2GT standard18/19wheels;notIPS,400,GT430orGTE",
+      "facts": {
+        "powerHp": 345,
+        "publishedPowerPS": 350,
+        "powerRpm": 7000,
+        "torqueNm": 400,
+        "torqueRpm": 4500,
+        "engineDisplacementL": 3.456,
+        "transmission": "manual",
+        "gearCount": 6,
+        "publishedMassKg": 1437,
+        "topSpeedMph": 172
+      },
+      "sources": [
+        {
+          "url": "https://www.lotuscars.com/en/lotus-story/road-cars/evora",
+          "publisher": "Lotus factory heritage",
+          "fields": [
+            "powerHp",
+            "publishedPowerPS",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "publishedMassKg",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        },
+        {
+          "url": "https://windingroad.com/articles/news/first-look-lotus-evora-s-and-evora-ips/",
+          "publisher": "LotusAugust2010factoryrelease mirrored byWindingRoad",
+          "fields": [
+            "publishedPowerPS",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "gearCount",
+            "publishedMassKg",
+            "zeroToSixtySec",
+            "topSpeedMph"
+          ],
+          "access": "Readweb2026-11-18. ExactEvoraStable notnaturallyaspiratedIPScolumn."
+        }
+      ],
+      "limits": [
+        "1437kg officiallaunchunladenmass usedasrunningproxy, notdryclaim; seats/optionsactualmassvary. Contemporaneouslaunch4.6s0\u201360/172mph preferred overnewheritage4.4s0\u2013100/286kmh possiblylatermixedfigures. Geometry,tires,ratios,weightdistribution,RPMlimits and dynamics estimated. Heritagepageautomaticfour-speedclaim appearsincorrect and irrelevant: selectingfactorysix-speedmanualonly.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Marsh Gentian 2012",
+            "documentId": "marsh-gentian-2012",
+            "runtimeId": "saved-car:Marsh Gentian 2012",
+            "reference": "ExigeS3.5V6small-platformcoupe",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Wood Forgetmenot 2023",
+            "documentId": "wood-forgetmenot-2023",
+            "runtimeId": "saved-car:Wood Forgetmenot 2023",
+            "reference": "EmiraV6FirstEditiontwo-seater",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Type122modularthree-sectionbondedaluminium2+2touringplatform longerwheelbase/interior versusExige111smallplatform; early345bhpmanualEvora notlaterEmiraorGT430badge.",
+        "evidence": [
+          "https://www.lotuscars.com/en/lotus-story/road-cars/evora"
+        ],
+        "audit": "Allnativecatalogfields includinginspiration/referenceVehicle read fromthe generation-time catalog snapshot; wave45/46intakes also checked; noexactLotusmatch. Finalfresh47catalogcheckpending ifnotyetgenerated."
+      },
+      "name": "Snow Clover 2011",
+      "id": "snow-clover-2011",
+      "simulationEstimates": {
+        "reverseRatio": 3.831,
+        "cgHeightM": 0.42,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.98,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.39,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "aspiration": "Supercharged",
+        "fuelTankUSgal": 15.850323141488905,
+        "zeroToSixtySec": 4.6,
+        "bodyClass": "coupe",
+        "drivetrain": "rwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "curbKg": 1437,
+        "lengthM": 4.342,
+        "widthM": 1.848,
+        "heightM": 1.229,
+        "wheelbaseM": 2.575,
+        "trackFrontIn": 61.6,
+        "trackRearIn": 62.0,
+        "tireSize": [
+          225,
+          40,
+          18
+        ],
+        "frontTire": [
+          225,
+          40,
+          18
+        ],
+        "rearTire": [
+          255,
+          35,
+          19
+        ],
+        "gearRatios": [
+          3.538,
+          1.913,
+          1.407,
+          1.091,
+          0.969,
+          0.861
+        ],
+        "finalDrive": 3.778,
+        "transmissionLabel": "six-speedmanual estimatedratios"
+      }
+    },
+    {
+      "candidateId": "ariel-nomad-2016-roster-candidate",
+      "identity": {
+        "year": 2016,
+        "make": "Ariel",
+        "model": "Nomad",
+        "trim": "first-generation 300bhp factory supercharged 2.4 Honda six-speed manual; representative off-road setup",
+        "market": "United Kingdom"
+      },
+      "bodyClass": "open buggy",
+      "referenceVehicle": "2016 UK Ariel Nomad300 first-generation Honda2.4 supercharged six-speed manual; not235NA,NomadR orNomad2",
+      "facts": {
+        "powerHp": 300,
+        "gearCount": 6,
+        "aspiration": "Supercharged",
+        "publishedDisplacementL": 2.4
+      },
+      "sources": [
+        {
+          "url": "https://www.arielmotor.co.uk/our-history/",
+          "publisher": "Ariel Motor Company factory chronology",
+          "fields": [
+            "2016 supercharger option",
+            "300bhp",
+            "HondaK24 family"
+          ],
+          "access": "Factoryhistory reviewed2026-11-18:235bhpNA launched2015,300bhpoption2016,distinctNomadR2020andNomad22024."
+        },
+        {
+          "url": "https://www.arielmotor.co.uk/used-ariel-vehicles/ariel-nomad-300-6/",
+          "publisher": "Ariel Motor Company factory vehicle specification",
+          "fields": [
+            "2016registered300bhp2.4supercharged",
+            "six-speed",
+            "15-inch off-road setup"
+          ],
+          "access": "Public factory specification corroborates2016configuration; no owner,service,price oruniquevehicleidentity data retained."
+        }
+      ],
+      "limits": [
+        "Representative production option combination, not reproduction of an individual customer vehicle. Factory chronology establishes300bhpoption2016; listing corroborates six-speed/2.4 configuration but does not establish exact torque, curbmass or individual ratio values.",
+        "All simulationEstimates\u2014including350Nm,715kgrunningmass,geometry,tiresize,ratios,brakes,steering anddamping\u2014are provisional engineering inputs. No selectable off-road control or measuredjump/rollover behavior claimed; existing RWD simulation only. SharedRTG001art; independent driving andoriginalartpending.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [],
+        "distinction": "Complete450-entry nativeprovenance inventory contains no Ariel. Tall-travel tubular exoskeleton rear-engine RWD off-road buggy is distinct from conventional pickup/SUVandlowtrackroadsters. No235NA/300dualcount, noNomadRorNomad2mix.",
+        "evidence": [
+          "https://www.arielmotor.co.uk/our-history/",
+          "https://www.arielmotor.co.uk/used-ariel-vehicles/ariel-nomad-300-6/"
+        ],
+        "audit": "Audited exactcandidateIDs andallprovenancefields beforeimplementation; existingbacklogcandidateconfirmed."
+      },
+      "name": "Forest Clover 2016",
+      "id": "forest-clover-2016",
+      "simulationEstimates": {
+        "reverseRatio": 3.583,
+        "cgHeightM": 0.55,
+        "groundClearanceM": 0.27,
+        "dragCoefficient": 0.65,
+        "tireGrip": 0.98,
+        "spring": 0.48,
+        "antiRollRear": 0.23,
+        "suspensionTravelM": 0.3,
+        "frontOverhangM": 0.4,
+        "rearDifferentialAccel": 0.35,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 230,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.4,
+        "redlineRpm": 7200,
+        "revLimitRpm": 7500,
+        "fuelTankUSgal": 13.2,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 3.4,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "engineDisplacementL": 2.354,
+        "torqueNm": 350,
+        "torqueRpm": 5500,
+        "powerRpm": 7000,
+        "curbKg": 715,
+        "lengthM": 3.215,
+        "widthM": 1.85,
+        "heightM": 1.425,
+        "wheelbaseM": 2.348,
+        "trackFrontIn": 61.2,
+        "trackRearIn": 61.2,
+        "tireSize": [
+          235,
+          75,
+          15
+        ],
+        "gearRatios": [
+          3.267,
+          2.13,
+          1.517,
+          1.147,
+          0.921,
+          0.738
+        ],
+        "finalDrive": 4.76,
+        "torqueLbFt": 258.14675224704297
+      }
+    }
+  ],
+  "deferred": []
+}

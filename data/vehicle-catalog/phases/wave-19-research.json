@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "base": "8730c4cf60942a2ec38c78f6ef65bedd3a530d0c",
+  "scope": "Two distinct Hyundai N sedan/crossover slots, excluding existing Veloster N and i20 N.",
+  "vehicles": [
+    {
+      "candidateId": "hyundai-elantra-n-2022-roster-candidate",
+      "id": "field-scabious-2022",
+      "name": "Field Scabious 2022",
+      "identity": {
+        "year": 2022,
+        "make": "Hyundai",
+        "model": "Elantra N",
+        "trim": "standard US 6-speed manual, not N Line or TCR",
+        "market": "United States"
+      },
+      "referenceVehicle": "2022 US Hyundai Elantra N, standard US 6-speed manual, not N Line or TCR",
+      "facts": {
+        "powerHp": 276,
+        "torqueLbFt": 289,
+        "engineDisplacementL": 2.0,
+        "transmission": "manual",
+        "gearCount": 6
+      },
+      "simulationEstimates": {
+        "drivetrain": "fwd",
+        "reverseRatio": 3.4,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.135,
+        "dragCoefficient": 0.32,
+        "tireGrip": 1.02,
+        "spring": 0.56,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.92,
+        "rearDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 200,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "aspiration": "Turbocharged",
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.62,
+        "powerRpm": 6000,
+        "torqueRpm": 3500,
+        "redlineRpm": 6700,
+        "revLimitRpm": 6900,
+        "fuelTankUSgal": 12.4,
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 5.6,
+        "curbKg": 1445,
+        "lengthM": 4.675,
+        "widthM": 1.825,
+        "heightM": 1.415,
+        "wheelbaseM": 2.72,
+        "trackFrontIn": 62.2,
+        "trackRearIn": 62.4,
+        "tireSize": [
+          245,
+          35,
+          19
+        ],
+        "gearRatios": [
+          3.08,
+          1.96,
+          1.32,
+          1.02,
+          0.84,
+          0.69
+        ],
+        "finalDrive": 4.15
+      },
+      "sources": [
+        {
+          "url": "https://www.hyundainews.com/assets/documents/original/48856-2022ElantraNPricingRelease30Nov2021.pdf",
+          "publisher": "Hyundai Motor America",
+          "fields": [
+            "identity",
+            "powerHp",
+            "torqueLbFt",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "Factory December2021 US pricing release for MY2022. Standard six-speed manual versus optional wet eight-speed explicitly distinguished. Indexed factory PDF text read2026-11-17."
+        }
+      ],
+      "limits": [
+        "All values outside verifiedFacts are explicit modeling estimates: mass, body dimensions, gearing, rpm anchors, load distribution, grip, suspension, steering/brakes, torque interpolation and acceleration. No active dampers, N control modes or proprietary stability system emulated.",
+        "Electronic front limited-slip behavior is not reproduced by the current generic builder; open differential baseline is disclosed, not a measured N handling replica. Shared RTG-001 exterior/cockpit only. Original graphics and independent desktop/touch acceptance pending.",
+        "No automatic rev-matching control; estimated manual shift timing."
+      ]
+    },
+    {
+      "candidateId": "hyundai-kona-n-2022-roster-candidate",
+      "id": "hemp-agrimony-2022",
+      "name": "Hemp Agrimony 2022",
+      "identity": {
+        "year": 2022,
+        "make": "Hyundai",
+        "model": "Kona N",
+        "trim": "standard US 8-speed wet dual-clutch automatic, not N Line or TCR",
+        "market": "United States"
+      },
+      "referenceVehicle": "2022 US Hyundai Kona N, standard US 8-speed wet dual-clutch automatic, not N Line or TCR",
+      "facts": {
+        "powerHp": 276,
+        "torqueLbFt": 289,
+        "engineDisplacementL": 2.0,
+        "transmission": "automatic",
+        "gearCount": 8
+      },
+      "simulationEstimates": {
+        "drivetrain": "fwd",
+        "reverseRatio": 3.4,
+        "cgHeightM": 0.59,
+        "groundClearanceM": 0.173,
+        "dragCoefficient": 0.35,
+        "tireGrip": 1.02,
+        "spring": 0.56,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.92,
+        "rearDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 120,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "aspiration": "Turbocharged",
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.62,
+        "powerRpm": 6000,
+        "torqueRpm": 3500,
+        "redlineRpm": 6700,
+        "revLimitRpm": 6900,
+        "fuelTankUSgal": 13.2,
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 5.3,
+        "curbKg": 1515,
+        "lengthM": 4.215,
+        "widthM": 1.8,
+        "heightM": 1.565,
+        "wheelbaseM": 2.6,
+        "trackFrontIn": 61.8,
+        "trackRearIn": 62,
+        "tireSize": [
+          235,
+          40,
+          19
+        ],
+        "gearRatios": [
+          3.71,
+          2.26,
+          1.76,
+          1.31,
+          1.07,
+          0.87,
+          0.71,
+          0.57
+        ],
+        "finalDrive": 4.15,
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "launchRpm": 2500,
+        "transmissionLabel": "8-speed wet dual-clutch approximation (estimated effective ratios)"
+      },
+      "sources": [
+        {
+          "url": "https://www.prnewswire.com/news-releases/hyundai-announces-2022-kona-n-pricing-301434329.html",
+          "publisher": "Hyundai Motor America via PR Newswire",
+          "fields": [
+            "identity",
+            "powerHp",
+            "torqueLbFt",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "Manufacturer-issued November30,2021 US MY2022 pricing release. 276hp289lb-ft2.0 turbo and eight-speed wet DCT. Read2026-11-17."
+        }
+      ],
+      "limits": [
+        "All values outside verifiedFacts are explicit modeling estimates: mass, body dimensions, gearing, rpm anchors, load distribution, grip, suspension, steering/brakes, torque interpolation and acceleration. No active dampers, N control modes or proprietary stability system emulated.",
+        "Electronic front limited-slip behavior is not reproduced by the current generic builder; open differential baseline is disclosed, not a measured N handling replica. Shared RTG-001 exterior/cockpit only. Original graphics and independent desktop/touch acceptance pending.",
+        "Effective ratios use one final drive; not the hardware dual-output-shaft ratios. Temporary overboost is not modeled."
+      ]
+    }
+  ],
+  "deferred": []
+}

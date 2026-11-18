@@ -1,0 +1,1355 @@
+{
+  "schemaVersion": 1,
+  "base": "9d1f24ee36b0da8879b587147806a4666e4556be",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "hyundai-accent-se-sedan-2018-us-6mt-supplemental",
+      "identity": {
+        "year": 2018,
+        "make": "Hyundai",
+        "model": "Accent",
+        "trim": "SE fifth-generation sedan1.6GDI6MT standard15-inch coveredsteel wheels; not SEL/Limited,automatic,olderMPI orKiaRio",
+        "market": "United States"
+      },
+      "referenceVehicle": "2018 United States Hyundai Accent, SE fifth-generation sedan1.6GDI6MT standard15-inch coveredsteel wheels; not SEL/Limited,automatic,olderMPI orKiaRio",
+      "bodyClass": "four-door five-seat subcompact sedan; production",
+      "facts": {
+        "powerHp": 130,
+        "torqueLbFt": 119,
+        "engineDisplacementL": 1.6,
+        "aspiration": "Naturally Aspirated",
+        "gearCount": 6,
+        "curbKg": 1134.8881097400001,
+        "lengthM": 4.38404,
+        "widthM": 1.7297399999999998,
+        "wheelbaseM": 2.58064,
+        "tireSize": [
+          185,
+          65,
+          15
+        ],
+        "dragCoefficient": 0.28,
+        "fuelTankUSgal": 11.9,
+        "absEnabled": true,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Hyundai/Accent/Hyundai_US%20Accent_2018.pdf",
+          "publisher": "Hyundai original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "torqueLbFt",
+            "engineDisplacementL",
+            "aspiration",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "wheelbaseM",
+            "tireSize",
+            "dragCoefficient",
+            "fuelTankUSgal",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "Visually read PDFpage11, 2026-11-18: SE6MT,130hp119lb-ft,2502lbMT endpoint,dimensions,Cd,tires,ABS/TC. ExactRPM/ratios/tracks not inthisbrochure and remain estimates."
+        }
+      ],
+      "limits": [
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "knotgrass-2004",
+            "alias": "Knotgrass 2004",
+            "reference": "2004USAccentGL1.6DOHC5MT",
+            "documentId": "knotgrass-2004",
+            "runtimeId": "saved-car:Knotgrass 2004",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Entirely newerHCgenerationGDI/six-speed sedan versus olderLC1.6MPI/five-speed Knotgrass, not trim/yearpadding. NoKiaRio duplicate added.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Hyundai/Accent/Hyundai_US%20Accent_2018.pdf"
+        ]
+      },
+      "name": "Canyon Clover 2018",
+      "id": "canyon-clover-2018",
+      "simulationEstimates": {
+        "reverseRatio": 3.7,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.1397,
+        "tireGrip": 0.83,
+        "spring": 0.43,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "topSpeedMph": 118,
+        "zeroToSixtySec": 8.8,
+        "transmission": "manual",
+        "drivetrain": "fwd",
+        "finalDrive": 4.059,
+        "gearRatios": [
+          3.615,
+          1.962,
+          1.286,
+          1.036,
+          0.839,
+          0.704
+        ],
+        "powerRpm": 6300,
+        "torqueRpm": 4850,
+        "heightM": 1.45034,
+        "trackFrontIn": 59.3,
+        "trackRearIn": 59.5
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "mazda-mazda3-i-sport-sedan-2014-us-6mt-supplemental",
+      "identity": {
+        "year": 2014,
+        "make": "Mazda",
+        "model": "Mazda3",
+        "trim": "i Sport BM four-door sedan2.0SKYACTIV-G6MT,16-inch coveredsteel wheels; nots2.5,hatchback,Mazdaspeed or i-ELOOP",
+        "market": "United States"
+      },
+      "referenceVehicle": "2014 United States Mazda Mazda3, i Sport BM four-door sedan2.0SKYACTIV-G6MT,16-inch coveredsteel wheels; nots2.5,hatchback,Mazdaspeed or i-ELOOP",
+      "bodyClass": "four-door five-seat compact sedan; production",
+      "facts": {
+        "powerHp": 155,
+        "powerRpm": 6000,
+        "torqueLbFt": 150,
+        "torqueRpm": 4000,
+        "engineDisplacementL": 1.998,
+        "aspiration": "Naturally Aspirated",
+        "gearCount": 6,
+        "gearRatios": [
+          3.363,
+          1.947,
+          1.3,
+          1.029,
+          0.837,
+          0.68
+        ],
+        "reverseRatio": 3.385,
+        "finalDrive": 3.85,
+        "redlineRpm": 6800,
+        "curbKg": 1261.44038097,
+        "lengthM": 4.57962,
+        "widthM": 1.79578,
+        "heightM": 1.45542,
+        "wheelbaseM": 2.70002,
+        "trackFrontIn": 61.2,
+        "trackRearIn": 61.4,
+        "groundClearanceM": 0.15494,
+        "tireSize": [
+          205,
+          60,
+          16
+        ],
+        "frontWeightDistribution": 0.59,
+        "dragCoefficient": 0.26,
+        "topSpeedMph": 130,
+        "fuelTankUSgal": 13.2,
+        "absEnabled": true,
+        "steeringRatio": 14
+      },
+      "sources": [
+        {
+          "url": "https://news.mazdausa.com/download/MAZDA3-14MY-SpecDeck-082613-v2014.6-for-press.pdf",
+          "publisher": "Mazda original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "redlineRpm",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "groundClearanceM",
+            "tireSize",
+            "frontWeightDistribution",
+            "dragCoefficient",
+            "topSpeedMph",
+            "fuelTankUSgal",
+            "absEnabled",
+            "steeringRatio"
+          ],
+          "access": "Read manufacturer-hosted public pressspecPDF pp13-14 plus trimavailability tables. 4-door i manual2781lb,5-door2797lb; notautomatic2848lb. 6.1inclearance explicitlyladen; factoryCd.26and130mphlimiter. PublicpressPDF retains internalConfidentialfooter; no nonpublicaccess used."
+        }
+      ],
+      "limits": [
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "woodrush-2005",
+            "alias": "Woodrush 2005",
+            "reference": "2005CanadianToyotaCorollaCE1.8manual",
+            "documentId": "woodrush-2005",
+            "runtimeId": "saved-car:Woodrush 2005",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "rotarypetal-2011",
+            "alias": "Rotarypetal 2011",
+            "reference": "2011USMazdaRX8SportrotaryRWD6MT",
+            "documentId": "rotarypetal-2011",
+            "runtimeId": "saved-car:Rotarypetal 2011",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No Mazda3/Mazdaspeed3 exact production reference found. BM2.0NAFWDsedan is neither RX8rotary nor MazdaMX5roadster; no same-engine trimvariant added.",
+        "evidence": [
+          "https://news.mazdausa.com/download/MAZDA3-14MY-SpecDeck-082613-v2014.6-for-press.pdf"
+        ]
+      },
+      "name": "Smallhead Clover 2014",
+      "id": "smallhead-clover-2014",
+      "simulationEstimates": {
+        "cgHeightM": 0.52,
+        "tireGrip": 0.83,
+        "spring": 0.43,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "revLimitRpm": 7000,
+        "zeroToSixtySec": 8.1,
+        "transmission": "manual",
+        "drivetrain": "fwd",
+        "transmissionLabel": "6-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "toyota-yaris-l-three-door-2012-us-5mt-supplemental",
+      "identity": {
+        "year": 2012,
+        "make": "Toyota",
+        "model": "Yaris",
+        "trim": "L third-generationXP130 THREE-door liftback5MT,1NZ-FEgasoline,15-inchsteel wheels; notfive-doorLautomatic,SE,hybrid orGR",
+        "market": "United States"
+      },
+      "referenceVehicle": "2012 United States Toyota Yaris, L third-generationXP130 THREE-door liftback5MT,1NZ-FEgasoline,15-inchsteel wheels; notfive-doorLautomatic,SE,hybrid orGR",
+      "bodyClass": "three-door five-seat subcompact hatchback; production",
+      "facts": {
+        "powerHp": 106,
+        "powerRpm": 6000,
+        "torqueLbFt": 103,
+        "torqueRpm": 4200,
+        "engineDisplacementL": 1.5,
+        "aspiration": "Naturally Aspirated",
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 1040.9944891500002,
+        "lengthM": 3.8989,
+        "widthM": 1.69418,
+        "heightM": 1.5087599999999999,
+        "wheelbaseM": 2.5095199999999998,
+        "trackFrontIn": 58.5,
+        "trackRearIn": 57.9,
+        "groundClearanceM": 0.1397,
+        "tireSize": [
+          175,
+          65,
+          15
+        ],
+        "fuelTankUSgal": 11.1,
+        "absEnabled": true,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Toyota/Yaris/Toyota_US%20Yaris_2012.pdf",
+          "publisher": "Toyota original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "groundClearanceM",
+            "tireSize",
+            "fuelTankUSgal",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "Read originalToyota brochure specification andequipment tables. Only3-doorL and5-doorSEmanual;2295lbmanual vs2315automatic. Power/torque,geometry,tires andStarSafety direct. Gearratios absent and estimated."
+        }
+      ],
+      "limits": [
+        "PlainLinterior has no factorytachometer; sharedRTGinstrumentation isplaceholder. NoToyotaDirectIgnition confusionwithdirectfuelinjection; engineport-injected.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "tutsan-2003",
+            "alias": "Tutsan 2003",
+            "reference": "2003USECHO four-door1.5manual",
+            "documentId": "tutsan-2003",
+            "runtimeId": "saved-car:Tutsan 2003",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "bramble-2021",
+            "alias": "Bramble 2021",
+            "reference": "2021UKGRYaris1.6turboAWD6MT",
+            "documentId": "bramble-2021",
+            "runtimeId": "saved-car:Bramble 2021",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "boxelder-2005",
+            "alias": "Boxelder 2005",
+            "reference": "2005USScionxB1.5manual",
+            "documentId": "boxelder-2005",
+            "runtimeId": "saved-car:Boxelder 2005",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Related1NZfamily is explicit: XP130three-door hatch is distinct laterchassis/body versusXP10ECHOsedan andboxyScionxB, not merelyyear/trim. Unrelated GRYarisperformancearchitecture doesnot representordinaryYaris.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Toyota/Yaris/Toyota_US%20Yaris_2012.pdf"
+        ]
+      },
+      "name": "Strawberry Trefoil 2012",
+      "id": "strawberry-trefoil-2012",
+      "simulationEstimates": {
+        "reverseRatio": 3.25,
+        "cgHeightM": 0.52,
+        "dragCoefficient": 0.3,
+        "tireGrip": 0.83,
+        "spring": 0.43,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6400,
+        "revLimitRpm": 6600,
+        "topSpeedMph": 109,
+        "zeroToSixtySec": 9.4,
+        "finalDrive": 3.722,
+        "gearRatios": [
+          3.545,
+          1.904,
+          1.31,
+          0.969,
+          0.815
+        ]
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "suzuki-sx4-crossover-2010-us-6mt-awd-supplemental",
+      "identity": {
+        "year": 2010,
+        "make": "Suzuki",
+        "model": "SX4",
+        "trim": "Crossover withoptional i-AWD,2.0DOHC gasoline6MT,standard16-inchcoveredsteelwheels; notSportBack,sedan,CVT orFiatSedici",
+        "market": "United States"
+      },
+      "referenceVehicle": "2010 United States Suzuki SX4, Crossover withoptional i-AWD,2.0DOHC gasoline6MT,standard16-inchcoveredsteelwheels; notSportBack,sedan,CVT orFiatSedici",
+      "bodyClass": "five-door five-seat compact crossover hatchback; production",
+      "facts": {
+        "powerHp": 150,
+        "powerRpm": 6200,
+        "torqueLbFt": 140,
+        "torqueRpm": 3500,
+        "engineDisplacementL": 2.0,
+        "aspiration": "Naturally Aspirated",
+        "gearCount": 6,
+        "lengthM": 4.13512,
+        "widthM": 1.7551399999999997,
+        "heightM": 1.60528,
+        "wheelbaseM": 2.4993600000000002,
+        "fuelTankUSgal": 11.9,
+        "absEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Suzuki/SX4/Suzuki_US%20SX4_2010.pdf",
+          "publisher": "Suzuki original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "fuelTankUSgal",
+            "absEnabled"
+          ],
+          "access": "Read originalUSbrochure pp7-8: manual150hp6200 vsCVT148hp6000,140lbft3500,6MT,AWDoptional,bodydimensions andAWD11.9gal. Curbmass,tiresize,tracks andratios notpresent, explicitlyestimated."
+        }
+      ],
+      "limits": [
+        "GenericAWD25percentrear is coarseestimate of automaticcoupling operation, not exact i-AWD logic. No2WD/Auto/Lockmode controls orlock-release simulation added.1315kg estimatedcurb mass pendingexactUS6MT-AWDtable.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "mossling-2019",
+            "alias": "Mossling 2019",
+            "reference": "2019UKSuzukiJimnySZ5 ladderframe1.5parttime4WD",
+            "documentId": "mossling-2019",
+            "runtimeId": "saved-car:Mossling 2019",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "gorse-2015",
+            "alias": "Gorse 2015",
+            "reference": "2015Defender90 diesel",
+            "documentId": "gorse-2015",
+            "runtimeId": "saved-car:Gorse 2015",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoSX4/Sedici existingidentity found. Unibody2.0six-speed crossover differs fundamentallyfromSuzukiJimny ladderframeoffroader. OptionalAWD explicitlyselected; no Fiattwin duplicate.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Suzuki/SX4/Suzuki_US%20SX4_2010.pdf"
+        ]
+      },
+      "name": "Bent Clover 2010",
+      "id": "bent-clover-2010",
+      "simulationEstimates": {
+        "reverseRatio": 3.481,
+        "cgHeightM": 0.6,
+        "groundClearanceM": 0.175,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.83,
+        "spring": 0.43,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.05,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "topSpeedMph": 115,
+        "zeroToSixtySec": 9.5,
+        "transmission": "manual",
+        "drivetrain": "awd",
+        "finalDrive": 4.117,
+        "gearRatios": [
+          3.615,
+          2.047,
+          1.518,
+          1.156,
+          0.918,
+          0.794
+        ],
+        "curbKg": 1315,
+        "trackFrontIn": 59.1,
+        "trackRearIn": 58.9,
+        "tireSize": [
+          205,
+          60,
+          16
+        ],
+        "centerDifferentialBalance": 0.25,
+        "centerDifferentialAccel": 0.25
+      }
+    },
+    {
+      "candidateId": "audi-a2-2000-1-4-aua-5mt",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2000,
+        "make": "Audi",
+        "model": "A2",
+        "trim": "1.4 AUA gasoline four-cylinder 55kW EYX five-speed manual, solid roof, four seats, 175/60R15; not TDI, FSI or 3L",
+        "market": "continental Europe"
+      },
+      "bodyClass": "hatchback",
+      "referenceVehicle": "2000 continental Europe Audi A2 1.4 AUA gasoline four-cylinder 55kW EYX five-speed manual, solid roof, four seats, 175/60R15; not TDI, FSI or 3L",
+      "facts": {
+        "powerKw": 55,
+        "powerRpm": 5000,
+        "torqueNm": 126,
+        "torqueRpm": 3800,
+        "engineDisplacementL": 1.39,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 895,
+        "lengthM": 3.826,
+        "widthM": 1.673,
+        "heightM": 1.553,
+        "wheelbaseM": 2.405,
+        "trackFrontIn": 57.55905511811024,
+        "trackRearIn": 56.181102362204726,
+        "gearRatios": [
+          3.45,
+          2.1,
+          1.39,
+          1.03,
+          0.81
+        ],
+        "finalDrive": 3.88,
+        "reverseRatio": 3.18,
+        "groundClearanceM": 0.139,
+        "fuelTankUSgal": 8.981849780177047,
+        "topSpeedMph": 107.49721625705877,
+        "tireSize": [
+          175,
+          60,
+          15
+        ],
+        "frontTire": [
+          175,
+          60,
+          15
+        ],
+        "rearTire": [
+          175,
+          60,
+          15
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.volkspage.net/technik/ssp/ssp/SSP_240.pdf",
+          "publisher": "Audi original Self-study programme 240, public mirror",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "gearRatios",
+            "finalDrive",
+            "reverseRatio",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "topSpeedMph",
+            "tireSize",
+            "frontTire",
+            "rearTire"
+          ],
+          "access": "Factory technical status 03/00; downloaded and extracted printed pp72\u201375. Petrol AUA/EYX column, not adjacent AMF/EWO diesel. Explicit unladen mass without driver 895kg."
+        },
+        {
+          "url": "https://www.audi.com/en/media-releases/leading-light-25-years-audi-a2-16857",
+          "publisher": "Audi Tradition",
+          "fields": [
+            "identity"
+          ],
+          "access": "Factory retrospective dates launch to June30,2000 with 75PS gasoline and 75PS TDI versions."
+        }
+      ],
+      "limits": [
+        "Supplementary identity must consume an existing open canonical 660 position; do not enlarge the historical backlog.",
+        "All suggestedEstimates are modeling estimates, not factory specifications. Referenced RTG-001 graphics only; no driving or finished-art claim.",
+        "Mass is the original 03/00 factory table unladen without driver, not later equipment-dependent EU weight. Factory 0\u2013100km/h is12.0s; 0\u201360mph estimated.",
+        "Factory 55kW retained rather than converting rounded75PS. Gear ratios are rounded factory values. Torque curve, inertia, suspension, braking and transient behavior remain estimates.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "tormentil-2000",
+            "alias": "Tormentil 2000",
+            "referenceVehicle": "2000 continental European Audi A2 1.4 TDI AMF 55kW launch specification, five-door four-seater, LHD FWD EWO5MT,175/60R15,solid roof. Not1.2TDI3L,90PS ATL,laterBHC Euro4,FSI,color.storm,OpenSky or later42litre tank.",
+            "documentId": "tormentil-2000",
+            "runtimeId": "saved-car:Tormentil 2000",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Same aluminum body family as Tormentil, but naturally aspirated four-cylinder gasoline AUA versus turbo three-cylinder diesel AMF, 126 versus195Nm,895 versus990kg without driver, and different EYX gearset/final drive. Mechanically distinct, not year or badge padding.",
+        "evidence": [
+          "https://www.volkspage.net/technik/ssp/ssp/SSP_240.pdf",
+          "https://www.audi.com/en/media-releases/leading-light-25-years-audi-a2-16857"
+        ]
+      },
+      "name": "Forest Trefoil 2000",
+      "id": "forest-trefoil-2000",
+      "simulationEstimates": {
+        "cgHeightM": 0.52,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 6000,
+        "revLimitRpm": 6300,
+        "zeroToSixtySec": 11.5,
+        "transmissionLabel": "5-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "bmw-116i-2004-e87-eletta-5mt",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2004,
+        "make": "BMW",
+        "model": "116i",
+        "trim": "E87 five-door Eletta 1.6 gasoline five-speed manual, standard steel 16-inch runflat wheels; not Attiva, diesel, 120i or facelift",
+        "market": "Italy"
+      },
+      "bodyClass": "hatchback",
+      "referenceVehicle": "2004 Italy BMW 116i E87 five-door Eletta 1.6 gasoline five-speed manual, standard steel 16-inch runflat wheels; not Attiva, diesel, 120i or facelift",
+      "facts": {
+        "powerKw": 85,
+        "powerRpm": 6000,
+        "torqueNm": 150,
+        "torqueRpm": 4300,
+        "engineDisplacementL": 1.6,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "topSpeedMph": 124.27423844746679
+      },
+      "sources": [
+        {
+          "url": "https://www.press.bmwgroup.com/italy/article/detail/T0017296IT/dal-18-settembre-2004-il-piacere-di-guidare-entra-anche-nel-segmento-delle-compatte-definiti-equipaggiamenti-e-prezzi-della-nuova-bmw-serie-1?language=it",
+          "publisher": "BMW Group Italia original May25,2004 release",
+          "fields": [
+            "identity",
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "topSpeedMph"
+          ],
+          "access": "Exact September18,2004 launch and Italian Eletta equipment: 16-inch steel runflat wheels,5MT;85kW6000rpm,150Nm4300rpm,1.6L,200km/h,0\u201310010.8s."
+        },
+        {
+          "url": "https://www.press.bmwgroup.com/united-kingdom/article/detail/T0016511EN_GB/the-new-bmw-1-series?language=en_GB",
+          "publisher": "BMW Group original March23,2004 release",
+          "fields": [
+            "drivetrain",
+            "identity"
+          ],
+          "access": "Launch 1 Series RWD architecture,116i5MT and advertised50:50 chassis weight distribution; no later facelift specification adopted."
+        }
+      ],
+      "limits": [
+        "Supplementary identity must consume an existing open canonical 660 position; do not enlarge the historical backlog.",
+        "All suggestedEstimates are modeling estimates, not factory specifications. Referenced RTG-001 graphics only; no driving or finished-art claim.",
+        "Factory kW anchor retained: publications inconsistently label rounded115CV/bhp; do not reinterpret as a precise SAE output.",
+        "1205kg curb is a driver-excluded modeling estimate, not a retrieved exact Eletta factory mass. Detailed dimensions, tracks, tire width/profile, gearing, tank and dynamic values are estimates. Factory only confirms16-inch runflat fitment and approximate4.23m length.",
+        "Factory advertised50:50 is a model-family claim; chosen runtime balance remains an estimate.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "milkweed-60-2013",
+            "alias": "Milkweed 60 2013",
+            "referenceVehicle": "Stock European launch October2013 BMW i3 BEV standard19inch wheels/Atelier base equipment, LHD, DIN1195kg; no range extender, later94/120Ah pack, i3s or US trim mixing",
+            "documentId": "milkweed-60-2013",
+            "runtimeId": "saved-car:Milkweed 60 2013",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "bellheather-2005",
+            "alias": "Bellheather 2005",
+            "referenceVehicle": "2005 European BMW M3 E46 standard coupe, S54 six-speed manual; not CSL or SMG",
+            "documentId": "bellheather-2005",
+            "runtimeId": "saved-car:Bellheather 2005",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Absent ordinary E87 compact five-door RWD gasoline hatch, unlike Milkweed i3 carbon-bodied electric hatch and Bellheather E46 M3 six-cylinder performance coupe; new body/platform and low-output four-cylinder powertrain.",
+        "evidence": [
+          "https://www.press.bmwgroup.com/italy/article/detail/T0017296IT/dal-18-settembre-2004-il-piacere-di-guidare-entra-anche-nel-segmento-delle-compatte-definiti-equipaggiamenti-e-prezzi-della-nuova-bmw-serie-1?language=it",
+          "https://www.press.bmwgroup.com/united-kingdom/article/detail/T0016511EN_GB/the-new-bmw-1-series?language=en_GB"
+        ]
+      },
+      "name": "Sierra Clover 2004",
+      "id": "sierra-clover-2004",
+      "simulationEstimates": {
+        "reverseRatio": 4.04,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.5,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "fuelTankUSgal": 14.001118774981867,
+        "zeroToSixtySec": 10.3,
+        "curbKg": 1205,
+        "lengthM": 4.227,
+        "widthM": 1.751,
+        "heightM": 1.43,
+        "wheelbaseM": 2.66,
+        "trackFrontIn": 58.425196850393704,
+        "trackRearIn": 58.93700787401575,
+        "gearRatios": [
+          4.23,
+          2.52,
+          1.66,
+          1.22,
+          1
+        ],
+        "finalDrive": 3.23,
+        "tireSize": [
+          195,
+          55,
+          16
+        ],
+        "frontTire": [
+          195,
+          55,
+          16
+        ],
+        "rearTire": [
+          195,
+          55,
+          16
+        ]
+      }
+    },
+    {
+      "candidateId": "volkswagen-take-up-2011-1-0-44kw-5mt",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2011,
+        "make": "Volkswagen",
+        "model": "up!",
+        "trim": "take up! two-side-door/three-door hatch 1.0 MPI44kW five-speed manual, non-BlueMotion, standard14-inch steel wheels; not75PS, ASG, CNG or electric",
+        "market": "Germany"
+      },
+      "bodyClass": "hatchback",
+      "referenceVehicle": "2011 Germany Volkswagen up! take up! two-side-door/three-door hatch 1.0 MPI44kW five-speed manual, non-BlueMotion, standard14-inch steel wheels; not75PS, ASG, CNG or electric",
+      "facts": {
+        "powerKw": 44,
+        "powerRpm": 5500,
+        "torqueNm": 95,
+        "torqueRpm": 3000,
+        "engineDisplacementL": 0.999,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "lengthM": 3.54,
+        "widthM": 1.641,
+        "heightM": 1.478,
+        "wheelbaseM": 2.42,
+        "publishedEuKerbWeightKg": 929,
+        "fuelTankUSgal": 9.246021832535195,
+        "topSpeedMph": 99.41939075797343
+      },
+      "sources": [
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/up-driving-presentation-3071/up-technologies-3086",
+          "publisher": "Volkswagen October10,2011 launch technical press pack",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "fuelTankUSgal",
+            "topSpeedMph"
+          ],
+          "access": "Original two-door 44kW MPI:5500rpm,95Nm3000\u20135000rpm,999cc,5MT,FWD,35L,160km/h and14.4s0\u2013100; forecast performance as of September2011."
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/up-driving-presentation-3071/up-exterior-3093",
+          "publisher": "Volkswagen October10,2011 launch press pack",
+          "fields": [
+            "identity",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "publishedEuKerbWeightKg"
+          ],
+          "access": "Original two-door launch dimensions and929kg published weight."
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/up-four-door-driving-presentation-3073/up-four-door-overview-3116",
+          "publisher": "Volkswagen March15,2012 model overview",
+          "fields": [
+            "identity",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "publishedEuKerbWeightKg"
+          ],
+          "access": "Confirms German two-door market launch December2011, take up44kW, shared exact dimensions and929kg specifically EU kerb basis. Four-door not selected; confirms14-inch steel165-width standard choice."
+        }
+      ],
+      "limits": [
+        "Supplementary identity must consume an existing open canonical 660 position; do not enlarge the historical backlog.",
+        "All suggestedEstimates are modeling estimates, not factory specifications. Referenced RTG-001 graphics only; no driving or finished-art claim.",
+        "929kg is published EU kerb mass; runtime854kg is estimated subtraction of75kg driver/luggage convention, not separately verified factory DIN mass.",
+        "TorqueRpm3000 denotes start of factory95Nm3000\u20135000 plateau; do not treat as a unique narrow torque peak. Optional curve interpolation should preserve broad plateau.",
+        "Factory technical page has an isolated four-cylinder wording error in an otherwise explicit three-cylinder EA211 description; modeled engine is three-cylinder. Performance figures are period forecasts, not independent measurements.",
+        "Tracks, gearing, tire aspect ratio, mass balance, clearance and dynamic tune remain estimates.2011 calendar-year December European introduction, not a claim of US model-year sales.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [],
+        "distinction": "No up!, Fox, Lupo or equivalent Volkswagen city-car reference found in actual wave50 roster or wave50 packets; compact three-cylinder A00 city hatch is not Golf or Jetta badge/year padding.",
+        "evidence": [
+          "https://www.volkswagen-newsroom.com/en/up-driving-presentation-3071/up-technologies-3086",
+          "https://www.volkswagen-newsroom.com/en/up-driving-presentation-3071/up-exterior-3093",
+          "https://www.volkswagen-newsroom.com/en/up-four-door-driving-presentation-3073/up-four-door-overview-3116"
+        ]
+      },
+      "name": "Roundhead Clover 2011",
+      "id": "roundhead-clover-2011",
+      "simulationEstimates": {
+        "reverseRatio": 3.617,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.144,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "zeroToSixtySec": 13.9,
+        "curbKg": 854,
+        "trackFrontIn": 56.22047244094488,
+        "trackRearIn": 56.06299212598425,
+        "gearRatios": [
+          3.643,
+          1.955,
+          1.27,
+          0.959,
+          0.796
+        ],
+        "finalDrive": 3.895,
+        "tireSize": [
+          165,
+          70,
+          14
+        ],
+        "frontTire": [
+          165,
+          70,
+          14
+        ],
+        "rearTire": [
+          165,
+          70,
+          14
+        ]
+      }
+    },
+    {
+      "candidateId": "fiat-panda-4x4-twinair-2012-supplemental-candidate",
+      "bodyClass": "hatchback",
+      "identity": {
+        "year": 2012,
+        "make": "Fiat",
+        "model": "Panda 4x4 TwinAir85",
+        "trim": "Italy third-generation875cc turbo twin-cylinder six-speed manual, normal85CV mode, standard175/65R15M+S; not ECO77.5CV, diesel,Trekking orpreviousgeneration",
+        "market": "Italy"
+      },
+      "referenceVehicle": "2012 Fiat Panda 4x4 TwinAir85, Italy third-generation875cc turbo twin-cylinder six-speed manual, normal85CV mode, standard175/65R15M+S; not ECO77.5CV, diesel,Trekking orpreviousgeneration",
+      "facts": {
+        "powerHp": 83.837206001,
+        "powerRpm": 5500,
+        "torqueNm": 145,
+        "torqueRpm": 1900,
+        "engineDisplacementL": 0.875,
+        "gearCount": 6,
+        "drivetrain": "awd",
+        "gearRatios": [
+          4.1,
+          2.158,
+          1.345,
+          0.974,
+          0.766,
+          0.646
+        ],
+        "reverseRatio": 3.818,
+        "finalDrive": 5.308,
+        "lengthM": 3.686,
+        "widthM": 1.672,
+        "heightM": 1.605,
+        "wheelbaseM": 2.3,
+        "trackFrontIn": 55.55118110236221,
+        "trackRearIn": 55.43307086614173,
+        "tireSize": [
+          175,
+          65,
+          15
+        ],
+        "curbKg": 1050,
+        "groundClearanceM": 0.15,
+        "fuelTankUSgal": 9.246021832535195,
+        "topSpeedMph": 103.14761791139743
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/it-it/fiat/press/motor-show-bologna-2012-un-area-fiat-dedicata-a-panda-4x4",
+          "publisher": "FiatItaly November2012 factoryspecification table",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "gearCount",
+            "drivetrain",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "curbKg",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "Factory mass1050kg is DIN running-order, notdry andnot1115kgdiesel. Power85CEE-CV converted83.8372mechanicalhp; normalmode145Nm selected, notECO100Nm. Factory0\u201310012.1s is not0\u201360;11.7 runtime estimate. Torque-on-demand electronicallycontrolledcoupler represented by estimated35%rear drive share underacceleration, notclaimedconstantfactorysplit. Brake-basedELD, autoengagement, stop-start/ECOswitching notexactlymodeled.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Pipit 100 2007",
+            "documentId": "pipit-100-2007",
+            "runtimeId": "saved-car:Pipit 100 2007",
+            "reference": "Pipit1002007: previousgeneration1.4NA four-cylinder FWDsix-speed",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Differentgeneration purpose-built raised4x4 drivetrain and875cc turbo twin versus previousFWD sportsPanda; noyearbadgepadding.",
+        "evidence": [
+          "https://www.media.stellantis.com/it-it/fiat/press/motor-show-bologna-2012-un-area-fiat-dedicata-a-panda-4x4"
+        ],
+        "audit": "Audited freshwave50native482entries, allfields includingcatalogProvenance/inspiration/referenceVehicle, pluscompleted50varietyintake. OnlypriorPandaPipit1002007 found; noexactPandaIII4x4/Kangoo/Modus. Supplementalreservationrequiresparentcanonical660slot; historical660untouched."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Lace Clover 2012",
+      "id": "lace-clover-2012",
+      "simulationEstimates": {
+        "cgHeightM": 0.55,
+        "dragCoefficient": 0.38,
+        "tireGrip": 0.8,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.7,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 6000,
+        "revLimitRpm": 6200,
+        "aspiration": "Turbocharged",
+        "zeroToSixtySec": 11.7,
+        "bodyClass": "hatchback",
+        "transmission": "manual",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "transmissionLabel": "6-speed manual (factory ratios; estimated shift calibration)",
+        "centerDifferentialBalance": 0.35,
+        "centerDifferentialAccel": 0.3
+      }
+    },
+    {
+      "candidateId": "renault-kangoo-authentique-1-6-16v105-2012-supplemental-candidate",
+      "bodyClass": "minivan",
+      "identity": {
+        "year": 2012,
+        "make": "Renault",
+        "model": "Kangoo Authentique1.6 16V105",
+        "trim": "Germany standard-length five-seat passenger MPV five-speedmanual, Euro5petrol, single right slidingdoor; notGrand7-seat,Rapidcargo,be-bop,automatic or1.6 8V90",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2012 Renault Kangoo Authentique1.6 16V105, Germany standard-length five-seat passenger MPV five-speedmanual, Euro5petrol, single right slidingdoor; notGrand7-seat,Rapidcargo,be-bop,automatic or1.6 8V90",
+      "facts": {
+        "powerHp": 104.5499274836,
+        "torqueNm": 148,
+        "torqueRpm": 3750,
+        "engineDisplacementL": 1.6,
+        "gearCount": 5,
+        "drivetrain": "fwd",
+        "lengthM": 4.213,
+        "wheelbaseM": 2.697,
+        "topSpeedMph": 105.63310268034677
+      },
+      "sources": [
+        {
+          "url": "https://presse.renault.de/vielseitig-familienfreundlich-und-vorbildlich-sparsam/?lang=deu",
+          "publisher": "RenaultDeutschland October2012factorydossier",
+          "fields": [
+            "powerHp",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "gearCount",
+            "drivetrain",
+            "lengthM",
+            "wheelbaseM",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        },
+        {
+          "url": "https://presse.renault.de/renault-kangoo-serienmassig-mit-esp/?lang=deu",
+          "publisher": "RenaultDeutschland2011factorygenerationrelease",
+          "fields": [
+            "identity",
+            "Euro5",
+            "Authentique",
+            "powerHp"
+          ],
+          "access": "Readweb2026-11-18; onlypetrol option1.6 16V105, Authentiqueequipment, noautomaticdataadopted."
+        }
+      ],
+      "limits": [
+        "106metricPS actualfactory rating converted104.5499hp;105is marketing suffix notmechanicaloutput. Factoryrounded1.6litre retained;1598ccnotindependentlyverifiedhere. Authentique15-inchwheels/right-onlyslidingdoor arefactoryspecified. Runningmass1360kg excludesdriver asestimate, notverifiedhomologationbasis; exact tireaspect, width/height/tracks/powerRPM/gears provisional. Factory0\u201310013.0s only;0\u201360estimate12.5s. No automatic5-stage typo from2011release used.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Yates Clover 2009",
+            "documentId": "yates-clover-2009",
+            "runtimeId": "saved-car:Yates Clover 2009",
+            "reference": "wave50QuboActive1.4passengerMPV",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Scenic-derived largerpassengerplatform with2.697m wheelbase and1.6sixteen-valve petrol, notQubo smallplatform1360ccMPV andnotbadgeclonesCitan/Kangoo.",
+        "evidence": [
+          "https://presse.renault.de/vielseitig-familienfreundlich-und-vorbildlich-sparsam/?lang=deu"
+        ],
+        "audit": "Audited freshwave50native482entries, allfields includingcatalogProvenance/inspiration/referenceVehicle, pluscompleted50varietyintake. OnlypriorPandaPipit1002007 found; noexactPandaIII4x4/Kangoo/Modus. Supplementalreservationrequiresparentcanonical660slot; historical660untouched."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Water Trefoil 2012",
+      "id": "water-trefoil-2012",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.62,
+        "groundClearanceM": 0.16,
+        "dragCoefficient": 0.38,
+        "tireGrip": 0.81,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 15.850323141488905,
+        "zeroToSixtySec": 12.5,
+        "bodyClass": "minivan",
+        "transmission": "manual",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 5750,
+        "curbKg": 1360,
+        "widthM": 1.829,
+        "heightM": 1.803,
+        "trackFrontIn": 59.9,
+        "trackRearIn": 60.3,
+        "tireSize": [
+          195,
+          65,
+          15
+        ],
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.32,
+          0.97,
+          0.76
+        ],
+        "finalDrive": 4.5,
+        "transmissionLabel": "five-speedmanual estimatedratios"
+      }
+    },
+    {
+      "candidateId": "renault-modus-avantage-1-2-16v-2009-supplemental-candidate",
+      "bodyClass": "minivan",
+      "identity": {
+        "year": 2009,
+        "make": "Renault",
+        "model": "Modus Avantage1.2 16V75",
+        "trim": "Germany faceliftshort-body five-door miniMPV standardfive-speedmanual, naturallyaspiratedpetrol; notGrandlongbody,Quickshift78PS,TCe100or1.6",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2009 Renault Modus Avantage1.2 16V75, Germany faceliftshort-body five-door miniMPV standardfive-speedmanual, naturallyaspiratedpetrol; notGrandlongbody,Quickshift78PS,TCe100or1.6",
+      "facts": {
+        "powerHp": 73.974005295,
+        "engineDisplacementL": 1.2,
+        "gearCount": 5,
+        "drivetrain": "fwd",
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://presse.renault.de/modus-jetzt-mit-esp-in-serie/?lang=deu",
+          "publisher": "RenaultDeutschland January2009factorypricing/equipmentrelease",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL",
+            "gearCount",
+            "drivetrain",
+            "tractionControlEnabled"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        },
+        {
+          "url": "https://presse.renault.de/langversion-mit-mehr-stauraum/?lang=deu",
+          "publisher": "RenaultDeutschland factoryfaceliftModus/GrandModusdossier",
+          "fields": [
+            "suggestedEstimates.torqueNm",
+            "suggestedEstimates.torqueRpm",
+            "suggestedEstimates.topSpeedMph"
+          ],
+          "access": "Readweb2026-11-18; earliergenerationcalibrationcontext, keptestimatesfor2009."
+        }
+      ],
+      "limits": [
+        "75metricPS converted73.974hp; manual75PS notQuickshift78PS. Factory2009Avantageidentity verified. Torque105Nm4250/top163kmh from priorfactoryfaceliftdossier are retainedasprovisional2009estimates pendingexactMYtable, notborrowed107NmTwingocalibration. Runningmass1090kg excludingdriver, tires, geometry andgeartrain allprovisional; noGranddimensionssubstituted.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Thimble Clover 2014",
+            "documentId": "thimble-clover-2014",
+            "runtimeId": "saved-car:Thimble Clover 2014",
+            "reference": "wave50rear-engine1.0triple",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Tomcat Clover 2013",
+            "documentId": "tomcat-clover-2013",
+            "runtimeId": "saved-car:Tomcat Clover 2013",
+            "reference": "wave50conventionalhatch1.2",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Water Trefoil 2012",
+            "id": "renault-kangoo-authentique-1-6-16v105-2012-supplemental-candidate",
+            "documentId": "water-trefoil-2012",
+            "runtimeId": "saved-car:Water Trefoil 2012",
+            "scope": "same-wave"
+          }
+        ],
+        "distinction": "Compact B-platform uprightMPV withshortbody/normalhingeddoors and1.2four-cylinder; distinctpackaging/size/dynamics fromrear-engineTwingo,hatchSandero,andlargerKangoo. Enginefamilysharingdoesnotimplysamevehicle.",
+        "evidence": [
+          "https://presse.renault.de/modus-jetzt-mit-esp-in-serie/?lang=deu"
+        ],
+        "audit": "Audited freshwave50native482entries, allfields includingcatalogProvenance/inspiration/referenceVehicle, pluscompleted50varietyintake. OnlypriorPandaPipit1002007 found; noexactPandaIII4x4/Kangoo/Modus. Supplementalreservationrequiresparentcanonical660slot; historical660untouched."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Creek Clover 2009",
+      "id": "creek-clover-2009",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.55,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.8,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6000,
+        "revLimitRpm": 6300,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 12.944430565549272,
+        "topSpeedMph": 101.3,
+        "zeroToSixtySec": 12.9,
+        "bodyClass": "minivan",
+        "transmission": "manual",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 5500,
+        "torqueNm": 105,
+        "torqueRpm": 4250,
+        "curbKg": 1090,
+        "lengthM": 3.874,
+        "widthM": 1.695,
+        "heightM": 1.589,
+        "wheelbaseM": 2.482,
+        "trackFrontIn": 58.0,
+        "trackRearIn": 57.1,
+        "tireSize": [
+          165,
+          65,
+          15
+        ],
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.32,
+          0.97,
+          0.76
+        ],
+        "finalDrive": 4.5,
+        "transmissionLabel": "five-speedmanual estimatedratios",
+        "torqueLbFt": 77.4440256741129
+      }
+    }
+  ],
+  "deferred": []
+}

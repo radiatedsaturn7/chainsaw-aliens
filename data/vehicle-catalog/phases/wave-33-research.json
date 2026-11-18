@@ -1,0 +1,1165 @@
+{
+  "schemaVersion": 1,
+  "base": "d69c3ebbe4edc3ac732b8fb0ecc43b94e8b3118d",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "mercedes-benz-a-45-amg-2013-roster-candidate",
+      "identity": {
+        "year": 2013,
+        "make": "Mercedes-Benz",
+        "model": "A 45 AMG",
+        "trim": "W176 type176.052 M133.980 4MATIC standard five-door 7DCT,18inch wheels; not Edition1",
+        "market": "Germany/ECE"
+      },
+      "referenceVehicle": "2013 Germany/ECE Mercedes-Benz A 45 AMG, W176 type176.052 M133.980 4MATIC standard five-door 7DCT,18inch wheels; not Edition1",
+      "facts": {
+        "powerKw": 265,
+        "torqueNm": 450,
+        "powerRpm": 6000,
+        "torqueRpm": 2250,
+        "engineDisplacementL": 1.991,
+        "curbKg": 1555,
+        "lengthIn": 171.61417322834646,
+        "widthIn": 70.07874015748033,
+        "heightIn": 55.787401574803155,
+        "wheelbaseIn": 106.25984251968505,
+        "trackFrontIn": 61.2992125984252,
+        "trackRearIn": 61.45669291338583,
+        "transmission": "automatic",
+        "gearCount": 7,
+        "tireSize": [
+          235,
+          40,
+          18
+        ],
+        "frontTire": [
+          235,
+          40,
+          18
+        ],
+        "rearTire": [
+          235,
+          40,
+          18
+        ],
+        "fuelTankUSgal": 14.793634932056312,
+        "dragCoefficient": 0.34,
+        "topSpeedMph": 155.3427980593335
+      },
+      "sources": [
+        {
+          "url": "https://de.scribd.com/document/393492168/Einfuehrung-a-45-Amg",
+          "publisher": "Daimler AG service introduction HLI0000001185, factory-authored public mirror",
+          "fields": [
+            "powerKw",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "curbKg",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "transmission",
+            "gearCount",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "fuelTankUSgal",
+            "dragCoefficient",
+            "topSpeedMph"
+          ],
+          "access": "Read2026-11-18; pp6,12,14\u201315,21,66\u201369,77. Technical baseline February2013 printedMay2013, June2013 market launch. EC unladen1555kg retained without subtracting driver allowance."
+        },
+        {
+          "url": "https://imprensa.mercedes-benz.com.br/releases/mercedes-benz-apresenta-novo-a-45-amg-no-brasil",
+          "publisher": "Mercedes-Benz Cars Brazil December2013 factory launch",
+          "fields": [
+            "powerKw",
+            "torqueNm",
+            "gearCount",
+            "aspiration",
+            "AWD operating principle"
+          ],
+          "access": "Corroborates same265kW450NmM133 and7DCT, front drive normal to50:50; does not establish German mass."
+        }
+      ],
+      "limits": [
+        "Factory service introduction warns preproduction technical data can differ; launch power/torque/DCT independently corroborated. EC mass1555kg is not DIN/dry weight.",
+        "Individual ratios/final drive are provisional simulation estimates, not extracted tooth ratios; manual gives15.94 overall first reduction, not all gear pairs. Multi-shaft DCT simplified with one final drive.",
+        "Fixed AWD approximation is not exact variable0\u201350percent rear clutch operation, ESP torque vectoring or proprietary launchcontrol. All dynamics/limiter/0\u201360 estimates; source4.6s is0\u2013100. Single twin-scroll turbo, not twin turbochargers.",
+        "centerDifferentialBalance is REAR torque share. Fixed0.50 estimates maximum-coupling acceleration state only, within factory0\u201350percent rear limit; normal cruising can be100percentfront. No exact variable clutch logic claimed.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Silverleaf 200 2018",
+            "runtimeId": "silverleaf-200-2018",
+            "reference": "2018 EU W177 A200 M2821332cc120kW FWD7DCT",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "W176 AMG M1331991cc265kW450Nm AWD versus later W177 ordinary A2001332cc120kW250Nm FWD; different platform generation, engine and driven axles, not year/badge padding.",
+        "evidence": [
+          "https://de.scribd.com/document/393492168/Einfuehrung-a-45-Amg",
+          "https://imprensa.mercedes-benz.com.br/releases/mercedes-benz-apresenta-novo-a-45-amg-no-brasil"
+        ],
+        "audit": "Current wave33 native catalog provenance/inspiration and authored tests/docs searched; exact candidate absent; actual full-candidate-backlog ID checked. No fuzzy match promoted to identity."
+      },
+      "name": "Wood Anemone 2013",
+      "id": "wood-anemone-2013",
+      "simulationEstimates": {
+        "reverseRatio": 3.38,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.13,
+        "tireGrip": 1.05,
+        "spring": 0.59,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.15,
+        "frontOverhangM": 0.94,
+        "rearDifferentialAccel": 0.12,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 150,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6700,
+        "revLimitRpm": 6900,
+        "aspiration": "Turbocharged",
+        "zeroToSixtySec": 4.4,
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "drivetrain": "awd",
+        "centerDifferentialBalance": 0.5,
+        "gearRatios": [
+          3.86,
+          2.43,
+          1.78,
+          1.29,
+          1.03,
+          0.84,
+          0.65
+        ],
+        "finalDrive": 4.13,
+        "transmissionLabel": "7-speed DCT approximated by existing automatic"
+      }
+    },
+    {
+      "candidateId": "mercedes-benz-c-63-amg-coupe-black-series-2012-roster-candidate",
+      "identity": {
+        "year": 2012,
+        "make": "Mercedes-Benz",
+        "model": "C 63 AMG Coupe Black Series",
+        "trim": "C204 M156 naturally aspirated V8 LHD two-seat 7-speed MCT, standard body aero; not optional rearwing package",
+        "market": "Japan"
+      },
+      "referenceVehicle": "2012 Japan Mercedes-Benz C 63 AMG Coupe Black Series, C204 M156 naturally aspirated V8 LHD two-seat 7-speed MCT, standard body aero; not optional rearwing package",
+      "facts": {
+        "powerKw": 380,
+        "torqueNm": 620,
+        "transmission": "automatic",
+        "gearCount": 7,
+        "tireSize": [
+          255,
+          35,
+          19
+        ],
+        "frontTire": [
+          255,
+          35,
+          19
+        ],
+        "rearTire": [
+          285,
+          30,
+          19
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://media.mercedes-benz.jp/C-63-AMG-%E3%82%AF%E3%83%BC%E3%83%9A-%E3%83%96%E3%83%A9%E3%83%83%E3%82%AF%E3%82%B7%E3%83%AA%E3%83%BC%E3%82%BA%E3%82%92%E9%99%90%E5%AE%9A%E7%99%BA%E5%A3%B2/",
+          "publisher": "Mercedes-Benz Japan factory release3October2011",
+          "fields": [
+            "powerKw",
+            "torqueNm",
+            "transmission",
+            "gearCount",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "2012JapanLHDdelivery",
+            "M156 naturally aspirated",
+            "two-seat standard",
+            "rear LSD",
+            "100ms fastest shift claim"
+          ],
+          "access": "Read2026-11-18. Spring2012 Japanese deliveries;380kW anchor avoids mistranslating517metricPS as mechanicalhp. Performance numbers labelled provisional/European references."
+        }
+      ],
+      "limits": [
+        "Mass1730kg is a provisional modeled curb basis, not confirmed Japanese homologation weight; geometry, engine exactcc/RPM, ratios/finaldrive and all nonfacts are estimates pending market table.",
+        "No optional Track/Aero package claim; model standard two-seat without large optional wing. M156 is distinct from SLS M159 despite shared components.",
+        "MCT uses wet starting clutch; existing automatic zero-converter approximation does not reproduce proprietary MCT modes, launchcontrol or variable100ms shifts. 0\u201360 estimate separate from factory4.2s0\u2013100.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "White Clover 2004",
+            "runtimeId": "white-clover-2004",
+            "reference": "W203 C32AMG supercharged3.2V6 sedan5AT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Ribwort Plantain 2011",
+            "runtimeId": "ribwort-plantain-2011",
+            "reference": "C197 SLSAMG M1596.208V8 7DCT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Sea Plantain 2009",
+            "runtimeId": "sea-plantain-2009",
+            "reference": "SL65BlackSeries biturboV12 5AT",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Purpose-built wide-track C204 two-seat M156NA V8 coupe with MCT7, distinct from W203superchargedV6sedan, SLS gullwing M159transaxleDCT, and SL65biturboV12 fixedroof. No existing standard C63 found.",
+        "evidence": [
+          "https://media.mercedes-benz.jp/C-63-AMG-%E3%82%AF%E3%83%BC%E3%83%9A-%E3%83%96%E3%83%A9%E3%83%83%E3%82%AF%E3%82%B7%E3%83%AA%E3%83%BC%E3%82%BA%E3%82%92%E9%99%90%E5%AE%9A%E7%99%BA%E5%A3%B2/"
+        ],
+        "audit": "Current wave33 native catalog provenance/inspiration and authored tests/docs searched; exact candidate absent; actual full-candidate-backlog ID checked. No fuzzy match promoted to identity."
+      },
+      "name": "Sea Aster 2012",
+      "id": "sea-aster-2012",
+      "simulationEstimates": {
+        "reverseRatio": 3.42,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.35,
+        "tireGrip": 1.05,
+        "spring": 0.66,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.15,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0.24,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 150,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 7200,
+        "revLimitRpm": 7400,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 17.435355455637797,
+        "topSpeedMph": 186,
+        "zeroToSixtySec": 4,
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "drivetrain": "rwd",
+        "curbKg": 1730,
+        "engineDisplacementL": 6.208,
+        "powerRpm": 6800,
+        "torqueRpm": 5000,
+        "lengthM": 4.707,
+        "widthM": 1.939,
+        "heightM": 1.391,
+        "wheelbaseM": 2.765,
+        "trackFrontIn": 63.34645669291339,
+        "trackRearIn": 64.1732283464567,
+        "gearRatios": [
+          4.38,
+          2.86,
+          1.92,
+          1.37,
+          1,
+          0.82,
+          0.73
+        ],
+        "finalDrive": 2.85,
+        "transmissionLabel": "7-speed MCT wet-start-clutch automatic approximation"
+      }
+    },
+    {
+      "candidateId": "audi-rs-6-2009-roster-candidate",
+      "identity": {
+        "year": 2009,
+        "make": "Audi",
+        "model": "RS 6",
+        "trim": "C6 standard5.0 V10 biturbo sedan quattro6AT,standard19inch wheels and250km/h limiter; notAvant/plus",
+        "market": "continental Europe"
+      },
+      "referenceVehicle": "2009 continental Europe Audi RS 6, C6 standard5.0 V10 biturbo sedan quattro6AT,standard19inch wheels and250km/h limiter; notAvant/plus",
+      "facts": {
+        "powerKw": 426.589275,
+        "torqueNm": 650,
+        "torqueRpm": 1500,
+        "engineDisplacementL": 5,
+        "transmission": "automatic",
+        "gearCount": 6,
+        "tireSize": [
+          255,
+          40,
+          19
+        ],
+        "frontTire": [
+          255,
+          40,
+          19
+        ],
+        "rearTire": [
+          255,
+          40,
+          19
+        ],
+        "widthIn": 74.40944881889764,
+        "topSpeedMph": 155.3427980593335
+      },
+      "sources": [
+        {
+          "url": "https://www.audi.com/en/media-releases/20-years-four-generations-audi-rs-6-superior-performance-with-an-everyday-look-14795",
+          "publisher": "Audi AG factory history25July2022 C6section",
+          "fields": [
+            "powerKw",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "widthIn",
+            "topSpeedMph",
+            "V10dry-sump",
+            "sedanidentity",
+            "approx60percentfrontmass"
+          ],
+          "access": "Read2026-11-18.580PS converted to426.589275kW; not580mechanicalhp.2009 selected within2008\u20132010C6. Standard sedan distinguished fromAvant4.6s andplus303km/h. Source rounds displacement to5L andwidth1.89m."
+        },
+        {
+          "url": "https://www.zercustoms.com/news/2008-Audi-RS6-Avant-Price.html",
+          "publisher": "Audi UK press release30January2008, reproduced verbatim by ZerCustoms",
+          "fields": [
+            "C6 nominal40front60rear torque distribution"
+          ],
+          "access": "Read2026-11-18; factory-authored mirrored release states40:60front-to-rear; AvantC6 same generation, sedan corroboration below."
+        },
+        {
+          "url": "https://audizine.com/articles/580ps-audi-rs-6-sedan-ushers-in-new-a6-range.80/",
+          "publisher": "Audi factory launch release reproduced by Audizine11August2008",
+          "fields": [
+            "C6sedan introduction",
+            "rear-biased40front60rearquattro"
+          ],
+          "access": "Read2026-11-18; sedan release states40/60rear-biased quattro."
+        }
+      ],
+      "limits": [
+        "Mass1985kg is provisional modeled curb basis, not factory-confirmed EC/DIN. Geometry except roundedwidth, ratios, fuel, RPMpeak, aero and chassis calibration all explicit estimates.",
+        "No exact4991cc fact promoted: retrieved factory source rounds to5L. 0\u20131004.5s not0\u201360. Standard250km/h selected, optional280 andplus303excluded.",
+        "Fixed AWD and spring/damper approximate quattro/DRC, not proprietary adaptive hydraulic behavior.",
+        "centerDifferentialBalance is REAR torque share;0.60 represents factory nominal40front/60rear. Fixed simulation split does not reproduce continuously variable self-locking differential or EDL braking.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Golden Saxifrage 2003",
+            "runtimeId": "golden-saxifrage-2003",
+            "reference": "Audi RS6C5 4.2biturboV8sedan5AT",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "C6 has dry-sump5.0V10 twin-turbo580PS650Nm and6AT versus C5 4.2V8 450PS560Nm5AT; distinct platform and cylinder-count architecture, not annual or badge padding.",
+        "evidence": [
+          "https://www.audi.com/en/media-releases/20-years-four-generations-audi-rs-6-superior-performance-with-an-everyday-look-14795"
+        ],
+        "audit": "Current wave33 native catalog provenance/inspiration and authored tests/docs searched; exact candidate absent; actual full-candidate-backlog ID checked. No fuzzy match promoted to identity."
+      },
+      "name": "Field Pansy 2009",
+      "id": "field-pansy-2009",
+      "simulationEstimates": {
+        "reverseRatio": 3.403,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.35,
+        "tireGrip": 1.05,
+        "spring": 0.59,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.15,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0.12,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 150,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6800,
+        "revLimitRpm": 7000,
+        "aspiration": "Twin turbocharged",
+        "fuelTankUSgal": 21.133764188651874,
+        "zeroToSixtySec": 4.3,
+        "torqueConverterSlip": 0.035,
+        "torqueConverterMultiplication": 1.7,
+        "drivetrain": "awd",
+        "curbKg": 1985,
+        "powerRpm": 6250,
+        "lengthM": 4.928,
+        "heightM": 1.456,
+        "wheelbaseM": 2.846,
+        "trackFrontIn": 63.54330708661418,
+        "trackRearIn": 64.44881889763779,
+        "centerDifferentialBalance": 0.6,
+        "gearRatios": [
+          4.171,
+          2.34,
+          1.521,
+          1.143,
+          0.867,
+          0.691
+        ],
+        "finalDrive": 3.317,
+        "transmissionLabel": "6-speed torque-converter automatic",
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 191.7661588120891
+          },
+          {
+            "rpm": 1500,
+            "torqueLbFt": 479.41539703022266
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 479.41539703022266
+          },
+          {
+            "rpm": 6250,
+            "torqueLbFt": 480.7181994109425
+          },
+          {
+            "rpm": 7000,
+            "torqueLbFt": 287.6492382181336
+          }
+        ]
+      }
+    },
+    {
+      "candidateId": "toyota-corolla-sr5-1974-roster-candidate",
+      "identity": {
+        "year": 1974,
+        "make": "Toyota",
+        "model": "Corolla SR-5",
+        "trim": "US federal 1600 coupe five-speed, no air conditioning",
+        "market": "United States federal, excluding California"
+      },
+      "referenceVehicle": "1974 US federal Toyota Corolla SR-5 1588cc OHV coupe five-speed manual, flared body and175/70HR13 tires; not California, laterTE37 or AE86",
+      "facts": {
+        "powerHp": 88,
+        "powerRpm": 6000,
+        "torqueLbFt": 91.3,
+        "torqueRpm": 3800,
+        "engineDisplacementL": 1.588,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbLb": 2050,
+        "gearRatios": [
+          3.587,
+          2.022,
+          1.384,
+          1,
+          0.861
+        ],
+        "reverseRatio": 3.484,
+        "finalDrive": 4.1,
+        "lengthIn": 163.5,
+        "widthIn": 62.8,
+        "heightIn": 52.6,
+        "wheelbaseIn": 91.9,
+        "trackFrontIn": 50,
+        "trackRearIn": 51,
+        "fuelTankUSgal": 11.9,
+        "tireSize": [
+          175,
+          70,
+          13
+        ]
+      },
+      "limits": [
+        "FactorySR5-specific curb2050lb used; brochure instructs add15lb forCalifornia, which is excluded. StandardSR5 width62.8in/height52.6in and50/51in tracks differ fromordinaryCorolla.",
+        "Published88hp/91.3lbft are explicitlySAEnet. CarburetedOHV1588cc, not Japanese2T-GDOHC or laterAE86four-valve engine.",
+        "Brochure8000rpm tachometer is instrument scale, not verifiedredline. Revlimit, CG/loadsplit, drag, suspension/grip and performance remain estimates. No optional air conditioning mass is added.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Woodrush 2005",
+            "reference": "2005 Canadian CorollaCE1.8FWD5MT",
+            "runtimeId": "woodrush-2005",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Borage (separate old eleven)",
+            "reference": "1970 Datsun510 four-door4MT",
+            "scope": "separate-preserved-checkpoint"
+          },
+          {
+            "alias": "Heath Violet 1974",
+            "reference": "1968ccSOHCcoupe5MT",
+            "runtimeId": "heath-violet-1974",
+            "scope": "same-wave"
+          }
+        ],
+        "distinction": "SR5 is an earlier compact RWD leaf-sprung1588ccOHV coupe, unlike2005FWDCorolla. Not Datsun510 independent-rear four-door and not largerSOHCcoil-sprungCelica; distinct chassis, body, engine, dimensions and gearing. Nativeprovenance and authoredtests/docs searched for1974Corolla/SR5/2T-C; no implementedexactmatch.",
+        "evidence": [
+          "https://xr793.com/wp-content/uploads/2024/09/1974-Toyota-Corolla.pdf",
+          "https://xr793.com/wp-content/uploads/2024/09/1974-Toyota-Celica.pdf"
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://xr793.com/wp-content/uploads/2024/09/1974-Toyota-Corolla.pdf",
+          "publisher": "Toyota Motor Sales USA original1974 Corolla brochure, archivedXR793",
+          "fields": [
+            "identity",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbLb",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "fuelTankUSgal",
+            "tireSize"
+          ],
+          "access": "Read2026-11-18; PDFp4 visually inspected. DistinctSR5curb, tire, track,width,height columns; federal versusCalifornia15lb note. SAE-net engine, full5MTgears/final and11.9galtank. Carburetion supplies naturallyaspirated descriptor."
+        }
+      ],
+      "name": "Wild Pansy 1974",
+      "id": "wild-pansy-1974",
+      "simulationEstimates": {
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.16,
+        "dragCoefficient": 0.44,
+        "tireGrip": 0.83,
+        "spring": 0.4,
+        "antiRollRear": 0.18,
+        "suspensionTravelM": 0.18,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "topSpeedMph": 100,
+        "zeroToSixtySec": 12.4,
+        "transmissionLabel": "5-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "toyota-celica-gt-1974-roster-candidate",
+      "identity": {
+        "year": 1974,
+        "make": "Toyota",
+        "model": "Celica GT",
+        "trim": "US 1968ccSOHC first-generation hardtop coupe five-speed, no air conditioning",
+        "market": "United States"
+      },
+      "referenceVehicle": "1974 US Toyota Celica GT first-generation1968ccSOHC carbureted hardtop coupe five-speed manual, standard185/70HR13 tires; not JapaneseDOHCGT, liftback orST4MT",
+      "facts": {
+        "powerHp": 97,
+        "powerRpm": 5500,
+        "torqueLbFt": 106,
+        "torqueRpm": 3600,
+        "engineDisplacementL": 1.968,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "gearRatios": [
+          3.287,
+          2.043,
+          1.397,
+          1,
+          0.853
+        ],
+        "reverseRatio": 4.039,
+        "finalDrive": 3.909,
+        "lengthIn": 169.2,
+        "widthIn": 63,
+        "heightIn": 51.6,
+        "wheelbaseIn": 95.5,
+        "trackFrontIn": 51.2,
+        "trackRearIn": 51.4,
+        "fuelTankUSgal": 13.2,
+        "tireSize": [
+          185,
+          70,
+          13
+        ]
+      },
+      "publishedMassReference": {
+        "curbLb": 2324,
+        "basis": "Shared Celica brochure specification row; not independently identified as GT-only mass. Runtime2324lb is an explicit estimate based on this factoryreference."
+      },
+      "limits": [
+        "Factory97hp/106lbft explicitlySAEnet; AmericanSOHC1968cc differs fromJapaneseDOHCGT. GT5MT ratios and185/70R13tires are separately identified.",
+        "Factory lists2324lb sharedcurb without trim-specific proof. Runtime uses same numeric value as labeled estimate, not falsely verifiedGT-only curb.",
+        "Redline/limiter, CG/loadsplit, clearance, drag, native suspension/roll/grip and performance estimated. Rearfour-linkcoil-sprungliveaxle differs fromleaf-sprungCorolla. No tachometerscale-to-redline inference.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Moonpetal GT 2000",
+            "reference": "USCelicaGT-SFWD1.8six-speed",
+            "runtimeId": "moonpetal-2000",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Stone Parsley 1994",
+            "reference": "UKST205turboAWD5MT",
+            "runtimeId": "stone-parsley-1994",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Melilot 1993",
+            "reference": "KankkunenST185GroupAcompetition",
+            "runtimeId": "melilot-1993",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Rockrose 1994",
+            "reference": "MillenUnlimitedPikesPeakprototype",
+            "runtimeId": "rockrose-1994",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Wild Pansy 1974",
+            "reference": "1588ccOHVleaf-sprungcoupe",
+            "runtimeId": "wild-pansy-1974",
+            "scope": "same-wave"
+          }
+        ],
+        "distinction": "First-generationRWD1968ccSOHC roadcoupe is absent; all existingCelicas use different platforms or competitiondesigns. It has longerwheelbase, moremass, differentengine/gearing andcoil-sprungrear than samewaveCorolla, not badge-onlypadding. Nativeprovenance and authoredtests/docs audit found no1974Celica build.",
+        "evidence": [
+          "https://xr793.com/wp-content/uploads/2024/09/1974-Toyota-Celica.pdf",
+          "https://xr793.com/wp-content/uploads/2024/09/1974-Toyota-Corolla.pdf"
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://xr793.com/wp-content/uploads/2024/09/1974-Toyota-Celica.pdf",
+          "publisher": "Toyota Motor Sales USA original1974 CelicaGT/ST brochure, archivedXR793",
+          "fields": [
+            "identity",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "fuelTankUSgal",
+            "tireSize",
+            "publishedMassReference"
+          ],
+          "access": "Read2026-11-18; PDFp4 visuallyverified exactGT5MTcolumn,3.909final,51.2/51.4tracks and185/70HR13tires. Shared2324lbcurb is source-onlyreference, not provenGTspecific. Power97hp at5500 verifiedvisually despite OCRerror."
+        }
+      ],
+      "name": "Heath Violet 1974",
+      "id": "heath-violet-1974",
+      "simulationEstimates": {
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.16,
+        "dragCoefficient": 0.43,
+        "tireGrip": 0.85,
+        "spring": 0.43,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.18,
+        "frontOverhangM": 0.91,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 6000,
+        "revLimitRpm": 6200,
+        "topSpeedMph": 105,
+        "zeroToSixtySec": 12.0,
+        "curbLb": 2324,
+        "transmissionLabel": "5-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "cadillac-cts-v-sedan-2016-roster-candidate",
+      "identity": {
+        "year": 2016,
+        "make": "Cadillac",
+        "model": "CTS-V Sedan",
+        "trim": "US third-generation LT4 6.2 supercharged V8 RWD 8L90 eight-speed automatic; standard aero, no optional Carbon Fiber package",
+        "market": "United States"
+      },
+      "referenceVehicle": "2016 US Cadillac CTS-V third-generation sedan, LT4 6.2 supercharged V8, RWD 8L90 8AT, standard aero and 19-inch staggered tires",
+      "facts": {
+        "powerHp": 640,
+        "powerRpm": 6400,
+        "torqueLbFt": 630,
+        "torqueRpm": 3600,
+        "engineDisplacementL": 6.162,
+        "aspiration": "Supercharged",
+        "curbKg": 1880,
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "transmissionLabel": "Hydra-Matic 8L90 eight-speed torque-converter automatic approximation",
+        "gearCount": 8,
+        "gearRatios": [
+          4.56,
+          2.97,
+          2.08,
+          1.69,
+          1.27,
+          1,
+          0.85,
+          0.65
+        ],
+        "reverseRatio": 3.82,
+        "finalDrive": 2.85,
+        "lengthM": 5.021,
+        "widthM": 1.833,
+        "heightM": 1.454,
+        "wheelbaseM": 2.91,
+        "trackFrontIn": 62.1,
+        "trackRearIn": 61.2,
+        "frontWeightDistribution": 0.527,
+        "tireSize": [
+          265,
+          35,
+          19
+        ],
+        "frontTire": [
+          265,
+          35,
+          19
+        ],
+        "rearTire": [
+          295,
+          30,
+          19
+        ],
+        "fuelTankUSgal": 19,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "revLimitRpm": 6600,
+        "topSpeedMph": 200,
+        "zeroToSixtySec": 3.7
+      },
+      "sources": [
+        {
+          "url": "https://www.caddyinfo.com/wordpress/200-mph-2016-cadillac-cts-v-announced/",
+          "publisher": "Cadillac/GM launch release and preliminary specification table, reproduced by CaddyInfo December 22 2014",
+          "fields": [
+            "SAE-certified engine peaks; transmission ratios; geometry; preliminary curb weight; tires; axle; weight distribution; maximum engine speed; claimed performance"
+          ],
+          "access": "2026-11-18 full indexed factory release and complete preliminary specification table read via search tool. Direct origin requests returned 502/503; this is an attributed OEM release mirror, not a new factory-hosted production spec sheet."
+        }
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Hawthorn V 2005",
+            "runtimeId": "hawthorn-v-2005",
+            "reference": "US2005 CTS-V LS6 5.7 naturally aspirated 6MT sedan",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Great Dock 2014",
+            "runtimeId": "great-dock-2014",
+            "reference": "US2014 CTS-V LSA 6.2 supercharged 6MT wagon",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Greater Celandine 2022",
+            "runtimeId": "greater-celandine-2022",
+            "reference": "US2022 CT5-V Blackwing 6MT sedan",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Exact 2016 CTS-V slot absent in current316 catalog. Third-generation CTS-V sedan uses LT4 direct-injection 640hp V8 and 8L90 automatic versus first-generation LS6 manual, second-generation LSA manual wagon, and later CT5 Blackwing manual. Distinct chassis, dimensions, output and transmission; not a badge/year-only variant.",
+        "evidence": [
+          "https://www.caddyinfo.com/wordpress/200-mph-2016-cadillac-cts-v-announced/",
+          "https://xr793.com/wp-content/uploads/2021/11/2005-Cadillac-CTS-V-Spec-Sheet.pdf"
+        ]
+      },
+      "limits": [
+        "Factory table is explicitly preliminary launch specification, not a measured individual production car: retain published1880kg curb basis; do not silently replace with secondary4134lb or claim options-specific weighed mass.",
+        "Source maximum engine speed6600rpm mapped to simulation limiter;6500 indicated redline is an estimate.",
+        "3.7-second0-60 and200mph are manufacturer reference claims, not verified in-game outcomes.",
+        "Generic automatic, estimated fixed differential locking and suspension cannot reproduce adaptive Magnetic Ride Control, eLSD/PTM/launch-control software, cylinder deactivation or all selectable modes. No new runtime requested.",
+        "Full torque curve, drivetrain losses, converter characteristics, CG, drag/downforce, suspension, grip, steering response and shifts remain modeling estimates. Shared RTG-001 placeholder art; no original-art or driving completion claimed.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Sweet Violet 2016",
+      "id": "sweet-violet-2016",
+      "simulationEstimates": {
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.35,
+        "tireGrip": 1.08,
+        "spring": 0.72,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.13,
+        "frontOverhangM": 0.88,
+        "rearDifferentialAccel": 0.42,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0.05,
+        "aeroRear": 0.07,
+        "shiftTimeMs": 160,
+        "wheelWellAware": true,
+        "redlineRpm": 6500,
+        "torqueConverterSlip": 0.06,
+        "torqueConverterMultiplication": 1.75
+      }
+    },
+    {
+      "candidateId": "alfa-romeo-8c-competizione-2007-roster-candidate",
+      "identity": {
+        "year": 2007,
+        "make": "Alfa Romeo",
+        "model": "8C Competizione Coupe",
+        "trim": "Italian/continental European production4.7V8 six-speedrobotisedtransaxle",
+        "market": "Italy / continental Europe"
+      },
+      "referenceVehicle": "2007 Italy Alfa Romeo8C Competizione productioncoupe4.691L naturallyaspiratedV8 six-speedrobotised;not2003concept orSpider",
+      "facts": {
+        "powerKw": 330.97443749999996,
+        "publishedPowerPS": 450,
+        "powerRpm": 7000,
+        "torqueNm": 470,
+        "torqueRpm": 4750,
+        "engineDisplacementL": 4.691,
+        "transmission": "automatic",
+        "gearCount": 6,
+        "revLimitRpm": 7500,
+        "publishedWeightKg": 1585
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/it-it/alfa-romeo/press/casey-stoner-prova-in-pista-l-alfa-8c-competizione",
+          "publisher": "Alfa Romeo factory14November2007 Italian release",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "revLimitRpm"
+          ],
+          "access": "Read Italian original:450CV7000,470Nm4750,4691cc,max7500rpm. CV treatedmetricPS,not mistranslatedEnglish450bhp."
+        },
+        {
+          "url": "https://www.media.stellantis.com/it-it/heritage-hub-italy/press/fca-heritage-a-essen-per-techno-classica-2019",
+          "publisher": "FCA Heritage factory5April2019 Italian retrospective",
+          "fields": [
+            "identity",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "Explicit2007Competizione productioncar, six-speedrobotised gearbox; not Spider paragraph."
+        },
+        {
+          "url": "https://www.media.stellantis.com/de-de/alfa-romeo/press/alfa-romeo-news-oktober-2007",
+          "publisher": "Alfa Romeo Germany factory31October2007 release",
+          "fields": [
+            "curbKg"
+          ],
+          "access": "Publishedcoupe1585kg; no driver/fuel basis stated. German deliveries2008 do not redefineItalian2007productionyear."
+        }
+      ],
+      "limits": [
+        "1585kg retained as publishedmanufacturerweight; exact fuel/driverbasis unknown. No dry/ECmass conversion claimed.",
+        "Robotised single-clutch transaxle modeled genericautomatic6speed, notDCT or torqueconverter claim. Ratios,geometry,tires,CG,distribution,grip andperformance calibration estimates.7500 factorymaximum retained;7300redline modelingestimate.",
+        "Runtime curbKg is provisional, anchored numerically to publishedWeightKg pending confirmation of its mass basis; not a verified curb or dry weight conversion.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Cicada Turbo 2015",
+            "referenceVehicle": "2015US AlfaRomeo4C1.75turboDCT midengine",
+            "runtimeId": "cicada-turbo-2015",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Field Gentian 2017",
+            "referenceVehicle": "2017US GiuliaQuadrifoglio2.9turboV6 sedan",
+            "runtimeId": "field-gentian-2017",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Front-mid naturallyaspirated4.7V8 carbon-bodied two-seat GT with rearrobotisedtransaxle; differentarchitecture frommidengine4C andfourdoorGiulia, notyearpadding.",
+        "evidence": [
+          "https://www.media.stellantis.com/it-it/alfa-romeo/press/casey-stoner-prova-in-pista-l-alfa-8c-competizione",
+          "https://www.media.stellantis.com/it-it/heritage-hub-italy/press/fca-heritage-a-essen-per-techno-classica-2019"
+        ]
+      },
+      "name": "Marsh Violet 2007",
+      "id": "marsh-violet-2007",
+      "simulationEstimates": {
+        "reverseRatio": 2.38,
+        "cgHeightM": 0.46,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 250,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.49,
+        "redlineRpm": 7300,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 23.78,
+        "topSpeedMph": 181,
+        "zeroToSixtySec": 4.2,
+        "drivetrain": "rwd",
+        "lengthM": 4.381,
+        "widthM": 1.894,
+        "heightM": 1.341,
+        "wheelbaseM": 2.646,
+        "trackFrontIn": 62.6,
+        "trackRearIn": 62.4,
+        "tireSize": [
+          245,
+          35,
+          20
+        ],
+        "frontTire": [
+          245,
+          35,
+          20
+        ],
+        "rearTire": [
+          285,
+          35,
+          20
+        ],
+        "gearRatios": [
+          3.21,
+          2.05,
+          1.43,
+          1.11,
+          0.9,
+          0.76
+        ],
+        "finalDrive": 3.73,
+        "transmissionLabel": "6-speed single-clutch robotised manual approximation",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "curbKg": 1585
+      }
+    },
+    {
+      "candidateId": "bentley-bentayga-2016-roster-candidate",
+      "identity": {
+        "year": 2016,
+        "make": "Bentley",
+        "model": "Bentayga W12",
+        "trim": "UK originalfive-seat6.0twin-turboW12 permanentAWD eight-speedautomatic",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "2016UK BentleyBentayga originalfive-seat5.950LW12 twin-turbo8AT permanentAWD;notSpeed,V8,DieselorHybrid",
+      "facts": {
+        "powerKw": 447,
+        "publishedPowerPS": 608,
+        "powerRpm": 6000,
+        "torqueNm": 900,
+        "torqueRpm": 1250,
+        "torquePlateauEndRpm": 4500,
+        "engineDisplacementL": 5.95,
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "gearCount": 8
+      },
+      "sources": [
+        {
+          "url": "https://www.bentleymedia.com/en/heritage-collection/2016-bentayga-11wo",
+          "publisher": "Bentley Motors factoryheritage2016Bentayga11WO record",
+          "fields": [
+            "publishedPowerPS",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "torquePlateauEndRpm",
+            "engineDisplacementL",
+            "drivetrain",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "Primaryindexedtext read via targetedsearch:2016bodyfive-seatSUV;5950cc;600bhp608PS6000;900Nm1250-4500;permanent4WD8speed. Directopen403; no fullpage inspectionclaim."
+        },
+        {
+          "url": "https://www.bentleymedia.com/en/newsitem/1107-the-bentley-bentayga-20000-pinnacle-luxury-suvs",
+          "publisher": "Bentley Motors factory4June2020 productionmilestone release",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "torqueNm"
+          ],
+          "access": "Factoryindexedrelease explicitly originalBentayga608PS600bhp447kW900Nm. Usepublished447kWanchor rather thanmixedhorsepowerconversion."
+        }
+      ],
+      "limits": [
+        "2440kg is provisionalcurb modelingestimate; primaryselectedindexedrecord doesnotestablishmass or fuel/driverbasis. Geometry,tires,ratios/final,CG,weightdistribution,grip andsuspension areestimates.",
+        "PermanentAWD represented withfixednominalsplit. No active48Vrollcontrol,air-suspensionheightselection,offroadmodes orcylinderdeactivation simulated; no sharedruntimechangesrequired.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [],
+        "distinction": "NoBentleymodel in currentnativecatalog ormatchingtests/docs; newheavyW12SUVarchitecture. Not a year/trimrename of existingSUV.",
+        "evidence": [
+          "https://www.bentleymedia.com/en/heritage-collection/2016-bentayga-11wo",
+          "https://www.bentleymedia.com/en/newsitem/1107-the-bentley-bentayga-20000-pinnacle-luxury-suvs"
+        ]
+      },
+      "name": "Dog Violet 2016",
+      "id": "dog-violet-2016",
+      "simulationEstimates": {
+        "reverseRatio": 3.317,
+        "cgHeightM": 0.65,
+        "groundClearanceM": 0.19,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.56,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Twin turbocharged",
+        "fuelTankUSgal": 22.45,
+        "topSpeedMph": 187,
+        "zeroToSixtySec": 4.2,
+        "curbKg": 2440,
+        "lengthM": 5.141,
+        "widthM": 1.998,
+        "heightM": 1.742,
+        "wheelbaseM": 2.992,
+        "trackFrontIn": 66.4,
+        "trackRearIn": 67.2,
+        "tireSize": [
+          275,
+          50,
+          20
+        ],
+        "gearRatios": [
+          4.714,
+          3.143,
+          2.106,
+          1.667,
+          1.285,
+          1,
+          0.839,
+          0.667
+        ],
+        "finalDrive": 2.85,
+        "transmissionLabel": "8-speed torque-converter automatic approximation",
+        "torqueConverterSlip": 0.05,
+        "torqueConverterMultiplication": 1.7,
+        "centerDifferentialBalance": 0.6,
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 265.52237373981563
+          },
+          {
+            "rpm": 1250,
+            "torqueLbFt": 663.805934349539
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 663.805934349539
+          },
+          {
+            "rpm": 6000,
+            "torqueLbFt": 524.7070770842049
+          },
+          {
+            "rpm": 6500,
+            "torqueLbFt": 398.2835606097234
+          }
+        ]
+      }
+    }
+  ],
+  "deferred": []
+}

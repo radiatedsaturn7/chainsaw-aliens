@@ -1,0 +1,206 @@
+{
+  "schemaVersion": 1,
+  "base": "630b6c4a9500dc8907817fc2d08ffe742946394f",
+  "scope": "Two distinct US Blackwing sedans: twin-turbo V6 compact and supercharged V8 midsize. Existing CTS-V2005 and DTS2006 are not duplicates.",
+  "vehicles": [
+    {
+      "candidateId": "cadillac-ct4-v-blackwing-2022-roster-candidate",
+      "id": "lesser-celandine-2022",
+      "name": "Lesser Celandine 2022",
+      "identity": {
+        "year": 2022,
+        "make": "Cadillac",
+        "model": "CT4-V Blackwing",
+        "trim": "standard US six-speed manual sedan; no optional carbon-fiber aero or carbon-ceramic brake package",
+        "market": "United States"
+      },
+      "referenceVehicle": "2022 US Cadillac CT4-V Blackwing, standard US six-speed manual sedan; no optional carbon-fiber aero or carbon-ceramic brake package",
+      "facts": {
+        "powerHp": 472,
+        "torqueLbFt": 445,
+        "engineDisplacementL": 3.6,
+        "transmission": "manual",
+        "gearCount": 6
+      },
+      "simulationEstimates": {
+        "drivetrain": "rwd",
+        "reverseRatio": 2.9,
+        "cgHeightM": 0.51,
+        "groundClearanceM": 0.135,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.04,
+        "spring": 0.58,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.88,
+        "rearDifferentialAccel": 0.28,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 210,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "curbKg": 1750,
+        "lengthM": 4.756,
+        "widthM": 1.815,
+        "heightM": 1.423,
+        "wheelbaseM": 2.775,
+        "trackFrontIn": 60.5,
+        "trackRearIn": 61.6,
+        "tireSize": [
+          255,
+          35,
+          18
+        ],
+        "frontTire": [
+          255,
+          35,
+          18
+        ],
+        "rearTire": [
+          275,
+          35,
+          18
+        ],
+        "gearRatios": [
+          3.01,
+          2.07,
+          1.43,
+          1,
+          0.84,
+          0.57
+        ],
+        "finalDrive": 3.73,
+        "powerRpm": 5750,
+        "torqueRpm": 4000,
+        "aspiration": "Turbocharged",
+        "fuelTankUSgal": 17,
+        "topSpeedMph": 189,
+        "zeroToSixtySec": 4.2
+      },
+      "sources": [
+        {
+          "url": "https://news.cadillac.com/newsroom.detail.html/Pages/news/us/en/2021/aug/0810-blackwing.html",
+          "publisher": "Cadillac official newsroom",
+          "fields": [
+            "powerHp",
+            "torqueLbFt",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "August10,2021 US MY2022 launch release read2026-11-17. Distinguishes CT4 twin-turbo3.6 and CT5 supercharged6.2, both standard six-speed manual or optional10AT. Full factory text accessible through web tool."
+        }
+      ],
+      "limits": [
+        "No mixing standard V-series, ATS-V, CTS-V, or optional10AT. Not the older turbocharged4.2L Blackwing V8. Initial collector markings are not a distinct physics variant.",
+        "Mass, dimensions, gearing, tracks, tire sizes, rpm anchors and all other non-fact values are explicit estimates. Manufacturer automatic acceleration figures are not used as manual measurements; runtime performance targets remain estimates.",
+        "Generic rear locking coefficient and fixed dampers approximate eLSD and Magnetic Ride only; no proprietary PTM, launch control, no-lift shifting or adaptive damping system is claimed. No optional carbon aero downforce.",
+        "Shared RTG-001 graphics by reference. No new original art or accepted independent desktop/touch drives."
+      ]
+    },
+    {
+      "candidateId": "cadillac-ct5-v-blackwing-2022-roster-candidate",
+      "id": "greater-celandine-2022",
+      "name": "Greater Celandine 2022",
+      "identity": {
+        "year": 2022,
+        "make": "Cadillac",
+        "model": "CT5-V Blackwing",
+        "trim": "standard US six-speed manual sedan; no optional carbon-fiber aero or carbon-ceramic brake package",
+        "market": "United States"
+      },
+      "referenceVehicle": "2022 US Cadillac CT5-V Blackwing, standard US six-speed manual sedan; no optional carbon-fiber aero or carbon-ceramic brake package",
+      "facts": {
+        "powerHp": 668,
+        "torqueLbFt": 659,
+        "engineDisplacementL": 6.2,
+        "transmission": "manual",
+        "gearCount": 6
+      },
+      "simulationEstimates": {
+        "drivetrain": "rwd",
+        "reverseRatio": 2.9,
+        "cgHeightM": 0.51,
+        "groundClearanceM": 0.135,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.04,
+        "spring": 0.61,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.88,
+        "rearDifferentialAccel": 0.3,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 210,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "curbKg": 1870,
+        "lengthM": 4.947,
+        "widthM": 1.883,
+        "heightM": 1.438,
+        "wheelbaseM": 2.947,
+        "trackFrontIn": 62.8,
+        "trackRearIn": 63.3,
+        "tireSize": [
+          275,
+          35,
+          19
+        ],
+        "frontTire": [
+          275,
+          35,
+          19
+        ],
+        "rearTire": [
+          305,
+          30,
+          19
+        ],
+        "gearRatios": [
+          2.66,
+          1.78,
+          1.3,
+          1,
+          0.8,
+          0.63
+        ],
+        "finalDrive": 3.73,
+        "powerRpm": 6500,
+        "torqueRpm": 3600,
+        "aspiration": "Supercharged",
+        "fuelTankUSgal": 17.4,
+        "topSpeedMph": 200,
+        "zeroToSixtySec": 3.8
+      },
+      "sources": [
+        {
+          "url": "https://news.cadillac.com/newsroom.detail.html/Pages/news/us/en/2021/aug/0810-blackwing.html",
+          "publisher": "Cadillac official newsroom",
+          "fields": [
+            "powerHp",
+            "torqueLbFt",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "August10,2021 US MY2022 launch release read2026-11-17. Distinguishes CT4 twin-turbo3.6 and CT5 supercharged6.2, both standard six-speed manual or optional10AT. Full factory text accessible through web tool."
+        }
+      ],
+      "limits": [
+        "No mixing standard V-series, ATS-V, CTS-V, or optional10AT. Not the older turbocharged4.2L Blackwing V8. Initial collector markings are not a distinct physics variant.",
+        "Mass, dimensions, gearing, tracks, tire sizes, rpm anchors and all other non-fact values are explicit estimates. Manufacturer automatic acceleration figures are not used as manual measurements; runtime performance targets remain estimates.",
+        "Generic rear locking coefficient and fixed dampers approximate eLSD and Magnetic Ride only; no proprietary PTM, launch control, no-lift shifting or adaptive damping system is claimed. No optional carbon aero downforce.",
+        "Shared RTG-001 graphics by reference. No new original art or accepted independent desktop/touch drives."
+      ]
+    }
+  ],
+  "deferred": []
+}

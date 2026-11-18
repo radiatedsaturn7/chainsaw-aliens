@@ -1,0 +1,1036 @@
+{
+  "schemaVersion": 1,
+  "base": "4ff519f339ee7970a64ab0cb2609f258418d7070",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "ford-fusion-2012-s-us-supplemental",
+      "identity": {
+        "year": 2012,
+        "make": "Ford",
+        "model": "Fusion",
+        "trim": "S 2.5-liter gasoline FWD six-speed manual, standard 16-inch wheels; not Hybrid, Sport or V6",
+        "market": "United States"
+      },
+      "referenceVehicle": "2012 United States Ford Fusion, S 2.5-liter gasoline FWD six-speed manual, standard 16-inch wheels; not Hybrid, Sport or V6",
+      "bodyClass": "four-door-sedan",
+      "artIdentity": "First-generation facelift midsize three-box sedan, three-bar nose, conventional trunk, small 16-inch wheels, cloth five-seat cabin.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "engineDisplacementL": 2.488,
+        "powerHp": 175,
+        "powerRpm": 6000,
+        "torqueLbFt": 172,
+        "torqueRpm": 4500,
+        "gearRatios": [
+          3.45,
+          1.84,
+          1.31,
+          1.03,
+          0.84,
+          0.68
+        ],
+        "finalDrive": 4.38,
+        "curbKg": 1490.05093545,
+        "lengthM": 4.84886,
+        "widthM": 1.83388,
+        "heightM": 1.4427199999999998,
+        "wheelbaseM": 2.72796,
+        "trackFrontIn": 61.7,
+        "trackRearIn": 61.3,
+        "tireSize": [
+          205,
+          60,
+          16
+        ],
+        "fuelTankUSgal": 17.5,
+        "frontWeightDistribution": 0.6,
+        "steeringRatio": 16
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Ford/Fusion/Ford_US%20Fusion_2012.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "tireSize",
+            "fuelTankUSgal"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        },
+        {
+          "url": "https://www.yumpu.com/en/document/view/11539111/2012-ford-fusion-technical-specifications",
+          "publisher": "Ford technical specifications, mirror",
+          "fields": [
+            "engineDisplacementL",
+            "gearRatios",
+            "finalDrive",
+            "curbKg",
+            "trackFrontIn",
+            "trackRearIn",
+            "frontWeightDistribution",
+            "steeringRatio"
+          ],
+          "access": "2026-11-18 indexed full Ford-authored specification table read; direct mirror page presents JavaScript challenge."
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Base curb is manufacturer manual-FWD 3285 lb, not automatic3342 lb. Brochure length190.9in used; technical sheet190.6in discrepancy retained here, not silently averaged. No hybrid controls.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Cudweed 2000",
+            "documentId": "cudweed-2000",
+            "runtimeId": "saved-car:Cudweed 2000",
+            "reference": "2000 United States Ford Taurus LX four-door sedan,standard flex-fuel3.0L OHV Vulcan V6 modeled on gasoline,FWD4AT,LHD,standard five-passenger front buckets/floor console,16inch steel wheel covers,black mirrors,solidroof. Not Duratec,SHO,SE/SES/SEL,wagon or later facelift.",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Sedge Clover 2008",
+            "documentId": "sedge-clover-2008",
+            "runtimeId": "saved-car:Sedge Clover 2008",
+            "reference": "2008 United States Mazda Tribute, iSport2.3gasoline front-wheel-drive five-speed manual, standard16-inch alloys; notHybrid,V6,automatic or4WD",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Distinct CD3 midsize sedan, 2.5 four-cylinder and six-speed manual; not Taurus Vulcan V6/4AT nor Tribute compact SUV. No current exact Fusion reference.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Ford/Fusion/Ford_US%20Fusion_2012.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Aspen Clover 2012",
+      "id": "aspen-clover-2012",
+      "simulationEstimates": {
+        "reverseRatio": 3.19,
+        "cgHeightM": 0.51,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.33,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.94,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "redlineRpm": 6400,
+        "revLimitRpm": 6600,
+        "topSpeedMph": 118,
+        "zeroToSixtySec": 8.9,
+        "transmissionLabel": "6-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "ford-edge-2012-se-us-supplemental",
+      "identity": {
+        "year": 2012,
+        "make": "Ford",
+        "model": "Edge",
+        "trim": "SE 3.5-liter V6 FWD six-speed automatic, standard 17-inch wheels; not EcoBoost, Sport or AWD",
+        "market": "United States"
+      },
+      "referenceVehicle": "2012 United States Ford Edge, SE 3.5-liter V6 FWD six-speed automatic, standard 17-inch wheels; not EcoBoost, Sport or AWD",
+      "bodyClass": "five-door-crossover",
+      "artIdentity": "Rounded first-generation facelift two-row crossover, broad nose, sloping rear quarter, conventional 17-inch wheels, five-seat cloth cabin.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "transmission": "automatic",
+        "gearCount": 6,
+        "engineDisplacementL": 3.5,
+        "powerHp": 285,
+        "powerRpm": 6500,
+        "torqueLbFt": 253,
+        "torqueRpm": 4000,
+        "lengthM": 4.67868,
+        "widthM": 1.9304,
+        "heightM": 1.7018,
+        "wheelbaseM": 2.82448,
+        "fuelTankUSgal": 18
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Ford/Edge/Ford_US%20Edge_2012.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "engineDisplacementL",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "fuelTankUSgal"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Brochure confirms17-inch SE wheels but tire profile, curb mass, track widths and all numerical gear ratios are explicitly estimates. Original detailed Edge technical PDF was403-blocked and is not claimed read.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Woad 2010",
+            "documentId": "woad-2010",
+            "runtimeId": "saved-car:Woad 2010",
+            "reference": "2010 United States Ford Flex SE Rapid Spec101A, naturally aspirated3.5L DuratecV6, FWD six-speed automatic, seven-seat cloth interior,LHD,standardP235/60R17,solid body-color roof without optional roof rails,tow package or accessories. NotSEL/Limited,EcoBoost,AWD or laterfacelift.",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Sedge Clover 2008",
+            "documentId": "sedge-clover-2008",
+            "runtimeId": "saved-car:Sedge Clover 2008",
+            "reference": "2008 United States Mazda Tribute, iSport2.3gasoline front-wheel-drive five-speed manual, standard16-inch alloys; notHybrid,V6,automatic or4WD",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Two-row CD3 crossover with285hp Ti-VCT V6,111.2in wheelbase; mechanically/body distinct from longer D4 Flex three-row wagon and2.3/5MT Tribute. Not a cosmetic Flex trim.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Ford/Edge/Ford_US%20Edge_2012.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Beech Clover 2012",
+      "id": "beech-clover-2012",
+      "simulationEstimates": {
+        "reverseRatio": 2.882,
+        "cgHeightM": 0.64,
+        "groundClearanceM": 0.2,
+        "dragCoefficient": 0.38,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.19,
+        "frontOverhangM": 0.95,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.58,
+        "redlineRpm": 6700,
+        "revLimitRpm": 6900,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 7.7,
+        "steeringRatio": 20,
+        "curbKg": 1840,
+        "gearRatios": [
+          4.484,
+          2.872,
+          1.842,
+          1.414,
+          1,
+          0.742
+        ],
+        "finalDrive": 3.16,
+        "trackFrontIn": 65.4,
+        "trackRearIn": 65.2,
+        "tireSize": [
+          235,
+          65,
+          17
+        ],
+        "transmissionLabel": "6-speed automatic (estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "ford-explorer-2012-base-us-supplemental",
+      "identity": {
+        "year": 2012,
+        "make": "Ford",
+        "model": "Explorer",
+        "trim": "base 3.5-liter Ti-VCT V6 FWD six-speed automatic, standard 17-inch covered steel wheels; not EcoBoost, XLT or 4WD",
+        "market": "United States"
+      },
+      "referenceVehicle": "2012 United States Ford Explorer, base 3.5-liter Ti-VCT V6 FWD six-speed automatic, standard 17-inch covered steel wheels; not EcoBoost, XLT or 4WD",
+      "bodyClass": "five-door-suv",
+      "artIdentity": "Fifth-generation three-row unibody SUV, upright rear and squared wheel arches, 17-inch covered steel wheels, cloth seven-seat cabin.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "transmission": "automatic",
+        "gearCount": 6,
+        "engineDisplacementL": 3.5,
+        "powerHp": 290,
+        "powerRpm": 6500,
+        "torqueLbFt": 255,
+        "torqueRpm": 4000,
+        "lengthM": 5.00634,
+        "widthM": 2.00406,
+        "heightM": 1.78816,
+        "wheelbaseM": 2.8600399999999997,
+        "tireSize": [
+          245,
+          65,
+          17
+        ],
+        "fuelTankUSgal": 18.6
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Ford/Explorer/Ford_US%20Explorer_2012.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "engineDisplacementL",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "tireSize",
+            "fuelTankUSgal"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Curb mass, track widths and numerical gear ratios are estimates. FWD version intentionally omits Intelligent4WD/TerrainManagement; no active terrain or hill-descent simulation.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Woad 2010",
+            "documentId": "woad-2010",
+            "runtimeId": "saved-car:Woad 2010",
+            "reference": "2010 United States Ford Flex SE Rapid Spec101A, naturally aspirated3.5L DuratecV6, FWD six-speed automatic, seven-seat cloth interior,LHD,standardP235/60R17,solid body-color roof without optional roof rails,tow package or accessories. NotSEL/Limited,EcoBoost,AWD or laterfacelift.",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "D4 family relationship to Flex acknowledged, but Explorer SUV has materially shorter112.6in wheelbase, taller70.4in body, wider78.9in envelope and revised290hp Ti-VCT engine versus existing262hp Flex wagon; not same-body badge substitution.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Ford/Explorer/Ford_US%20Explorer_2012.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Yew Clover 2012",
+      "id": "yew-clover-2012",
+      "simulationEstimates": {
+        "reverseRatio": 2.882,
+        "cgHeightM": 0.7,
+        "groundClearanceM": 0.2,
+        "dragCoefficient": 0.4,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.2,
+        "frontOverhangM": 0.97,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.57,
+        "redlineRpm": 6700,
+        "revLimitRpm": 6900,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 8.5,
+        "steeringRatio": 20,
+        "curbKg": 2060,
+        "gearRatios": [
+          4.484,
+          2.872,
+          1.842,
+          1.414,
+          1,
+          0.742
+        ],
+        "finalDrive": 3.39,
+        "trackFrontIn": 67,
+        "trackRearIn": 67,
+        "transmissionLabel": "6-speed automatic (estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "ford-expedition-2012-xl-us-supplemental",
+      "identity": {
+        "year": 2012,
+        "make": "Ford",
+        "model": "Expedition",
+        "trim": "XL standard-wheelbase 5.4-liter V8 gasoline 4x2 six-speed automatic, standard open3.31 axle and17-inch wheels; not EL,4x4 or tow package",
+        "market": "United States"
+      },
+      "referenceVehicle": "2012 United States Ford Expedition, XL standard-wheelbase 5.4-liter V8 gasoline 4x2 six-speed automatic, standard open3.31 axle and17-inch wheels; not EL,4x4 or tow package",
+      "bodyClass": "five-door-suv",
+      "artIdentity": "Full-size body-on-frame standard-length SUV, tall boxy three-row cabin,17-inch wheels; distinct shorter body than EL.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "gearCount": 6,
+        "engineDisplacementL": 5.4,
+        "powerHp": 310,
+        "powerRpm": 5100,
+        "torqueLbFt": 365,
+        "torqueRpm": 3600,
+        "finalDrive": 3.31,
+        "lengthM": 5.2451,
+        "widthM": 2.0015199999999997,
+        "heightM": 1.96088,
+        "wheelbaseM": 3.0225999999999997,
+        "groundClearanceM": 0.22097999999999998,
+        "frontOverhangM": 0.99568,
+        "fuelTankUSgal": 28
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Ford/Expedition/Ford_US%20Expedition_2012.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "engineDisplacementL",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "finalDrive",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "groundClearanceM",
+            "frontOverhangM",
+            "fuelTankUSgal"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Gasoline output basis for flex-fuel engine; no simulated E85 switch. Standard non-limited-slip3.31 axle verified. Estimated curb is unladen operating mass, not GVWR or shipping. Tireprofile,trackwidths and gearbox ratios are estimates. No low range,4WD or towing load.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Feverfew 2005",
+            "documentId": "feverfew-2005",
+            "runtimeId": "saved-car:Feverfew 2005",
+            "reference": "2005 United States Chevrolet Avalanche1500 base LS 2WD, standard LM7 5328cc Vortec5300 V8, Hydra-Matic4L60-E4AT, standard3.73 axle andP265/70R16, LHD six-seat crewcab, standard darkgray bodycladding, closed Midgate/cargo cover, unladen. NoZ66/Z71,WBH,2500,4WD,flex-fuel or towing load.",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Woad 2010",
+            "documentId": "woad-2010",
+            "runtimeId": "saved-car:Woad 2010",
+            "reference": "2010 United States Ford Flex SE Rapid Spec101A, naturally aspirated3.5L DuratecV6, FWD six-speed automatic, seven-seat cloth interior,LHD,standardP235/60R17,solid body-color roof without optional roof rails,tow package or accessories. NotSEL/Limited,EcoBoost,AWD or laterfacelift.",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Large rear-drive body-on-frame5.4V8 SUV versus FWD Flex wagon and GM Avalanche pickup; independent rear suspension, enclosed passenger body and6AT distinct.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Ford/Expedition/Ford_US%20Expedition_2012.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Spruce Clover 2012",
+      "id": "spruce-clover-2012",
+      "simulationEstimates": {
+        "reverseRatio": 3.4,
+        "cgHeightM": 0.79,
+        "dragCoefficient": 0.42,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.22,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 5500,
+        "revLimitRpm": 5800,
+        "topSpeedMph": 105,
+        "zeroToSixtySec": 9.4,
+        "steeringRatio": 20,
+        "curbKg": 2490,
+        "gearRatios": [
+          4.17,
+          2.34,
+          1.52,
+          1.14,
+          0.87,
+          0.69
+        ],
+        "trackFrontIn": 67,
+        "trackRearIn": 67.2,
+        "tireSize": [
+          265,
+          70,
+          17
+        ],
+        "transmissionLabel": "6-speed automatic (estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "ford-five-hundred-2007-sel-us-supplemental",
+      "identity": {
+        "year": 2007,
+        "make": "Ford",
+        "model": "Five Hundred",
+        "trim": "SEL 3.0-liter Duratec DOHC V6 FWD six-speed automatic, standard17-inch wheels; not AWD CVT or Limited",
+        "market": "United States"
+      },
+      "referenceVehicle": "2007 United States Ford Five Hundred, SEL 3.0-liter Duratec DOHC V6 FWD six-speed automatic, standard17-inch wheels; not AWD CVT or Limited",
+      "bodyClass": "four-door-sedan",
+      "artIdentity": "Tall D3 large three-box sedan, high roof and upright formal rear glass,17-inch seven-spoke wheels,cloth five-seat cabin.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "transmission": "automatic",
+        "gearCount": 6,
+        "engineDisplacementL": 3,
+        "powerHp": 203,
+        "powerRpm": 5750,
+        "torqueLbFt": 207,
+        "torqueRpm": 4500,
+        "tireSize": [
+          215,
+          60,
+          17
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Ford/500/Ford_US%20500_2007.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "engineDisplacementL",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "tireSize"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "All dimensions,mass,capacity,gear ratios anddynamic values outside published facts are estimates. Brochure confirms FWD6AT distinct from optionalAWD CVT; no fabricated steppedCVT. Traction control is optional onFWD; chosen absent.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Woad 2010",
+            "documentId": "woad-2010",
+            "runtimeId": "saved-car:Woad 2010",
+            "reference": "2010 United States Ford Flex SE Rapid Spec101A, naturally aspirated3.5L DuratecV6, FWD six-speed automatic, seven-seat cloth interior,LHD,standardP235/60R17,solid body-color roof without optional roof rails,tow package or accessories. NotSEL/Limited,EcoBoost,AWD or laterfacelift.",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Cudweed 2000",
+            "documentId": "cudweed-2000",
+            "runtimeId": "saved-car:Cudweed 2000",
+            "reference": "2000 United States Ford Taurus LX four-door sedan,standard flex-fuel3.0L OHV Vulcan V6 modeled on gasoline,FWD4AT,LHD,standard five-passenger front buckets/floor console,16inch steel wheel covers,black mirrors,solidroof. Not Duratec,SHO,SE/SES/SEL,wagon or later facelift.",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "D3 large sedan with3.0DOHC Duratec203hp/6AT versus older Taurus3.0OHV Vulcan/4AT; entirely different platform and tall body. Related later Flex architecture acknowledged but sedan/3.0 engine distinctly different.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Ford/500/Ford_US%20500_2007.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Fir Clover 2007",
+      "id": "fir-clover-2007",
+      "simulationEstimates": {
+        "reverseRatio": 3.394,
+        "cgHeightM": 0.58,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.33,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 1.01,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "fuelTankUSgal": 20,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 9.1,
+        "steeringRatio": 20,
+        "curbKg": 1650,
+        "lengthM": 5.097779999999999,
+        "widthM": 1.8922999999999999,
+        "heightM": 1.5621,
+        "wheelbaseM": 2.86766,
+        "trackFrontIn": 64.6,
+        "trackRearIn": 65,
+        "gearRatios": [
+          4.148,
+          2.37,
+          1.556,
+          1.155,
+          0.859,
+          0.686
+        ],
+        "finalDrive": 3.46,
+        "transmissionLabel": "6-speed automatic (estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "fiat-tipo-base-1-4-2016-supplemental-candidate",
+      "bodyClass": "sedan",
+      "identity": {
+        "year": 2016,
+        "make": "Fiat",
+        "model": "Tipo 1.4 16V95",
+        "trim": "Poland February2016 base Tipo four-door sedan six-speed manual with15inch steel covered wheels; notPop,OpeningEdition,hatchback,estate orE-Torq automatic",
+        "market": "Poland"
+      },
+      "referenceVehicle": "2016 Fiat Tipo 1.4 16V95, Poland February2016 base Tipo four-door sedan six-speed manual with15inch steel covered wheels; notPop,OpeningEdition,hatchback,estate orE-Torq automatic",
+      "facts": {
+        "powerHp": 93.700406707,
+        "engineDisplacementL": 1.4,
+        "gearCount": 6,
+        "transmission": "manual"
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/pl-pl/fiat/press/fiat-tipo-%E2%80%9Eurodzony%E2%80%9D-sedan-premierowy-cennik-na-rynku-polskim",
+          "publisher": "Fiat Poland February2016 launch trim/transmission table",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL",
+            "gearCount",
+            "transmission"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "Factory95KM means metric horsepower, converted93.7004 mechanicalhp. Source gives rounded1.4L; exact1.368L and all RPM/torque values remain estimates here. Estimated1150kg running mass excludingdriver, geometry,tires,gear ratios and performance are not factory-table claims. Base15inch wheel diameter is verified;195/65 section/aspect remains estimate.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Lemon Clover 2008",
+            "documentId": "lemon-clover-2008",
+            "runtimeId": "saved-car:Lemon Clover 2008",
+            "reference": "Fiat Bravo Active Eco1.6diesel hatch",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Reed Clover 2003",
+            "documentId": "reed-clover-2003",
+            "runtimeId": "saved-car:Reed Clover 2003",
+            "reference": "Stilo MultiWagon1.8 estate",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "New-generation conventional four-door three-box budget petrol sedan versus older diesel Bravo hatch and Stilo estate; different body, platform generation and engine.",
+        "evidence": [
+          "https://www.media.stellantis.com/pl-pl/fiat/press/fiat-tipo-%E2%80%9Eurodzony%E2%80%9D-sedan-premierowy-cennik-na-rynku-polskim"
+        ],
+        "audit": "Fresh wave59 native554-car inventory inspected across full catalogProvenance/referenceVehicle/inspiration and names; no exact Tipo sedan,C3 Picasso orRCZ match. Supplemental canonical slot reservation required; no historical660list edit."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Lime Clover 2016",
+      "id": "lime-clover-2016",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.55,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 11.887742356116679,
+        "topSpeedMph": 114,
+        "zeroToSixtySec": 11.2,
+        "bodyClass": "sedan",
+        "drivetrain": "fwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 6000,
+        "torqueNm": 127,
+        "torqueRpm": 4500,
+        "curbKg": 1150,
+        "lengthM": 4.532,
+        "widthM": 1.792,
+        "heightM": 1.497,
+        "wheelbaseM": 2.636,
+        "trackFrontIn": 59,
+        "trackRearIn": 58.5,
+        "tireSize": [
+          195,
+          65,
+          15
+        ],
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.32,
+          0.97,
+          0.76,
+          0.62
+        ],
+        "finalDrive": 4.1,
+        "transmissionLabel": "6-speedmanual estimatedratios",
+        "torqueLbFt": 93.67039295821273
+      }
+    },
+    {
+      "candidateId": "citroen-c3-picasso-vt-1-4-vti95-2009-supplemental-candidate",
+      "bodyClass": "minivan",
+      "identity": {
+        "year": 2009,
+        "make": "Citroen",
+        "model": "C3 Picasso VT1.4 VTi95",
+        "trim": "UK April2009 entry VT five-door miniMPV five-speed manual15inch wheels, nooptionalESP assumed; notVTR+,Exclusive or1.6",
+        "market": "UK"
+      },
+      "referenceVehicle": "2009 Citroen C3 Picasso VT1.4 VTi95, UK April2009 entry VT five-door miniMPV five-speed manual15inch wheels, nooptionalESP assumed; notVTR+,Exclusive or1.6",
+      "facts": {
+        "engineDisplacementL": 1.397,
+        "publishedPowerDINhp": 95,
+        "powerRpm": 6000,
+        "torqueNm": 134.225976852,
+        "torqueRpm": 4000,
+        "gearCount": 5,
+        "transmission": "manual",
+        "curbKg": 1334,
+        "lengthM": 4.08,
+        "widthM": 1.73,
+        "heightM": 1.62,
+        "wheelbaseM": 2.54,
+        "topSpeedMph": 111,
+        "periodPublishedRatings": {
+          "value": 95,
+          "unit": "DIN hp as printed",
+          "basis": "2009UKfactory table, metric interpretation not independently resolved",
+          "installedPowerHpEstimate": 93.700406707
+        }
+      },
+      "sources": [
+        {
+          "url": "https://www.citroenet.org.uk/passenger-cars/psa/c3/c3-picasso/c3-picasso22.html",
+          "publisher": "CitroenUK2009 factory press technical table, credited original reproduced byCitroenet",
+          "fields": [
+            "engineDisplacementL",
+            "publishedPowerDINhp",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "gearCount",
+            "transmission",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        },
+        {
+          "url": "https://www.citroenet.org.uk/passenger-cars/psa/c3/c3-picasso/c3-picasso21.html",
+          "publisher": "CitroenUK2009 factory launch pricing/trim table mirrored byCitroenet",
+          "fields": [
+            "identity",
+            "trim",
+            "wheelDiameter"
+          ],
+          "access": "Readweb2026-11-18; prices dated1April2009 VT1.4 VTi95 and15inch wheels."
+        }
+      ],
+      "limits": [
+        "Table says95 DIN hp, notSAEhp; runtime93.7004mechanicalhp is explicitly modeled assuming95metricPS. Table kerb1334kg retained literally; driver/loading inclusion not stated. Published exterior dimensions rounded4.08x1.73x1.62 retained rather than substituting differing secondary figures. Ratios, tracks,tiresection,transients and0\u20136011.8 are estimates; factory0\u201362is12.2.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data.",
+        "Historical published ratings are not certified modern net output; installed simulation output is an explicit estimate."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Creek Clover 2009",
+            "documentId": "creek-clover-2009",
+            "runtimeId": "saved-car:Creek Clover 2009",
+            "reference": "Renault Modus Avantage1.2 short miniMPV",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Yates Clover 2009",
+            "documentId": "yates-clover-2009",
+            "runtimeId": "saved-car:Yates Clover 2009",
+            "reference": "Fiat Qubo1.4 passengerMPV",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Distinct PSA B-platform upright five-door miniMPV with VTi engine, taller squared body and sliding rear seats; not rebadged Qubo or merely a C3 trim.",
+        "evidence": [
+          "https://www.citroenet.org.uk/passenger-cars/psa/c3/c3-picasso/c3-picasso22.html"
+        ],
+        "audit": "Fresh wave59 native554-car inventory inspected across full catalogProvenance/referenceVehicle/inspiration and names; no exact Tipo sedan,C3 Picasso orRCZ match. Supplemental canonical slot reservation required; no historical660list edit."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Poplar Clover 2009",
+      "id": "poplar-clover-2009",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.6,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 13.20860261790742,
+        "zeroToSixtySec": 11.8,
+        "bodyClass": "minivan",
+        "drivetrain": "fwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "trackFrontIn": 59,
+        "trackRearIn": 58.5,
+        "tireSize": [
+          195,
+          60,
+          15
+        ],
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.32,
+          0.97,
+          0.76
+        ],
+        "finalDrive": 4.1,
+        "transmissionLabel": "5-speedmanual estimatedratios",
+        "powerHp": 93.700406707
+      }
+    },
+    {
+      "candidateId": "peugeot-rcz-thp200-2010-supplemental-candidate",
+      "bodyClass": "coupe",
+      "identity": {
+        "year": 2010,
+        "make": "Peugeot",
+        "model": "RCZ 1.6 THP200",
+        "trim": "Austria summer2010 conventional petrol front-drive2+2 coupe six-speed manual standard18inch representation; not156automatic,HDi,RCZR orHYbrid4concept",
+        "market": "Austria"
+      },
+      "referenceVehicle": "2010 Peugeot RCZ 1.6 THP200, Austria summer2010 conventional petrol front-drive2+2 coupe six-speed manual standard18inch representation; not156automatic,HDi,RCZR orHYbrid4concept",
+      "facts": {
+        "powerHp": 197.26401412,
+        "engineDisplacementL": 1.6,
+        "torqueNm": 275,
+        "gearCount": 6,
+        "transmission": "manual"
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/at-de/peugeot/press/peugeot-rcz-der-supersportler-made-in-austria",
+          "publisher": "Peugeot Austria March2010 factory launch specification",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL",
+            "torqueNm",
+            "gearCount",
+            "transmission"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "Factory147kW/200PS rounded pair;200metricPS converted197.264mechanicalhp. Torque275Nm and6MT verified; exact1598cc, RPM anchors,1297kg runningmass withoutdriver, dimensions, tracks, tiresection, gearing andperformance estimates. Factory documents18/19inch choices; selectedstandard18inch geometry approximate. No activewing or hybrid simulation added.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Bog Asphodel 2011",
+            "documentId": "bog-asphodel-2011",
+            "runtimeId": "saved-car:Bog Asphodel 2011",
+            "reference": "Peugeot308GTiT7 THP200five-door6MT",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Shares PSA platform2 and THP200 engine family with308GTi, explicitly acknowledged. Bespoke2+2 coupe has lowerbody/CG, widertrack and200PS-specific frontbrace; distinct geometry and driving package, notyear/trim padding.",
+        "evidence": [
+          "https://www.media.stellantis.com/at-de/peugeot/press/peugeot-rcz-der-supersportler-made-in-austria"
+        ],
+        "audit": "Fresh wave59 native554-car inventory inspected across full catalogProvenance/referenceVehicle/inspiration and names; no exact Tipo sedan,C3 Picasso orRCZ match. Supplemental canonical slot reservation required; no historical660list edit."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Cypress Clover 2010",
+      "id": "cypress-clover-2010",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.46,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.33,
+        "tireGrip": 0.94,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.62,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Turbocharged",
+        "fuelTankUSgal": 14.529462879698164,
+        "topSpeedMph": 146,
+        "zeroToSixtySec": 7.2,
+        "bodyClass": "coupe",
+        "drivetrain": "fwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 5800,
+        "torqueRpm": 1700,
+        "curbKg": 1297,
+        "lengthM": 4.287,
+        "widthM": 1.845,
+        "heightM": 1.359,
+        "wheelbaseM": 2.612,
+        "trackFrontIn": 62.20472440944882,
+        "trackRearIn": 62.71653543307087,
+        "tireSize": [
+          235,
+          45,
+          18
+        ],
+        "gearRatios": [
+          3.538,
+          1.92,
+          1.323,
+          0.975,
+          0.761,
+          0.646
+        ],
+        "finalDrive": 4.176,
+        "transmissionLabel": "6-speedmanual estimatedratios",
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 81.13183642049923
+          },
+          {
+            "rpm": 1700,
+            "torqueLbFt": 202.82959105124806
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 202.82959105124806
+          },
+          {
+            "rpm": 5800,
+            "torqueLbFt": 178.62596588935173
+          },
+          {
+            "rpm": 6500,
+            "torqueLbFt": 121.69775463074883
+          }
+        ]
+      }
+    }
+  ],
+  "deferred": []
+}

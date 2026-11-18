@@ -1,0 +1,895 @@
+{
+  "schemaVersion": 1,
+  "base": "9e03b106bb920aabf9f0cd1602b9ccaac6d538cb",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "hyundai-santa-fe-gls-2-4-2012-us-supplemental",
+      "identity": {
+        "year": 2012,
+        "make": "Hyundai",
+        "model": "Santa Fe",
+        "trim": "GLS 2.4 four-cylinder FWD six-speed automatic, standard 17-inch wheels; not V6 or AWD",
+        "market": "United States"
+      },
+      "referenceVehicle": "2012 United States Hyundai Santa Fe, GLS 2.4 four-cylinder FWD six-speed automatic, standard 17-inch wheels; not V6 or AWD",
+      "bodyClass": "five-door-suv",
+      "artIdentity": "Original logo-free 2012 Santa Fe five-door-suv proportions and cabin appropriate to stated trim; no badges or sponsor artwork.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "engineDisplacementL": 2.4,
+        "powerHp": 175,
+        "drivetrain": "fwd",
+        "transmission": "automatic",
+        "gearCount": 6
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Hyundai/Santa%20Fe/Hyundai_US%20SantaFe_2012.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "engineDisplacementL",
+            "powerHp",
+            "drivetrain",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "2026-11-18 manufacturer brochure text or reproduced original manufacturer release/manual read; mirror host is not the author."
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Factory brochure GLStable confirms2.4/6AT/FWD and175hp. All remaining numerical engineering fields including169lbft, mass1690kg and ratios are explicit estimates; no trim-exact curb claim. No manual or AWD modeled.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Copper Trefoil 2012",
+            "documentId": "copper-trefoil-2012",
+            "runtimeId": "saved-car:Copper Trefoil 2012",
+            "reference": "2012 United States Kia Sorento, LX3.5V6 FWD6AT,standard18-inchwheels,unladen",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Willow Clover 2012",
+            "documentId": "willow-clover-2012",
+            "runtimeId": "saved-car:Willow Clover 2012",
+            "reference": "2012 United States Hyundai Veracruz, GLS3.8MPI V6 FWD6AT,standard17-inchalloys,sevenseats",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Santa Fe CM five-seat utility with 175hp 2.4 four-cylinder versus related Sorento 276hp3.5V6 and larger Veracruz3.8V6. Different engine/output/body dimensions; not a badge-only V6 duplicate.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Hyundai/Santa%20Fe/Hyundai_US%20SantaFe_2012.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Kumquat Clover 2012",
+      "id": "kumquat-clover-2012",
+      "simulationEstimates": {
+        "reverseRatio": 3.39,
+        "cgHeightM": 0.64,
+        "groundClearanceM": 0.2,
+        "dragCoefficient": 0.38,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.96,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 6300,
+        "revLimitRpm": 6600,
+        "fuelTankUSgal": 18,
+        "topSpeedMph": 118,
+        "zeroToSixtySec": 10.4,
+        "steeringRatio": 20,
+        "powerRpm": 6000,
+        "torqueLbFt": 169,
+        "torqueRpm": 3750,
+        "curbKg": 1690,
+        "lengthM": 4.676139999999999,
+        "widthM": 1.88976,
+        "heightM": 1.72466,
+        "wheelbaseM": 2.70002,
+        "trackFrontIn": 63.6,
+        "trackRearIn": 63.8,
+        "tireSize": [
+          235,
+          65,
+          17
+        ],
+        "gearRatios": [
+          4.21,
+          2.64,
+          1.8,
+          1.39,
+          1,
+          0.77
+        ],
+        "finalDrive": 3.91,
+        "transmissionLabel": "6-speed automatic (estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "hyundai-tucson-gl-2-0-2012-us-supplemental",
+      "identity": {
+        "year": 2012,
+        "make": "Hyundai",
+        "model": "Tucson",
+        "trim": "GL 2.0 petrol FWD five-speed manual, standard16-inch wheels; not GLS2.4,AWD orautomatic",
+        "market": "United States"
+      },
+      "referenceVehicle": "2012 United States Hyundai Tucson, GL 2.0 petrol FWD five-speed manual, standard16-inch wheels; not GLS2.4,AWD orautomatic",
+      "bodyClass": "five-door-suv",
+      "artIdentity": "Original logo-free 2012 Tucson five-door-suv proportions and cabin appropriate to stated trim; no badges or sponsor artwork.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "engineDisplacementL": 2,
+        "powerHp": 165,
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 5
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Hyundai/Tucson/Hyundai_US%20Tucson_2012.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "engineDisplacementL",
+            "powerHp",
+            "drivetrain",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "2026-11-18 manufacturer brochure text or reproduced original manufacturer release/manual read; mirror host is not the author."
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Factory brochure confirms GL2.0/5MT/FWD and165hp. Torque, RPM, numeric gearing and all geometry/mass are estimates; no manufacturer claim for these. No 2.4 or PZEV170hp specification mixed.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Amber Trefoil 2013",
+            "documentId": "amber-trefoil-2013",
+            "runtimeId": "saved-car:Amber Trefoil 2013",
+            "reference": "2013 United States Kia Sportage, baseSportage2.4MPI ULEV176hp FWD6MT,16-inchwheels",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Platform relationship with Sportage acknowledged. Selected Tucson entry GL has 2.0/165hp and five-speed versus existing Sportage2.4/176hp/six-speed; distinct engine displacement and transmission, not a same-engine rebadge. Hyundai utility body differs Kia body.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Hyundai/Tucson/Hyundai_US%20Tucson_2012.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Citron Clover 2012",
+      "id": "citron-clover-2012",
+      "simulationEstimates": {
+        "reverseRatio": 3.583,
+        "cgHeightM": 0.61,
+        "groundClearanceM": 0.17,
+        "dragCoefficient": 0.37,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "fuelTankUSgal": 15.3,
+        "topSpeedMph": 115,
+        "zeroToSixtySec": 10.0,
+        "steeringRatio": 20,
+        "powerRpm": 6200,
+        "torqueLbFt": 146,
+        "torqueRpm": 4600,
+        "curbKg": 1450,
+        "lengthM": 4.399279999999999,
+        "widthM": 1.82118,
+        "heightM": 1.65608,
+        "wheelbaseM": 2.63906,
+        "trackFrontIn": 63.5,
+        "trackRearIn": 63.5,
+        "tireSize": [
+          215,
+          70,
+          16
+        ],
+        "gearRatios": [
+          3.615,
+          1.955,
+          1.37,
+          1.031,
+          0.837
+        ],
+        "finalDrive": 4.188
+      }
+    },
+    {
+      "candidateId": "chrysler-pacifica-touring-4-0-2007-us-supplemental",
+      "identity": {
+        "year": 2007,
+        "make": "Chrysler",
+        "model": "Pacifica",
+        "trim": "Touring FWD29T 4.0SOHC V6 six-speed AutoStick, standard17-inch wheels; not Signature package,AWD or3.8base",
+        "market": "United States"
+      },
+      "referenceVehicle": "2007 United States Chrysler Pacifica, Touring FWD29T 4.0SOHC V6 six-speed AutoStick, standard17-inch wheels; not Signature package,AWD or3.8base",
+      "bodyClass": "five-door-crossover-wagon",
+      "artIdentity": "Original logo-free 2007 Pacifica five-door-crossover-wagon proportions and cabin appropriate to stated trim; no badges or sponsor artwork.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "engineDisplacementL": 4,
+        "powerHp": 253,
+        "torqueLbFt": 262,
+        "drivetrain": "fwd",
+        "transmission": "automatic",
+        "gearCount": 6,
+        "tireSize": [
+          235,
+          65,
+          17
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Chrysler/Pacifica/Chrysler_US%20Pacifica_2007.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "engineDisplacementL",
+            "powerHp",
+            "torqueLbFt",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "tireSize"
+          ],
+          "access": "2026-11-18 manufacturer brochure text or reproduced original manufacturer release/manual read; mirror host is not the author."
+        },
+        {
+          "url": "https://wagnertech.wordpress.com/2006/12/12/limited-edition-signature-series-models-of-the-2007-chrysler-300-pacifica-pt-cruiser-and-town-country-arrive-in-dealerships-this-fall/",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "engineDisplacementL",
+            "powerHp",
+            "torqueLbFt",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "tireSize"
+          ],
+          "access": "2026-11-18 manufacturer brochure text or reproduced original manufacturer release/manual read; mirror host is not the author."
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Original Chrysler Dec11,2006 release reproduced by mirror corroborates common253hp/262lbft4.0 engine; brochure selects nonSignature29T17-inch trim. No Signature19-inch package implied.",
+        "Curb1950kg is operating estimate, not grossweight or trim-specific factory claim. Geometry, gear/final ratios, peakRPM, handling andperformance explicitly estimated. No self-leveling active simulation.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Hemlock RT 2005",
+            "documentId": "hemlock-rt-2005",
+            "runtimeId": "saved-car:Hemlock RT 2005",
+            "reference": "US2005 Dodge Magnum RT RWD5AT LHD standard18in wheels, no optional self-leveling suspension/tow package; not AWD/SRT8",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Woad 2010",
+            "documentId": "woad-2010",
+            "runtimeId": "saved-car:Woad 2010",
+            "reference": "2010 United States Ford Flex SE Rapid Spec101A, naturally aspirated3.5L DuratecV6, FWD six-speed automatic, seven-seat cloth interior,LHD,standardP235/60R17,solid body-color roof without optional roof rails,tow package or accessories. NotSEL/Limited,EcoBoost,AWD or laterfacelift.",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Selfheal 2005",
+            "documentId": "selfheal-2005",
+            "runtimeId": "saved-car:Selfheal 2005",
+            "reference": "2005 US Dodge Grand Caravan SE long-wheelbase,3301cc OHV12V V6 gasoline,FWD4AT,seven seats with basic cloth second/third-row removable benches,15-inch steel wheel covers,no roof rack. Not short Caravan,SE Plus,Stow n Go,SXT3.8,C/V or Honda Odyssey.",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "CS-platform crossover-wagon with4.0SOHCV6/6AT differs Caravan3.3OHV/4AT van, FordFlex3.5DOHC wagon and longitudinalV8/RWDMagnum. Not modern Pacifica minivan.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Chrysler/Pacifica/Chrysler_US%20Pacifica_2007.pdf",
+          "https://wagnertech.wordpress.com/2006/12/12/limited-edition-signature-series-models-of-the-2007-chrysler-300-pacifica-pt-cruiser-and-town-country-arrive-in-dealerships-this-fall/"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Pomelo Clover 2007",
+      "id": "pomelo-clover-2007",
+      "simulationEstimates": {
+        "reverseRatio": 3.214,
+        "cgHeightM": 0.61,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.35,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 1.04,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 6300,
+        "revLimitRpm": 6600,
+        "fuelTankUSgal": 23,
+        "topSpeedMph": 115,
+        "zeroToSixtySec": 8.5,
+        "steeringRatio": 20,
+        "powerRpm": 6000,
+        "torqueRpm": 4100,
+        "curbKg": 1950,
+        "lengthM": 5.05206,
+        "widthM": 2.01422,
+        "heightM": 1.6840199999999999,
+        "wheelbaseM": 2.95402,
+        "trackFrontIn": 66,
+        "trackRearIn": 66,
+        "gearRatios": [
+          4.127,
+          2.842,
+          2.283,
+          1.452,
+          1,
+          0.69
+        ],
+        "finalDrive": 3.25,
+        "transmissionLabel": "6-speed automatic (estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "kia-picanto-1-25-2011-europe-supplemental",
+      "identity": {
+        "year": 2011,
+        "make": "Kia",
+        "model": "Picanto",
+        "trim": "TA launch European1.25Kappa petrol five-door five-speed manual,14-inch wheels,nonISG; no unsupported national grade name",
+        "market": "Europe"
+      },
+      "referenceVehicle": "2011 Europe Kia Picanto, TA launch European1.25Kappa petrol five-door five-speed manual,14-inch wheels,nonISG; no unsupported national grade name",
+      "bodyClass": "five-door-hatchback",
+      "artIdentity": "Original logo-free 2011 Picanto five-door-hatchback proportions and cabin appropriate to stated trim; no badges or sponsor artwork.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "engineDisplacementL": 1.248,
+        "powerHp": 83.837206001,
+        "torqueNm": 121,
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "lengthM": 3.595,
+        "widthM": 1.595,
+        "heightM": 1.48,
+        "wheelbaseM": 2.385,
+        "trackFrontIn": 55.70866141732284,
+        "trackRearIn": 55.82677165354331,
+        "tireSize": [
+          165,
+          60,
+          14
+        ],
+        "fuelTankUSgal": 9.246021832535195,
+        "dragCoefficient": 0.31
+      },
+      "sources": [
+        {
+          "url": "https://www.netcarshow.com/kia/2012-picanto/",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "engineDisplacementL",
+            "powerHp",
+            "torqueNm",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "fuelTankUSgal",
+            "dragCoefficient"
+          ],
+          "access": "2026-11-18 manufacturer brochure text or reproduced original manufacturer release/manual read; mirror host is not the author."
+        },
+        {
+          "url": "https://manualzz.com/doc/6750213/kia-picanto-2011-owner-s-manual",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "engineDisplacementL",
+            "powerHp",
+            "torqueNm",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "fuelTankUSgal",
+            "dragCoefficient"
+          ],
+          "access": "2026-11-18 manufacturer brochure text or reproduced original manufacturer release/manual read; mirror host is not the author."
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Manufacturer Geneva2011 release reproduced on2012-labeled mirror establishes2011launch European1.25five-door5MT. 85PS converted to83.84mechanicalhp, not85SAEhp. No exact national trim designation asserted.",
+        "Factory2011manual gives dimensions and14-inch configuration. Curb950kg is estimated operating mass, NOT1370kg gross from manual. Ratios,peakRPM and performance estimates. No ISG or ESC simulation claimed.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Knotgrass 2004",
+            "documentId": "knotgrass-2004",
+            "runtimeId": "saved-car:Knotgrass 2004",
+            "reference": "2004 mainland-US Hyundai Accent GL four-door sedan,1.6L DOHC inline4,standard five-speed manual,FWD,LHD. No Popular Equipment Package; not GT,sport suspension,3-door,GLS or later generation.",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Arrowleaf Trefoil 2012",
+            "documentId": "arrowleaf-trefoil-2012",
+            "runtimeId": "saved-car:Arrowleaf Trefoil 2012",
+            "reference": "2012 United States Kia Rio5-door, LX1.6GDI hatchback6MT,standard15-inchsteelwheels,noISG",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "TA second-generation citybody/Kappa1.25 differs largerRio1.6GDI and Accent1.6. Same-wave i10PA1.1SOHC versus this DOHCdualCVVT1.25, different generation/body and85PS versus65bhp; not rebadge.",
+        "evidence": [
+          "https://www.netcarshow.com/kia/2012-picanto/",
+          "https://manualzz.com/doc/6750213/kia-picanto-2011-owner-s-manual"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Tangerine Clover 2011",
+      "id": "tangerine-clover-2011",
+      "simulationEstimates": {
+        "reverseRatio": 3.583,
+        "cgHeightM": 0.51,
+        "groundClearanceM": 0.15,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.73,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 6400,
+        "revLimitRpm": 6700,
+        "topSpeedMph": 106,
+        "zeroToSixtySec": 11.7,
+        "steeringRatio": 20,
+        "powerRpm": 6000,
+        "torqueRpm": 4000,
+        "curbKg": 950,
+        "gearRatios": [
+          3.615,
+          1.95,
+          1.37,
+          1.031,
+          0.837
+        ],
+        "finalDrive": 4.267
+      }
+    },
+    {
+      "candidateId": "opel-adam-base-1-2-2013-supplemental-candidate",
+      "bodyClass": "hatchback",
+      "identity": {
+        "year": 2013,
+        "make": "Opel",
+        "model": "Adam base1.2",
+        "trim": "January2013 base Adam three-door four-seat1.2naturallyaspirated five-speedmanual, noecoFLEXpack,Jam,Glam,Slam orlaterTurbo",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2013 Germany Opel Adam base1.2 naturallyaspirated four-cylinder three-door four-seat five-speedmanual, standardroof; noecoFLEXpack orlaterTurbo",
+      "facts": {
+        "powerHp": 69.042404942,
+        "engineDisplacementL": 1.2,
+        "gearCount": 5,
+        "transmission": "manual",
+        "wheelbaseM": 2.311,
+        "trackFrontIn": 57.952755905511815,
+        "trackRearIn": 57.637795275590555
+      },
+      "sources": [
+        {
+          "url": "https://www.netcarshow.com/opel/2013-adam/",
+          "publisher": "Manufacturer-authored release; original host or attributed factory text mirror",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL",
+            "gearCount",
+            "transmission",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "FactoryGermanentry11500euro1.2 51kW70metricPS; basenameAdam selected ratherthaninventingnamedtrim. 1011kgrunningmass isestimate, notunchecked1086EUfigureminusdriverfact. Noautomatic/startstop simulated.",
+        "Mass is an explicit estimated running mass without driver, not a verified trim-specific curb figure. Unrepeated geometry, tires, track, RPM, torque and gear/final-drive ratios are modeling estimates.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Spiceberry Clover 2020",
+            "documentId": "spiceberry-clover-2020",
+            "runtimeId": "saved-car:Spiceberry Clover 2020",
+            "reference": "CorsaFSE1.2three-cylinderfive-door",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Blackcurrant Clover 1998",
+            "documentId": "blackcurrant-clover-1998",
+            "runtimeId": "saved-car:Blackcurrant Clover 1998",
+            "reference": "LanciaYLS1.2 16vthree-door",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "ShortGM GammaII-family fashioncity hatch with1.229Lfour, versus longerPSACMPCorsaFthree-cylinder andearlierFiat-platformLanciaY. Neitherplatformbody/powertrainclone.",
+        "evidence": [
+          "https://www.netcarshow.com/opel/2013-adam/"
+        ],
+        "audit": "Fresh629nativecatalog fullprovenance/inspiration audited; noAdam,Meriva,Mokka,Trax,Encore productionidentity. Fourfirstpacketrows distinct. Supplementalcanonicalreservationrequired."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Mandarin Clover 2013",
+      "id": "mandarin-clover-2013",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.55,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.72,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 10.03853798960964,
+        "topSpeedMph": 102.5262467191601,
+        "zeroToSixtySec": 14.4,
+        "bodyClass": "hatchback",
+        "drivetrain": "fwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 5600,
+        "torqueNm": 115,
+        "torqueRpm": 4000,
+        "curbKg": 1011,
+        "lengthM": 3.698,
+        "widthM": 1.72,
+        "heightM": 1.484,
+        "tireSize": [
+          185,
+          65,
+          15
+        ],
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.32,
+          0.97,
+          0.76
+        ],
+        "finalDrive": 4.1,
+        "transmissionLabel": "5-speed manual; estimated ratios",
+        "torqueLbFt": 84.81964716688555
+      }
+    },
+    {
+      "candidateId": "vauxhall-meriva-s-1-4-2010-supplemental-candidate",
+      "bodyClass": "minivan",
+      "identity": {
+        "year": 2010,
+        "make": "Vauxhall",
+        "model": "Meriva S1.4 16V100",
+        "trim": "2010 secondgeneration five-seat FlexDoorsminiMPV baseS naturallyaspirated petrol five-speedmanual noaircon, noSEpanoramicroof; notTurbo,automaticorMerivaA",
+        "market": "UK"
+      },
+      "referenceVehicle": "2010 Vauxhall Meriva S1.4 16V100, 2010 secondgeneration five-seat FlexDoorsminiMPV baseS naturallyaspirated petrol five-speedmanual noaircon, noSEpanoramicroof; notTurbo,automaticorMerivaA",
+      "facts": {
+        "powerHp": 98.63200706,
+        "engineDisplacementL": 1.4,
+        "gearCount": 5,
+        "transmission": "manual"
+      },
+      "sources": [
+        {
+          "url": "https://www.netcarshow.com/vauxhall/2011-meriva/",
+          "publisher": "Manufacturer-authored release; original host or attributed factory text mirror",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL",
+            "gearCount",
+            "transmission"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        },
+        {
+          "url": "https://www.carsuk.net/vauxhall-at-geneva-vauxhall-meriva-2010-uk-prices/",
+          "publisher": "Vauxhall original2010price/modeltable reproduced byCarsUK",
+          "fields": [
+            "UKS1.4 100PSmanual",
+            "2010marketdate",
+            "trim"
+          ],
+          "access": "Readexact reproducedmanufacturerpricetable effective1April2010; editorialreviewnotusedfortechnicalfacts."
+        }
+      ],
+      "limits": [
+        "Factory100PS converted98.632hp; factorylaunch textfive-speedallpetrol except140PS establishesselectedNA100. UKoriginalMarch2010price-table explicitlyS1.4manual; mirror2011page ismodelyearheading notprooflaunchwaiteduntil2011. 1398cc/RPM/torque/mass/geometry/tires estimated; baseSnoACmass approximate.",
+        "Mass is an explicit estimated running mass without driver, not a verified trim-specific curb figure. Unrepeated geometry, tires, track, RPM, torque and gear/final-drive ratios are modeling estimates.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Guelder Clover 2013",
+            "documentId": "guelder-clover-2013",
+            "runtimeId": "saved-car:Guelder Clover 2013",
+            "reference": "Fiat500LPopStarTwinAir1056MT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Poplar Clover 2009",
+            "documentId": "poplar-clover-2009",
+            "runtimeId": "saved-car:Poplar Clover 2009",
+            "reference": "CitroenC3PicassoVT1.4VTi95five-speed",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "DistinctGM compactMPV withrearhingedrear doors andlongerAstra-derivedstructure, notFiatTwinAirMPV orPSAC3Picasso. NoOpelMeriva clonefound.",
+        "evidence": [
+          "https://www.netcarshow.com/vauxhall/2011-meriva/"
+        ],
+        "audit": "Fresh629nativecatalog fullprovenance/inspiration audited; noAdam,Meriva,Mokka,Trax,Encore productionidentity. Fourfirstpacketrows distinct. Supplementalcanonicalreservationrequired."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Clementine Clover 2010",
+      "id": "clementine-clover-2010",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.58,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 14.265290827340015,
+        "topSpeedMph": 110,
+        "zeroToSixtySec": 13.4,
+        "bodyClass": "minivan",
+        "drivetrain": "fwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 6000,
+        "torqueNm": 130,
+        "torqueRpm": 4000,
+        "curbKg": 1285,
+        "lengthM": 4.288,
+        "widthM": 1.812,
+        "heightM": 1.615,
+        "wheelbaseM": 2.644,
+        "trackFrontIn": 59,
+        "trackRearIn": 58.5,
+        "tireSize": [
+          195,
+          65,
+          15
+        ],
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.32,
+          0.97,
+          0.76
+        ],
+        "finalDrive": 4.1,
+        "transmissionLabel": "5-speed manual; estimated ratios",
+        "torqueLbFt": 95.88307940604453
+      }
+    },
+    {
+      "candidateId": "opel-mokka-base-1-6-2013-supplemental-candidate",
+      "bodyClass": "suv",
+      "identity": {
+        "year": 2013,
+        "make": "Opel",
+        "model": "Mokka base1.6ecoFLEX115",
+        "trim": "MY2013 firstgeneration entry1.6naturallyaspiratedFWD five-speedmanual StartStop, standardroof andbasewheels; not1.4TurboAWD,CDTI,MokkaXorPSAMokkaB",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2013 Opel Mokka base1.6ecoFLEX115, MY2013 firstgeneration entry1.6naturallyaspiratedFWD five-speedmanual StartStop, standardroof andbasewheels; not1.4TurboAWD,CDTI,MokkaXorPSAMokkaB",
+      "facts": {
+        "powerHp": 113.426808119,
+        "engineDisplacementL": 1.6,
+        "gearCount": 5,
+        "transmission": "manual",
+        "torqueNm": 155,
+        "torqueRpm": 4000,
+        "drivetrain": "fwd"
+      },
+      "sources": [
+        {
+          "url": "https://www.netcarshow.com/opel/2013-mokka/",
+          "publisher": "Manufacturer-authored release; original host or attributed factory text mirror",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL",
+            "gearCount",
+            "transmission",
+            "torqueNm",
+            "torqueRpm",
+            "drivetrain"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "FactoryGermanentry1.6ecoFLEX85kW115metricPS18990euro model selected; noinventednamedtrim. 1598cc,RPM,1285kgdriver-excludedrunningmass andsecondarygeometry/tires provisional. StopStartnotmodeled. Source155Nm4000andfive-speedmanual verified; noAWDlogicclaimed.",
+        "Mass is an explicit estimated running mass without driver, not a verified trim-specific curb figure. Unrepeated geometry, tires, track, RPM, torque and gear/final-drive ratios are modeling estimates.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Prairie Trefoil 2012",
+            "documentId": "prairie-trefoil-2012",
+            "runtimeId": "saved-car:Prairie Trefoil 2012",
+            "reference": "ChevroletSonicLS1.8five-door5MT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Checkerberry Clover 2021",
+            "documentId": "checkerberry-clover-2021",
+            "runtimeId": "saved-car:Checkerberry Clover 2021",
+            "reference": "GrandlandXGriffin1.2Turbo6MT",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "GM GammaIIcompactSUV withraisedbody and1.6NA versusrelatedlowerSonic1.8hatch andmuchlargerPSAEMP2Grandlandturbo. NoTrax/Encore/Mokka badgeequivalent in629nativecatalog.",
+        "evidence": [
+          "https://www.netcarshow.com/opel/2013-mokka/"
+        ],
+        "audit": "Fresh629nativecatalog fullprovenance/inspiration audited; noAdam,Meriva,Mokka,Trax,Encore productionidentity. Fourfirstpacketrows distinct. Supplementalcanonicalreservationrequired."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Bergamot Clover 2013",
+      "id": "bergamot-clover-2013",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.6,
+        "groundClearanceM": 0.16,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 13.736946722623719,
+        "topSpeedMph": 106,
+        "zeroToSixtySec": 11.9,
+        "bodyClass": "suv",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 6000,
+        "curbKg": 1285,
+        "lengthM": 4.278,
+        "widthM": 1.777,
+        "heightM": 1.658,
+        "wheelbaseM": 2.555,
+        "trackFrontIn": 60.629921259842526,
+        "trackRearIn": 60.629921259842526,
+        "tireSize": [
+          215,
+          60,
+          16
+        ],
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.32,
+          0.97,
+          0.76
+        ],
+        "finalDrive": 4.1,
+        "transmissionLabel": "5-speed manual; estimated ratios"
+      }
+    }
+  ],
+  "deferred": []
+}

@@ -1,0 +1,1158 @@
+{
+  "schemaVersion": 1,
+  "base": "fb46b0f92f83db140aec8471cf4693e85df7c207",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "bmw-z3-m-coupe-2002-roster-candidate",
+      "identity": {
+        "year": 2002,
+        "make": "BMW",
+        "model": "Z3 M Coupe",
+        "trim": "US E36/8 S54B32 naturally aspirated3.2 hatch coupe five-speed manual",
+        "market": "United States"
+      },
+      "referenceVehicle": "2002 United States BMW Z3 M Coupe E36/8 S54B32 3246cc315hp five-speed manual; not earlier S52, European325PS, Z4M E86 or M Roadster.",
+      "facts": {
+        "powerHp": 315,
+        "powerRpm": 7400,
+        "torqueLbFt": 251,
+        "torqueRpm": 4900,
+        "engineDisplacementL": 3.246,
+        "lengthIn": 158.5,
+        "widthIn": 68.5,
+        "heightIn": 49.8,
+        "wheelbaseIn": 96.8,
+        "trackFrontIn": 56,
+        "trackRearIn": 58.7,
+        "fuelTankUSgal": 13.5,
+        "transmission": "manual",
+        "frontTire": [
+          225,
+          45,
+          17
+        ],
+        "rearTire": [
+          245,
+          40,
+          17
+        ],
+        "tireSize": [
+          225,
+          45,
+          17
+        ],
+        "publishedMassIncludingOnePersonKg": 1420
+      },
+      "sources": [
+        {
+          "url": "https://www.manualslib.com/manual/368714/Bmw-M-Coupe-2002.html",
+          "publisher": "BMW AG US2002 M roadster/M coupe owner manual01410156429, copyright10/2001, archived Manualslib",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "curbKg",
+            "fuelTankUSgal",
+            "transmission",
+            "frontTire",
+            "rearTire",
+            "tireSize"
+          ],
+          "access": "Text read from factory manual pp150\u2013153 and103.315hp7400,251lbft4900; dimensions shared table; mass1420kg expressly WITH ONE PERSON, ready/fulltank/options excluded. Summer225/45ZR17front245/40ZR17rear. Not quoted as empty vehicle weight."
+        },
+        {
+          "url": "https://www.bmwgroup-classic.com/en/models/bmw-classics/product-description-page.ad-2745-1.bmw-m-coupe-e36-us-model.html",
+          "publisher": "BMW Group Classic archive",
+          "fields": [
+            "2002identity",
+            "S54USengine"
+          ],
+          "access": "US production1998\u20132002; fromApril2001 S54 3246cc315hp. AI-assisted archive; period manual corroborates output."
+        }
+      ],
+      "limits": [
+        "Source1420kg includes one person and full tank, options excluded; retained as published loaded-curb reference, not bare vehicle weight. Occupant mass unspecified, so no arbitrary75kg subtraction.",
+        "Manual shared dimensions table gives49.8in1266mm height for roadster/coupe. Preserve as documented reference; actual roof/collider fit may require measured simulation adjustment. Rounded paired imperial/metric values differ slightly.",
+        "Five-speed choice and ratios/final drive provisional pending model-specific transmission table; factory owner manual confirms manual but numerical ratios not found. Performance5.0sec0\u201360/155mph estimated; do not use AI archive137mph as verified2002S54 maximum.",
+        "S54 torque interpolation, limiter, mass distribution, CG, tire grip, suspension/aero and all non-fact fields are estimates. Passive limited-slip model and simplified traction control, not exact DSC.",
+        "Runtime mass is provisionally anchored to published mass INCLUDING one person. No unoccupied curb mass or driver-subtraction conversion is claimed.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Satureja 2007",
+            "documentId": "satureja-2007",
+            "runtimeId": "saved-car:Satureja 2007",
+            "reference": "US BMW Z4M Coupe E86 S54 six-speed manual",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Bellheather 2005",
+            "documentId": "bellheather-2005",
+            "runtimeId": "saved-car:Bellheather 2005",
+            "reference": "European BMW M3 E46 S54 six-speed coupe",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Z3-based E36/8 short hatch coupe has older semi-trailing rear suspension,96.8inch wheelbase, five-speed gearbox and US315hp calibration; not the later E86 Z4M body/suspension/six-speed or E46 sedan-derived coupe. S54 shared engine family does not imply identical chassis/model.",
+        "evidence": [
+          "https://www.manualslib.com/manual/368714/Bmw-M-Coupe-2002.html",
+          "https://www.bmwgroup-classic.com/en/models/bmw-classics/product-description-page.ad-2745-1.bmw-m-coupe-e36-us-model.html"
+        ],
+        "audit": "Actual349 native catalog entries searched forZ3/E36/8/Mcoupe provenance; onlyZ4M andE46related. Exact backlog slot confirmed separately."
+      },
+      "name": "Silverweed 2002",
+      "id": "silverweed-2002",
+      "simulationEstimates": {
+        "reverseRatio": 3.85,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.37,
+        "tireGrip": 0.98,
+        "spring": 0.56,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.82,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 200,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.51,
+        "redlineRpm": 7600,
+        "revLimitRpm": 7800,
+        "aspiration": "Naturally aspirated",
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 5.0,
+        "drivetrain": "rwd",
+        "gearCount": 5,
+        "gearRatios": [
+          4.21,
+          2.49,
+          1.66,
+          1.24,
+          1
+        ],
+        "finalDrive": 3.15,
+        "transmissionLabel": "five-speed manual",
+        "curbKg": 1420
+      }
+    },
+    {
+      "candidateId": "audi-s4-2004-roster-candidate",
+      "identity": {
+        "year": 2004,
+        "make": "Audi",
+        "model": "S4",
+        "trim": "US B6 sedan4.2 naturally aspiratedV8 quattro six-speed manual",
+        "market": "United States"
+      },
+      "referenceVehicle": "2004 US Audi S4 B6 sedan,4163cc naturally aspirated port-injected40-valveV8,quattro6MT,standard18inch wheels; not Avant,Tiptronic,B7RS4FSI or B5biturbo.",
+      "facts": {
+        "powerHp": 340,
+        "powerRpm": 7000,
+        "torqueLbFt": 302,
+        "torqueRpm": 3500,
+        "engineDisplacementL": 4.163,
+        "transmission": "manual",
+        "gearCount": 6,
+        "gearRatios": [
+          3.667,
+          2.05,
+          1.462,
+          1.133,
+          0.919,
+          0.778
+        ],
+        "finalDrive": 3.889,
+        "curbKg": 1735,
+        "lengthIn": 179,
+        "widthIn": 69.5,
+        "heightIn": 56.2,
+        "wheelbaseIn": 104.3,
+        "trackFrontIn": 60.2,
+        "trackRearIn": 60.1,
+        "tireSize": [
+          235,
+          40,
+          18
+        ],
+        "frontTire": [
+          235,
+          40,
+          18
+        ],
+        "rearTire": [
+          235,
+          40,
+          18
+        ],
+        "fuelTankUSgal": 17.4,
+        "dragCoefficient": 0.3,
+        "frontWeightDistribution": 0.53,
+        "topSpeedMph": 155
+      },
+      "sources": [
+        {
+          "url": "https://manuals.plus/m/4b25e11818567684d4bf10597f675a13406892f3096c1cd28ad9f6f0e6f7e64e",
+          "publisher": "Audi of America factory2004 S4 technical specifications/equipment/prices, mirrored Manuals+",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "finalDrive",
+            "curbKg",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "fuelTankUSgal",
+            "dragCoefficient",
+            "frontWeightDistribution",
+            "topSpeedMph"
+          ],
+          "access": "Factory10-page packet text read pp1\u20132 specs; later price page effective1January2004.340SAEhp7000,302lbft3500,manual1735kg vs automatic1780kg, six manual ratios3.889final. Body/tire/track/Cd/massdistribution. DOHC belt-driven phrase conflicts knownchain design, not used as fact.0\u201360 line parenthetically says0\u2013100kmh, so5.3s retained only as approximate target."
+        }
+      ],
+      "limits": [
+        "1735kg is factory manual-transmission curb mass; supplied sheet does not define fuel/occupant convention. Do not substitute UK1778.5kg CO2-calculation driver-inclusive weight.",
+        "Nominal fixed centerDifferentialBalance0.5 is an estimated REAR share; actualTorsen variable torque bias is not fully represented. Source confirms variable Torsen, not a fixed50/50 law. EDL/ESP approximated through existing controls.",
+        "Reverse ratio,CG,shift/limiter/suspension/grip and other non-fact inputs are estimates.5.3sec modeled0\u201360 is approximate because source combines0\u201360mph and0\u2013100kmh headings incorrectly.",
+        "No FSI orturbo; laterRS4 high-rev420PS engine is distinct. Tire source agrees235/40R18 though wheelcast/forged andoffset contradictory across source pages; no exact wheelconstruction claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Great Willowherb 2006",
+            "documentId": "great-willowherb-2006",
+            "runtimeId": "saved-car:Great Willowherb 2006",
+            "reference": "German B7 AudiRS4 FSI V8 sedan6MT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Hoary Willowherb 2001",
+            "documentId": "hoary-willowherb-2001",
+            "runtimeId": "saved-car:Hoary Willowherb 2001",
+            "reference": "UK B5 AudiRS4 Avant2.7biturboV6",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Golden Saxifrage 2003",
+            "documentId": "golden-saxifrage-2003",
+            "runtimeId": "saved-car:Golden Saxifrage 2003",
+            "reference": "Europe C5AudiRS6 biturboV8 sedan5AT",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "B6S4 ordinary-width compact sedan with340SAEhp port-injected40-valve NA4.2V8 and six-speed, versus B7RS4 wider high-rev direct-injection32-valve420PS and different center bias; distinct from turboV6wagon and largerC5 biturboV8automatic. Not mere year badge padding.",
+        "evidence": [
+          "https://manuals.plus/m/4b25e11818567684d4bf10597f675a13406892f3096c1cd28ad9f6f0e6f7e64e"
+        ],
+        "audit": "All349 current catalog entries/provenance checked forS4/B6/BBK; no exactmodel. ExistingRS4/RS6relationships recorded; exactbacklogID independently confirmed."
+      },
+      "name": "Cinquefoil 2004",
+      "id": "cinquefoil-2004",
+      "simulationEstimates": {
+        "reverseRatio": 3.333,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.106,
+        "tireGrip": 0.98,
+        "spring": 0.56,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.82,
+        "rearDifferentialAccel": 0.12,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 200,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "aspiration": "Naturally aspirated",
+        "zeroToSixtySec": 5.3,
+        "drivetrain": "awd",
+        "centerDifferentialBalance": 0.5,
+        "transmissionLabel": "6-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "toyota-supra-2-0-gt-1992-roster-candidate",
+      "identity": {
+        "year": 1992,
+        "make": "Toyota",
+        "model": "Supra 2.0 GT",
+        "trim": "GA70 narrow-body hardtop 1G-GEU naturally aspirated five-speed manual, standard equipment without optional LSD",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1992 Japan Toyota Supra2.0GT GA70 narrow-body fixed-roof 1G-GEU1988cc naturally aspirated inline-six RWD5MT; August1991\u2013May1993 specification, not TwinTurbo,3.0Turbo,AeroTop orA80",
+      "facts": {
+        "powerKw": 110,
+        "powerRpm": 6200,
+        "torqueNm": 182.4,
+        "torqueRpm": 5600,
+        "engineDisplacementL": 1.988,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 1440,
+        "lengthM": 4.62,
+        "widthM": 1.69,
+        "heightM": 1.3,
+        "wheelbaseM": 2.595,
+        "trackFrontIn": 57.480314960629926,
+        "trackRearIn": 57.67716535433071,
+        "reverseRatio": 4.091,
+        "finalDrive": 4.556,
+        "fuelTankUSgal": 18.49204366507039
+      },
+      "sources": [
+        {
+          "url": "https://toyota.jp/ucar/catalog/brand-TOYOTA/car-SUPRA/199108/1000947/",
+          "publisher": "Toyota Motor Corporation certified-used-car historical catalog, exact2.0GT5MT entry; not a period brochure",
+          "fields": [
+            "identity",
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "reverseRatio",
+            "finalDrive",
+            "fuelTankUSgal"
+          ],
+          "access": "Read2026-11-18;1440kg manual vehicleweight, not1460kg4AT sibling. Exactentry coversAugust1991\u2013May1993, including1992. 5MT,4.091reverse,4.556final,optionalLSD explicitly stated. Tire cells omitted inmanualentry."
+        },
+        {
+          "url": "https://www.toyota-global.com/company/history_of_toyota/75years/vehicle_lineage/car/id60006816/index.html",
+          "publisher": "Toyota Motor Corporation official75-year vehicle lineage",
+          "fields": [
+            "GA70 generation",
+            "1G-GEU naturally aspirated architecture",
+            "double-wishbone suspension",
+            "net rating basis"
+          ],
+          "access": "Read2026-11-18. Launch1986reference140PS1370kg excluded from1992variant. Officialhistory distinguishes1G-GEU from1G-GTEU and7M-GTEU."
+        }
+      ],
+      "limits": [
+        "Exactyear is1992 withinAugust1991\u2013May1993 Toyota catalog specification. Do not mix1986launch140PS1370kg, automatic1460kg, turbo orwidebody data.",
+        "110kW/150PS is metriccatalogpower, not150SAEhp. Forwardgearing,tirefitment,ABSselection,redline,limiter,performance andchassisparameters areexplicitestimates. Tire205/60R15 is estimated for selectedmanual, corroboratedonlybyautomatic sibling.",
+        "Genericopenrear differential selected withoutoptionalLSD. NoTEMS/activechassis implementation claimed; RTG-001art remainsplaceholder.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "sunstriker-gt-1994",
+            "alias": "Sunstriker GT 1994",
+            "reference": "1994US A80SupraTurbo3.0L2JZ-GTE6MT",
+            "documentId": "sunstriker-gt-1994",
+            "runtimeId": "saved-car:Sunstriker GT 1994",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Complete native/provenance and authored-doc audit found onlyA80Supra. SelectedA70 is earlierlongerwheelbase narrow-body generation with naturallyaspirated2.0L1G-GEU,5MT, muchloweroutput anddifferentmass/gearing, not year-onlypadding orbadgeswap.",
+        "evidence": [
+          "https://toyota.jp/ucar/catalog/brand-TOYOTA/car-SUPRA/199108/1000947/",
+          "https://www.toyota-global.com/company/history_of_toyota/75years/vehicle_lineage/car/id60006816/index.html"
+        ]
+      },
+      "name": "Hoary Cinquefoil 1992",
+      "id": "hoary-cinquefoil-1992",
+      "simulationEstimates": {
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.92,
+        "spring": 0.49,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.18,
+        "frontOverhangM": 0.94,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 10.1,
+        "gearRatios": [
+          3.566,
+          2.056,
+          1.384,
+          1,
+          0.85
+        ],
+        "tireSize": [
+          205,
+          60,
+          15
+        ]
+      }
+    },
+    {
+      "candidateId": "mitsubishi-fto-gp-version-r-1998-roster-candidate",
+      "identity": {
+        "year": 1998,
+        "make": "Mitsubishi",
+        "model": "FTO GP Version R",
+        "trim": "Japan E-DE3A 6A12 MIVEC naturally aspirated V6 five-speed manual standard coupe, no optional equipment",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1998 Japan Mitsubishi FTO GPVersionR E-DE3A 1998cc6A12MIVECV6 FWD5MT1150kg; February1997\u2013August1999 version, not automatic,GPX,GPVersionRaeroseries or1999GF emissionsupdate",
+      "facts": {
+        "powerKw": 147,
+        "powerRpm": 7500,
+        "torqueNm": 200.1,
+        "torqueRpm": 6000,
+        "engineDisplacementL": 1.998,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 1150,
+        "lengthM": 4.365,
+        "widthM": 1.735,
+        "heightM": 1.3,
+        "wheelbaseM": 2.5,
+        "trackFrontIn": 58.66141732283465,
+        "trackRearIn": 58.46456692913386,
+        "reverseRatio": 3.363,
+        "finalDrive": 4.312,
+        "fuelTankUSgal": 15.850323141488905,
+        "tireSize": [
+          205,
+          50,
+          16
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://gazoo.com/catalog/maker/MITSUBISHI/FTO/199410/4003215/",
+          "publisher": "Toyota GAZOO historical vehicle catalog for Mitsubishi; secondary specification compilation hosted by another manufacturer, not Mitsubishi factory engineering data",
+          "fields": [
+            "identity",
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "reverseRatio",
+            "finalDrive",
+            "fuelTankUSgal",
+            "tireSize"
+          ],
+          "access": "Read2026-11-18. ExactE-DE3A manualGPVersionR entry coversFebruary1997\u2013August1999,1150kg;1190kgautomaticand1999GF excluded. Gives5MT,3.363reverse,4.312final,205/50R16andstandardLSD. Fineoptionequipment is not relied on asfactoryproof."
+        },
+        {
+          "url": "https://www.mitsubishi-motors.com/en/company/history/car/",
+          "publisher": "Mitsubishi Motors official car history,1994FTO section",
+          "fields": [
+            "FTO identity",
+            "2.0L V6 MIVEC architecture",
+            "distinct compact coupe design"
+          ],
+          "access": "Read2026-11-18. Primaryfactoryhistory confirms2.0V6MIVEC topgrades andOctober1994launch; does not independentlycertify1998GPVersionR output,mass orgearbox. Automaticlaunch discussion not transplanted to selectedmanual."
+        }
+      ],
+      "limits": [
+        "Exacttrim numericalspecifications are fromToyota-hosted GAZOO historical compilation, explicitlysecondary forMitsubishi. PrimaryMitsubishi history independently anchorsmodel/enginearchitecture only. No claim that allfacts arefactory-engineeringverified.",
+        "147kW/200PS metricpublishedrating is not200SAEhp.1150kg correspondsmanualbaseentry, excludes1190kgautomatic andoptionalextras.",
+        "Forwardratios,ABSselection,redline,revlimiter,torque-shape,massdistribution,suspension,grip andperformancetargets are modelingestimates. GAZOOlistsABSstandard; selection remainsestimate becauseperiodequipment corroboration unavailable.",
+        "Genericlimited-slipfront approximatesroadtraction; noMIVECswitchingcontroller orINVECSIIautomatic behavior is simulated. SharedRTG-001art remainsplaceholder.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "bluebell-gt-2006",
+            "alias": "Bluebell GT 2006",
+            "reference": "2006US EclipseGT3.8LV6FWD6MT",
+            "documentId": "bluebell-gt-2006",
+            "runtimeId": "saved-car:Bluebell GT 2006",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "bur-medick-1995",
+            "alias": "Bur Medick 1995",
+            "reference": "1995US EclipseRS2.0LinlinefourFWD5MT",
+            "documentId": "bur-medick-1995",
+            "runtimeId": "saved-car:Bur Medick 1995",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "nightcoil-gt-1995",
+            "alias": "Nightcoil GT 1995",
+            "reference": "1995US EclipseGSX2.0turboAWD5MT",
+            "documentId": "nightcoil-gt-1995",
+            "runtimeId": "saved-car:Nightcoil GT 1995",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Fullcatalog/provenance andauthoredtests/docs contain noFTOorDE3A. CompactJapaneseFTO isdifferentplatform,shorter2500mmwheelbase,lighter1150kg,high-revving2.0MIVECV6 andfrontLSD versusEclipsefamilies; notbadgeswap oryearpadding.",
+        "evidence": [
+          "https://gazoo.com/catalog/maker/MITSUBISHI/FTO/199410/4003215/",
+          "https://www.mitsubishi-motors.com/en/company/history/car/"
+        ]
+      },
+      "name": "Marsh Cinquefoil 1998",
+      "id": "marsh-cinquefoil-1998",
+      "simulationEstimates": {
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.31,
+        "tireGrip": 0.98,
+        "spring": 0.57,
+        "antiRollRear": 0.34,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.93,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.28,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 8000,
+        "revLimitRpm": 8200,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 7.0,
+        "gearRatios": [
+          3.583,
+          1.947,
+          1.343,
+          0.976,
+          0.804
+        ]
+      }
+    },
+    {
+      "candidateId": "dodge-challenger-srt-hellcat-2015-roster-candidate",
+      "identity": {
+        "year": 2015,
+        "make": "Dodge",
+        "model": "Challenger SRT Hellcat",
+        "trim": "Canadian optional TR6060 six-speed manual, standard275/40ZR20 all-season tires, full-output mode",
+        "market": "Canada"
+      },
+      "referenceVehicle": "2015 Canadian Dodge Challenger SRT Hellcat6.2supercharged V8,optionalTR6060 six-speed manual,3.70 LSD,RWD,standard275/40ZR20 all-season tires;full707hpoutput,noBlackKeyrestriction",
+      "facts": {
+        "powerHp": 707,
+        "powerRpm": 6000,
+        "torqueLbFt": 650,
+        "torqueRpm": 4000,
+        "engineDisplacementL": 6.166,
+        "aspiration": "Supercharged",
+        "curbKg": 2018,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "transmissionLabel": "OptionalCanadianHellcatTremecTR6060 six-speedmanual",
+        "gearCount": 6,
+        "gearRatios": [
+          2.26,
+          1.58,
+          1.19,
+          1,
+          0.77,
+          0.63
+        ],
+        "reverseRatio": 2.9,
+        "finalDrive": 3.7,
+        "lengthM": 5.018,
+        "widthM": 1.923,
+        "heightM": 1.416,
+        "wheelbaseM": 2.951,
+        "trackFrontIn": 63.97637795275591,
+        "trackRearIn": 63.70078740157481,
+        "frontWeightDistribution": 0.57,
+        "dragCoefficient": 0.38,
+        "fuelTankUSgal": 18.49204366507039,
+        "steeringRatio": 14.4,
+        "tireSize": [
+          275,
+          40,
+          20
+        ],
+        "revLimitRpm": 6200,
+        "absEnabled": true,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://www.fcapresskit.ca/2015/Contents/Press-Releases/PDFs/Dodge/Challenger_SRT/CN_2015_DG_Challenger_SRT_SP.pdf",
+          "publisher": "FCA Canada official2015DodgeChallengerSRT specifications",
+          "fields": [
+            "engine",
+            "optionalHellcatmanualratios",
+            "manufacturerestimatedcurb",
+            "dimensions",
+            "tracks",
+            "tires",
+            "tank",
+            "distribution",
+            "drag",
+            "steering",
+            "maximumrpm",
+            "ABS/TC"
+          ],
+          "access": "2026-11-18 allsevenpages fullPDFtext inspected. ExactHellcatmanualcolumn selected; Canada automaticstandard,manualoptional."
+        }
+      ],
+      "limits": [
+        "2018kg is manufacturer ESTIMATED manualcurb, notmeasuredvehicle; avoid2013.5kg automaticcolumn.",
+        "Factoryspecprints clearance11.5mm(4.5in), a unit/decimal conflict; runtime.1143m is explicit interpretationof4.5in, notassertion11.5mmvalid.",
+        "6166cc is printedmetricdisplacement despite inconsistent370cuin parenthesis; metricretained.70L is15.4IMPERIALgal, converted18.49USgal.",
+        "2005/2012NA392manual ratios aredifferent. Existing707hpCharger8ATandDurangoAWD8ATdo notsatisfy thiscoupe/TR6060variant.",
+        "Runtime full-outputsupercharged engine/LSD approximations; no newred/blackkey,selectableADS/ESC,skipshift orlaunchcontrol UI. Redline,0-60,top speed,grip,suspension,losses,CG,steering/brakingdynamics andtorquecurveawayfrompeaks estimated. SharedRTG001.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Meadow Buttercup 2012",
+            "documentId": "meadow-buttercup-2012",
+            "runtimeId": "saved-car:Meadow Buttercup 2012",
+            "reference": "CanadianChallengerSRT8392 NA6.4/6MT470hp",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Wood Sage 2015",
+            "documentId": "wood-sage-2015",
+            "runtimeId": "saved-car:Wood Sage 2015",
+            "reference": "ChargerSRT Hellcat6.2supercharged8AT sedan",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Purple Loosestrife 2021",
+            "documentId": "purple-loosestrife-2021",
+            "runtimeId": "saved-car:Purple Loosestrife 2021",
+            "reference": "2021 US Dodge Durango SRT Hellcat 6.2 supercharged AWD8AT, six seats, standard295/45ZR20 all-season runflats, Auto mode approximation",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Actual349-entry audit has noChallengerHellcat. Comparedwithsamefamily2012Challenger392:supercharged6.2 engine707hpvsNA6.4 470hp,distinctgearset/finaldrive,cooling/brakes/tires/suspension andmass. ExistingHellcat sedan/SUV use8ATanddifferentbody/chassis; this6MTcoupeisnotbadge-onlypadding.",
+        "evidence": [
+          "https://www.fcapresskit.ca/2015/Contents/Press-Releases/PDFs/Dodge/Challenger_SRT/CN_2015_DG_Challenger_SRT_SP.pdf"
+        ]
+      },
+      "name": "Hoary Plantain 2015",
+      "id": "hoary-plantain-2015",
+      "simulationEstimates": {
+        "cgHeightM": 0.55,
+        "groundClearanceM": 0.1143,
+        "tireGrip": 0.94,
+        "spring": 0.58,
+        "antiRollRear": 0.26,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0.35,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 280,
+        "wheelWellAware": true,
+        "redlineRpm": 6000,
+        "topSpeedMph": 199,
+        "zeroToSixtySec": 3.9
+      }
+    },
+    {
+      "candidateId": "pontiac-firebird-trans-am-ram-air-2002-roster-candidate",
+      "identity": {
+        "year": 2002,
+        "make": "Pontiac",
+        "model": "Firebird Trans Am Ram Air",
+        "trim": "Canadian coupe, RamAirPerformanceandHandlingPackage(WS6),optional6MT,standardpackage17inch tires,noCollectorEdition",
+        "market": "Canada"
+      },
+      "referenceVehicle": "2002 Canadian Pontiac Firebird Trans Am coupe with RamAirPerformanceandHandlingPackage(WS6),5.7LS1V8,optional six-speedmanualwithHurstshifter,3.42LSD,P275/40ZR17,closedT-top;notCollectorEdition,convertible,SLPFirehawkorbase310hp",
+      "facts": {
+        "powerHp": 325,
+        "engineDisplacementL": 5.7,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "transmissionLabel": "Optional six-speedmanual withHurstshifter",
+        "gearCount": 6,
+        "finalDrive": 3.42,
+        "lengthM": 4.919,
+        "widthM": 1.89,
+        "heightM": 1.3,
+        "wheelbaseM": 2.566,
+        "trackFrontIn": 60.70866141732284,
+        "trackRearIn": 60.629921259842526,
+        "fuelTankUSgal": 16.774925324742426,
+        "tireSize": [
+          275,
+          40,
+          17
+        ],
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "publishedBaseCurbKg": 1595,
+        "publishedBaseCurbBasis": "GMCanada manufacturerestimatedTransAmcoupe, notexplicitWS6/6MTspecificmass"
+      },
+      "sources": [
+        {
+          "url": "https://www.lov2xlr8.no/brochures/pontiac/02f/02f.html",
+          "publisher": "GeneralMotorsCanada original2002PontiacFirebirdbrochure121-02-B-004E,July2001;archivedscan",
+          "fields": [
+            "RamAir325hp",
+            "5.7LS1",
+            "6MT/Hurst",
+            "3.42manualaxle",
+            "P275/40ZR17",
+            "specificsprings/dampers/Panhard",
+            "coupegeometry",
+            "estimatedbasecurb",
+            "fuel",
+            "ABS",
+            "optionalTC"
+          ],
+          "access": "2026-11-18 originalscanimages4,8,9,10,12 visuallyinspected. Page8packageparagraph distinguishes325hpRamAirfromstandard310hpengine;page9footnoteTransAmlength4919mm."
+        },
+        {
+          "url": "https://www.lov2xlr8.no/brochures/pontiac/02f/bilder/8.jpg",
+          "publisher": "GMCanada originalbrochurepage8",
+          "fields": [
+            "exactRamAirhardware",
+            "power",
+            "tires",
+            "3.42manual"
+          ],
+          "access": "Originalequipmenttable visuallyread2026-11-18"
+        },
+        {
+          "url": "https://www.lov2xlr8.no/brochures/pontiac/02f/bilder/9.jpg",
+          "publisher": "GMCanada originalbrochurepage9",
+          "fields": [
+            "geometry",
+            "manufacturerestimatedbasecurb",
+            "fuel"
+          ],
+          "access": "Originalspecstable visuallyread2026-11-18"
+        }
+      ],
+      "limits": [
+        "325hpRamAirpowerfactoryverified; brochuredoesNOTgiveRamAirspecificrpm/torque.350lbft4000and5200powerpeak are explicitmodelingestimates; notpromotedfromstandard310hp/340lbfttable.",
+        "1595kg estimatedfactorybaseTransAmcoupe isnotproofWS6manualweight; modeled1600kg is explicitestimateincluding5kg packageallowance, notmeasuredorcertified.",
+        "6MTavailableand3.42axlefactoryverified; internalgearset/reverse suppliedasestimatespendingexactfactorygearstable.",
+        "Factorymetricgeometry used,TransAmfootnotelength4919notgenericFirebird4911.63.5Ltable14.0galisIMPERIAL,notUS.",
+        "ElectronictractioncontrolisOPTIONALandnotselected;ABSstandard. NoCollectorEditioncosmetics,noSLPFirehawk342hp,noautomatic/convertible.",
+        "GenericLSD,live-rearaxle/Panhard andspecificWS6springs/dampers approximatedwithruntimeparameters.0-60/top speed/redline/CG/Cd/clearance/torquecurveawayfromanchors andallotherdynamicsestimated. SharedRTG001art.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Lobelia 2005",
+            "documentId": "lobelia-2005",
+            "runtimeId": "saved-car:Lobelia 2005",
+            "reference": "CorvetteC6LS2 6.0V8T56 six-speedmanualcoupe",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Ironbloom GT 2005",
+            "documentId": "ironbloom-gt-2005",
+            "runtimeId": "saved-car:Ironbloom GT 2005",
+            "reference": "MustangGT4.6V8five-speedmanualcoupe",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Actual349-entryprovenanceaudit foundnoFirebird/Camaro orLS1F-bodyvariant. Frontengine/reartransmissionlive-rearaxle fourth-genF-body2+2 hatchcoupe differsfromC6reartransaxle/independentrear two-seat6.0LS2Corvette andFord4.6modularfive-speedMustang; notyear/badgevariant.",
+        "evidence": [
+          "https://www.lov2xlr8.no/brochures/pontiac/02f/02f.html"
+        ]
+      },
+      "name": "Buckshorn Plantain 2002",
+      "id": "buckshorn-plantain-2002",
+      "simulationEstimates": {
+        "reverseRatio": 2.9,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.94,
+        "spring": 0.53,
+        "antiRollRear": 0.26,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 280,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 6000,
+        "revLimitRpm": 6200,
+        "topSpeedMph": 160,
+        "zeroToSixtySec": 5.2,
+        "powerRpm": 5200,
+        "torqueLbFt": 350,
+        "torqueRpm": 4000,
+        "curbKg": 1600,
+        "gearRatios": [
+          2.66,
+          1.78,
+          1.3,
+          1,
+          0.74,
+          0.5
+        ]
+      }
+    },
+    {
+      "candidateId": "jaguar-f-type-r-coup-2015-roster-candidate",
+      "identity": {
+        "year": 2015,
+        "make": "Jaguar",
+        "model": "F-TYPE R Coupe",
+        "trim": "US launchRWD5.0superchargedV8 eight-speedQuickshift standardsteelbrakes",
+        "market": "United States"
+      },
+      "referenceVehicle": "2015 US Jaguar F-TYPE R Coupe 5.0superchargedV8 RWD8AT;not2016AWD,RConvertible,Project7 orlater575hp",
+      "facts": {
+        "powerKw": 410.13492937999996,
+        "publishedPowerHp": 550,
+        "engineDisplacementL": 5.0,
+        "transmission": "automatic",
+        "gearCount": 8,
+        "gearRatios": [
+          4.714,
+          3.143,
+          2.106,
+          1.667,
+          1.285,
+          1,
+          0.839,
+          0.667
+        ],
+        "finalDrive": 2.56,
+        "aspiration": "Supercharged",
+        "topSpeedMph": 186,
+        "zeroToSixtySec": 4.0
+      },
+      "sources": [
+        {
+          "url": "https://media.jlr.com/jaguar/en-us/news/2013/11/jaguar-f-type-coupe-joins-jaguar-lineup",
+          "publisher": "Jaguar Land Rover North America factory20November2013 launch release",
+          "fields": [
+            "identity",
+            "powerKw",
+            "publishedPowerHp",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "finalDrive",
+            "aspiration",
+            "topSpeedMph",
+            "zeroToSixtySec"
+          ],
+          "access": "Read2026-11-18; explicitU.S.Modelsand2015MSRP,550hpRcoupe,full8ratiosand2.56final inRcolumn. Factorylater2016AWDdata deliberately excluded."
+        },
+        {
+          "url": "https://media.jlr.com/jaguar/en-us/news/2014/11/2016-f-type-gains-all-wheel-drive-and-manual-transmission-options",
+          "publisher": "Jaguar factory19November2014 MY2016announcement",
+          "fields": [
+            "variant boundary only"
+          ],
+          "access": "Read2026-11-18: identifiesAWDasnewstandardforRmodelsinMY2016; onlyusedtoexclude laterAWDfrom2015RWDselection."
+        }
+      ],
+      "limits": [
+        "1650kg is estimated runningmass,notverified exactUScurborDINbasis. Torque,RPManchors,bodygeometry/tires andallhandlingfields remainestimates; no2016AWDweight claimed.",
+        "US550hp mechanicalconversionto410.1349kW differsfromEuropean550PS; factoryUSlabel retained. No assertion that2013calendarrelease means2013modelyear: tableexplicitly2015US.",
+        "EstimatedLSD/fixeddamping onlyapproximateElectronicActiveDifferential,torquevectoring andadaptivechassis. No proprietarycontroloractiveaerofidelityclaim. SharedRTG001artdoesnotmeanoriginalartorverifieddrive.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "white-stonecrop-2012",
+            "alias": "White Stonecrop 2012",
+            "referenceVehicle": "2012 UK/Europe Jaguar XKR-S Coupe5.0supercharged6AT;notConvertible,GTorXFR-S",
+            "documentId": "white-stonecrop-2012",
+            "runtimeId": "saved-car:White Stonecrop 2012",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "curled-dock-2015",
+            "alias": "Curled Dock 2015",
+            "referenceVehicle": "2015 UK Jaguar XE S launch3.0superchargedV6 rear-wheel-drive eight-speed automatic; not2017US or later380PS/AWD",
+            "documentId": "curled-dock-2015",
+            "runtimeId": "saved-car:Curled Dock 2015",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "F-TYPE isshorterwheelbasecompacttwo-seatRWDsportscoupe8ATwithnewbody/platform; XKRS islarger2+2GT6ATthoughsharing5.0superchargedfamily. XESis3.0V6fourdoorsedan. Notyear/badgepadding. NoF-TYPEfoundin nativeororiginalimportprovenance.",
+        "evidence": [
+          "https://media.jlr.com/jaguar/en-us/news/2013/11/jaguar-f-type-coupe-joins-jaguar-lineup"
+        ]
+      },
+      "name": "Wood Avens 2015",
+      "id": "wood-avens-2015",
+      "simulationEstimates": {
+        "reverseRatio": 3.317,
+        "cgHeightM": 0.47,
+        "groundClearanceM": 0.11,
+        "dragCoefficient": 0.35,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.35,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.52,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "fuelTankUSgal": 18.5,
+        "torqueNm": 680.62,
+        "powerRpm": 6500,
+        "torqueRpm": 3500,
+        "curbKg": 1650,
+        "drivetrain": "rwd",
+        "lengthM": 4.47,
+        "widthM": 1.923,
+        "heightM": 1.311,
+        "wheelbaseM": 2.622,
+        "trackFrontIn": 62.4,
+        "trackRearIn": 64.1,
+        "tireSize": [
+          255,
+          35,
+          20
+        ],
+        "frontTire": [
+          255,
+          35,
+          20
+        ],
+        "rearTire": [
+          295,
+          30,
+          20
+        ],
+        "torqueConverterSlip": 0.035,
+        "torqueConverterMultiplication": 1.7,
+        "transmissionLabel": "8-speed torque-converter automatic approximation",
+        "torqueLbFt": 501.99955004109256
+      }
+    },
+    {
+      "candidateId": "aston-martin-db5-1964-roster-candidate",
+      "identity": {
+        "year": 1964,
+        "make": "Aston Martin",
+        "model": "DB5 Saloon",
+        "trim": "standard4.0straight-six five-speedZF manual; notVantageorConvertible",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "1964 UK Aston Martin DB5 standardSaloon3995ccDOHCstraight-six five-speedZFmanual;notVantage,Convertible,DB4 ormoderncontinuation",
+      "facts": {
+        "publishedPowerHp": 282,
+        "publishedTorqueLbFt": 280,
+        "powerRpm": 5500,
+        "torqueRpm": 4500,
+        "engineDisplacementL": 3.995,
+        "transmission": "manual",
+        "gearCount": 5,
+        "lengthM": 4.57,
+        "widthM": 1.676,
+        "heightM": 1.32,
+        "periodPublishedRatings": {
+          "powerHp": 282,
+          "torqueLbFt": 280,
+          "ratingBasis": "Historical factory archive; test standard unspecified, not asserted modern net."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://www.astonmartin.com/en-us/models/past-models/db5-db5-convertible",
+          "publisher": "Aston Martin officialDB5historictechnicalarchive",
+          "fields": [
+            "identity",
+            "publishedPowerHp",
+            "publishedTorqueLbFt",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM"
+          ],
+          "access": "Read2026-11-18:1963\u20131965DB5period;3995ccDOHCsix282bhp5500/280lb-ft4500;5-speedZF oroptional3-speedauto. SelectstandardSaloon andmanual. Factory doesnotlabelhistoricalratingteststandard; retainedseparatelyfrominstalledestimate."
+        },
+        {
+          "url": "https://media.astonmartin.com/the-aston-martin-db5-at-60-celebrating-six-decades-of-the-worlds-most-iconic-car",
+          "publisher": "Aston Martin factory13September2023 historicalrelease",
+          "fields": [
+            "identity",
+            "publishedPowerHp",
+            "engineDisplacementL"
+          ],
+          "access": "Readindexedfactorytext2026-11-18:standardDB5usednew3995ccsix282bhp. SupportsstandardnotVantageselection."
+        }
+      ],
+      "limits": [
+        "Historical282bhp/280lb-ftbasis is notidentifiedbyfactoryarchive; notclaimedmodernSAEnet. Installed185kW/350Nm isexplicitconservative simulationestimate,notunitconversionorverifieddyno.",
+        "1964 selectedwithinverified1963\u20131965productionrange; no separate1964mechanicalrevisionclaimed.1465kgcurb,driver/fuelbasis,geometrynotlistedabove,gears,tires,performanceandallhandlingremainestimates.",
+        "Period15-inch185radialgeometry approximatedas185/80R15; notclaimofverifiedoriginalaspectratio. No laterDB5Vantage orcontinuationmotor borrowed.",
+        "SharedRTG001placeholder only; no originalartorindependentdrive claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "water-forgetmenot-2008",
+            "alias": "Water Forgetmenot 2008",
+            "referenceVehicle": "2008 UK Aston Martin DBS coupe 2+0 5.935L naturally aspirated V12 six-speed manual; not DBS Volante, later DBS Superleggera or DB11",
+            "documentId": "water-forgetmenot-2008",
+            "runtimeId": "saved-car:Water Forgetmenot 2008",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "marsh-bedstraw-2017",
+            "alias": "Marsh Bedstraw 2017",
+            "referenceVehicle": "2017 UK Aston Martin DB11 V12 Coupe5.2 twin-turbo8AT original608PS;notlaterAMR orV8",
+            "documentId": "marsh-bedstraw-2017",
+            "runtimeId": "saved-car:Marsh Bedstraw 2017",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "DB5 is1960ssteel-platformaluminiumbodyGTwithnaturallyaspirated4.0straight-six5MTandlive rearaxle,versusDBS5.9V12VH6MT andDB11twinturboV128AT. Entirelydifferentera,architecture,engineandbody; noDB5foundinnativeorimportprovenance.",
+        "evidence": [
+          "https://www.astonmartin.com/en-us/models/past-models/db5-db5-convertible"
+        ]
+      },
+      "name": "Herb Bennet 1964",
+      "id": "herb-bennet-1964",
+      "simulationEstimates": {
+        "reverseRatio": 3.21,
+        "cgHeightM": 0.51,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.4,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.15,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.52,
+        "redlineRpm": 5500,
+        "revLimitRpm": 6000,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 22,
+        "topSpeedMph": 145,
+        "zeroToSixtySec": 8.1,
+        "powerKw": 185,
+        "torqueNm": 350,
+        "curbKg": 1465,
+        "drivetrain": "rwd",
+        "wheelbaseM": 2.489,
+        "trackFrontIn": 54,
+        "trackRearIn": 53.5,
+        "tireSize": [
+          185,
+          80,
+          15
+        ],
+        "frontTire": [
+          185,
+          80,
+          15
+        ],
+        "rearTire": [
+          185,
+          80,
+          15
+        ],
+        "gearRatios": [
+          2.89,
+          1.84,
+          1.33,
+          1,
+          0.86
+        ],
+        "finalDrive": 3.77,
+        "transmissionLabel": "5-speed manual",
+        "torqueLbFt": 258.14675224704297,
+        "powerHp": 248.08908657508016
+      }
+    }
+  ],
+  "deferred": []
+}

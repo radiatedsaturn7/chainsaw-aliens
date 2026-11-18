@@ -1,0 +1,1877 @@
+{
+  "schemaVersion": 1,
+  "base": "04d4731baab05f0b8d6416b290fd4063fa9884e3",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "mitsubishi-lancer-evolution-iii-gsr-1995-roster-candidate",
+      "identity": {
+        "year": 1995,
+        "make": "Mitsubishi",
+        "model": "Lancer Evolution III GSR",
+        "trim": "February1995 E-CE9A 4G63turbo5MT road sedan, nooptional sunroof; notRS,racecar orlaterCT9A",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1995 Japan Mitsubishi Lancer Evolution III GSR February1995 E-CE9A 4G63turbo5MT road sedan, nooptional sunroof; notRS,racecar orlaterCT9A",
+      "bodyClass": "four-door five-seat compact sedan",
+      "facts": {
+        "powerKw": 199,
+        "powerRpm": 6250,
+        "torqueNm": 308.9,
+        "torqueRpm": 3000,
+        "engineDisplacementL": 1.997,
+        "aspiration": "Turbocharged",
+        "drivetrain": "awd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 1260,
+        "lengthM": 4.31,
+        "widthM": 1.695,
+        "heightM": 1.42,
+        "wheelbaseM": 2.51,
+        "trackFrontIn": 57.67716535433071,
+        "trackRearIn": 57.874015748031496,
+        "tireSize": [
+          205,
+          60,
+          15
+        ],
+        "reverseRatio": 3.166,
+        "finalDrive": 5.358,
+        "fuelTankUSgal": 13.20860261790742
+      },
+      "sources": [
+        {
+          "url": "https://gazoo.com/catalog/maker/MITSUBISHI/LANCER/199110/4005896/",
+          "publisher": "Toyota GAZOO historical Mitsubishi catalog; secondary compilation, not factorysheet",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "reverseRatio",
+            "finalDrive",
+            "fuelTankUSgal"
+          ],
+          "access": "Read2026-11-18. ExactFebruary1995 GSR1260kg,5MT,5.358finaldrive and3.166reverse. Do not mix usual4.529final fromotherEvos."
+        },
+        {
+          "url": "https://www.mitsubishi-motors.com/en/company/history/car/",
+          "publisher": "Mitsubishi Motors official car history",
+          "fields": [
+            "EvolutionIII identity",
+            "1995 introduction",
+            "4G63architecture",
+            "270PS generation output"
+          ],
+          "access": "Read2026-11-18. FactoryFebruary1995 section confirms270PS4G63,9.0compression and redesignedcooling/aero. Notevent-specific racepower."
+        }
+      ],
+      "limits": [
+        "Nominal50percentrear genericAWD/LSD; noAYC/ACD invented onthisearlycar. Forwardratios are estimates paired to published5.358final, not independently verified gearboxinternals.",
+        "Parameters outside facts are explicit provisional simulation estimates, including torque interpolation, losses, gearing when unsourced, CG/distribution, suspension, grip, brakes, steering/transients and displayed performance.",
+        "Shared RTG-001 assets only. No original art or independently drive-tested status claimed.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "hawkbit-1999",
+            "alias": "Hawkbit 1999",
+            "reference": "1999MonteCarlo EvoVI GroupAcompetition",
+            "documentId": "hawkbit-1999",
+            "runtimeId": "saved-car:Hawkbit 1999",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "cow-parsley-2008",
+            "alias": "Cow Parsley 2008",
+            "reference": "2008US EvoXGSR4B11T5MT",
+            "documentId": "cow-parsley-2008",
+            "runtimeId": "saved-car:Cow Parsley 2008",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "nightcoil-gt-1995",
+            "alias": "Nightcoil GT 1995",
+            "reference": "1995EclipseGSX4G63AWDcoupe",
+            "documentId": "nightcoil-gt-1995",
+            "runtimeId": "saved-car:Nightcoil GT 1995",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "aconite",
+            "alias": "Aconite",
+            "reference": "Separateoldroster2006EvoIX5MT; excluded fromimport",
+            "scope": "separate-preserved-checkpoint"
+          }
+        ],
+        "distinction": "First-generationCE9A compactroad4G63sedan is distinct platform/geometry/mass fromlaterCT9AEvoIX andCZ4AEvoX; existingVI iscompetition build. Not sameyearbadgepadding orEclipsecoupeclone.",
+        "evidence": [
+          "https://gazoo.com/catalog/maker/MITSUBISHI/LANCER/199110/4005896/",
+          "https://www.mitsubishi-motors.com/en/company/history/car/"
+        ]
+      },
+      "artHandoffStatus": "source-ready for shared-placeholder; original vehicle art pending",
+      "name": "White Deadnettle 1995",
+      "id": "white-deadnettle-1995",
+      "simulationEstimates": {
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.95,
+        "spring": 0.55,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0.1,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.58,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7300,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 5.6,
+        "gearRatios": [
+          2.571,
+          1.6,
+          1.16,
+          0.862,
+          0.617
+        ],
+        "centerDifferentialBalance": 0.5
+      }
+    },
+    {
+      "candidateId": "toyota-celica-gt-four-rc-st185-1992-roster-candidate",
+      "identity": {
+        "year": 1992,
+        "make": "Toyota",
+        "model": "Celica GT-Four RC",
+        "trim": "Japan E-ST185H 3S-GTE1998cc water-to-airintercooledturbo roadhomologation5MT; September1991\u2013October1993 catalog configuration, notRACrally orUKCarlosSainz",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1992 Japan Toyota Celica GT-Four RC Japan E-ST185H 3S-GTE1998cc water-to-airintercooledturbo roadhomologation5MT; September1991\u2013October1993 catalog configuration, notRACrally orUKCarlosSainz",
+      "bodyClass": "three-door five-seat liftback coupe",
+      "facts": {
+        "powerKw": 173,
+        "powerRpm": 6000,
+        "torqueNm": 304,
+        "torqueRpm": 4000,
+        "engineDisplacementL": 1.998,
+        "aspiration": "Turbocharged",
+        "drivetrain": "awd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 1460,
+        "lengthM": 4.41,
+        "widthM": 1.745,
+        "heightM": 1.305,
+        "wheelbaseM": 2.525,
+        "trackFrontIn": 58.07086614173229,
+        "trackRearIn": 56.88976377952756,
+        "tireSize": [
+          215,
+          50,
+          15
+        ],
+        "reverseRatio": 3.545,
+        "finalDrive": 3.933,
+        "fuelTankUSgal": 17.963699560354094
+      },
+      "sources": [
+        {
+          "url": "https://gazoo.com/catalog/maker/TOYOTA/CELICA/198909/10002212/",
+          "publisher": "Toyota GAZOO own-brand historical catalog",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "reverseRatio",
+            "finalDrive",
+            "fuelTankUSgal"
+          ],
+          "access": "Read2026-11-18. ExactRC5MT1460kg table235PS173kW/304Nm; optionalABS excluded; no225PSstandardGT-Four orcompetitionvalues."
+        },
+        {
+          "url": "https://toyota.jp/ucar/catalog/brand-TOYOTA/car-CELICA/199109/10002212/",
+          "publisher": "Toyota Motor Corporation official certified-used historical catalog",
+          "fields": [
+            "identity",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn"
+          ],
+          "access": "Read2026-11-18. ExactRC tuple confirmsbody/mass andSeptember1991\u2013October1993 coverage, including1992. Historicalcatalog, notperiodengineering test."
+        }
+      ],
+      "limits": [
+        "Fixed50percentrearAWD/LSD approximation only; water-intercooler identity recorded but nofluid-temperature subsystem. Forwardratios are explicitestimates; notcompetition gearbox.",
+        "Parameters outside facts are explicit provisional simulation estimates, including torque interpolation, losses, gearing when unsourced, CG/distribution, suspension, grip, brakes, steering/transients and displayed performance.",
+        "Shared RTG-001 assets only. No original art or independently drive-tested status claimed.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "melilot-1993",
+            "alias": "Melilot 1993",
+            "reference": "1993KankkunenRAC ST185GroupAcompetition",
+            "documentId": "melilot-1993",
+            "runtimeId": "saved-car:Melilot 1993",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "stone-parsley-1994",
+            "alias": "Stone Parsley 1994",
+            "reference": "1994UK roadST205GT-Four",
+            "documentId": "stone-parsley-1994",
+            "runtimeId": "saved-car:Stone Parsley 1994",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "moonpetal-2000",
+            "alias": "Moonpetal GT 2000",
+            "reference": "2000US CelicaGT-SFWD6MT",
+            "documentId": "moonpetal-2000",
+            "runtimeId": "saved-car:Moonpetal GT 2000",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "rockrose-1994",
+            "alias": "Rockrose 1994",
+            "reference": "1994MillenUnlimitedprototype",
+            "documentId": "rockrose-1994",
+            "runtimeId": "saved-car:Rockrose 1994",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "ExistingST185is strippedGroupAeventcar; RC is1460kg production235PS roadmodelwithroadgears/tires. ST205 islaterbody/chassis, GT-SFWD andUnlimitedprototype aredifferentplatforms. NoexactST185RCroadreference found.",
+        "evidence": [
+          "https://gazoo.com/catalog/maker/TOYOTA/CELICA/198909/10002212/",
+          "https://toyota.jp/ucar/catalog/brand-TOYOTA/car-CELICA/199109/10002212/"
+        ]
+      },
+      "artHandoffStatus": "source-ready for shared-placeholder; original vehicle art pending",
+      "name": "Red Deadnettle 1992",
+      "id": "red-deadnettle-1992",
+      "simulationEstimates": {
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.95,
+        "spring": 0.55,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0.1,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7300,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 6.6,
+        "gearRatios": [
+          3.583,
+          2.045,
+          1.333,
+          0.972,
+          0.731
+        ],
+        "centerDifferentialBalance": 0.5
+      }
+    },
+    {
+      "candidateId": "nissan-silvia-club-k-s-1992-roster-candidate",
+      "identity": {
+        "year": 1992,
+        "make": "Nissan",
+        "model": "Silvia K's Club Selection",
+        "trim": "January1992 E-PS13 SR20DET1998cc turbo5MT standard2WS coupe; noSuperHICAS oroptionalABS,notS14 orUS240SX",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1992 Japan Nissan Silvia K's Club Selection January1992 E-PS13 SR20DET1998cc turbo5MT standard2WS coupe; noSuperHICAS oroptionalABS,notS14 orUS240SX",
+      "bodyClass": "two-door four-seat coupe",
+      "facts": {
+        "powerKw": 150.77724375,
+        "powerRpm": 6000,
+        "torqueNm": 274.58619999999996,
+        "torqueRpm": 4000,
+        "engineDisplacementL": 1.998,
+        "aspiration": "Turbocharged",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 1170,
+        "lengthM": 4.47,
+        "widthM": 1.69,
+        "heightM": 1.29,
+        "wheelbaseM": 2.475,
+        "trackFrontIn": 57.67716535433071,
+        "trackRearIn": 57.480314960629926,
+        "tireSize": [
+          205,
+          60,
+          15
+        ],
+        "reverseRatio": 3.382,
+        "finalDrive": 4.083,
+        "fuelTankUSgal": 15.850323141488905
+      },
+      "sources": [
+        {
+          "url": "https://gazoo.com/catalog/maker/NISSAN/SILVIA/198805/1507203/",
+          "publisher": "Toyota GAZOO historical Nissan catalog; secondary compilation, not Nissan factorysheet",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "reverseRatio",
+            "finalDrive",
+            "fuelTankUSgal"
+          ],
+          "access": "Read2026-11-18. ExactJanuary1992ClubSelection5MT1170kg,205PS/28kgm, convertedto kW/Nm.1190kgautomatic/KPS13HICAS excluded."
+        },
+        {
+          "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/silvia_qs.html",
+          "publisher": "Nissan Heritage Collection primaryS13generation history",
+          "fields": [
+            "generation",
+            "dimensions",
+            "1991SR20replacement",
+            "RWDarchitecture"
+          ],
+          "access": "Read2026-11-18. 1988Qscar confirmsS13platform and1991replacementofCA18bySR20. Its1110kg/135PS/185tires nottransplanted."
+        }
+      ],
+      "limits": [
+        "SelectedPS13 has noSuperHICAS; noactive rearsteerclaimed. Forwardgear ratios,limiter andgenericLSD areestimates.",
+        "Parameters outside facts are explicit provisional simulation estimates, including torque interpolation, losses, gearing when unsourced, CG/distribution, suspension, grip, brakes, steering/transients and displayed performance.",
+        "Shared RTG-001 assets only. No original art or independently drive-tested status claimed.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "brooklime-1994",
+            "alias": "Brooklime 1994",
+            "reference": "1994JapanS14SilviaKsTypeS5MT",
+            "documentId": "brooklime-1994",
+            "runtimeId": "saved-car:Brooklime 1994",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "birdsfoot-trefoil-1995",
+            "alias": "Birdsfoot Trefoil 1995",
+            "reference": "1995US S14KA24DE240SXbase5MT",
+            "documentId": "birdsfoot-trefoil-1995",
+            "runtimeId": "saved-car:Birdsfoot Trefoil 1995",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "EarlierS13 narrower1690mm shorter2475mmwheelbase1170kg platform differs fromS14. SR20DET early205PS specification andgeometry definegeneration difference; ClubSelection equipment alone doesnotjustifyaddition. NoexistingS13nativeidentity found.",
+        "evidence": [
+          "https://gazoo.com/catalog/maker/NISSAN/SILVIA/198805/1507203/",
+          "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/silvia_qs.html"
+        ]
+      },
+      "artHandoffStatus": "source-ready for shared-placeholder; original vehicle art pending",
+      "name": "Yellow Archangel 1992",
+      "id": "yellow-archangel-1992",
+      "simulationEstimates": {
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.95,
+        "spring": 0.55,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7300,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 6.8,
+        "gearRatios": [
+          3.321,
+          1.902,
+          1.308,
+          1,
+          0.759
+        ]
+      }
+    },
+    {
+      "candidateId": "mazda-rx-3-1973-roster-candidate",
+      "identity": {
+        "year": 1973,
+        "make": "Mazda",
+        "model": "RX-3 Coupe",
+        "trim": "US1973 stocktwo-door12A twinrotor four-speedmanual,unoptionedcoupe; notJapaneseSavannaGT5MT,sedan,wagon orracecar",
+        "market": "United States"
+      },
+      "referenceVehicle": "1973 United States Mazda RX-3 Coupe US1973 stocktwo-door12A twinrotor four-speedmanual,unoptionedcoupe; notJapaneseSavannaGT5MT,sedan,wagon orracecar",
+      "bodyClass": "two-door compact four-seat coupe",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 4,
+        "publishedDisplacementCuIn": 70,
+        "secondaryPublishedRatings": {
+          "powerHp": 90,
+          "torqueLbFt": 96,
+          "basis": "Exact US1973 manual secondary Automobile-Catalog table states SAE net; not primary factory verified."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://importarchive.com/brochure/mazdarx31973_01",
+          "publisher": "OriginalMazda US1973brochure9999-92-0103-82 mirroredbyImportArchive",
+          "fields": [
+            "1973USmodelidentity",
+            "coupebody",
+            "four-speedmanual",
+            "rotaryengine",
+            "publishedDisplacementCuIn",
+            "RWDchassislayout"
+          ],
+          "access": "Read2026-11-18. Publicpages11/12 visuallyread. Page11 explicitlyfour-speed; page12engine35cuinx2,frontstrut/rearleaf,frontdisc/reardrum andcoupe/sedan/wagon columns. Lowresolutionmassdigits andexactdimensions nottrusted; nofactorypower figurevisible."
+        },
+        {
+          "url": "https://www.mazda.com/en/about/history/greatcar/savanna/",
+          "publisher": "Mazda officialSavannahistory",
+          "fields": [
+            "12A1972introduction",
+            "distinctSavanna/RX3generation",
+            "1973emissionsupdatecontext"
+          ],
+          "access": "Read2026-11-18. Confirms12Aintroduced1972 andAPadded1973; doesnotproveUSrating orapplyJapanGT125PS toUScar."
+        },
+        {
+          "url": "https://www.automobile-catalog.com/car/1973/1584755/mazda_rx-3_coupe.html",
+          "publisher": "Automobile-Catalog historical compilation; secondary, not Mazda factory data",
+          "fields": [
+            "estimated installed output",
+            "estimated mass",
+            "estimated dimensions",
+            "estimated engine displacement"
+          ],
+          "access": "Read2026-11-18 exactUS1973manual4 entry:90SAEnethp6000,96lbft4000,975kgwithoutdriver,4115x1600x1345WB2310,1146cc. Used as labeledestimate anchors, not factoryverification. Its modeledperformance estimates not adopted as factoryfacts."
+        }
+      ],
+      "limits": [
+        "Installed90hp/96lbft,975kg and4115x1600x1345/WB2310 use exactUS1973manual secondaryAutomobile-Catalog anchors, explicitly estimated pending readablefactoryspecs. Factorybrochure publicscan confirmsidentity/transmission; massdigits unreadable andpowernotvisible.",
+        "Mass,dimensions/tracks,tiresize/gearing/fuel are estimates guidedbylowresolutionbrochure; no falseprecisionfactoryclaim. ExactUS1973coupe/4MT isverified. Originalreferenceimages retainedscratchonly,notgameart.",
+        "Parameters outside facts are explicit provisional simulation estimates, including torque interpolation, losses, gearing when unsourced, CG/distribution, suspension, grip, brakes, steering/transients and displayed performance.",
+        "Shared RTG-001 assets only. No original art or independently drive-tested status claimed.",
+        "Secondary SAE-net output is a simulation estimate anchor, not promoted to primary factory data.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "musk-mallow-1985",
+            "alias": "Musk Mallow 1985",
+            "reference": "1985US FB RX7GSL-SE13BNA5MT",
+            "documentId": "musk-mallow-1985",
+            "runtimeId": "saved-car:Musk Mallow 1985",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "rotorveil-1993",
+            "alias": "Rotorveil 1993",
+            "reference": "1993US FD RX7base twin-turbo",
+            "documentId": "rotorveil-1993",
+            "runtimeId": "saved-car:Rotorveil 1993",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "common-agrimony-1972",
+            "alias": "Common Agrimony 1972",
+            "reference": "1972CosmoL10B982cc two-seat coupe",
+            "documentId": "common-agrimony-1972",
+            "runtimeId": "saved-car:Common Agrimony 1972",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoRX3/Savanna1973 nativeidentity. Compactrear-leaf conventionalfour-seatcoupe with12A1146cc differs fromtwo-seatCosmo10A andlaterRX7sportsplatforms.",
+        "evidence": [
+          "https://importarchive.com/brochure/mazdarx31973_01",
+          "https://www.mazda.com/en/about/history/greatcar/savanna/",
+          "https://www.automobile-catalog.com/car/1973/1584755/mazda_rx-3_coupe.html"
+        ]
+      },
+      "artHandoffStatus": "source-ready for shared-placeholder; original vehicle art pending",
+      "name": "Ground Ivy 1973",
+      "id": "ground-ivy-1973",
+      "simulationEstimates": {
+        "reverseRatio": 3.758,
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.16,
+        "dragCoefficient": 0.43,
+        "tireGrip": 0.76,
+        "spring": 0.43,
+        "antiRollRear": 0.23,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.86,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "fuelTankUSgal": 15.9,
+        "topSpeedMph": 105,
+        "zeroToSixtySec": 11.5,
+        "powerHp": 90,
+        "powerRpm": 6000,
+        "torqueLbFt": 96,
+        "torqueRpm": 4000,
+        "engineDisplacementL": 1.146,
+        "curbKg": 975,
+        "lengthM": 4.115,
+        "widthM": 1.6,
+        "heightM": 1.345,
+        "wheelbaseM": 2.31,
+        "trackFrontIn": 51,
+        "trackRearIn": 51,
+        "tireSize": [
+          165,
+          80,
+          13
+        ],
+        "gearRatios": [
+          3.416,
+          1.944,
+          1.307,
+          1
+        ],
+        "finalDrive": 3.9
+      }
+    },
+    {
+      "candidateId": "pontiac-gto-1965-roster-candidate",
+      "identity": {
+        "year": 1965,
+        "make": "Pontiac",
+        "model": "GTO",
+        "trim": "two-door hardtop,standard389cuin four-barrel335hp reference,optionalwide-ratio4MT,standard3.23axle",
+        "market": "United States"
+      },
+      "referenceVehicle": "1965 US Pontiac GTO, two-door hardtop,standard389cuin four-barrel335hp reference,optionalwide-ratio4MT,standard3.23axle",
+      "bodyClass": "two-door-hardtop-coupe",
+      "artIdentity": "Stackedvertical headlights,splitgrille,long1965A-bodytwo-doorpillarlesshardtop,hoodscoop,stock14-inchwheels; not1968curvedbody orJudge.",
+      "facts": {
+        "engineDisplacementL": 6.374567896,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "periodPublishedRatings": {
+          "advertisedPowerHp": 335,
+          "powerRpm": 5000,
+          "advertisedTorqueLbFt": 431,
+          "torqueRpm": 3200,
+          "ratingBasis": "Period factory advertised brake output; no modern SAE-net certification implied. Preserve separate from estimated installed output; source does not define test-accessory basis."
+        },
+        "gearCount": 4,
+        "gearRatios": [
+          2.56,
+          1.91,
+          1.48,
+          1
+        ],
+        "finalDrive": 3.23,
+        "lengthM": 5.23494,
+        "widthM": 1.86436,
+        "heightM": 1.3589,
+        "wheelbaseM": 2.921,
+        "trackFrontIn": 58,
+        "trackRearIn": 58,
+        "fuelTankUSgal": 21.5,
+        "steeringRatio": 24,
+        "publishedShippingWeightLb": 3462
+      },
+      "sources": [
+        {
+          "url": "https://www.lov2xlr8.no/brochures/pontiac/65pp/bilder/9.jpg",
+          "publisher": "Original1965Pontiac factory sales/performance brochure archivedbylov2xlr8",
+          "fields": [
+            "exactengine/transmissionselection",
+            "publishedperiodpowerandtorque",
+            "chassis/body"
+          ],
+          "access": "2026-11-18 originalfactoryspecificationimage visuallyreviewed,noOCR."
+        }
+      ],
+      "limits": [
+        "Installed horsepower/torque are explicit engineering estimates, not arithmetic conversion of period gross/advertised output into net certification. Unspecified runtime calibration including curves away from peaks, brakes/grip/suspension,CG,distribution,performance,cutoff and tire rolling radius remains estimated.",
+        "SharedRTG001 reference art only; originalart/drivingcompletion notclaimed. No race tuning,moderncontrolsorABS/tractioncontrol added.",
+        "3462lb is factoryHARDTOPshippingweight with335hp/manual, NOTcurb.1620kgcurb explicitestimate includingnormalfluids; donotreplacewith3462lbconvertedcurb.",
+        "Factorywide-ratio2.56/1.91/1.48/1 and3.23standard335hpmanualaxle selected; not360hpTriPower/3.55 or3.90close-ratio. Reverse andmodernmetric tireapproximation estimated.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Buckshorn Plantain 2002",
+            "documentId": "buckshorn-plantain-2002",
+            "runtimeId": "saved-car:Buckshorn Plantain 2002",
+            "reference": "2002 Canadian Pontiac Firebird Trans Am coupe with RamAirPerformanceandHandlingPackage(WS6),5.7LS1V8,optional six-speedmanualwithHurstshifter,3.42LSD,P275/40ZR17,closedT-top;notCollectorEdition,convertible,SLPFirehawkorbase310hp",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Currentcatalog has noPontiacGTO1965; MitsubishiGTO is unrelatednamecollision. Different1965A-body389V8hardtop versusmodernLS1Firebird. Noold11overlap.",
+        "evidence": [
+          "https://www.lov2xlr8.no/brochures/pontiac/65pp/bilder/9.jpg"
+        ]
+      },
+      "name": "Common Mullein 1965",
+      "id": "common-mullein-1965",
+      "simulationEstimates": {
+        "reverseRatio": 2.59,
+        "cgHeightM": 0.53,
+        "groundClearanceM": 0.16,
+        "dragCoefficient": 0.48,
+        "tireGrip": 0.78,
+        "spring": 0.49,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 410,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.55,
+        "redlineRpm": 5500,
+        "revLimitRpm": 5800,
+        "topSpeedMph": 120,
+        "zeroToSixtySec": 7.3,
+        "powerRpm": 5000,
+        "torqueRpm": 3200,
+        "powerHp": 265,
+        "torqueLbFt": 365,
+        "curbKg": 1620,
+        "tireSize": [
+          205,
+          75,
+          14
+        ],
+        "transmissionLabel": "4-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "pontiac-firebird-1968-roster-candidate",
+      "identity": {
+        "year": 1968,
+        "make": "Pontiac",
+        "model": "Firebird Sprint",
+        "trim": "two-door coupe,250cuin OHC inline-six four-barrelSprint,optional4MT,standard3.55axle",
+        "market": "United States"
+      },
+      "referenceVehicle": "1968 US Pontiac Firebird Sprint, two-door coupe,250cuin OHC inline-six four-barrelSprint,optional4MT,standard3.55axle",
+      "bodyClass": "two-door-coupe",
+      "artIdentity": "First-generationcompactponycar hardtop,splitchrome nose withfourroundheadlamps,longhood/shortdeck,stock14-inchwheels; flat hood,no400scoops orTransAmspoiler.",
+      "facts": {
+        "engineDisplacementL": 4.096766,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "periodPublishedRatings": {
+          "advertisedPowerHp": 215,
+          "powerRpm": 5200,
+          "advertisedTorqueLbFt": 255,
+          "torqueRpm": 3800,
+          "ratingBasis": "Period factory advertised brake output; no modern SAE-net certification implied. Preserve separate from estimated installed output; source does not define test-accessory basis."
+        },
+        "gearCount": 4,
+        "finalDrive": 3.55,
+        "lengthM": 4.79552,
+        "widthM": 1.8491199999999999,
+        "heightM": 1.27,
+        "wheelbaseM": 2.7457399999999996,
+        "trackFrontIn": 60,
+        "trackRearIn": 60,
+        "fuelTankUSgal": 18.5,
+        "steeringRatio": 24,
+        "publishedShippingWeightLb": 3087,
+        "publishedFourSpeedWeightAdjustmentLb": 9
+      },
+      "sources": [
+        {
+          "url": "https://www.lov2xlr8.no/brochures/pontiac/68fi/bilder/9.jpg",
+          "publisher": "Original1968Pontiac factory sales/performance brochure archivedbylov2xlr8",
+          "fields": [
+            "exactengine/transmissionselection",
+            "publishedperiodpowerandtorque",
+            "chassis/body"
+          ],
+          "access": "2026-11-18 originalfactoryspecificationimage visuallyreviewed,noOCR."
+        }
+      ],
+      "limits": [
+        "Installed horsepower/torque are explicit engineering estimates, not arithmetic conversion of period gross/advertised output into net certification. Unspecified runtime calibration including curves away from peaks, brakes/grip/suspension,CG,distribution,performance,cutoff and tire rolling radius remains estimated.",
+        "SharedRTG001 reference art only; originalart/drivingcompletion notclaimed. No race tuning,moderncontrolsorABS/tractioncontrol added.",
+        "Shipping3087lb+9lb4MT is NOTcurb;1460kg operatingcurb explicitlyestimated. Four-speedavailabilityfactory butinternalratiosestimated,notpresentinselectedtable.",
+        "SprintisOHC250four-barrelinline-six,not175hpone-barrelbaseorFirebird350/400V8. FactoryF70x14 approximated205/70R14; E70base tire excluded.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Buckshorn Plantain 2002",
+            "documentId": "buckshorn-plantain-2002",
+            "runtimeId": "saved-car:Buckshorn Plantain 2002",
+            "reference": "2002 Canadian Pontiac Firebird Trans Am coupe with RamAirPerformanceandHandlingPackage(WS6),5.7LS1V8,optional six-speedmanualwithHurstshifter,3.42LSD,P275/40ZR17,closedT-top;notCollectorEdition,convertible,SLPFirehawkorbase310hp",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No1968Firebird/Sprint inactualcatalog;2002WS6isfourthgeneration5.7LS1V8/6MT. SprintOHCinline-six/firstgenbody ismechanicallydistinct,notbadgedV8duplicate.",
+        "evidence": [
+          "https://www.lov2xlr8.no/brochures/pontiac/68fi/bilder/9.jpg"
+        ]
+      },
+      "name": "Dark Mullein 1968",
+      "id": "dark-mullein-1968",
+      "simulationEstimates": {
+        "reverseRatio": 3.11,
+        "cgHeightM": 0.53,
+        "groundClearanceM": 0.16,
+        "dragCoefficient": 0.48,
+        "tireGrip": 0.78,
+        "spring": 0.49,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 410,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 5500,
+        "revLimitRpm": 5800,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 9.5,
+        "powerRpm": 5200,
+        "torqueRpm": 3800,
+        "powerHp": 175,
+        "torqueLbFt": 215,
+        "curbKg": 1460,
+        "gearRatios": [
+          3.11,
+          2.2,
+          1.47,
+          1
+        ],
+        "tireSize": [
+          205,
+          70,
+          14
+        ]
+      }
+    },
+    {
+      "candidateId": "buick-gsx-1970-roster-candidate",
+      "identity": {
+        "year": 1970,
+        "make": "Buick",
+        "model": "GSX",
+        "trim": "standard455cuin four-barrel350hp reference,4MT,3.42PositiveTraction;notStage1,noautomatic",
+        "market": "United States"
+      },
+      "referenceVehicle": "1970 US Buick GSX, standard455cuin four-barrel350hp reference,4MT,3.42PositiveTraction;notStage1,noautomatic",
+      "bodyClass": "two-door-hardtop-coupe",
+      "artIdentity": "1970A-bodytwo-doorhardtop,splitgrille,pairedheadlamps,raisedhoodscoops,reardeckspoiler,15-inchwheels; originalfictionalcolors/nobadges orfactorystripecopy.",
+      "facts": {
+        "engineDisplacementL": 7.45611412,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "periodPublishedRatings": {
+          "advertisedPowerHp": 350,
+          "powerRpm": 4600,
+          "advertisedTorqueLbFt": 510,
+          "torqueRpm": 2800,
+          "ratingBasis": "Period factory advertised brake output; no modern SAE-net certification implied. Preserve separate from estimated installed output; source does not define test-accessory basis."
+        },
+        "gearCount": 4,
+        "gearRatios": [
+          2.2,
+          1.64,
+          1.28,
+          1
+        ],
+        "reverseRatio": 2.27,
+        "finalDrive": 3.42,
+        "curbKg": 1757.21684138,
+        "lengthM": 5.1308,
+        "widthM": 1.96342,
+        "heightM": 1.3461999999999998,
+        "wheelbaseM": 2.8447999999999998,
+        "trackFrontIn": 60.12,
+        "trackRearIn": 59,
+        "fuelTankUSgal": 20,
+        "groundClearanceM": 0.163068,
+        "steeringRatio": 24
+      },
+      "sources": [
+        {
+          "url": "https://www.lov2xlr8.no/brochures/buick/70gsx/bilder/3.jpg",
+          "publisher": "Original1970Buick factory sales/performance brochure archivedbylov2xlr8",
+          "fields": [
+            "exactengine/transmissionselection",
+            "publishedperiodpowerandtorque",
+            "chassis/body"
+          ],
+          "access": "2026-11-18 originalfactoryspecificationimage visuallyreviewed,noOCR."
+        }
+      ],
+      "limits": [
+        "Installed horsepower/torque are explicit engineering estimates, not arithmetic conversion of period gross/advertised output into net certification. Unspecified runtime calibration including curves away from peaks, brakes/grip/suspension,CG,distribution,performance,cutoff and tire rolling radius remains estimated.",
+        "SharedRTG001 reference art only; originalart/drivingcompletion notclaimed. No race tuning,moderncontrolsorABS/tractioncontrol added.",
+        "Factory3874lbCURB isstandardmanual; brochureadd45.7lbautomatic/add2.4lbStage1excluded. Standard350/510 column retained,not360Stage1 or3.64axle.",
+        "FactoryG60-15 fiberglassbeltedtiresapproximated235/60R15; exactbiasconstructionnotrecreated. PositiveTraction implementedestimatedLSDgain.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [],
+        "distinction": "Currentcatalog noBuickGSX/GS455; unlikeGNXturboV6 orpendingCenturyfamilycar. Distinct455bigblock A-body four-speed,notPontiacGTOengineortrim.",
+        "evidence": [
+          "https://www.lov2xlr8.no/brochures/buick/70gsx/bilder/3.jpg"
+        ]
+      },
+      "name": "Hoary Mullein 1970",
+      "id": "hoary-mullein-1970",
+      "simulationEstimates": {
+        "cgHeightM": 0.53,
+        "dragCoefficient": 0.48,
+        "tireGrip": 0.78,
+        "spring": 0.49,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0.28,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 410,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.56,
+        "redlineRpm": 5200,
+        "revLimitRpm": 5500,
+        "topSpeedMph": 119,
+        "zeroToSixtySec": 6.8,
+        "powerRpm": 4600,
+        "torqueRpm": 2800,
+        "powerHp": 285,
+        "torqueLbFt": 440,
+        "tireSize": [
+          235,
+          60,
+          15
+        ],
+        "transmissionLabel": "4-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "dodge-challenger-r-t-1970-roster-candidate",
+      "identity": {
+        "year": 1970,
+        "make": "Dodge",
+        "model": "Challenger R/T",
+        "trim": "two-doorhardtop,standard383Magnum four-barrel335hp reference,standardall-synchro3MT,nonSE,nonsixpack",
+        "market": "United States"
+      },
+      "referenceVehicle": "1970 US Dodge Challenger R/T, two-doorhardtop,standard383Magnum four-barrel335hp reference,standardall-synchro3MT,nonSE,nonsixpack",
+      "bodyClass": "two-door-hardtop-coupe",
+      "artIdentity": "First-yearE-bodytwo-doorhardtop,quadroundheadlamps,recessedgrille,longhood/shortdeck,standardR/Ttwinscoopedhood notshaker,14-inchwheels; notmodern2008+Challengerbody.",
+      "facts": {
+        "engineDisplacementL": 6.276245512,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "periodPublishedRatings": {
+          "advertisedPowerHp": 335,
+          "powerRpm": 5200,
+          "advertisedTorqueLbFt": 425,
+          "torqueRpm": 3400,
+          "ratingBasis": "Period factory advertised brake output; no modern SAE-net certification implied. Preserve separate from estimated installed output; source does not define test-accessory basis."
+        },
+        "gearCount": 3
+      },
+      "sources": [
+        {
+          "url": "https://www.lov2xlr8.no/brochures/dodge/70cha/bilder/5.jpg",
+          "publisher": "Original1970Dodge factory sales/performance brochure archivedbylov2xlr8",
+          "fields": [
+            "exactengine/transmissionselection",
+            "publishedperiodpowerandtorque",
+            "chassis/body"
+          ],
+          "access": "2026-11-18 originalfactoryspecificationimage visuallyreviewed,noOCR."
+        },
+        {
+          "url": "https://www.lov2xlr8.no/brochures/dodge/70cha/bilder/4.jpg",
+          "publisher": "OriginalDodge1970Challengercatalog81-205-0050printed8/69",
+          "fields": [
+            "R/Tstandard383Magnum",
+            "standardall-synchrothree-speed",
+            "standardhood/body"
+          ],
+          "access": "Originalfactoryimagevisuallyreviewed; standard383paragraphread,notpicturedoptionalSixPackclaim."
+        }
+      ],
+      "limits": [
+        "Installed horsepower/torque are explicit engineering estimates, not arithmetic conversion of period gross/advertised output into net certification. Unspecified runtime calibration including curves away from peaks, brakes/grip/suspension,CG,distribution,performance,cutoff and tire rolling radius remains estimated.",
+        "SharedRTG001 reference art only; originalart/drivingcompletion notclaimed. No race tuning,moderncontrolsorABS/tractioncontrol added.",
+        "Completegeometry,mass,3MTinternalratios/reverse/finaldrive andfueltank areexplicitestimatedmodelinputs,notverified onselectedengine/bodybrochure. Sourceanchorsengine335/425,R/Ttrimand3MT.",
+        "Published335hp383MAGNUM column differs330hpordinary383fourbarrel. Do notuse440/426Hemi orSixPackpicturedoptionalcar. PeriodF70x14/R/Ttirefitment notprovenonselectedtable;205/70R14explicitestimate.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Meadow Buttercup 2012",
+            "documentId": "meadow-buttercup-2012",
+            "runtimeId": "saved-car:Meadow Buttercup 2012",
+            "reference": "2012 Canadian Dodge Challenger SRT8 392 6.4 naturally aspirated HEMI RWD TR6060 six-speed manual, standard245/45ZR20 all-season tires",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Hoary Plantain 2015",
+            "documentId": "hoary-plantain-2015",
+            "runtimeId": "saved-car:Hoary Plantain 2015",
+            "reference": "2015 Canadian Dodge Challenger SRT Hellcat6.2supercharged V8,optionalTR6060 six-speed manual,3.70 LSD,RWD,standard275/40ZR20 all-season tires;full707hpoutput,noBlackKeyrestriction",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No1970E-bodyChallenger inactualcatalog. 2012/2015modernChallengersuse6.4/6.2enginesand6MT,newbody/chassis;1970car383bigblock/3MTismateriallydifferent. Noold11overlap.",
+        "evidence": [
+          "https://www.lov2xlr8.no/brochures/dodge/70cha/bilder/5.jpg",
+          "https://www.lov2xlr8.no/brochures/dodge/70cha/bilder/4.jpg"
+        ]
+      },
+      "name": "White Mullein 1970",
+      "id": "white-mullein-1970",
+      "simulationEstimates": {
+        "reverseRatio": 3.34,
+        "cgHeightM": 0.53,
+        "groundClearanceM": 0.16,
+        "dragCoefficient": 0.48,
+        "tireGrip": 0.78,
+        "spring": 0.49,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 410,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.55,
+        "redlineRpm": 5500,
+        "revLimitRpm": 5800,
+        "fuelTankUSgal": 18,
+        "topSpeedMph": 120,
+        "zeroToSixtySec": 7.1,
+        "powerRpm": 5200,
+        "torqueRpm": 3400,
+        "powerHp": 265,
+        "torqueLbFt": 365,
+        "curbKg": 1620,
+        "gearRatios": [
+          2.55,
+          1.49,
+          1
+        ],
+        "finalDrive": 3.23,
+        "lengthM": 4.85902,
+        "widthM": 1.9329399999999999,
+        "heightM": 1.29286,
+        "wheelbaseM": 2.794,
+        "trackFrontIn": 59.7,
+        "trackRearIn": 60.7,
+        "tireSize": [
+          205,
+          70,
+          14
+        ],
+        "steeringRatio": 24
+      }
+    },
+    {
+      "candidateId": "renault-5-turbo-1980-roster-candidate",
+      "identity": {
+        "year": 1980,
+        "make": "Renault",
+        "model": "5 Turbo",
+        "trim": "R8220 original road homologation, calendar-1980 production carrying MY1981, two-seat mid-engine five-speed manual",
+        "market": "France",
+        "bodyClass": "hatchback"
+      },
+      "bodyClass": "hatchback",
+      "referenceVehicle": "1980-built France Renault 5 Turbo R8220 road homologation two-seat hatchback, factory MY1981,1397cc GarrettT3 rear-mid-engine RWD5MT; not Turbo2 or Ragnotti Group4 competition car",
+      "facts": {
+        "powerKw": 117.6798,
+        "publishedPowerPS": 160,
+        "powerRpm": 6000,
+        "torqueNm": 209.86230999999998,
+        "torqueRpm": 3250,
+        "engineDisplacementL": 1.397,
+        "aspiration": "Turbocharged",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "publishedWeightKg": 970,
+        "lengthM": 3.664,
+        "widthM": 1.752,
+        "heightM": 1.323,
+        "wheelbaseM": 2.43,
+        "trackFrontIn": 53.07086614173229,
+        "trackRearIn": 58.031496062992126,
+        "fuelTankUSgal": 24.568000869307802,
+        "topSpeedMph": 124.27423844746679
+      },
+      "sources": [
+        {
+          "url": "https://cdn.group.renault.com/ren/master/renault-classic/tools-and-services/Renault5TURBO.pdf.asset.pdf/d687c20fd2.pdf",
+          "publisher": "Renault Classic, Les cahiers histoire et passion Renault5Turbo",
+          "fields": [
+            "identity",
+            "powerKw",
+            "publishedPowerPS",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "publishedWeightKg",
+            "topSpeedMph",
+            "periodMetricTires"
+          ],
+          "access": "Downloaded original factory PDF and read text pp8\u201311 on2026-11-18. French p9 R8220 road table160ch6000rpm,21.4mkg3250rpm,1397cc,GarrettT3,RWD5gears,970kg,190/55HR340 front220/55VR365rear,200km/h. P11 explicitly802built1980butMY1981. Torque converts kilogram-force metres; ch treated as metric horsepower."
+        },
+        {
+          "url": "https://www.mespiecesauto.com/wp-content/uploads/2025/08/R5-turbo-manuel-reparation-MR221.pdf",
+          "publisher": "Regie Nationale des Usines Renault, original MR221 workshop manual, mirrored by MesPiecesAuto",
+          "fields": [
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "fuelTankUSgal",
+            "engineDisplacementL"
+          ],
+          "access": "Visually inspected original scan PDFp7/A3 andp9/A5. R8220 dimensions3664x1752x1323mm,WB2430mm,tracks1348/1474mm,1397cc engine840-30,gearbox369-04; fuel93L. No heavyOCR used."
+        },
+        {
+          "url": "https://theoriginals.renault.com/maxi-5-turbo",
+          "publisher": "Renault The Originals factory museum French page",
+          "fields": [
+            "identity",
+            "publishedPowerPS"
+          ],
+          "access": "Read2026-11-18: confirms original road Renault5Turbo launched1980with160ch before laterCevennes/TourdeCorse/Maxi competition evolutions."
+        }
+      ],
+      "limits": [
+        "Year1980 denotes actual calendar production, not model-year: factory explicitly says these802cars carriedMY1981. Do not create another1981road slot for the identical batch.",
+        "Factory970kg has no explicit curb/driver/fuel basis in heritage table; modeled970kg curb is an estimate.",
+        "Period tires are metricTRX190/55HR340front220/55VR365rear. Fractional inch rim values are exact unit conversions into schema, not modern replacement tire claims. If schema rejects fractional diameters, use explicitly estimated replacement rolling diameter rather than silently round to13/14in.",
+        "Gear ratios,finaldrive,reverse,axleweight,CG,clearance,redline/limiter and0\u201360 are unsupported simulation estimates. Powercurve/turbo response,grip,braking andsteering calibration remain simulation approximations.",
+        "Historical manual injection and differential mechanisms are represented only through existing engine/drive semantics; sharedRTG001art is placeholder,not finished car-specificart.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "vesper-v6-2003",
+            "alias": "Vesper V6 2003",
+            "referenceVehicle": "2003 German Clio V6 Phase II LHD six-speed RWD",
+            "documentId": "vesper-v6-2003",
+            "runtimeId": "saved-car:Vesper V6 2003",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "larkspur-1981",
+            "alias": "Larkspur 1981",
+            "referenceVehicle": "1981 Renault 5 Turbo Group 4, Jean Ragnotti / Jean-Marc Andri\u00e9, Monte Carlo winner. Not later Maxi, Group B Tour de Corse, or road Turbo 2.",
+            "documentId": "larkspur-1981",
+            "runtimeId": "saved-car:Larkspur 1981",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Larkspur1981 is Ragnotti/Andrie MonteCarlo Group4 competition configuration; this is the original160ch road car with production cabin,mass androadtires,not just a different year. Vesper2003 is later unrelated ClioV6 mid-engine3.0NA6MT platform. Exact current catalog and Renault provenance audit found no roadR8220 configuration.",
+        "evidence": [
+          "https://cdn.group.renault.com/ren/master/renault-classic/tools-and-services/Renault5TURBO.pdf.asset.pdf/d687c20fd2.pdf",
+          "https://theoriginals.renault.com/r5-turbo"
+        ]
+      },
+      "name": "Vipers Bugloss 1980",
+      "id": "vipers-bugloss-1980",
+      "simulationEstimates": {
+        "reverseRatio": 3.545,
+        "cgHeightM": 0.46,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.4,
+        "redlineRpm": 6250,
+        "revLimitRpm": 6500,
+        "zeroToSixtySec": 6.8,
+        "curbKg": 970,
+        "tireSize": [
+          190,
+          55,
+          13.385826771653544
+        ],
+        "frontTire": [
+          190,
+          55,
+          13.385826771653544
+        ],
+        "rearTire": [
+          220,
+          55,
+          14.370078740157481
+        ],
+        "gearRatios": [
+          3.364,
+          2.059,
+          1.381,
+          1.057,
+          0.862
+        ],
+        "finalDrive": 3.889
+      }
+    },
+    {
+      "candidateId": "alfa-romeo-giulia-sprint-gta-stradale-1965-roster-candidate",
+      "bodyClass": "coupe",
+      "identity": {
+        "year": 1965,
+        "make": "Alfa Romeo",
+        "model": "Giulia Sprint GTA Stradale",
+        "trim": "original1570cc twin-plug115CV road coupe5MT; not170CV competition tune ormodernGiuliaGTA",
+        "market": "Italy/Europe"
+      },
+      "referenceVehicle": "1965 Alfa Romeo Giulia Sprint GTA Stradale, original1570cc twin-plug115CV road coupe5MT; not170CV competition tune ormodernGiuliaGTA",
+      "facts": {
+        "powerKw": 84.58235625,
+        "publishedPowerPS": 115,
+        "powerRpm": 6000,
+        "engineDisplacementL": 1.57,
+        "transmission": "manual",
+        "gearCount": 5,
+        "lengthM": 4.08,
+        "widthM": 1.58,
+        "heightM": 1.315,
+        "wheelbaseM": 2.35,
+        "publishedEmptyKg": 745,
+        "topSpeedMph": 114.95367056390678
+      },
+      "sources": [
+        {
+          "url": "https://www.museoalfaromeo.com/it-it/collezione/Pages/GiuliaSprintGTA.aspx",
+          "publisher": "Alfa Romeo factory/museum",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "powerRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "publishedEmptyKg",
+            "topSpeedMph"
+          ],
+          "access": "Manufacturer historical specification text read2026-11-18; exact selected variant, not a later or race-output substitution."
+        },
+        {
+          "url": "https://www.media.stellantis.com/it-it/alfa-romeo/press/giulia-gta-l-impetuoso-ritorno-di-una-leggenda-alfa-romeo",
+          "publisher": "Alfa Romeo",
+          "fields": [
+            "1965identity",
+            "road115CVversusrace170CV"
+          ],
+          "access": "FactoryItalianhistory read2026-11-18."
+        }
+      ],
+      "limits": [
+        "115CV is metric, notSAEhp.745kg factory a-vuoto/empty value; installed800kg estimated wet mass, not745kgcurb.",
+        "Road115CV used; factory retrospective racing170CV excluded.",
+        "All suggestedEstimates are provisional implementation values, not newly verified factory specifications: geometry or mass absent from facts, tracks, tires, ratios/final drive, load split, grip, aero, suspension, limiter, fuel and performance. Shared RTG-001 graphics only; no finished original-art claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Field Gentian 2017",
+            "documentId": "field-gentian-2017",
+            "runtimeId": "saved-car:Field Gentian 2017",
+            "reference": "modernGiuliaQuadrifoglio2.9V6",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Yellow Melilot 1966",
+            "documentId": "yellow-melilot-1966",
+            "runtimeId": "saved-car:Yellow Melilot 1966",
+            "reference": "FordLotusCortina1558cc",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "1960s lightweight aluminum-panel twin-plug four-cylinder rear-drivecoupe; unrelated to modernfour-doorV6Giulia and not sameengine/body asCortina.",
+        "evidence": [
+          "https://www.museoalfaromeo.com/it-it/collezione/Pages/GiuliaSprintGTA.aspx"
+        ],
+        "audit": "Full wave41 native catalog referenceVehicle/inspiration audit and exact model searches; existing GiuliettaQV broadleaf-dock-2011 and155Q4 horseshoe-vetch-1992 rejected. Confirmed existing660candidateId."
+      },
+      "name": "Common Comfrey 1965",
+      "id": "common-comfrey-1965",
+      "simulationEstimates": {
+        "reverseRatio": 3.01,
+        "cgHeightM": 0.45,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.39,
+        "tireGrip": 0.83,
+        "spring": 0.47,
+        "antiRollRear": 0.1,
+        "suspensionTravelM": 0.19,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 500,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.5,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 12.15,
+        "zeroToSixtySec": 9.3,
+        "bodyClass": "coupe",
+        "drivetrain": "rwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "transmissionLabel": "period manual; provisional gearing",
+        "torqueNm": 142,
+        "torqueRpm": 3000,
+        "curbKg": 800,
+        "trackFrontIn": 51.6,
+        "trackRearIn": 50.0,
+        "tireSize": [
+          155,
+          80,
+          15
+        ],
+        "gearRatios": [
+          3.304,
+          1.988,
+          1.355,
+          1,
+          0.791
+        ],
+        "finalDrive": 4.56,
+        "torqueLbFt": 104.73382519737171
+      }
+    },
+    {
+      "candidateId": "alfa-romeo-33-stradale-1968-roster-candidate",
+      "bodyClass": "coupe",
+      "identity": {
+        "year": 1968,
+        "make": "Alfa Romeo",
+        "model": "33 Stradale",
+        "trim": "original1967\u20131969 productionseries2.0NA V8 road coupe6MT; notTipo33race,prototype-specific body or2023V6/BEV",
+        "market": "Italy/Europe"
+      },
+      "referenceVehicle": "1968 Alfa Romeo 33 Stradale, original1967\u20131969 productionseries2.0NA V8 road coupe6MT; notTipo33race,prototype-specific body or2023V6/BEV",
+      "facts": {
+        "powerKw": 169.1647125,
+        "publishedPowerPS": 230,
+        "powerRpm": 8800,
+        "torqueNm": 206,
+        "engineDisplacementL": 2.0
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/it-it/alfa-romeo/press/alfa-romeo-33-stradale-il-coraggio-di-sognare",
+          "publisher": "Alfa Romeo factory/museum",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "powerRpm",
+            "torqueNm",
+            "engineDisplacementL"
+          ],
+          "access": "Manufacturer historical specification text read2026-11-18; exact selected variant, not a later or race-output substitution."
+        }
+      ],
+      "limits": [
+        "230CV and206Nm from factory historical original-car section, not2023power figures.",
+        "1968 selected within factory1967\u20131969productionrange. Dimensions and750kgwet target estimated from periodfamily, not prototype museum700kg mass claimed asproduction curb. Six-speed count andgearing remain provisional.",
+        "All suggestedEstimates are provisional implementation values, not newly verified factory specifications: geometry or mass absent from facts, tracks, tires, ratios/final drive, load split, grip, aero, suspension, limiter, fuel and performance. Shared RTG-001 graphics only; no finished original-art claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Cicada Turbo 2015",
+            "documentId": "cicada-turbo-2015",
+            "runtimeId": "saved-car:Cicada Turbo 2015",
+            "reference": "Alfa4C turbo1.75four",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Marsh Violet 2007",
+            "documentId": "marsh-violet-2007",
+            "runtimeId": "saved-car:Marsh Violet 2007",
+            "reference": "Alfa8C front-engine4.7V8",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Tiny mid-enginehigh-rev2LNA V8 originalroadcar, not modern4Cturbo orfront-engine8C. 1968slot selects originalproductionseries, no uniquechassis claim.",
+        "evidence": [
+          "https://www.media.stellantis.com/it-it/alfa-romeo/press/alfa-romeo-33-stradale-il-coraggio-di-sognare"
+        ],
+        "audit": "Full wave41 native catalog referenceVehicle/inspiration audit and exact model searches; existing GiuliettaQV broadleaf-dock-2011 and155Q4 horseshoe-vetch-1992 rejected. Confirmed existing660candidateId."
+      },
+      "name": "Marsh Woundwort 1968",
+      "id": "marsh-woundwort-1968",
+      "simulationEstimates": {
+        "reverseRatio": 3.1,
+        "cgHeightM": 0.38,
+        "groundClearanceM": 0.11,
+        "dragCoefficient": 0.39,
+        "tireGrip": 0.83,
+        "spring": 0.47,
+        "antiRollRear": 0.1,
+        "suspensionTravelM": 0.19,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 500,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.4,
+        "redlineRpm": 9000,
+        "revLimitRpm": 9200,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 25.1,
+        "topSpeedMph": 162,
+        "zeroToSixtySec": 5.3,
+        "bodyClass": "coupe",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "transmissionLabel": "period manual; provisional gearing",
+        "torqueRpm": 7000,
+        "curbKg": 750,
+        "lengthM": 3.97,
+        "widthM": 1.71,
+        "heightM": 0.99,
+        "wheelbaseM": 2.35,
+        "trackFrontIn": 53.1,
+        "trackRearIn": 56.9,
+        "tireSize": [
+          185,
+          70,
+          13
+        ],
+        "frontTire": [
+          185,
+          70,
+          13
+        ],
+        "rearTire": [
+          205,
+          70,
+          13
+        ],
+        "gearRatios": [
+          3.1,
+          2.16,
+          1.62,
+          1.3,
+          1.07,
+          0.88
+        ],
+        "finalDrive": 4.1
+      }
+    },
+    {
+      "candidateId": "maserati-a6gcs-53-pininfarina-berlinetta-1953-roster-candidate",
+      "bodyClass": "coupe",
+      "identity": {
+        "year": 1953,
+        "make": "Maserati",
+        "model": "A6GCS/53 Pinin Farina Berlinetta",
+        "trim": "1953\u20131954 closed-body2.0NAstraight-six sportscar; notopenA6GCS orlaterA6G54roadGT",
+        "market": "Italy/Europe"
+      },
+      "referenceVehicle": "1953 Maserati A6GCS/53 Pinin Farina Berlinetta, 1953\u20131954 closed-body2.0NAstraight-six sportscar; notopenA6GCS orlaterA6G54roadGT",
+      "facts": {
+        "powerKw": 125.0347875,
+        "publishedPowerPS": 170,
+        "powerRpm": 7500,
+        "engineDisplacementL": 1.9855,
+        "publishedDryKg": 740,
+        "topSpeedMph": 146.02223017577347
+      },
+      "sources": [
+        {
+          "url": "https://www.maserati.com/it/it/brand/auto-storiche/speciali/a6gcs-berlinetta",
+          "publisher": "Maserati factory/museum",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "powerRpm",
+            "engineDisplacementL",
+            "publishedDryKg",
+            "topSpeedMph"
+          ],
+          "access": "Manufacturer historical specification text read2026-11-18; exact selected variant, not a later or race-output substitution."
+        }
+      ],
+      "limits": [
+        "Factory table is explicitly titled A6GCS/53 Berlinetta Pinin Farina and gives1953\u20131954production, not genericopen-chassis range. PublicTurinshowdebut1954 retained;1953backlogslot is family-era reference, not proof any particularclosed-body car was completedin1953. Noindividualchassis date orrace result asserted.",
+        "170CV metric;740kgDRY retained separately,805kgwet simulationestimate. Four-speed andratios unverified.",
+        "All suggestedEstimates are provisional implementation values, not newly verified factory specifications: geometry or mass absent from facts, tracks, tires, ratios/final drive, load split, grip, aero, suspension, limiter, fuel and performance. Shared RTG-001 graphics only; no finished original-art claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Field Bindweed 1997",
+            "documentId": "field-bindweed-1997",
+            "runtimeId": "saved-car:Field Bindweed 1997",
+            "reference": "MaseratiGhibliCup2.0twin-turboV6",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Hedge Bindweed 2004",
+            "documentId": "hedge-bindweed-2004",
+            "runtimeId": "saved-car:Hedge Bindweed 2004",
+            "reference": "MC12midV12",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Historicfront-engineNAstraight-six aluminumclosed-body sportscar, not laterV6roadcoupe orV12supercar; mechanicallydistinct.",
+        "evidence": [
+          "https://www.maserati.com/it/it/brand/auto-storiche/speciali/a6gcs-berlinetta"
+        ],
+        "audit": "Full wave41 native catalog referenceVehicle/inspiration audit and exact model searches; existing GiuliettaQV broadleaf-dock-2011 and155Q4 horseshoe-vetch-1992 rejected. Confirmed existing660candidateId."
+      },
+      "name": "Hedge Woundwort 1953",
+      "id": "hedge-woundwort-1953",
+      "simulationEstimates": {
+        "reverseRatio": 3.0,
+        "cgHeightM": 0.45,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.39,
+        "tireGrip": 0.83,
+        "spring": 0.47,
+        "antiRollRear": 0.1,
+        "suspensionTravelM": 0.19,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 500,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.5,
+        "redlineRpm": 7600,
+        "revLimitRpm": 7800,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 21.13,
+        "zeroToSixtySec": 7.1,
+        "bodyClass": "coupe",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 4,
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "transmissionLabel": "period manual; provisional gearing",
+        "torqueNm": 190,
+        "torqueRpm": 5500,
+        "curbKg": 805,
+        "lengthM": 3.96,
+        "widthM": 1.52,
+        "heightM": 1.28,
+        "wheelbaseM": 2.31,
+        "trackFrontIn": 50.4,
+        "trackRearIn": 49.6,
+        "tireSize": [
+          165,
+          80,
+          16
+        ],
+        "gearRatios": [
+          2.97,
+          1.84,
+          1.32,
+          1
+        ],
+        "finalDrive": 3.9,
+        "torqueLbFt": 140.13680836268048
+      }
+    },
+    {
+      "candidateId": "maserati-tipo-61-birdcage-1961-roster-candidate",
+      "bodyClass": "roadster",
+      "identity": {
+        "year": 1961,
+        "make": "Maserati",
+        "model": "Tipo 61 Birdcage",
+        "trim": "front-engine2.89NAfour two-seat sportsracer5MT,1961familyreference; noexactcrew/eventsetup claim",
+        "market": "Italy/Europe"
+      },
+      "referenceVehicle": "1961 Maserati Tipo 61 Birdcage, front-engine2.89NAfour two-seat sportsracer5MT,1961familyreference; noexactcrew/eventsetup claim",
+      "facts": {
+        "powerKw": 183.8746875,
+        "publishedPowerPS": 250,
+        "powerRpm": 7000,
+        "engineDisplacementL": 2.89,
+        "gearCount": 5,
+        "transmission": "manual",
+        "publishedMassKg": 600,
+        "topSpeedMph": 177.09078978764018
+      },
+      "sources": [
+        {
+          "url": "https://www.maserati.com/it/it/news/maserati-tipo-61-the-60th-anniversary",
+          "publisher": "Maserati factory/museum",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "powerRpm",
+            "engineDisplacementL",
+            "gearCount",
+            "transmission",
+            "publishedMassKg",
+            "topSpeedMph"
+          ],
+          "access": "Manufacturer historical specification text read2026-11-18; exact selected variant, not a later or race-output substitution."
+        }
+      ],
+      "limits": [
+        "Factory1961anniversary givesTipo61 2890cc,250CV,5MTand600kg; bodytext roundsengine2900cc. Use technicaltable2890.",
+        "Published600kg basisundefined; estimated660kg running-fuel target notfactorycurb. Historicalrace power not modernSAE-netcertification. Stocksharedbody approximates openracecar only.",
+        "All suggestedEstimates are provisional implementation values, not newly verified factory specifications: geometry or mass absent from facts, tracks, tires, ratios/final drive, load split, grip, aero, suspension, limiter, fuel and performance. Shared RTG-001 graphics only; no finished original-art claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Goldilocks 1955",
+            "documentId": "goldilocks-1955",
+            "runtimeId": "saved-car:Goldilocks 1955",
+            "reference": "Mercedes300SLR1955MilleMiglia",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Hedge Bindweed 2004",
+            "documentId": "hedge-bindweed-2004",
+            "runtimeId": "saved-car:Hedge Bindweed 2004",
+            "reference": "MaseratiMC12V12roadcar",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "1961front-enginefour-cylinder spaceframebarchetta, distinct from Mercedesstraight-eight andMaseratimid-engineV12. No racelegend credit claimedwithout exacteventsetup.",
+        "evidence": [
+          "https://www.maserati.com/it/it/news/maserati-tipo-61-the-60th-anniversary"
+        ],
+        "audit": "Full wave41 native catalog referenceVehicle/inspiration audit and exact model searches; existing GiuliettaQV broadleaf-dock-2011 and155Q4 horseshoe-vetch-1992 rejected. Confirmed existing660candidateId."
+      },
+      "name": "Water Figwort 1961",
+      "id": "water-figwort-1961",
+      "simulationEstimates": {
+        "reverseRatio": 2.8,
+        "cgHeightM": 0.36,
+        "groundClearanceM": 0.1,
+        "dragCoefficient": 0.39,
+        "tireGrip": 0.83,
+        "spring": 0.47,
+        "antiRollRear": 0.1,
+        "suspensionTravelM": 0.19,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 500,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.49,
+        "redlineRpm": 7200,
+        "revLimitRpm": 7400,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 31.7,
+        "zeroToSixtySec": 4.8,
+        "bodyClass": "roadster",
+        "drivetrain": "rwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "transmissionLabel": "period manual; provisional gearing",
+        "torqueNm": 294,
+        "torqueRpm": 5500,
+        "curbKg": 660,
+        "lengthM": 3.8,
+        "widthM": 1.5,
+        "heightM": 0.985,
+        "wheelbaseM": 2.2,
+        "trackFrontIn": 47.2,
+        "trackRearIn": 47.2,
+        "tireSize": [
+          185,
+          70,
+          15
+        ],
+        "gearRatios": [
+          2.8,
+          1.9,
+          1.42,
+          1.13,
+          0.91
+        ],
+        "finalDrive": 3.5,
+        "torqueLbFt": 216.8432718875161
+      }
+    },
+    {
+      "candidateId": "aston-martin-db4-gt-zagato-1960-roster-candidate",
+      "bodyClass": "coupe",
+      "identity": {
+        "year": 1960,
+        "make": "Aston Martin",
+        "model": "DB4 GT Zagato",
+        "trim": "original1960introduction standardtwo-seat3.7twin-plugstraight-six4MT; notDP207/209lightweight,SanctionII/IIIorcontinuation",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "1960 Aston Martin DB4 GT Zagato, original1960introduction standardtwo-seat3.7twin-plugstraight-six4MT; notDP207/209lightweight,SanctionII/IIIorcontinuation",
+      "facts": {
+        "engineDisplacementL": 3.7,
+        "publishedClaimedPeriodBhp": 314,
+        "periodPublishedRatings": {
+          "claimedBhp": 314,
+          "ratingBasis": "Factory historical claim, gross/net basis unresolved; installed output is estimated."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://media.astonmartin.com/db4-gt-zagato/?lang=eng",
+          "publisher": "Aston Martin factory/museum",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL"
+          ],
+          "access": "Manufacturer historical specification text read2026-11-18; exact selected variant, not a later or race-output substitution."
+        }
+      ],
+      "limits": [
+        "Factory calls314bhp a CLAIMED period figure; gross/net/accessory standard not specified. Retained only as publishedClaimedPeriodBhp. Installed300hp is an explicit conservative simulation estimate, not measured or certified net output. No continuation4.7engine substitution.",
+        "1960isintroductionyearfactory1960\u20131963range; noindividualcustomer-deliverydate asserted.1200kgestimatedwetmass, not lightweightEssexracecar. Allotherparameters provisional.",
+        "All suggestedEstimates are provisional implementation values, not newly verified factory specifications: geometry or mass absent from facts, tracks, tires, ratios/final drive, load split, grip, aero, suspension, limiter, fuel and performance. Shared RTG-001 graphics only; no finished original-art claim.",
+        "Period314bhp claim is not certified modern net output; estimated installed output remains separate.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Herb Bennet 1964",
+            "documentId": "herb-bennet-1964",
+            "runtimeId": "saved-car:Herb Bennet 1964",
+            "reference": "standardDB5 3995cc5MT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Spiny Restharrow 2001",
+            "documentId": "spiny-restharrow-2001",
+            "runtimeId": "saved-car:Spiny Restharrow 2001",
+            "reference": "V12Vanquish",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Shortwheelbase lightweightZagatoGT3.7twin-plug highercompressiontwo-seater versuslonger/heavier4.0DB5roadGT. Differentbody/engine/transmission, notmodelyearpadding.",
+        "evidence": [
+          "https://media.astonmartin.com/db4-gt-zagato/?lang=eng"
+        ],
+        "audit": "Full wave41 native catalog referenceVehicle/inspiration audit and exact model searches; existing GiuliettaQV broadleaf-dock-2011 and155Q4 horseshoe-vetch-1992 rejected. Confirmed existing660candidateId."
+      },
+      "name": "Common Figwort 1960",
+      "id": "common-figwort-1960",
+      "simulationEstimates": {
+        "reverseRatio": 2.8,
+        "cgHeightM": 0.45,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.39,
+        "tireGrip": 0.83,
+        "spring": 0.47,
+        "antiRollRear": 0.1,
+        "suspensionTravelM": 0.19,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 500,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.51,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 30.0,
+        "topSpeedMph": 153,
+        "zeroToSixtySec": 6.2,
+        "bodyClass": "coupe",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 4,
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "transmissionLabel": "period manual; provisional gearing",
+        "powerRpm": 6000,
+        "torqueNm": 377,
+        "torqueRpm": 5400,
+        "curbKg": 1200,
+        "lengthM": 4.267,
+        "widthM": 1.657,
+        "heightM": 1.27,
+        "wheelbaseM": 2.362,
+        "trackFrontIn": 54.0,
+        "trackRearIn": 53.5,
+        "tireSize": [
+          185,
+          80,
+          16
+        ],
+        "gearRatios": [
+          2.61,
+          1.64,
+          1.23,
+          1
+        ],
+        "finalDrive": 3.31,
+        "powerHp": 300,
+        "torqueLbFt": 278.06093027752917
+      }
+    }
+  ],
+  "deferred": []
+}

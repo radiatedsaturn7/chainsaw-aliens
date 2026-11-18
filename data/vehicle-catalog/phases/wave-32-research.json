@@ -1,0 +1,1073 @@
+{
+  "schemaVersion": 1,
+  "base": "89e8831574f53b59ce9cf945f7cbe88497684936",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "mercedes-benz-sls-amg-2011-roster-candidate",
+      "identity": {
+        "year": 2011,
+        "make": "Mercedes-Benz",
+        "model": "SLS AMG",
+        "trim": "C197type197.377standardcoupe7DCT",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2011 German Mercedes-Benz SLS AMG C197197.377 M159.9806.208L naturallyaspiratedV8 coupe7DCT,notGT/BlackSeries/Roadster",
+      "facts": {
+        "powerKw": 420,
+        "torqueNm": 650,
+        "powerRpm": 6800,
+        "torqueRpm": 4750,
+        "engineDisplacementL": 6.208,
+        "curbKg": 1695,
+        "lengthIn": 182.5984251968504,
+        "widthIn": 76.33858267716536,
+        "heightIn": 49.68503937007874,
+        "wheelbaseIn": 105.51181102362206,
+        "trackFrontIn": 66.22047244094489,
+        "trackRearIn": 65.07874015748033,
+        "transmission": "automatic",
+        "gearCount": 7,
+        "gearRatios": [
+          3.4,
+          2.19,
+          1.63,
+          1.29,
+          1.03,
+          0.84,
+          0.72
+        ],
+        "reverseRatio": 2.79,
+        "finalDrive": 3.67,
+        "tireSize": [
+          265,
+          35,
+          19
+        ],
+        "frontTire": [
+          265,
+          35,
+          19
+        ],
+        "rearTire": [
+          295,
+          30,
+          20
+        ],
+        "fuelTankUSgal": 22.454624450442616,
+        "dragCoefficient": 0.36,
+        "topSpeedMph": 196.97466793923485
+      },
+      "sources": [
+        {
+          "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/SLS-AMG-Coup-2010---2014.xhtml?oid=192608215",
+          "publisher": "Mercedes-Benz official public archive exactmodel technicalrecord",
+          "fields": [
+            "identity",
+            "powerKw",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "curbKg",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "fuelTankUSgal",
+            "dragCoefficient",
+            "topSpeedMph"
+          ],
+          "access": "Read2026-11-18. Exactproductionperiod supports selectedyear;April2011price forSLS. kWanchors retained rather than metricPS mislabeledmechanicalhp. Mass1695kg unladen under qualified validmeasurementmethods; no unprovenDINconversion."
+        }
+      ],
+      "limits": [
+        "Published unladen mass retained directly under archive qualified measurement-method wording; not relabeled DIN driver-excluded or dry. No subtraction of75kg without exactbasis proof.",
+        "All nonfacts estimates:CG,loadsplit,limiter,idle,torquecurves,spring/damper/grip,brakebias,shift calibration,downforce/differential,and0\u201360;source3.8sec is0\u2013100.",
+        "DCT approximated with existingautomatic zero-converter; no proprietarylaunchcontrol or exact dualclutchactuation reproduction. NotGT/BlackSeries/Roadster.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Ribwort Plantain 2011",
+      "id": "ribwort-plantain-2011",
+      "simulationEstimates": {
+        "cgHeightM": 0.45,
+        "groundClearanceM": 0.12,
+        "tireGrip": 1.12,
+        "spring": 0.67,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.14,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.15,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0.03,
+        "aeroRear": 0.08,
+        "shiftTimeMs": 150,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.47,
+        "redlineRpm": 7200,
+        "revLimitRpm": 7400,
+        "aspiration": "Naturally aspirated",
+        "zeroToSixtySec": 3.6,
+        "drivetrain": "rwd",
+        "transmissionLabel": "7-speed dual-clutch existing automatic approximation",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1
+      }
+    },
+    {
+      "candidateId": "mercedes-benz-sl-65-amg-black-series-2009-roster-candidate",
+      "identity": {
+        "year": 2009,
+        "make": "Mercedes-Benz",
+        "model": "SL 65 AMG Black Series",
+        "trim": "R230type230.479fixed-roofcoupe5AT",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2009 German Mercedes-Benz SL 65 AMG Black Series R230230.479 M275.9835.980L biturboV12 fixedroofcoupe5AT,notstandardSL65roadster",
+      "facts": {
+        "powerKw": 493,
+        "torqueNm": 1000,
+        "powerRpm": 5400,
+        "torqueRpm": 2200,
+        "engineDisplacementL": 5.98,
+        "curbKg": 1870,
+        "lengthIn": 180.6692913385827,
+        "widthIn": 77.16535433070867,
+        "heightIn": 50.629921259842526,
+        "wheelbaseIn": 100.78740157480316,
+        "trackFrontIn": 65.59055118110237,
+        "trackRearIn": 64.52755905511812,
+        "transmission": "automatic",
+        "gearCount": 5,
+        "gearRatios": [
+          3.59,
+          2.19,
+          1.41,
+          1,
+          0.83
+        ],
+        "reverseRatio": 3.16,
+        "finalDrive": 2.65,
+        "tireSize": [
+          265,
+          35,
+          19
+        ],
+        "frontTire": [
+          265,
+          35,
+          19
+        ],
+        "rearTire": [
+          325,
+          30,
+          20
+        ],
+        "fuelTankUSgal": 21.133764188651874
+      },
+      "sources": [
+        {
+          "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/SL-65-AMG-Black-Series-2008---2009.xhtml?oid=188078632",
+          "publisher": "Mercedes-Benz official public archive exactmodel technicalrecord",
+          "fields": [
+            "identity",
+            "powerKw",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "curbKg",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "fuelTankUSgal"
+          ],
+          "access": "Read2026-11-18. Exactproductionperiod supports selectedyear;April2011price forSLS. kWanchors retained rather than metricPS mislabeledmechanicalhp. Mass1870kg unladen under qualified validmeasurementmethods; no unprovenDINconversion."
+        },
+        {
+          "url": "https://media.mercedes-benz.com/article/c4efd3be-e345-4e19-a886-95391e593c51",
+          "publisher": "Mercedes-Benz2020GTBlackSeries factoryrelease historicalsection",
+          "fields": [
+            "topSpeedMph provisional discrepancy reference"
+          ],
+          "access": "HistoricalSL65BlackSeriessection gives320km/h,conflictswitharchive250; flag and modelprovisionally."
+        }
+      ],
+      "limits": [
+        "Published unladen mass retained directly under archive qualified measurement-method wording; not relabeled DIN driver-excluded or dry. No subtraction of75kg without exactbasis proof.",
+        "All nonfacts estimates:CG,loadsplit,limiter,idle,torquecurves,spring/damper/grip,brakebias,shift calibration,downforce/differential,and0\u201360;source3.8sec is0\u2013100.",
+        "Top-speed primary conflict:archive says250km/h,2020Mercedes factoryretrospective says320km/h; modeled320 is provisional not exact2009confirmed value. Torque is electronicallylimited1000Nm2200\u20134200,notunrestricted1200Nm. Fixedcouperoof,notstandardSLroadster.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Sea Plantain 2009",
+      "id": "sea-plantain-2009",
+      "simulationEstimates": {
+        "cgHeightM": 0.45,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.32,
+        "tireGrip": 1.12,
+        "spring": 0.67,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.14,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.15,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0.03,
+        "aeroRear": 0.08,
+        "shiftTimeMs": 220,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 6000,
+        "revLimitRpm": 6200,
+        "aspiration": "Twin turbocharged",
+        "topSpeedMph": 198.83878151594686,
+        "zeroToSixtySec": 3.6,
+        "drivetrain": "rwd",
+        "transmissionLabel": "5-speed torque-converter automatic",
+        "torqueConverterSlip": 0.04,
+        "torqueConverterMultiplication": 1.6
+      }
+    },
+    {
+      "candidateId": "honda-nsx-r-2005-roster-candidate",
+      "identity": {
+        "year": 2005,
+        "make": "Honda",
+        "model": "NSX-R NA2",
+        "trim": "Japan ABA-NA2 3.2 six-speed manual, no optional air conditioning, airbags or rear hatch garnish",
+        "market": "Japan"
+      },
+      "referenceVehicle": "2005 Japan Honda NSX Type R ABA-NA2 C32B3.2 six-speed manual, standard1270kg lightweight specification; not1992NA1, NSX-R GT or standardNSX",
+      "facts": {
+        "powerKw": 206,
+        "powerRpm": 7300,
+        "torqueNm": 304,
+        "torqueRpm": 5300,
+        "engineDisplacementL": 3.179,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "curbKg": 1270,
+        "lengthM": 4.43,
+        "widthM": 1.81,
+        "heightM": 1.16,
+        "wheelbaseM": 2.53,
+        "trackFrontIn": 59.4488188976378,
+        "trackRearIn": 60.629921259842526,
+        "groundClearanceM": 0.125,
+        "fuelTankUSgal": 18.49204366507039,
+        "gearRatios": [
+          3.066,
+          1.956,
+          1.428,
+          1.125,
+          0.914,
+          0.717
+        ],
+        "reverseRatio": 3.186,
+        "finalDrive": 4.235,
+        "tireSize": [
+          215,
+          40,
+          17
+        ],
+        "rearTireSize": [
+          255,
+          40,
+          17
+        ],
+        "frontTire": [
+          215,
+          40,
+          17
+        ],
+        "rearTire": [
+          255,
+          40,
+          17
+        ]
+      },
+      "limits": [
+        "Native catalogProvenance and tests/docs search confirms only Lunaria1991standard3.0 and Adderstongue1992NA1TypeR. This NA2 C32B3.2/6MT/facelift17inch-tire specification is materially different; not a year-only repeat. No R-GT snorkel/garnish or five-car homologation version selected.",
+        "Factory December2005 archive explicitly labels206kW/304Nm net. Base vehicle mass1270kg excludes AC1290kg and ACplusairbags1300kg. Height1.160m excludes optional rear-hatch garnish1.335m; retain that distinction.",
+        "Redline/limiter, load distribution, CG, native spring/roll/differential coefficients, drag/downforce and performance remain estimates; do not label simulated handling as factory measured.",
+        "Runtime frontTire/rearTire aliases retain the exact source tireSize/rearTireSize dimensions.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "sources": [
+        {
+          "url": "https://www.honda.co.jp/auto-archive/nsx/2005/grade-data/r-spec.html",
+          "publisher": "Honda official December2005 NSX-R specification archive",
+          "fields": [
+            "identity",
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "tireSize",
+            "rearTireSize"
+          ],
+          "access": "Read2026-11-18. ExactABA-NA2C32B3.2six-speedcolumn; net output explicitly stated, standard and optional masses distinguished. Full gearing, staggered tires and dimensions."
+        }
+      ],
+      "name": "Hedge Bedstraw 2005",
+      "id": "hedge-bedstraw-2005",
+      "simulationEstimates": {
+        "cgHeightM": 0.43,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.14,
+        "spring": 0.68,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.13,
+        "frontOverhangM": 0.99,
+        "rearDifferentialAccel": 0.35,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.42,
+        "redlineRpm": 8000,
+        "revLimitRpm": 8200,
+        "aspiration": "Naturally aspirated",
+        "topSpeedMph": 174,
+        "zeroToSixtySec": 4.8,
+        "transmissionLabel": "6-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "subaru-sti-s209-2019-roster-candidate",
+      "identity": {
+        "year": 2019,
+        "make": "Subaru",
+        "model": "STI S209",
+        "trim": "US limited-production EJ25 6MT wide-body sedan, standard equipment",
+        "market": "United States"
+      },
+      "referenceVehicle": "2019 United States Subaru Tecnica International S209 EJ25 turbo2.457L six-speed manual AWD sedan, factory341hp specification; not ordinary WRX STI, TypeRA, S208 or Airslayer",
+      "facts": {
+        "powerHp": 341,
+        "powerRpm": 6400,
+        "torqueLbFt": 330,
+        "torqueRpm": 3600,
+        "engineDisplacementL": 2.457,
+        "drivetrain": "awd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "curbLb": 3485,
+        "lengthIn": 181.9,
+        "widthIn": 72.4,
+        "heightIn": 58.1,
+        "wheelbaseIn": 104.3,
+        "trackFrontIn": 60.8,
+        "trackRearIn": 61.2,
+        "groundClearanceM": 0.12446,
+        "fuelTankUSgal": 15.9,
+        "tireSize": [
+          265,
+          35,
+          19
+        ]
+      },
+      "limits": [
+        "Actual native catalog and authored tests/docs contain no S209. Existing22B, GroupAImpreza,2022WRX andAirslayer do not represent this2019US341hp limited-production wide-body model.",
+        "STIheritage marks3485lb a reference vehicle weight; SubaruOctober2019 finalized specification independently calls it curb weight. Use unladen factory reference, not driver-loaded test mass.",
+        "Existing generic AWD only approximates mechanical drive; no claim to active DCCD controller, brake torque-vectoring/VDC calibration, SI-Drive modes or driver-operated intercooler spray. Estimatedfixedcenter/rear/frontlocking and tractioncontrol do not recreate those systems; no runtime additions.",
+        "Gearing, redline, load split, CG, aero loads, native suspension/grip and performance below are explicit estimates; sourced tire size does not prove a native tire friction coefficient.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "sources": [
+        {
+          "url": "https://www.sti.jp/brand/heritage/2019/s209/",
+          "publisher": "Subaru Tecnica International official S209 heritage specification",
+          "fields": [
+            "identity",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "curbLb",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "groundClearanceM",
+            "tireSize"
+          ],
+          "access": "Read2026-11-18. ExplicitUS-only2019model; net341hp6400/330lbft3600,6MT,2457cc,3485lbreferenceweight,standard265/35R19."
+        },
+        {
+          "url": "https://www.subaru.co.jp/press/news-en/2019_10_11_7825/",
+          "publisher": "Subaru Corporation finalized STI S209 features and specification,11October2019",
+          "fields": [
+            "identity",
+            "curbLb",
+            "fuelTankUSgal",
+            "tireSize",
+            "powerHp",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "groundClearanceM"
+          ],
+          "access": "Finalizedrelease, not earlierJanuaryestimatedannouncement; expresslylabels3485lbcurb,15.9galtank,standard19inch tires and dynamic-control/water-spray equipment requiring fidelity disclosure."
+        }
+      ],
+      "name": "Heath Bedstraw 2019",
+      "id": "heath-bedstraw-2019",
+      "simulationEstimates": {
+        "reverseRatio": 3.545,
+        "cgHeightM": 0.5,
+        "dragCoefficient": 0.36,
+        "tireGrip": 1.16,
+        "spring": 0.69,
+        "antiRollRear": 0.32,
+        "suspensionTravelM": 0.15,
+        "frontOverhangM": 0.98,
+        "rearDifferentialAccel": 0.4,
+        "frontDifferentialAccel": 0.25,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "aspiration": "Turbocharged",
+        "topSpeedMph": 162,
+        "zeroToSixtySec": 4.5,
+        "gearRatios": [
+          3.636,
+          2.235,
+          1.521,
+          1.137,
+          0.971,
+          0.756
+        ],
+        "finalDrive": 3.9,
+        "centerDifferentialBalance": 0.59
+      }
+    },
+    {
+      "candidateId": "gmc-syclone-1991-candidate",
+      "identity": {
+        "year": 1991,
+        "make": "GMC",
+        "model": "Syclone",
+        "trim": "4.3 turbo/intercooled V6 regular-cab pickup,4AT,full-time road AWD",
+        "market": "United States"
+      },
+      "referenceVehicle": "1991 US GMC Syclone 4.3 turbo/intercooled V6 regular-cab pickup,4AT,full-time road AWD",
+      "facts": {
+        "powerHp": 280,
+        "torqueLbFt": 350,
+        "powerRpm": 4400,
+        "torqueRpm": 3600,
+        "engineDisplacementL": 4.3,
+        "aspiration": "Turbocharged",
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "transmissionLabel": "Four-speed automatic approximation",
+        "gearCount": 4,
+        "finalDrive": 3.42,
+        "tireSize": [
+          245,
+          50,
+          16
+        ],
+        "fuelTankUSgal": 20,
+        "centerDifferentialBalance": 0.65,
+        "absEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://sportmachines.com/wp-content/uploads/1991/01/Syclone-Brochure.pdf",
+          "publisher": "GMC Truck original1991 Syclone brochure, preserved bySportmachines",
+          "fields": [
+            "SAEnet280hp@4400 and350lbft@3600",
+            "4AT",
+            "AWD approximately35percentfront",
+            "3.42 rearLSD",
+            "245/50VR16",
+            "20USgal",
+            "ABS"
+          ],
+          "access": "2026-11-18 original four-pagePDF read, specification panel page4; brochure launch performance is manufacturer reference only"
+        }
+      ],
+      "limits": [
+        "No Syclone/Typhoon identity found in current native307roster. Distinct road-performance pickup, not offroad truck or Typhoon SUV.",
+        "Mass1600kg,body dimensions,gear ratios and RPMcutoff are explicit modeling estimates, not factory-verified by cited brochure.",
+        "Runtime centerDifferentialBalance is REAR share:0.65 represents source approximately35percentfront. Generic fixedAWD/rearLSD does not reproduce viscous coupling exactly.",
+        "Factory4.6second claim is not measured ingame; conservative5.2second target estimated.",
+        "Full torque curve, drivetrain losses, inertia, CG, spring/damping, grip and shift/launch calibration are estimates; shared RTG-001 art only, no original-art or actual driving completion claimed.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Orange Hawkweed 1991",
+      "id": "orange-hawkweed-1991",
+      "simulationEstimates": {
+        "reverseRatio": 2.29,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.4,
+        "tireGrip": 0.9,
+        "spring": 0.5,
+        "antiRollRear": 0.22,
+        "suspensionTravelM": 0.2,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.28,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 400,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 5000,
+        "revLimitRpm": 5300,
+        "topSpeedMph": 126,
+        "zeroToSixtySec": 5.2,
+        "curbKg": 1600,
+        "lengthM": 4.585,
+        "widthM": 1.734,
+        "heightM": 1.532,
+        "wheelbaseM": 2.751,
+        "trackFrontIn": 56.6,
+        "trackRearIn": 55.1,
+        "gearRatios": [
+          3.06,
+          1.63,
+          1,
+          0.7
+        ],
+        "torqueConverterSlip": 0.08,
+        "torqueConverterMultiplication": 1.7
+      }
+    },
+    {
+      "candidateId": "ford-mustang-svo-1986-roster-candidate",
+      "identity": {
+        "year": 1986,
+        "make": "Ford",
+        "model": "Mustang SVO",
+        "trim": "2.3 EFI intercooled turbo hatchback,5MT,standard equipment,noCompetitionPrep",
+        "market": "United States"
+      },
+      "referenceVehicle": "1986 US Ford Mustang SVO 2.3 EFI intercooled turbo hatchback,5MT,standard equipment,noCompetitionPrep",
+      "facts": {
+        "powerHp": 200,
+        "powerRpm": 5000,
+        "engineDisplacementL": 2.3,
+        "aspiration": "Turbocharged",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "transmissionLabel": "Five-speed manual approximation",
+        "gearCount": 5,
+        "finalDrive": 3.73,
+        "curbKg": 1424.2800418000002,
+        "lengthIn": 180.8,
+        "widthIn": 69.1,
+        "heightIn": 52.1,
+        "wheelbaseIn": 100.5,
+        "trackFrontIn": 57.8,
+        "trackRearIn": 58.3,
+        "tireSize": [
+          225,
+          50,
+          16
+        ],
+        "fuelTankUSgal": 15.4,
+        "steeringRatio": 15,
+        "absEnabled": false
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Ford/Mustang/Ford_US%20Mustang_1986.pdf",
+          "publisher": "Ford original1986US Mustang sales brochure, preserved byAuto-Brochures",
+          "fields": [
+            "200hp@5000SAEJ1349",
+            "SVO2.3turbo5MT",
+            "3.73 axle",
+            "3140lb SVOcurb",
+            "SVO-specificgeometry",
+            "225/50VR16",
+            "15.4USgal",
+            "15:1steering"
+          ],
+          "access": "2026-11-18 downloaded original scan; physicalpages10,12,15,17 (printed15,17,21,23) rendered and visually reviewed; SVO column separate from standard hatchback"
+        }
+      ],
+      "limits": [
+        "No MustangSVO identity in307native roster; mechanically distinct turbo four from existing V8Mustangs.",
+        "200hp@5000 is brochure SAEJ1349net for1986; do not substitute1985.5 205hp or standardGT200hp@4000.",
+        "Factory3140lb is SVO published curb basis, not CompetitionPrep weight or standardhatchback2791lb.",
+        "Torque240lbft@3200,individualratios,revlimit and dynamics remain explicitlyestimated; no factory torque anchor established in this brochure.",
+        "Fixed suspension approximates Koni adjustable setup; no octane-switch controller or boost switch simulation claimed.",
+        "Full torque curve, drivetrain losses, inertia, CG, spring/damping, grip and shift/launch calibration are estimates; shared RTG-001 art only, no original-art or actual driving completion claimed.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Mouseear Hawkweed 1986",
+      "id": "mouseear-hawkweed-1986",
+      "simulationEstimates": {
+        "reverseRatio": 3.76,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.9,
+        "spring": 0.5,
+        "antiRollRear": 0.22,
+        "suspensionTravelM": 0.2,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 400,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 5500,
+        "revLimitRpm": 6000,
+        "topSpeedMph": 134,
+        "zeroToSixtySec": 7.0,
+        "torqueLbFt": 240,
+        "torqueRpm": 3200,
+        "gearRatios": [
+          3.5,
+          2.14,
+          1.39,
+          1,
+          0.78
+        ]
+      }
+    },
+    {
+      "candidateId": "jeep-wrangler-rubicon-2012-roster-candidate",
+      "identity": {
+        "year": 2012,
+        "make": "Jeep",
+        "model": "Wrangler Rubicon",
+        "trim": "JK two-door3.6V6 six-speedmanual,standardLT255/75R17,2H road mode and unlocked axles",
+        "market": "United States"
+      },
+      "referenceVehicle": "2012 US Jeep Wrangler Rubicon JK two-door3.6V6 six-speedmanual,standardLT255/75R17,2H road mode and unlocked axles",
+      "facts": {
+        "powerHp": 285,
+        "torqueLbFt": 260,
+        "powerRpm": 6400,
+        "torqueRpm": 4800,
+        "engineDisplacementL": 3.604,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "transmissionLabel": "NSG370 six-speedmanual,2H road-mode approximation",
+        "gearCount": 6,
+        "gearRatios": [
+          4.46,
+          2.61,
+          1.72,
+          1.25,
+          1,
+          0.797
+        ],
+        "reverseRatio": 4.06,
+        "finalDrive": 4.1,
+        "tireSize": [
+          255,
+          75,
+          17
+        ],
+        "fuelTankUSgal": 18.6,
+        "revLimitRpm": 6600,
+        "absEnabled": true,
+        "steeringRatio": 16.7,
+        "publishedCurbLb": 4104
+      },
+      "sources": [
+        {
+          "url": "https://manualzz.com/doc/57464552/jeep-2012-wrangler-specifications",
+          "publisher": "Chrysler original2012 Jeep Wrangler technical specification sheet, archived transcription",
+          "fields": [
+            "3.6V6SAEnet285hp260lbft",
+            "NSG370ratios",
+            "Rubiconmanual4.10axle",
+            "2H/4H/4L transfercase",
+            "LT255/75R17",
+            "curb4104lb",
+            "18.6USgal"
+          ],
+          "access": "2026-11-18 full primarydocument transcription read; source contains erroneous unit conversions and geometry inconsistency, explicitly noted below"
+        },
+        {
+          "url": "https://www.auto-brochures.com/makes/Jeep/Wrangler/Jeep_US%20Wrangler_2012.pdf",
+          "publisher": "Jeep original2012US Wrangler sales brochure, archive mirror",
+          "fields": [
+            "US2012Rubicon identity",
+            "285hp260lbft",
+            "manual73.1crawl ratio",
+            "RockTrac/TruLok/BFGoodrich17-inch equipment"
+          ],
+          "access": "2026-11-18 originalPDF downloaded and text read"
+        },
+        {
+          "url": "https://pt.slideshare.net/slideshow/2012-jeep-wrangler-buyers-guide/10972230",
+          "publisher": "Jeep original2012US Wrangler buyers guide, archived scan/transcription",
+          "fields": [
+            "two-door exterior geometry corroboration164.2length/95.4wheelbase"
+          ],
+          "access": "2026-11-18 factory buyer guide text read; geometry held as estimate pending local image verification"
+        }
+      ],
+      "limits": [
+        "No Wrangler identity in307nativecatalog; not Gladiator or GrandCherokee. Shortwheelbase two-door makesdistinct use and dynamics.",
+        "Select2H RWD road configuration from actualpart-time transfercase; no4WDlow/lockers/swaybarcontrols claimed. Do notlabel AWD while simulating rear-drive.",
+        "Primary specification sheet prints4104lb as1532kg, plainlyinconsistent. Use converted1861.543kg from4104lb as modeled mass, with uncertainty because towtable4132lb base differs28lb.",
+        "Specsheet152.8inlength and70.9height conflict with2012buyer guide164.2/73.5; reject old-lookinggeometry and retainbuyersguide geometry as explicit estimates pending renderedcheck.",
+        "285hp is not209kW; sourceconversionwrong. Preservehp and convertcorrectly. No claimed articulation/ERM/TruLok controller fidelity.",
+        "Full torque curve, drivetrain losses, inertia, CG, spring/damping, grip and shift/launch calibration are estimates; shared RTG-001 art only, no original-art or actual driving completion claimed.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Biting Stonecrop 2012",
+      "id": "biting-stonecrop-2012",
+      "simulationEstimates": {
+        "cgHeightM": 0.79,
+        "groundClearanceM": 0.254,
+        "dragCoefficient": 0.5,
+        "tireGrip": 0.73,
+        "spring": 0.5,
+        "antiRollRear": 0.22,
+        "suspensionTravelM": 0.3,
+        "frontOverhangM": 0.75,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 400,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.505,
+        "redlineRpm": 6400,
+        "topSpeedMph": 100,
+        "zeroToSixtySec": 8.2,
+        "curbKg": 1861.54308648,
+        "lengthIn": 164.2,
+        "widthIn": 73.9,
+        "heightIn": 73.5,
+        "wheelbaseIn": 95.4,
+        "trackFrontIn": 61.9,
+        "trackRearIn": 61.9
+      }
+    },
+    {
+      "candidateId": "jaguar-xkr-s-2012-roster-candidate",
+      "identity": {
+        "year": 2012,
+        "make": "Jaguar",
+        "model": "XKR-S Coupe",
+        "trim": "European2012MY5.0superchargedV8 six-speedautomatic, standard20inch staggered wheels",
+        "market": "United Kingdom / Europe"
+      },
+      "referenceVehicle": "2012 UK/Europe Jaguar XKR-S Coupe5.0supercharged6AT;notConvertible,GTorXFR-S",
+      "facts": {
+        "powerKw": 405,
+        "publishedPowerPS": 550,
+        "torqueNm": 680,
+        "engineDisplacementL": 5.0,
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "gearCount": 6,
+        "gearRatios": [
+          4.17,
+          2.3,
+          1.52,
+          1.14,
+          0.87,
+          0.69
+        ],
+        "finalDrive": 3.31,
+        "reverseRatio": 3.4,
+        "curbKg": 1753,
+        "lengthM": 4.794,
+        "widthM": 1.892,
+        "heightM": 1.312,
+        "wheelbaseM": 2.752,
+        "trackFrontIn": 61.417322834645674,
+        "trackRearIn": 63.30708661417323,
+        "frontTire": [
+          255,
+          35,
+          20
+        ],
+        "rearTire": [
+          295,
+          35,
+          20
+        ],
+        "tireSize": [
+          255,
+          35,
+          20
+        ],
+        "fuelTankUSgal": 18.75621571742854
+      },
+      "sources": [
+        {
+          "url": "https://media.jlr.com/archive-jaguar/en-gb/press-kit",
+          "publisher": "Jaguar factory UK archive, XKR-S2012ModelYearPressKit",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "torqueNm",
+            "engineDisplacementL",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "finalDrive",
+            "reverseRatio",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "frontTire",
+            "rearTire",
+            "tireSize",
+            "fuelTankUSgal"
+          ],
+          "access": "Downloaded linked factoryZIP xkr-s-2012-model-yea.zip and read xkenin010311.doc text using strings including technicaltable. Factory405kW/550PS/542BHP. Table givesEUkerb1753kg, sixratios,reverse3.40/final3.31, dimensions,staggeredtires,71Lfuel. No peakRPM provided."
+        }
+      ],
+      "limits": [
+        "1753kg retained exactly as factory EUkerb table; driver/fuel inclusion not stated in this press kit, so no75kg subtraction or dry-mass claim.",
+        "Power and torque RPM anchors,revlimits,CG,distribution,grip and transient dynamics are estimates. ActiveDifferentialControl/adaptive damping simplified to genericLSD/fixed suspension. Publishedperformance targets are not driveverification.",
+        "Doc also contains internally inconsistent federalweight/grossweight labels; these unused figures are excluded. European specification consistently chosen, not550SAEhp.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "White Stonecrop 2012",
+      "id": "white-stonecrop-2012",
+      "simulationEstimates": {
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.11,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.52,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "aspiration": "Supercharged",
+        "topSpeedMph": 186,
+        "zeroToSixtySec": 4.2,
+        "powerRpm": 6500,
+        "torqueRpm": 2500,
+        "transmissionLabel": "6-speed torque-converter automatic approximation",
+        "torqueConverterSlip": 0.05,
+        "torqueConverterMultiplication": 1.6
+      }
+    },
+    {
+      "candidateId": "aston-martin-db11-2017-roster-candidate",
+      "identity": {
+        "year": 2017,
+        "make": "Aston Martin",
+        "model": "DB11 V12 Coupe",
+        "trim": "original5.2twin-turboV12 eight-speedZFautomatic;notV8or2018AMR",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "2017 UK Aston Martin DB11 V12 Coupe5.2 twin-turbo8AT original608PS;notlaterAMR orV8",
+      "facts": {
+        "powerKw": 447.18324,
+        "publishedPowerPS": 608,
+        "torqueNm": 700,
+        "engineDisplacementL": 5.2,
+        "transmission": "automatic",
+        "gearCount": 8
+      },
+      "sources": [
+        {
+          "url": "https://media.astonmartin.com/aston-martin-db11-the-latest-in-an-illustrious-bloodline/?lang=eng",
+          "publisher": "Aston Martin factory28February2017 release",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "torqueNm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "Factory2017 release confirms5.2twin-turboV12,608PS(600BHP),700Nm,8speedZFautomatic. MetricPS converted0.73549875; not600PS."
+        },
+        {
+          "url": "https://www.astonmartin.com/en-us/our-world/news/2017/6/28/sublime-choices-db11-now-offered-with-v8-engine",
+          "publisher": "Aston Martin factory28June2017 release",
+          "fields": [
+            "massInference"
+          ],
+          "access": "NewV8kerb1760kg with115kg saving versusV12 suggests1875kgV12. Basis not otherwise defined; retained as estimated modelingmass, not verified dry/driverlessmass."
+        }
+      ],
+      "limits": [
+        "1875kg is inferred1760+115 from factoryV8comparison; driver/fuel basis not established. Do not use1770kgdry-style figure as runningcurb without evidence.",
+        "Geometry,tires,ratios/final,RPManchors,limits,loadsplit,CG,aero,grip andhandling are estimates. No2018AMRpower or performance borrowed.",
+        "Genericautomatic and fixeddamping approximations omit cylinderdeactivation,brakevectoring/adaptive drivingmodes and activeAeroBlade control. Factory3.9s0-62 is not measured0-60.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Marsh Bedstraw 2017",
+      "id": "marsh-bedstraw-2017",
+      "simulationEstimates": {
+        "reverseRatio": 3.317,
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.51,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "aspiration": "Twin turbocharged",
+        "fuelTankUSgal": 20.605420083935577,
+        "topSpeedMph": 200,
+        "zeroToSixtySec": 3.8,
+        "powerRpm": 6500,
+        "torqueRpm": 1500,
+        "curbKg": 1875,
+        "drivetrain": "rwd",
+        "lengthM": 4.739,
+        "widthM": 1.94,
+        "heightM": 1.279,
+        "wheelbaseM": 2.805,
+        "trackFrontIn": 64.1,
+        "trackRearIn": 64.7,
+        "tireSize": [
+          255,
+          40,
+          20
+        ],
+        "frontTire": [
+          255,
+          40,
+          20
+        ],
+        "rearTire": [
+          295,
+          35,
+          20
+        ],
+        "gearRatios": [
+          4.714,
+          3.143,
+          2.106,
+          1.667,
+          1.285,
+          1,
+          0.839,
+          0.667
+        ],
+        "finalDrive": 2.703,
+        "transmissionLabel": "8-speed torque-converter automatic approximation",
+        "torqueConverterSlip": 0.04,
+        "torqueConverterMultiplication": 1.7,
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 206.5174017976344
+          },
+          {
+            "rpm": 1500,
+            "torqueLbFt": 516.2935044940859
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 516.2935044940859
+          },
+          {
+            "rpm": 6500,
+            "torqueLbFt": 484.5435431728334
+          },
+          {
+            "rpm": 7200,
+            "torqueLbFt": 309.7761026964516
+          }
+        ]
+      }
+    }
+  ],
+  "deferred": []
+}

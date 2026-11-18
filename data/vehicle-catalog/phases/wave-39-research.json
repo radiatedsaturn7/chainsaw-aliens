@@ -1,0 +1,1296 @@
+{
+  "schemaVersion": 1,
+  "base": "b4df7f85bb51b0db726c9443a5f62ee7a7dbf983",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "mitsubishi-gto-1997-roster-candidate",
+      "identity": {
+        "year": 1997,
+        "make": "Mitsubishi",
+        "model": "GTO Twin Turbo MR",
+        "trim": "August1997 E-Z15A 6G72 2972cc twin-turbo V6 AWD6MT road coupe, standard fixed roof, not regularTwinTurbo4WS or US3000GT",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1997 Japan Mitsubishi GTO Twin Turbo MR August1997 E-Z15A 6G72 2972cc twin-turbo V6 AWD6MT road coupe, standard fixed roof, not regularTwinTurbo4WS or US3000GT",
+      "bodyClass": "three-door four-seat grand-touring coupe",
+      "facts": {
+        "powerKw": 206,
+        "powerRpm": 6000,
+        "torqueNm": 426.6,
+        "torqueRpm": 2500,
+        "engineDisplacementL": 2.972,
+        "aspiration": "Turbocharged",
+        "drivetrain": "awd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "curbKg": 1700,
+        "lengthM": 4.59,
+        "widthM": 1.84,
+        "heightM": 1.285,
+        "wheelbaseM": 2.47,
+        "trackFrontIn": 61.417322834645674,
+        "trackRearIn": 62.20472440944882,
+        "tireSize": [
+          245,
+          40,
+          18
+        ],
+        "reverseRatio": 3.153,
+        "finalDrive": 4.155,
+        "fuelTankUSgal": 19.812903926861132
+      },
+      "sources": [
+        {
+          "url": "https://gazoo.com/catalog/maker/MITSUBISHI/GTO/199010/4007994/",
+          "publisher": "Toyota GAZOO historical Mitsubishi catalog; secondary compilation, not Mitsubishi factory engineering sheet",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "reverseRatio",
+            "finalDrive",
+            "fuelTankUSgal"
+          ],
+          "access": "Read2026-11-18; exact year/trim/transmission catalog tuple selected. Mass is published vehicle weight for this configuration; no driver or optional extras inferred."
+        },
+        {
+          "url": "https://www.mitsubishi-motors.com/en/company/history/car/",
+          "publisher": "Mitsubishi official history/heritage",
+          "fields": [
+            "generation",
+            "engine architecture",
+            "drivetrain architecture"
+          ],
+          "access": "Read2026-11-18. Official1990 GTO history anchors3.0V6 twin-turbo280PS,AWD viscous center45:55front/rear, frontstrut/reardoublewishbone. Launch5MT is NOT transplanted to1997MR6MT. MR-specific1997 spec relies on exactcatalog."
+        }
+      ],
+      "limits": [
+        "Selected MR omits4WS; generic fixed suspension and limited-slip approximate its road chassis. No active aero/ECS/active rear steering implementation claimed.",
+        "Estimated nominal55percentrear share is anchored only to primary launch-generation45:55 description; exact1997 differential calibration and forwardratios not independently factory-verified.",
+        "Numerical variant table is secondary manufacturer-hosted GAZOO, distinct from primary history corroboration. No claim that every fact is factory-sheet verified.",
+        "All suggestedEstimates, interpolated torque curve, losses, steering/braking/transients, suspension and performance targets are provisional simulation assumptions. RTG-001 shared placeholder assets; independent driving and original model-specific art remain pending.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "nightcoil-gt-1995",
+            "alias": "Nightcoil GT 1995",
+            "reference": "1995US EclipseGSX2.0turboAWD5MT",
+            "documentId": "nightcoil-gt-1995",
+            "runtimeId": "saved-car:Nightcoil GT 1995",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "marsh-cinquefoil-1998",
+            "alias": "Marsh Cinquefoil 1998",
+            "reference": "1998FTO GPVersionR2.0NA V6FWD5MT",
+            "documentId": "marsh-cinquefoil-1998",
+            "runtimeId": "saved-car:Marsh Cinquefoil 1998",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No GTO/3000GT source identity found in native catalog or authored tests/docs. Larger/heavier3.0V6 twin-turbo AWD6MT flagship is a separate platform from2.0Eclipse and compactFTO, not badge/year padding.",
+        "evidence": [
+          "https://gazoo.com/catalog/maker/MITSUBISHI/GTO/199010/4007994/",
+          "https://www.mitsubishi-motors.com/en/company/history/car/"
+        ]
+      },
+      "name": "Slender Speedwell 1997",
+      "id": "slender-speedwell-1997",
+      "simulationEstimates": {
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.98,
+        "spring": 0.56,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 1.02,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0.08,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.58,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 6.0,
+        "gearRatios": [
+          3.071,
+          1.904,
+          1.304,
+          1.034,
+          0.828,
+          0.676
+        ],
+        "centerDifferentialBalance": 0.55
+      }
+    },
+    {
+      "candidateId": "mitsubishi-galant-vr-4-1992-roster-candidate",
+      "identity": {
+        "year": 1992,
+        "make": "Mitsubishi",
+        "model": "Galant VR-4",
+        "trim": "May1992 seventh-generation E-E84A 6A12 1998cc twin-turbo V6 AWD4AT, not sixth-generation E39A4G63 or manual240PS",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1992 Japan Mitsubishi Galant VR-4 May1992 seventh-generation E-E84A 6A12 1998cc twin-turbo V6 AWD4AT, not sixth-generation E39A4G63 or manual240PS",
+      "bodyClass": "four-door five-seat sedan",
+      "facts": {
+        "powerKw": 158,
+        "powerRpm": 6000,
+        "torqueNm": 308.9,
+        "torqueRpm": 3500,
+        "engineDisplacementL": 1.998,
+        "aspiration": "Turbocharged",
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "gearCount": 4,
+        "curbKg": 1460,
+        "lengthM": 4.63,
+        "widthM": 1.73,
+        "heightM": 1.41,
+        "wheelbaseM": 2.635,
+        "trackFrontIn": 59.4488188976378,
+        "trackRearIn": 59.251968503937015,
+        "tireSize": [
+          205,
+          60,
+          15
+        ],
+        "reverseRatio": 2.176,
+        "finalDrive": 4.422,
+        "fuelTankUSgal": 16.9070113509215
+      },
+      "sources": [
+        {
+          "url": "https://gazoo.com/catalog/maker/MITSUBISHI/GALANT/199205/4004007/",
+          "publisher": "Toyota GAZOO historical Mitsubishi catalog; secondary compilation, not Mitsubishi factory engineering sheet",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "reverseRatio",
+            "finalDrive",
+            "fuelTankUSgal"
+          ],
+          "access": "Read2026-11-18; exact year/trim/transmission catalog tuple selected. Mass is published vehicle weight for this configuration; no driver or optional extras inferred."
+        },
+        {
+          "url": "https://www.mitsubishi-motors.com/en/company/history/car/",
+          "publisher": "Mitsubishi official history/heritage",
+          "fields": [
+            "generation",
+            "engine architecture",
+            "drivetrain architecture"
+          ],
+          "access": "Read2026-11-18. OfficialMay1992 seventh-generation history confirms1730mmwidth,2635mmwheelbase,V6enginefamily,multilink chassis andINVECS automatic availability. Typical4610mm/1400mm general-model dimensions are NOT substituted for exactVR4 catalog4630/1410."
+        }
+      ],
+      "limits": [
+        "1992 year spans two Galant generations across markets; exact selected JapanMay1992E84A documented. Do not label this asUS1992E39A or use240PSmanual output.",
+        "Generic4AT andfixed50:50 AWD approximation only; noINVECS fuzzy shifting,active4WS,ActivePreviewECS orfactoryelectronics fidelity claimed. OptionalTC omitted. Forwardratios and shift behavior are estimates.",
+        "Numerical variant table is secondary manufacturer-hosted GAZOO, distinct from primary history corroboration. No claim that every fact is factory-sheet verified.",
+        "All suggestedEstimates, interpolated torque curve, losses, steering/braking/transients, suspension and performance targets are provisional simulation assumptions. RTG-001 shared placeholder assets; independent driving and original model-specific art remain pending.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "nightcoil-gt-1995",
+            "alias": "Nightcoil GT 1995",
+            "reference": "1995US EclipseGSX2.0inline-fourturboAWD5MT",
+            "documentId": "nightcoil-gt-1995",
+            "runtimeId": "saved-car:Nightcoil GT 1995",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "marsh-cinquefoil-1998",
+            "alias": "Marsh Cinquefoil 1998",
+            "reference": "1998FTO GPVersionR2.0naturallyaspiratedMIVECV6FWD5MT",
+            "documentId": "marsh-cinquefoil-1998",
+            "runtimeId": "saved-car:Marsh Cinquefoil 1998",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No Galant or E84A identity found. This ordinary four-door longer-wheelbase twin-turboV6 automatic sedan is distinct fromEclipse4G63 andFTO naturallyaspirated coupe; explicitly chosen Japan seventh-generation variant from market-unspecified1992slot.",
+        "evidence": [
+          "https://gazoo.com/catalog/maker/MITSUBISHI/GALANT/199205/4004007/",
+          "https://www.mitsubishi-motors.com/en/company/history/car/"
+        ]
+      },
+      "name": "Ivy Speedwell 1992",
+      "id": "ivy-speedwell-1992",
+      "simulationEstimates": {
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.32,
+        "tireGrip": 0.98,
+        "spring": 0.56,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.98,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0.08,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 7.6,
+        "gearRatios": [
+          2.551,
+          1.488,
+          1,
+          0.685
+        ],
+        "centerDifferentialBalance": 0.5
+      }
+    },
+    {
+      "candidateId": "nissan-fairlady-z-version-s-twin-turbo-1994-roster-candidate",
+      "identity": {
+        "year": 1994,
+        "make": "Nissan",
+        "model": "Fairlady Z Version S Twin Turbo",
+        "trim": "October1994 E-CZ32 two-seater standard fixed roof VG30DETT2960cc RWD5MT, not2by2,T-bar,NA orUS300ZX",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1994 Japan Nissan Fairlady Z Version S Twin Turbo October1994 E-CZ32 two-seater standard fixed roof VG30DETT2960cc RWD5MT, not2by2,T-bar,NA orUS300ZX",
+      "bodyClass": "three-door two-seat fixed-roof sports coupe",
+      "facts": {
+        "powerKw": 206,
+        "powerRpm": 6400,
+        "torqueNm": 388.3,
+        "torqueRpm": 3600,
+        "engineDisplacementL": 2.96,
+        "aspiration": "Turbocharged",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 1530,
+        "lengthM": 4.31,
+        "widthM": 1.79,
+        "heightM": 1.245,
+        "wheelbaseM": 2.45,
+        "trackFrontIn": 58.85826771653544,
+        "trackRearIn": 60.43307086614173,
+        "tireSize": [
+          225,
+          50,
+          16
+        ],
+        "reverseRatio": 3.369,
+        "finalDrive": 3.692,
+        "fuelTankUSgal": 19.020387769786687
+      },
+      "sources": [
+        {
+          "url": "https://gazoo.com/catalog/maker/NISSAN/FAIRLADY_Z/198907/1501108/",
+          "publisher": "Toyota GAZOO historical Nissan catalog; secondary compilation, not Nissan factory engineering sheet",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "reverseRatio",
+            "finalDrive",
+            "fuelTankUSgal"
+          ],
+          "access": "Read2026-11-18; exact year/trim/transmission catalog tuple selected. Mass is published vehicle weight for this configuration; no driver or optional extras inferred."
+        },
+        {
+          "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/fairlady_z_300zx_146.html",
+          "publisher": "Nissan official history/heritage",
+          "fields": [
+            "generation",
+            "engine architecture",
+            "drivetrain architecture"
+          ],
+          "access": "Read2026-11-18. Nissan1989GCZ32 heritage anchorsZ32July1989launch,3.0V6 turbo/NA andtwo-seat/2by2 configurations. Displayed car is strengthened-suspension Fuji pacecar; its1570kg,2570mmWB anddimensions are excluded. Typo206W andVG30DET not treated as precise1994spec proof; exactcatalogVG30DETT/206kW used."
+        }
+      ],
+      "limits": [
+        "Standard fixedroof two-seat1530kg configuration is explicit; do not mix2by2GCZ32 wheelbase2570mm orT-bar masses.",
+        "GenericRWD LSD and fixedrearsteering; noSuperHICAS oradaptive chassis simulation claim. Forwardratios,redline/limiter andperformance remainestimates.",
+        "Numerical variant table is secondary manufacturer-hosted GAZOO, distinct from primary history corroboration. No claim that every fact is factory-sheet verified.",
+        "All suggestedEstimates, interpolated torque curve, losses, steering/braking/transients, suspension and performance targets are provisional simulation assumptions. RTG-001 shared placeholder assets; independent driving and original model-specific art remain pending.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "foxglove-z-2003",
+            "alias": "Foxglove Z 2003",
+            "reference": "US2003 350ZbaseZ33 VQ35DE3.5NA6MT",
+            "documentId": "foxglove-z-2003",
+            "runtimeId": "saved-car:Foxglove Z 2003",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "harebell-1970",
+            "alias": "Harebell 1970",
+            "reference": "1970US S30Datsun240Z L24road4MT",
+            "documentId": "harebell-1970",
+            "runtimeId": "saved-car:Harebell 1970",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "shepherds-purse-1969",
+            "alias": "Shepherds Purse 1969",
+            "reference": "1969JapanPS30Z432S20road5MT",
+            "documentId": "shepherds-purse-1969",
+            "runtimeId": "saved-car:Shepherds Purse 1969",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "CurrentZidentities are S30 andlaterZ33; noZ32/300ZX in provenance or authoredtests/docs. Low2450mmwheelbase twin-turbo3.0V6 fixedroof two-seat Z32 has distinct platform/powertrain fromNA3.5Z33 and inline-sixS30.",
+        "evidence": [
+          "https://gazoo.com/catalog/maker/NISSAN/FAIRLADY_Z/198907/1501108/",
+          "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/fairlady_z_300zx_146.html"
+        ]
+      },
+      "name": "Trailing Tormentil 1994",
+      "id": "trailing-tormentil-1994",
+      "simulationEstimates": {
+        "cgHeightM": 0.46,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.31,
+        "tireGrip": 0.98,
+        "spring": 0.56,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.91,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 5.8,
+        "gearRatios": [
+          3.214,
+          1.925,
+          1.302,
+          1,
+          0.752
+        ]
+      }
+    },
+    {
+      "candidateId": "chevrolet-nova-super-sport-1966-roster-candidate",
+      "identity": {
+        "year": 1966,
+        "make": "Chevrolet",
+        "model": "Chevy II Nova Super Sport",
+        "trim": "Two-door hardtop Super Sport Coupe, optional275-hp327 Turbo-Fire V8, optional wide-ratio4MT, optional3.36 axle",
+        "market": "United States"
+      },
+      "bodyClass": "two-door-hardtop-coupe",
+      "artIdentity": "1966 second-generation Chevy II Nova Super Sport two-door pillarless hardtop; boxy narrow body, straight fender lines, compact rectangular grille, single round headlight each side, short rear deck; stock14-inch wheels, twin plain exhaust outlets, no hood scoop or racing graphics. Future fictional logo-free2994 treatment; current sharedRTG001 placeholder only.",
+      "referenceVehicle": "1966 US Chevrolet Chevy II Nova Super Sport Coupe two-door hardtop, optional275-hp327cuin four-barrel Turbo-Fire V8, optional four-speed wide-ratio2.52 first gear,3.36 rear axle, RWD; not350-hpL79, later396Nova, four-door or racing conversion.",
+      "facts": {
+        "engineDisplacementL": 5.358569928,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "transmissionLabel": "Optional four-speed floor-shift all-synchromesh, wide-ratio2.52 first",
+        "gearCount": 4,
+        "finalDrive": 3.36,
+        "periodPublishedRatings": {
+          "advertisedPowerHp": 275,
+          "ratingBasis": "1966Chevrolet brochure prints275-hpTurbo-Fire327V8 option. Period advertised horsepower retained separately; brochure does not define accessory/teststandard or netoutput. NOT275modernSAEnet."
+        },
+        "lengthM": 4.6482,
+        "widthM": 1.8110199999999999,
+        "heightM": 1.36652,
+        "wheelbaseM": 2.794,
+        "trackFrontIn": 56.8,
+        "trackRearIn": 56.3
+      },
+      "sources": [
+        {
+          "url": "https://www.lov2xlr8.no/brochures/chevy/66nova/bilder/8.jpg",
+          "publisher": "Chevrolet Motor Division original1966ChevyII factorybrochure, printed10\u201311, archived bylov2xlr8",
+          "fields": [
+            "327275-hpoption",
+            "4MTavailability",
+            "2.52versus2.20firstgear options",
+            "optional3.36axle",
+            "SuperSport14-inchwheels",
+            "SuperSportCoupe53.8-inchheight",
+            "183length71.3width110wheelbase56.8/56.3tracks",
+            "coilfrontleafrear",
+            "bucket-seatSuperSportidentity"
+          ],
+          "access": "2026-11-18 original factory image visually inspected; noOCR. All-models275-hpoption and4-speed column selected; do notmix350-hpL79 row."
+        },
+        {
+          "url": "https://www.lov2xlr8.no/brochures/chevy/66nova/66nova.html",
+          "publisher": "Archive of original Chevrolet1966ChevyII brochure",
+          "fields": [
+            "factorybrochure context andbody illustrations"
+          ],
+          "access": "Originalimageindex inspected; specifications on image8."
+        }
+      ],
+      "limits": [
+        "275 advertised period hp is not installedmodernnetoutput.220hp4800/290lbft3200 are explicitly modeled installed-output estimates, not directpercentage conversion or verified factoryNET ratings.",
+        "1340kg is estimated operating curb mass for selectedV8manualhardtop, not brochure shippingweight or falselyverifiedcurb. No mass is given on inspected brochure page.",
+        "Factory specifies firstgear choices2.52 or2.20; selected2.52wide-ratio. Remaining1.88/1.46/1 and2.59reverse estimated implementation, not sourced factory gearset.3.36rearaxle appears as available optionalratio, deliberately selected rather than claiming standard.",
+        "195/75R14 approximates stockperiodtires using factory14-inch wheel diameter; width/aspect/construction and loadedradius are unverified. No modernsporttires implied.",
+        "Geometry uses SuperSportCoupe53.8height; otherNovaSportCoupe52.8and sedan55.1 are notmixed. Brochure tracks56.8front56.3rear refernonwagonmodels.",
+        "Fuel,clearance,steering,CG/distribution,redline/cutoff,performance,differential,torquecurveawayfrompeaks andnormalizedhandling estimates. Open rear differential selected; no undocumentedPositraction. SharedRTG001 graphics and noindependentdrive claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Goldenrod 1996",
+            "documentId": "goldenrod-1996",
+            "runtimeId": "saved-car:Goldenrod 1996",
+            "reference": "1996 US Chevrolet Caprice Classic wagon, standard LT1 5.7 V8 RWD4AT, standard2.56 axle and225/75R15 tires, eight seats, unladen. No trailering/handling package, woodgrain option, Impala SS wheels, police sedan or Roadmaster.",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Purple Toadflax 1955",
+            "documentId": "purple-toadflax-1955",
+            "runtimeId": "saved-car:Purple Toadflax 1955",
+            "reference": "1955 US Chevrolet One-Fifty Utility Sedan model1512/Fisher55-1211B, three seats, standard235.5cuin Blue Flame123 single-carburetor inline-six, three-speed manual without overdrive,3.70 axle, RWD",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "357-entry nativecatalog audited: noNova/ChevyII productionreference. Distinctcompact1966hardtopV8/4MT from1955One-Fiftyutilitysedan235six/3MT and1996CapriceLT1wagon/4AT; neither body,powertrainorwheelbase matches. Noold-eleven model overlap. Wave38Cortina unrelated.",
+        "evidence": [
+          "https://www.lov2xlr8.no/brochures/chevy/66nova/bilder/8.jpg"
+        ]
+      },
+      "name": "Common Restharrow 1966",
+      "id": "common-restharrow-1966",
+      "simulationEstimates": {
+        "reverseRatio": 2.59,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.16,
+        "dragCoefficient": 0.48,
+        "tireGrip": 0.78,
+        "spring": 0.48,
+        "antiRollRear": 0.18,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.83,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 400,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.55,
+        "redlineRpm": 5500,
+        "revLimitRpm": 5800,
+        "fuelTankUSgal": 16,
+        "topSpeedMph": 118,
+        "zeroToSixtySec": 7.8,
+        "powerHp": 220,
+        "powerRpm": 4800,
+        "torqueLbFt": 290,
+        "torqueRpm": 3200,
+        "curbKg": 1340,
+        "gearRatios": [
+          2.52,
+          1.88,
+          1.46,
+          1
+        ],
+        "tireSize": [
+          195,
+          75,
+          14
+        ],
+        "steeringRatio": 20
+      }
+    },
+    {
+      "candidateId": "aston-martin-v12-vanquish-2001-roster-candidate",
+      "identity": {
+        "year": 2001,
+        "make": "Aston Martin",
+        "model": "V12 Vanquish",
+        "trim": "standard 5.935L naturally aspirated V12 ASM/SSM six-speed coupe; not Vanquish S",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "2001 UK Aston Martin V12 Vanquish standard 5.935L naturally aspirated V12 ASM/SSM six-speed coupe; not Vanquish S",
+      "facts": {
+        "powerKw": 343.02,
+        "publishedPowerBhp": 460,
+        "powerRpm": 6500,
+        "torqueNm": 542.33,
+        "publishedTorqueLbFt": 400,
+        "torqueRpm": 5000,
+        "engineDisplacementL": 5.935,
+        "transmission": "automatic",
+        "gearCount": 6,
+        "publishedWeightKg": 1835,
+        "lengthM": 4.665,
+        "widthM": 1.923,
+        "heightM": 1.318
+      },
+      "sources": [
+        {
+          "url": "https://www.astonmartin.com/en-us/models/past-models/vanquish-vanquish-s",
+          "publisher": "Aston Martin factory heritage specifications",
+          "fields": [
+            "powerKw",
+            "publishedPowerBhp",
+            "powerRpm",
+            "torqueNm",
+            "publishedTorqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "publishedWeightKg",
+            "lengthM",
+            "widthM",
+            "heightM"
+          ],
+          "access": "Read 2026-11-18. Archive explicitly establishes 2001 production and original 460bhp specification; later S separately described. bhp and lb-ft converted using mechanical units."
+        }
+      ],
+      "limits": [
+        "Factory weight has no dry/kerb/driver basis; modeled 1835kg curb is explicitly an estimate. UK market selection follows original home-market configuration, heritage page is international.",
+        "All suggestedEstimates values are unsourced simulation assumptions, including tires, ratios, axle, axle load, CG, clearance and tank; do not present as factory measurements.",
+        "Native automatic approximates the electrohydraulic clutch, not torque converter or DCT; no authentic clutch actuator or shift program modeled.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "water-forgetmenot-2008",
+            "alias": "Water Forgetmenot 2008",
+            "referenceVehicle": "2008 UK Aston Martin DBS coupe 2+0 5.935L naturally aspirated V12 six-speed manual; not DBS Volante, later DBS Superleggera or DB11",
+            "documentId": "water-forgetmenot-2008",
+            "runtimeId": "saved-car:Water Forgetmenot 2008",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "marsh-bedstraw-2017",
+            "alias": "Marsh Bedstraw 2017",
+            "referenceVehicle": "2017 UK Aston Martin DB11 V12 Coupe5.2 twin-turbo8AT original608PS;notlaterAMR orV8",
+            "documentId": "marsh-bedstraw-2017",
+            "runtimeId": "saved-car:Marsh Bedstraw 2017",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "herb-bennet-1964",
+            "alias": "Herb Bennet 1964",
+            "referenceVehicle": "1964 UK Aston Martin DB5 standardSaloon3995ccDOHCstraight-six five-speedZFmanual;notVantage,Convertible,DB4 ormoderncontinuation",
+            "documentId": "herb-bennet-1964",
+            "runtimeId": "saved-car:Herb Bennet 1964",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "First-generation bonded aluminium/carbon-fibre Vanquish chassis and six-speed electrohydraulic AMT differ from VH DBS manual and turbo DB11 eight-speed. Shared V12 ancestry does not make these the same platform, body or transmission.",
+        "evidence": [
+          "https://www.astonmartin.com/en-us/models/past-models/vanquish-vanquish-s"
+        ]
+      },
+      "name": "Spiny Restharrow 2001",
+      "id": "spiny-restharrow-2001",
+      "simulationEstimates": {
+        "reverseRatio": 2.9,
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.5,
+        "redlineRpm": 6500,
+        "revLimitRpm": 7000,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 21.1,
+        "topSpeedMph": 190,
+        "zeroToSixtySec": 4.7,
+        "curbKg": 1835,
+        "drivetrain": "rwd",
+        "wheelbaseM": 2.69,
+        "trackFrontIn": 61.9,
+        "trackRearIn": 62.4,
+        "tireSize": [
+          255,
+          40,
+          19
+        ],
+        "frontTire": [
+          255,
+          40,
+          19
+        ],
+        "rearTire": [
+          285,
+          40,
+          19
+        ],
+        "gearRatios": [
+          2.66,
+          1.78,
+          1.3,
+          1,
+          0.74,
+          0.5
+        ],
+        "finalDrive": 3.69,
+        "transmissionLabel": "6-speed electrohydraulic single-clutch automated manual approximation",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1
+      }
+    },
+    {
+      "candidateId": "aston-martin-v12-vantage-s-2013-roster-candidate",
+      "identity": {
+        "year": 2013,
+        "make": "Aston Martin",
+        "model": "V12 Vantage S",
+        "trim": "2013 launch coupe AM28 V12 Sportshift III seven-speed, standard forged wheels; not later dog-leg manual",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "2013 UK Aston Martin V12 Vantage S 2013 launch coupe AM28 V12 Sportshift III seven-speed, standard forged wheels; not later dog-leg manual",
+      "facts": {
+        "powerKw": 421,
+        "publishedPowerPS": 573,
+        "powerRpm": 6750,
+        "torqueNm": 620,
+        "torqueRpm": 5750,
+        "engineDisplacementL": 5.935,
+        "transmission": "automatic",
+        "gearCount": 7,
+        "drivetrain": "rwd",
+        "lengthM": 4.385,
+        "widthM": 1.865,
+        "heightM": 1.25,
+        "wheelbaseM": 2.6,
+        "trackFrontIn": 61.811023622047244,
+        "trackRearIn": 62.00787401574804,
+        "frontTire": [
+          255,
+          35,
+          19
+        ],
+        "rearTire": [
+          295,
+          30,
+          19
+        ],
+        "finalDrive": 3.7,
+        "publishedWeightKg": 1665,
+        "fuelTankUSgal": 21.1,
+        "topSpeedMph": 205,
+        "zeroToSixtySec": 3.7
+      },
+      "sources": [
+        {
+          "url": "https://device.report/m/28b6838bdad3f2391b90545524d3f9d51391c4f6a965931d07b171baf2c9313c",
+          "publisher": "Aston Martin original brochure part 705969, mirror",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "drivetrain",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "frontTire",
+            "rearTire",
+            "finalDrive",
+            "publishedWeightKg",
+            "fuelTankUSgal",
+            "topSpeedMph",
+            "zeroToSixtySec"
+          ],
+          "access": "Read extracted original brochure, document metadata June20 2013; specification section and dimensions. Published kerb1665kg and performance remain launch estimates per disclaimer; 2013 is introduction year, not a claim of US MY2013."
+        },
+        {
+          "url": "https://media.astonmartin.com/V12-vantage-s/?lang=eng",
+          "publisher": "Aston Martin factory media archive",
+          "fields": [
+            "identity",
+            "publishedPowerPS"
+          ],
+          "access": "Read 2026-11-18: historical range2013\u20132018 and573PSAM28 engine; corroborates launch identity."
+        }
+      ],
+      "limits": [
+        "Original June2013 brochure takes precedence over current consumer heritage page inconsistent 563bhp/6650rpm; use421kW at6750 and620Nm at5750, not a blended rating.",
+        "Brochure launch disclaimer says not yet in production and performance figures estimated. Mass1665kg is published kerb basis but retained as modeled estimate pending production-specific certification.",
+        "Individual gear ratios, reverse, load split, CG, clearance, redline/limiter and simplified shifting are estimates. Three-mode damping and stability system are not reproduced.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "water-forgetmenot-2008",
+            "alias": "Water Forgetmenot 2008",
+            "referenceVehicle": "2008 UK Aston Martin DBS coupe 2+0 5.935L naturally aspirated V12 six-speed manual; not DBS Volante, later DBS Superleggera or DB11",
+            "documentId": "water-forgetmenot-2008",
+            "runtimeId": "saved-car:Water Forgetmenot 2008",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "marsh-bedstraw-2017",
+            "alias": "Marsh Bedstraw 2017",
+            "referenceVehicle": "2017 UK Aston Martin DB11 V12 Coupe5.2 twin-turbo8AT original608PS;notlaterAMR orV8",
+            "documentId": "marsh-bedstraw-2017",
+            "runtimeId": "saved-car:Marsh Bedstraw 2017",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Compact 2.6m-wheelbase Vantage VH two-seat body with AM28 engine and seven-speed AMT, distinct from longer DBS six-speed manual and turbo DB11. Also distinct from wave39 original Vanquish six-speed aluminium/carbon chassis.",
+        "evidence": [
+          "https://device.report/m/28b6838bdad3f2391b90545524d3f9d51391c4f6a965931d07b171baf2c9313c",
+          "https://media.astonmartin.com/V12-vantage-s/?lang=eng"
+        ]
+      },
+      "name": "Yellow Vetchling 2013",
+      "id": "yellow-vetchling-2013",
+      "simulationEstimates": {
+        "reverseRatio": 3.154,
+        "cgHeightM": 0.46,
+        "groundClearanceM": 0.11,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.51,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "aspiration": "Naturally aspirated",
+        "curbKg": 1665,
+        "tireSize": [
+          255,
+          35,
+          19
+        ],
+        "gearRatios": [
+          3.154,
+          2.176,
+          1.565,
+          1.185,
+          0.935,
+          0.758,
+          0.652
+        ],
+        "transmissionLabel": "7-speed Sportshift III single-clutch automated manual approximation",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1
+      }
+    },
+    {
+      "candidateId": "lotus-esprit-v8-2002-roster-candidate",
+      "identity": {
+        "year": 2002,
+        "make": "Lotus",
+        "model": "Esprit V8",
+        "trim": "UK MY02 3.5 twin-turbo V8 five-speed manual, standard OZ Nova wheels; not US25thAnniversary or Sport350",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "2002 UK Lotus Esprit V8 UK MY02 3.5 twin-turbo V8 five-speed manual, standard OZ Nova wheels; not US25thAnniversary or Sport350",
+      "facts": {
+        "torqueNm": 400,
+        "torqueRpm": 4250,
+        "engineDisplacementL": 3.5,
+        "transmission": "manual",
+        "gearCount": 5,
+        "aspiration": "Twin turbocharged",
+        "secondaryPublishedRatings": {
+          "powerKw": 260,
+          "powerRpm": 6500,
+          "basis": "Reproduced factory release; primary original numerical table not verified. Installed output remains explicitly estimated."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Lotus/Esprit/Lotus_int%20Esprit_2002-V8.pdf",
+          "publisher": "Lotus Cars original MY02 UK and International brochure, mirrored",
+          "fields": [
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "aspiration",
+            "identity"
+          ],
+          "access": "Visually inspected PDF pages3\u20136 on2026-11-18: page3 specifies400Nm4250rpm and five gears; page5 twin-turbo3.5V8; pages4,6 identify2002 and UK/international model and17-inch front/18-inch rear wheels."
+        },
+        {
+          "url": "https://www.lotusespritworld.com/EModels/V802.html",
+          "publisher": "Lotus Esprit World reproduction of period Lotus release",
+          "fields": [
+            "suggestedEstimates.powerKw",
+            "suggestedEstimates.powerRpm",
+            "suggestedEstimates.curbKg",
+            "suggestedEstimates.gearRatios"
+          ],
+          "access": "Read2026-11-18. Attributed factory launch text matches original brochure; table gives260kW6500rpm,1380kg unladen,dimensions,gear ratios and performance. Reproduction is not independently verified factory-original table; those values remain estimates."
+        }
+      ],
+      "limits": [
+        "Only exact factory brochure facts are promoted as verified. Power260kW, mass1380kg unladen and gear ratios are provisional modeling values from reproduced release; do not label original-document certified.",
+        "Unladen does not establish driver/fuel basis; curb1380kg is estimated. Geometry, tracks, tire widths/aspects, weight split, CG, clearance, redline, tank and transients are estimates.",
+        "Do not use factually erroneous archive summaries describing naturally aspirated Cosworth or six-speed; brochure clearly establishes twin-turbo LotusV8 and five gears.",
+        "Secondary reproduced factory power anchor is not promoted to a primary verified net rating; installed power remains an estimate.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "gossamer-2005",
+            "alias": "Gossamer 2005",
+            "referenceVehicle": "2005 North American Lotus Elise standard 1.8 six-speed manual",
+            "documentId": "gossamer-2005",
+            "runtimeId": "saved-car:Gossamer 2005",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "marsh-gentian-2012",
+            "alias": "Marsh Gentian 2012",
+            "referenceVehicle": "2012 UK Lotus Exige S 3.5 supercharged V6 coupe six-speed manual, standard non-Race-Pack specification",
+            "documentId": "marsh-gentian-2012",
+            "runtimeId": "saved-car:Marsh Gentian 2012",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "wood-forgetmenot-2023",
+            "alias": "Wood Forgetmenot 2023",
+            "referenceVehicle": "2023 UK Lotus Emira V6 First Edition 3.456 supercharged six-speed manual; initial First Edition specification, not AMG four-cylinder or later Turbo SE",
+            "documentId": "wood-forgetmenot-2023",
+            "runtimeId": "saved-car:Wood Forgetmenot 2023",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Longitudinal Lotus twin-turbo V8 and five-speed transaxle on steel-backbone Esprit differs fundamentally from Toyota four-cylinder Elise and transverse supercharged V6 Exige/Emira. No existing Esprit found in native catalog or prior import references.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Lotus/Esprit/Lotus_int%20Esprit_2002-V8.pdf",
+          "https://www.lotusespritworld.com/EModels/V802.html"
+        ]
+      },
+      "name": "Marsh Arrowgrass 2002",
+      "id": "marsh-arrowgrass-2002",
+      "simulationEstimates": {
+        "reverseRatio": 3.546,
+        "cgHeightM": 0.43,
+        "groundClearanceM": 0.105,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.42,
+        "redlineRpm": 6500,
+        "revLimitRpm": 7000,
+        "fuelTankUSgal": 19.3,
+        "topSpeedMph": 175,
+        "zeroToSixtySec": 4.8,
+        "powerKw": 260,
+        "powerRpm": 6500,
+        "curbKg": 1380,
+        "drivetrain": "rwd",
+        "lengthM": 4.369,
+        "widthM": 1.883,
+        "heightM": 1.15,
+        "wheelbaseM": 2.42,
+        "trackFrontIn": 59.8,
+        "trackRearIn": 61.1,
+        "tireSize": [
+          235,
+          40,
+          17
+        ],
+        "frontTire": [
+          235,
+          40,
+          17
+        ],
+        "rearTire": [
+          285,
+          35,
+          18
+        ],
+        "gearRatios": [
+          3.364,
+          2.059,
+          1.381,
+          1.037,
+          0.756
+        ],
+        "finalDrive": 3.889,
+        "powerHp": 348.6657432947072
+      }
+    },
+    {
+      "candidateId": "lancia-037-stradale-1982-roster-candidate",
+      "identity": {
+        "year": 1982,
+        "make": "Lancia",
+        "model": "Rally 037 Stradale",
+        "trim": "Italian-market road homologation coupe, 1995cc supercharged four, RWD five-speed manual",
+        "market": "Italy"
+      },
+      "referenceVehicle": "1982 Italian Lancia Rally 037 Stradale road homologation coupe,1995cc supercharged16V inline-four205metricCV; not1983 MonteCarlo GroupB race specification or laterEvo2.",
+      "facts": {
+        "powerKw": 150.77724375,
+        "publishedPowerPS": 205,
+        "powerRpm": 7000,
+        "engineDisplacementL": 1.995
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/it-it/heritage-hub-italy/press/fca-heritage-protagonista-alla-28esima-edizione-di-autopromotec",
+          "publisher": "Stellantis/FCA Heritage factory historical release",
+          "fields": [
+            "1982roadidentity",
+            "1995cc16Vsupercharged",
+            "205metricCVat7000rpm",
+            "over220km/h",
+            "under7seconds0to100"
+          ],
+          "access": "Italian factory text read2026-11-18; 1982 road car explicitly separated from competition description."
+        }
+      ],
+      "limits": [
+        "205CV converted to150.77724375kW; metric horsepower, not205SAEhp. The factory historical road specification is the power anchor.",
+        "All suggestedEstimates are provisional modeling inputs, not newly verified factory data.1170kg is selected running-order mass approximation, with driver/fuel allowance unverified. Geometry, tires, torque225.55Nm/5000rpm, five-speed ratios and final drive require a period factory table before promotion to facts.",
+        "Estimated0\u201360=6.8sec is a modeling target, not factory under7sec0\u2013100 restated as a measurement. Suspension, load distribution, aero, grip, shifts and limiter are estimates. No GroupB race-output transplant.",
+        "Shared RTG-001 art is placeholder only. No bespoke supercharger/boost simulation or real performance claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Centaury 1983",
+            "documentId": "centaury-1983",
+            "runtimeId": "saved-car:Centaury 1983",
+            "reference": "Walter R\u00f6hrl1983MonteCarlo Lancia037GroupB tribute",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Gromwell 1985",
+            "documentId": "gromwell-1985",
+            "runtimeId": "saved-car:Gromwell 1985",
+            "reference": "1985RAC DeltaS4GroupB",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Meadowsweet 1992",
+            "documentId": "meadowsweet-1992",
+            "runtimeId": "saved-car:Meadowsweet 1992",
+            "reference": "1992DeltaIntegraleEvoI road",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Road-homologation037 has205CV carbureted supercharged engine, road mass/tires and road suspension; Centaury is a driver/event-specific higher-output race configuration. Not a model-year-only variant.",
+        "evidence": [
+          "https://www.media.stellantis.com/it-it/heritage-hub-italy/press/fca-heritage-protagonista-alla-28esima-edizione-di-autopromotec",
+          "https://www.media.stellantis.com/it-it/heritage-hub-italy/press/fca-protagonista-di-milano-autoclassica-5-1-2"
+        ],
+        "audit": "Audited refreshed wave39 complete native catalog (365 entries including three templates), native catalogProvenance/referenceVehicle/inspiration, and repo data/tests exact Stradale searches on2026-11-18. Existing037 andS4 references are explicitly competition variants; no exact road variant found. Existing660candidateId confirmed."
+      },
+      "name": "Sea Arrowgrass 1982",
+      "id": "sea-arrowgrass-1982",
+      "simulationEstimates": {
+        "reverseRatio": 2.867,
+        "cgHeightM": 0.44,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.38,
+        "tireGrip": 0.87,
+        "spring": 0.48,
+        "antiRollRear": 0.05,
+        "suspensionTravelM": 0.19,
+        "frontOverhangM": 0.78,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 450,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.44,
+        "redlineRpm": 7200,
+        "revLimitRpm": 7400,
+        "aspiration": "Supercharged",
+        "fuelTankUSgal": 18.49,
+        "topSpeedMph": 137,
+        "zeroToSixtySec": 6.8,
+        "drivetrain": "rwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "torqueNm": 225.55,
+        "torqueRpm": 5000,
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 1170,
+        "lengthM": 3.915,
+        "widthM": 1.85,
+        "heightM": 1.245,
+        "wheelbaseM": 2.24,
+        "trackFrontIn": 59.1,
+        "trackRearIn": 59.6,
+        "tireSize": [
+          205,
+          55,
+          16
+        ],
+        "frontTire": [
+          205,
+          55,
+          16
+        ],
+        "rearTire": [
+          225,
+          50,
+          16
+        ],
+        "gearRatios": [
+          2.417,
+          1.611,
+          1.136,
+          0.846,
+          0.704
+        ],
+        "finalDrive": 5.25,
+        "transmissionLabel": "five-speed manual road homologation estimate",
+        "torqueLbFt": 166.35714276948727
+      }
+    },
+    {
+      "candidateId": "lancia-delta-s4-1986-roster-candidate",
+      "identity": {
+        "year": 1986,
+        "make": "Lancia",
+        "model": "Delta S4 Stradale",
+        "trim": "Italian road homologation two-door,1759cc twincharged four,AWD five-speed manual",
+        "market": "Italy"
+      },
+      "referenceVehicle": "1986 Italian Lancia Delta S4 Stradale road homologation coupe,1759cc twincharged DOHC16V four250metricCV,AWD5MT; notToivonen1985RACGroupB,front-enginedDeltaHFIntegrale or ordinaryDelta.",
+      "facts": {
+        "powerKw": 183.8746875,
+        "publishedPowerPS": 250,
+        "engineDisplacementL": 1.759
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/it-it/heritage-hub-italy/press/fca-protagonista-di-milano-autoclassica-5-1-2",
+          "publisher": "Stellantis/FCA Heritage factory historical release",
+          "fields": [
+            "1986Stradaleidentity",
+            "1759ccDOHC16Vfour",
+            "turbochargerplussupercharger",
+            "250metricCVroadversusnearly500race",
+            "spaceframematerialarchitecture"
+          ],
+          "access": "Italian factory text read2026-11-18; DeltaS4(1986) section identifies exhibited road car and separates road/race output."
+        }
+      ],
+      "limits": [
+        "250CV converted to183.8746875kW, not250SAEhp. Factory source verifies road output and twincharged engine identity, not a dyno curve.",
+        "All suggestedEstimates are provisional, including284Nm/4500rpm,6750rpm power speed,1200kg running-order target with unverified driver/fuel allowance, geometry/tracks/tires, five forward ratios/final drive and finite performance targets. Do not promote these to factory facts.",
+        "Twincharging is engine identity; existing ICE curve approximates combined boost. Runtime aspiration label Turbocharged is a simplified label, not a new compound-charging system. No special bypass/supercharger transition logic.",
+        "centerDifferentialBalance=.60 is estimated REAR torque share; front=.40. Road AWD representation approximate, no sourced fixed/variable split claim. Differential, grip and suspension are estimates.",
+        "Existing raceGromwell approximate500CV/966kg values deliberately not reused. No new factory-event assertion. Shared RTG-001 placeholder art only.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Gromwell 1985",
+            "documentId": "gromwell-1985",
+            "runtimeId": "saved-car:Gromwell 1985",
+            "reference": "HenriToivonen-NeilWilson1985RAC DeltaS4GroupB",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Meadowsweet 1992",
+            "documentId": "meadowsweet-1992",
+            "runtimeId": "saved-car:Meadowsweet 1992",
+            "reference": "front-engine1992DeltaIntegraleEvoI",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Road homologationS4 is factory250CV vs nearly500competition, with heavier roadtrim and road tires. It is also mid-engine tubular-chassis twincharged AWD, unlike front-engine productionDeltaIntegrale. Exact roadversion not present; not yearpadding.",
+        "evidence": [
+          "https://www.media.stellantis.com/it-it/heritage-hub-italy/press/fca-protagonista-di-milano-autoclassica-5-1-2",
+          "https://www.stellantisheritage.com/en-uk/heritage/news/lancia-delta-s4"
+        ],
+        "audit": "Audited refreshed wave39 complete native catalog (365 entries including three templates), native catalogProvenance/referenceVehicle/inspiration, and repo data/tests exact Stradale searches on2026-11-18. Existing037 andS4 references are explicitly competition variants; no exact road variant found. Existing660candidateId confirmed."
+      },
+      "name": "Meadow Vetchling 1986",
+      "id": "meadow-vetchling-1986",
+      "simulationEstimates": {
+        "reverseRatio": 3,
+        "cgHeightM": 0.47,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.38,
+        "tireGrip": 0.87,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.21,
+        "frontOverhangM": 0.77,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 450,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.45,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "aspiration": "Turbocharged",
+        "fuelTankUSgal": 18.49,
+        "topSpeedMph": 140,
+        "zeroToSixtySec": 5.8,
+        "drivetrain": "awd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 6750,
+        "torqueNm": 284,
+        "torqueRpm": 4500,
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 1200,
+        "lengthM": 3.99,
+        "widthM": 1.88,
+        "heightM": 1.35,
+        "wheelbaseM": 2.44,
+        "trackFrontIn": 59.1,
+        "trackRearIn": 60.0,
+        "tireSize": [
+          205,
+          55,
+          16
+        ],
+        "frontTire": [
+          205,
+          55,
+          16
+        ],
+        "rearTire": [
+          225,
+          50,
+          16
+        ],
+        "gearRatios": [
+          3.08,
+          2.18,
+          1.61,
+          1.24,
+          1
+        ],
+        "finalDrive": 3.67,
+        "centerDifferentialBalance": 0.6,
+        "transmissionLabel": "five-speed manual road homologation estimate",
+        "torqueLbFt": 209.46765039474343
+      }
+    }
+  ],
+  "deferred": []
+}

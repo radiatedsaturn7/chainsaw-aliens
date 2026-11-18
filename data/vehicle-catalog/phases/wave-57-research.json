@@ -1,0 +1,919 @@
+{
+  "schemaVersion": 1,
+  "base": "dae60dad5aa411c4fc1a9229bbdf0684ba2daaeb",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "bmw-328i-2012-us-f30-6mt",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2012,
+        "make": "BMW",
+        "model": "328i",
+        "trim": "F30 sedan2.0TwinPower Turbo four-cylinder RWDsix-speed manual,standard17-inchalloys,nonSportLine/noincreasedlimiter;notE90six-cylinder or335i",
+        "market": "United States"
+      },
+      "referenceVehicle": "2012 United States BMW 328i F30 sedan2.0TwinPower Turbo four-cylinder RWDsix-speed manual,standard17-inchalloys,nonSportLine/noincreasedlimiter;notE90six-cylinder or335i",
+      "bodyClass": "sedan",
+      "facts": {
+        "powerKw": 178.96796928,
+        "powerRpm": 5000,
+        "torqueNm": 352.51266648,
+        "torqueRpm": 1250,
+        "engineDisplacementL": 1.997,
+        "aspiration": "Turbocharged",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "curbKg": 1544.9356122200002,
+        "frontWeightDistribution": 0.495,
+        "lengthM": 4.6354999999999995,
+        "widthM": 1.8110199999999999,
+        "heightM": 1.4300199999999998,
+        "wheelbaseM": 2.80924,
+        "trackFrontIn": 60.3,
+        "trackRearIn": 61.9,
+        "gearRatios": [
+          3.68,
+          2.06,
+          1.31,
+          1,
+          0.81,
+          0.68
+        ],
+        "reverseRatio": 3.35,
+        "finalDrive": 3.91,
+        "fuelTankUSgal": 15.8,
+        "zeroToSixtySec": 5.7,
+        "topSpeedMph": 130,
+        "tireSize": [
+          225,
+          50,
+          17
+        ],
+        "frontTire": [
+          225,
+          50,
+          17
+        ],
+        "rearTire": [
+          225,
+          50,
+          17
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/BMW/3%20Series/BMW_US%203SeriesSedan_2012.pdf",
+          "publisher": "BMW original US factory brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "frontWeightDistribution",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "fuelTankUSgal",
+            "zeroToSixtySec",
+            "topSpeedMph",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "identity"
+          ],
+          "access": "Original2012USbrochure technicalpp72\u201373 visually reviewed fromPDFpage37, savedbmw3spec.png. Manual328icolumn3406lb49.5/50.5distribution,240hp5000\u20136000rpm260lb-ft1250\u20134800;6MT exactratios/final/tires/geometry."
+        }
+      ],
+      "limits": [
+        "Supplementary identity consumes an existing open canonical660 reservation, no historical list expansion.",
+        "All suggestedEstimates explicitly modeled; referenced RTG001 art only, no test/driving/finished-art claims.",
+        "USfactoryunladen3406lb retained asrunningmass,notEUdriverinclusive orautomatic3461lb. Roundedprintedratios retained.",
+        "PeakRPM fields denote beginning ofbroadfactorypower/torqueplateaus; curveinterpolation/boost/inertia/suspension estimates. NoactivechassisorEcoPro simulation claim.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "wall-speedwell-2008",
+            "alias": "Wall Speedwell 2008",
+            "referenceVehicle": "2008 US BMW M3 Coupe E92 4.0 naturally aspirated V8 six-speed manual; not E46, DCT, sedan or convertible",
+            "documentId": "wall-speedwell-2008",
+            "runtimeId": "saved-car:Wall Speedwell 2008",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "sierra-clover-2004",
+            "alias": "Sierra Clover 2004",
+            "referenceVehicle": "2004 Italy BMW 116i E87 five-door Eletta 1.6 gasoline five-speed manual, standard steel 16-inch runflat wheels; not Attiva, diesel, 120i or facelift",
+            "documentId": "sierra-clover-2004",
+            "runtimeId": "saved-car:Sierra Clover 2004",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Absent F30compactexecutivesedan withN20turbo four-cylinder6MT, distinctfromE87NA116ihatch andE92M3V8coupe; notyear-onlysamebodytrim.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/BMW/3%20Series/BMW_US%203SeriesSedan_2012.pdf"
+        ]
+      },
+      "name": "Dew Clover 2012",
+      "id": "dew-clover-2012",
+      "simulationEstimates": {
+        "cgHeightM": 0.53,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "redlineRpm": 6500,
+        "revLimitRpm": 7000,
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 103.9999999745795
+          },
+          {
+            "rpm": 1250,
+            "torqueLbFt": 259.9999999364487
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 259.9999999364487
+          },
+          {
+            "rpm": 5000,
+            "torqueLbFt": 252.09600014122034
+          },
+          {
+            "rpm": 7000,
+            "torqueLbFt": 155.99999996186924
+          }
+        ],
+        "transmissionLabel": "6-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "bmw-740i-2011-us-f01-6at",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2011,
+        "make": "BMW",
+        "model": "740i",
+        "trim": "F01 short-wheelbase3.0TwinPower Turbo inline-sixRWD six-speedautomatic,standard18-inchallseason wheels;not740Li,750i,ActiveHybrid orxDrive",
+        "market": "United States"
+      },
+      "referenceVehicle": "2011 United States BMW 740i F01 short-wheelbase3.0TwinPower Turbo inline-sixRWD six-speedautomatic,standard18-inchallseason wheels;not740Li,750i,ActiveHybrid orxDrive",
+      "bodyClass": "sedan",
+      "facts": {
+        "powerKw": 234.89545968,
+        "powerRpm": 5800,
+        "torqueNm": 447.41992284,
+        "torqueRpm": 1600,
+        "engineDisplacementL": 2.979,
+        "aspiration": "Twin-turbocharged",
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "gearCount": 6,
+        "curbKg": 1970.4052552800001,
+        "frontWeightDistribution": 0.503,
+        "lengthM": 5.07492,
+        "widthM": 1.90246,
+        "heightM": 1.4808199999999998,
+        "wheelbaseM": 3.07086,
+        "trackFrontIn": 63.4,
+        "trackRearIn": 65.0,
+        "gearRatios": [
+          4.17,
+          2.34,
+          1.52,
+          1.14,
+          0.87,
+          0.69
+        ],
+        "finalDrive": 3.46,
+        "reverseRatio": 3.4,
+        "fuelTankUSgal": 21.7,
+        "topSpeedMph": 150,
+        "zeroToSixtySec": 5.8,
+        "tireSize": [
+          245,
+          50,
+          18
+        ],
+        "frontTire": [
+          245,
+          50,
+          18
+        ],
+        "rearTire": [
+          245,
+          50,
+          18
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/BMW/7%20Series/BMW_US%207Series_2011.pdf",
+          "publisher": "BMW original US factory brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "frontWeightDistribution",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "gearRatios",
+            "finalDrive",
+            "reverseRatio",
+            "fuelTankUSgal",
+            "topSpeedMph",
+            "zeroToSixtySec",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "identity"
+          ],
+          "access": "Original2011USbrochure printed84\u201385/PDF43 visually reviewed bmw7spec.png.740i firstcolumn4344lb50.3/49.7;315hp5800\u20136000rpm330lb-ft1600\u20134500;6ATgears. Drawing usesparentheticalSWB199.8/120.9in,not205.3/126.4Li."
+        }
+      ],
+      "limits": [
+        "Supplementary identity consumes an existing open canonical660 reservation, no historical list expansion.",
+        "All suggestedEstimates explicitly modeled; referenced RTG001 art only, no test/driving/finished-art claims.",
+        "Unladen4344lb isoriginalUSbasis; noEU75kg subtraction. SWBselectednotLi.",
+        "Factory6ATapproximatednativeTCgearbox. Power/torqueRPMstartplateaus, boost/control/shifts/damping/transients estimates; nohybrid orrearsteerfeatures.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "heath-speedwell-2009",
+            "alias": "Heath Speedwell 2009",
+            "referenceVehicle": "2009 US BMW M5 Sedan E60 5.0 naturally aspirated V10 six-speed manual; not E39/E34 or SMG",
+            "documentId": "heath-speedwell-2009",
+            "runtimeId": "saved-car:Heath Speedwell 2009",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "dune-clover-2010",
+            "alias": "Dune Clover 2010",
+            "referenceVehicle": "2010 United Kingdom BMW 520d Touring F11 launch four-cylinder turbo-diesel estate six-speed manual RWD, standard chassis; no M Sport, xDrive or eight-speed automatic",
+            "documentId": "dune-clover-2010",
+            "runtimeId": "saved-car:Dune Clover 2010",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "FirstF01flagshipsedan3.0turbosix with6AT, notE60V10M5 orF11dieselwagon. No7Series identity found in catalog.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/BMW/7%20Series/BMW_US%207Series_2011.pdf"
+        ]
+      },
+      "name": "Fawn Clover 2011",
+      "id": "fawn-clover-2011",
+      "simulationEstimates": {
+        "cgHeightM": 0.56,
+        "groundClearanceM": 0.145,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "redlineRpm": 6500,
+        "revLimitRpm": 7000,
+        "transmissionLabel": "6-speed torque-converter automatic approximation",
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 131.99999996773553
+          },
+          {
+            "rpm": 1600,
+            "torqueLbFt": 329.9999999193388
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 329.9999999193388
+          },
+          {
+            "rpm": 5800,
+            "torqueLbFt": 285.23793119426875
+          },
+          {
+            "rpm": 7000,
+            "torqueLbFt": 197.99999995160326
+          }
+        ]
+      }
+    },
+    {
+      "candidateId": "audi-a4-avant-2009-us-2-0t-quattro-6at",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2009,
+        "make": "Audi",
+        "model": "A4 Avant",
+        "trim": "B8 Premium2.0TFSI211hp quattro six-speedTiptronic wagon,standard17-inchwheels;not3.2sedan,manualsedan,CVT orRS4",
+        "market": "United States"
+      },
+      "referenceVehicle": "2009 United States Audi A4 Avant B8 Premium2.0TFSI211hp quattro six-speedTiptronic wagon,standard17-inchwheels;not3.2sedan,manualsedan,CVT orRS4",
+      "bodyClass": "wagon",
+      "facts": {
+        "powerKw": 157.342672992,
+        "powerRpm": 4300,
+        "torqueNm": 349.80103058400005,
+        "torqueRpm": 1500,
+        "engineDisplacementL": 2,
+        "aspiration": "Turbocharged",
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "gearCount": 6,
+        "lengthM": 4.704079999999999,
+        "widthM": 1.8288,
+        "heightM": 1.4351,
+        "trackFrontIn": 61.6,
+        "trackRearIn": 61.1,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 6.9
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Audi/A4/Audi_US%20A4_2009.pdf",
+          "publisher": "Audi original US factory brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "trackFrontIn",
+            "trackRearIn",
+            "topSpeedMph",
+            "zeroToSixtySec",
+            "identity"
+          ],
+          "access": "Original2009USbrochureAvant-specific modelconfiguration explicitly211hp2.0T6ATquattro; technicaldrawing72inwidth56.5height185.2length61.6/61.1tracks.211hp4300\u20135000rpm258lb-ft1500\u20134200;6.9s0\u201360130mph."
+        }
+      ],
+      "limits": [
+        "Supplementary identity consumes an existing open canonical660 reservation, no historical list expansion.",
+        "All suggestedEstimates explicitly modeled; referenced RTG001 art only, no test/driving/finished-art claims.",
+        "1785kg curb,tires,gearset,finaldrive,wheelbase,tank andalltransientvalues estimates until exactfactorytechsheetverified. Brochuretechnicalpictureheightretainedasprinted.",
+        "Nativefixed40:60front/rearapproximation forquattroroaduse; notfullTorsenlockingbehavior. NoDSG,CVTorhybrid.",
+        "PowerandtorqueRPMdenotestartoffactoryplateau; torqueinterpolationmustnot inventnarrowpeak.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "hoary-willowherb-2001",
+            "alias": "Hoary Willowherb 2001",
+            "referenceVehicle": "2001 UK Audi RS 4 Avant, B5 standard2.7biturboV6 quattro six-speed manual wagon, RHD; notSportconversion orB7",
+            "documentId": "hoary-willowherb-2001",
+            "runtimeId": "saved-car:Hoary Willowherb 2001",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "cinquefoil-2004",
+            "alias": "Cinquefoil 2004",
+            "referenceVehicle": "2004 US Audi S4 B6 sedan,4163cc naturally aspirated port-injected40-valveV8,quattro6MT,standard18inch wheels; not Avant,Tiptronic,B7RS4FSI or B5biturbo.",
+            "documentId": "cinquefoil-2004",
+            "runtimeId": "saved-car:Cinquefoil 2004",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "wild-madder-2013",
+            "alias": "Wild Madder 2013",
+            "referenceVehicle": "2013 UK Audi RS4Avant B84.163LNAhighrevV8 quattro7-speedS tronicwagon standard19-inch;notB5turbo,B7manualsedan orlaterB9V6",
+            "documentId": "wild-madder-2013",
+            "runtimeId": "saved-car:Wild Madder 2013",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "OrdinaryB8Avant turbo4/6AT differentpowertrainandpurpose fromB8RS4NAhighrevV8/7DCT; also differentgenerationfromB5RS4turboV6manualandB6S4V8sedan.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Audi/A4/Audi_US%20A4_2009.pdf"
+        ]
+      },
+      "name": "Lark Clover 2009",
+      "id": "lark-clover-2009",
+      "simulationEstimates": {
+        "reverseRatio": 3.403,
+        "cgHeightM": 0.55,
+        "groundClearanceM": 0.125,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.56,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "fuelTankUSgal": 17.2,
+        "curbKg": 1785,
+        "wheelbaseM": 2.808,
+        "gearRatios": [
+          4.171,
+          2.34,
+          1.521,
+          1.143,
+          0.867,
+          0.691
+        ],
+        "finalDrive": 3.539,
+        "centerDifferentialBalance": 0.6,
+        "transmissionLabel": "6-speed torque-converter automatic approximation",
+        "tireSize": [
+          225,
+          50,
+          17
+        ],
+        "frontTire": [
+          225,
+          50,
+          17
+        ],
+        "rearTire": [
+          225,
+          50,
+          17
+        ],
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 103.19999997477505
+          },
+          {
+            "rpm": 1500,
+            "torqueLbFt": 257.9999999369376
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 257.9999999369376
+          },
+          {
+            "rpm": 4300,
+            "torqueLbFt": 257.7144187490188
+          },
+          {
+            "rpm": 6800,
+            "torqueLbFt": 154.79999996216256
+          }
+        ]
+      }
+    },
+    {
+      "candidateId": "fiat-stilo-multi-wagon-dynamic-1-8-2003-supplemental-candidate",
+      "bodyClass": "wagon",
+      "identity": {
+        "year": 2003,
+        "make": "Fiat",
+        "model": "Stilo MultiWagonDynamic1.8 16V",
+        "trim": "UK February2003five-door estate C510five-speedmanual, standardDynamic16inchalloys, fixedroof; not3/5-doorhatch,Abarth,JTDorSkyWindow",
+        "market": "UK"
+      },
+      "referenceVehicle": "2003 Fiat Stilo MultiWagonDynamic1.8 16V, UK February2003five-door estate C510five-speedmanual, standardDynamic16inchalloys, fixedroof; not3/5-doorhatch,Abarth,JTDorSkyWindow",
+      "facts": {
+        "powerHp": 133,
+        "powerRpm": 6400,
+        "torqueNm": 162,
+        "torqueRpm": 3500,
+        "engineDisplacementL": 1.747,
+        "gearCount": 5,
+        "drivetrain": "fwd",
+        "curbKg": 1385,
+        "lengthM": 4.516,
+        "widthM": 1.756,
+        "heightM": 1.57,
+        "wheelbaseM": 2.6,
+        "trackFrontIn": 59.60629921259843,
+        "trackRearIn": 59.37007874015748,
+        "tireSize": [
+          205,
+          55,
+          16
+        ],
+        "fuelTankUSgal": 15.321979036772609,
+        "topSpeedMph": 124.27
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/uk-en/fiat/press/fiat-stilo-multi-wagon",
+          "publisher": "FiatUK originalfactorylaunch presspack",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "gearCount",
+            "drivetrain",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "fuelTankUSgal",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "Factoryliteral133bhp and98kWpublishedtogether; notexactunitconversion. Mass1385kgDIN1.8column; no1296kg1.6substitution. Generictechnicaltable195/65R15conflictsDynamictrimdetail: explicitDynamicstandard16inchalloys andequipment205/55R16 selected. GearedC5105MTverified butinternalratios/finalratio remainestimates. Factory0\u20136210.8s;runtime0\u20136010.4estimated.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Lush Clover 2005",
+            "documentId": "lush-clover-2005",
+            "runtimeId": "saved-car:Lush Clover 2005",
+            "reference": "CromaDynamic2.2Dsegmenthighroofestate",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Lemon Clover 2008",
+            "documentId": "lemon-clover-2008",
+            "runtimeId": "saved-car:Lemon Clover 2008",
+            "reference": "Lemon Clover 2008 / BravoActiveEco1.6dieselhatch",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Distinct StiloCsegmentestate1.747NApetrol withslidingrearseats, notlargeCroma2.2 orlaterBravodieselhatch. NoStilohatchreferencefound.",
+        "evidence": [
+          "https://www.media.stellantis.com/uk-en/fiat/press/fiat-stilo-multi-wagon"
+        ],
+        "audit": "Auditednativewave54allreference/inspiration/identity/provenance plusall54intakes; noStilo,Idea,Ulysseorbadgeclones807/C8/Phedra. SedicirejectedbecauseSX4present. Supplementalcanonical660reservationrequired."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Reed Clover 2003",
+      "id": "reed-clover-2003",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.55,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6700,
+        "revLimitRpm": 6900,
+        "aspiration": "Naturally aspirated",
+        "zeroToSixtySec": 10.4,
+        "bodyClass": "wagon",
+        "transmission": "manual",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.32,
+          0.97,
+          0.76
+        ],
+        "finalDrive": 4.1,
+        "transmissionLabel": "5-speedmanual estimatedratios"
+      }
+    },
+    {
+      "candidateId": "fiat-ulysse-dynamic-2-0-2003-supplemental-candidate",
+      "bodyClass": "minivan",
+      "identity": {
+        "year": 2003,
+        "make": "Fiat",
+        "model": "Ulysse Dynamic2.0 16V",
+        "trim": "UK February2003secondgenerationseven-seatpassengerMPV petrolBE4five-speedmanual, standard15inchsteelwheels/nooptionalroofbars; notautomatic,diesel,Prestigio6-seat orbadgeclones807/C8/Phedra",
+        "market": "UK"
+      },
+      "referenceVehicle": "2003 Fiat Ulysse Dynamic2.0 16V, UK February2003secondgenerationseven-seatpassengerMPV petrolBE4five-speedmanual, standard15inchsteelwheels/nooptionalroofbars; notautomatic,diesel,Prestigio6-seat orbadgeclones807/C8/Phedra",
+      "facts": {
+        "powerHp": 136,
+        "powerRpm": 6000,
+        "torqueNm": 189.814512762,
+        "torqueRpm": 4100,
+        "engineDisplacementL": 1.997,
+        "gearCount": 5,
+        "drivetrain": "fwd",
+        "lengthM": 4.719,
+        "widthM": 1.863,
+        "heightM": 1.752,
+        "wheelbaseM": 2.823,
+        "trackFrontIn": 61.811023622047244,
+        "trackRearIn": 60.944881889763785,
+        "tireSize": [
+          205,
+          65,
+          15
+        ],
+        "fuelTankUSgal": 21.133764188651874,
+        "topSpeedMph": 115
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/uk-en/fiat/press/new-fiat-ulysse",
+          "publisher": "FiatUK originalfactorylaunch presspack",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "gearCount",
+            "drivetrain",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "fuelTankUSgal",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "Factory136bhp literalpreserved; torque140lbft converted189.8145Nm. BE4manual5speedexplicit, not4-speedautomatic. SevenseatconfigurationstandardDynamic. Factoryheight1752withoutroofbarsusedratherthan1856roofbarfigure. Runningmass1645kg excludingdriver isestimate; exactgear/finalratiosandtransientsnotfactory. ESP/TCoptionalDynamic; noforcedtractionupgrade.0\u201360estimate10.8fromfactory0\u20136211.2.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Podmoss 2005",
+            "documentId": "podmoss-2005",
+            "runtimeId": "saved-car:Podmoss 2005",
+            "reference": "Multipla1.6wide6-seatMPV",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Yates Clover 2009",
+            "documentId": "yates-clover-2009",
+            "runtimeId": "saved-car:Yates Clover 2009",
+            "reference": "Qubo1.4compactMPV",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Trailing Trefoil 2012",
+            "documentId": "trailing-trefoil-2012",
+            "runtimeId": "saved-car:Trailing Trefoil 2012",
+            "reference": "wave54EspaceIVturboMPV",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "EurovanII seven-seat twin-sliding-door2.0NA platform; notFiatMultipla6seatwidecompact,Qubosmallplatform orRenaultEspaceturbo. OnlyoneEurovanIIbadgeaccepted.",
+        "evidence": [
+          "https://www.media.stellantis.com/uk-en/fiat/press/new-fiat-ulysse"
+        ],
+        "audit": "Auditednativewave54allreference/inspiration/identity/provenance plusall54intakes; noStilo,Idea,Ulysseorbadgeclones807/C8/Phedra. SedicirejectedbecauseSX4present. Supplementalcanonical660reservationrequired."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Moss Clover 2003",
+      "id": "moss-clover-2003",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.63,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Naturally aspirated",
+        "zeroToSixtySec": 10.8,
+        "bodyClass": "minivan",
+        "transmission": "manual",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "curbKg": 1645,
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.32,
+          0.97,
+          0.76
+        ],
+        "finalDrive": 4.1,
+        "transmissionLabel": "5-speedmanual estimatedratios"
+      }
+    },
+    {
+      "candidateId": "fiat-idea-active-1-4-2004-supplemental-candidate",
+      "bodyClass": "minivan",
+      "identity": {
+        "year": 2004,
+        "make": "Fiat",
+        "model": "Idea Active1.4 16V",
+        "trim": "UK February2004 launchfive-seatminiMPV FIREpetrolfive-speedmanual, nooptionalSkyDomeroof; notDualogic,MultiJet orLanciaMusa",
+        "market": "UK"
+      },
+      "referenceVehicle": "2004 Fiat Idea Active1.4 16V, UK February2004 launchfive-seatminiMPV FIREpetrolfive-speedmanual, nooptionalSkyDomeroof; notDualogic,MultiJet orLanciaMusa",
+      "facts": {
+        "powerHp": 95,
+        "engineDisplacementL": 1.4,
+        "gearCount": 5,
+        "drivetrain": "fwd",
+        "lengthM": 3.93,
+        "widthM": 1.7,
+        "heightM": 1.66,
+        "wheelbaseM": 2.51
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/uk-en/fiat/press/new-fiat-idea-in-uk",
+          "publisher": "FiatUK originalfactorylaunch presspack",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL",
+            "gearCount",
+            "drivetrain",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "Factory95bhp literal, noassumedmetricPSconversion. Rounded1.4source retained; exact1368ccnotasserted. Bothenginesfactory5MT, laterDualogicexcluded. Runningmass1155kg excludingdriver, torque/RPM,tires/gearing/tracks/performance areexplicitestimates pendingfactorytable. Do notinferESPstandardfromavailable-systemsmarketing;ABSstandard,TCleftoff.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Yates Clover 2009",
+            "documentId": "yates-clover-2009",
+            "runtimeId": "saved-car:Yates Clover 2009",
+            "reference": "Qubo1.4 8vcompactMPV",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Podmoss 2005",
+            "documentId": "podmoss-2005",
+            "runtimeId": "saved-car:Podmoss 2005",
+            "reference": "Multipla1.6wide6-seatMPV",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Creek Clover 2009",
+            "documentId": "creek-clover-2009",
+            "runtimeId": "saved-car:Creek Clover 2009",
+            "reference": "RenaultModus1.2BsegmentminiMPV",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Punto-derived upright five-seat miniMPV withnormalhingeddoors and16valveFIRE, distinctfromQuboslidingdoorPSA1360cc8v orwideMultipla; directModuscompetitor notbadgeclone.",
+        "evidence": [
+          "https://www.media.stellantis.com/uk-en/fiat/press/new-fiat-idea-in-uk"
+        ],
+        "audit": "Auditednativewave54allreference/inspiration/identity/provenance plusall54intakes; noStilo,Idea,Ulysseorbadgeclones807/C8/Phedra. SedicirejectedbecauseSX4present. Supplementalcanonical660reservationrequired."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Heather Clover 2004",
+      "id": "heather-clover-2004",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.58,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 12.416086460832975,
+        "topSpeedMph": 109,
+        "zeroToSixtySec": 11.1,
+        "bodyClass": "minivan",
+        "transmission": "manual",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 5800,
+        "torqueNm": 128,
+        "torqueRpm": 4500,
+        "curbKg": 1155,
+        "trackFrontIn": 59,
+        "trackRearIn": 58.5,
+        "tireSize": [
+          185,
+          65,
+          14
+        ],
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.32,
+          0.97,
+          0.76
+        ],
+        "finalDrive": 4.1,
+        "transmissionLabel": "5-speedmanual estimatedratios",
+        "torqueLbFt": 94.40795510749
+      }
+    }
+  ],
+  "deferred": []
+}
