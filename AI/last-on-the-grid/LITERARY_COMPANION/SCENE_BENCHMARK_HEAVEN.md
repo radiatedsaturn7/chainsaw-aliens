@@ -1,5 +1,7 @@
 # Dialogue Voice Benchmark — Heaven (Expanded Conversation)
-**Source: dialogue draft developed in the conversation, November 17, 2026. PROPOSED; not implemented, not locked canon.**
+**Source: dialogue draft developed in the conversation, November 17, 2026; chronology revised November 18 to fit the [rapid Ascension](../WORLD_LORE/THE_ASCENSION.md). PROPOSED; not implemented, not locked canon.**
+
+> [Read the pre-Ascension original](../ARCHIVE/HEAVEN_BENCHMARK_PRE_ASCENSION_2026-11-17.md). The **voice and dramatic exchanges are the benchmark**; dates and ages are explicitly new revisions, not recovered older dialogue.
 
 ## Why we're keeping this
 The short, fast exchanges in earlier chapter drafts felt like a rapid-fire television comedy or a stream of RPG text boxes. The user chose the **slower Evelyn/Heaven conversation** as the writing benchmark. Characters should finish thoughts, tell stories, laugh, misunderstand each other and occasionally take a long route to an uncomfortable truth. This is an example of *cadence*, not a command to copy its exposition or length in every scene.
@@ -10,7 +12,7 @@ The short, fast exchanges in earlier chapter drafts felt like a rapid-fire telev
 
 *Cait wanders while Rob searches for a replacement component. A monitor lights up.*
 
-**EVELYN:** "Well, hello there! I was beginning to think we'd gone another century without a visitor. You wouldn't believe how few people come through here anymore."
+**EVELYN:** "Well, hello there! I was beginning to think that visitor terminal had finally died. These halls used to be crowded when everyone was coming over. I haven't seen someone walk in through that door in years."
 
 **CAIT:** "Jesus! You scared the hell out of me."
 
@@ -18,7 +20,7 @@ The short, fast exchanges in earlier chapter drafts felt like a rapid-fire telev
 
 **CAIT:** "Yeah, I'm fine. Just wasn't expecting a face to appear out of nowhere. Who are you?"
 
-**EVELYN:** "Evelyn. I've lived here for... goodness, I couldn't tell you exactly how long. A few centuries, at least. Time becomes rather difficult to keep track of when you don't have to worry about growing old."
+**EVELYN:** "Evelyn. I've been in here nearly nine years, I think. Daniel insists on keeping a calendar, but I gave up on that nonsense. He has one that takes up an entire wall. It's possibly the most boring thing anyone's made in here."
 
 **CAIT:** "Right. Well, I'm Cait. We're just passing through, looking for a few parts. Didn't think anybody was still using this place."
 
@@ -46,9 +48,9 @@ The short, fast exchanges in earlier chapter drafts felt like a rapid-fire telev
 
 **CAIT:** "So what happens when you get bored? I mean, you can have anything you want. Doesn't that get old after a while?"
 
-**EVELYN:** "Oh, heavens, no! If anything, it's quite the opposite. There's always something new to experience. I learned to paint about eighty years ago. Never had the patience for it when I was alive. Well, when I was biological, I suppose I should say."
+**EVELYN:** "Oh, heavens, no! If anything, it's quite the opposite. There's always something new to experience. I took up painting four years ago. Never had the patience for it when I was alive. Well, biological, I suppose I should say. You'd think being able to undo every bad brushstroke would make me a better painter, but I'm quite convinced it's made me worse."
 
-**CAIT:** "Eighty years painting? Christ, I get annoyed if a car takes longer than a weekend to finish."
+**CAIT:** "Four years painting? Christ, I get annoyed if a car takes longer than a weekend to finish."
 
 **EVELYN:** "You work on cars?"
 
@@ -88,7 +90,7 @@ The short, fast exchanges in earlier chapter drafts felt like a rapid-fire telev
 
 **CAIT:** "Did you ever try contacting him?"
 
-**EVELYN:** "Oh, once or twice. But the communications systems became unreliable as the years went on. And we had our own lives to get on with. I suppose I just assumed he found somewhere he was happy."
+**EVELYN:** "We did, especially at first. Then he stopped coming round, and the outside connections grew less reliable. You know how it goes—one week you're saying you'll call on Sunday, and then somehow it's Christmas. I suppose I told myself he'd found somewhere he was happy."
 
 *The room is quiet for a moment.*
 
@@ -106,7 +108,7 @@ The short, fast exchanges in earlier chapter drafts felt like a rapid-fire telev
 
 **CAIT:** "I've only just started getting used to the body I've got."
 
-**EVELYN:** "Well, of course. But imagine being able to experience anything you wanted. You mentioned racing. We have racing here, too. Cars that can fly, tracks that wrap around entire planets. You could spend a thousand years driving and never see the same place twice."
+**EVELYN:** "Well, of course. But imagine being able to experience anything you wanted. You mentioned racing. We have racing here, too. Cars that can fly, tracks that wrap around entire planets. You could drive for years and never see the same place twice."
 
 *Cait considers that.*
 
@@ -232,10 +234,10 @@ The short, fast exchanges in earlier chapter drafts felt like a rapid-fire telev
 |---|---|---|
 | Evelyn apologizes for startling Cait; Cait recovers by joking | Establishes a relationship between two *people*, not a computer user and a tutorial | Don't make Cait a rote source of questions |
 | Cait describes the tree growing through a parking garage; Evelyn says there's so much going on “here” | Two overlapping but profoundly different definitions of a liveable world | Evelyn shouldn't seem grotesquely indifferent without cause |
-| Evelyn's Florence and painting stories | Makes Heaven tempting because it contains genuine activity and memory, not an abstract guarantee of bliss | Can trim excessive exposition while preserving personality |
+| Evelyn's Florence, painting and ridiculous calendar stories | Makes Heaven tempting because it contains genuine activity and memory, not an abstract guarantee of bliss; also shows how a decade can stretch subjectively | Can trim excessive exposition while preserving personality |
 | Cait mentions garage work and Rob; Evelyn recognizes him | Turns worldbuilding into an encounter with somebody who has her own history with our protagonist | Need to resolve Rob's timeline/longevity |
 | Daniel's lake house; Rob's preference for an actual mosquito | Gives Rob's refusal a comic, physical specificity; a second account of the past | Could feel too neat if the aphorism is played as an official theme |
-| Evelyn says she thought Rob found happiness | Shows benign neglect; the people of Heaven need not be malicious to hurt him | Is Evelyn remembering enough concrete affection to earn this? |
+| Evelyn says she thought Rob found happiness | Shows how friends can lose contact **within a decade**; the people of Heaven need not be malicious to hurt him | Is Evelyn remembering enough concrete affection to earn this? |
 | Heaven invites Cait to discard her body; Cait asks about real rain | Presents a credible alternative life that Cait must choose or refuse; physical reality as a lived preference | The offer's irreversibility is still an open worldbuilding question |
 | Rob remembers the dock and trees | Demonstrates he wasn't exaggerating: the invitation was serious and tailored to him | Rob's firsthand visit needs lore continuity |
 | “It wasn't. That's what bothered me.” | Concedes the world was appealing; prevents easy moral superiority | A strong short line works amid longer responses |
@@ -243,7 +245,7 @@ The short, fast exchanges in earlier chapter drafts felt like a rapid-fire telev
 | “They made their choice” | He respects an agency that hurt him—an echo of what Cait may do | Keep it quiet; don't tell the audience to applaud |
 
 ## Known issues to solve before this becomes canon
-1. A person apparently alive in **2994** personally knew Evelyn centuries ago. How?
+1. **Chronology revised:** The uploads became widespread within a few years, around a decade before the 2994 journey. Evelyn and Rob knew each other recently. Exact dates are provisional; no centuries-long Rob lifespan is required.
 2. Rob says he visited Heaven for days. Does that mean temporary simulation access, remote immersion, or uploading? It cannot contradict Cait's concern that entering might mean abandoning her body.
 3. The exact mechanics of “perfect rain” aren't needed for the scene, but the nature of Cait's embodiment and senses must remain consistent.
 4. This draft is **not a requirement** that every character speaks in long paragraphs. It demonstrates variety: Evelyn has unhurried stories; Rob is capable of full thoughts when memory escapes his defenses; Cait has jokes, desires and reactions beyond diagnostics.
