@@ -6,6 +6,7 @@
  * wheelFit and per-car cockpitCalibration. Source previews are not acceptance.
  */
 import fs from 'node:fs';
+import {resolveRuntimeId} from './runtime-source-binding.mjs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
@@ -54,7 +55,9 @@ for(const [key,length] of [['size',2],['cluster',4],['wheel',3]]){
 const source=path.resolve(cfg.sourceDirectory),images={},sourceHashes={};
 const marker=path.join(source,'package-status.json'),sourceStatus=fs.existsSync(marker)?JSON.parse(fs.readFileSync(marker)):null;
 if(sourceStatus){
-  assert.equal(sourceStatus.id,cfg.id);
+  assert.equal(resolveRuntimeId(sourceStatus),cfg.id,'Source package must bind to this exact runtime ID');
+  assert.equal(sourceStatus.name,cfg.name);
+  assert.equal(path.basename(source),sourceStatus.id);
   assert.deepEqual(cfg.mapping,sourceStatus.mapping,'Fitting mapping differs from the reviewed source package');
 }
 const sourceConfig=path.join(source,'package-config.json');

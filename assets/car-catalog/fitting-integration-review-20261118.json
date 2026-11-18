@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "combinedInput": "791a8250e08726a0c5b8d0beff18ce479cc45276",
+  "bindingCheckpoint": "6980280333fc7fe6e0e222682a9a862e4aff974f",
+  "canonicalIds": 660,
+  "sourceBindingsVerified": 31,
+  "measuredConfigurationsInputValidated": 46,
+  "preservedPilotOverlaysValidated": 3,
+  "newOfflineOverlaysPrepared": 3,
+  "productionOverlaysIntegrated": 0,
+  "remainingNewSourcePackagesWithoutMeasuredFit": 400,
+  "renders": [
+    {
+      "id": "alkanet-2015",
+      "renderReportSha256": "bb4eb1c7bfa1e01657cec787827d08b0b3d37a16a371c4760266fbc24119615c",
+      "contactSheetSha256": "e39dbc133d973b43cbe4bddaab02dd9540a46086e36ef2b6dd50d6d6c050b2f0",
+      "exteriorViews": 8,
+      "cockpitViewports": 2,
+      "staticVisuallyReviewed": true,
+      "gameplayAccepted": false
+    },
+    {
+      "id": "glasswort-181-1973",
+      "renderReportSha256": "790f5962b7399c1c7ab21236a3dc4ec7cf512f476636c56407d3523db216eefd",
+      "contactSheetSha256": "623b384d82d04a8305a1f02cb8dbfb2ee026abbc0a046593f177c432a790e049",
+      "exteriorViews": 8,
+      "cockpitViewports": 2,
+      "staticVisuallyReviewed": true,
+      "gameplayAccepted": false
+    },
+    {
+      "id": "moonwort-2010",
+      "renderReportSha256": "195e511c1274dbddac68b23d90f5de3155c33109d3af3ccac2c05f6941b06985",
+      "contactSheetSha256": "9f870f1f0286c02cd8affb60d4bcca11c127defe0e99bd2376aff73a2be79473",
+      "exteriorViews": 8,
+      "cockpitViewports": 2,
+      "staticVisuallyReviewed": true,
+      "gameplayAccepted": false
+    },
+    {
+      "id": "starflower-25-2024",
+      "renderReportSha256": "26dac17de06b68fd7a0b3c037ecc1e239a0606a7b42763593798c6e917c2eaab",
+      "contactSheetSha256": "340bfc932edc07d67a7b4f52ef65fb32599428b0a7bf712516fcdb48a37a02e8",
+      "exteriorViews": 8,
+      "cockpitViewports": 2,
+      "staticVisuallyReviewed": true,
+      "gameplayAccepted": false
+    },
+    {
+      "id": "heatherbell-s-1987",
+      "renderReportSha256": "d4e1f70ae177bd5e37b88bb777b2b9b47085af1fc0fdd39d04f2515a549d458a",
+      "contactSheetSha256": "3202989833da9c0fd6694564f890c5ee7985779b9c6885f889678f360a71795c",
+      "exteriorViews": 8,
+      "cockpitViewports": 2,
+      "staticVisuallyReviewed": true,
+      "gameplayAccepted": false
+    },
+    {
+      "id": "wood-sorrel-2013",
+      "renderReportSha256": "dea3ba66b1e457d692eb48a367d796731980f8a19b20e07a04bf62cbc90cde54",
+      "contactSheetSha256": "7a50c157bd780fcb835368db59e8b1c63e66350590bb5413a938c23377fa8539",
+      "exteriorViews": 8,
+      "cockpitViewports": 2,
+      "staticVisuallyReviewed": true,
+      "gameplayAccepted": false
+    }
+  ],
+  "observations": [
+    "All six contact sheets visually reviewed: eight distinct exterior directions and readable sampled live-gauge values at desktop and portrait dimensions.",
+    "Glasswort front/rear exposed tread needs ground-contact and moving-camera review; static output does not establish wheel placement acceptance.",
+    "Alkanet large handheld steering wheel approaches the right viewport edge; review actual handheld interaction before accepting its scale.",
+    "Pilot wheels sit below their instrument clusters; preserve originals until gameplay review confirms placement."
+  ],
+  "unrun": [
+    "physics motion",
+    "fixed rear chase in gameplay",
+    "smoke and tread placement while moving",
+    "keyboard and touch browser acceptance"
+  ],
+  "acceptance": "Static preview only; no fleet-wide fit or gameplay acceptance claimed."
+}
