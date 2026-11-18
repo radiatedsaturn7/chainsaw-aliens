@@ -1,0 +1,335 @@
+{
+  "schemaVersion": 1,
+  "base": "e2f31c64058816a3b362e038c466a517e54af4ec",
+  "scope": "Three existing Nissan slots resolved to distinct road configurations; no slot inflation.",
+  "vehicles": [
+    {
+      "candidateId": "nissan-skyline-gts-r-hr31-1987-roster-candidate",
+      "id": "storksbill-r-1987",
+      "name": "Storksbill R 1987",
+      "identity": {
+        "year": 1987,
+        "make": "Nissan",
+        "model": "Skyline 2000GTS-R",
+        "trim": "KHR31 RB20DET-R road coupe 5MT",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1987 Japan Nissan Skyline 2000GTS-R KHR31 RB20DET-R road coupe 5MT",
+      "sources": [
+        {
+          "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/skyline_2000gts-r.html",
+          "publisher": "Nissan Motor Co.",
+          "access": "Manufacturer heritage specification table read 2026-11-17",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "transmission",
+            "gearCount",
+            "tireSize"
+          ]
+        }
+      ],
+      "facts": {
+        "powerKw": 154,
+        "publishedPowerPS": 210,
+        "torqueNm": 245,
+        "powerRpm": 6400,
+        "torqueRpm": 4800,
+        "engineDisplacementL": 1.998,
+        "curbKg": 1345,
+        "lengthM": 4.66,
+        "widthM": 1.69,
+        "heightM": 1.365,
+        "wheelbaseM": 2.615,
+        "trackFrontIn": 56.102362204724415,
+        "trackRearIn": 55.90551181102362,
+        "transmission": "manual",
+        "gearCount": 5,
+        "tireSize": [
+          205,
+          60,
+          15
+        ]
+      },
+      "simulationEstimates": {
+        "transmission": "manual",
+        "gearCount": 5,
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.36,
+        "tireGrip": 0.84,
+        "spring": 0.48,
+        "antiRollRear": 0.24,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.82,
+        "rearDifferentialAccel": 0.2,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "fuelTankUSgal": 15.8,
+        "drivetrain": "rwd",
+        "aspiration": "Turbocharged",
+        "gearRatios": [
+          3.32,
+          1.9,
+          1.31,
+          1,
+          0.76
+        ],
+        "finalDrive": 4.375,
+        "frontWeightDistribution": 0.55,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7300,
+        "topSpeedMph": 145,
+        "zeroToSixtySec": 7.1
+      },
+      "limits": [
+        "800-unit road homologation model, not 1988 ETCC 2029cc/400PS competition car, R32 Group A Heartsease or later AWD GT-R Stormline. Fixed generic suspension does not reproduce HICAS.",
+        "All inputs outside facts are provisional modeling estimates, including individual ratios, interpolated torque envelope, drivetrain losses, load/inertia, grip, braking, steering, springs/dampers, aero and performance. Source ratings are preserved in original units without claiming an unverified test standard.",
+        "Shared RTG-001 art and cockpit by reference only; original model-specific art and independent browser driving acceptance are pending."
+      ]
+    },
+    {
+      "candidateId": "nissan-fairlady-z-432-1969-roster-candidate",
+      "id": "shepherds-purse-1969",
+      "name": "Shepherds Purse 1969",
+      "identity": {
+        "year": 1969,
+        "make": "Nissan",
+        "model": "Fairlady Z432",
+        "trim": "PS30 S20 road coupe 5MT",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1969 Japan Nissan Fairlady Z432 PS30 S20 road coupe 5MT",
+      "sources": [
+        {
+          "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/fairlady_z_432.html",
+          "publisher": "Nissan Motor Co.",
+          "access": "Manufacturer heritage specification table read 2026-11-17",
+          "fields": [
+            "publishedReferencePowerKw",
+            "publishedPowerPS",
+            "publishedReferenceTorqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "publishedTire"
+          ]
+        },
+        {
+          "url": "https://usa.nissannews.com/en-US/releases/datsun-and-nissan-fairlady-z-heritage?origin=channel-289",
+          "publisher": "Nissan Motor Co.",
+          "access": "Manufacturer heritage specification table read 2026-11-17",
+          "fields": [
+            "transmission",
+            "gearCount",
+            "publishedTire"
+          ]
+        }
+      ],
+      "facts": {
+        "publishedReferencePowerKw": 118,
+        "publishedPowerPS": 160,
+        "publishedReferenceTorqueNm": 177,
+        "powerRpm": 7000,
+        "torqueRpm": 5600,
+        "engineDisplacementL": 1.989,
+        "curbKg": 1040,
+        "lengthM": 4.115,
+        "widthM": 1.63,
+        "heightM": 1.29,
+        "wheelbaseM": 2.305,
+        "trackFrontIn": 53.34645669291339,
+        "trackRearIn": 52.952755905511815,
+        "transmission": "manual",
+        "gearCount": 5,
+        "publishedTire": "6.95H-14"
+      },
+      "simulationEstimates": {
+        "transmission": "manual",
+        "gearCount": 5,
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.36,
+        "tireGrip": 0.77,
+        "spring": 0.43,
+        "antiRollRear": 0.24,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.82,
+        "rearDifferentialAccel": 0.2,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "fuelTankUSgal": 15.8,
+        "powerHp": 140,
+        "torqueLbFt": 115,
+        "drivetrain": "rwd",
+        "aspiration": "Naturally Aspirated",
+        "tireSize": [
+          175,
+          80,
+          14
+        ],
+        "gearRatios": [
+          2.96,
+          1.86,
+          1.31,
+          1,
+          0.85
+        ],
+        "finalDrive": 4.44,
+        "frontWeightDistribution": 0.51,
+        "redlineRpm": 7500,
+        "revLimitRpm": 7800,
+        "topSpeedMph": 125,
+        "zeroToSixtySec": 9
+      },
+      "limits": [
+        "S20 twin-cam 24-valve two-litre/5MT/LSD road variant is mechanically distinct from existing Harebell US240Z L24 SOHC2.4/4MT. Not lightweight 432R or Safari competition car.",
+        "Factory retrospective gives 118kW/160PS and177Nm without specifying gross/net basis. These are reference facts only, NOT installed net ratings. Runtime140mechanicalhp/115lb-ft is a deliberately provisional lower installed-output estimate, not a claimed conversion between standards.",
+        "Original inch cross-ply tire has no direct exact modern metric equivalent;175/80R14 is a dimensional estimate. No original cross-ply model fidelity claimed.",
+        "All inputs outside facts are provisional modeling estimates, including individual ratios, interpolated torque envelope, drivetrain losses, load/inertia, grip, braking, steering, springs/dampers, aero and performance. Source ratings are preserved in original units without claiming an unverified test standard.",
+        "Shared RTG-001 art and cockpit by reference only; original model-specific art and independent browser driving acceptance are pending."
+      ]
+    },
+    {
+      "candidateId": "nissan-pulsar-gti-r-1990-roster-candidate",
+      "id": "ladyfern-r-1990",
+      "name": "Ladyfern R 1990",
+      "identity": {
+        "year": 1990,
+        "make": "Nissan",
+        "model": "Pulsar GTI-R",
+        "trim": "RNN14 1220kg production road reference 5MT",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1990 Japan Nissan Pulsar GTI-R RNN14 1220kg production road reference 5MT",
+      "sources": [
+        {
+          "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/Pulsar_GTI-R.html",
+          "publisher": "Nissan Motor Co.",
+          "access": "Manufacturer heritage specification table read 2026-11-17",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "drivetrain"
+          ]
+        },
+        {
+          "url": "https://www2.nissan.co.jp/HERITAGE/DETAIL/420.html",
+          "publisher": "Nissan Motor Co.",
+          "access": "Manufacturer heritage specification table read 2026-11-17",
+          "fields": [
+            "1990 road identity",
+            "curbKg",
+            "engine anchors"
+          ]
+        }
+      ],
+      "facts": {
+        "powerKw": 169,
+        "publishedPowerPS": 230,
+        "torqueNm": 284,
+        "powerRpm": 6400,
+        "torqueRpm": 4800,
+        "engineDisplacementL": 1.998,
+        "curbKg": 1220,
+        "lengthM": 3.975,
+        "widthM": 1.69,
+        "heightM": 1.4,
+        "wheelbaseM": 2.43,
+        "trackFrontIn": 56.69291338582678,
+        "trackRearIn": 55.70866141732284,
+        "tireSize": [
+          195,
+          55,
+          14
+        ],
+        "drivetrain": "awd"
+      },
+      "simulationEstimates": {
+        "transmission": "manual",
+        "gearCount": 5,
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.36,
+        "tireGrip": 0.84,
+        "spring": 0.48,
+        "antiRollRear": 0.24,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.82,
+        "rearDifferentialAccel": 0.15,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "fuelTankUSgal": 15.8,
+        "aspiration": "Turbocharged",
+        "gearRatios": [
+          3.38,
+          1.85,
+          1.27,
+          0.95,
+          0.76
+        ],
+        "finalDrive": 4.125,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7300,
+        "topSpeedMph": 140,
+        "zeroToSixtySec": 5.8
+      },
+      "limits": [
+        "Nissan no420 production road1220kg example, not1190kg stripped RB, later1230kg or1991 Acropolis GroupA rally car. Precise option/grade code is not asserted from the Heritage page; assistance settings are provisional.",
+        "Generic fixed50:50 AWD and rear limited-slip approximate the road driveline; no ATTESA ET-S claim or active rally controller. Individual ratios and5MT selection remain provisional pending exact factory transmission table.",
+        "All inputs outside facts are provisional modeling estimates, including individual ratios, interpolated torque envelope, drivetrain losses, load/inertia, grip, braking, steering, springs/dampers, aero and performance. Source ratings are preserved in original units without claiming an unverified test standard.",
+        "Shared RTG-001 art and cockpit by reference only; original model-specific art and independent browser driving acceptance are pending."
+      ]
+    }
+  ],
+  "deferred": [
+    {
+      "candidateId": "nissan-safari-turbo-1985-roster-candidate",
+      "reason": "Nissan Heritage VR161 page table says naturally aspirated SD33 95PS while narrative says SD33T120PS. Do not blend; unresolved exact engine/trim, no implementation.",
+      "source": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/Nissan_Safari_4WD_Hardtop_Standard_roof_AD.html"
+    }
+  ]
+}

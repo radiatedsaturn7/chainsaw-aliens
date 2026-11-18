@@ -1,0 +1,46 @@
+{
+  "base": "8a9eead877d5f19d05ae4fad03875b6dd6ed5b23",
+  "stagingObserved": "dd0f1f81ad1c058eaf9155f17911e882a1572d64",
+  "historicalSlots": 660,
+  "localNonSystemEntries": 222,
+  "systemTemplates": 3,
+  "sharedPlaceholders": 12,
+  "previousFinishedReported": 210,
+  "newAuthored": 3,
+  "newUnitTested": 3,
+  "newDriveVerified": 0,
+  "newOriginalArtFinished": 0,
+  "units": {
+    "passed": 58,
+    "failed": 0,
+    "skipped": 0
+  },
+  "registeredPickerCases": 6,
+  "localBrowser": "Blocked before page launch: official Headless Shell with chromiumSandbox:true reports No usable sandbox. No security changes.",
+  "entries": [
+    {
+      "id": "sandspurry-six-1970",
+      "name": "Sandspurry Six 1970",
+      "candidateId": "porsche-914-6-1970-roster-candidate",
+      "documentSha256": "6fb6b2c1b8790b81b85cb5e8c8b6236228fbd5797ba0059bef4d5fca04320737"
+    },
+    {
+      "id": "harebell-rs-1973",
+      "name": "Harebell RS 1973",
+      "candidateId": "porsche-911-carrera-rs-1973-roster-candidate",
+      "documentSha256": "69c4094876066a64c094b2529617424fa74c5bd82e5e3e31a1cfe1df01ddc52f"
+    },
+    {
+      "id": "sea-lavender-gts-1993",
+      "name": "Sea Lavender GTS 1993",
+      "candidateId": "porsche-928-gts-1993-roster-candidate",
+      "documentSha256": "74b8b4f65363e172f7bea465cc75db657635e20f419670c91bc1cf0aa4442e97"
+    }
+  ],
+  "validation": {
+    "fullAssetScan": "{\"documents\": 2219, \"assets\": 16}\nPublished project manifest includes every current document.",
+    "finalNewDocuments": 3,
+    "finalManifestMatches": true,
+    "priorManifestEntriesAndDocumentsByteIdentical": true
+  }
+}

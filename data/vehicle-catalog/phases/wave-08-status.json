@@ -1,0 +1,78 @@
+{
+  "base": "171e58b6f04a76113ed1274617d0243c22ab32b9",
+  "historicalSlots": 660,
+  "localNonSystemEntries": 235,
+  "systemTemplates": 3,
+  "sharedPlaceholders": 24,
+  "previousFinishedReported": 210,
+  "echoOriginalArtAuthoredAwaitingAcceptanceReconciliation": 1,
+  "newAuthored": 6,
+  "newUnitTested": 6,
+  "newDriveVerified": 0,
+  "newOriginalArtFinished": 0,
+  "registeredPickerCases": 12,
+  "allAdditionPickerCasesRetained": 50,
+  "units": {
+    "passed": 107,
+    "failed": 0,
+    "skipped": 0
+  },
+  "priorDocumentsByteIdentical": 479,
+  "browser": "Sandbox-preserving launch fails with No usable sandbox before page creation; zero certified drives",
+  "observedStaging": "aaab12b270d8a1bb60de30875301e79d5d203ed6",
+  "hostedGate": {
+    "run": 44158167346,
+    "job": 134304433167,
+    "step": 10,
+    "status": "in_progress",
+    "individualTest": "unavailable: job logs404 BlobNotFound"
+  },
+  "entries": [
+    {
+      "id": "brooklime-1994",
+      "name": "Brooklime 1994",
+      "candidateId": "nissan-silvia-k-s-1994-roster-candidate",
+      "documentSha256": "c4190666b39cfb4466d1269f7e5f9270b2fa80707d02869395a36e07f778fef7"
+    },
+    {
+      "id": "moschatel-1973",
+      "name": "Moschatel 1973",
+      "candidateId": "nissan-skyline-h-t-2000gt-r-1973-roster-candidate",
+      "documentSha256": "38e41886766a34d6bd375c9586a9b9796346883e93a77d2adbef65556bfcf8f1"
+    },
+    {
+      "id": "fumitory-1983",
+      "name": "Fumitory 1983",
+      "candidateId": "volkswagen-golf-gti-1983-roster-candidate",
+      "documentSha256": "ead7d15bc5c0dcc0871b46adbb518aa3b874e06e6c1d4e75865bf22bec9b0298"
+    },
+    {
+      "id": "sandwort-1988",
+      "name": "Sandwort 1988",
+      "candidateId": "volkswagen-scirocco-16v-1988-roster-candidate",
+      "documentSha256": "00a7ccb183e78bd4c15d4530858527a784f3ff8227c97cf6a91f7b67d51c66a9"
+    },
+    {
+      "id": "water-avens-1995",
+      "name": "Water Avens 1995",
+      "candidateId": "volkswagen-corrado-vr6-1995-roster-candidate",
+      "documentSha256": "69c636a868602294162569f2cbee6c5738d422adc8a4943531764ae5fcdc75fd"
+    },
+    {
+      "id": "quaking-grass-2003",
+      "name": "Quaking Grass 2003",
+      "candidateId": "volkswagen-golf-r32-2003-roster-candidate",
+      "documentSha256": "6cab4e84828fde6c04517dcdffa97d5bccf3ab1d611e324ad1f724e985f086e5"
+    }
+  ],
+  "evidenceSha256": {
+    "units.log": "919c3a9d901777a1286e8aba5aaaabf0b857b8f927f9dbed5b8d6cc7facff17d",
+    "discovery.log": "fcbf107286341c4f97ff149bb3b704323efa98feacace4873efbb8ead64f0981",
+    "browser.log": "78239a20c7523d1a98cf2191dddcb6ba612f9b6d1cf43b7761e2b6d580c66607",
+    "manifest.log": "b4ca4108a333b98a19cbf958d9eef102c6e8e1bdc6634e0d43d182e7b80e58ad"
+  },
+  "manifestValidation": {
+    "passed": true,
+    "log": "{\"documents\": 2235, \"assets\": 16}\nPublished project manifest includes every current document."
+  }
+}

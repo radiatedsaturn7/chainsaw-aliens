@@ -1,0 +1,405 @@
+{
+  "schemaVersion": 1,
+  "base": "754a9d1b0e5592fadcfa7826ad433a6e3516137f",
+  "scope": "Four exact resolved production variants occupy existing candidate slots. No additions to 660-slot ledger. Original art and driving acceptance pending.",
+  "vehicles": [
+    {
+      "candidateId": "porsche-959-1987-roster-candidate",
+      "id": "heatherbell-s-1987",
+      "name": "Heatherbell S 1987",
+      "identity": {
+        "year": 1987,
+        "make": "Porsche",
+        "model": "959",
+        "trim": "S 6MT",
+        "market": "European"
+      },
+      "referenceVehicle": "1987 European Porsche 959 S production road coupe, 515 PS variant, six-speed manual AWD; not standard Komfort 450 PS or Dakar/961",
+      "sources": [
+        {
+          "url": "https://newsroom.porsche.com/en/2022/history/porsche-classic-959-s-factory-restoration-nick-heidfeld-28934.html",
+          "publisher": "Porsche AG",
+          "access": "Manufacturer-authored technical material read 2026-11-17",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "curbKg",
+            "engineDisplacementL",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "drivetrain",
+            "transmission",
+            "gearCount"
+          ]
+        }
+      ],
+      "facts": {
+        "powerKw": 379,
+        "publishedPowerPS": 515,
+        "torqueNm": 561,
+        "powerRpm": 6900,
+        "torqueRpm": 6500,
+        "curbKg": 1350,
+        "engineDisplacementL": 2.848,
+        "lengthM": 4.26,
+        "widthM": 1.84,
+        "heightM": 1.24,
+        "wheelbaseM": 2.272,
+        "drivetrain": "awd",
+        "transmission": "manual",
+        "gearCount": 6
+      },
+      "simulationEstimates": {
+        "powerRpm": 6500,
+        "torqueRpm": 4500,
+        "trackFrontIn": 59.1,
+        "trackRearIn": 61.2,
+        "fuelTankUSgal": 18,
+        "tireSize": [
+          255,
+          40,
+          17
+        ],
+        "reverseRatio": 3.2,
+        "frontWeightDistribution": 0.4,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.31,
+        "tireGrip": 0.9,
+        "spring": 0.54,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.15,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7300,
+        "topSpeedMph": 210,
+        "zeroToSixtySec": 3.5,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0.25,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 220,
+        "gearRatios": [
+          3.5,
+          2.08,
+          1.48,
+          1.13,
+          0.9,
+          0.72
+        ],
+        "finalDrive": 3.44,
+        "aspiration": "Turbocharged"
+      },
+      "limits": [
+        "Generic historical 959 slot resolved to the well-documented S variant. Does not count Komfort separately. Factory table explicitly supplies S geometry and DIN curb mass; PS is retained separately from kW-converted mechanical hp.",
+        "Ratios are estimates; six forward ratios approximate the original G plus five-road-gear arrangement. Fixed AWD balance and conventional dampers do not reproduce Porsche active programs.",
+        "Every simulation input not in facts is an explicitly provisional modeling estimate, including ratios, torque curve away from anchors, mechanical loss, load/inertia, springs/dampers, tire grip, steering, aero and performance. No OEM active-control fidelity claimed.",
+        "RTG-001 graphics/cockpit are shared by reference; no original model-specific artwork or browser driving certification.",
+        "Factory 561 Nm at 6500 rpm mathematically implies about 382 kW, slightly above its separately published 379 kW. The estimated curve is capped at the 379 kW anchor; nominal peak torque remains in provenance, and this is not an exact reproduction of both rounded source peaks."
+      ]
+    },
+    {
+      "candidateId": "ferrari-roma-2020-candidate",
+      "id": "bogbean-2020",
+      "name": "Bogbean 2020",
+      "identity": {
+        "year": 2020,
+        "make": "Ferrari",
+        "model": "Roma",
+        "trim": "coupe 8DCT",
+        "market": "European"
+      },
+      "referenceVehicle": "2020 European launch-specification Ferrari Roma coupe, 98 RON, 3.855L turbo V8 eight-speed DCT; not Spider or Amalfi",
+      "sources": [
+        {
+          "url": "https://www.mediawire.co.za/news/release/d4111aa7-85e0-11ed-9e8c-049226d40405/d5516907-85e0-11ed-9e8c-049226d40405",
+          "publisher": "Ferrari launch release, 14 November 2019, syndicated by MediaWire",
+          "access": "Manufacturer-authored technical material read 2026-11-17",
+          "fields": [
+            "powerKw",
+            "publishedPowerCV",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "publishedDryKg",
+            "drivetrain",
+            "transmission",
+            "gearCount"
+          ]
+        }
+      ],
+      "facts": {
+        "powerKw": 456,
+        "publishedPowerCV": 620,
+        "powerRpm": 7500,
+        "torqueNm": 760,
+        "torqueRpm": 3000,
+        "engineDisplacementL": 3.855,
+        "lengthM": 4.656,
+        "widthM": 1.974,
+        "heightM": 1.301,
+        "wheelbaseM": 2.67,
+        "publishedDryKg": 1472,
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "gearCount": 8
+      },
+      "simulationEstimates": {
+        "powerRpm": 6500,
+        "torqueRpm": 4500,
+        "trackFrontIn": 65,
+        "trackRearIn": 66.1,
+        "fuelTankUSgal": 18,
+        "tireSize": [
+          245,
+          35,
+          20
+        ],
+        "reverseRatio": 3.2,
+        "frontWeightDistribution": 0.47,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.9,
+        "spring": 0.54,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.15,
+        "redlineRpm": 7500,
+        "revLimitRpm": 7700,
+        "topSpeedMph": 199,
+        "zeroToSixtySec": 3.3,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0.25,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 100,
+        "curbKg": 1610,
+        "gearRatios": [
+          3.7,
+          2.5,
+          1.85,
+          1.43,
+          1.16,
+          0.95,
+          0.78,
+          0.63
+        ],
+        "finalDrive": 3.85,
+        "aspiration": "Turbocharged"
+      },
+      "limits": [
+        "1472 kg is dry with lightweight options, NOT curb mass. Running mass 1610 kg is explicitly estimated. The 2019 release defines the 2020 launch configuration; no later Spider data.",
+        "Generic eight-speed automatic represents DCT shifts approximately; no variable-boost-by-gear torque software, active spoiler or Side Slip Control reproduction. Torque-envelope and ratios estimated.",
+        "Every simulation input not in facts is an explicitly provisional modeling estimate, including ratios, torque curve away from anchors, mechanical loss, load/inertia, springs/dampers, tire grip, steering, aero and performance. No OEM active-control fidelity claimed.",
+        "RTG-001 graphics/cockpit are shared by reference; no original model-specific artwork or browser driving certification."
+      ]
+    },
+    {
+      "candidateId": "ford-mustang-2024-dark-horse-candidate",
+      "id": "sea-holly-2024",
+      "name": "Sea Holly 2024",
+      "identity": {
+        "year": 2024,
+        "make": "Ford",
+        "model": "Mustang",
+        "trim": "Dark Horse 6MT",
+        "market": "US"
+      },
+      "referenceVehicle": "2024 US Ford Mustang Dark Horse standard six-speed TREMEC manual, premium fuel, no Handling Package; not European 453 PS or GTD",
+      "sources": [
+        {
+          "url": "https://www.mustangdriver.com/feature-articles/ho-ho-ho-horsepower",
+          "publisher": "Ford Motor Company authored release republished by Mustang Driver",
+          "access": "Manufacturer-authored technical material read 2026-11-17",
+          "fields": [
+            "powerHp",
+            "torqueLbFt",
+            "engineDisplacementL",
+            "redlineRpm",
+            "transmission",
+            "gearCount"
+          ]
+        },
+        {
+          "url": "https://www.fromtheroad.ford.com/ca/en/articles/2022/ford-introduces-mustang-dark-horse",
+          "publisher": "Ford HQ",
+          "access": "North American launch description read",
+          "fields": [
+            "six-speed TREMEC manual standard; optional ten-speed not selected"
+          ]
+        }
+      ],
+      "facts": {
+        "powerHp": 500,
+        "torqueLbFt": 418,
+        "engineDisplacementL": 5.0,
+        "redlineRpm": 7500,
+        "transmission": "manual",
+        "gearCount": 6
+      },
+      "simulationEstimates": {
+        "powerRpm": 7250,
+        "torqueRpm": 4900,
+        "trackFrontIn": 62,
+        "trackRearIn": 62,
+        "fuelTankUSgal": 18,
+        "tireSize": [
+          255,
+          40,
+          19
+        ],
+        "reverseRatio": 3.2,
+        "frontWeightDistribution": 0.54,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.9,
+        "spring": 0.57,
+        "antiRollRear": 0.31,
+        "suspensionTravelM": 0.15,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7700,
+        "topSpeedMph": 165,
+        "zeroToSixtySec": 4.1,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0.25,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 220,
+        "curbKg": 1780,
+        "lengthM": 4.818,
+        "widthM": 1.918,
+        "heightM": 1.402,
+        "wheelbaseM": 2.718,
+        "drivetrain": "rwd",
+        "gearRatios": [
+          3.25,
+          2.23,
+          1.61,
+          1.24,
+          1,
+          0.63
+        ],
+        "finalDrive": 3.73,
+        "aspiration": "Naturally Aspirated"
+      },
+      "limits": [
+        "Factory power ratings use premium fuel SAE J1349. Estimated mass/geometry/ratios/tire sizing are not the heavier optional Handling Package magazine-test configuration.",
+        "Fixed dampers and differential approximate a standard road setup, not MagneRide control or electronic drift-brake behavior.",
+        "Every simulation input not in facts is an explicitly provisional modeling estimate, including ratios, torque curve away from anchors, mechanical loss, load/inertia, springs/dampers, tire grip, steering, aero and performance. No OEM active-control fidelity claimed.",
+        "RTG-001 graphics/cockpit are shared by reference; no original model-specific artwork or browser driving certification."
+      ]
+    },
+    {
+      "candidateId": "dodge-viper-2016-acr-candidate",
+      "id": "thornapple-acr-2016",
+      "name": "Thornapple ACR 2016",
+      "identity": {
+        "year": 2016,
+        "make": "Dodge",
+        "model": "Viper",
+        "trim": "ACR standard aero 6MT",
+        "market": "US"
+      },
+      "referenceVehicle": "2016 US Dodge Viper ACR six-speed manual, standard ACR aero, no optional Extreme Aero Package; not base SRT or earlier 600hp ACR",
+      "sources": [
+        {
+          "url": "https://www.prnewswire.com/news-releases/dodge-viper-powers-into-2016-with-new-acr-model-expanded-custom-options-and-industry-exclusive-colors-300105302.html",
+          "publisher": "FCA US LLC, June 26 2015 factory release",
+          "access": "Manufacturer-authored technical material read 2026-11-17",
+          "fields": [
+            "powerHp",
+            "torqueLbFt",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "finalDrive",
+            "frontWeightDistribution",
+            "frontTire",
+            "rearTire"
+          ]
+        }
+      ],
+      "facts": {
+        "powerHp": 645,
+        "torqueLbFt": 600,
+        "engineDisplacementL": 8.4,
+        "transmission": "manual",
+        "gearCount": 6,
+        "finalDrive": 3.55,
+        "frontWeightDistribution": 0.5,
+        "frontTire": [
+          295,
+          25,
+          19
+        ],
+        "rearTire": [
+          355,
+          30,
+          19
+        ]
+      },
+      "simulationEstimates": {
+        "powerRpm": 6200,
+        "torqueRpm": 5000,
+        "trackFrontIn": 62,
+        "trackRearIn": 62,
+        "fuelTankUSgal": 18,
+        "tireSize": [
+          295,
+          25,
+          19
+        ],
+        "reverseRatio": 3.2,
+        "frontWeightDistribution": 0.5,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.43,
+        "tireGrip": 1.0,
+        "spring": 0.68,
+        "antiRollRear": 0.4,
+        "suspensionTravelM": 0.12,
+        "redlineRpm": 6400,
+        "revLimitRpm": 6600,
+        "topSpeedMph": 180,
+        "zeroToSixtySec": 3.5,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0.25,
+        "aeroFront": 0.25,
+        "aeroRear": 0.4,
+        "shiftTimeMs": 220,
+        "curbKg": 1540,
+        "lengthM": 4.463,
+        "widthM": 1.941,
+        "heightM": 1.247,
+        "wheelbaseM": 2.51,
+        "drivetrain": "rwd",
+        "gearRatios": [
+          2.26,
+          1.58,
+          1.19,
+          1,
+          0.77,
+          0.63
+        ],
+        "aspiration": "Naturally Aspirated"
+      },
+      "limits": [
+        "Old unpublished Fireweed is a base SRT; this ACR is mechanically distinct. The standard ACR suspension/tire/aero package is selected, not Extreme Aero.",
+        "Neither the generic Viper 206mph claim nor optional Extreme Aero one-ton downforce is treated as this configuration performance. Aero coefficients and performance targets are estimates, not measured downforce.",
+        "Actual front/rear tire radii use factory tire sizes; common editor setup field describes fronts, with per-wheel radii for dynamics. Mass/geometry and individual ratios remain estimates.",
+        "Every simulation input not in facts is an explicitly provisional modeling estimate, including ratios, torque curve away from anchors, mechanical loss, load/inertia, springs/dampers, tire grip, steering, aero and performance. No OEM active-control fidelity claimed.",
+        "RTG-001 graphics/cockpit are shared by reference; no original model-specific artwork or browser driving certification."
+      ]
+    }
+  ]
+}

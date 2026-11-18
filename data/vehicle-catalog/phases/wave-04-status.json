@@ -1,0 +1,38 @@
+{
+  "base": "754a9d1b0e5592fadcfa7826ad433a6e3516137f",
+  "historicalSlots": 660,
+  "localNonSystemEntries": 219,
+  "systemTemplates": 3,
+  "sharedPlaceholders": 9,
+  "previousFinishedReported": 210,
+  "newAuthored": 4,
+  "newUnitTested": 4,
+  "newDriveVerified": 0,
+  "newOriginalArtFinished": 0,
+  "entries": [
+    {
+      "id": "heatherbell-s-1987",
+      "name": "Heatherbell S 1987",
+      "candidateId": "porsche-959-1987-roster-candidate",
+      "documentSha256": "e3aa26bbd87245f3e56624f4d7b51543a5f3cd8d771486d10da64c5fdb996a12"
+    },
+    {
+      "id": "bogbean-2020",
+      "name": "Bogbean 2020",
+      "candidateId": "ferrari-roma-2020-candidate",
+      "documentSha256": "fa0b0ef70bf29a0ad148f67d444a354a0d24edec16207e3ab07304263475a49a"
+    },
+    {
+      "id": "sea-holly-2024",
+      "name": "Sea Holly 2024",
+      "candidateId": "ford-mustang-2024-dark-horse-candidate",
+      "documentSha256": "e6e6800cd514cdcac993af72abfb6f52cdc5233622bd906d65fc2a2dfeffba4d"
+    },
+    {
+      "id": "thornapple-acr-2016",
+      "name": "Thornapple ACR 2016",
+      "candidateId": "dodge-viper-2016-acr-candidate",
+      "documentSha256": "cfd111daf70ca2daefa58c802d97e9b662f23b08b0f1aa52c0fa49b14bd16783"
+    }
+  ]
+}

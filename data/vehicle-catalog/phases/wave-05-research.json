@@ -1,0 +1,332 @@
+{
+  "schemaVersion": 1,
+  "base": "8a9eead877d5f19d05ae4fad03875b6dd6ed5b23",
+  "scope": "Three existing slots resolved to distinct road Porsche variants. Primary anchors reviewed; explicitly estimated remaining inputs. No 660-slot inflation.",
+  "vehicles": [
+    {
+      "candidateId": "porsche-914-6-1970-roster-candidate",
+      "id": "sandspurry-six-1970",
+      "name": "Sandspurry Six 1970",
+      "identity": {
+        "year": 1970,
+        "make": "Porsche",
+        "model": "914/6",
+        "trim": "901/36 road targa 5MT (not GT)",
+        "market": "European"
+      },
+      "referenceVehicle": "1970 European Porsche 914/6 901/36 road targa 5MT (not GT)",
+      "sources": [
+        {
+          "url": "https://bowlsby.net/914/Classic/zMan_1970-71_ServiceInformation.pdf",
+          "publisher": "Porsche AG",
+          "access": "Factory Service Information 1970-71 scan visually read: PDF pages 3,9,25,27,29; printed 13/15/17. DIN rather than SAE gross rating.",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "publishedDINUnladenKg",
+            "redlineRpm",
+            "revLimitRpm"
+          ]
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/vw-porsche-914-19691975-19672",
+          "publisher": "Volkswagen AG",
+          "access": "Factory material read 2026-11-17",
+          "fields": [
+            "publishedPowerPS",
+            "mid-engine road six-cylinder identity"
+          ]
+        }
+      ],
+      "facts": {
+        "powerKw": 80.9048625,
+        "publishedPowerPS": 110,
+        "torqueNm": 156.9064,
+        "powerRpm": 5800,
+        "torqueRpm": 4200,
+        "engineDisplacementL": 1.991,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "lengthM": 3.985,
+        "widthM": 1.65,
+        "heightM": 1.24,
+        "wheelbaseM": 2.45,
+        "trackFrontIn": 53.58267716535433,
+        "trackRearIn": 54.409448818897644,
+        "publishedDINUnladenKg": 940,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6500
+      },
+      "simulationEstimates": {
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "reverseRatio": 3.3,
+        "aspiration": "Naturally Aspirated",
+        "fuelTankUSgal": 18,
+        "trackFrontIn": 54,
+        "trackRearIn": 55,
+        "cgHeightM": 0.45,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.36,
+        "tireGrip": 0.77,
+        "spring": 0.43,
+        "antiRollRear": 0.23,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 280,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "curbKg": 940,
+        "tireSize": [
+          165,
+          80,
+          15
+        ],
+        "gearRatios": [
+          3.09,
+          1.89,
+          1.32,
+          1.04,
+          0.79
+        ],
+        "finalDrive": 4.43,
+        "frontWeightDistribution": 0.46,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6500,
+        "topSpeedMph": 125,
+        "zeroToSixtySec": 8.5
+      },
+      "limits": [
+        "Factory table gives 940 kg DIN 70020 unladen, not the often-quoted 980 kg. Runtime mass uses that basis provisionally without driver/payload; not a measured car. Table 110 DIN hp is metric PS, separately from 125 SAE period gross hp, which is NOT installed.",
+        "Original 165 HR15 aspect is unstated: 80% profile is estimated. Standard narrow road body; no Group 4 race power or flares.",
+        "All values outside facts are provisional simulation estimates, including ratios, torque envelope away from anchors, curb basis where noted, load distribution, inertia, grip, dampers, steering, braking, aero and acceleration. No exact historical handling claim.",
+        "Shared RTG-001 graphics and cockpit by reference only; model-specific original art and independent browser driving remain pending."
+      ]
+    },
+    {
+      "candidateId": "porsche-911-carrera-rs-1973-roster-candidate",
+      "id": "harebell-rs-1973",
+      "name": "Harebell RS 1973",
+      "identity": {
+        "year": 1973,
+        "make": "Porsche",
+        "model": "911 Carrera RS 2.7",
+        "trim": "M471 Sport 5MT",
+        "market": "European"
+      },
+      "referenceVehicle": "1973 European Porsche 911 Carrera RS 2.7 M471 Sport 5MT",
+      "sources": [
+        {
+          "url": "https://newsroom.porsche.com/en/2022/history/porsche-50-years-911-carrera-rs-2-7-germanys-fastest-sports-car-28486.html",
+          "publisher": "Porsche AG",
+          "access": "Factory material read 2026-11-17",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "curbKg",
+            "engineDisplacementL",
+            "frontTire",
+            "rearTire"
+          ]
+        }
+      ],
+      "facts": {
+        "powerKw": 154.4547375,
+        "publishedPowerPS": 210,
+        "torqueNm": 255,
+        "powerRpm": 6300,
+        "torqueRpm": 5100,
+        "curbKg": 960,
+        "engineDisplacementL": 2.7,
+        "frontTire": [
+          185,
+          70,
+          15
+        ],
+        "rearTire": [
+          215,
+          60,
+          15
+        ]
+      },
+      "simulationEstimates": {
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "reverseRatio": 3.3,
+        "aspiration": "Naturally Aspirated",
+        "fuelTankUSgal": 18,
+        "trackFrontIn": 54,
+        "trackRearIn": 55,
+        "cgHeightM": 0.45,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.36,
+        "tireGrip": 0.81,
+        "spring": 0.49,
+        "antiRollRear": 0.23,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.2,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 280,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "lengthM": 4.14,
+        "widthM": 1.65,
+        "heightM": 1.32,
+        "wheelbaseM": 2.271,
+        "tireSize": [
+          185,
+          70,
+          15
+        ],
+        "gearRatios": [
+          3.18,
+          1.83,
+          1.26,
+          0.96,
+          0.76
+        ],
+        "finalDrive": 4.43,
+        "frontWeightDistribution": 0.4,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "topSpeedMph": 152,
+        "zeroToSixtySec": 5.6
+      },
+      "limits": [
+        "M471 Sport lightweight road homologation variant, not heavier M472 Touring, 2.8 RSR racer or modern GT3. Geometry, individual gears and dynamic settings are estimates.",
+        "All values outside facts are provisional simulation estimates, including ratios, torque envelope away from anchors, curb basis where noted, load distribution, inertia, grip, dampers, steering, braking, aero and acceleration. No exact historical handling claim.",
+        "Shared RTG-001 graphics and cockpit by reference only; model-specific original art and independent browser driving remain pending."
+      ]
+    },
+    {
+      "candidateId": "porsche-928-gts-1993-roster-candidate",
+      "id": "sea-lavender-gts-1993",
+      "name": "Sea Lavender GTS 1993",
+      "identity": {
+        "year": 1993,
+        "make": "Porsche",
+        "model": "928 GTS",
+        "trim": "M28/49 G28/57 5MT",
+        "market": "European"
+      },
+      "referenceVehicle": "1993 European Porsche 928 GTS M28/49 G28/57 5MT",
+      "sources": [
+        {
+          "url": "https://www.scribd.com/document/825153433/90-93-928s4-Gt-Gts-Tech-Specs",
+          "publisher": "Porsche AG",
+          "access": "Public OCR of factory Technical Specifications first edition August 1992: MY1993 engine/type table, engine data p17, weights p78. Unambiguous fields only; no downloaded restricted material.",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "revLimitRpm",
+            "publishedDINUnladenKg"
+          ]
+        },
+        {
+          "url": "https://www.porsche.at/service-zubehoer/classic-service-und-ersatzteile/modelle/porsche-928/porsche-928-gtgts",
+          "publisher": "Porsche AG",
+          "access": "Factory material read 2026-11-17",
+          "fields": [
+            "publishedPowerPS",
+            "model identity"
+          ]
+        }
+      ],
+      "facts": {
+        "powerKw": 257,
+        "publishedPowerPS": 350,
+        "torqueNm": 500,
+        "powerRpm": 5700,
+        "torqueRpm": 4250,
+        "engineDisplacementL": 5.397,
+        "transmission": "manual",
+        "gearCount": 5,
+        "revLimitRpm": 6600,
+        "publishedDINUnladenKg": 1620
+      },
+      "simulationEstimates": {
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "reverseRatio": 3.3,
+        "aspiration": "Naturally Aspirated",
+        "fuelTankUSgal": 18,
+        "trackFrontIn": 61.06,
+        "trackRearIn": 63.62,
+        "cgHeightM": 0.45,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.36,
+        "tireGrip": 0.85,
+        "spring": 0.5,
+        "antiRollRear": 0.23,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.98,
+        "rearDifferentialAccel": 0.25,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 280,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "curbKg": 1620,
+        "lengthM": 4.52,
+        "widthM": 1.89,
+        "heightM": 1.283,
+        "wheelbaseM": 2.5,
+        "tireSize": [
+          225,
+          45,
+          17
+        ],
+        "gearRatios": [
+          3.82,
+          2.2,
+          1.52,
+          1.22,
+          1
+        ],
+        "finalDrive": 2.73,
+        "frontWeightDistribution": 0.51,
+        "redlineRpm": 6400,
+        "revLimitRpm": 6600,
+        "topSpeedMph": 171,
+        "zeroToSixtySec": 5.7
+      },
+      "limits": [
+        "Factory table 1620 kg is European GTS DIN basis, not individually weighed manual equipment specification; used provisionally for runtime curb mass. 257 kW converted to mechanical hp, not 350 mechanical hp.",
+        "Conventional rear differential approximates PSD; no hydraulic variable locking or Weissach axle kinematics reproduced. Tire dimensions/geometry and ratios remain estimates pending a fully legible factory table.",
+        "All values outside facts are provisional simulation estimates, including ratios, torque envelope away from anchors, curb basis where noted, load distribution, inertia, grip, dampers, steering, braking, aero and acceleration. No exact historical handling claim.",
+        "Shared RTG-001 graphics and cockpit by reference only; model-specific original art and independent browser driving remain pending."
+      ]
+    }
+  ]
+}

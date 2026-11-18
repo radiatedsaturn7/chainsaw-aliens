@@ -56,5 +56,24 @@ test('catalog pilot hydrates published art and renders eight body angles plus da
  // This is an asset-render smoke test, not a claim of collision/handling QA.
 });
 
+// Shared-art phase-2 pilot: keyboard and touch picker-to-drive acceptance.
+import '../helpers/carCatalogPlaceholderPickerCases.js';
+
+import '../helpers/carCatalogPlaceholderWave02PickerCases.js';
+
+import "../helpers/carCatalogPlaceholderWave03PickerCases.js";
+
+import "../helpers/carCatalogPlaceholderWave04PickerCases.js";
+
+import "../helpers/carCatalogPlaceholderWave05PickerCases.js";
+
+import "../helpers/carCatalogPlaceholderWave06PickerCases.js";
 // Register the two Tutsan paged-picker/input cases in staging catalog CI.
 import "../helpers/tutsanStaticPickerCases.js";
+
+import "../helpers/carCatalogPlaceholderWave07PickerCases.js";
+
+import "../helpers/carCatalogPlaceholderWave08PickerCases.js";
+
+// Full navigation coverage remains separate from each car's bounded setup and real drive.
+import '../helpers/carCatalogPickerTraversalCases.js';

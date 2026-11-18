@@ -1,0 +1,669 @@
+{
+  "schemaVersion": 1,
+  "base": "171e58b6f04a76113ed1274617d0243c22ab32b9",
+  "scope": "Six distinct existing backlog identities, factory engine anchors; shared art only. No660-slot inflation.",
+  "vehicles": [
+    {
+      "candidateId": "nissan-silvia-k-s-1994-roster-candidate",
+      "id": "brooklime-1994",
+      "name": "Brooklime 1994",
+      "identity": {
+        "year": 1994,
+        "make": "Nissan",
+        "model": "Silvia K's Type S",
+        "trim": "Japan S14 turbo road coupe; modeled 5MT",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1994 Nissan Silvia K's Type S Japan S14 turbo road coupe; modeled 5MT",
+      "facts": {
+        "powerKw": 162,
+        "publishedPowerPS": 220,
+        "torqueNm": 274,
+        "powerRpm": 6000,
+        "torqueRpm": 4800,
+        "curbKg": 1220,
+        "lengthM": 4.5,
+        "widthM": 1.73,
+        "heightM": 1.295,
+        "wheelbaseM": 2.525,
+        "trackFrontIn": 58.267716535433074,
+        "trackRearIn": 57.874015748031496,
+        "tireSize": [
+          205,
+          55,
+          16
+        ],
+        "engineFamily": "SR20DET"
+      },
+      "simulationEstimates": {
+        "transmission": "manual",
+        "gearCount": 5,
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.36,
+        "tireGrip": 0.84,
+        "spring": 0.48,
+        "antiRollRear": 0.24,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.18,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "fuelTankUSgal": 14,
+        "aspiration": "Turbocharged",
+        "engineDisplacementL": 1.998,
+        "drivetrain": "rwd",
+        "gearRatios": [
+          3.321,
+          1.902,
+          1.308,
+          1,
+          0.759
+        ],
+        "finalDrive": 4.083,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "topSpeedMph": 145,
+        "zeroToSixtySec": 6.5
+      },
+      "sources": [
+        {
+          "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/silvia_ks_s14.html",
+          "publisher": "Nissan Motor Co.",
+          "access": "Factory heritage archive read 2026-11-17",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "engineFamily"
+          ]
+        }
+      ],
+      "limits": [
+        "Factory no198 identifies K's Type S, 220PS SR20DET and1220kg; not US240SX KA24, S13, S15 or JGTC race car. Heritage table does not specify its transmission;5MT and exact displacement are provisional modeling selections pending a transmission/displacement table. No HICAS/active steering emulation.",
+        "Inputs outside facts are provisional simulation estimates, not factory measurements: individual ratios/final drive unless explicitly sourced, torque envelope, mass when not sourced, tire fitment when not sourced, load distribution, inertia, drivetrain losses, steering, grip, springs, damping, brakes, aero and performance. Generic fixed body and suspension do not reproduce detailed chassis kinematics.",
+        "RTG-001 exterior and live cockpit art are shared by reference only. No original vehicle art or independent driving acceptance is claimed."
+      ]
+    },
+    {
+      "candidateId": "nissan-skyline-h-t-2000gt-r-1973-roster-candidate",
+      "id": "moschatel-1973",
+      "name": "Moschatel 1973",
+      "identity": {
+        "year": 1973,
+        "make": "Nissan",
+        "model": "Skyline 2000GT-R",
+        "trim": "KPGC110 S20 road hardtop; modeled 5MT",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1973 Nissan Skyline 2000GT-R KPGC110 S20 road hardtop; modeled 5MT",
+      "facts": {
+        "publishedReferencePowerKw": 118,
+        "publishedPowerPS": 160,
+        "publishedReferenceTorqueNm": 177,
+        "powerRpm": 7000,
+        "torqueRpm": 5600,
+        "curbKg": 1145,
+        "lengthM": 4.46,
+        "widthM": 1.695,
+        "heightM": 1.38,
+        "wheelbaseM": 2.61,
+        "trackFrontIn": 54.92125984251969,
+        "trackRearIn": 54.13385826771654,
+        "engineDisplacementL": 1.989,
+        "publishedTire": "175HR14"
+      },
+      "simulationEstimates": {
+        "transmission": "manual",
+        "gearCount": 5,
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.36,
+        "tireGrip": 0.76,
+        "spring": 0.48,
+        "antiRollRear": 0.24,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.12,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "fuelTankUSgal": 14,
+        "aspiration": "Naturally Aspirated",
+        "powerHp": 140,
+        "torqueLbFt": 115,
+        "drivetrain": "rwd",
+        "gearRatios": [
+          2.957,
+          1.858,
+          1.311,
+          1,
+          0.852
+        ],
+        "finalDrive": 4.44,
+        "tireSize": [
+          175,
+          80,
+          14
+        ],
+        "frontWeightDistribution": 0.55,
+        "redlineRpm": 7500,
+        "revLimitRpm": 7800,
+        "topSpeedMph": 120,
+        "zeroToSixtySec": 9.5
+      },
+      "sources": [
+        {
+          "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/068_skyline_2000gtr.html",
+          "publisher": "Nissan Motor Co.",
+          "access": "Factory heritage archive read 2026-11-17",
+          "fields": [
+            "publishedReferencePowerKw",
+            "publishedPowerPS",
+            "publishedReferenceTorqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "engineDisplacementL",
+            "publishedTire"
+          ]
+        }
+      ],
+      "limits": [
+        "1973 KPGC110 road example no068, not1971 KPGC10, R31 GTS-R, R32 GroupA or later AWD GT-R. The source does not establish gross/net rating basis;118kW/160PS and177Nm are reference-only. Installed140hp/115lb-ft are lower explicit estimates, not a gross-to-net conversion. Tire aspect80 and5MT selection are estimates.",
+        "Inputs outside facts are provisional simulation estimates, not factory measurements: individual ratios/final drive unless explicitly sourced, torque envelope, mass when not sourced, tire fitment when not sourced, load distribution, inertia, drivetrain losses, steering, grip, springs, damping, brakes, aero and performance. Generic fixed body and suspension do not reproduce detailed chassis kinematics.",
+        "RTG-001 exterior and live cockpit art are shared by reference only. No original vehicle art or independent driving acceptance is claimed."
+      ]
+    },
+    {
+      "candidateId": "volkswagen-golf-gti-1983-roster-candidate",
+      "id": "fumitory-1983",
+      "name": "Fumitory 1983",
+      "identity": {
+        "year": 1983,
+        "make": "Volkswagen",
+        "model": "Golf I GTI",
+        "trim": "German1.8 standard three-door 4+E manual",
+        "market": "Germany"
+      },
+      "referenceVehicle": "1983 Volkswagen Golf I GTI German1.8 standard three-door 4+E manual",
+      "facts": {
+        "powerKw": 82,
+        "publishedPowerPS": 112,
+        "torqueNm": 150,
+        "powerRpm": 5800,
+        "torqueRpm": 3500,
+        "engineDisplacementL": 1.781,
+        "drivetrain": "fwd",
+        "lengthM": 3.815,
+        "widthM": 1.63,
+        "heightM": 1.395,
+        "wheelbaseM": 2.4,
+        "transmission": "manual",
+        "gearCount": 5
+      },
+      "simulationEstimates": {
+        "transmission": "manual",
+        "gearCount": 5,
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.46,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.36,
+        "tireGrip": 0.8,
+        "spring": 0.43,
+        "antiRollRear": 0.24,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "fuelTankUSgal": 14,
+        "aspiration": "Naturally Aspirated",
+        "curbKg": 840,
+        "trackFrontIn": 55.275590551181104,
+        "trackRearIn": 54.01574803149607,
+        "tireSize": [
+          175,
+          70,
+          13
+        ],
+        "gearRatios": [
+          3.45,
+          1.94,
+          1.29,
+          0.97,
+          0.75
+        ],
+        "finalDrive": 3.67,
+        "frontWeightDistribution": 0.62,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "topSpeedMph": 114,
+        "zeroToSixtySec": 8.9
+      },
+      "sources": [
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/engine-versions-golf-1-gti-profile-19500",
+          "publisher": "Volkswagen AG",
+          "access": "Factory heritage archive read 2026-11-17",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL"
+          ]
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/vehicle-data-golf-1-gti-profile-19499",
+          "publisher": "Volkswagen AG",
+          "access": "Factory heritage archive read 2026-11-17",
+          "fields": [
+            "identity",
+            "drivetrain",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM"
+          ]
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/golf-1-gti-19761983-19498",
+          "publisher": "Volkswagen AG",
+          "access": "Factory heritage archive read 2026-11-17",
+          "fields": [
+            "transmission",
+            "gearCount",
+            "1982 standard4+E and1.8 update"
+          ]
+        }
+      ],
+      "limits": [
+        "Standard late MkI1.8, not1976 1.6, Pirelli special edition, MkII or existing2015 Scabious. Factory narrative810kg refers to launch configuration, so late1.8 mass840kg remains an estimate instead of reusing810kg as verified. Standard tire and exact4+E ratios remain estimates.",
+        "Inputs outside facts are provisional simulation estimates, not factory measurements: individual ratios/final drive unless explicitly sourced, torque envelope, mass when not sourced, tire fitment when not sourced, load distribution, inertia, drivetrain losses, steering, grip, springs, damping, brakes, aero and performance. Generic fixed body and suspension do not reproduce detailed chassis kinematics.",
+        "RTG-001 exterior and live cockpit art are shared by reference only. No original vehicle art or independent driving acceptance is claimed."
+      ]
+    },
+    {
+      "candidateId": "volkswagen-scirocco-16v-1988-roster-candidate",
+      "id": "sandwort-1988",
+      "name": "Sandwort 1988",
+      "identity": {
+        "year": 1988,
+        "make": "Volkswagen",
+        "model": "Scirocco II GTX 16V",
+        "trim": "German102kW archive specification; modeled5MT",
+        "market": "Germany"
+      },
+      "referenceVehicle": "1988 Volkswagen Scirocco II GTX 16V German102kW archive specification; modeled5MT",
+      "facts": {
+        "powerKw": 102,
+        "publishedPowerPS": 139,
+        "torqueNm": 165,
+        "powerRpm": 6100,
+        "torqueRpm": 4600,
+        "engineDisplacementL": 1.781,
+        "drivetrain": "fwd",
+        "lengthM": 4.05,
+        "widthM": 1.625,
+        "heightM": 1.28,
+        "wheelbaseM": 2.4
+      },
+      "simulationEstimates": {
+        "transmission": "manual",
+        "gearCount": 5,
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.45,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.83,
+        "spring": 0.47,
+        "antiRollRear": 0.24,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "fuelTankUSgal": 14,
+        "aspiration": "Naturally Aspirated",
+        "curbKg": 980,
+        "trackFrontIn": 55.275590551181104,
+        "trackRearIn": 54.01574803149607,
+        "tireSize": [
+          185,
+          60,
+          14
+        ],
+        "gearRatios": [
+          3.45,
+          2.12,
+          1.44,
+          1.13,
+          0.91
+        ],
+        "finalDrive": 3.67,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6800,
+        "revLimitRpm": 7100,
+        "topSpeedMph": 129,
+        "zeroToSixtySec": 8.1
+      },
+      "sources": [
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/engine-versions-scirocco-2-profile-19653",
+          "publisher": "Volkswagen AG",
+          "access": "Factory heritage archive read 2026-11-17",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL"
+          ]
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/vehicle-data-scirocco-2-profile-19652",
+          "publisher": "Volkswagen AG",
+          "access": "Factory heritage archive read 2026-11-17",
+          "fields": [
+            "identity",
+            "drivetrain",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM"
+          ]
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/scirocco-2-19811992-19651",
+          "publisher": "Volkswagen AG",
+          "access": "Factory heritage archive read 2026-11-17",
+          "fields": [
+            "1985 16V introduction and catalyst option from1986"
+          ]
+        }
+      ],
+      "limits": [
+        "Choose the factory table102kW/139PS GTX16V reference, not US16V, catalyst129PS, 8-valve GTI or later SciroccoR. The retrospective does not bind exact engine/catalyst code to1988; no code or catalyst fitment is claimed beyond the selected102kW variant.5MT selection and mass980kg remain provisional; exact trim brochure remains a follow-up. Distinct low coupe body/16-valve engine, not badge-only Golf1 duplication.",
+        "Inputs outside facts are provisional simulation estimates, not factory measurements: individual ratios/final drive unless explicitly sourced, torque envelope, mass when not sourced, tire fitment when not sourced, load distribution, inertia, drivetrain losses, steering, grip, springs, damping, brakes, aero and performance. Generic fixed body and suspension do not reproduce detailed chassis kinematics.",
+        "RTG-001 exterior and live cockpit art are shared by reference only. No original vehicle art or independent driving acceptance is claimed."
+      ]
+    },
+    {
+      "candidateId": "volkswagen-corrado-vr6-1995-roster-candidate",
+      "id": "water-avens-1995",
+      "name": "Water Avens 1995",
+      "identity": {
+        "year": 1995,
+        "make": "Volkswagen",
+        "model": "Corrado VR6",
+        "trim": "German2.9 Type53i road coupe; modeled5MT",
+        "market": "Germany"
+      },
+      "referenceVehicle": "1995 Volkswagen Corrado VR6 German2.9 Type53i road coupe; modeled5MT",
+      "facts": {
+        "powerKw": 140,
+        "publishedPowerPS": 190,
+        "torqueNm": 245,
+        "powerRpm": 5800,
+        "torqueRpm": 4200,
+        "engineDisplacementL": 2.861,
+        "drivetrain": "fwd",
+        "lengthM": 4.048,
+        "widthM": 1.69,
+        "heightM": 1.318,
+        "wheelbaseM": 2.47
+      },
+      "simulationEstimates": {
+        "transmission": "manual",
+        "gearCount": 5,
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.47,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.32,
+        "tireGrip": 0.87,
+        "spring": 0.51,
+        "antiRollRear": 0.24,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "fuelTankUSgal": 14,
+        "aspiration": "Naturally Aspirated",
+        "curbKg": 1240,
+        "trackFrontIn": 56.37795275590552,
+        "trackRearIn": 56.22047244094488,
+        "tireSize": [
+          205,
+          50,
+          15
+        ],
+        "gearRatios": [
+          3.3,
+          1.94,
+          1.31,
+          1.03,
+          0.84
+        ],
+        "finalDrive": 3.39,
+        "frontWeightDistribution": 0.64,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "topSpeedMph": 145,
+        "zeroToSixtySec": 6.7
+      },
+      "sources": [
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/engine-versions-corrado-profile-19685",
+          "publisher": "Volkswagen AG",
+          "access": "Factory heritage archive read 2026-11-17",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL"
+          ]
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/vehicle-data-corrado-profile-19684",
+          "publisher": "Volkswagen AG",
+          "access": "Factory heritage archive read 2026-11-17",
+          "fields": [
+            "identity",
+            "drivetrain",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM"
+          ]
+        }
+      ],
+      "limits": [
+        "German2.9VR6 production through1995, notUS2.8SLC, G60 or Scirocco.5MT selection,1240kg and tire fitment are provisional; primary archive establishes model/engine and family dimensions, not exact options. Generic fixed aero does not implement moving rear spoiler.",
+        "Inputs outside facts are provisional simulation estimates, not factory measurements: individual ratios/final drive unless explicitly sourced, torque envelope, mass when not sourced, tire fitment when not sourced, load distribution, inertia, drivetrain losses, steering, grip, springs, damping, brakes, aero and performance. Generic fixed body and suspension do not reproduce detailed chassis kinematics.",
+        "RTG-001 exterior and live cockpit art are shared by reference only. No original vehicle art or independent driving acceptance is claimed."
+      ]
+    },
+    {
+      "candidateId": "volkswagen-golf-r32-2003-roster-candidate",
+      "id": "quaking-grass-2003",
+      "name": "Quaking Grass 2003",
+      "identity": {
+        "year": 2003,
+        "make": "Volkswagen",
+        "model": "Golf IV R32",
+        "trim": "Europe3.2 VR6 4MOTION three-door6MT",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2003 Volkswagen Golf IV R32 Europe3.2 VR6 4MOTION three-door6MT",
+      "facts": {
+        "powerKw": 177,
+        "publishedPowerPS": 241,
+        "torqueNm": 320,
+        "powerRpm": 6250,
+        "torqueRpm": 2800,
+        "torquePlateauEndRpm": 3200,
+        "engineDisplacementL": 3.189,
+        "drivetrain": "awd",
+        "wheelbaseM": 2.518,
+        "transmission": "manual",
+        "gearCount": 6,
+        "referenceZeroTo100KmhSec": 6.6,
+        "referenceTopSpeedKmh": 247
+      },
+      "simulationEstimates": {
+        "transmission": "manual",
+        "gearCount": 5,
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.94,
+        "spring": 0.56,
+        "antiRollRear": 0.24,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 230,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "fuelTankUSgal": 14,
+        "aspiration": "Naturally Aspirated",
+        "curbKg": 1477,
+        "lengthM": 4.149,
+        "widthM": 1.735,
+        "heightM": 1.425,
+        "trackFrontIn": 59.566929133858274,
+        "trackRearIn": 58.81889763779528,
+        "tireSize": [
+          225,
+          40,
+          18
+        ],
+        "gearRatios": [
+          3.36,
+          2.09,
+          1.47,
+          1.1,
+          0.91,
+          0.76
+        ],
+        "finalDrive": 3.94,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "topSpeedMph": 153,
+        "zeroToSixtySec": 6.4
+      },
+      "sources": [
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/motor-versions-golf-4-profile-19479",
+          "publisher": "Volkswagen AG",
+          "access": "Factory heritage archive read 2026-11-17",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "torquePlateauEndRpm",
+            "engineDisplacementL"
+          ]
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/vehicle-data-golf-4-profile-19478",
+          "publisher": "Volkswagen AG",
+          "access": "Factory heritage archive read 2026-11-17",
+          "fields": [
+            "2002\u20132003 R32",
+            "wheelbaseM"
+          ]
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/the-volkswagen-r-models-15258/volkswagen-r-the-history-15267",
+          "publisher": "Volkswagen AG",
+          "access": "Factory heritage archive read 2026-11-17",
+          "fields": [
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "referenceZeroTo100KmhSec",
+            "referenceTopSpeedKmh"
+          ]
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/golf-4-19972003-19476",
+          "publisher": "Volkswagen AG",
+          "access": "Factory heritage archive read 2026-11-17",
+          "fields": [
+            "2003 optionalDSG",
+            "Haldex drivetrain behavior"
+          ]
+        }
+      ],
+      "limits": [
+        "Europe2003 MkIV manual241PS, not2004US specification, DSG, MkV250PS or existing2015 GTI.1477kg and lowered exterior dimensions/tire fitment are estimates, not sourced trim weight. Generic fixed50:50 AWD does not reproduce front-biased on-demand Haldex or ESP. Single final-drive approximation cannot claim full dual-output six-speed gearbox fidelity; torque plateau reduced to one anchor by current builder.",
+        "Inputs outside facts are provisional simulation estimates, not factory measurements: individual ratios/final drive unless explicitly sourced, torque envelope, mass when not sourced, tire fitment when not sourced, load distribution, inertia, drivetrain losses, steering, grip, springs, damping, brakes, aero and performance. Generic fixed body and suspension do not reproduce detailed chassis kinematics.",
+        "RTG-001 exterior and live cockpit art are shared by reference only. No original vehicle art or independent driving acceptance is claimed."
+      ]
+    }
+  ],
+  "deferred": [
+    {
+      "candidateId": "nissan-safari-turbo-1985-roster-candidate",
+      "reason": "Unresolved SD33/SD33T source conflict; no implementation."
+    },
+    {
+      "candidateId": "nissan-skyline-2000gt-r-1971-roster-candidate",
+      "reason": "Factory example found is1972 KPGC10, not proof of exact1971; use independently documented1973 KPGC110 slot instead."
+    },
+    {
+      "candidateId": "volkswagen-sp-2-1976-roster-candidate",
+      "reason": "Exact1976 power rating basis not established from factory source in this pass."
+    },
+    {
+      "candidateId": "volkswagen-type-2-de-luxe-1963-roster-candidate",
+      "reason": "Exact1963 market/engine/DeLuxe specification unresolved; do not reuse1978 Bus."
+    }
+  ]
+}
