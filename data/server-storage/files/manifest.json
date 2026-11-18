@@ -1282,7 +1282,16 @@
       "catalog-sanicle-1970-wheels": "art/catalog-sanicle-1970-wheels/document.json",
       "catalog-tutsan-2003-body": "art/catalog-tutsan-2003-body/document.json",
       "catalog-tutsan-2003-dashboard": "art/catalog-tutsan-2003-dashboard/document.json",
-      "catalog-tutsan-2003-wheels": "art/catalog-tutsan-2003-wheels/document.json"
+      "catalog-tutsan-2003-wheels": "art/catalog-tutsan-2003-wheels/document.json",
+      "catalog-alkanet-2015-body": "art/catalog-alkanet-2015-body/document.json",
+      "catalog-alkanet-2015-dashboard": "art/catalog-alkanet-2015-dashboard/document.json",
+      "catalog-alkanet-2015-tires": "art/catalog-alkanet-2015-tires/document.json",
+      "catalog-glasswort-181-1973-body": "art/catalog-glasswort-181-1973-body/document.json",
+      "catalog-glasswort-181-1973-dashboard": "art/catalog-glasswort-181-1973-dashboard/document.json",
+      "catalog-glasswort-181-1973-tires": "art/catalog-glasswort-181-1973-tires/document.json",
+      "catalog-moonwort-2010-body": "art/catalog-moonwort-2010-body/document.json",
+      "catalog-moonwort-2010-dashboard": "art/catalog-moonwort-2010-dashboard/document.json",
+      "catalog-moonwort-2010-tires": "art/catalog-moonwort-2010-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

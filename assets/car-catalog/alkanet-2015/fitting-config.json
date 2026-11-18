@@ -152,7 +152,7 @@
     ],
     "wheelOpening": true,
     "gaugeColor": "#e4efff",
-    "viewportWheelScale": 1.95
+    "viewportWheelScale": 1.8
   },
   "steeringWheelSource": {
     "artRef": "buse-steeringwheel",

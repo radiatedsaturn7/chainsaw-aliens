@@ -109,6 +109,8 @@ const tires=normalizeTireSheetOpacity(images.tires);
 const tireDoc=carSheetDocument(tires,prepareCarSheet(tires,{columns:2,rows:1}));
 const tireRef=`catalog-${cfg.id}-tires`;assignCarTireSheet(car,tireRef,tireDoc);built.art[tireRef]=tireDoc;
 for(const layer of Object.values(car.art.angleLayers)){layer.tires.tireMode='auto';layer.tires.visible=true;}
+// Per-angle region/bounds are not native saved-layer fields; tireSurfaces owns them.
+for(const layer of Object.values(car.art.angleLayers)){delete layer.tires.region;delete layer.tires.bounds;}
 for(const value of Object.values(car.art.tireTreads||{}))Object.assign(value,car.art.tireSurfaces.tread);
 const next={...original,car},withoutArt=doc=>{const copy=structuredClone(doc);delete copy.car.art;return copy;};
 assert.deepEqual(withoutArt(next),withoutArt(original),'Non-art vehicle fields changed');

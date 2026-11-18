@@ -151,3 +151,5 @@ import '../helpers/carCatalogPlaceholderWave69PickerCases.js';
 import '../helpers/carCatalogPlaceholderWave70PickerCases.js';
 import '../helpers/carCatalogPlaceholderWave71PickerCases.js';
 import '../helpers/carCatalogPlaceholderWave72PickerCases.js';
+
+import '../helpers/carCatalogFittingPilotPickerCases.js';
