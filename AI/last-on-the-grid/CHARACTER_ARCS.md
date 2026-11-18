@@ -4,12 +4,12 @@
 ## Robtergeist — From indispensable to present
 **Desire:** Be wanted. **Confused strategy:** Be too useful to abandon. **Fear:** “When I stop being useful, I'll stop mattering.” **Blind spot:** He can recognize Cait's care yet still insist on a verbal declaration, because the two forms of evidence do different emotional work for him. Neither his need for words nor Cait's refusal is trivial.
 
-**Before the game:** A long period of isolation has made him difficult to reassure and slow to trust. His competence with machines is not theatrical; it has kept him alive. He loves repairing things partly because problems with parts have answers. He agreed to the Pacific because Cait wanted it, but the promise creates a role he understands.
+**Before the game:** In roughly ten years as one of the last biological humans outside Heaven, Rob has watched people he personally knew gradually stop answering calls. His solitude is recent enough for vivid memories of their ordinary lives; Cait was created sometime during those years, so the exact span of complete solitude remains OPEN. Isolation has made him difficult to reassure and slow to trust. His competence with machines is not theatrical; it has kept him alive. He loves repairing things partly because problems with parts have answers. He agreed to the Pacific because Cait wanted it, but the promise creates a role he understands.
 
 **What the world does to him:**
 - **01–02:** He worries, goes along with a detour, behaves like someone for whom coming home matters. He avoids admitting that he himself fears solitude.
 - **03–05:** Helping for no return, unanswered radio calls, and pointless labor begin to make the player's portrait of him more complex. He does not explain it.
-- **06:** Evelyn remembers him as a friend who was invited *in*. He remembers people refusing to come *out*. His isolation has a history, not a clean villain.
+- **06:** Evelyn remembers Rob as a friend from the years surrounding the rapid Ascension, and remembers inviting him *in*. He remembers people refusing to come *out*. Neither requires millennial longevity; their disagreement is recent enough to sting.
 - **07:** His best instruction would have killed him; Cait's independent choice saves him. His utility and command are not always protection.
 - **08:** He is a competent mechanic among machines that can do his work better and faster. No one devalues him; he devalues himself. Cait enjoys others' company.
 - **09:** He reacts unfairly to a costly decision that affects them both, then speaks the words “I love you.” Cait does not answer in kind. He hears what isn't said.
@@ -41,7 +41,7 @@
 **Failure modes:** Cait only asks questions; every choice she makes is morally correct; every argument makes her a cold diagnostic robot; she is secretly a programmed reward whose affection is explained away; her only interests are Rob's problems.
 
 ## Supporting character functions
-- **Evelyn (Heaven) — strong proposal:** Warm, talkative and plausibly kind. She remembers Rob affectionately but also remembers that *he* stopped calling. She's not the game's mouthpiece or antagonist.
+- **Evelyn (Heaven) — strong proposal:** A recent acquaintance from before/during the Ascension, warm, talkative and plausibly kind. She remembers Rob affectionately but also remembers that *he* stopped calling. She's not the game's mouthpiece or antagonist.
 - **Independent machine racer / workshop friend (Pikes Peak) — proposal:** Give Cait a relationship that is not mediated by Rob; a peer with opinions and an inconvenient schedule, not an agent assigned to test their bond.
 - **Other scientist's android — established encounter:** Obedient, capable of formulaic affectionate language, absent the power of independent refusal. Avoid sensationalizing it. Its speech can unsettle Cait without proving anything about her own subjective life.
 - **Dog — optional:** If present, Rob feeds it; the scene must not turn into a lecture or a permanent pet-acquisition mechanic.
