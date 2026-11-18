@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "source-mandarin-clover-2013",
+  "name": "Mandarin Clover 2013",
+  "stableCarId": "saved-car:Mandarin Clover 2013",
+  "referenceVehicle": "Germany January2013 Opel Adam base1.2naturallyaspirated,5MT. Three-door four-seat hatchback,baseAdam,notJam/Glam/Slam orlaterturbo.",
+  "runtimeDocumentIdVerified": false,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "0b73dc055ec38db804686766d463bfe6962b794e2af2f3a15df828dbba1d1ef8",
+    "dashboard": "77b7b2d3ebdec8481f57838f5da99d373b339a7151d476e716f6089f061e6d7f",
+    "tires": "8714495619bdd5c9c1f80c5beb31742c00db99cf764432c0c817ca4810245cea"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

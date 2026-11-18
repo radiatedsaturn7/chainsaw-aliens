@@ -1,0 +1,72 @@
+{
+  "id": "tayberry-clover-2011",
+  "name": "Tayberry Clover 2011",
+  "stableCarId": "saved-car:Tayberry Clover 2011",
+  "runtimeId": "saved-car:Tayberry Clover 2011",
+  "candidateId": "mercedes-benz-e350-bluetec-2011-us-luxury-7at",
+  "referenceVehicle": "2011 United States Mercedes-Benz E350 BlueTEC W212 Luxury sedan3.0 turbo-dieselV6 RWD seven-speedautomatic, comfort-tuned chassis standard17inch wheels; not gasolineE350,Sport,4MATIC orwagon",
+  "identity": {
+    "year": 2011,
+    "make": "Mercedes-Benz",
+    "model": "E350 BlueTEC",
+    "trim": "W212 Luxury sedan3.0 turbo-dieselV6 RWD seven-speedautomatic, comfort-tuned chassis standard17inch wheels; not gasolineE350,Sport,4MATIC orwagon",
+    "market": "United States"
+  },
+  "bodyClass": "sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Mercedes_Benz/E-Class/Mercedes%20Benz_US%20E-Class_2011.pdf",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "publishedWeightKg",
+        "lengthM",
+        "heightM",
+        "wheelbaseM",
+        "identity"
+      ]
+    }
+  ]
+}

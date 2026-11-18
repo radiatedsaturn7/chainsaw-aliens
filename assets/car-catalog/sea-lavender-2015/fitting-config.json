@@ -1,0 +1,163 @@
+{
+  "id": "sea-lavender-2015",
+  "name": "Sea Lavender 2015",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "d633949406ccd644564dffc7dbed2fd43c731ab94e839422caa2de2463f60de4",
+  "sourceDirectory": "assets/car-catalog/sea-lavender-2015",
+  "sourceHashes": {
+    "body": "aa6257e834260bc0623da939aab2af3ba7f12dce4d550660009487ec0b4e15cf",
+    "dashboard": "df73937c98aa6cc22023d34bf1ae2de2b2f7bf5b1c25e69df4747a99c4bcd22f",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 42.58,
+        "y": 310.45,
+        "radius": 42.58
+      },
+      {
+        "wheel": "fr",
+        "x": 305.13,
+        "y": 310.45,
+        "radius": 42.58
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 622.67,
+        "y": 285.61,
+        "radius": 42.58
+      },
+      {
+        "wheel": "rr",
+        "x": 787.66,
+        "y": 257.23,
+        "radius": 33.71
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 878.13,
+        "y": 725.57,
+        "radius": 49.67
+      },
+      {
+        "wheel": "rr",
+        "x": 1211.64,
+        "y": 723.79,
+        "radius": 47.9
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 361.9,
+        "y": 700.73,
+        "radius": 35.48
+      },
+      {
+        "wheel": "rr",
+        "x": 489.62,
+        "y": 734.44,
+        "radius": 44.35
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 40.8,
+        "y": 750.4,
+        "radius": 42.58
+      },
+      {
+        "wheel": "rl",
+        "x": 294.48,
+        "y": 750.4,
+        "radius": 42.58
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1573.54,
+        "y": 285.61,
+        "radius": 42.58
+      },
+      {
+        "wheel": "fl",
+        "x": 1742.07,
+        "y": 271.42,
+        "radius": 35.48
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 924.25,
+        "y": 280.29,
+        "radius": 44.35
+      },
+      {
+        "wheel": "fl",
+        "x": 1231.16,
+        "y": 278.52,
+        "radius": 44.35
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1351.79,
+        "y": 700.73,
+        "radius": 35.48
+      },
+      {
+        "wheel": "fl",
+        "x": 1513.22,
+        "y": 745.08,
+        "radius": 46.12
+      }
+    ]
+  },
+  "wheelFit": "average",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1229,
+      492,
+      506,
+      159
+    ],
+    "wheel": [
+      1438,
+      763,
+      337
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e2e9e8",
+    "viewportWheelScale": 2.04,
+    "gaugeBackground": "#111111"
+  },
+  "steeringWheelSource": {
+    "artRef": "steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementNotes": "Individual source atlas and dashboard inspected on 1000x500 body / 1000x400 dash preview. Original-pixel coordinates; wheel hubs estimated at arch circle centers. Runtime render review still required."
+}

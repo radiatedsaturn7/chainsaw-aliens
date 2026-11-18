@@ -1,0 +1,56 @@
+{
+  "id": "snowbell-gt-2023",
+  "name": "Snowbell GT 2023",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      238,
+      476,
+      476,
+      159
+    ],
+    "wheel": [
+      476,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de",
+    "electric": true
+  },
+  "sources": [
+    {
+      "url": "https://www.kiamedia.com/us/en/models/ev6/2023/specifications",
+      "fields": [
+        "576 hp",
+        "430 kW",
+        "545 lb-ft",
+        "4795 lb minimum AWD curb",
+        "AWD",
+        "10.65 reduction",
+        "77.4 kWh nominal",
+        "184.8/74.4/60.8 inches L/W/H",
+        "114.2 inch wheelbase",
+        "12.56 steering ratio",
+        "21 inch wheels",
+        "161 mph/3.4 s published performance"
+      ]
+    }
+  ]
+}

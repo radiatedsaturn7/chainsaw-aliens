@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "dog-violet-2016",
+  "name": "Dog Violet 2016",
+  "stableCarId": "saved-car:Dog Violet 2016",
+  "referenceVehicle": "2016UK BentleyBentayga originalfive-seat5.950LW12 twin-turbo8AT permanentAWD;notSpeed,V8,DieselorHybrid",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "07a66cbf2805937404adcf5551b59e44cafd8dc8e30fda716d21dbbb0f935006",
+    "dashboard": "72a24dc941caf6d5dc21f32a64353423fc29cffdfe6f834689ea6d81df755562",
+    "tires": "39e1100b7c764e48700e7b7b6745a280547a347f098a50674b1ee1b1dc8c0c0e"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

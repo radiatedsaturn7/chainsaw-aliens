@@ -1,0 +1,81 @@
+{
+  "id": "pale-clover-2017",
+  "name": "Pale Clover 2017",
+  "stableCarId": "saved-car:Pale Clover 2017",
+  "runtimeId": "saved-car:Pale Clover 2017",
+  "candidateId": "bentley-continental-supersports-2017-roster-candidate",
+  "referenceVehicle": "2017 Bentley Continental Supersports, second-generation W12 coupe permanentAWD ZF8AT,standardsteelroof;notConvertible,2009modelor2027V8",
+  "identity": {
+    "year": 2017,
+    "make": "Bentley",
+    "model": "Continental Supersports",
+    "trim": "second-generation W12 coupe permanentAWD ZF8AT,standardsteelroof;notConvertible,2009modelor2027V8",
+    "market": "UK/Europe"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.theautochannel.com/news/2017/01/12/335694-new-bentley-continental-supersports-worlds-fastest-four-seat-car-video.html",
+      "fields": [
+        "powerHp",
+        "publishedPowerPS",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "torquePlateauEndRpm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "topSpeedMph"
+      ]
+    },
+    {
+      "url": "https://www.bentleymontreal.com/en/news/view/bentley-launches-new-continental-supersports-and-supersports-convertible/73733",
+      "fields": [
+        "publishedPowerPS",
+        "centerDifferentialBalance",
+        "identity"
+      ]
+    }
+  ]
+}

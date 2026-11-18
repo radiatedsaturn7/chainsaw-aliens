@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bithynian-vetch-1958",
+  "name": "Bithynian Vetch 1958",
+  "stableCarId": "saved-car:Bithynian Vetch 1958",
+  "referenceVehicle": "1958 US Plymouth Fury two-doorhardtop,standard318cuin DualFuryV800 two-four-barrelV8,three-speedmanual and3.73highperformancechassisaxle;not305hp350GoldenCommando,not1957model",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "dec36658c668017e42fb1f2ae92996b2ffa705545999b3b050a5f5937f7f4f3e",
+    "dashboard": "c204131bc5da0de798f576896077bc0a1da27b943f602994456ecfd06c5bdb53",
+    "tires": "a7ceb85b2e480996240a24a0c44872f06661a3b10f2189aa9ffa96b85af5d69e"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

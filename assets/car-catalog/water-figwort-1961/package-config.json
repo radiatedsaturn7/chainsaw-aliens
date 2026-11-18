@@ -1,0 +1,66 @@
+{
+  "id": "water-figwort-1961",
+  "name": "Water Figwort 1961",
+  "stableCarId": "saved-car:Water Figwort 1961",
+  "runtimeId": "saved-car:Water Figwort 1961",
+  "candidateId": "maserati-tipo-61-birdcage-1961-roster-candidate",
+  "referenceVehicle": "1961 Maserati Tipo 61 Birdcage, front-engine2.89NAfour two-seat sportsracer5MT,1961familyreference; noexactcrew/eventsetup claim",
+  "identity": {
+    "year": 1961,
+    "make": "Maserati",
+    "model": "Tipo 61 Birdcage",
+    "trim": "front-engine2.89NAfour two-seat sportsracer5MT,1961familyreference; noexactcrew/eventsetup claim",
+    "market": "Italy/Europe"
+  },
+  "bodyClass": "roadster",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1309,
+      595,
+      436,
+      95
+    ],
+    "wheel": [
+      1507,
+      769,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.maserati.com/it/it/news/maserati-tipo-61-the-60th-anniversary",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "powerRpm",
+        "engineDisplacementL",
+        "gearCount",
+        "transmission",
+        "publishedMassKg",
+        "topSpeedMph"
+      ]
+    }
+  ]
+}

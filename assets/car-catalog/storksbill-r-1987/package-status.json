@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "storksbill-r-1987",
+  "name": "Storksbill R 1987",
+  "stableCarId": "saved-car:Storksbill R 1987",
+  "referenceVehicle": "1987 Japan Nissan Skyline 2000GTS-R KHR31 RB20DET-R road coupe 5MT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "storksbill-r-1987",
+  "sourceHashes": {
+    "body": "02ba69de60ab93e65b4d72f073da640c47a3db5f96bdb1b59d8797799397c9b3",
+    "dashboard": "dc20029a75f6cbceeeabab4c11d60f96814f0f18131dfb62d64a57c7dbd0a8fd",
+    "tires": "025b9a349ce11b373c9089963ab3a5e719011bcafc12e124b7f66d3ac9353b8f"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

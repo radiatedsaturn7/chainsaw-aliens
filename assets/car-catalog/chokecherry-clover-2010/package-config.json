@@ -1,0 +1,62 @@
+{
+  "id": "chokecherry-clover-2010",
+  "name": "Chokecherry Clover 2010",
+  "stableCarId": "saved-car:Chokecherry Clover 2010",
+  "runtimeId": "saved-car:Chokecherry Clover 2010",
+  "candidateId": "seat-alhambra-style-1-4-tsi-dsg-2010-supplemental-candidate",
+  "referenceVehicle": "2010 SEAT Alhambra Style1.4TSI150, Sweden November2010 second-generation standardfive-seat passengerMPV optional6DSG frontdrive, nooptionalthirdrow; notReference,TDI,Sharanorfirstgeneration",
+  "identity": {
+    "year": 2010,
+    "make": "SEAT",
+    "model": "Alhambra Style1.4TSI150",
+    "trim": "Sweden November2010 second-generation standardfive-seat passengerMPV optional6DSG frontdrive, nooptionalthirdrow; notReference,TDI,Sharanorfirstgeneration",
+    "market": "Sweden"
+  },
+  "bodyClass": "minivan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.vwgroup.se/nyheter--media/pressmeddelanden/2010/11/nya-seat-alhambra-ar-prissatt-och-bestallningsbar/",
+      "fields": [
+        "powerHp",
+        "engineDisplacementL",
+        "gearCount",
+        "transmission"
+      ]
+    }
+  ]
+}

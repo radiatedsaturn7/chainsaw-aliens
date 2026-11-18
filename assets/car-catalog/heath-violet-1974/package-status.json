@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "heath-violet-1974",
+  "name": "Heath Violet 1974",
+  "stableCarId": "saved-car:Heath Violet 1974",
+  "referenceVehicle": "1974 US Toyota Celica GT first-generation1968ccSOHC carbureted hardtop coupe five-speed manual, standard185/70HR13 tires; not JapaneseDOHCGT, liftback orST4MT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "43cc05dd7e156ad59c1179d7324d53696de3c2d3ee73847577ded0fcdeb8283e",
+    "dashboard": "e442b9e03b43a76231fbf777de817324d73295789d935cf82fabd0d166f67232",
+    "tires": "37b654d8fcc9e0ecc2e80c0804539b6866478b796af472acb974165ab175f796"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "cedar-clover-2010",
+  "name": "Cedar Clover 2010",
+  "stableCarId": "saved-car:Cedar Clover 2010",
+  "referenceVehicle": "2010 United States Mercedes-Benz GLK350 X204 baseRWD3.5gasolineV6 seven-speedautomatic,standard19-inchwheels,noPremiumorAppearancePackage;not4MATIC,diesel orAMG",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "cedar-clover-2010",
+  "sourceHashes": {
+    "body": "b46e1fc5abcd83026511bf550700caf9e3e99995d4c0471f312fcbef7a0a4b3d",
+    "dashboard": "429e75e453c9bb1237e03881a6aeed9fce0c6666fdc9c80627337b73da349e22",
+    "tires": "b09d96ed30132baa37bd635ef67802cdef9adb9a084db70656ae1f8990a8f3e8"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

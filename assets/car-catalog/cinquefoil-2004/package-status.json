@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "cinquefoil-2004",
+  "name": "Cinquefoil 2004",
+  "stableCarId": "saved-car:Cinquefoil 2004",
+  "referenceVehicle": "2004 US Audi S4 B6 sedan,4163cc naturally aspirated port-injected40-valveV8,quattro6MT,standard18inch wheels; not Avant,Tiptronic,B7RS4FSI or B5biturbo.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "674195e6e70ad39aba408d718ed976d3ba086208d61c533ed4801d5f967714ff",
+    "dashboard": "014b81f7617ad10ebabf4a3469fc66b14cbed9334e71c9910ce786e696e029e4",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

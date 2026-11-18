@@ -1,0 +1,78 @@
+{
+  "id": "hackberry-clover-2008",
+  "name": "Hackberry Clover 2008",
+  "stableCarId": "saved-car:Hackberry Clover 2008",
+  "runtimeId": "saved-car:Hackberry Clover 2008",
+  "candidateId": "mercedes-benz-sl550-2008-us-r230-7at",
+  "referenceVehicle": "2008 United States Mercedes-Benz SL550 R230 naturally aspirated5.461V8 two-seat retractable-hardtop roadster7AT, standard18inch wheels, roof-up; not SL600,SL55AMG orSL65BlackSeries",
+  "identity": {
+    "year": 2008,
+    "make": "Mercedes-Benz",
+    "model": "SL550",
+    "trim": "R230 naturally aspirated5.461V8 two-seat retractable-hardtop roadster7AT, standard18inch wheels, roof-up; not SL600,SL55AMG orSL65BlackSeries",
+    "market": "United States"
+  },
+  "bodyClass": "convertible",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Mercedes_Benz/SL-Class/Mercedes%20Benz_US%20SL-Class_2008.pdf",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "heightM",
+        "wheelbaseM",
+        "finalDrive",
+        "fuelTankUSgal",
+        "zeroToSixtySec",
+        "tireSize",
+        "frontTire",
+        "rearTire",
+        "identity"
+      ]
+    }
+  ]
+}

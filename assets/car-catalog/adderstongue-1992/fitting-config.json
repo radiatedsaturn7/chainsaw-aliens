@@ -1,0 +1,163 @@
+{
+  "id": "adderstongue-1992",
+  "name": "Adderstongue 1992",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "30231a14ca969b1f96252e63a63f0dddfd324fc747bffd2c68b2a022bca05f85",
+  "sourceDirectory": "assets/car-catalog/adderstongue-1992",
+  "sourceHashes": {
+    "body": "a462e509181e692a1f980bf427905bf0e670dca9e8851ea86eb2374a0a5ee670",
+    "dashboard": "974882b9cfbe49689ddf577bb24572b1dfbf69eb7625b29906fbe7f6b29c21c7",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 47.9,
+        "y": 326.42,
+        "radius": 37.25
+      },
+      {
+        "wheel": "fr",
+        "x": 338.83,
+        "y": 326.42,
+        "radius": 37.25
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 672.35,
+        "y": 296.26,
+        "radius": 39.03
+      },
+      {
+        "wheel": "rr",
+        "x": 823.14,
+        "y": 253.68,
+        "radius": 30.16
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 936.67,
+        "y": 697.18,
+        "radius": 42.58
+      },
+      {
+        "wheel": "rr",
+        "x": 1236.48,
+        "y": 691.86,
+        "radius": 42.58
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 399.15,
+        "y": 674.12,
+        "radius": 30.16
+      },
+      {
+        "wheel": "rr",
+        "x": 535.75,
+        "y": 695.41,
+        "radius": 40.8
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 46.12,
+        "y": 732.66,
+        "radius": 37.25
+      },
+      {
+        "wheel": "rl",
+        "x": 312.22,
+        "y": 732.66,
+        "radius": 37.25
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1584.18,
+        "y": 285.61,
+        "radius": 40.8
+      },
+      {
+        "wheel": "fl",
+        "x": 1738.52,
+        "y": 264.33,
+        "radius": 31.93
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 963.28,
+        "y": 285.61,
+        "radius": 42.58
+      },
+      {
+        "wheel": "fl",
+        "x": 1241.8,
+        "y": 285.61,
+        "radius": 40.8
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1358.88,
+        "y": 661.7,
+        "radius": 30.16
+      },
+      {
+        "wheel": "fl",
+        "x": 1497.26,
+        "y": 704.28,
+        "radius": 40.8
+      }
+    ]
+  },
+  "wheelFit": "average",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1289,
+      476,
+      476,
+      159
+    ],
+    "wheel": [
+      1442,
+      763,
+      327
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e2e9e8",
+    "viewportWheelScale": 2.02,
+    "gaugeBackground": "#111111"
+  },
+  "steeringWheelSource": {
+    "artRef": "steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementNotes": "Individual source atlas and dashboard inspected on 1000x500 body / 1000x400 dash preview. Original-pixel coordinates; wheel hubs estimated at arch circle centers. Runtime render review still required."
+}

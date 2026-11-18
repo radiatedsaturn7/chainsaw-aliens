@@ -1,0 +1,66 @@
+{
+  "id": "cream-clover-1958",
+  "name": "Cream Clover 1958",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1269,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      1526,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://mgaguru.com/mgtech/books/tdb/tdtc__general_data.pdf",
+      "fields": [
+        "dimensions",
+        "tracks",
+        "curbKg",
+        "weight distribution",
+        "CG",
+        "gear ratios",
+        "finalDrive"
+      ]
+    },
+    {
+      "url": "https://mgaguru.com/mgtech/books/tdb/tdtc_b_engine.pdf",
+      "fields": [
+        "engineDisplacementL",
+        "publishedStandardPowerBhp",
+        "publishedStandardTorqueLbFt",
+        "publishedGrossSAEPowerBhp"
+      ]
+    },
+    {
+      "url": "https://mgaguru.com/mgtech/twincam/tc125.htm",
+      "fields": [
+        "1958 introduction",
+        "Twin Cam identity"
+      ]
+    }
+  ]
+}

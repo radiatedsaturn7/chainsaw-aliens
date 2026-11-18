@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bearberry-2017",
+  "name": "Bearberry 2017",
+  "stableCarId": "saved-car:Bearberry 2017",
+  "referenceVehicle": "2017 US Ram 2500 Power Wagon Crew Cab6.4 V8 66RFE6AT, standard trim; high-range road approximation",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "9dd4a39288641a72bd6f400d188cdcb211c6afdf9f00cc4fefd62e502f1c9181",
+    "dashboard": "60c731d4b24150490271876edcae53f6c1d8e86fbe7e1f7814efd85a2b89b8b7",
+    "tires": "94a1215f81aec9b7fb79086b5b752460f0dafa0e7d5421f04d15f18240900d2b"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

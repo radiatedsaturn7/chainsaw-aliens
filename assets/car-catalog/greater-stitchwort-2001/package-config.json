@@ -1,0 +1,83 @@
+{
+  "id": "greater-stitchwort-2001",
+  "name": "Greater Stitchwort 2001",
+  "stableCarId": "saved-car:Greater Stitchwort 2001",
+  "candidateId": "acura-integra-type-r-2001-roster-candidate",
+  "referenceVehicle": "2001 US Acura Integra Type R three-door B18C5 five-speed manual",
+  "identity": {
+    "year": 2001,
+    "make": "Acura",
+    "model": "Integra Type R",
+    "trim": "US three-door B18C5 five-speed manual, not LS sedan or JDM specification",
+    "market": "United States"
+  },
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      258,
+      460,
+      476,
+      167
+    ],
+    "wheel": [
+      496,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://acuranews.com/en-US/releases/2001-acura-integra-type-r-specifications",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "drivetrain",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "redlineRpm",
+        "revLimitRpm",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "frontWeightDistribution",
+        "groundClearanceM",
+        "fuelTankUSgal",
+        "steeringRatio",
+        "absEnabled"
+      ]
+    }
+  ]
+}

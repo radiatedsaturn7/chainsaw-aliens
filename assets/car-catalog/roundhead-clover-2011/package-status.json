@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "roundhead-clover-2011",
+  "name": "Roundhead Clover 2011",
+  "stableCarId": "saved-car:Roundhead Clover 2011",
+  "referenceVehicle": "2011 Germany Volkswagen up! take up! two-side-door/three-door hatch 1.0 MPI44kW five-speed manual, non-BlueMotion, standard14-inch steel wheels; not75PS, ASG, CNG or electric",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "4364258c31edd6ce552d3c45ce59b04f0a565d6a203fd4b594458c8e152183d4",
+    "dashboard": "dd017809f4e13309369faf930097e6b84fe984665b44cef78f7bd688bca69950",
+    "tires": "52a51d3b674fdd907ebee16429f15b821b32518f323309fd77c3c674ddc1f252"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "wall-speedwell-2008",
+  "name": "Wall Speedwell 2008",
+  "stableCarId": "saved-car:Wall Speedwell 2008",
+  "referenceVehicle": "2008 US BMW M3 Coupe E92 4.0 naturally aspirated V8 six-speed manual; not E46, DCT, sedan or convertible",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "080127a0ff4331c2cde2eca490b5df6c38c0e8e29d38e4aa6f814770e4d862c5",
+    "dashboard": "6ca6cc6d7df63cb3478f289e8b52050e855f5d1fb7a4fffbd1d6feb0f161d5db",
+    "tires": "f261c983d1601981f25a8c8aafe2ef2004c8c8fb1795da0d0208b1c4f980bb09"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "meadow-trefoil-2002",
+  "name": "Meadow Trefoil 2002",
+  "stableCarId": "saved-car:Meadow Trefoil 2002",
+  "referenceVehicle": "2002 United States Honda CR-V, EX Real Time 4WD 2.4 gasoline five-speed manual, standard 15-inch alloy wheels; not LX, automatic or later generation",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "8f54a5fa5c206aca76cbc208c97f6db911064c9eb732e3ed2de6273bd7e5904d",
+    "dashboard": "05b1765d5cdf644e9e774bf8d699f4ac04b385b3fd24c25c44c92fd832efe295",
+    "tires": "dfbbaab725929fdf9dd56bf464e96bd2b469e443f8104017ce41aa51c253f059"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

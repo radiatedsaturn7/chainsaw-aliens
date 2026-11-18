@@ -1,0 +1,81 @@
+{
+  "id": "bearberry-clover-2005",
+  "name": "Bearberry Clover 2005",
+  "stableCarId": "saved-car:Bearberry Clover 2005",
+  "runtimeId": "saved-car:Bearberry Clover 2005",
+  "candidateId": "lexus-es330-base-2005-ca-5at-supplemental",
+  "referenceVehicle": "2005 Canada Lexus ES330, Canadian base 3.3 V6 FWD 5AT,16-inch wheels,no Luxury/Appearance/AVS package",
+  "identity": {
+    "year": 2005,
+    "make": "Lexus",
+    "model": "ES330",
+    "trim": "Canadian base 3.3 V6 FWD 5AT,16-inch wheels,no Luxury/Appearance/AVS package",
+    "market": "Canada"
+  },
+  "bodyClass": "four-door five-seat luxury sedan; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      220,
+      490,
+      550,
+      185
+    ],
+    "wheel": [
+      490,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://toyotacanada.scene7.com/is/content/toyotacanada/05LexusES330_E_specspdf-1",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "transmission",
+        "transmissionLabel",
+        "gearCount",
+        "absEnabled",
+        "drivetrain",
+        "curbKg",
+        "tireSize",
+        "groundClearanceM",
+        "dragCoefficient",
+        "fuelTankUSgal",
+        "tractionControlEnabled"
+      ]
+    }
+  ]
+}

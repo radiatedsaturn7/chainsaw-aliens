@@ -1,0 +1,79 @@
+{
+  "id": "lush-clover-2005",
+  "name": "Lush Clover 2005",
+  "stableCarId": "saved-car:Lush Clover 2005",
+  "runtimeId": "saved-car:Lush Clover 2005",
+  "candidateId": "fiat-croma-dynamic-2-2-2005-supplemental-candidate",
+  "referenceVehicle": "2005 Fiat Croma Dynamic2.2 16V, UK launch five-door high-roof estate/crossover, petrol5MT, standard16inch wheels; notautomatic,diesel oroldCroma",
+  "identity": {
+    "year": 2005,
+    "make": "Fiat",
+    "model": "Croma Dynamic2.2 16V",
+    "trim": "UK launch five-door high-roof estate/crossover, petrol5MT, standard16inch wheels; notautomatic,diesel oroldCroma",
+    "market": "UK"
+  },
+  "bodyClass": "wagon",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1289,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      1507,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.media.stellantis.com/uk-en/fiat/press/new-fiat-croma-in-uk",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "gearCount",
+        "drivetrain",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "fuelTankUSgal",
+        "topSpeedMph",
+        "dragCoefficient"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "id": "wild-clary-2015",
+  "name": "Wild Clary 2015",
+  "candidateId": "lexus-rc-f-2015-roster-candidate",
+  "referenceVehicle": "2015 US Lexus RC F, standard 5.0 V8 RWD eight-speed automatic, Torsen differential, no optional TVD or carbon package",
+  "identity": {
+    "year": 2015,
+    "make": "Lexus",
+    "model": "RC F",
+    "trim": "standard 5.0 V8 RWD eight-speed automatic, Torsen differential, no optional TVD or carbon package",
+    "market": "United States"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://pressroom.lexus.com/2015-lexus-rc-f-product-news/",
+      "fields": [
+        "powerHp",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "wheelbaseM",
+        "frontTire",
+        "rearTire"
+      ]
+    }
+  ]
+}

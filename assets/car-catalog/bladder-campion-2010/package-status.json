@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bladder-campion-2010",
+  "name": "Bladder Campion 2010",
+  "stableCarId": "saved-car:Bladder Campion 2010",
+  "referenceVehicle": "2010 German BMW M3GTS E92 4.361L naturallyaspiratedV8,two-seat roadlegalclubsport coupe,7-speedMDCT,standardrollbar,withoutoptionalAC/audio;notstandard4.0M3or2009prototype",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "bfc634801e6f6d94c1bdac6487fcbad93824820c5703c62a05f0abd513a51d33",
+    "dashboard": "f48445452c73ad002ad6ebb98f8d7e963353d52e0ac95bc62af50fc8df13349a",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

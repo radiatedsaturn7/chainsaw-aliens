@@ -1,0 +1,55 @@
+{
+  "id": "hungarian-clover-2015",
+  "name": "Hungarian Clover 2015",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      198,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      475,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://hondanews.com/en-US/honda-racing/releases/release-f979ce4e6f02402b981220057b3291b8-honda-ridgeline-baja-race-truck-conquers-baja-1000",
+      "fields": [
+        "powerHp",
+        "engineDisplacementL",
+        "aspiration",
+        "publishedEngine",
+        "publishedStructure"
+      ]
+    },
+    {
+      "url": "https://tfltruck.com/2015/11/honda-ridgeline-desert-racer-finishes-the-2015-score-baja-1000/",
+      "fields": [
+        "estimated wheelbase/tracks/tire anchors",
+        "Albins ST6 and rear-engine corroboration"
+      ]
+    }
+  ]
+}

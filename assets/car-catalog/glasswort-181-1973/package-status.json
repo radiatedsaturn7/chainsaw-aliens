@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "glasswort-181-1973",
+  "name": "Glasswort 181 1973",
+  "stableCarId": "saved-car:Glasswort 181 1973",
+  "referenceVehicle": "1973 European Volkswagen Type 181 1600 post-update civilian 4MT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "15fafe39fa07547769caf9e483b692ec3eb930207e8c59c6a4b357689b9cffac",
+    "dashboard": "46beddb5f9e730843416d5f4b7af05659bce8c0f15faaef1d1c2ca351f207a07",
+    "tires": "3e48df6b80daac562b4e10e528fc7eff3ee6badaf60abf94bb6c2903e9a0983d"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

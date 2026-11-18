@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "sea-campion-2006",
+  "name": "Sea Campion 2006",
+  "stableCarId": "saved-car:Sea Campion 2006",
+  "referenceVehicle": "Early2006 German Mercedes-Benz E55AMG S211 type211.276 stationwagon,supercharged M113.9905.439L V8,RWD5AT;notS210naturallyaspirated,E63,sedan,USweightsorold500E",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "b78478b29695a6e9954d733f0b7d7938fbf5259dd4f377e8463dac874652050f",
+    "dashboard": "004baf3f9334c03d89d7066c4c4022b873c78c6ce82cb6b00291a75db205012a",
+    "tires": "f8ce1555ad4ff4fcb3a28f2cdf6da569b7700a93efd10e09c0d2baa578899c7e"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

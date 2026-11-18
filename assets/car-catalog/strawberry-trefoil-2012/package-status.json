@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "strawberry-trefoil-2012",
+  "name": "Strawberry Trefoil 2012",
+  "stableCarId": "saved-car:Strawberry Trefoil 2012",
+  "referenceVehicle": "2012 United States Toyota Yaris, L third-generationXP130 THREE-door liftback5MT,1NZ-FEgasoline,15-inchsteel wheels; notfive-doorLautomatic,SE,hybrid orGR",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "2fec7d1878252b38a1ab3cc74e0fcc5eb27c6d4940d40df00b825ae949aaa503",
+    "dashboard": "007c69a76496f2031a72bbe25b12ce29e85dee45fccdeec566f6f11158a32ba6",
+    "tires": "a334b33e6254e64cca863f25b4ef41dfbab4fe8a026d4b882b54680c4866c342"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

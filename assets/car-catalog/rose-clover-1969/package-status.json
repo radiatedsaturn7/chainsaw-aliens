@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "rose-clover-1969",
+  "name": "Rose Clover 1969",
+  "stableCarId": "saved-car:Rose Clover 1969",
+  "referenceVehicle": "1969 United States Chevrolet Camaro Super Sport Coupe, SS350 four-barrel300-hp reference, special heavy-duty three-speed floor-shift,3.31axle, non-RallySport",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "2e1ae35fc4a52e28120b7720f50c17ad9ec77a8d976673e5c311449defb195aa",
+    "dashboard": "f24b61744e1684b5904c886cfe7d95c070c55f6ed7ecf6aa5721b986ec797358",
+    "tires": "588676efaaaab6719cd789f87c70277b5a9ec2df170a5d96f7c72d967b2f9e7b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

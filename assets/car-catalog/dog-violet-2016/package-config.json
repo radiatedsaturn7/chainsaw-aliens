@@ -1,0 +1,60 @@
+{
+  "id": "dog-violet-2016",
+  "name": "Dog Violet 2016",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1300,
+      440,
+      430,
+      170
+    ],
+    "wheel": [
+      1515,
+      753,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://www.bentleymedia.com/en/heritage-collection/2016-bentayga-11wo",
+      "fields": [
+        "publishedPowerPS",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "torquePlateauEndRpm",
+        "engineDisplacementL",
+        "drivetrain",
+        "transmission",
+        "gearCount"
+      ]
+    },
+    {
+      "url": "https://www.bentleymedia.com/en/newsitem/1107-the-bentley-bentayga-20000-pinnacle-luxury-suvs",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "torqueNm"
+      ]
+    }
+  ]
+}

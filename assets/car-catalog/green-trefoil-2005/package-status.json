@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "green-trefoil-2005",
+  "name": "Green Trefoil 2005",
+  "stableCarId": "saved-car:Green Trefoil 2005",
+  "referenceVehicle": "2005 United States Volkswagen Phaeton W12 US long-wheelbase five-seat sedan,6.0NA five-speed Tiptronic4MOTION,standardconfiguration; notV8,EuropeanSWB orlater450PS",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "838efbdf2ed3520b614998276e7bbab40fe838bb2b91df9e694c16bf08f26053",
+    "dashboard": "00492cda4dd4613b02263fc0a8de670e3cfc5670a465dda11512d0b6ae1c05e3",
+    "tires": "357525b62b37839fec23218689d75198f525871aa26d717fdbcb7e644562bd05"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

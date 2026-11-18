@@ -1,0 +1,65 @@
+{
+  "id": "whitlowgrass-1991",
+  "name": "Whitlowgrass 1991",
+  "candidateId": "honda-cr-x-sir-1991-roster-candidate",
+  "referenceVehicle": "1991 Japan Honda CR-X SiR EF8, late-generation B16A 5MT, solid roof, no power steering, air conditioning, optional ALB or LSD",
+  "identity": {
+    "year": 1991,
+    "make": "Honda",
+    "model": "CR-X SiR EF8",
+    "trim": "late-generation B16A 5MT, solid roof, no power steering, air conditioning, optional ALB or LSD",
+    "market": "Japan"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1289,
+      468,
+      456,
+      167
+    ],
+    "wheel": [
+      1507,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.honda.co.jp/auto-archive/cr-x/1992/sir_sy.html",
+      "fields": [
+        "engine",
+        "dimensions",
+        "mass",
+        "ratios",
+        "tires",
+        "fuel capacity"
+      ]
+    },
+    {
+      "url": "https://global.honda/jp/news/1989/4890921.html",
+      "fields": [
+        "SiR production introduction",
+        "optional ALB and LSD"
+      ]
+    }
+  ]
+}

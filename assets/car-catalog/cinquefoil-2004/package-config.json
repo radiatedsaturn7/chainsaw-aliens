@@ -1,0 +1,80 @@
+{
+  "id": "cinquefoil-2004",
+  "name": "Cinquefoil 2004",
+  "stableCarId": "saved-car:Cinquefoil 2004",
+  "candidateId": "audi-s4-2004-roster-candidate",
+  "referenceVehicle": "2004 US Audi S4 B6 sedan,4163cc naturally aspirated port-injected40-valveV8,quattro6MT,standard18inch wheels; not Avant,Tiptronic,B7RS4FSI or B5biturbo.",
+  "identity": {
+    "year": 2004,
+    "make": "Audi",
+    "model": "S4",
+    "trim": "US B6 sedan4.2 naturally aspiratedV8 quattro six-speed manual",
+    "market": "United States"
+  },
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      258,
+      515,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://manuals.plus/m/4b25e11818567684d4bf10597f675a13406892f3096c1cd28ad9f6f0e6f7e64e",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "gearRatios",
+        "finalDrive",
+        "curbKg",
+        "lengthIn",
+        "widthIn",
+        "heightIn",
+        "wheelbaseIn",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "frontTire",
+        "rearTire",
+        "fuelTankUSgal",
+        "dragCoefficient",
+        "frontWeightDistribution",
+        "topSpeedMph"
+      ]
+    }
+  ]
+}

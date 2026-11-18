@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "tayberry-clover-2011",
+  "name": "Tayberry Clover 2011",
+  "stableCarId": "saved-car:Tayberry Clover 2011",
+  "referenceVehicle": "2011 United States Mercedes-Benz E350 BlueTEC W212 Luxury sedan3.0 turbo-dieselV6 RWD seven-speedautomatic, comfort-tuned chassis standard17inch wheels; not gasolineE350,Sport,4MATIC orwagon",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "847ffe06b5c2f0686ca40d134ba3e27c06fd7f4faed29f34774c7f037fdc8cf1",
+    "dashboard": "4dc5c7317d9f419435d94ca68bc01ba6e1792a200ff42b7d8df13b0fa40462f0",
+    "tires": "8456c4e912011aef54ae33ce987ab12cbf337675048694df6690063400a3b8ab"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

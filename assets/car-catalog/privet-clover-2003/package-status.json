@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "privet-clover-2003",
+  "name": "Privet Clover 2003",
+  "stableCarId": "saved-car:Privet Clover 2003",
+  "referenceVehicle": "2003 Lancia Thesis Executive3.2 V6 24V, Italy June2003 unarmored luxury sedan five-speed Comfortronic automatic standardExecutive, notEmblema,Protecta,3.0 orJTD",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "e12c893050d65b51f485b87f2e3b3f6e6cb1ddbe19d0aa81395000d98813e3d6",
+    "dashboard": "e9cf7fb31da1da4f979c152181e82ecef591f087200e022154fad0ec11a33b13",
+    "tires": "943fd53d8a824c42f8c8f782a01f0b9f191d59c9545ac586900269bd11948a1d"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

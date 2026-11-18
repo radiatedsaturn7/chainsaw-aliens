@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "wild-madder-2013",
+  "name": "Wild Madder 2013",
+  "stableCarId": "saved-car:Wild Madder 2013",
+  "referenceVehicle": "2013 UK Audi RS4Avant B84.163LNAhighrevV8 quattro7-speedS tronicwagon standard19-inch;notB5turbo,B7manualsedan orlaterB9V6",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "9155c94ca13c4bb44d0306df4f52f30167f3e878627ae24520cea5b9c6e3f9dc",
+    "dashboard": "6ca98363f3f18af160c759588d0bafcd28e2b65cee4ab561831cf473feaf4dd3",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

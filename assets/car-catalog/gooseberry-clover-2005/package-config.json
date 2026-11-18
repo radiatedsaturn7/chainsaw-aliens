@@ -1,0 +1,69 @@
+{
+  "id": "gooseberry-clover-2005",
+  "name": "Gooseberry Clover 2005",
+  "stableCarId": "saved-car:Gooseberry Clover 2005",
+  "runtimeId": "saved-car:Gooseberry Clover 2005",
+  "candidateId": "nissan-titan-xe-2005-us-crew-cab-rwd-5at-supplemental",
+  "referenceVehicle": "2005 United States Nissan Titan, XE Crew Cab4x2 VK56V8five-speedautomatic,bench six seats,17-inchsteel wheels,noTrac/OffRoad/towingpackage",
+  "identity": {
+    "year": 2005,
+    "make": "Nissan",
+    "model": "Titan",
+    "trim": "XE Crew Cab4x2 VK56V8five-speedautomatic,bench six seats,17-inchsteel wheels,noTrac/OffRoad/towingpackage",
+    "market": "United States"
+  },
+  "bodyClass": "four-door six-seat full-size pickup; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      235,
+      500,
+      500,
+      185
+    ],
+    "wheel": [
+      490,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://usa.nissannews.com/en-US/releases/2005-nissan-titan-crew-cab-press-kit-2",
+      "fields": [
+        "powerHp",
+        "torqueLbFt",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "transmissionLabel",
+        "gearCount",
+        "absEnabled",
+        "tireSize",
+        "fuelTankUSgal"
+      ]
+    }
+  ]
+}

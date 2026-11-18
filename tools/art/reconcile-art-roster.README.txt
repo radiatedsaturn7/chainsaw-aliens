@@ -1,0 +1,12 @@
+Read-only source-to-roster binding reconciliation (version1.0.0)
+
+python tools/art/reconcile-art-roster.py --art-root /path/to/art-checkout --roster-root /path/to/current-roster-checkout > /tmp/reconciliation.json
+python tools/art/test-reconcile-art-roster.py
+
+Both roots are explicit. Art root contains assets/car-catalog/*/package-status.json and package-config.json. Roster root contains data/server-storage/files/cars/*/document.json. Output is JSON on stdout; the tool writes nothing. Reports carry exact tool SHA256/version plus input document and source PNG hashes. Tests write only isolated temporary fixtures and read a real staged document.
+
+Bindings use exact, case-sensitive saved-car:<car.name> identities and actual decoded car.id; there is no slugification, fuzzy matching, guessed runtime ID or copied physics. Source-prefix package keys remain temporary keys. Existing verified runtime IDs must match. Plain native JSON and __chainsawStorage gzip/base64 wrappers are supported. Required native identity, dimensions, camera, setup, transmissions, tuning and art objects must be present. Explicit native mechanics:null is preserved, including EV documents; a missing mechanics field is not invented.
+
+Only explicitly declared placeholders (boolean true or the native RTG-001/sharedArtOnly provenance object) become ready binding proposals. Documents with no explicit placeholder authorization are preserved and reported separately, including unassigned existing cars. Duplicate source identities, duplicate exact-name documents, held sources, hash errors, incomplete documents and ID conflicts prevent ready binding. Missing documents are expected on an older checkout and are listed without fabrication. Exit1 means malformed inputs or identity/duplicate conflicts; ordinary missing documents and preserved/blocked rows are represented in the report.
+
+A ready binding is permission to prepare an offline art overlay against the recorded exact document bytes, not an integration or visual-fit acceptance. No source configs, runtime docs, physics, existing original art, manifests or branches are modified. Rerun after receiving newer complete roster documents; reject stale SHA bindings before preparing an overlay.

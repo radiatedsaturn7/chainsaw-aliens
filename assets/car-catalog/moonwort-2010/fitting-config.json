@@ -1,0 +1,161 @@
+{
+  "id": "moonwort-2010",
+  "name": "Moonwort 2010",
+  "rosterCommit": "757337b575627e7d327da108e2a00951f1e8dbe1",
+  "expectedDocumentSha256": "d79e1acfb1afdd255242b17c2b3adb8c3bc844a760dcbf91147c655c304a96c9",
+  "sourceDirectory": "assets/car-catalog/moonwort-2010",
+  "sourceHashes": {
+    "body": "3fdf23af31cbc68f9e740f62c806f58c8b628b608065c321b2552fa36542012e",
+    "dashboard": "7842f18e8895344e5dca74a9a6c6503d12c4c477d1c5e92bd8e92b91286c4600",
+    "tires": "a00afd800f8abe1166f4525113f16fb19937785f0538152299677f61730a3dd0"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 90,
+        "y": 330,
+        "radius": 25
+      },
+      {
+        "wheel": "fr",
+        "x": 352,
+        "y": 330,
+        "radius": 25
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 688,
+        "y": 298,
+        "radius": 44
+      },
+      {
+        "wheel": "rr",
+        "x": 844,
+        "y": 263,
+        "radius": 32
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 976,
+        "y": 283,
+        "radius": 40
+      },
+      {
+        "wheel": "rr",
+        "x": 1263,
+        "y": 280,
+        "radius": 43
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 455,
+        "y": 706,
+        "radius": 29
+      },
+      {
+        "wheel": "rr",
+        "x": 600,
+        "y": 729,
+        "radius": 47
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 90,
+        "y": 752,
+        "radius": 24
+      },
+      {
+        "wheel": "rl",
+        "x": 355,
+        "y": 752,
+        "radius": 24
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1603,
+        "y": 291,
+        "radius": 44
+      },
+      {
+        "wheel": "fl",
+        "x": 1740,
+        "y": 265,
+        "radius": 25
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 954,
+        "y": 722,
+        "radius": 43
+      },
+      {
+        "wheel": "fl",
+        "x": 1237,
+        "y": 724,
+        "radius": 43
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1365,
+        "y": 695,
+        "radius": 32
+      },
+      {
+        "wheel": "fl",
+        "x": 1515,
+        "y": 730,
+        "radius": 45
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      485,
+      590,
+      205
+    ],
+    "wheel": [
+      450,
+      770,
+      680
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e2edf8",
+    "viewportWheelScale": 2.15
+  },
+  "steeringWheelSource": {
+    "artRef": "steeringwheel",
+    "frameIndex": 0
+  }
+}

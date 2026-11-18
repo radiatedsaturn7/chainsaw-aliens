@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "thimble-clover-2014",
+  "name": "Thimble Clover 2014",
+  "stableCarId": "saved-car:Thimble Clover 2014",
+  "referenceVehicle": "2014 Renault Twingo Expression SCe 70, Germany third-generation five-door rear-engine naturally aspirated 1.0 three-cylinder five-speed manual; non-ENERGY without start-stop",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "4f4000a2dad758ba2fcc3db4c2436d06239c641809b701fd03f88069328acc47",
+    "dashboard": "f7a114a5ee14b9dff45283a2a982608ed462bdf46efd2d059d3e60573d39f9e3",
+    "tires": "4f861d539d32722714391b77a7f6588b906791a394c47e9fd1cd92aa97675c15"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

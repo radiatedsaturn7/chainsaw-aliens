@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "hairy-tare-1969",
+  "name": "Hairy Tare 1969",
+  "stableCarId": "saved-car:Hairy Tare 1969",
+  "referenceVehicle": "1969 Italian Fiat Dino2400 Bertone coupe2+2,front-engine2.4NA V6,RWD ZFfive-speed; notDinoSpider,earlier2.0,FerrariDino246 orStratos.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "e2cbfd5e590cb1ee6d0e11fc1f150c7ae6d3592141105f6fe21e81c24606e6e1",
+    "dashboard": "a2be08e4dff0fec08635be97f24cf065bd6dbe1618a05b312a138262675d46fc",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

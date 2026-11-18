@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "source-sloe-clover-2010",
+  "name": "Sloe Clover 2010",
+  "stableCarId": "saved-car:Sloe Clover 2010",
+  "referenceVehicle": "US2010 Volvo XC60 T6 AWD,turbo six,6-speedGeartronic. Five-door SUV,standard non-R-Design exterior.",
+  "runtimeDocumentIdVerified": false,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "babad0c2029f43ec72850eb1475ede7c926c7e195c7389a0ccae79b907bb08ae",
+    "dashboard": "22c908a7f7551f2bae19ea5483679a8eab61877c9ad700e73c2f74e0106d597b",
+    "tires": "623e2eb01ea9d34926e7944fd7fa7584536632f45fa54dacd7e44a0f687dc8db"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

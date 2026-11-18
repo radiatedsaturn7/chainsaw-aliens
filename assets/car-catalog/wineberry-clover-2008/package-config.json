@@ -1,0 +1,80 @@
+{
+  "id": "wineberry-clover-2008",
+  "name": "Wineberry Clover 2008",
+  "stableCarId": "saved-car:Wineberry Clover 2008",
+  "runtimeId": "saved-car:Wineberry Clover 2008",
+  "candidateId": "subaru-tribeca-base-2008-us-five-seat-5at-supplemental",
+  "referenceVehicle": "2008 United States Subaru Tribeca, USbase3.6flat-sixAWDfive-speedautomatic,five seats,nooptionalthirdrow,roofrails ormoonroof; notLimited/olderB9three-liter",
+  "identity": {
+    "year": 2008,
+    "make": "Subaru",
+    "model": "Tribeca",
+    "trim": "USbase3.6flat-sixAWDfive-speedautomatic,five seats,nooptionalthirdrow,roofrails ormoonroof; notLimited/olderB9three-liter",
+    "market": "United States"
+  },
+  "bodyClass": "five-door five-seat midsize crossover; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Subaru/Tribeca/Subaru_US%20Tribeca_2008.pdf",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "lengthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "curbKg",
+        "tireSize",
+        "drivetrain",
+        "transmission",
+        "transmissionLabel",
+        "gearCount",
+        "centerDifferentialBalance",
+        "dragCoefficient",
+        "groundClearanceM",
+        "absEnabled",
+        "tractionControlEnabled"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "purple-trefoil-2009",
+  "name": "Purple Trefoil 2009",
+  "stableCarId": "saved-car:Purple Trefoil 2009",
+  "referenceVehicle": "2009 Lotus 2-Eleven, standard252bhp supercharged1796ccToyota road-goingUKSVA six-speed,original2007\u20132010spec;notGT4,NAorCircuitCarprototype",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "02f7152e85d51571b0a2c8b53c87de822d8feb7f73e7d0b476fad9e83be7f066",
+    "dashboard": "f3a8f3c685114309db3ab337df47eb9a291a1390dd6d308d17d6da50a91cb7ea",
+    "tires": "a85721ed18d3b44cb470bddd71a1588445987c20dbe2a2a9d69da523ceefbea5"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

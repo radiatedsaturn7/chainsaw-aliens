@@ -1,0 +1,74 @@
+{
+  "id": "elder-clover-2010",
+  "name": "Elder Clover 2010",
+  "stableCarId": "saved-car:Elder Clover 2010",
+  "runtimeId": "saved-car:Elder Clover 2010",
+  "candidateId": "fiat-doblo-active-1-4-2010-supplemental-candidate",
+  "referenceVehicle": "2010 Fiat Doblo Active1.4 16V95, UK March2010 second-generation standard-length five-seat passenger MPV five-speed manual, noFamilyPack; notCargo,Maxi,seven-seat,diesel orMTA",
+  "identity": {
+    "year": 2010,
+    "make": "Fiat",
+    "model": "Doblo Active1.4 16V95",
+    "trim": "UK March2010 second-generation standard-length five-seat passenger MPV five-speed manual, noFamilyPack; notCargo,Maxi,seven-seat,diesel orMTA",
+    "market": "UK"
+  },
+  "bodyClass": "minivan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1289,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      1507,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.media.stellantis.com/uk-en/fiat/press/new-doblo-press-pack",
+      "fields": [
+        "powerHp",
+        "engineDisplacementL",
+        "gearCount",
+        "transmission",
+        "lengthM",
+        "wheelbaseM",
+        "absEnabled",
+        "tractionControlEnabled"
+      ]
+    },
+    {
+      "url": "https://www.media.stellantis.com/uk-en/fiat/press/prices-announced-for-all-new-fiat-doblo",
+      "fields": [
+        "identity",
+        "trim",
+        "engine"
+      ]
+    }
+  ]
+}

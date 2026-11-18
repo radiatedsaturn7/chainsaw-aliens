@@ -1,0 +1,72 @@
+{
+  "id": "large-birdsfoot-1960",
+  "name": "Large Birdsfoot 1960",
+  "stableCarId": "saved-car:Large Birdsfoot 1960",
+  "runtimeId": "saved-car:Large Birdsfoot 1960",
+  "candidateId": "porsche-718-rs-60-1960-roster-candidate",
+  "referenceVehicle": "1960 Porsche 718 RS60 open mid-engine flat-four sports racer, Revs Institute 718-041 currently documented 1697cc specification; not road Boxster, 1959 RSK, 1961 RS61 or 2.0 flat-eight development configuration",
+  "identity": {
+    "year": 1960,
+    "make": "Porsche",
+    "model": "718 RS60",
+    "trim": "1.697L flat-four sports racer, custodian 718-041 reference",
+    "market": "International sports-car competition"
+  },
+  "bodyClass": "open sports racer",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      539,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://revsinstitute.org/vehicle/1960-porsche-rs-60",
+      "fields": [
+        "identity",
+        "publishedPowerHp",
+        "powerRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "wheelbaseM",
+        "publishedWeightKg"
+      ]
+    },
+    {
+      "url": "https://newsroom.porsche.com/en/company/porsche-718-550-spyder-rsk-mid-mounted-engine-lightweight-construction-design-four-cylinder-12334.html",
+      "fields": [
+        "modelFamily",
+        "modelYear"
+      ]
+    }
+  ]
+}

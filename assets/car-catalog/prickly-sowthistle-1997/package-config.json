@@ -1,0 +1,89 @@
+{
+  "id": "prickly-sowthistle-1997",
+  "name": "Prickly Sowthistle 1997",
+  "stableCarId": "saved-car:Prickly Sowthistle 1997",
+  "candidateId": "toyota-mark-ii-tourer-v-jzx100-1997-roster-candidate",
+  "referenceVehicle": "Early1997 Japan Toyota MarkII TourerV JZX100 1JZ-GTE VVT-i single-turbo2.491L RWD5MT hardtop, standard1470kg version; not Grande, Chaser, automatic or modified drift car",
+  "identity": {
+    "year": 1997,
+    "make": "Toyota",
+    "model": "Mark II Tourer V",
+    "trim": "Japan JZX100 hardtop 1JZ-GTE VVT-i five-speed manual, September1996\u2013August1997 specification, standard equipment",
+    "market": "Japan"
+  },
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1309,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      1507,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://toyota.jp/ucar/catalog/brand-TOYOTA/car-MARK_II/199609/1001095/",
+      "fields": [
+        "identity",
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "reverseRatio",
+        "absEnabled",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "finalDrive",
+        "fuelTankUSgal",
+        "tractionControlEnabled"
+      ]
+    },
+    {
+      "url": "https://www.toyota-global.com/company/history_of_toyota/75years/vehicle_lineage/car/id60013052/index.html",
+      "fields": [
+        "generation",
+        "single-turbo VVT-i identity",
+        "net power basis",
+        "dimensions",
+        "ABS"
+      ]
+    }
+  ]
+}

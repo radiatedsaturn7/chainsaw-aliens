@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "blackberry-clover-2011",
+  "name": "Blackberry Clover 2011",
+  "stableCarId": "saved-car:Blackberry Clover 2011",
+  "referenceVehicle": "2011 United States Saab 9-5 second-generation Turbo4 base sedan2.0 twin-scroll turbo four FWD standard six-speed manual; not Premium automatic,Turbo6XWD or Aero",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "535f6e79afad67af53e849a531454cde8c1ddda5a07ea695cb33f63c1865ff0a",
+    "dashboard": "9e1eafe062dd31a597ded433fdfcf728353d981b6d938e9e3cc75a0574da23bb",
+    "tires": "f689368f5160db79ca7bfbc7b893550eef90896887cdf136b9b2335b11f3c380"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

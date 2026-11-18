@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "broom-clover-2005",
+  "name": "Broom Clover 2005",
+  "stableCarId": "saved-car:Broom Clover 2005",
+  "referenceVehicle": "2005 United States Toyota Camry Solara, SE convertible 3.3 V6 five-speed automatic, four seats and17-inch wheels; notSLE,coupe,four-cylinder orTRD",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "400d6efb2026ab98bcf66f94c6610875c3b73300a36c3a0b039b869fb19f1fca",
+    "dashboard": "dc299711c35c1b7010c0a9850a853eb6e00a4e58e42e6ba58586414f96354772",
+    "tires": "f9e17c09a271da13d79116fc670fd8a5638a0c941a5109895ef1490fc54bfbfe"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

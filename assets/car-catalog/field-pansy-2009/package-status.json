@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "field-pansy-2009",
+  "name": "Field Pansy 2009",
+  "stableCarId": "saved-car:Field Pansy 2009",
+  "referenceVehicle": "2009 continental Europe Audi RS 6, C6 standard5.0 V10 biturbo sedan quattro6AT,standard19inch wheels and250km/h limiter; notAvant/plus",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "f04e5cd66b5da40084a06255015bd708ec91662e9b47ecb28cf629160191f3a7",
+    "dashboard": "e0752b305438b3035c3711650663e5f03568304ad38d42814629be95cc4c513d",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "smooth-tare-1998",
+  "name": "Smooth Tare 1998",
+  "stableCarId": "saved-car:Smooth Tare 1998",
+  "referenceVehicle": "1998 UK AstonMartin WorksServiceV8VantageV600 twin-supercharged roadcoupe,representative manual conversion; not2018V12V600,LeMansedition orordinary550bhpVantage.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "953a3bacec22b279985c94ca91cd635105f92381a16dae9f216ea5ab47a6534f",
+    "dashboard": "459391b7fa71fde646721c252cd378d9007e15494b1439c7a3c8a886ce068ea5",
+    "tires": "1eff590a47dc7a922fecc1b0b3bc12311ba78d86095bc78ba651e584559a7220"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

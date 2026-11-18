@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "trailing-tormentil-1994",
+  "name": "Trailing Tormentil 1994",
+  "stableCarId": "saved-car:Trailing Tormentil 1994",
+  "referenceVehicle": "1994 Japan Nissan Fairlady Z Version S Twin Turbo October1994 E-CZ32 two-seater standard fixed roof VG30DETT2960cc RWD5MT, not2by2,T-bar,NA orUS300ZX",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "aee62b403b1262ce4e0ed0933d898c0f0b88d5dfa1dfcb4688ab1ce758afbf19",
+    "dashboard": "5b3c9df1f73ec8444b3b9e24e2b7af25bfc01245243d005b850510b3662f2d1e",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

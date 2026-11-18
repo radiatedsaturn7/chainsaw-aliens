@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "sandcherry-clover-2011",
+  "name": "Sandcherry Clover 2011",
+  "stableCarId": "saved-car:Sandcherry Clover 2011",
+  "referenceVehicle": "2011 United States Mazda Mazda2, USSport1.5five-speedmanual five-door,15-inchsteelwheels,noTouringspoiler; notlaterToyota-badgedsedan",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "08cac778085dd6cf21a8e555163dcaa0742247729d18abeebce19337ed4a0d4d",
+    "dashboard": "9ce5efef902bc373ed7393bf3f22e8955c5968b749ed7e36cdd2264eb764a78e",
+    "tires": "ce6936a8d0349e80054aaf85920d41ffd6d2e4aad04c1606378552235cf570b5"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "little-burclover-2011",
+  "name": "Little Burclover 2011",
+  "stableCarId": "saved-car:Little Burclover 2011",
+  "referenceVehicle": "2011 McLaren MP4-12C, European launch coupe600PS seven-speedSSG standardPZero tires andDIN1434kg; not625PSupdate,Spider,GT3 orlightweightdryweight",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "14830f36a45e4852a7c42c1dd4b55d82a74ce461b9090b0625d3aeb725f4ed5b",
+    "dashboard": "bc8c454db08c768698b5a66d4f7a0cb948941f39cfc047e15fb8d5707f4f39bd",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

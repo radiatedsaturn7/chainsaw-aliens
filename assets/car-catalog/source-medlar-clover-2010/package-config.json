@@ -1,0 +1,44 @@
+{
+  "id": "source-medlar-clover-2010",
+  "name": "Medlar Clover 2010",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      198,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      475,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Volkswagen/Eos/VW_US%20Eos_2010.pdf",
+      "fields": [
+        "exact identity and visual configuration"
+      ]
+    }
+  ]
+}

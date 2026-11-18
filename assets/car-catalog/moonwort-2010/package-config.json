@@ -1,0 +1,63 @@
+{
+  "id": "moonwort-2010",
+  "name": "Moonwort 2010",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      485,
+      590,
+      205
+    ],
+    "wheel": [
+      475,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2edf8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Audi/R8/Audi_US%20R8_2010.pdf",
+      "fields": [
+        "powerHp",
+        "torqueLbFt",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "drivetrain",
+        "referenceZeroToSixtySec",
+        "referenceTopSpeedMph",
+        "referenceFrontTorqueShareRange"
+      ]
+    },
+    {
+      "url": "https://www.yumpu.com/en/document/view/50460496/audi-order-guide-model-year-2010-usa-invoice-i-am-audi",
+      "fields": [
+        "2010US model42352T",
+        "frontTire",
+        "rearTire",
+        "publishedMaxEngineRpm"
+      ]
+    }
+  ]
+}

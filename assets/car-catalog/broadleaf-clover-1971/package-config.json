@@ -1,0 +1,110 @@
+{
+  "id": "broadleaf-clover-1971",
+  "name": "Broadleaf Clover 1971",
+  "stableCarId": "saved-car:Broadleaf Clover 1971",
+  "runtimeId": "saved-car:Broadleaf Clover 1971",
+  "candidateId": "ford-mustang-mach-1-1971-roster-candidate",
+  "referenceVehicle": "1971 United States Ford Mustang Mach 1, 429CJ-R DualRamInduction,wide-ratio4MT,noDragPack",
+  "identity": {
+    "year": 1971,
+    "make": "Ford",
+    "model": "Mustang Mach 1",
+    "trim": "429CJ-R DualRamInduction,wide-ratio4MT,noDragPack",
+    "market": "United States"
+  },
+  "bodyClass": "two-door-fastback",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1981,
+      793
+    ],
+    "cluster": [
+      277,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      475,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.lov2xlr8.no/brochures/ford/must7/bilder/8.jpg",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "engineDisplacementL",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "fuelTankUSgal",
+        "steeringRatio",
+        "periodPublishedRatings"
+      ]
+    },
+    {
+      "url": "https://www.lov2xlr8.no/brochures/ford/must7/bilder/9.jpg",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "engineDisplacementL",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "fuelTankUSgal",
+        "steeringRatio",
+        "periodPublishedRatings"
+      ]
+    },
+    {
+      "url": "https://www.lov2xlr8.no/brochures/ford/must7/bilder/10.jpg",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "engineDisplacementL",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "fuelTankUSgal",
+        "steeringRatio",
+        "periodPublishedRatings"
+      ]
+    }
+  ]
+}

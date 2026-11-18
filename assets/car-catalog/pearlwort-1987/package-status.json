@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "pearlwort-1987",
+  "name": "Pearlwort 1987",
+  "stableCarId": "saved-car:Pearlwort 1987",
+  "referenceVehicle": "1987 Japan Nissan Be-1 BK10 standard-roof 3AT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "9c085d6e31d2a822f539dc2bd48761d9459fc93a7f13d6b9e21d058e1f376f27",
+    "dashboard": "bacb581b10c96d26fdc7f35f75fa35a9b179e43eb190a19915404be97d47b932",
+    "tires": "e83bd1edb64126b917173381460f5661c8a4dd6ae0a500d787a705cd3a512375"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

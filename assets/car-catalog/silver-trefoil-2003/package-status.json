@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "silver-trefoil-2003",
+  "name": "Silver Trefoil 2003",
+  "stableCarId": "saved-car:Silver Trefoil 2003",
+  "referenceVehicle": "2003 United States Nissan Xterra, XE four-cylinder 2.4 KA24DE rear-wheel-drive five-speed manual, basic equipment; not XE-V6, SE, supercharged or 4WD",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "8f0790448883307659466c0bde831c94fdef0c68bdd259a296ae30ef078ad1d4",
+    "dashboard": "f86e727c09167ecd27214f650c77f623a16270d60122eb9d7e87da95a8c92192",
+    "tires": "279a5bc12c83cda65e51fcf265829e33897fb9bc8cac265fc0e9fc5b15f32152"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

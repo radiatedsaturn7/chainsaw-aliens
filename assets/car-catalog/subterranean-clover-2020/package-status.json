@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "subterranean-clover-2020",
+  "name": "Subterranean Clover 2020",
+  "stableCarId": "saved-car:Subterranean Clover 2020",
+  "referenceVehicle": "2020 McLaren GT, originalEuropean4.0M840TEtwin-turboV8two-seatgrandtourer7SSG; notGTS or570GT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "181735d433465e1a456a6106512c97a50a25952e84522b70b43c946a4529fab4",
+    "dashboard": "256f41ed59de99f40baac36da8bbcf31bdd109ef9fc1cbf3fd77f1a3c77870cb",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

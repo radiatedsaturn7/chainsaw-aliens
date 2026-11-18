@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "prickly-sowthistle-1997",
+  "name": "Prickly Sowthistle 1997",
+  "stableCarId": "saved-car:Prickly Sowthistle 1997",
+  "referenceVehicle": "Early1997 Japan Toyota MarkII TourerV JZX100 1JZ-GTE VVT-i single-turbo2.491L RWD5MT hardtop, standard1470kg version; not Grande, Chaser, automatic or modified drift car",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "8785b67484894e5c6f31446e31182c4f085049d7ad2cbdd5ddf03e345939805b",
+    "dashboard": "261178dd4e55ab48cc91d5bce0077bfac6e324f15b0451d66c8d64d14363e581",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

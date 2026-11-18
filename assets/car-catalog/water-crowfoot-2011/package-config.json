@@ -1,0 +1,61 @@
+{
+  "id": "water-crowfoot-2011",
+  "name": "Water Crowfoot 2011",
+  "candidateId": "audi-rs-3-sportback-2011-roster-candidate",
+  "referenceVehicle": "2011 Netherlands Audi RS3 Sportback 8P, standard five-door2.5TFSI five-cylinder seven-speed S tronic, no Pro Line package",
+  "identity": {
+    "year": 2011,
+    "make": "Audi",
+    "model": "RS3 Sportback 8P",
+    "trim": "standard five-door2.5TFSI five-cylinder seven-speed S tronic, no Pro Line package",
+    "market": "Netherlands"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://nieuws.audi.nl/audi-presenteert-audi-rs3/",
+      "fields": [
+        "identity",
+        "powerKw",
+        "torqueNm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "drivetrain",
+        "tracks",
+        "tires"
+      ]
+    }
+  ]
+}

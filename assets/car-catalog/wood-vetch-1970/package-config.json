@@ -1,0 +1,77 @@
+{
+  "id": "wood-vetch-1970",
+  "name": "Wood Vetch 1970",
+  "stableCarId": "saved-car:Wood Vetch 1970",
+  "runtimeId": "saved-car:Wood Vetch 1970",
+  "candidateId": "chevrolet-camaro-z28-1970-roster-candidate",
+  "referenceVehicle": "1970 Canada Chevrolet Camaro Z28, SportCoupewithZ28package,350solid-lifterfour-barrelV8,4MT,standard3.73axle,nonRS",
+  "identity": {
+    "year": 1970,
+    "make": "Chevrolet",
+    "model": "Camaro Z28",
+    "trim": "SportCoupewithZ28package,350solid-lifterfour-barrelV8,4MT,standard3.73axle,nonRS",
+    "market": "Canada"
+  },
+  "bodyClass": "two-door-coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      531,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.lov2xlr8.no/brochures/chevy/70cam/bilder/8.jpg",
+      "fields": [
+        "exactyear/market/model/engine",
+        "advertisedoutput",
+        "gearboxavailability"
+      ]
+    },
+    {
+      "url": "https://www.lov2xlr8.no/brochures/chevy/70cam/bilder/10.jpg",
+      "fields": [
+        "exactyear/market/model/engine",
+        "advertisedoutput",
+        "gearboxavailability"
+      ]
+    },
+    {
+      "url": "https://www.lov2xlr8.no/brochures/chevy/70cam/bilder/11.jpg",
+      "fields": [
+        "exactyear/market/model/engine",
+        "advertisedoutput",
+        "gearboxavailability"
+      ]
+    }
+  ]
+}

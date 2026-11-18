@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "source-date-clover-2008",
+  "name": "Date Clover 2008",
+  "stableCarId": "saved-car:Date Clover 2008",
+  "referenceVehicle": "UK March2008 Hyundai i10 Classic1.1SOHC,5MT. Five-door hatchback,RHD,standard14-inch steel wheels,notStyle orlater1.2.",
+  "runtimeDocumentIdVerified": false,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "df3ddeb7930504ecb37c24e96447e11d9719e776b15ab2d2921241d543e034d9",
+    "dashboard": "4ed1a3f60e3970aa0f70890ce4f9c5de8009592bc5e63e51156a8525f1ab7ad8",
+    "tires": "230bae98868d8121a03f32b4545edee43290ca4ba71d2422e18b99b1942b315c"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "mouseear-hawkweed-1986",
+  "name": "Mouseear Hawkweed 1986",
+  "stableCarId": "saved-car:Mouseear Hawkweed 1986",
+  "referenceVehicle": "1986 US Ford Mustang SVO 2.3 EFI intercooled turbo hatchback,5MT,standard equipment,noCompetitionPrep",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "d20913a7ea2f3da5a917470183367a1205e55ad4f1f14d1af29a7dafc1e60ce3",
+    "dashboard": "c691776f323484da0672a6716a3bc138e9d44d2e8ec2bb274acf4655edf54d17",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

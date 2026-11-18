@@ -1,0 +1,76 @@
+{
+  "id": "jostaberry-clover-2006",
+  "name": "Jostaberry Clover 2006",
+  "stableCarId": "saved-car:Jostaberry Clover 2006",
+  "runtimeId": "saved-car:Jostaberry Clover 2006",
+  "candidateId": "pontiac-g6-gt-coupe-2006-us-supplemental",
+  "referenceVehicle": "2006 United States Pontiac G6, GT two-doorfixed-roofcoupe3.5LX9 V6 MN5four-speedautomatic, standard17-inchalloys; notconvertible,sedan,GTP3.9 or6MT",
+  "identity": {
+    "year": 2006,
+    "make": "Pontiac",
+    "model": "G6",
+    "trim": "GT two-doorfixed-roofcoupe3.5LX9 V6 MN5four-speedautomatic, standard17-inchalloys; notconvertible,sedan,GTP3.9 or6MT",
+    "market": "United States"
+  },
+  "bodyClass": "two-door-coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Pontiac/G6/Pontiac_US%20G6_2006.pdf",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "engineDisplacementL",
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "fuelTankUSgal"
+      ]
+    }
+  ]
+}

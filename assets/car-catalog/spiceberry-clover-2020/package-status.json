@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "spiceberry-clover-2020",
+  "name": "Spiceberry Clover 2020",
+  "stableCarId": "saved-car:Spiceberry Clover 2020",
+  "referenceVehicle": "2020 Vauxhall Corsa SE1.2i75, UK January2020 delivery launch five-door CorsaF CMP naturallyaspiratedpetrolfive-speed manual16inchalloys; notCorsaE VXR,Corsa-e orTurbo",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "spiceberry-clover-2020",
+  "sourceHashes": {
+    "body": "7a40c1c3978de6229ac0949696b968e48873722ba5f7f717f58c7bd1688b2739",
+    "dashboard": "1963a8a9f9ac95a854bcb556858347e28b6891ddd2f8e23902d7f1d9693ef2a1",
+    "tires": "da68df1223b5d13f5ea7a0219fb94ce297beed545fd8f5e565fc52ae4de76cc0"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

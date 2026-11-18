@@ -1,0 +1,53 @@
+{
+  "id": "fir-clover-2007",
+  "name": "Fir Clover 2007",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      198,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      475,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Ford/500/Ford_US%20500_2007.pdf",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "engineDisplacementL",
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "tireSize"
+      ]
+    }
+  ]
+}

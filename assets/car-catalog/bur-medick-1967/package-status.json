@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bur-medick-1967",
+  "name": "Bur Medick 1967",
+  "stableCarId": "saved-car:Bur Medick 1967",
+  "referenceVehicle": "1967 Aston Martin DBS, original standard3995cc straight-six coupe ZF5MT; notVantage,V8 or2008V12DBS",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "27989dd8c50f8a544acd7ae048f4cd1cd69d12583161f7905d8d3f577e74d0b0",
+    "dashboard": "65d67cfc8875ea1e20b15c5674ab8f068af648068bcf72ec33dbd08aa2a3dabd",
+    "tires": "fa98be7776a058b56f3d5efa36a87d1a5a14fcd43af3a9f7d29a839efc9b8c00"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

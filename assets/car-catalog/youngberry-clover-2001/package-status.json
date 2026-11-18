@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "youngberry-clover-2001",
+  "name": "Youngberry Clover 2001",
+  "stableCarId": "saved-car:Youngberry Clover 2001",
+  "referenceVehicle": "2001 United States Oldsmobile Aurora, 3.5TwinCamV6 front-drive four-speedautomatic, standard16-inchwheels; not4.0V8 orfirstgeneration",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "a00a274ab755b130414bd11bf7e6f8981e35503cca3b1d06fa84a39ece93dd60",
+    "dashboard": "0119e5fd5ab6ff0ccb82d1772ce042baccfbd00a10264d3dc77d3154b589736a",
+    "tires": "373cde1791c891c6abadde266d1fc85e814b6657bcb7b65ce5e82c99d40eaa00"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

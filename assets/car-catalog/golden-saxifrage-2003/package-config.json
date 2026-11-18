@@ -1,0 +1,58 @@
+{
+  "id": "golden-saxifrage-2003",
+  "name": "Golden Saxifrage 2003",
+  "candidateId": "audi-rs-6-2003-roster-candidate",
+  "referenceVehicle": "2003 Europe Audi RS6 C5, standard 4.2 V8 biturbo sedan five-speed torque-converter automatic, not Avant/plus/Competition",
+  "identity": {
+    "year": 2003,
+    "make": "Audi",
+    "model": "RS6 C5",
+    "trim": "standard 4.2 V8 biturbo sedan five-speed torque-converter automatic, not Avant/plus/Competition",
+    "market": "Europe"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      560,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.audi-mediacenter.com/de/pressemitteilungen/20-jahre-vier-generationen-audi-rs-6-ueberlegene-performance-im-alltagsgewand-14768",
+      "fields": [
+        "powerKw",
+        "torqueNm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "C5 sedan identity"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "id": "river-clover-2013",
+  "name": "River Clover 2013",
+  "stableCarId": "saved-car:River Clover 2013",
+  "runtimeId": "saved-car:River Clover 2013",
+  "candidateId": "dacia-logan-mcv-essentiel-1-2-16v75-2013-supplemental-candidate",
+  "referenceVehicle": "2013 Dacia Logan MCV Essentiel1.2 16V75, Germany second-generation five-seat estate basepetrol5MT, notfirstgenerationseven-seater,LPG,TCe,diesel orStepway",
+  "identity": {
+    "year": 2013,
+    "make": "Dacia",
+    "model": "Logan MCV Essentiel1.2 16V75",
+    "trim": "Germany second-generation five-seat estate basepetrol5MT, notfirstgenerationseven-seater,LPG,TCe,diesel orStepway",
+    "market": "Germany"
+  },
+  "bodyClass": "wagon",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://presse.dacia.de/neuer-dacia-logan-mcv-kombi-mit-dem-besten-preis-raum-verhaltnis/",
+      "fields": [
+        "powerHp",
+        "engineDisplacementL",
+        "lengthM"
+      ]
+    }
+  ]
+}

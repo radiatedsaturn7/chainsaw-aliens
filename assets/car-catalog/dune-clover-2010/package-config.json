@@ -1,0 +1,57 @@
+{
+  "id": "dune-clover-2010",
+  "name": "Dune Clover 2010",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1269,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      1526,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://www.press.bmwgroup.com/united-kingdom/article/detail/T0078475EN_GB/the-new-bmw-5-series-touring",
+      "fields": [
+        "identity",
+        "torqueNm",
+        "transmission",
+        "gearCount",
+        "topSpeedMph",
+        "drivetrain"
+      ]
+    },
+    {
+      "url": "https://www.press.bmwgroup.com/netherlands/article/detail/T0079064NL/de-nieuwe-bmw-5-serie-touring%3A-vanaf-52-950-euro",
+      "fields": [
+        "powerKw",
+        "torqueNm",
+        "identity"
+      ]
+    }
+  ]
+}

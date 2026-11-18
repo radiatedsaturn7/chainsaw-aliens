@@ -1,0 +1,74 @@
+{
+  "id": "quaking-grass-2003",
+  "name": "Quaking Grass 2003",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      190,
+      480,
+      540,
+      180
+    ],
+    "wheel": [
+      465,
+      735,
+      315
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f3dea4"
+  },
+  "sources": [
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/motor-versions-golf-4-profile-19479",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "torqueNm",
+        "powerRpm",
+        "torqueRpm",
+        "torquePlateauEndRpm",
+        "engineDisplacementL"
+      ]
+    },
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/vehicle-data-golf-4-profile-19478",
+      "fields": [
+        "2002\u20132003 R32",
+        "wheelbaseM"
+      ]
+    },
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/the-volkswagen-r-models-15258/volkswagen-r-the-history-15267",
+      "fields": [
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "referenceZeroTo100KmhSec",
+        "referenceTopSpeedKmh"
+      ]
+    },
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/golf-4-19972003-19476",
+      "fields": [
+        "2003 optionalDSG",
+        "Haldex drivetrain behavior"
+      ]
+    }
+  ]
+}

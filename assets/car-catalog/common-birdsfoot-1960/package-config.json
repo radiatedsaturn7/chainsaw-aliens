@@ -1,0 +1,76 @@
+{
+  "id": "common-birdsfoot-1960",
+  "name": "Common Birdsfoot 1960",
+  "stableCarId": "saved-car:Common Birdsfoot 1960",
+  "runtimeId": "saved-car:Common Birdsfoot 1960",
+  "candidateId": "chevrolet-corvette-1960-roster-candidate",
+  "referenceVehicle": "1960 United States Chevrolet Corvette, standard 283 four-barrel 230-hp reference engine, standard three-speed manual and3.70 axle, soft top raised",
+  "identity": {
+    "year": 1960,
+    "make": "Chevrolet",
+    "model": "Corvette",
+    "trim": "standard 283 four-barrel 230-hp reference engine, standard three-speed manual and3.70 axle, soft top raised",
+    "market": "United States"
+  },
+  "bodyClass": "two-door-roadster",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1985,
+      792
+    ],
+    "cluster": [
+      278,
+      531,
+      437,
+      119
+    ],
+    "wheel": [
+      476,
+      752,
+      298
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.lov2xlr8.no/brochures/chevy/60vt/bilder/7.jpg",
+      "fields": [
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "fuelTankUSgal",
+        "groundClearanceM",
+        "steeringRatio",
+        "periodPublishedRatings"
+      ]
+    }
+  ]
+}

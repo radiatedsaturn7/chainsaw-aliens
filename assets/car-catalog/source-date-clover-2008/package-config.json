@@ -1,0 +1,54 @@
+{
+  "id": "source-date-clover-2008",
+  "name": "Date Clover 2008",
+  "stableCarId": "saved-car:Date Clover 2008",
+  "runtimeId": "saved-car:Date Clover 2008",
+  "runtimeDocumentId": null,
+  "candidateId": null,
+  "referenceVehicle": "UK March2008 Hyundai i10 Classic1.1SOHC,5MT. Five-door hatchback,RHD,standard14-inch steel wheels,notStyle orlater1.2.",
+  "identity": null,
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1289,
+      365,
+      357,
+      111
+    ],
+    "wheel": [
+      1467,
+      674,
+      357
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.scribd.com/document/36810349/i10-PDF-Brochure",
+      "fields": [
+        "exact identity and visual configuration"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bogmyrtle-2018",
+  "name": "Bogmyrtle 2018",
+  "stableCarId": "saved-car:Bogmyrtle 2018",
+  "referenceVehicle": "2018 US Jeep Grand Cherokee Trackhawk 6.2supercharged V8 eight-speed automatic, standard20-inch wheels; Auto-mode approximation",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "7b6a505236bc4a24cf15b4e603c09955bf2beef54279255e24d8e5ec7406b254",
+    "dashboard": "1b9368f5fde207a7fce656a3e190a09e9041dc965934ac6529020e122cc3022f",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

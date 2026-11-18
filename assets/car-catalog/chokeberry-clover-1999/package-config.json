@@ -1,0 +1,64 @@
+{
+  "id": "chokeberry-clover-1999",
+  "name": "Chokeberry Clover 1999",
+  "stableCarId": "saved-car:Chokeberry Clover 1999",
+  "runtimeId": "saved-car:Chokeberry Clover 1999",
+  "candidateId": "fiat-coupe-20v-turbo-plus-1999-supplemental-candidate",
+  "referenceVehicle": "1999 Fiat Coupe20V TurboPlus, Italy November1999 two-door four-seat front-drive2.0turbo inline-five six-speedmanual225/45R16, standardPlusbrace/Recaroseats; not16VTurbo,NAorLimitedEdition",
+  "identity": {
+    "year": 1999,
+    "make": "Fiat",
+    "model": "Coupe20V TurboPlus",
+    "trim": "Italy November1999 two-door four-seat front-drive2.0turbo inline-five six-speedmanual225/45R16, standardPlusbrace/Recaroseats; not16VTurbo,NAorLimitedEdition",
+    "market": "Italy"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.media.stellantis.com/it-it/fiat/press/motor-show-di-bologna-1999-coup-eacute-fiat",
+      "fields": [
+        "powerHp",
+        "engineDisplacementL",
+        "gearCount",
+        "transmission",
+        "tireSize",
+        "topSpeedMph"
+      ]
+    }
+  ]
+}

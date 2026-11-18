@@ -1,0 +1,85 @@
+{
+  "id": "sandcherry-clover-2011",
+  "name": "Sandcherry Clover 2011",
+  "stableCarId": "saved-car:Sandcherry Clover 2011",
+  "runtimeId": "saved-car:Sandcherry Clover 2011",
+  "candidateId": "mazda-mazda2-sport-2011-us-5mt-supplemental",
+  "referenceVehicle": "2011 United States Mazda Mazda2, USSport1.5five-speedmanual five-door,15-inchsteelwheels,noTouringspoiler; notlaterToyota-badgedsedan",
+  "identity": {
+    "year": 2011,
+    "make": "Mazda",
+    "model": "Mazda2",
+    "trim": "USSport1.5five-speedmanual five-door,15-inchsteelwheels,noTouringspoiler; notlaterToyota-badgedsedan",
+    "market": "United States"
+  },
+  "bodyClass": "five-door five-seat subcompact hatchback; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://news.mazdausa.com/download/2011-MAZDA2-Specifications.pdf",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "drivetrain",
+        "transmission",
+        "transmissionLabel",
+        "gearCount",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "tireSize",
+        "redlineRpm",
+        "frontWeightDistribution",
+        "groundClearanceM",
+        "fuelTankUSgal",
+        "steeringRatio",
+        "absEnabled",
+        "tractionControlEnabled"
+      ]
+    }
+  ]
+}

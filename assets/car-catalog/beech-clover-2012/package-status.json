@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "beech-clover-2012",
+  "name": "Beech Clover 2012",
+  "stableCarId": "saved-car:Beech Clover 2012",
+  "referenceVehicle": "2012 United States Ford Edge, SE 3.5-liter V6 FWD six-speed automatic, standard 17-inch wheels; not EcoBoost, Sport or AWD",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "beech-clover-2012",
+  "sourceHashes": {
+    "body": "00e91ecdd795912b424047bf4f0d5edd474245f42034869b624d71e515653e6f",
+    "dashboard": "1b55b9ff793767c42e0052d4b2ba40cd45706f35e446c6164cd06d55b8792b60",
+    "tires": "d719afad92c1dbb28096428f1cea6b4c57e183a9e6d925781c7c944bb763b4e8"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

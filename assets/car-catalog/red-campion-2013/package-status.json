@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "red-campion-2013",
+  "name": "Red Campion 2013",
+  "stableCarId": "saved-car:Red Campion 2013",
+  "referenceVehicle": "2013 US Mazda MX-5 Miata Sport NC 2.0 five-speed manual, vinyl soft top; not Club, PRHT or automatic",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "700e345ab6ce89b540ff250e97aeff14345f1e440d7fb95d5d4860e56a7028df",
+    "dashboard": "4869b85ed06013e2c0fd10f36e9eba22126119bfcb2c7ec6c6541492a68dc655",
+    "tires": "d06224e0d8c68921a2f4bd9998c45bc3b90693895c190b2da9a785bbb0f6afe6"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

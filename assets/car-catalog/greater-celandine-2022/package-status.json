@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "greater-celandine-2022",
+  "name": "Greater Celandine 2022",
+  "stableCarId": "saved-car:Greater Celandine 2022",
+  "referenceVehicle": "2022 US Cadillac CT5-V Blackwing, standard US six-speed manual sedan; no optional carbon-fiber aero or carbon-ceramic brake package",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "e8c7bef0e2df090a320631339f3520069cd960edbbaf3a13696737a502ce9716",
+    "dashboard": "fb3df26a9da10d9940389971e689f517ffd4b6ad118e47566ef46028fee308a2",
+    "tires": "2e1664a30dc2b684d70e4507764bc8772ff6b72b7ef1a0af718348a108d52e67"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

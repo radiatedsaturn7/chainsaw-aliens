@@ -1,0 +1,44 @@
+{
+  "id": "source-damson-clover-1970",
+  "name": "Damson Clover 1970",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1269,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      1526,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/laurel_hardtop_2000gx.html",
+      "fields": [
+        "exact identity and visual configuration"
+      ]
+    }
+  ]
+}

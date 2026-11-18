@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "source-fig-clover-2012",
+  "name": "Fig Clover 2012",
+  "stableCarId": "saved-car:Fig Clover 2012",
+  "referenceVehicle": "US2012 Lincoln MKS standard3.7V6,FWD,6AT. Four-door sedan,standard18-inch wheels,noEcoBoost/appearancepackage.",
+  "runtimeDocumentIdVerified": false,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "684aa2ce634de28f295fdf696c5dfeef6a892b385da219b1b398f2efd73be320",
+    "dashboard": "a3e61cdbcb338611e61a43bd5b23a26d13b82340be44de75faaebee9d4d71b0b",
+    "tires": "8db08d49968f37fec50d1060c9edd516f8109cebf0b3c19fb38d292777cec9e8"
+  },
+  "mapping": [
+    0,
+    7,
+    6,
+    3,
+    4,
+    5,
+    2,
+    1
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

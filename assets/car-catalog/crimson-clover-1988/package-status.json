@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "crimson-clover-1988",
+  "name": "Crimson Clover 1988",
+  "stableCarId": "saved-car:Crimson Clover 1988",
+  "referenceVehicle": "1988 UnitedStates MitsubishiStarion ESI-R widebody2.555LG54B intercooledturbo RWDfive-speedmanual",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "0f2a704de885cd7c77f52cd88f02259ff62c0961186bda24d1ca9ee43b40c60a",
+    "dashboard": "abdc1acdc87532c24aa65bc5f91a764091e3e277f4cbb280a21051840a7e9425",
+    "tires": "8db5269007cefb907e2b9fc9f1d215fda0a47385f690c1a05a38d931cd6a2ee0"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,86 @@
+{
+  "id": "yellow-vetchling-2013",
+  "name": "Yellow Vetchling 2013",
+  "stableCarId": "saved-car:Yellow Vetchling 2013",
+  "candidateId": "aston-martin-v12-vantage-s-2013-roster-candidate",
+  "referenceVehicle": "2013 UK Aston Martin V12 Vantage S 2013 launch coupe AM28 V12 Sportshift III seven-speed, standard forged wheels; not later dog-leg manual",
+  "identity": {
+    "year": 2013,
+    "make": "Aston Martin",
+    "model": "V12 Vantage S",
+    "trim": "2013 launch coupe AM28 V12 Sportshift III seven-speed, standard forged wheels; not later dog-leg manual",
+    "market": "United Kingdom"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1942,
+      809
+    ],
+    "cluster": [
+      1250,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      1500,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://device.report/m/28b6838bdad3f2391b90545524d3f9d51391c4f6a965931d07b171baf2c9313c",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "drivetrain",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "frontTire",
+        "rearTire",
+        "finalDrive",
+        "publishedWeightKg",
+        "fuelTankUSgal",
+        "topSpeedMph",
+        "zeroToSixtySec"
+      ]
+    },
+    {
+      "url": "https://media.astonmartin.com/V12-vantage-s/",
+      "fields": [
+        "identity",
+        "publishedPowerPS"
+      ]
+    }
+  ]
+}

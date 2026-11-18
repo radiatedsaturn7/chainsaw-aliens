@@ -1,0 +1,91 @@
+{
+  "id": "pygmy-clover-1965",
+  "name": "Pygmy Clover 1965",
+  "stableCarId": "saved-car:Pygmy Clover 1965",
+  "runtimeId": "saved-car:Pygmy Clover 1965",
+  "candidateId": "ford-mustang-gt-coupe-1965-roster-candidate",
+  "referenceVehicle": "1965 United States Ford Mustang GT Coupe, GT equipment group hardtop,225-hp-reference289four-barrel,standard synchronized3MT;not271HiPo",
+  "identity": {
+    "year": 1965,
+    "make": "Ford",
+    "model": "Mustang GT Coupe",
+    "trim": "GT equipment group hardtop,225-hp-reference289four-barrel,standard synchronized3MT;not271HiPo",
+    "market": "United States"
+  },
+  "bodyClass": "two-door-coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    3,
+    4,
+    5,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.lov2xlr8.no/brochures/ford/65mu/bilder/8.jpg",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "engineDisplacementL",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "fuelTankUSgal",
+        "steeringRatio",
+        "periodPublishedRatings"
+      ]
+    },
+    {
+      "url": "https://www.lov2xlr8.no/brochures/ford/65mu/bilder/9.jpg",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "engineDisplacementL",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "fuelTankUSgal",
+        "steeringRatio",
+        "periodPublishedRatings"
+      ]
+    }
+  ]
+}

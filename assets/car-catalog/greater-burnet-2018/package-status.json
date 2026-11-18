@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "greater-burnet-2018",
+  "name": "Greater Burnet 2018",
+  "stableCarId": "saved-car:Greater Burnet 2018",
+  "referenceVehicle": "2018 Renault Megane R.S. 280, Belgian-market Sport chassis five-door with manual gearbox; not Cup or Trophy",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "3d0b30610d6e3f6a917faf4dd981189fb2e6bccadc0f8017dcd7482f1cefead5",
+    "dashboard": "c779e1872d23b32a0be6c9cbc33d39f6b5002be95908d51909385deb4be17a79",
+    "tires": "fb92885fa6cdcb2f2421702864a67e4906bc2d2fd4ad7399372f60cc157a2f19"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

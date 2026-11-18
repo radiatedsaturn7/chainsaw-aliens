@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "yellow-loosestrife-2008",
+  "name": "Yellow Loosestrife 2008",
+  "stableCarId": "saved-car:Yellow Loosestrife 2008",
+  "referenceVehicle": "2008 US Dodge Magnum SRT8 6.1 naturally aspirated RWD5AT wagon with press-release documented staggered GoodyearF1 tires",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "bd83af4bf065b0a2ad9928dd4e8d85d059d546b92a0c6b5d9145df361c9aa5da",
+    "dashboard": "cbb839c7279b4c4dea0b2eacd2bf9e14d06e13e769299c228f0851f20d1752ab",
+    "tires": "5b055f2f097c171001d9479023472b2f2ed00e2d36e37322f6540cb589a68e8b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

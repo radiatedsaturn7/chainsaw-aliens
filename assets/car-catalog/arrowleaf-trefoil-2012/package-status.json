@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "arrowleaf-trefoil-2012",
+  "name": "Arrowleaf Trefoil 2012",
+  "stableCarId": "saved-car:Arrowleaf Trefoil 2012",
+  "referenceVehicle": "2012 United States Kia Rio5-door, LX1.6GDI hatchback6MT,standard15-inchsteelwheels,noISG",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "514aea896e9618f2fcd5313a29987b24b1d9ade2ae966b99dee9e7cb5da75d8a",
+    "dashboard": "8393151993914e14838899dd6bdf51b267d1136a5b8cef651acb65ecaffd6119",
+    "tires": "65483daf22e8d9870b1b8b47105746d816920673f8bebfa6ff0d3dddaec21b75"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "adderstongue-1992",
+  "name": "Adderstongue 1992",
+  "stableCarId": "saved-car:Adderstongue 1992",
+  "referenceVehicle": "1992 Japan Honda NSX Type R NA1, C30A 3.0 V6 five-speed manual, standard lightweight specification without optional air conditioning/audio",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "a462e509181e692a1f980bf427905bf0e670dca9e8851ea86eb2374a0a5ee670",
+    "dashboard": "974882b9cfbe49689ddf577bb24572b1dfbf69eb7625b29906fbe7f6b29c21c7",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

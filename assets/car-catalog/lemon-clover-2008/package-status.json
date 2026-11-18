@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "lemon-clover-2008",
+  "name": "Lemon Clover 2008",
+  "stableCarId": "saved-car:Lemon Clover 2008",
+  "referenceVehicle": "2008 Fiat Bravo Active EcoMultiJet105, UK five-door1.6diesel six-speed manual Ecopackage, notstandard105gearing,TJet or1.9MultiJet",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "b957b24375575a8a92cf87ec0fb67503ac47ed358b91c55da3e2441593533c81",
+    "dashboard": "be00ac0c0a784510e88c338b2d5c706944e2598baceb5ecc7f567db881682c13",
+    "tires": "995f01c19769546f5c28d6f678cabdbf34f10d15e1d17d253a16e356eec8459d"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

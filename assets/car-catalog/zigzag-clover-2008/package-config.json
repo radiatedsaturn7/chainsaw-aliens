@@ -1,0 +1,75 @@
+{
+  "id": "zigzag-clover-2008",
+  "name": "Zigzag Clover 2008",
+  "stableCarId": "saved-car:Zigzag Clover 2008",
+  "runtimeId": "saved-car:Zigzag Clover 2008",
+  "candidateId": "mazda-furai-2008-roster-candidate",
+  "referenceVehicle": "2008 Japan / US concept debut Mazda Furai, functional Courage C65-based three-rotor E100 concept, Detroit2008 debut; not787B or production RX-8",
+  "identity": {
+    "year": 2008,
+    "make": "Mazda",
+    "model": "Furai",
+    "trim": "functional Courage C65-based three-rotor E100 concept, Detroit2008 debut; not787B or production RX-8",
+    "market": "Japan / US concept debut"
+  },
+  "bodyClass": "two-seat closed mid-engine track concept; non-production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1213,
+      490,
+      550,
+      185
+    ],
+    "wheel": [
+      1493,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://newsroom.mazda.com/en/publicity/release/2007/200712/071212.html",
+      "fields": [
+        "powerHp",
+        "publishedFuel",
+        "publishedEngine",
+        "publishedChassis"
+      ]
+    },
+    {
+      "url": "https://www.cardesignnews.com/cars/ccotw-mazda-furai-2008/452817",
+      "fields": [
+        "estimated geometry/mass anchors",
+        "six-speed/RWD layout corroboration"
+      ]
+    },
+    {
+      "url": "https://en.media.mazda.ca/download/Furai_Eng.pdf",
+      "fields": [
+        "source-art-repair-reference"
+      ]
+    }
+  ]
+}

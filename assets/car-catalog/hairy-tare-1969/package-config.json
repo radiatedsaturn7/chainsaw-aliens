@@ -1,0 +1,70 @@
+{
+  "id": "hairy-tare-1969",
+  "name": "Hairy Tare 1969",
+  "stableCarId": "saved-car:Hairy Tare 1969",
+  "runtimeId": "saved-car:Hairy Tare 1969",
+  "candidateId": "fiat-dino-2-4-coupe-1969-roster-candidate",
+  "referenceVehicle": "1969 Italian Fiat Dino2400 Bertone coupe2+2,front-engine2.4NA V6,RWD ZFfive-speed; notDinoSpider,earlier2.0,FerrariDino246 orStratos.",
+  "identity": {
+    "year": 1969,
+    "make": "Fiat",
+    "model": "Dino 2400 Coupe",
+    "trim": "Italian Bertone2+2 coupe2.4NA V6 ZF5MT",
+    "market": "Italy"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.media.stellantis.com/it-it/heritage-hub-italy/press/fca-heritage-fa-ritorno-al-salon-retromobile",
+      "fields": [
+        "FiatDinoCoupeBertone",
+        "2.4version180metricCV"
+      ]
+    },
+    {
+      "url": "https://www.museomotori.unipa.it/scheda.php",
+      "fields": [
+        "1969\u20131972FiatDino2400application",
+        "2419cc",
+        "180CV6600",
+        "216Nm4600",
+        "ZF5MT"
+      ]
+    }
+  ]
+}

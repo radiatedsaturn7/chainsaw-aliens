@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "source-cherry-clover-1967",
+  "name": "Cherry Clover 1967",
+  "stableCarId": "saved-car:Cherry Clover 1967",
+  "referenceVehicle": "Japan1967 Prince Gloria Super6 S41D,column-shift3-speed plus overdrive. Four-door six-seat road sedan,period column-shift cabin,not1964 competition car.",
+  "runtimeDocumentIdVerified": false,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "0a8e1b4aa94c36b4e3dfcec7ba862598e9178f817b3089470acaaccaebec801d",
+    "dashboard": "17e8279339342a03a2c3675d53be2aa051493bbbb1418feb6878123c23461aec",
+    "tires": "925260dd0c49e937b5e158e4cebfb3ecb1252502c554ef95637d1431602b0c47"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

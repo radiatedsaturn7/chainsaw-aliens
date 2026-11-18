@@ -1,0 +1,54 @@
+{
+  "id": "forest-clover-2016",
+  "name": "Forest Clover 2016",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1269,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      1526,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://www.arielmotor.co.uk/our-history/",
+      "fields": [
+        "2016 supercharger option",
+        "300bhp",
+        "HondaK24 family"
+      ]
+    },
+    {
+      "url": "https://www.arielmotor.co.uk/used-ariel-vehicles/ariel-nomad-300-6/",
+      "fields": [
+        "2016registered300bhp2.4supercharged",
+        "six-speed",
+        "15-inch off-road setup"
+      ]
+    }
+  ]
+}

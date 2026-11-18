@@ -1,0 +1,83 @@
+{
+  "id": "island-clover-2006",
+  "name": "Island Clover 2006",
+  "stableCarId": "saved-car:Island Clover 2006",
+  "runtimeId": "saved-car:Island Clover 2006",
+  "candidateId": "honda-ridgeline-rt-2006-us-5at-awd-supplemental",
+  "referenceVehicle": "2006 United States Honda Ridgeline, RT first-generation3.5V6 VTM-4 five-speed automatic crew-cab pickup, standard steel wheels/covers; no accessories or moonroof",
+  "identity": {
+    "year": 2006,
+    "make": "Honda",
+    "model": "Ridgeline",
+    "trim": "RT first-generation3.5V6 VTM-4 five-speed automatic crew-cab pickup, standard steel wheels/covers; no accessories or moonroof",
+    "market": "United States"
+  },
+  "bodyClass": "four-door five-seat crew-cab pickup; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      245,
+      470,
+      440,
+      150
+    ],
+    "wheel": [
+      490,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://hondanews.com/en-US/honda-automobiles/releases/release-6b5f4c2fc8de8c77c9c6fc004c34c28f-2006-honda-ridgeline-overview",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "transmission",
+        "gearCount",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "curbKg",
+        "frontWeightDistribution",
+        "groundClearanceM",
+        "fuelTankUSgal",
+        "steeringRatio",
+        "revLimitRpm",
+        "absEnabled",
+        "tractionControlEnabled"
+      ]
+    }
+  ]
+}

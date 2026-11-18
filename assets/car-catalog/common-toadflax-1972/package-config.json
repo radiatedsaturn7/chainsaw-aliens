@@ -1,0 +1,66 @@
+{
+  "id": "common-toadflax-1972",
+  "name": "Common Toadflax 1972",
+  "stableCarId": "saved-car:Common Toadflax 1972",
+  "candidateId": "chevrolet-k10-custom-1972-roster-candidate",
+  "referenceVehicle": "1972 US Chevrolet K10 Custom KS10734 short115in-wheelbase Fleetside pickup,250cuin naturally aspirated inline-six, standard three-speed column manual,3.73axles, NewProcess205 operated in high-range2H RWD, unladen",
+  "identity": {
+    "year": 1972,
+    "make": "Chevrolet",
+    "model": "K10 Custom",
+    "trim": "KS10734 regular-cab6.5-foot Fleetside, standard250 inline-six/3MT, NP205 in road2H",
+    "market": "United States"
+  },
+  "bodyClass": "pickup",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.gm.com/content/dam/company/no_search/heritage-archive-docs/vehicle-information-kits/chevrolet-trucks/1972-Chevrolet-Truck.pdf",
+      "fields": [
+        "KS10734 identity",
+        "3955lb curb and axle loads",
+        "115in wheelbase and bodygeometry",
+        "250I6 SAE net85F ratings",
+        "ZW4 manual",
+        "NP205",
+        "3.73axles",
+        "G78-15B tires",
+        "20gal tank"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "harebell-rs-1973",
+  "name": "Harebell RS 1973",
+  "stableCarId": "saved-car:Harebell RS 1973",
+  "referenceVehicle": "1973 European Porsche 911 Carrera RS 2.7 M471 Sport 5MT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "b9633bd57f386546edbc65458aec3d339bbb732ff068c231fb09147d6bc92cb0",
+    "dashboard": "29ea04264bd94e048d3ccf7630f8db4673de92156698d2d5201531a9fc32ac81",
+    "tires": "e2edc8cd145a86d457930c253408f9bf06fb34f1d2b1fdf669d437127c26e8ac"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

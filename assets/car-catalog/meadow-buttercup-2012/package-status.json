@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "meadow-buttercup-2012",
+  "name": "Meadow Buttercup 2012",
+  "stableCarId": "saved-car:Meadow Buttercup 2012",
+  "referenceVehicle": "2012 Canadian Dodge Challenger SRT8 392 6.4 naturally aspirated HEMI RWD TR6060 six-speed manual, standard245/45ZR20 all-season tires",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "0dfad71b3462c2a3b1ed4331b50c8304cc1003da0a39d0e3bae28c38fcc134d6",
+    "dashboard": "7c9c00ba7a8e01cd1b0da0e48fca36b6d94a54d067026f323067e5aa917babae",
+    "tires": "57ebfc0e017a813601137780b78ea06055e7ce69d7279b75f5c54081a755d5e3"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

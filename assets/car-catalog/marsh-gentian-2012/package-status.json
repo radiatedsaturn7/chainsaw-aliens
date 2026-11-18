@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "marsh-gentian-2012",
+  "name": "Marsh Gentian 2012",
+  "stableCarId": "saved-car:Marsh Gentian 2012",
+  "referenceVehicle": "2012 UK Lotus Exige S 3.5 supercharged V6 coupe six-speed manual, standard non-Race-Pack specification",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "e5e2c61623341aa233cfd9370978ed07020122404803ff1b8cf4f41c4b4421f6",
+    "dashboard": "acce7588c6875b75c15523721a06c202c80b98f2bb920cbd44a3cd814d444999",
+    "tires": "e938da90ba560afd9a6283150a3b80fcef08b2b35fc6788d036ee09e3116293b"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

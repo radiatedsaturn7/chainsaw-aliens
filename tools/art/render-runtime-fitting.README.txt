@@ -1,0 +1,9 @@
+Static native fitting preview (not gameplay acceptance)
+
+node tools/art/render-runtime-fitting-native.mjs REPO COMPLETE_CAR_DOCUMENT OFFLINE_OVERLAY_DIRECTORY EMPTY_OUTPUT_DIRECTORY
+
+Requires Node24 and @napi-rs/canvas0.1.100 resolved from REPO/node_modules, plus DejaVu Sans and DejaVu Sans Mono fonts. Keep render-runtime-fitting-core.mjs beside the entry point. Do not replace an existing dependency directory.
+
+Checks exact document SHA/id/name, renders8 exterior views and desktop/portrait cockpits using native engine methods, with100km/h,5500rpm,gear3 samples. Source and shared assets are read-only. Output must be absent or empty.
+
+These static renders do not verify gameplay camera, motion, wheel ground contact, smoke, browser typography or touch. Use a supported sandboxed browser for runtime acceptance.

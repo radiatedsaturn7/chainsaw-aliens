@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "moss-clover-2003",
+  "name": "Moss Clover 2003",
+  "stableCarId": "saved-car:Moss Clover 2003",
+  "referenceVehicle": "2003 Fiat Ulysse Dynamic2.0 16V, UK February2003secondgenerationseven-seatpassengerMPV petrolBE4five-speedmanual, standard15inchsteelwheels/nooptionalroofbars; notautomatic,diesel,Prestigio6-seat orbadgeclones807/C8/Phedra",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "c405eea57295714aadbaca2477f16a26d7259ca5b4028eac220ce0cfaca70b59",
+    "dashboard": "ca7d471814187c9949574677024ac1d86680350538674babdae4a0a3b8c2952d",
+    "tires": "41181eaed84e1f198e17a02af13dbdfd77be086f77a8b76324fd915ebb41cc93"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

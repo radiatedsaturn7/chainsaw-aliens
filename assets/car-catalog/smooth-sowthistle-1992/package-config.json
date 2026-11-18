@@ -1,0 +1,57 @@
+{
+  "id": "smooth-sowthistle-1992",
+  "name": "Smooth Sowthistle 1992",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      198,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      475,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://xr793.com/wp-content/uploads/2019/10/1992-VW-GTI.pdf",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "fuelTankUSgal"
+      ]
+    },
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/golf-2-19831991-19470",
+      "fields": [
+        "generation relationship only"
+      ]
+    }
+  ]
+}

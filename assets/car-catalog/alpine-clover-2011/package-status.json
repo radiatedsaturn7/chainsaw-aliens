@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "alpine-clover-2011",
+  "name": "Alpine Clover 2011",
+  "stableCarId": "saved-car:Alpine Clover 2011",
+  "referenceVehicle": "2011 Pagani Huayra Coupe, early launch700hp, notBC/R/later730hp",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "3ee5a8e8886b1d2af3635e8cc8314c90b22a710dc1f1ac89c98ae1654cfbeb98",
+    "dashboard": "80d3eec95f6b4b5886650616a13d44f2de110403fe991f3057542f21d89bcd1b",
+    "tires": "d9217a4a81d9adc43b0d1ad74c83d7f12737bf5cffdb71e15fc6b029a5bcdd96"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

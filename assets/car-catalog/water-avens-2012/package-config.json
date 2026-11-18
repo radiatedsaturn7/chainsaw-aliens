@@ -1,0 +1,50 @@
+{
+  "id": "water-avens-2012",
+  "name": "Water Avens 2012",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      245,
+      440,
+      440,
+      140
+    ],
+    "wheel": [
+      465,
+      740,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://usa.infinitinews.com/en-US/releases/release-161fd67ea0a24761af8fe0a835af4295-2012-ipl-g-coupe-press-kit",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "gearCount",
+        "transmission"
+      ]
+    }
+  ]
+}

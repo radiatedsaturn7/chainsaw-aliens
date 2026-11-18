@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "blue-trefoil-2002",
+  "name": "Blue Trefoil 2002",
+  "stableCarId": "saved-car:Blue Trefoil 2002",
+  "referenceVehicle": "2002 Germany Volkswagen Lupo GTI1.6 16V six-speed manual three-door,standard15-inch wheels; not earlier5MT,FSI or3L",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "6ef982145e23c55be8c1a1d54312a6edf9f9746c1f1edb98a94714872b394962",
+    "dashboard": "3efee0a3ba0fc2832a9cdf5df7b462e9e75d86462232af46fc768ed790a0c43b",
+    "tires": "ce47ce324b2fc79289c4ebc9317cd44f60ba929a6ae94d31b7fe045bdfed61bb"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "marsh-violet-2007",
+  "name": "Marsh Violet 2007",
+  "stableCarId": "saved-car:Marsh Violet 2007",
+  "referenceVehicle": "2007 Italy Alfa Romeo8C Competizione productioncoupe4.691L naturallyaspiratedV8 six-speedrobotised;not2003concept orSpider",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "088447765317384442e9fb14cf3659bfae495034740ea4ef735cd6c295566e68",
+    "dashboard": "12c3fc27a2ab3668b8e3d0c082662717a127b8905fcce67aab6a7a900709efbf",
+    "tires": "c5708f775e6dc0486616f5218b233d842cf5a2a72c2c9a678138f23fafdd2b3a"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

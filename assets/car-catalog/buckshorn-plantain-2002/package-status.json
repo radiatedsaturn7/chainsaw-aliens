@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "buckshorn-plantain-2002",
+  "name": "Buckshorn Plantain 2002",
+  "stableCarId": "saved-car:Buckshorn Plantain 2002",
+  "referenceVehicle": "2002 Canadian Pontiac Firebird Trans Am coupe with RamAirPerformanceandHandlingPackage(WS6),5.7LS1V8,optional six-speedmanualwithHurstshifter,3.42LSD,P275/40ZR17,closedT-top;notCollectorEdition,convertible,SLPFirehawkorbase310hp",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "fe5e8bb183065b0cb1e8f078f4ff4f6a96093fb178c1e74fa0cf8fc8b280349e",
+    "dashboard": "07d1a41c8cd17f2284c7e6b916c97fe2751062181f47628e5428a93b65405e6e",
+    "tires": "dfdf296a3da72f90e9c28ced1a1cd487d2b7f84c1a2a5df73fa6db93358e14f8"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

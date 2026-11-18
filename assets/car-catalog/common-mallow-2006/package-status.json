@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "common-mallow-2006",
+  "name": "Common Mallow 2006",
+  "stableCarId": "saved-car:Common Mallow 2006",
+  "referenceVehicle": "2006 US HUMMER H1 Alpha four-door wagon, standard wheels/GSA tires, no Adventure Package or winch; high-range full-time 4WD",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "95c219a92d11a240932620f7e108ffee4916855a6d36863382de6b094319e572",
+    "dashboard": "cdf6c52e6bd0e4509650c2bf43cfdceef11455eaa621c6ccda49b7edb79ccd73",
+    "tires": "57ae2da4b6538a8b549f8475b36fee98c7f89a567bc06ea39e800ac217b49e07"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

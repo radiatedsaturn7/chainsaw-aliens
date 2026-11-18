@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "snowberry-clover-2005",
+  "name": "Snowberry Clover 2005",
+  "stableCarId": "saved-car:Snowberry Clover 2005",
+  "referenceVehicle": "2005 United States Lincoln LS, V8 Sport3.9DOHCVCT rear-drive five-speedSelectShift automatic,standard17-inchwheels; notV6,Ultimate orLSE",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "f17a2ad0302ab0b65c691d812352576d273f1c002aaec64d5a7f8713c018fd7b",
+    "dashboard": "135f1bef4da8252c0cde11c56ba1db033d4d00c8acabf5d9388ebb66f252f785",
+    "tires": "ff1d3e7104624ecfa8868d26361b93e0e4876ea8efb4044c3ec0425274c283db"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

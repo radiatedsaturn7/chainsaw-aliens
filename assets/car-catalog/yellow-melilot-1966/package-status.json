@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "yellow-melilot-1966",
+  "name": "Yellow Melilot 1966",
+  "stableCarId": "saved-car:Yellow Melilot 1966",
+  "referenceVehicle": "1966 US-export Ford Lotus Cortina Mk I 1558 cc twin-cam two-door sedan, four-speed manual, 4.125 rear axle, leaf-spring rear suspension; October 1965 USA factory brochure configuration, not earlier A-frame or competition car.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "ae163dbbfcffe6214fd1190a9deb18884363d2dab1e209f5fd04dd90ad31ac9d",
+    "dashboard": "ca089eae75bdb5d58e4acd0ca51928b19334b5f675544aae77397c3780c9256e",
+    "tires": "917be7a5684cabef2565df923a88936ed1f6b0230d3626cc410b988769342b9c"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

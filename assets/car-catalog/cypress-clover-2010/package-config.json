@@ -1,0 +1,48 @@
+{
+  "id": "cypress-clover-2010",
+  "name": "Cypress Clover 2010",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      426,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://www.media.stellantis.com/at-de/peugeot/press/peugeot-rcz-der-supersportler-made-in-austria",
+      "fields": [
+        "powerHp",
+        "engineDisplacementL",
+        "torqueNm",
+        "gearCount",
+        "transmission"
+      ]
+    }
+  ]
+}

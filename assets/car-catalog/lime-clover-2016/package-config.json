@@ -1,0 +1,47 @@
+{
+  "id": "lime-clover-2016",
+  "name": "Lime Clover 2016",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      198,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      475,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://www.media.stellantis.com/pl-pl/fiat/press/fiat-tipo-%E2%80%9Eurodzony%E2%80%9D-sedan-premierowy-cennik-na-rynku-polskim",
+      "fields": [
+        "powerHp",
+        "engineDisplacementL",
+        "gearCount",
+        "transmission"
+      ]
+    }
+  ]
+}

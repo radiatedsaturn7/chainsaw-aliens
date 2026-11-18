@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "barberry-clover-2012",
+  "name": "Barberry Clover 2012",
+  "stableCarId": "saved-car:Barberry Clover 2012",
+  "referenceVehicle": "2012 United States Chevrolet Impala, LS3.6SIDI DOHCV6 FWD six-speedautomatic,standard16-inchaluminumwheels andfrontbucketseats; notpolice,LTZ,SS or1964rear-drive",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "baf4788c3c068a66349416d82efb28b0f35de74948910ec77cac3138dd3caee7",
+    "dashboard": "bec2111a5f29e01976720d151844cf6528220c907588eb6a0bfcb608400444b8",
+    "tires": "fcd40a671ee5457779d3960e07cdf99c97a8d292a49efa1d862a4633064368a9"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

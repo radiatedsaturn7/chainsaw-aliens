@@ -1,0 +1,70 @@
+{
+  "id": "slender-tare-1995",
+  "name": "Slender Tare 1995",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1269,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      1526,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/181_nismo_gt-r_lm_road_car.html",
+      "fields": [
+        "powerKw",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize"
+      ]
+    },
+    {
+      "url": "https://www.nissan.co.jp/HERITAGE/DETAIL/181.html",
+      "fields": [
+        "identity",
+        "aspiration",
+        "source conflict"
+      ]
+    },
+    {
+      "url": "https://www.thedrive.com/culture/heres-how-the-legendary-1995-skyline-r33-gt-r-lm-road-car-came-to-be",
+      "fields": [
+        "RWD corroboration only"
+      ]
+    }
+  ]
+}

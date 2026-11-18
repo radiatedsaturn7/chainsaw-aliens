@@ -1,0 +1,67 @@
+{
+  "id": "guelder-clover-2013",
+  "name": "Guelder Clover 2013",
+  "stableCarId": "saved-car:Guelder Clover 2013",
+  "runtimeId": "saved-car:Guelder Clover 2013",
+  "candidateId": "fiat-500l-pop-star-twinair105-2013-supplemental-candidate",
+  "referenceVehicle": "2013 Fiat 500L Pop StarTwinAir105, UK February2013 short-body five-seat compactMPV0.9TwinAir six-speedmanual normalpower mode, standard16inchalloys; notMPW,Living,Trekking,ECO or500citycar",
+  "identity": {
+    "year": 2013,
+    "make": "Fiat",
+    "model": "500L Pop StarTwinAir105",
+    "trim": "UK February2013 short-body five-seat compactMPV0.9TwinAir six-speedmanual normalpower mode, standard16inchalloys; notMPW,Living,Trekking,ECO or500citycar",
+    "market": "UK"
+  },
+  "bodyClass": "minivan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1289,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      1507,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.media.stellantis.com/uk-en/fiat/press/fiat-500l-500-goes-large-press-pack",
+      "fields": [
+        "engineDisplacementL",
+        "publishedPowerHp",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "gearCount",
+        "transmission",
+        "lengthM",
+        "topSpeedMph"
+      ]
+    }
+  ]
+}

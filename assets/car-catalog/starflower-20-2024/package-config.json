@@ -1,0 +1,57 @@
+{
+  "id": "starflower-20-2024",
+  "name": "Starflower 20 2024",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      238,
+      476,
+      476,
+      159
+    ],
+    "wheel": [
+      476,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://www.subaru.com/content/dam/subaru/downloads/pdf/brochures/2024/MY24_Impreza_Brochure.pdf",
+      "pages": [
+        8,
+        9,
+        12
+      ],
+      "fields": [
+        "trim",
+        "displacement",
+        "power/rpm",
+        "torque/rpm",
+        "curb mass",
+        "dimensions/tracks",
+        "AWD/CVT",
+        "fuel capacity",
+        "suspension distinction"
+      ]
+    }
+  ]
+}

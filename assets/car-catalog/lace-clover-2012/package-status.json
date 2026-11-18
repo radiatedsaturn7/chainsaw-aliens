@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "lace-clover-2012",
+  "name": "Lace Clover 2012",
+  "stableCarId": "saved-car:Lace Clover 2012",
+  "referenceVehicle": "2012 Fiat Panda 4x4 TwinAir85, Italy third-generation875cc turbo twin-cylinder six-speed manual, normal85CV mode, standard175/65R15M+S; not ECO77.5CV, diesel,Trekking orpreviousgeneration",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "4214848281a86ede9e453ba82f4619b8001297a045adae39aceff20c1f51205b",
+    "dashboard": "cb4860060aa7356901cf03ffbc9b349c70bc7fad6c066d9a46e0001d0d9f644a",
+    "tires": "d10b2e119c1fb1709b8c08c625e71ba111e57b5d6d0bdfd4204133136d1a340a"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

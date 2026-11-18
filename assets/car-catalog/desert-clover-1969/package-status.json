@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "desert-clover-1969",
+  "name": "Desert Clover 1969",
+  "stableCarId": "saved-car:Desert Clover 1969",
+  "referenceVehicle": "1969 United States Pontiac GTO Judge, standard400RamAirV8 andstandardfullysynchronized3MT,hardtop",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "7f5d1233348d055edef0de788c40ac58794e22a2397959b50b930e4727591bee",
+    "dashboard": "3bdb7e8c6d7ef82e76dde9e3d722d8a543bc40df4ac1e6c45f6e1c44d0148333",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

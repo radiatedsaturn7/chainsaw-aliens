@@ -1,0 +1,54 @@
+{
+  "id": "source-pawpaw-clover-2012",
+  "name": "Pawpaw Clover 2012",
+  "stableCarId": "saved-car:Pawpaw Clover 2012",
+  "runtimeId": "saved-car:Pawpaw Clover 2012",
+  "runtimeDocumentId": null,
+  "candidateId": null,
+  "referenceVehicle": "US2012 Hyundai Genesis Coupe base2.0T,RWD,6MT. Two-door coupe,standard18-inch wheels,2012BODY,not2013update orR-Spec.",
+  "identity": null,
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    3,
+    4,
+    5,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      238,
+      420,
+      436,
+      127
+    ],
+    "wheel": [
+      476,
+      714,
+      377
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Hyundai/Genesis%20Coupe/Hyundai_US%20GenesisCoupe_2012.pdf",
+      "fields": [
+        "exact identity and visual configuration"
+      ]
+    }
+  ]
+}

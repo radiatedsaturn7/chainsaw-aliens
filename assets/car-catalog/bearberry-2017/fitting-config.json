@@ -1,0 +1,163 @@
+{
+  "id": "bearberry-2017",
+  "name": "Bearberry 2017",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "780b5005119f35b8c8beaf587ca3d1608819752f133156d70a0f068973bb3028",
+  "sourceDirectory": "assets/car-catalog/bearberry-2017",
+  "sourceHashes": {
+    "body": "9dd4a39288641a72bd6f400d188cdcb211c6afdf9f00cc4fefd62e502f1c9181",
+    "dashboard": "60c731d4b24150490271876edcae53f6c1d8e86fbe7e1f7814efd85a2b89b8b7",
+    "tires": "94a1215f81aec9b7fb79086b5b752460f0dafa0e7d5421f04d15f18240900d2b"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 97.57,
+        "y": 328.19,
+        "radius": 47.9
+      },
+      {
+        "wheel": "fr",
+        "x": 319.32,
+        "y": 328.19,
+        "radius": 47.9
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 606.71,
+        "y": 314.0,
+        "radius": 42.58
+      },
+      {
+        "wheel": "rr",
+        "x": 784.11,
+        "y": 276.74,
+        "radius": 31.93
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 933.12,
+        "y": 308.68,
+        "radius": 46.12
+      },
+      {
+        "wheel": "rr",
+        "x": 1248.9,
+        "y": 306.9,
+        "radius": 46.12
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 420.44,
+        "y": 706.05,
+        "radius": 31.93
+      },
+      {
+        "wheel": "rr",
+        "x": 576.55,
+        "y": 746.85,
+        "radius": 44.35
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 95.8,
+        "y": 752.18,
+        "radius": 46.12
+      },
+      {
+        "wheel": "rl",
+        "x": 324.64,
+        "y": 752.18,
+        "radius": 46.12
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1578.86,
+        "y": 310.45,
+        "radius": 44.35
+      },
+      {
+        "wheel": "fl",
+        "x": 1722.55,
+        "y": 273.2,
+        "radius": 30.16
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 920.71,
+        "y": 730.89,
+        "radius": 46.12
+      },
+      {
+        "wheel": "fl",
+        "x": 1236.48,
+        "y": 730.89,
+        "radius": 46.12
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1362.43,
+        "y": 707.83,
+        "radius": 30.16
+      },
+      {
+        "wheel": "fl",
+        "x": 1507.9,
+        "y": 748.63,
+        "radius": 42.58
+      }
+    ]
+  },
+  "wheelFit": "average",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      248,
+      486,
+      436,
+      159
+    ],
+    "wheel": [
+      545,
+      763,
+      317
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e2e9e8",
+    "viewportWheelScale": 2.04,
+    "gaugeBackground": "#111111"
+  },
+  "steeringWheelSource": {
+    "artRef": "steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementNotes": "Individual source atlas and dashboard inspected on 1000x500 body / 1000x400 dash preview. Original-pixel coordinates; wheel hubs estimated at arch circle centers. Runtime render review still required."
+}

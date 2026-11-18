@@ -1,0 +1,49 @@
+{
+  "id": "field-scabious-2022",
+  "name": "Field Scabious 2022",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      426,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://www.hyundainews.com/assets/documents/original/48856-2022ElantraNPricingRelease30Nov2021.pdf",
+      "fields": [
+        "identity",
+        "powerHp",
+        "torqueLbFt",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount"
+      ]
+    }
+  ]
+}

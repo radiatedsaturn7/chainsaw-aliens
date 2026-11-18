@@ -1,0 +1,48 @@
+{
+  "id": "greater-celandine-2022",
+  "name": "Greater Celandine 2022",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1672,
+      941
+    ],
+    "cluster": [
+      201,
+      565,
+      401,
+      188
+    ],
+    "wheel": [
+      401,
+      885,
+      268
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://news.cadillac.com/newsroom.detail.html/Pages/news/us/en/2021/aug/0810-blackwing.html",
+      "fields": [
+        "powerHp",
+        "torqueLbFt",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount"
+      ]
+    }
+  ]
+}

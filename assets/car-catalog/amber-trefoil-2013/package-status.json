@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "amber-trefoil-2013",
+  "name": "Amber Trefoil 2013",
+  "stableCarId": "saved-car:Amber Trefoil 2013",
+  "referenceVehicle": "2013 United States Kia Sportage, baseSportage2.4MPI ULEV176hp FWD6MT,16-inchwheels",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "e5b19ab3f7d03bfcfe0f9deb36075005528d50760bcfa343318034be4afe5aa1",
+    "dashboard": "9fa24ca8c9d31574f2b54fb657c4950f9d861293623b4e5270ef78cabfcbf155",
+    "tires": "21e6039e49c9044a90806270ce02e3d28643762ef5d304849c9b61060b6df5bf"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

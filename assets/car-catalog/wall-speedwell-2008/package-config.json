@@ -1,0 +1,69 @@
+{
+  "id": "wall-speedwell-2008",
+  "name": "Wall Speedwell 2008",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      426,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://newsroom.bmwgroup.com/americas/download/703033a9-613d-4d98-9861-64031dfb7d07/20260728123812599-36.pdf",
+      "fields": [
+        "identity",
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "curbKg",
+        "lengthIn",
+        "widthIn",
+        "heightIn",
+        "wheelbaseIn",
+        "trackFrontIn",
+        "trackRearIn",
+        "frontWeightDistribution",
+        "dragCoefficient",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "transmission",
+        "gearCount",
+        "tireSize",
+        "frontTire",
+        "rearTire",
+        "fuelTankUSgal",
+        "zeroToSixtySec",
+        "topSpeedMph"
+      ]
+    }
+  ]
+}

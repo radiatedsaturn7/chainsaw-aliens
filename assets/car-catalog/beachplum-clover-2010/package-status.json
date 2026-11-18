@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "beachplum-clover-2010",
+  "name": "Beachplum Clover 2010",
+  "stableCarId": "saved-car:Beachplum Clover 2010",
+  "referenceVehicle": "2010 United States Scion tC, 2010USmonospec2.4five-speedmanual,standardpanoramicglassroof17-inchalloys; noTRDsupercharger/LSD,ReleaseSeries orsecondgeneration2.5",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "0425f3bd894d8e1e65e5e4f5b8c762836304400cd53460de05b8cb411b289870",
+    "dashboard": "d8bb1e6326f6dc5096dcc72cba9c35a2ddd1089485a40aeeebfb70481ee657fc",
+    "tires": "cbf7d51bbab063440aa38f54e429440f9b001cc64d41a13e7bda0b5394b92ff1"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

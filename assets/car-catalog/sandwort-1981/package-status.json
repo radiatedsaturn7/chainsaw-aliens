@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "sandwort-1981",
+  "name": "Sandwort 1981",
+  "stableCarId": "saved-car:Sandwort 1981",
+  "referenceVehicle": "1981 European BMW M1 E26 road coupe, five-speed manual; not Procar",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "e728e8ce62b923ddd08b417b3e2961a1c4e88dd70311838297b7f47f4733eaf2",
+    "dashboard": "42d829a36d09b66612fb291fc45d6a5965cf30da2bbf7562e20dfd33389c7548",
+    "tires": "37f6589768ddefd050e0b85b101266cd2f029b8e0d9fc1d360b22f91bd0abee6"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

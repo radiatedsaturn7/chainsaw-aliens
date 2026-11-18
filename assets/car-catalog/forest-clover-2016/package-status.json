@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "forest-clover-2016",
+  "name": "Forest Clover 2016",
+  "stableCarId": "saved-car:Forest Clover 2016",
+  "referenceVehicle": "2016 UK Ariel Nomad300 first-generation Honda2.4 supercharged six-speed manual; not235NA,NomadR orNomad2",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "d8ca376ddd9daab58e89e32474242589429053c58eba87e101fc2964e822a55b",
+    "dashboard": "d2ab260de058ef302dd20f0d05e996b6a57ed8a94315ce13185cb3d8dcad16a9",
+    "tires": "f21ec05ab2b0c1ab4f3074595ecf7dac96f87251204aa29ea60b9db4f7f472c7"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

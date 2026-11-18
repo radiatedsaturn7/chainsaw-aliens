@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "lesser-pimpernel-1970",
+  "name": "Lesser Pimpernel 1970",
+  "stableCarId": "saved-car:Lesser Pimpernel 1970",
+  "referenceVehicle": "1970 Japan Honda S800 M roadster 791cc DOHC four, four-speed manual, final 1968-1970 specification; not chain-drive early S800 or coupe",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "4b6b6a16590001195aa1f9d747b8e39bec856df45acb8e24215bbcff4120f370",
+    "dashboard": "1961cdcac4b56c1e3a50e0f164620906621eb5d7417ab870b6f25fb4f833f54e",
+    "tires": "89c791844f27143283ecbf908ede1828359578101335335b080dd5baa03c5888"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

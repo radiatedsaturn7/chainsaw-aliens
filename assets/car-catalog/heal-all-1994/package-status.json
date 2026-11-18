@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "heal-all-1994",
+  "name": "Heal-all 1994",
+  "stableCarId": "saved-car:Heal-all 1994",
+  "referenceVehicle": "1994 Japan Honda Prelude Si E-BA8 2WS F22B 2156cc non-VTEC naturally aspirated DOHC16 inline-four FWD5MT; not US 2.3 Si, VTEC Si-VTEC, BA9 4WS or fifth-generation H22A4",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "4b199b03bbc8df955fdc076ed2b97aa1d6385e65c4ca074632041269244b44ed",
+    "dashboard": "f222369e77b713cf063ad25be3cc921cc593b7ffcd81f3d627c4b858bd241726",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

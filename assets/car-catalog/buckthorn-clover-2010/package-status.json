@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "buckthorn-clover-2010",
+  "name": "Buckthorn Clover 2010",
+  "stableCarId": "saved-car:Buckthorn Clover 2010",
+  "referenceVehicle": "2010 United States Dodge Caliber, Express2.0 dualVVT naturallyaspirated FWD five-speedmanual, standard15-inch wheelcovers, cloth; not CVT,Heat,Rush orSRT4",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "79a1a32fe6f125f043ee4a152a40d0459804ef959e75a6c21f5a7b7442cd6ca4",
+    "dashboard": "b7ee8d6c08c75c2f801321a4d690a1a1a7423301566e40e1bec17cf7d776cc90",
+    "tires": "da0b379bfdfd1b665bd43f534cebd3e3846a1e9ee0973b6bc492090b0a161951"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

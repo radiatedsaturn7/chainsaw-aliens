@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bighead-clover-2012",
+  "name": "Bighead Clover 2012",
+  "stableCarId": "saved-car:Bighead Clover 2012",
+  "referenceVehicle": "2012 United States Nissan Versa, US1.6S N17 four-door sedan HR16DE gasoline5MT, base15-inch steel wheels/fullcovers; not CVT,SV,SL or carryover1.8hatchback",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "a7a89cacdb5d6c5f63616f03cf9bceafc8f22a948b5f6e4d14bc9124dbbb2eb3",
+    "dashboard": "93f1478d449af9da5975306291fe8a0028fd9292bb5a27a162ed58473afba4b6",
+    "tires": "e5edacc4f73dc9130aa000e568365b1f296973cb2149d20b2c9c68b87879d3e4"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

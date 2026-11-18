@@ -1,0 +1,65 @@
+{
+  "id": "mouseear-hawkweed-1986",
+  "name": "Mouseear Hawkweed 1986",
+  "stableCarId": "saved-car:Mouseear Hawkweed 1986",
+  "candidateId": "ford-mustang-svo-1986-roster-candidate",
+  "referenceVehicle": "1986 US Ford Mustang SVO 2.3 EFI intercooled turbo hatchback,5MT,standard equipment,noCompetitionPrep",
+  "identity": {
+    "year": 1986,
+    "make": "Ford",
+    "model": "Mustang SVO",
+    "trim": "2.3 EFI intercooled turbo hatchback,5MT,standard equipment,noCompetitionPrep",
+    "market": "United States"
+  },
+  "bodyClass": "hatchback",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      238,
+      468,
+      555,
+      174
+    ],
+    "wheel": [
+      496,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Ford/Mustang/Ford_US%20Mustang_1986.pdf",
+      "fields": [
+        "200hp@5000SAEJ1349",
+        "SVO2.3turbo5MT",
+        "3.73 axle",
+        "3140lb SVOcurb",
+        "SVO-specificgeometry",
+        "225/50VR16",
+        "15.4USgal",
+        "15:1steering"
+      ]
+    }
+  ]
+}

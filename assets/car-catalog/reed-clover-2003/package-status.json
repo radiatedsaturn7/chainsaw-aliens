@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "reed-clover-2003",
+  "name": "Reed Clover 2003",
+  "stableCarId": "saved-car:Reed Clover 2003",
+  "referenceVehicle": "2003 Fiat Stilo MultiWagonDynamic1.8 16V, UK February2003five-door estate C510five-speedmanual, standardDynamic16inchalloys, fixedroof; not3/5-doorhatch,Abarth,JTDorSkyWindow",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "e84d8e3cb7b7657a10c488c8da4e736804a0e4e24184f5610f9903579873503a",
+    "dashboard": "8433abea8078e4411ecbd1c48f529f3f387e8b8f3e969fa82d9176c17f38cc27",
+    "tires": "3a51e351372a7762b88ddc7e1d6a7490b740b502ec2cdbef5a991d8fe053ac64"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

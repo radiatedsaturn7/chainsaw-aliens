@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "kidney-vetch-1966",
+  "name": "Kidney Vetch 1966",
+  "stableCarId": "saved-car:Kidney Vetch 1966",
+  "referenceVehicle": "1966 Jaguar XJ13, solemid-engine5.0DOHCV12 prototype,ZF5MT; neverraced, notroadproduction orreplica",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "f24358b920df41d1011a73fbb45d6e2c504ca2c0cd80593c2753f3d1bfddb8dd",
+    "dashboard": "b225df39921e2e659d14706e4dbc5da1791300e672f140cc9a9d74fc88e71770",
+    "tires": "5f2c919c8fa38aae64ae32ee9baa029b34d322a86e3513a9026c293764f12eea"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

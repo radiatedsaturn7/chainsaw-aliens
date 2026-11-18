@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "white-melilot-1997",
+  "name": "White Melilot 1997",
+  "stableCarId": "saved-car:White Melilot 1997",
+  "referenceVehicle": "1997 Japan Mitsubishi Pajero Evolution E-V55W road homologation SUV, 3496cc6G74MIVEC naturally aspiratedV6,5MT,1970kg; Montero Evolution backlog label resolved to Japanese Pajero, not2005MPR11 Dakarprototype",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "50698f1d3ad3a91cd91fde0dbb861dcbfb31d4b7e47e9b8f4a9adb62db01625b",
+    "dashboard": "8a2f81f30a9ad5347d544f8cbce0e03bc4581c7881d3f43ad10193725473e6ed",
+    "tires": "d6fedc9197cc52d4e03c1d1536ce0ef8309ba1bd7e56a8b8d42edbacbab13d87"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    3,
+    4,
+    5,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

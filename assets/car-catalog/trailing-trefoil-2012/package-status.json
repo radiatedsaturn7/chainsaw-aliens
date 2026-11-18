@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "trailing-trefoil-2012",
+  "name": "Trailing Trefoil 2012",
+  "stableCarId": "saved-car:Trailing Trefoil 2012",
+  "referenceVehicle": "2012 Renault Espace CelsiumTCe170, Germany January2012 standard-length five-seat EspaceIV petrolturbo six-speedmanual, notGrand,optionalrearrowseats,automatic,diesel orlatercrossover",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "trailing-trefoil-2012",
+  "sourceHashes": {
+    "body": "0d46de1e291ac4cc76481146fa945b21f4908e169c916cbc9918b4bbdfa31912",
+    "dashboard": "998d755fe9b8e1044891471695e2d60542708dd3f1775c096a38e702cf531ea2",
+    "tires": "437b68ac8add5e6589ed2cddf9ae0170511a8cd347a6cbf6ebbb26bb08817bcf"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

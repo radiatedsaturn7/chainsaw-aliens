@@ -1,0 +1,85 @@
+{
+  "id": "toothed-medick-2002",
+  "name": "Toothed Medick 2002",
+  "stableCarId": "saved-car:Toothed Medick 2002",
+  "runtimeId": "saved-car:Toothed Medick 2002",
+  "candidateId": "koenigsegg-cc8s-2002-roster-candidate",
+  "referenceVehicle": "2002 Koenigsegg CC8S standard 4.7 supercharged V8 six-speed manual removable-hardtop",
+  "identity": {
+    "year": 2002,
+    "make": "Koenigsegg",
+    "model": "CC8S",
+    "trim": "standard 4.7 supercharged V8 six-speed manual removable-hardtop",
+    "market": "Sweden / international factory specification"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      531,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.koenigsegg.com/technical-specifications-cc8s",
+      "fields": [
+        "powerHp",
+        "torqueNm",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "gearCount",
+        "aspiration",
+        "tireSize",
+        "rearTireSize",
+        "groundClearanceM",
+        "publishedDryWeightKg",
+        "dragCoefficient",
+        "revLimitRpm",
+        "fuelTankUSgal"
+      ]
+    },
+    {
+      "url": "https://www.koenigsegg.com/model/cc8s",
+      "fields": [
+        "identity",
+        "variant distinction"
+      ]
+    },
+    {
+      "url": "https://www.koenigsegg.com/index.php/history",
+      "fields": [
+        "generation chronology"
+      ]
+    }
+  ]
+}

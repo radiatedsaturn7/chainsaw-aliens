@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "sandspurry-six-1970",
+  "name": "Sandspurry Six 1970",
+  "stableCarId": "saved-car:Sandspurry Six 1970",
+  "referenceVehicle": "1970 European Porsche 914/6 901/36 road targa 5MT (not GT)",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "64e5c1cecaacef156caf3755f53a936acd1969ee38848bf31b328bb54ad5cb35",
+    "dashboard": "1093e91615440071a381e7d633b60a68f74d863ff595f6ff5be98cba328ee8b1",
+    "tires": "341e4b01d1c6a0da0b8f130e934ca50f4a511deb0c4c6ee93695ccf1f9ae140f"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

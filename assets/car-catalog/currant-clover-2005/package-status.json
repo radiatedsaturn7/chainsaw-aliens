@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "currant-clover-2005",
+  "name": "Currant Clover 2005",
+  "stableCarId": "saved-car:Currant Clover 2005",
+  "referenceVehicle": "2005 United States Nissan Quest, new3.5BaseVQ35FWDfour-speedautomatic sevenseats16-inchsteel wheels,noSkyView/DVD; notSL5AT orSE17inch",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "439cbb9bbb2de14fd46b9c2e59567508226f686b2245ed6c4db4f3d72937886e",
+    "dashboard": "579d982f6955d0a99aba4dedfccf341ecb8c24966a81c59e21ab027d1493570d",
+    "tires": "080bb56208278578b6958f3900e5f7c711c961f14f085d76bfa2ee2dfe85cad2"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

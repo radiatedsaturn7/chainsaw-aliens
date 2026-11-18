@@ -1,0 +1,66 @@
+{
+  "id": "ground-ivy-1973",
+  "name": "Ground Ivy 1973",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      210,
+      470,
+      500,
+      175
+    ],
+    "wheel": [
+      460,
+      753,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://importarchive.com/brochure/mazdarx31973_01",
+      "fields": [
+        "1973USmodelidentity",
+        "coupebody",
+        "four-speedmanual",
+        "rotaryengine",
+        "publishedDisplacementCuIn",
+        "RWDchassislayout"
+      ]
+    },
+    {
+      "url": "https://www.mazda.com/en/about/history/greatcar/savanna/",
+      "fields": [
+        "12A1972introduction",
+        "distinctSavanna/RX3generation",
+        "1973emissionsupdatecontext"
+      ]
+    },
+    {
+      "url": "https://www.automobile-catalog.com/car/1973/1584755/mazda_rx-3_coupe.html",
+      "fields": [
+        "estimated installed output",
+        "estimated mass",
+        "estimated dimensions",
+        "estimated engine displacement"
+      ]
+    }
+  ]
+}

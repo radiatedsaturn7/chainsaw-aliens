@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "golden-trefoil-2012",
+  "name": "Golden Trefoil 2012",
+  "stableCarId": "saved-car:Golden Trefoil 2012",
+  "referenceVehicle": "2012 United States Chevrolet Cruze, LS1.8Ecotec sedan6MT,16-inchcoveredsteelwheels,noEcoorRS",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "5328c3b317680031d8836825f9eabbdff406858ad084f09d56643a0132170b6a",
+    "dashboard": "98f68cd512cd911f40a40d85eca3967431573746fbff7b09224e254807ce8eb1",
+    "tires": "dcdf770320bbf8c6b57b08d1d1b12e71a2c4008f6a6a777813e73c6249e6dc5b"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

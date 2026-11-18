@@ -1,0 +1,70 @@
+{
+  "id": "chilean-clover-2018",
+  "name": "Chilean Clover 2018",
+  "stableCarId": "saved-car:Chilean Clover 2018",
+  "runtimeId": "saved-car:Chilean Clover 2018",
+  "candidateId": "morgan-aero-gt-2018-roster-candidate",
+  "referenceVehicle": "2018 Morgan Aero GT, BMWN62 4.8NA V8six-speedmanual,optionalcarbonhardtopfitted representativefinaleightroadcars;notGT3racerorPlus8",
+  "identity": {
+    "year": 2018,
+    "make": "Morgan",
+    "model": "Aero GT",
+    "trim": "BMWN62 4.8NA V8six-speedmanual,optionalcarbonhardtopfitted representativefinaleightroadcars;notGT3racerorPlus8",
+    "market": "UK/Europe"
+  },
+  "bodyClass": "roadster",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1289,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      1507,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.britishbuiltcars.co.uk/News/article/835/March%202018/Morgan%20marks%20end%20of%20Aero%208%20production%20with%20limited%20edition%20GT",
+      "fields": [
+        "powerHp",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "topSpeedMph"
+      ]
+    },
+    {
+      "url": "https://www.britishbuiltcars.co.uk/News/article/822/December%202017/Morgan%20announces%20a%20limited%20production%20run%20of%20their%20most%20extreme%20road%20car",
+      "fields": [
+        "engineDisplacementL",
+        "gearCount"
+      ]
+    }
+  ]
+}

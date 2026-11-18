@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "heather-clover-2004",
+  "name": "Heather Clover 2004",
+  "stableCarId": "saved-car:Heather Clover 2004",
+  "referenceVehicle": "2004 Fiat Idea Active1.4 16V, UK February2004 launchfive-seatminiMPV FIREpetrolfive-speedmanual, nooptionalSkyDomeroof; notDualogic,MultiJet orLanciaMusa",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "0ee4141fc415df2c414efbc1331914784b6b5d3b568f380373fe2360986a615e",
+    "dashboard": "f3adbfe1f36d11677b00a39cb498ff18909c59687a7d75bdfcd1e2f9f8b81122",
+    "tires": "52e17cc93aca4c07479fd51a1e3ff55b5a53ed515351d2e7e478149747b78da1"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

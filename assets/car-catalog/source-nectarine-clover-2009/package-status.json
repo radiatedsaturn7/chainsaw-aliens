@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "source-nectarine-clover-2009",
+  "name": "Nectarine Clover 2009",
+  "stableCarId": "saved-car:Nectarine Clover 2009",
+  "referenceVehicle": "US 2009 Audi A5 3.2FSI quattro,6MT. Two-door coupe,standard chassis/body,noS5/RS5 treatment.",
+  "runtimeDocumentIdVerified": false,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "e14aa69736af37694b2d2ec76418db9f2f5b90205e05be3cdc44f58897cb556f",
+    "dashboard": "7559791ba4b241dfa93c970a1549e8d157a4c56f31f4fc97f9491572a8a08c9d",
+    "tires": "ee701660906305e3968f5f49699da04147d79d7f147548342bd770d61ac7d674"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

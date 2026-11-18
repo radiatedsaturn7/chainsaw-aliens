@@ -1,0 +1,67 @@
+{
+  "id": "coast-clover-2008",
+  "name": "Coast Clover 2008",
+  "stableCarId": "saved-car:Coast Clover 2008",
+  "runtimeId": "saved-car:Coast Clover 2008",
+  "candidateId": "nissan-altima-coupe-2-5-s-2008-us-federal-6mt-supplemental",
+  "referenceVehicle": "2008 United States Nissan Altima Coupe, Federal2.5S QR25DE six-speedmanual,standard16-inchcoveredsteelwheels; notCalifornia170hp,CVT,3.5SE orsedan",
+  "identity": {
+    "year": 2008,
+    "make": "Nissan",
+    "model": "Altima Coupe",
+    "trim": "Federal2.5S QR25DE six-speedmanual,standard16-inchcoveredsteelwheels; notCalifornia170hp,CVT,3.5SE orsedan",
+    "market": "United States"
+  },
+  "bodyClass": "two-door five-seat front-drive coupe; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://usa.nissannews.com/en-US/releases/2008-altima-coupe-press-kit",
+      "fields": [
+        "powerHp",
+        "torqueLbFt",
+        "engineDisplacementL",
+        "aspiration",
+        "gearCount",
+        "lengthM",
+        "heightM",
+        "wheelbaseM",
+        "absEnabled"
+      ]
+    }
+  ]
+}

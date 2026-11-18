@@ -1,0 +1,76 @@
+{
+  "id": "heath-bedstraw-2019",
+  "name": "Heath Bedstraw 2019",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      198,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      475,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://www.sti.jp/brand/heritage/2019/s209/",
+      "fields": [
+        "identity",
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "curbLb",
+        "lengthIn",
+        "widthIn",
+        "heightIn",
+        "wheelbaseIn",
+        "trackFrontIn",
+        "trackRearIn",
+        "groundClearanceM",
+        "tireSize"
+      ]
+    },
+    {
+      "url": "https://www.subaru.co.jp/press/news-en/2019_10_11_7825/",
+      "fields": [
+        "identity",
+        "curbLb",
+        "fuelTankUSgal",
+        "tireSize",
+        "powerHp",
+        "lengthIn",
+        "widthIn",
+        "heightIn",
+        "trackFrontIn",
+        "trackRearIn",
+        "groundClearanceM"
+      ]
+    }
+  ]
+}

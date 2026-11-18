@@ -1,0 +1,59 @@
+{
+  "id": "yellow-vetchling-2016",
+  "name": "Yellow Vetchling 2016",
+  "stableCarId": "saved-car:Yellow Vetchling 2016",
+  "runtimeId": "saved-car:Yellow Vetchling 2016",
+  "candidateId": "aston-martin-vulcan-2016-roster-candidate",
+  "referenceVehicle": "2016 Aston Martin Vulcan, originalcustomertrack-only7.0NA V12,six-speedsequential,fullpower; not2017AMRPro/RMLroadconversion",
+  "identity": {
+    "year": 2016,
+    "make": "Aston Martin",
+    "model": "Vulcan",
+    "trim": "originalcustomertrack-only7.0NA V12,six-speedsequential,fullpower; not2017AMRPro/RMLroadconversion",
+    "market": "United Kingdom"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      337,
+      571,
+      436,
+      119
+    ],
+    "wheel": [
+      535,
+      761,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://media.astonmartin.com/aston-martin-vulcan-amr-pro-wildest-ever-aston-martin-taken-to-new-extremes/",
+      "fields": [
+        "powerHp"
+      ]
+    }
+  ]
+}

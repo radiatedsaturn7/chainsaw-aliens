@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "herb-bennet-1964",
+  "name": "Herb Bennet 1964",
+  "stableCarId": "saved-car:Herb Bennet 1964",
+  "referenceVehicle": "1964 UK Aston Martin DB5 standardSaloon3995ccDOHCstraight-six five-speedZFmanual;notVantage,Convertible,DB4 ormoderncontinuation",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "9cddbcf62fbbea1b153c50c2752c48c9cdabfe8eac0f112dd5a17b7d03c1415f",
+    "dashboard": "6e195da55105fbd8645aea30aafd556109a64b9944732dc0bdba0d827d97ed9b",
+    "tires": "fa98be7776a058b56f3d5efa36a87d1a5a14fcd43af3a9f7d29a839efc9b8c00"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

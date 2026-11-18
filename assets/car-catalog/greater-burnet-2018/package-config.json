@@ -1,0 +1,53 @@
+{
+  "id": "greater-burnet-2018",
+  "name": "Greater Burnet 2018",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      198,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      475,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://be.media.renaultgroup.com/nouvelle-renault-megane-rs-la-performance-a-letat-pur-pour-les-passionnes-de-conduite-sportive/",
+      "fields": [
+        "powerKw",
+        "torqueNm",
+        "engineDisplacementL",
+        "transmission"
+      ]
+    },
+    {
+      "url": "https://media.alpinecars.com/renault-revele-la-nouvelle-megane-rs-au-salon-international-de-lautomobile-de-francfort-2017/",
+      "fields": [
+        "gearCount"
+      ]
+    }
+  ]
+}

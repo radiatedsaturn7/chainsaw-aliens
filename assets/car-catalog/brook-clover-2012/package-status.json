@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "brook-clover-2012",
+  "name": "Brook Clover 2012",
+  "stableCarId": "saved-car:Brook Clover 2012",
+  "referenceVehicle": "2012 United States Kia Sedona, LX3.5MPI V6 FWD6AT standard16-inchwheels,seatsseven,unladen",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "brook-clover-2012",
+  "sourceHashes": {
+    "body": "f2c849ce2608b973a4c1860ceb7aa9749a826b3fb26d1780370489f6f76e19c4",
+    "dashboard": "5ecc178a9768e7d29835b15a7138790471cbfcca181aeb5c0a8923fd51c92d76",
+    "tires": "c88b66e7c506a27601d168a256d80ffc019eaec38e2367ad38a8b101819ca4a9"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

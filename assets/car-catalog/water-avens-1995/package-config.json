@@ -1,0 +1,60 @@
+{
+  "id": "water-avens-1995",
+  "name": "Water Avens 1995",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      190,
+      480,
+      540,
+      180
+    ],
+    "wheel": [
+      465,
+      735,
+      315
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f3dea4"
+  },
+  "sources": [
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/engine-versions-corrado-profile-19685",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "torqueNm",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL"
+      ]
+    },
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/vehicle-data-corrado-profile-19684",
+      "fields": [
+        "identity",
+        "drivetrain",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM"
+      ]
+    }
+  ]
+}

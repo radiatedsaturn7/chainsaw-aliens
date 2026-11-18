@@ -1,0 +1,60 @@
+{
+  "id": "spotted-medick-1961",
+  "name": "Spotted Medick 1961",
+  "stableCarId": "saved-car:Spotted Medick 1961",
+  "runtimeId": "saved-car:Spotted Medick 1961",
+  "candidateId": "jaguar-e-type-1961-roster-candidate",
+  "referenceVehicle": "1961 Jaguar E-type, Series1 3.8 open two-seater standard road car, Moss4MT; not4.2,Lightweight or tuned77RW replica",
+  "identity": {
+    "year": 1961,
+    "make": "Jaguar",
+    "model": "E-type",
+    "trim": "Series1 3.8 open two-seater standard road car, Moss4MT; not4.2,Lightweight or tuned77RW replica",
+    "market": "UK/Europe"
+  },
+  "bodyClass": "roadster",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1289,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      1507,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.jaguarheritage.com/vehicle-collection/1961-jaguar-e-type-series-1-3-8-litre-77-rw/",
+      "fields": [
+        "engineDisplacementL",
+        "publishedPowerBhp"
+      ]
+    }
+  ]
+}

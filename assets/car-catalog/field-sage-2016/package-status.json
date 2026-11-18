@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "field-sage-2016",
+  "name": "Field Sage 2016",
+  "stableCarId": "saved-car:Field Sage 2016",
+  "referenceVehicle": "2016 US Cadillac ATS-V sedan 1SV 3.6 LF4 twin-turbo V6 RWD MG9 six-speed manual, no Track Performance Package",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "53cf40a7a5d9691075db52a04ee732262850832299c0185fdb251d4e601c141b",
+    "dashboard": "f9479785f831bb459a41e527735be153bfdc58bf6aaff54591b1ff9445d8091a",
+    "tires": "7df29c62141ea818df6c76235161067788e33fea809b57653f9d5f68df36c63c"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

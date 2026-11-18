@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "toothed-medick-2002",
+  "name": "Toothed Medick 2002",
+  "stableCarId": "saved-car:Toothed Medick 2002",
+  "referenceVehicle": "2002 Koenigsegg CC8S standard 4.7 supercharged V8 six-speed manual removable-hardtop",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "bf61dcd80d86e82fdcd556ca33cc481bd43f4c8cdad390db1b14ca3fd3eee502",
+    "dashboard": "7d7f8dfc37956c67c1422bcae4fbafc81189e5522f466e030401d1c135f088e6",
+    "tires": "50ca06f8526d45e53724ff12292a4154e7e66da5a61c9add2b945aeace6d8fc9"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

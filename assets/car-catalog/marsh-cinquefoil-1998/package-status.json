@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "marsh-cinquefoil-1998",
+  "name": "Marsh Cinquefoil 1998",
+  "stableCarId": "saved-car:Marsh Cinquefoil 1998",
+  "referenceVehicle": "1998 Japan Mitsubishi FTO GPVersionR E-DE3A 1998cc6A12MIVECV6 FWD5MT1150kg; February1997\u2013August1999 version, not automatic,GPX,GPVersionRaeroseries or1999GF emissionsupdate",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "marsh-cinquefoil-1998",
+  "sourceHashes": {
+    "body": "cd5689d77c398deb7a828a4b301630e87c1856cfbcdf4da26fdce8e2200965fb",
+    "dashboard": "7f2a0937df8d986a28c391f9321b8ef11e8acac2fef05b9710c830becb25e4c6",
+    "tires": "c932b1f417e4e92bb9ceedc0c64a6d1cf199accae0f45acd431d579f0b3bded8"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "wild-clary-2015",
+  "name": "Wild Clary 2015",
+  "stableCarId": "saved-car:Wild Clary 2015",
+  "referenceVehicle": "2015 US Lexus RC F, standard 5.0 V8 RWD eight-speed automatic, Torsen differential, no optional TVD or carbon package",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "wild-clary-2015",
+  "sourceHashes": {
+    "body": "2616476da9efa8a719361a02b95d0a7c665c5749e6664e0fc03ddb354dbb62e1",
+    "dashboard": "28d4e3437dfecdfcc792db1a590d0a051613352f9c0de7862479215343907e78",
+    "tires": "b695743b2e0a1e160c24f6c850d0fd09cef76073751a46b4adfd738f498e99bf"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

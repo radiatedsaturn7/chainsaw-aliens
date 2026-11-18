@@ -1,0 +1,69 @@
+{
+  "id": "spring-vetch-1970",
+  "name": "Spring Vetch 1970",
+  "stableCarId": "saved-car:Spring Vetch 1970",
+  "runtimeId": "saved-car:Spring Vetch 1970",
+  "candidateId": "chevrolet-chevelle-super-sport-454-1970-roster-candidate",
+  "referenceVehicle": "1970 United States Chevrolet Chevelle SS454, SportCoupe,LS5-type360-hp454four-barrelV8,4MT,standardclosedhood,noLS6",
+  "identity": {
+    "year": 1970,
+    "make": "Chevrolet",
+    "model": "Chevelle SS454",
+    "trim": "SportCoupe,LS5-type360-hp454four-barrelV8,4MT,standardclosedhood,noLS6",
+    "market": "United States"
+  },
+  "bodyClass": "two-door-coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      515,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.lov2xlr8.no/brochures/chevy/70chevelle/bilder/8.jpg",
+      "fields": [
+        "exactyear/market/model/engine",
+        "advertisedoutput",
+        "gearboxavailability"
+      ]
+    },
+    {
+      "url": "https://www.lov2xlr8.no/brochures/chevy/70chevelle/bilder/9.jpg",
+      "fields": [
+        "exactyear/market/model/engine",
+        "advertisedoutput",
+        "gearboxavailability"
+      ]
+    }
+  ]
+}

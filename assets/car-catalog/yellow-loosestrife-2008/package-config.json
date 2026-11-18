@@ -1,0 +1,48 @@
+{
+  "id": "yellow-loosestrife-2008",
+  "name": "Yellow Loosestrife 2008",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      198,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      475,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://seriouswheels.com/2008-dodge-magnum-srt8.htm",
+      "fields": [
+        "2008SRT8 identity",
+        "425hp420lbft6.1",
+        "5AT",
+        "245/45ZR20front255/45ZR20rearF1",
+        "lowerSRTsuspension/Brembo"
+      ]
+    }
+  ]
+}

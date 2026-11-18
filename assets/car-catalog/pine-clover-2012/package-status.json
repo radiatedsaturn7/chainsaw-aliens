@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "pine-clover-2012",
+  "name": "Pine Clover 2012",
+  "stableCarId": "saved-car:Pine Clover 2012",
+  "referenceVehicle": "2012 US Volkswagen Passat NMS2.5S inline-five5MT standard16inchsteel wheels,withoutAppearancePackage",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "pine-clover-2012",
+  "sourceHashes": {
+    "body": "26f1041a99872e337528cb42788a0828750274aee67c15a51f72c9c511896da4",
+    "dashboard": "528ae258eab0d9738eeb69618ad1342b12ed9783c3f23113f470b22c47351c35",
+    "tires": "995f01c19769546f5c28d6f678cabdbf34f10d15e1d17d253a16e356eec8459d"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    3,
+    4,
+    5,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

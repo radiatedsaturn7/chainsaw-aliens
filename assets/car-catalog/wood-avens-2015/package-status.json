@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "wood-avens-2015",
+  "name": "Wood Avens 2015",
+  "stableCarId": "saved-car:Wood Avens 2015",
+  "referenceVehicle": "2015 US Jaguar F-TYPE R Coupe 5.0superchargedV8 RWD8AT;not2016AWD,RConvertible,Project7 orlater575hp",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "1f09e8f97e9f767bb4ab3dd8fe2a09ac5c4b7804d83ec5c337385bef53d8a384",
+    "dashboard": "c7d05f73a2febfb60e5c824b754460172426ef93913c7ea08b13aae21cfd76e2",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

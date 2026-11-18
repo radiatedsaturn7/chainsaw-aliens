@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "corn-gromwell-2003",
+  "name": "Corn Gromwell 2003",
+  "stableCarId": "saved-car:Corn Gromwell 2003",
+  "referenceVehicle": "2003 US Infiniti G35 Sport Coupe, US rear-drive coupe 6MT, not sedan or later Rev-Up",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "4f5f658b77ad452e4d8217771bf6815f92b48901d275d051909b34ca97778574",
+    "dashboard": "14158935a7ba6a8ed1141693ca53e80ae40d4e6c20c749c14bc724b0b3734ed0",
+    "tires": "48a4902bdcd7da35e19853220f79dae1e37da853494bcdd2303a05e2c3118718"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

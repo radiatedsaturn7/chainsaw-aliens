@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "vipers-bugloss-1980",
+  "name": "Vipers Bugloss 1980",
+  "stableCarId": "saved-car:Vipers Bugloss 1980",
+  "referenceVehicle": "1980-built France Renault 5 Turbo R8220 road homologation two-seat hatchback, factory MY1981,1397cc GarrettT3 rear-mid-engine RWD5MT; not Turbo2 or Ragnotti Group4 competition car",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "f389268b8a690e9a963485f600929d9f706f039a2bedd3cde3c86ed39b4594cf",
+    "dashboard": "96ba6dfdccd6c00810cfdd6afe349be0b49449fcc3af419cee406c2c5a381f6e",
+    "tires": "7a5a04780c0c58b95286b0d48d8e5a670c365f6bcfba951e604131f112dd7c8a"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

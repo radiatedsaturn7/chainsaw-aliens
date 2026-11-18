@@ -1,0 +1,65 @@
+{
+  "id": "yellow-wort-2013",
+  "name": "Yellow Wort 2013",
+  "candidateId": "lexus-gs350-f-sport-2013-roster-candidate",
+  "referenceVehicle": "2013 US Lexus GS 350 F SPORT, RWD 3.5 V6 six-speed automatic, without optional rear steering",
+  "identity": {
+    "year": 2013,
+    "make": "Lexus",
+    "model": "GS 350 F SPORT",
+    "trim": "RWD 3.5 V6 six-speed automatic, without optional rear steering",
+    "market": "United States"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://pressroom.lexus.com/lexus-2013-gs-350-f-sport-2011-sema/",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "drivetrain",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM"
+      ]
+    }
+  ]
+}

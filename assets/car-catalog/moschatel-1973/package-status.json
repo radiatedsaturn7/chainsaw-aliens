@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "moschatel-1973",
+  "name": "Moschatel 1973",
+  "stableCarId": "saved-car:Moschatel 1973",
+  "referenceVehicle": "1973 Nissan Skyline 2000GT-R KPGC110 S20 road hardtop; modeled 5MT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "05593021066000290d6f47389e6dfa17622875ad93043e609d405ec4eb414de5",
+    "dashboard": "0850faf127748b6491d9a8d1b9cb3462fcde3799001f575598c173b24d021317",
+    "tires": "6dc9da2a2fb339199766c0e06101b4e15467846a0c24fcb12f114c012b2638cb"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

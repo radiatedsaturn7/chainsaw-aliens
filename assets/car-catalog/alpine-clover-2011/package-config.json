@@ -1,0 +1,74 @@
+{
+  "id": "alpine-clover-2011",
+  "name": "Alpine Clover 2011",
+  "stableCarId": "saved-car:Alpine Clover 2011",
+  "runtimeId": "saved-car:Alpine Clover 2011",
+  "candidateId": "pagani-huayra-coupe-2011-roster-candidate",
+  "referenceVehicle": "2011 Pagani Huayra Coupe, early launch700hp, notBC/R/later730hp",
+  "identity": {
+    "year": 2011,
+    "make": "Pagani",
+    "model": "Huayra Coupe",
+    "trim": "early2011 launch700hp twin-turbo road coupe seven-speed AMT",
+    "market": "Italy / international reference"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.pagani.com/news/huayra-shown-for-first-time-in-us/",
+      "fields": [
+        "engineDisplacementL",
+        "torqueNm",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "publishedDryWeightKg",
+        "powerHp",
+        "frontWeightDistribution"
+      ]
+    },
+    {
+      "url": "https://www.pagani.com/huayra/",
+      "fields": [
+        "identity",
+        "family specification"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "id": "sea-lavender-2015",
+  "name": "Sea Lavender 2015",
+  "candidateId": "volvo-v60-polestar-2015-roster-candidate",
+  "referenceVehicle": "2015 UK Volvo V60 Polestar, first-generation T6 six-cylinder estate, six-speed automatic; not later four-cylinder/eight-speed",
+  "identity": {
+    "year": 2015,
+    "make": "Volvo",
+    "model": "V60 Polestar",
+    "trim": "first-generation T6 six-cylinder estate, six-speed automatic; not later four-cylinder/eight-speed",
+    "market": "UK"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1289,
+      468,
+      456,
+      167
+    ],
+    "wheel": [
+      1507,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.volvocars.com/uk/media/press-releases/9E5AB179295ACD5A/",
+      "fields": [
+        "powerKw",
+        "torqueNm",
+        "transmission",
+        "gearCount",
+        "tireSize"
+      ]
+    },
+    {
+      "url": "https://www.volvocars.com/uk/media/press-releases/456803EDC09D524B/",
+      "fields": [
+        "2015 production identity"
+      ]
+    },
+    {
+      "url": "https://www.volvocars.com/uk/media/press-releases/83BA1A515DAEF4CD/",
+      "fields": [
+        "source conflict"
+      ]
+    }
+  ]
+}

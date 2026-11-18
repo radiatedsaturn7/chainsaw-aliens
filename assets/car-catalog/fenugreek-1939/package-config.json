@@ -1,0 +1,76 @@
+{
+  "id": "fenugreek-1939",
+  "name": "Fenugreek 1939",
+  "stableCarId": "saved-car:Fenugreek 1939",
+  "runtimeId": "saved-car:Fenugreek 1939",
+  "candidateId": "mercedes-benz-w154-1939-roster-candidate",
+  "referenceVehicle": "1939 Mercedes-Benz W154 GrandPrix M1633.0V12 two-stageRoots supercharged RWD5MT; not1938M154,recordstreamliner,hillclimb45Ltank orW165",
+  "identity": {
+    "year": 1939,
+    "make": "Mercedes-Benz",
+    "model": "W154",
+    "trim": "GrandPrix open-wheel single-seater M163 two-stage supercharged3.0V12, representative470PS7500rpm racefuel specification",
+    "market": "European Grand Prix competition"
+  },
+  "bodyClass": "open-wheel race car",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      800,
+      435,
+      460,
+      135
+    ],
+    "wheel": [
+      1030,
+      730,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://mercedes-benz-archive.com/marsClassic/en/instance/ko/Mercedes-Benz-Grand-Prix-racing-car-W-154-1939.xhtml",
+      "fields": [
+        "identity",
+        "publishedPowerPS",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "fuelTankUSgal",
+        "publishedWeightKg"
+      ]
+    }
+  ]
+}

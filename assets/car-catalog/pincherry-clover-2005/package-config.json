@@ -1,0 +1,80 @@
+{
+  "id": "pincherry-clover-2005",
+  "name": "Pincherry Clover 2005",
+  "stableCarId": "saved-car:Pincherry Clover 2005",
+  "runtimeId": "saved-car:Pincherry Clover 2005",
+  "candidateId": "toyota-matrix-xrs-2005-us-6mt-supplemental",
+  "referenceVehicle": "2005 United States Toyota Matrix, XRS2ZZ-GE VVTL-i six-speedmanual FWD,16-inchalloys,solidroof; notbase1ZZ,XR,AWD orPontiacVibe",
+  "identity": {
+    "year": 2005,
+    "make": "Toyota",
+    "model": "Matrix",
+    "trim": "XRS2ZZ-GE VVTL-i six-speedmanual FWD,16-inchalloys,solidroof; notbase1ZZ,XR,AWD orPontiacVibe",
+    "market": "United States"
+  },
+  "bodyClass": "five-door five-seat high-roof performance hatchback; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Toyota/Matrix/Toyota_US%20Matrix_2005.pdf",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "drivetrain",
+        "transmission",
+        "transmissionLabel",
+        "gearCount",
+        "curbKg",
+        "tireSize",
+        "groundClearanceM",
+        "fuelTankUSgal",
+        "absEnabled",
+        "tractionControlEnabled"
+      ]
+    }
+  ]
+}

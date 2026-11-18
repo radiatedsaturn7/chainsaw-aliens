@@ -1,0 +1,68 @@
+{
+  "id": "pearlwort-1987",
+  "name": "Pearlwort 1987",
+  "candidateId": "nissan-be-1-1987-roster-candidate",
+  "referenceVehicle": "1987 Japan Nissan Be-1 BK10 standard-roof 3AT",
+  "identity": {
+    "year": 1987,
+    "make": "Nissan",
+    "model": "Be-1",
+    "trim": "BK10 standard-roof 3AT",
+    "market": "Japan"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1210,
+      490,
+      520,
+      185
+    ],
+    "wheel": [
+      1470,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/Be_1_standardroof.html",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "torqueNm",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "transmission",
+        "gearCount",
+        "tireSize"
+      ]
+    }
+  ]
+}

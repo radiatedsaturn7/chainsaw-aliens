@@ -1,0 +1,72 @@
+{
+  "id": "persian-clover-1990",
+  "name": "Persian Clover 1990",
+  "stableCarId": "saved-car:Persian Clover 1990",
+  "runtimeId": "saved-car:Persian Clover 1990",
+  "candidateId": "subaru-legacy-rs-1990-roster-candidate",
+  "referenceVehicle": "1990 Japan Subaru Legacy RS, early1990 Japan E-BC5 revisionA BC5A48D EJ20G1994cc turboAWD5MT standardRS, noABS/sunroof;notRS-RA,rallycar orlaterrevisionB",
+  "identity": {
+    "year": 1990,
+    "make": "Subaru",
+    "model": "Legacy RS",
+    "trim": "early1990 Japan E-BC5 revisionA BC5A48D EJ20G1994cc turboAWD5MT standardRS, noABS/sunroof;notRS-RA,rallycar orlaterrevisionB",
+    "market": "Japan"
+  },
+  "bodyClass": "four-door five-seat production sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1289,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      1507,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://ucar.subaru.jp/php/catalog/grade.php",
+      "fields": [
+        "publishedFamilyPowerKw",
+        "publishedFamilyPowerRpm",
+        "publishedFamilyTorqueNm",
+        "publishedFamilyTorqueRpm",
+        "publishedFamilyMassKg",
+        "publishedFamilyGearRatios",
+        "publishedFamilyFinalDrive",
+        "carryover dimensions/tire/reverse/fuel anchors"
+      ]
+    },
+    {
+      "url": "https://www.legacypic.uk/car/specs.php",
+      "fields": [
+        "early1990 identity/carryover dates"
+      ]
+    }
+  ]
+}

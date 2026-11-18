@@ -1,0 +1,85 @@
+{
+  "id": "rush-clover-2008",
+  "name": "Rush Clover 2008",
+  "stableCarId": "saved-car:Rush Clover 2008",
+  "runtimeId": "saved-car:Rush Clover 2008",
+  "candidateId": "mazda-cx-9-sport-2008-us-6at-fwd-supplemental",
+  "referenceVehicle": "2008 United States Mazda CX-9, Sport3.7V6 front-wheel-drive six-speed automatic, sevenseats,standard18-inchalloys,noaccessoryroofrails ormoonroof; notAWD,GrandTouring20inch orlater2.5turbo",
+  "identity": {
+    "year": 2008,
+    "make": "Mazda",
+    "model": "CX-9",
+    "trim": "Sport3.7V6 front-wheel-drive six-speed automatic, sevenseats,standard18-inchalloys,noaccessoryroofrails ormoonroof; notAWD,GrandTouring20inch orlater2.5turbo",
+    "market": "United States"
+  },
+  "bodyClass": "five-door seven-seat large crossover; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://news.mazdausa.com/download/2008-CX-9-Spec.pdf",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "transmission",
+        "gearCount",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "curbKg",
+        "tireSize",
+        "redlineRpm",
+        "dragCoefficient",
+        "fuelTankUSgal",
+        "steeringRatio",
+        "frontOverhangM",
+        "topSpeedMph",
+        "absEnabled",
+        "tractionControlEnabled"
+      ]
+    }
+  ]
+}

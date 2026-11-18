@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "yellow-bartsia-2018",
+  "name": "Yellow Bartsia 2018",
+  "stableCarId": "saved-car:Yellow Bartsia 2018",
+  "referenceVehicle": "2018 UK Range Rover Velar P380 First Edition L560,3.0 superchargedV6 380metricPS450Nm AWD8AT,22inch wheels, road-height air suspension; notD300diesel,P250fourcylinder,RangeRoverSport orSVAutobiographyV8.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "yellow-bartsia-2018",
+  "sourceHashes": {
+    "body": "56b1724abc822a9a1d95fa2ba538acfd7975d3888794cda4df367c146344946a",
+    "dashboard": "6337f8bf838086c353125cfef42e188eea3999e1145ceb32ebad9bcd97129843",
+    "tires": "b4ce08507f80baf2a63b9282c96514545e5746d9d8d29a645337487a364a350c"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

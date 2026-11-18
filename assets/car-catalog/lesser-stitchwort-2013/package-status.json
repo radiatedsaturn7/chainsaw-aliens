@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "lesser-stitchwort-2013",
+  "name": "Lesser Stitchwort 2013",
+  "stableCarId": "saved-car:Lesser Stitchwort 2013",
+  "referenceVehicle": "2013 Renault Clio R.S. 200 EDC, French-market Sport chassis five-door, standard six-speed EDC, not Cup or Trophy",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "cf605f3453791ebda96d866fde1ca32cb8a140a5908318edf08e5e24eff984d2",
+    "dashboard": "886d33bd89e0bc7e77a57511247a8cb1931bb7f1dc269a351eb3065d74b12044",
+    "tires": "2cbcd93f8a22ac1c95bea440cc695c82056abbdcfc5a315312e3cd45605c4014"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

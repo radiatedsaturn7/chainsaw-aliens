@@ -1,0 +1,73 @@
+{
+  "id": "wood-anemone-2013",
+  "name": "Wood Anemone 2013",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      198,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      475,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://de.scribd.com/document/393492168/Einfuehrung-a-45-Amg",
+      "fields": [
+        "powerKw",
+        "torqueNm",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "curbKg",
+        "lengthIn",
+        "widthIn",
+        "heightIn",
+        "wheelbaseIn",
+        "trackFrontIn",
+        "trackRearIn",
+        "transmission",
+        "gearCount",
+        "tireSize",
+        "frontTire",
+        "rearTire",
+        "fuelTankUSgal",
+        "dragCoefficient",
+        "topSpeedMph"
+      ]
+    },
+    {
+      "url": "https://imprensa.mercedes-benz.com.br/releases/mercedes-benz-apresenta-novo-a-45-amg-no-brasil",
+      "fields": [
+        "powerKw",
+        "torqueNm",
+        "gearCount",
+        "aspiration",
+        "AWD operating principle"
+      ]
+    }
+  ]
+}

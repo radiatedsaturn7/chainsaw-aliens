@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "field-pennywort-2011",
+  "name": "Field Pennywort 2011",
+  "stableCarId": "saved-car:Field Pennywort 2011",
+  "referenceVehicle": "2011 Germany Volkswagen Scirocco III R 2.0TSI195kW front-wheel drive six-speed manual; not R-Line, Australian188kW or2014facelift206kW",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "cbe703038769a34909edab22d72a863257c9b79c556ab97e1082127b5e6f04a6",
+    "dashboard": "35f412700236a96f08a4521405054d0eaa9afd0ce379497523da05cfed7cee4d",
+    "tires": "230659643e3821dcb7694f6f35cb1e620144fc8b7b2e662ad513d49bea3ec39f"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

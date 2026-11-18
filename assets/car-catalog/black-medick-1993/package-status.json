@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "black-medick-1993",
+  "name": "Black Medick 1993",
+  "stableCarId": "saved-car:Black Medick 1993",
+  "referenceVehicle": "1993 Jaguar XJ220, standard production road coupe3.5 twin-turboV6 five-speed manual; not1988V12AWDconcept,S,TWRrace orde-catalysed record run",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "f88d5593946dbdf3ad257f03be41bb25d8a3821845b3f93e206aaefd8e060988",
+    "dashboard": "ee045f623580457bc98fa3e30b0b87eabd4b20597e5cee0ef171f31935be4969",
+    "tires": "50ca06f8526d45e53724ff12292a4154e7e66da5a61c9add2b945aeace6d8fc9"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,163 @@
+{
+  "id": "shepherds-purse-1969",
+  "name": "Shepherds Purse 1969",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "13cc8c1f744e13ae0510cac6fbdf11220f205f9e316d93e288ef5211f722078f",
+  "sourceDirectory": "assets/car-catalog/shepherds-purse-1969",
+  "sourceHashes": {
+    "body": "420ec46ce565c58a8a9678562e426e377fa4021bcc4434aee03158f9e2fe5f81",
+    "dashboard": "51850bbc72259fd47288106415bb0c8c2e1a5b82a3143f84a176c87d215823c0",
+    "tires": "9c328679a8557cb344595cb96d58861d57c5edcbcbdff9b7dac4358703ea17bd"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 96,
+        "y": 314,
+        "radius": 42
+      },
+      {
+        "wheel": "fr",
+        "x": 320,
+        "y": 314,
+        "radius": 42
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 640,
+        "y": 316,
+        "radius": 46
+      },
+      {
+        "wheel": "rr",
+        "x": 790,
+        "y": 280,
+        "radius": 38
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 968,
+        "y": 300,
+        "radius": 48
+      },
+      {
+        "wheel": "rr",
+        "x": 1240,
+        "y": 300,
+        "radius": 50
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 416,
+        "y": 712,
+        "radius": 32
+      },
+      {
+        "wheel": "rr",
+        "x": 560,
+        "y": 738,
+        "radius": 46
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 92,
+        "y": 746,
+        "radius": 46
+      },
+      {
+        "wheel": "rl",
+        "x": 308,
+        "y": 746,
+        "radius": 46
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1564,
+        "y": 296,
+        "radius": 46
+      },
+      {
+        "wheel": "fl",
+        "x": 1720,
+        "y": 280,
+        "radius": 36
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 946,
+        "y": 730,
+        "radius": 50
+      },
+      {
+        "wheel": "fl",
+        "x": 1236,
+        "y": 730,
+        "radius": 52
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1392,
+        "y": 704,
+        "radius": 34
+      },
+      {
+        "wheel": "fl",
+        "x": 1500,
+        "y": 742,
+        "radius": 46
+      }
+    ]
+  },
+  "wheelFit": "average",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1249,
+      520,
+      540,
+      160
+    ],
+    "wheel": [
+      1411.13,
+      752,
+      270
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#eed9ae",
+    "viewportWheelScale": 2.1,
+    "gaugeBackground": "#101010"
+  },
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementNotes": "Individually inspected half-scale body source and 992px-wide dashboard on fitting-measurement.png. Body coordinates doubled to original pixels; dashboard offset450 removed and scaled1983/992. Front/rear wheel centers inferred behind occluding bumper edges from source silhouette; diagonal and side centers measured at open arches. Art estimates only, no mechanical inference. Runtime render fitting pending. Wheel IDs follow actual native getRaceSpriteWheelRig projection: front fl screen-left, rear rr screen-left. Static v2 mobile viewport wheel side clipping corrected using native render geometry; individual opening placement and scales retained."
+}

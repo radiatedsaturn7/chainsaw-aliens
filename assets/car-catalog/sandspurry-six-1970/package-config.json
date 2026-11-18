@@ -1,0 +1,77 @@
+{
+  "id": "sandspurry-six-1970",
+  "name": "Sandspurry Six 1970",
+  "candidateId": "porsche-914-6-1970-roster-candidate",
+  "referenceVehicle": "1970 European Porsche 914/6 901/36 road targa 5MT (not GT)",
+  "identity": {
+    "year": 1970,
+    "make": "Porsche",
+    "model": "914/6",
+    "trim": "901/36 road targa 5MT (not GT)",
+    "market": "European"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      220,
+      500,
+      550,
+      190
+    ],
+    "wheel": [
+      490,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://bowlsby.net/914/Classic/zMan_1970-71_ServiceInformation.pdf",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "torqueNm",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "publishedDINUnladenKg",
+        "redlineRpm",
+        "revLimitRpm"
+      ]
+    },
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/vw-porsche-914-19691975-19672",
+      "fields": [
+        "publishedPowerPS",
+        "mid-engine road six-cylinder identity"
+      ]
+    }
+  ]
+}

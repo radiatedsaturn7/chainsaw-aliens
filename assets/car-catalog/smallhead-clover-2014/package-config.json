@@ -1,0 +1,84 @@
+{
+  "id": "smallhead-clover-2014",
+  "name": "Smallhead Clover 2014",
+  "stableCarId": "saved-car:Smallhead Clover 2014",
+  "runtimeId": "saved-car:Smallhead Clover 2014",
+  "candidateId": "mazda-mazda3-i-sport-sedan-2014-us-6mt-supplemental",
+  "referenceVehicle": "2014 United States Mazda Mazda3, i Sport BM four-door sedan2.0SKYACTIV-G6MT,16-inch coveredsteel wheels; nots2.5,hatchback,Mazdaspeed or i-ELOOP",
+  "identity": {
+    "year": 2014,
+    "make": "Mazda",
+    "model": "Mazda3",
+    "trim": "i Sport BM four-door sedan2.0SKYACTIV-G6MT,16-inch coveredsteel wheels; nots2.5,hatchback,Mazdaspeed or i-ELOOP",
+    "market": "United States"
+  },
+  "bodyClass": "four-door five-seat compact sedan; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://news.mazdausa.com/download/MAZDA3-14MY-SpecDeck-082613-v2014.6-for-press.pdf",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "gearCount",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "redlineRpm",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "groundClearanceM",
+        "tireSize",
+        "frontWeightDistribution",
+        "dragCoefficient",
+        "topSpeedMph",
+        "fuelTankUSgal",
+        "absEnabled",
+        "steeringRatio"
+      ]
+    }
+  ]
+}

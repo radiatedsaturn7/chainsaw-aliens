@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "elder-clover-2010",
+  "name": "Elder Clover 2010",
+  "stableCarId": "saved-car:Elder Clover 2010",
+  "referenceVehicle": "2010 Fiat Doblo Active1.4 16V95, UK March2010 second-generation standard-length five-seat passenger MPV five-speed manual, noFamilyPack; notCargo,Maxi,seven-seat,diesel orMTA",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "f65cdcaf4bea44071ef4617726ffc819059d5a8de5e3f2867f302244102f9c26",
+    "dashboard": "765c03af82c3b8347bf1ec3e3cec8bd4352532ade292704781597635fbdae935",
+    "tires": "8d41a084b7854d33f7ee9000c0dca6a29f4db899168d59d5c77410388bb5be16"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

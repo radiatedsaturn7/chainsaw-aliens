@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "field-madder-2013",
+  "name": "Field Madder 2013",
+  "stableCarId": "saved-car:Field Madder 2013",
+  "referenceVehicle": "2013 Netherlands Audi RS7Sportback C74.0TFSI560PSquattro8AT four-seatfive-door;notlater605PSperformance orC8",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "4030f247f18d924ad047c5206eef94a1da0909d1d76951b5bda8da91a9638764",
+    "dashboard": "9eb6f1c53ea40f9b85862dff1527386e27ebcf1e324cb0ccc5649bf101577c61",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

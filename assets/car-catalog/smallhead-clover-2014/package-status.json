@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "smallhead-clover-2014",
+  "name": "Smallhead Clover 2014",
+  "stableCarId": "saved-car:Smallhead Clover 2014",
+  "referenceVehicle": "2014 United States Mazda Mazda3, i Sport BM four-door sedan2.0SKYACTIV-G6MT,16-inch coveredsteel wheels; nots2.5,hatchback,Mazdaspeed or i-ELOOP",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "smallhead-clover-2014",
+  "sourceHashes": {
+    "body": "1f387c978b86fe300b39674923a49941c3ea51363af82259cb10e0c061ab11f4",
+    "dashboard": "3c3dee38b00f786856f3381c27d2090b166d8199300e2cf3050127705e01c16a",
+    "tires": "ed57af71ef923399dd8a5cfda4fa99c53f66c55e27499bc82e12d84e04259293"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

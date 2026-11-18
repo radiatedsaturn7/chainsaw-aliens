@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "hairy-clover-1970",
+  "name": "Hairy Clover 1970",
+  "stableCarId": "saved-car:Hairy Clover 1970",
+  "referenceVehicle": "1970 United States Dodge Coronet Super Bee, two-doorhardtop,optional440SixPack three-two-barrelV8,optional4MT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "cfc8d6aa0c24bfb21e870baa78d972145821121f1e80bb42ad403270b884d541",
+    "dashboard": "b0ba4b9f8a1dd87c96d49ef0ded907cd550ba4061a62b9c579606f8324888c58",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

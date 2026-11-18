@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "sweet-violet-2016",
+  "name": "Sweet Violet 2016",
+  "stableCarId": "saved-car:Sweet Violet 2016",
+  "referenceVehicle": "2016 US Cadillac CTS-V third-generation sedan, LT4 6.2 supercharged V8, RWD 8L90 8AT, standard aero and 19-inch staggered tires",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "248890b58a162a338bc847e40e7d4453845779eec6bd288f2f0abe148fe002bf",
+    "dashboard": "797c57e55f2c37aceac2edcdd6258940f93c58351425310e2ffa61badcc0c57f",
+    "tires": "083ec75ceb75d0379474311e898b1c8ea015d608c081e47a05b4ba1df6b6398a"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

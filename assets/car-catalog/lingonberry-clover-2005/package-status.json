@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "lingonberry-clover-2005",
+  "name": "Lingonberry Clover 2005",
+  "stableCarId": "saved-car:Lingonberry Clover 2005",
+  "referenceVehicle": "2005 Canada Lexus RX330, Canadian standard3.3V6 full-timeAWD5AT,17-inchall-season wheels,coil suspension; noair-suspensionpackage",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "4a5b30af6315be1207bc7b770c59fed8357bfd0eaa6e86cbd34bd80dfac27486",
+    "dashboard": "49317be5d45ac76f5d756c8a61a6b78b7c0eca8f22a37e50c432ae8052200e5e",
+    "tires": "03c5b7e256f1b86507eeb7f80ad4293049c69472ca5015c5fd99a007e4e4ded1"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,67 @@
+{
+  "id": "heather-clover-2004",
+  "name": "Heather Clover 2004",
+  "stableCarId": "saved-car:Heather Clover 2004",
+  "runtimeId": "saved-car:Heather Clover 2004",
+  "candidateId": "fiat-idea-active-1-4-2004-supplemental-candidate",
+  "referenceVehicle": "2004 Fiat Idea Active1.4 16V, UK February2004 launchfive-seatminiMPV FIREpetrolfive-speedmanual, nooptionalSkyDomeroof; notDualogic,MultiJet orLanciaMusa",
+  "identity": {
+    "year": 2004,
+    "make": "Fiat",
+    "model": "Idea Active1.4 16V",
+    "trim": "UK February2004 launchfive-seatminiMPV FIREpetrolfive-speedmanual, nooptionalSkyDomeroof; notDualogic,MultiJet orLanciaMusa",
+    "market": "UK"
+  },
+  "bodyClass": "minivan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      780,
+      390,
+      500,
+      160
+    ],
+    "wheel": [
+      1500,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5",
+    "layoutNote": "Central instruments; right steering. Provisional source coordinates pending game fitting."
+  },
+  "sources": [
+    {
+      "url": "https://www.media.stellantis.com/uk-en/fiat/press/new-fiat-idea-in-uk",
+      "fields": [
+        "powerHp",
+        "engineDisplacementL",
+        "gearCount",
+        "drivetrain",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM"
+      ]
+    }
+  ]
+}

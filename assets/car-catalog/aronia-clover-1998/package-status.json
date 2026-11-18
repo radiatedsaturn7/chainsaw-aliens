@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "aronia-clover-1998",
+  "name": "Aronia Clover 1998",
+  "stableCarId": "saved-car:Aronia Clover 1998",
+  "referenceVehicle": "1998 Fiat Barchetta LimitedEdition1.8 16V, Italy January1998 numbered LimitedEdition two-seat FWD roadster five-speedmanual, clothroof and15inch alloys; not1999LE or2003facelift",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "beb0ed3062e7fe1a49827f454126f3423ca6cc2661cc8e516cc8591c319f31ec",
+    "dashboard": "15e1f6f72f31e9c6ac24ddfd268c72eb1c1c0c1963a333e448edbfae9b4e2b77",
+    "tires": "0eca99feee523efbbffb255d5735610e45c83940ee22c33d00318836932886d8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

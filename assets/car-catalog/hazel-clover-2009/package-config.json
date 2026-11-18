@@ -1,0 +1,70 @@
+{
+  "id": "hazel-clover-2009",
+  "name": "Hazel Clover 2009",
+  "stableCarId": "saved-car:Hazel Clover 2009",
+  "runtimeId": "saved-car:Hazel Clover 2009",
+  "candidateId": "kia-amanti-2009-us-38-5at-canonical-candidate",
+  "referenceVehicle": "2009 United States Kia Amanti, standard3.8V6 FWD5AT,16-inchalloys,noLeather/Premiumpackages",
+  "identity": {
+    "year": 2009,
+    "make": "Kia",
+    "model": "Amanti",
+    "trim": "standard3.8V6 FWD5AT,16-inchalloys,noLeather/Premiumpackages",
+    "market": "United States"
+  },
+  "bodyClass": "four-door-sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.kiamedia.com/us/en/media/pressreleases/3588/2009-kia-amanti",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "absEnabled",
+        "tractionControlEnabled",
+        "engineDisplacementL",
+        "powerHp",
+        "torqueLbFt",
+        "gearCount",
+        "wheelbaseM",
+        "heightM",
+        "tireSize"
+      ]
+    }
+  ]
+}

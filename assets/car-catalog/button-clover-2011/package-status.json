@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "button-clover-2011",
+  "name": "Button Clover 2011",
+  "stableCarId": "saved-car:Button Clover 2011",
+  "referenceVehicle": "2011 Koenigsegg Agera standard 5.0 twin-turbo V8 seven-speed paddle-shift; not R/S/RS",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "6c2440feab60ed696673d4c2290f027fd202013235ed3dd71fd84f7532ca5bbb",
+    "dashboard": "6e959d2356916348321af3fe9069dc5172ca49fb7539289659ef03e2a08fd7f0",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

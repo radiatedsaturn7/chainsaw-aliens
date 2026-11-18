@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "loganberry-clover-2010",
+  "name": "Loganberry Clover 2010",
+  "stableCarId": "saved-car:Loganberry Clover 2010",
+  "referenceVehicle": "2010 United States Mercedes-Benz CL600 C2165.5 twin-turbo V12 RWD five-speed automatic four-seat luxury coupe, standard18-inch staggered wheels; not CL5504MATIC or AMG",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "0d5f2d779952076d232cea99f4bfbd36153e0f381d0dd7575f60b5229b78e7bd",
+    "dashboard": "a9b5c411a670871af481c9dcc92990cf40649eceb62a8cb56318f8890a8ad9d6",
+    "tires": "74fb3280e492243f5cb0d2f1473b3165397ca912c306c14baeeedfde58e01176"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

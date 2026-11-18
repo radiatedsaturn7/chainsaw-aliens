@@ -1,0 +1,163 @@
+{
+  "id": "quaking-grass-2003",
+  "name": "Quaking Grass 2003",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "6cab4e84828fde6c04517dcdffa97d5bccf3ab1d611e324ad1f724e985f086e5",
+  "sourceDirectory": "assets/car-catalog/quaking-grass-2003",
+  "sourceHashes": {
+    "body": "f4a2f112dbe5fd31a71317a809ef32a2615537b270ec6886b197fd5d5575d32a",
+    "dashboard": "3a43ffc2d8b1345684c538154a55ad7788612f0db588a9449410ce661d3fd3ad",
+    "tires": "2d8b6931f02699e59ea39486882bfe2127433daf19b01988b5fe3837c392499c"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 96,
+        "y": 341,
+        "radius": 50
+      },
+      {
+        "wheel": "fr",
+        "x": 338,
+        "y": 341,
+        "radius": 50
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 664,
+        "y": 324,
+        "radius": 50
+      },
+      {
+        "wheel": "rr",
+        "x": 836,
+        "y": 286,
+        "radius": 44
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 962,
+        "y": 750,
+        "radius": 50
+      },
+      {
+        "wheel": "rr",
+        "x": 1262,
+        "y": 750,
+        "radius": 50
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 452,
+        "y": 732,
+        "radius": 38
+      },
+      {
+        "wheel": "rr",
+        "x": 600,
+        "y": 758,
+        "radius": 50
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 98,
+        "y": 767,
+        "radius": 52
+      },
+      {
+        "wheel": "rl",
+        "x": 338,
+        "y": 767,
+        "radius": 52
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1584,
+        "y": 318,
+        "radius": 50
+      },
+      {
+        "wheel": "fl",
+        "x": 1738,
+        "y": 286,
+        "radius": 42
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 966,
+        "y": 312,
+        "radius": 50
+      },
+      {
+        "wheel": "fl",
+        "x": 1260,
+        "y": 312,
+        "radius": 50
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1392,
+        "y": 712,
+        "radius": 38
+      },
+      {
+        "wheel": "fl",
+        "x": 1530,
+        "y": 764,
+        "radius": 50
+      }
+    ]
+  },
+  "wheelFit": "average",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      230,
+      530,
+      470,
+      150
+    ],
+    "wheel": [
+      597.65,
+      760,
+      264
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#eed9ae",
+    "viewportWheelScale": 2.2,
+    "gaugeBackground": "#101010"
+  },
+  "steeringWheelSource": {
+    "artRef": "pz-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementNotes": "Individually inspected half-scale body source and 992px-wide dashboard on fitting-measurement.png. Body coordinates doubled to original pixels; dashboard offset450 removed and scaled1983/992. Front/rear wheel centers inferred behind occluding bumper edges from source silhouette; diagonal and side centers measured at open arches. Art estimates only, no mechanical inference. Runtime render fitting pending. Wheel IDs follow actual native getRaceSpriteWheelRig projection: front fl screen-left, rear rr screen-left. Static v2 mobile viewport wheel side clipping corrected using native render geometry; individual opening placement and scales retained."
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "white-deadnettle-1995",
+  "name": "White Deadnettle 1995",
+  "stableCarId": "saved-car:White Deadnettle 1995",
+  "referenceVehicle": "1995 Japan Mitsubishi Lancer Evolution III GSR February1995 E-CE9A 4G63turbo5MT road sedan, nooptional sunroof; notRS,racecar orlaterCT9A",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "409cc6e6f01e879046b1b1509db0726d7ad4bfc2148c7941d363e6292f59e7ac",
+    "dashboard": "b1ba95fe2ea07a35125fe8f6e93fb102dbf7c9f05d9ac0dfc9a044c0072ba794",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

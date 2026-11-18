@@ -1,0 +1,61 @@
+{
+  "id": "golden-clover-2015",
+  "name": "Golden Clover 2015",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1269,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      1526,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://www.saicmotor.com/e/latest_news/mg/44784.shtml",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "gearCount",
+        "absEnabled",
+        "tractionControlEnabled",
+        "publishedPowerPS",
+        "publishedTransmission",
+        "publishedFuelCompatibility"
+      ]
+    },
+    {
+      "url": "https://device.report/m/e90b9faa9452f4617984a7beb7a3569cfd4d4c07ae8ad73fe476bae659d46f04",
+      "fields": [
+        "estimatedrelated-family gearing anchor"
+      ]
+    }
+  ]
+}

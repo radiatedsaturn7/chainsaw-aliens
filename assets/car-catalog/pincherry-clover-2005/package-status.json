@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "pincherry-clover-2005",
+  "name": "Pincherry Clover 2005",
+  "stableCarId": "saved-car:Pincherry Clover 2005",
+  "referenceVehicle": "2005 United States Toyota Matrix, XRS2ZZ-GE VVTL-i six-speedmanual FWD,16-inchalloys,solidroof; notbase1ZZ,XR,AWD orPontiacVibe",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "c8e243d9976f9437f8ed81a980fc8771ab0ff9b074af87d6a9f306c539fa2c00",
+    "dashboard": "2e9df8750ff78c0194b6914254c8c9f475970f8d4811377a5bfd42ea2d7edb0e",
+    "tires": "b8ee1f0084984be3478d92ed6af58751a6e2232aa59ded526769b8088e1a0171"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

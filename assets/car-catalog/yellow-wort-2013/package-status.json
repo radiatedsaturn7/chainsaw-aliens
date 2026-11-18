@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "yellow-wort-2013",
+  "name": "Yellow Wort 2013",
+  "stableCarId": "saved-car:Yellow Wort 2013",
+  "referenceVehicle": "2013 US Lexus GS 350 F SPORT, RWD 3.5 V6 six-speed automatic, without optional rear steering",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "yellow-wort-2013",
+  "sourceHashes": {
+    "body": "4404bfe1aac5e7b11bfba023c7ebc890d1cf7ab3eb65ef03ff7bb5f9a8c4e6c9",
+    "dashboard": "d708e02596d08d4d2e57e420325909d2a000b82e08a50ca01ca3b762834965ef",
+    "tires": "6492652c4b8617d677cdbdd436eb79be4dd940504add4125256d626e3cc5a6ec"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

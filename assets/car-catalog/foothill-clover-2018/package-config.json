@@ -1,0 +1,70 @@
+{
+  "id": "foothill-clover-2018",
+  "name": "Foothill Clover 2018",
+  "stableCarId": "saved-car:Foothill Clover 2018",
+  "runtimeId": "saved-car:Foothill Clover 2018",
+  "candidateId": "mclaren-720s-coupe-2018-roster-candidate",
+  "referenceVehicle": "2018 McLaren 720S Coupe, originalEuropeanM840T3994cctwin-turboV8seven-speedSSG MonocageIIcoupe;notSpider,765LTor750S",
+  "identity": {
+    "year": 2018,
+    "make": "McLaren",
+    "model": "720S Coupe",
+    "trim": "originalEuropeanM840T3994cctwin-turboV8seven-speedSSG MonocageIIcoupe;notSpider,765LTor750S",
+    "market": "UK/Europe"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.onlymanuals.com/mclaren/720s/mclaren_720s_owners_manual_2017_2017_3",
+      "fields": [
+        "powerHp",
+        "publishedPowerPS",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "heightM",
+        "wheelbaseM"
+      ]
+    }
+  ]
+}

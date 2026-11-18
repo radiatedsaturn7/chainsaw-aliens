@@ -1,0 +1,71 @@
+{
+  "id": "bent-clover-2010",
+  "name": "Bent Clover 2010",
+  "stableCarId": "saved-car:Bent Clover 2010",
+  "runtimeId": "saved-car:Bent Clover 2010",
+  "candidateId": "suzuki-sx4-crossover-2010-us-6mt-awd-supplemental",
+  "referenceVehicle": "2010 United States Suzuki SX4, Crossover withoptional i-AWD,2.0DOHC gasoline6MT,standard16-inchcoveredsteelwheels; notSportBack,sedan,CVT orFiatSedici",
+  "identity": {
+    "year": 2010,
+    "make": "Suzuki",
+    "model": "SX4",
+    "trim": "Crossover withoptional i-AWD,2.0DOHC gasoline6MT,standard16-inchcoveredsteelwheels; notSportBack,sedan,CVT orFiatSedici",
+    "market": "United States"
+  },
+  "bodyClass": "five-door five-seat compact crossover hatchback; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Suzuki/SX4/Suzuki_US%20SX4_2010.pdf",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "fuelTankUSgal",
+        "absEnabled"
+      ]
+    }
+  ]
+}

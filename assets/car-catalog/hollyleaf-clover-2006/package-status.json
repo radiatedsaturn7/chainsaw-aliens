@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "hollyleaf-clover-2006",
+  "name": "Hollyleaf Clover 2006",
+  "stableCarId": "saved-car:Hollyleaf Clover 2006",
+  "referenceVehicle": "2006 United States Honda Civic, US DX four-door sedan R18 1.799L SOHC i-VTEC5MT, standard15-inch covered steel wheels; not coupe,Si,Hybrid,GX,automatic or latergeneration",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "725ce7dee2a79e6d0f7131e0fbb3c6b7ab9b273156213386532d2b8753640a7a",
+    "dashboard": "e9221c1cbc19b7f76d38fb05c1abf41df0812b73860bfc9a2caab38629a0c114",
+    "tires": "e0d7dc8f439ac729d62b16181833f636265f01fcfcf5ead0a2b5280aa8d70881"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

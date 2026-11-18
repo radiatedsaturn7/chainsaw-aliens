@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bush-vetch-1968",
+  "name": "Bush Vetch 1968",
+  "stableCarId": "saved-car:Bush Vetch 1968",
+  "referenceVehicle": "1968 US Plymouth Barracuda Formula S340 V8 fastback, four-speedmanual3.23openrearaxle;not383,notlaterE-bodyCuda orHemiSuperStock",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "bush-vetch-1968",
+  "sourceHashes": {
+    "body": "cda1a575ebc2095e4982bfc4c2ac174162f9147fa1c48ae63744559ef40704e6",
+    "dashboard": "07fd1c6d19459a825781c81f6af8081ad08aade10aab23299068124e0439fd23",
+    "tires": "588676efaaaab6719cd789f87c70277b5a9ec2df170a5d96f7c72d967b2f9e7b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

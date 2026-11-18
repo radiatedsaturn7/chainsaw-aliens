@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "wood-dock-2012",
+  "name": "Wood Dock 2012",
+  "stableCarId": "saved-car:Wood Dock 2012",
+  "referenceVehicle": "2012 German Mercedes-Benz SLK55AMG R172 type172.475 M152.980 naturally aspirated5.5V8,standard seven-speed torque-converter automatic; not R171 or SL55",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "wood-dock-2012",
+  "sourceHashes": {
+    "body": "3c7e4faf28f6f764f4b1360c1789d6ca75d9b542c87d85704c18d3c013e4dfa6",
+    "dashboard": "15395bbdc1182bd95e344f3dd778e30c658fd113837d6e843b0fd8d499eb071d",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    3,
+    4,
+    5,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

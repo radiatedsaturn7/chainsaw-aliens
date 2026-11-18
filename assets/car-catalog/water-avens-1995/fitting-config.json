@@ -1,0 +1,163 @@
+{
+  "id": "water-avens-1995",
+  "name": "Water Avens 1995",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "69c636a868602294162569f2cbee6c5738d422adc8a4943531764ae5fcdc75fd",
+  "sourceDirectory": "assets/car-catalog/water-avens-1995",
+  "sourceHashes": {
+    "body": "517dad38aa272adb985f5b6c83c350f27d0cccc4552561ef9a0e2ba87a3566b5",
+    "dashboard": "58368edd86a74fadb778efcb02a45485e8621656aafbae97c07298ae54284b34",
+    "tires": "103f99ec0c82048b8342074518852a53ffcee9210e7ae3b5209bef97b177271e"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 98,
+        "y": 320,
+        "radius": 44
+      },
+      {
+        "wheel": "fr",
+        "x": 340,
+        "y": 320,
+        "radius": 44
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 658,
+        "y": 312,
+        "radius": 48
+      },
+      {
+        "wheel": "rr",
+        "x": 824,
+        "y": 262,
+        "radius": 42
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 948,
+        "y": 716,
+        "radius": 48
+      },
+      {
+        "wheel": "rr",
+        "x": 1240,
+        "y": 716,
+        "radius": 48
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 420,
+        "y": 698,
+        "radius": 34
+      },
+      {
+        "wheel": "rr",
+        "x": 620,
+        "y": 734,
+        "radius": 50
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 96,
+        "y": 738,
+        "radius": 48
+      },
+      {
+        "wheel": "rl",
+        "x": 336,
+        "y": 738,
+        "radius": 48
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1582,
+        "y": 308,
+        "radius": 48
+      },
+      {
+        "wheel": "fl",
+        "x": 1738,
+        "y": 270,
+        "radius": 40
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 962,
+        "y": 294,
+        "radius": 48
+      },
+      {
+        "wheel": "fl",
+        "x": 1258,
+        "y": 294,
+        "radius": 48
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1358,
+        "y": 690,
+        "radius": 36
+      },
+      {
+        "wheel": "fl",
+        "x": 1506,
+        "y": 738,
+        "radius": 50
+      }
+    ]
+  },
+  "wheelFit": "average",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      230,
+      524,
+      476,
+      144
+    ],
+    "wheel": [
+      571.87,
+      754,
+      264
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#eed9ae",
+    "viewportWheelScale": 2.1,
+    "gaugeBackground": "#101010"
+  },
+  "steeringWheelSource": {
+    "artRef": "steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementNotes": "Individually inspected half-scale body source and 992px-wide dashboard on fitting-measurement.png. Body coordinates doubled to original pixels; dashboard offset450 removed and scaled1983/992. Front/rear wheel centers inferred behind occluding bumper edges from source silhouette; diagonal and side centers measured at open arches. Art estimates only, no mechanical inference. Runtime render fitting pending. Wheel IDs follow actual native getRaceSpriteWheelRig projection: front fl screen-left, rear rr screen-left. Static v2 mobile viewport wheel side clipping corrected using native render geometry; individual opening placement and scales retained."
+}

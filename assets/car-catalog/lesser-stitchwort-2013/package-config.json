@@ -1,0 +1,62 @@
+{
+  "id": "lesser-stitchwort-2013",
+  "name": "Lesser Stitchwort 2013",
+  "stableCarId": "saved-car:Lesser Stitchwort 2013",
+  "candidateId": "renault-clio-r-s-200-edc-2013-roster-candidate",
+  "referenceVehicle": "2013 Renault Clio R.S. 200 EDC, French-market Sport chassis five-door, standard six-speed EDC, not Cup or Trophy",
+  "identity": {
+    "year": 2013,
+    "make": "Renault",
+    "model": "Clio R.S. 200 EDC",
+    "trim": "French-market Sport chassis five-door, standard six-speed EDC, not Cup or Trophy",
+    "market": "France"
+  },
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      255,
+      480,
+      470,
+      165
+    ],
+    "wheel": [
+      490,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://media.alpinecars.com/nouvelle-renault-clio-rs-200-edc-tarifs-et-equipements/",
+      "fields": [
+        "powerKw",
+        "torqueNm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount"
+      ]
+    }
+  ]
+}

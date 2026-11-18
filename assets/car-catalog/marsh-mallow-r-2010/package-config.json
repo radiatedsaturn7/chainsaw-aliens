@@ -1,0 +1,62 @@
+{
+  "id": "marsh-mallow-r-2010",
+  "name": "Marsh Mallow R 2010",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      190,
+      485,
+      530,
+      190
+    ],
+    "wheel": [
+      460,
+      750,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/the-golf-r-international-driving-presentation-ellmau-2010-2348/download",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "torqueNm",
+        "powerRpm",
+        "torqueRpm",
+        "torquePlateauEndRpm",
+        "engineDisplacementL",
+        "publishedKerbKg",
+        "publishedMassBasisNote",
+        "transmission",
+        "gearCount",
+        "drivetrain",
+        "tireSize",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "referenceZeroTo100KmhSec",
+        "referenceTopSpeedKmh",
+        "fuelTankLitres"
+      ]
+    }
+  ]
+}

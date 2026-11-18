@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "deergrass-2020",
+  "name": "Deergrass 2020",
+  "stableCarId": "saved-car:Deergrass 2020",
+  "referenceVehicle": "2020 US Jeep Gladiator Rubicon 3.6V6 six-speed manual Crew Cab5-foot bed; high-range road approximation",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "f7bc96332d5dbb84bb7ce6e9d02f7ead62ef140a2ec40978975e1f9bc1ba3f4f",
+    "dashboard": "712675a20588814789f54a81aeab4a1cf3d21c04b8ff6011e38c082337e584ce",
+    "tires": "7cdb2d892dbf9792c5932f50a8b4483aa75bbd66d219d3671bd9e2dc5c39846e"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "water-dock-1986",
+  "name": "Water Dock 1986",
+  "stableCarId": "saved-car:Water Dock 1986",
+  "referenceVehicle": "1986 UK BMW M635CSi E24 M88/3 non-catalyst3.453L naturally aspirated inline-six five-speed manual;not US S38 catalyst M6",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "5e3735128e7f85bdaff891e6ccff42ffa6bf691d115c25f58a78275cfc976f4c",
+    "dashboard": "7c8e091843cb2bab8c78f980a11706045b2d87116f72418fb1361462fd4678e4",
+    "tires": "5f4811935602608078f737066db9097b3427deb0dd4e3dcaa4028460d6377791"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

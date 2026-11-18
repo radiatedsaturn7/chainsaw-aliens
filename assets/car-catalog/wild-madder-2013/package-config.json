@@ -1,0 +1,78 @@
+{
+  "id": "wild-madder-2013",
+  "name": "Wild Madder 2013",
+  "stableCarId": "saved-car:Wild Madder 2013",
+  "candidateId": "audi-rs-4-avant-2013-roster-candidate",
+  "referenceVehicle": "2013 UK Audi RS4Avant B84.163LNAhighrevV8 quattro7-speedS tronicwagon standard19-inch;notB5turbo,B7manualsedan orlaterB9V6",
+  "identity": {
+    "year": 2013,
+    "make": "Audi",
+    "model": "RS 4 Avant",
+    "trim": "UKB8standard4.2FSIV8quattro7-speedStronic,19-inch,withoutoptionalDRC/sportdifferential",
+    "market": "United Kingdom"
+  },
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1309,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      1507,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://media.manuals.plus/m/bf2d7a9d0d9314bc475ae8a0840bb812e806508b82fa47a1a0956da61134d42c",
+      "fields": [
+        "identity",
+        "transmission",
+        "gearCount"
+      ]
+    },
+    {
+      "url": "https://audi.media-corner.ch/fr/press/la-nouvelle-audi-rs-4-avant",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "drivetrain",
+        "tireSize",
+        "frontTire",
+        "rearTire",
+        "aspiration"
+      ]
+    }
+  ]
+}

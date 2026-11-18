@@ -1,0 +1,85 @@
+{
+  "id": "fawn-clover-2011",
+  "name": "Fawn Clover 2011",
+  "stableCarId": "saved-car:Fawn Clover 2011",
+  "runtimeId": "saved-car:Fawn Clover 2011",
+  "candidateId": "bmw-740i-2011-us-f01-6at",
+  "referenceVehicle": "2011 United States BMW 740i F01 short-wheelbase3.0TwinPower Turbo inline-sixRWD six-speedautomatic,standard18-inchallseason wheels;not740Li,750i,ActiveHybrid orxDrive",
+  "identity": {
+    "year": 2011,
+    "make": "BMW",
+    "model": "740i",
+    "trim": "F01 short-wheelbase3.0TwinPower Turbo inline-sixRWD six-speedautomatic,standard18-inchallseason wheels;not740Li,750i,ActiveHybrid orxDrive",
+    "market": "United States"
+  },
+  "bodyClass": "sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/BMW/7%20Series/BMW_US%207Series_2011.pdf",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "frontWeightDistribution",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "gearRatios",
+        "finalDrive",
+        "reverseRatio",
+        "fuelTankUSgal",
+        "topSpeedMph",
+        "zeroToSixtySec",
+        "tireSize",
+        "frontTire",
+        "rearTire",
+        "identity"
+      ]
+    }
+  ]
+}

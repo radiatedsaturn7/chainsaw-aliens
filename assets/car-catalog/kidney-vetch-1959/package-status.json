@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "kidney-vetch-1959",
+  "name": "Kidney Vetch 1959",
+  "stableCarId": "saved-car:Kidney Vetch 1959",
+  "referenceVehicle": "1959 Ford Anglia105E US-export two-door saloon,997ccOHV pre-crossflow inline-four,standard8.9:1compression,4MT/4.125axle,RWD,LHD; July1959USbrochure L9373/759/USA,not1198Super,100Esidevalve,vanorlowcompressionoption",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "kidney-vetch-1959",
+  "sourceHashes": {
+    "body": "419b0d520bc314feaeccb8df78d0e771ee524bdee1a3227324d75ecc159e202a",
+    "dashboard": "bf7b54595e1793c6cea0ed3a2a85e0225d977511d12f516cb6411ecf0d41a0fd",
+    "tires": "4d5518188c633a9378240efd5480328b25313dab26a6164e9e9957258690e00e"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

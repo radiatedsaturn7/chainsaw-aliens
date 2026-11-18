@@ -1,0 +1,57 @@
+{
+  "id": "black-trefoil-2005",
+  "name": "Black Trefoil 2005",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      240,
+      420,
+      440,
+      160
+    ],
+    "wheel": [
+      470,
+      753,
+      360
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Volkswagen/Touareg/VW_US%20Touareg_2005.pdf",
+      "fields": [
+        "powerKw",
+        "torqueNm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "tireSize",
+        "frontTire",
+        "rearTire"
+      ]
+    }
+  ]
+}

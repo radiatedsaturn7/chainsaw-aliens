@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "goldentuft-1993",
+  "name": "Goldentuft 1993",
+  "stableCarId": "saved-car:Goldentuft 1993",
+  "referenceVehicle": "1993 France Renault Clio Williams, first-series European 2.0 naturally aspirated three-door road car, five-speed manual; not rally Group A/N",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "b8d552373b2b30d30694372233971ee7a374dff89ae7a1fe5c81c243b2d194e1",
+    "dashboard": "3f9df6d7d7d840892ac8eb15ddfd80a9e08f1001af370e71cd7a13e8cfc78dcf",
+    "tires": "0ce9a4cbb716154e932faf032dba5795dccedad6f41eb7d3de7f513520627813"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

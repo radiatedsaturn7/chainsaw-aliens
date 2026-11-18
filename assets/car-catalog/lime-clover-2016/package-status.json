@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "lime-clover-2016",
+  "name": "Lime Clover 2016",
+  "stableCarId": "saved-car:Lime Clover 2016",
+  "referenceVehicle": "2016 Fiat Tipo 1.4 16V95, Poland February2016 base Tipo four-door sedan six-speed manual with15inch steel covered wheels; notPop,OpeningEdition,hatchback,estate orE-Torq automatic",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "fd37c2f78a0a1b0d31071493a74ae83148a77366da894362a250797f34a3ede5",
+    "dashboard": "054cdb3b5750163544b02c326f6e123ca0fc30f29d18df4c660354891c7faf2d",
+    "tires": "8058fb8e5495e39d2ab45e72b9d01e056815c6cdf77f91a498d00b21b2c1c9fe"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

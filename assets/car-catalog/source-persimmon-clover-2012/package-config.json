@@ -1,0 +1,54 @@
+{
+  "id": "source-persimmon-clover-2012",
+  "name": "Persimmon Clover 2012",
+  "stableCarId": "saved-car:Persimmon Clover 2012",
+  "runtimeId": "saved-car:Persimmon Clover 2012",
+  "runtimeDocumentId": null,
+  "candidateId": null,
+  "referenceVehicle": "US2012 Hyundai Genesis3.8GDI sedan,RWD,8AT. Four-door sedan,standard17-inch wheels,Hyundai-era body,notCoupe orR-Spec.",
+  "identity": null,
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    7,
+    6,
+    3,
+    4,
+    5,
+    2,
+    1
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      238,
+      420,
+      436,
+      127
+    ],
+    "wheel": [
+      476,
+      714,
+      377
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Hyundai/Genesis/Hyundai_US%20Genesis_2012.pdf",
+      "fields": [
+        "exact identity and visual configuration"
+      ]
+    }
+  ]
+}

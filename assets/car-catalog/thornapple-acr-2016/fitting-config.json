@@ -1,0 +1,165 @@
+{
+  "id": "thornapple-acr-2016",
+  "name": "Thornapple ACR 2016",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "cfd111daf70ca2daefa58c802d97e9b662f23b08b0f1aa52c0fa49b14bd16783",
+  "sourceDirectory": "assets/car-catalog/thornapple-acr-2016",
+  "sourceHashes": {
+    "body": "0d2ffa3860b2195f2bb8cef195c3a21ec1f0de108fe9f1bafaa8e8de319f9ee2",
+    "dashboard": "0d3b4c66a038be5d1ce5ae19927604e417bdf92e0d081893139ada408c620b45",
+    "tires": "455ac2cde2501c5df99a61a8fc5dd3522f66d15e82248297361c69861f16ac26"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 100,
+        "y": 320,
+        "radius": 30
+      },
+      {
+        "wheel": "fr",
+        "x": 335,
+        "y": 320,
+        "radius": 30
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 680,
+        "y": 301,
+        "radius": 45
+      },
+      {
+        "wheel": "rr",
+        "x": 834,
+        "y": 249,
+        "radius": 38
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 984,
+        "y": 287,
+        "radius": 45
+      },
+      {
+        "wheel": "rr",
+        "x": 1254,
+        "y": 282,
+        "radius": 46
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1384,
+        "y": 251,
+        "radius": 37
+      },
+      {
+        "wheel": "rr",
+        "x": 1498,
+        "y": 282,
+        "radius": 44
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 99,
+        "y": 738,
+        "radius": 30
+      },
+      {
+        "wheel": "rl",
+        "x": 338,
+        "y": 738,
+        "radius": 30
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 680,
+        "y": 713,
+        "radius": 44
+      },
+      {
+        "wheel": "fl",
+        "x": 831,
+        "y": 682,
+        "radius": 37
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 962,
+        "y": 711,
+        "radius": 45
+      },
+      {
+        "wheel": "fl",
+        "x": 1233,
+        "y": 716,
+        "radius": 45
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1372,
+        "y": 687,
+        "radius": 38
+      },
+      {
+        "wheel": "fl",
+        "x": 1501,
+        "y": 738,
+        "radius": 46
+      }
+    ]
+  },
+  "wheelFit": "cover",
+  "cockpitCalibration": {
+    "size": [
+      1672,
+      941
+    ],
+    "cluster": [
+      280,
+      615,
+      370,
+      110
+    ],
+    "wheel": [
+      465,
+      705,
+      300
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#ffceae",
+    "electric": false,
+    "viewportWheelScale": 1.98,
+    "gaugeBackground": "#101014"
+  },
+  "steeringWheelSource": {
+    "artRef": "ct-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementMethod": "Individual original-sheet arch measurements, followed by eight-view native static review. Head-on tread centers raised 10 source pixels and reduced per vehicle. Cockpit wheel center and viewport scale individually reviewed at 1280x720 and 390x844. Gameplay acceptance deferred.",
+  "runtimeFitted": false
+}

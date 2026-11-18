@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "sulphur-clover-2021",
+  "name": "Sulphur Clover 2021",
+  "stableCarId": "saved-car:Sulphur Clover 2021",
+  "referenceVehicle": "2021 Bentley Flying Spur, third-generation V8 standard five-seat AWD eight-speed DCT luxury sedan,4.0 twin turbo;notW12,hybrid,MullinerorSpeed",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "sulphur-clover-2021",
+  "sourceHashes": {
+    "body": "0e696ed925507c73bddfdeba1a7ee09695950a41909b0d85c3157fa87b3b1c90",
+    "dashboard": "d522b713b39acdad9bc5c23a5fccbb199ffee356e972e7cc139f17e8f2b4f213",
+    "tires": "f9150e64ff573dca93e947aa5416742aa7e7d77c1a1431565b2e4454e4444495"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

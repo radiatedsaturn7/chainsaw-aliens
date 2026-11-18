@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "willow-clover-2012",
+  "name": "Willow Clover 2012",
+  "stableCarId": "saved-car:Willow Clover 2012",
+  "referenceVehicle": "2012 United States Hyundai Veracruz, GLS3.8MPI V6 FWD6AT,standard17-inchalloys,sevenseats",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "8ec0637cd2e0f200eb6c79b935f451e54d0ad999058dbb20540582ecdfdfbc81",
+    "dashboard": "6579c7839fb98260d6068d51eca115ae97ea6ed93c7b41d2da6c9549154cc53b",
+    "tires": "67b1d40a9712ca01807f55d9060765744d0df5df444a62f5d7db42424400ff44"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

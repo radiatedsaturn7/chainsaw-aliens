@@ -1,0 +1,107 @@
+{
+  "id": "hairy-tare-1971",
+  "name": "Hairy Tare 1971",
+  "stableCarId": "saved-car:Hairy Tare 1971",
+  "runtimeId": "saved-car:Hairy Tare 1971",
+  "candidateId": "amc-javelin-1971-amx-candidate",
+  "referenceVehicle": "1971 United States AMC Javelin AMX, optional401 four-barrel V8, four-speed manual,3.54 rear axle, no Go package assumption",
+  "identity": {
+    "year": 1971,
+    "make": "AMC",
+    "model": "Javelin AMX",
+    "trim": "optional401 four-barrel V8, four-speed manual,3.54 rear axle, no Go package assumption",
+    "market": "United States"
+  },
+  "bodyClass": "two-door-fastback",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      531,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.lov2xlr8.no/brochures/amc/71amc/bilder/18.jpg",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "engineDisplacementL",
+        "gearCount",
+        "finalDrive",
+        "lengthM",
+        "widthM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "fuelTankUSgal",
+        "periodPublishedRatings"
+      ]
+    },
+    {
+      "url": "https://www.lov2xlr8.no/brochures/amc/71amc/bilder/19.jpg",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "engineDisplacementL",
+        "gearCount",
+        "finalDrive",
+        "lengthM",
+        "widthM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "fuelTankUSgal",
+        "periodPublishedRatings"
+      ]
+    },
+    {
+      "url": "https://www.lov2xlr8.no/brochures/amc/71amc/bilder/20.jpg",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "engineDisplacementL",
+        "gearCount",
+        "finalDrive",
+        "lengthM",
+        "widthM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "fuelTankUSgal",
+        "periodPublishedRatings"
+      ]
+    }
+  ]
+}

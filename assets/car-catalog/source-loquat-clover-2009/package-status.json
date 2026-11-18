@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "source-loquat-clover-2009",
+  "name": "Loquat Clover 2009",
+  "stableCarId": "saved-car:Loquat Clover 2009",
+  "referenceVehicle": "US2009 Audi Q5 Premium3.2FSI quattro,6-speedTiptronic. Five-door SUV,standard18-inch wheels,notPremiumPlus orSQ5.",
+  "runtimeDocumentIdVerified": false,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "0fd3357aa38a8e8fbc00010cfe4fa424b244155555eaf81e02b0bad8a4e33a67",
+    "dashboard": "f649fbfa4a10c99318fd23a3e4e4f2784a71eaa2f787cbf970826a95400d346a",
+    "tires": "5eaf87094887d943e3dbf8c741cc4d4f1570bc702b8918eb91e778350e423828"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

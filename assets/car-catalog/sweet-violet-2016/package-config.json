@@ -1,0 +1,58 @@
+{
+  "id": "sweet-violet-2016",
+  "name": "Sweet Violet 2016",
+  "stableCarId": "saved-car:Sweet Violet 2016",
+  "candidateId": "cadillac-cts-v-sedan-2016-roster-candidate",
+  "referenceVehicle": "2016 US Cadillac CTS-V third-generation sedan, LT4 6.2 supercharged V8, RWD 8L90 8AT, standard aero and 19-inch staggered tires",
+  "identity": {
+    "year": 2016,
+    "make": "Cadillac",
+    "model": "CTS-V Sedan",
+    "trim": "US third-generation LT4 6.2 supercharged V8 RWD 8L90 eight-speed automatic; standard aero, no optional Carbon Fiber package",
+    "market": "United States"
+  },
+  "bodyClass": "sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      240,
+      490,
+      470,
+      160
+    ],
+    "wheel": [
+      490,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://www.caddyinfo.com/wordpress/200-mph-2016-cadillac-cts-v-announced/",
+      "fields": [
+        "SAE-certified engine peaks; transmission ratios; geometry; preliminary curb weight; tires; axle; weight distribution; maximum engine speed; claimed performance"
+      ]
+    }
+  ]
+}

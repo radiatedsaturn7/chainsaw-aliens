@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "guelder-clover-2013",
+  "name": "Guelder Clover 2013",
+  "stableCarId": "saved-car:Guelder Clover 2013",
+  "referenceVehicle": "2013 Fiat 500L Pop StarTwinAir105, UK February2013 short-body five-seat compactMPV0.9TwinAir six-speedmanual normalpower mode, standard16inchalloys; notMPW,Living,Trekking,ECO or500citycar",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "3f2fa1ec960d3218267a788bd354b833b2b2ce52629f4fd3ba39b4493cd63ef5",
+    "dashboard": "d452afc570b8ffc91c9b1562acadc575368f2ac7e76e75d4f24894fcd3dc82d2",
+    "tires": "d2e995e3a6a9a70ef3ca306f6924eb835b0ffd392c4e9179be941a7327776c2c"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,66 @@
+{
+  "id": "bithynian-vetch-1958",
+  "name": "Bithynian Vetch 1958",
+  "stableCarId": "saved-car:Bithynian Vetch 1958",
+  "runtimeId": "saved-car:Bithynian Vetch 1958",
+  "candidateId": "plymouth-fury-1958-roster-candidate",
+  "referenceVehicle": "1958 US Plymouth Fury two-doorhardtop,standard318cuin DualFuryV800 two-four-barrelV8,three-speedmanual and3.73highperformancechassisaxle;not305hp350GoldenCommando,not1957model",
+  "identity": {
+    "year": 1958,
+    "make": "Plymouth",
+    "model": "Fury",
+    "trim": "two-doorhardtop,standardDualFuryV800318dual-four-barrelV8,standard3MT,3.73highperformanceaxle;notGoldenCommando350",
+    "market": "United States"
+  },
+  "bodyClass": "two-door-hardtop-coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.lov2xlr8.no/brochures/plymouth/ply8/bilder/10.jpg",
+      "fields": [
+        "FuryexclusiveDualFuryV800318290hp5200/330lbft3600",
+        "twofourbarrel",
+        "manual3MT",
+        "highperformance3.73axle",
+        "dimensions",
+        "20gal",
+        "Fury8.00x14tires",
+        "torsionbarfrontleafrear"
+      ]
+    }
+  ]
+}

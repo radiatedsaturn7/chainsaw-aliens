@@ -1,0 +1,70 @@
+{
+  "id": "sea-bindweed-2010",
+  "name": "Sea Bindweed 2010",
+  "stableCarId": "saved-car:Sea Bindweed 2010",
+  "runtimeId": "saved-car:Sea Bindweed 2010",
+  "candidateId": "maserati-gran-turismo-s-2010-roster-candidate",
+  "referenceVehicle": "2010 European Maserati GranTurismo S Automatic four-seat coupe,4.7L naturally aspiratedV8 RWD ZF six-speed torque-converter automatic; notMCShift automatedmanual,MCStradale orGranCabrio.",
+  "identity": {
+    "year": 2010,
+    "make": "Maserati",
+    "model": "GranTurismo S Automatic",
+    "trim": "European4.7NA V8 four-seat coupe ZF6AT",
+    "market": "Europe"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      515,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.media.stellantis.com/us-en/maserati/press/maserati-granturismo-s-automatic-unveiled-at-the-geneva-auto-show",
+      "fields": [
+        "4.7V8",
+        "323kW7000rpm",
+        "490Nm4750rpm",
+        "ZF6AT",
+        "20inchwheels"
+      ]
+    },
+    {
+      "url": "https://www.media.stellantis.com/uk-en/maserati/press/worldwide-paris-premiere-for-the-maserati-granturismo-mc-stradale",
+      "fields": [
+        "continued2010SAutomaticavailability",
+        "distinctionfromMCShiftandMCStradale"
+      ]
+    }
+  ]
+}

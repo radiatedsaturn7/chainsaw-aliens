@@ -1,0 +1,66 @@
+{
+  "id": "knotted-clover-2015",
+  "name": "Knotted Clover 2015",
+  "stableCarId": "saved-car:Knotted Clover 2015",
+  "runtimeId": "saved-car:Knotted Clover 2015",
+  "candidateId": "mclaren-570s-coupe-2015-roster-candidate",
+  "referenceVehicle": "2015 McLaren 570S Coupe, EuropeanlaunchM838TE3.799twin-turboV8RWD7SSG,closedroof; not570GT/Spider orGT",
+  "identity": {
+    "year": 2015,
+    "make": "McLaren",
+    "model": "570S Coupe",
+    "trim": "EuropeanlaunchM838TE3.799twin-turboV8RWD7SSG,closedroof; not570GT/Spider orGT",
+    "market": "Europe/United Kingdom"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.ryland.co.uk/mclaren/news-and-events/570s-launch/",
+      "fields": [
+        "2015launch",
+        "570PS7400",
+        "600Nm5000\u20136500",
+        "3799cc",
+        "7SSG",
+        "1313kglightweightdry",
+        "42/58",
+        "length/height"
+      ]
+    }
+  ]
+}

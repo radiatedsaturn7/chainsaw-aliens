@@ -1,0 +1,78 @@
+{
+  "id": "alpine-trefoil-2010",
+  "name": "Alpine Trefoil 2010",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      426,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://newsroom.bmwgroup.com/global/download/bfbeee2f-5521-4020-ba05-81ec4370d026/20260721135239292-334.doc",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "gearRatios",
+        "finalDrive",
+        "reverseRatio",
+        "groundClearanceM",
+        "fuelTankUSgal",
+        "topSpeedMph",
+        "tireSize",
+        "frontTire",
+        "rearTire"
+      ]
+    },
+    {
+      "url": "https://www.press.bmwgroup.com/deutschland/article/detail/T0076759DE/allroundtalent-bmw-x1-%E2%80%93-jetzt-mit-noch-mehr-vielfalt-im-motorenprogramm",
+      "fields": [
+        "identity",
+        "powerKw",
+        "torqueNm",
+        "transmission",
+        "gearCount"
+      ]
+    }
+  ]
+}

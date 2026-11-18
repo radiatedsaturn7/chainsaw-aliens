@@ -1,0 +1,81 @@
+{
+  "id": "basil-thyme-2020",
+  "name": "Basil Thyme 2020",
+  "stableCarId": "saved-car:Basil Thyme 2020",
+  "candidateId": "hyundai-i30-n-2020-roster-candidate",
+  "referenceVehicle": "2020 Germany Hyundai i30 N Performance five-door hatch,2.0T-GDI202kW six-speed manual,pre-facelift; not Fastback or2021DCT",
+  "identity": {
+    "year": 2020,
+    "make": "Hyundai",
+    "model": "i30 N Performance",
+    "trim": "German five-door hatch,2.0T-GDI202kW six-speed manual,standard cloth/manual seats,no optional packages",
+    "market": "Germany"
+  },
+  "bodyClass": "hatchback",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1984,
+      793
+    ],
+    "cluster": [
+      278,
+      476,
+      417,
+      151
+    ],
+    "wheel": [
+      476,
+      753,
+      298
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-preisliste.de/download-preislisten-aller-marken/32-hyundai/1725-hyundai-i30-pd-2017/41541-2020-07-preisliste-hyundai-i30-n",
+      "fields": [
+        "powerKw",
+        "torqueNm",
+        "powerRpm",
+        "torqueRpm",
+        "torquePlateauEndRpm",
+        "engineDisplacementL",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "frontOverhangM",
+        "groundClearanceM",
+        "tireSize",
+        "fuelTankUSgal",
+        "publishedMassKgMin",
+        "publishedMassKgMax",
+        "publishedMassBasis",
+        "publishedTopSpeedKmh",
+        "publishedZeroTo100KmhSec"
+      ]
+    }
+  ]
+}

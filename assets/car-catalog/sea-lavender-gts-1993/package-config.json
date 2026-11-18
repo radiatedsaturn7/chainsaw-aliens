@@ -1,0 +1,69 @@
+{
+  "id": "sea-lavender-gts-1993",
+  "name": "Sea Lavender GTS 1993",
+  "candidateId": "porsche-928-gts-1993-roster-candidate",
+  "referenceVehicle": "1993 European Porsche 928 GTS M28/49 G28/57 5MT",
+  "identity": {
+    "year": 1993,
+    "make": "Porsche",
+    "model": "928 GTS",
+    "trim": "M28/49 G28/57 5MT",
+    "market": "European"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      220,
+      480,
+      540,
+      200
+    ],
+    "wheel": [
+      490,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://www.scribd.com/document/825153433/90-93-928s4-Gt-Gts-Tech-Specs",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "torqueNm",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "revLimitRpm",
+        "publishedDINUnladenKg"
+      ]
+    },
+    {
+      "url": "https://www.porsche.at/service-zubehoer/classic-service-und-ersatzteile/modelle/porsche-928/porsche-928-gtgts",
+      "fields": [
+        "publishedPowerPS",
+        "model identity"
+      ]
+    }
+  ]
+}

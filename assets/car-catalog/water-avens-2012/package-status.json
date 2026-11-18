@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "water-avens-2012",
+  "name": "Water Avens 2012",
+  "stableCarId": "saved-car:Water Avens 2012",
+  "referenceVehicle": "2012 US Infiniti IPL G Coupe, US rear-drive 6MT, not standard G37, convertible or seven-speed automatic",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "2d26366f58f79b4425bdb0fcc50939b5b3de0aec32f827fb3bc976cef805d288",
+    "dashboard": "1a4181b867144cfafe7dc2e99bcd26ad87a6b60e892b1650409dcf54ce055058",
+    "tires": "e26a48c01c740f27571d9740ab8801bd7388331e7f705e839246ff9a1ac663e7"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

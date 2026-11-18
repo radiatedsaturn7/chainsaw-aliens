@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "white-mullein-1970",
+  "name": "White Mullein 1970",
+  "stableCarId": "saved-car:White Mullein 1970",
+  "referenceVehicle": "1970 US Dodge Challenger R/T, two-doorhardtop,standard383Magnum four-barrel335hp reference,standardall-synchro3MT,nonSE,nonsixpack",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "bbfb87a921ed69ed8d6a687e8e17915b6a7f12e5f7d3d50f080b4c1bbb8a561d",
+    "dashboard": "07c55d1999c6806278e3a013a6c09260820fcfa3b39d6577f93281c1e91e8707",
+    "tires": "ce0b6e6027d7cf91ca17f4523df375d3c55543e8f9726c57c9dd857e42097f61"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

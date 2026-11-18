@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "narrowleaf-vetch-1967",
+  "name": "Narrowleaf Vetch 1967",
+  "stableCarId": "saved-car:Narrowleaf Vetch 1967",
+  "referenceVehicle": "1967 Japan / international Formula One Honda RA300, John Surtees1967 ItalianGP winning reference, Lola T130 monocoque / RA273E V12 five-speed, no aerodynamic wings",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "c47b01a85f2ef27b88979af9d3b1c5cdcd18b554fcc333a46e99e133f8440419",
+    "dashboard": "670c44719cb6577d21bf866f1a8e65b9c79f8964bd65bb32b239fbe87cccffd5",
+    "tires": "5f2c919c8fa38aae64ae32ee9baa029b34d322a86e3513a9026c293764f12eea"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

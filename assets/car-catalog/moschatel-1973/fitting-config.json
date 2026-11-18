@@ -1,0 +1,163 @@
+{
+  "id": "moschatel-1973",
+  "name": "Moschatel 1973",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "38e41886766a34d6bd375c9586a9b9796346883e93a77d2adbef65556bfcf8f1",
+  "sourceDirectory": "assets/car-catalog/moschatel-1973",
+  "sourceHashes": {
+    "body": "05593021066000290d6f47389e6dfa17622875ad93043e609d405ec4eb414de5",
+    "dashboard": "0850faf127748b6491d9a8d1b9cb3462fcde3799001f575598c173b24d021317",
+    "tires": "6dc9da2a2fb339199766c0e06101b4e15467846a0c24fcb12f114c012b2638cb"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 98,
+        "y": 323,
+        "radius": 48
+      },
+      {
+        "wheel": "fr",
+        "x": 338,
+        "y": 323,
+        "radius": 48
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 654,
+        "y": 328,
+        "radius": 46
+      },
+      {
+        "wheel": "rr",
+        "x": 816,
+        "y": 288,
+        "radius": 40
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 952,
+        "y": 718,
+        "radius": 48
+      },
+      {
+        "wheel": "rr",
+        "x": 1236,
+        "y": 718,
+        "radius": 50
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 464,
+        "y": 710,
+        "radius": 34
+      },
+      {
+        "wheel": "rr",
+        "x": 604,
+        "y": 736,
+        "radius": 46
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 96,
+        "y": 737,
+        "radius": 50
+      },
+      {
+        "wheel": "rl",
+        "x": 334,
+        "y": 737,
+        "radius": 50
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1562,
+        "y": 316,
+        "radius": 48
+      },
+      {
+        "wheel": "fl",
+        "x": 1730,
+        "y": 294,
+        "radius": 40
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 964,
+        "y": 304,
+        "radius": 50
+      },
+      {
+        "wheel": "fl",
+        "x": 1238,
+        "y": 304,
+        "radius": 50
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1386,
+        "y": 694,
+        "radius": 36
+      },
+      {
+        "wheel": "fl",
+        "x": 1514,
+        "y": 738,
+        "radius": 46
+      }
+    ]
+  },
+  "wheelFit": "average",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1309,
+      528,
+      450,
+      144
+    ],
+    "wheel": [
+      1411.13,
+      748,
+      276
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#eed9ae",
+    "viewportWheelScale": 2.1,
+    "gaugeBackground": "#101010"
+  },
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementNotes": "Individually inspected half-scale body source and 992px-wide dashboard on fitting-measurement.png. Body coordinates doubled to original pixels; dashboard offset450 removed and scaled1983/992. Front/rear wheel centers inferred behind occluding bumper edges from source silhouette; diagonal and side centers measured at open arches. Art estimates only, no mechanical inference. Runtime render fitting pending. Wheel IDs follow actual native getRaceSpriteWheelRig projection: front fl screen-left, rear rr screen-left. Static v2 mobile viewport wheel side clipping corrected using native render geometry; individual opening placement and scales retained."
+}

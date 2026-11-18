@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "source-peach-clover-2009",
+  "name": "Peach Clover 2009",
+  "stableCarId": "saved-car:Peach Clover 2009",
+  "referenceVehicle": "US 2009 BMW128i E82 Coupe,3.0 naturally aspirated six,6MT,non-Sport. Ordinary two-door coupe;not135i,hatchback orconvertible.",
+  "runtimeDocumentIdVerified": false,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "4029d0dbf5aa3c64b4e9aba2341627a5fcf1cb9104a7a3027877d45b2f19708a",
+    "dashboard": "6b1751ac91c1e9c79d1a6190f96bb0e67ee63258576a24756c4edfb834510585",
+    "tires": "b45f021c3445886ad790e4b6c3b0532e503afeb953601decbfe3f9ead7986bfe"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

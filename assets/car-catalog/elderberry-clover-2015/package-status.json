@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "elderberry-clover-2015",
+  "name": "Elderberry Clover 2015",
+  "stableCarId": "saved-car:Elderberry Clover 2015",
+  "referenceVehicle": "2015 Skoda Superb Combi Active1.4TSI125, continentalEurope June2015 third-generation basic estate92kW FWD six-speedmanual16inch wheels, standard passive suspension; notACT150,4x4,DSG,LK orDCC",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "elderberry-clover-2015",
+  "sourceHashes": {
+    "body": "7f52b423f84c9279504b5cf96418f9804668afc30bde7cf3360e8bfb4ebe0115",
+    "dashboard": "aa1b9cbbd14468589d0b7361b58d22ff04037078383fdfa870d7c710c743ec83",
+    "tires": "4d24ee37391e59340c740c926307b9e530d87623f11f088e1560320bc258e1bd"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

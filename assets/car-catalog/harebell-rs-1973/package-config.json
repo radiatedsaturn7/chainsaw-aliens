@@ -1,0 +1,61 @@
+{
+  "id": "harebell-rs-1973",
+  "name": "Harebell RS 1973",
+  "candidateId": "porsche-911-carrera-rs-1973-roster-candidate",
+  "referenceVehicle": "1973 European Porsche 911 Carrera RS 2.7 M471 Sport 5MT",
+  "identity": {
+    "year": 1973,
+    "make": "Porsche",
+    "model": "911 Carrera RS 2.7",
+    "trim": "M471 Sport 5MT",
+    "market": "European"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      220,
+      490,
+      550,
+      185
+    ],
+    "wheel": [
+      490,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://newsroom.porsche.com/en/2022/history/porsche-50-years-911-carrera-rs-2-7-germanys-fastest-sports-car-28486.html",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "torqueNm",
+        "powerRpm",
+        "torqueRpm",
+        "curbKg",
+        "engineDisplacementL",
+        "frontTire",
+        "rearTire"
+      ]
+    }
+  ]
+}

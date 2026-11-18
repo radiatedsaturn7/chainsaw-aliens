@@ -1,0 +1,66 @@
+{
+  "id": "bayberry-clover-2017",
+  "name": "Bayberry Clover 2017",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      240,
+      430,
+      490,
+      170
+    ],
+    "wheel": [
+      470,
+      753,
+      360
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://cdn.skoda-storyboard.com/2017/05/SKODA_RAPID_SPACEBACK_Press_Kit_EN_with_TD.pdf",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "drivetrain",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "groundClearanceM",
+        "tireSize",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "dragCoefficient",
+        "fuelTankUSgal",
+        "topSpeedMph"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "marsh-sowthistle-1997",
+  "name": "Marsh Sowthistle 1997",
+  "stableCarId": "saved-car:Marsh Sowthistle 1997",
+  "referenceVehicle": "Late1997 Japan Toyota Soarer2.5GT-T JZZ30 VVT-i1JZ-GTE2.491L turbo RWD5MT standard coupe1560kg, withoutLpackage oroptionalLSD; not LexusSC400,4.0active-suspension model or earlier twin-turbo",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "91aaa3a9b849d9638af833f3f39eb087a5c98a3826db7a975ad87b4078bc4b09",
+    "dashboard": "4d76053cbd81da3b4fbb2cc0c007cbd04aea0b8586afdc8ad634c27f8ea39090",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

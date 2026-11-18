@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "prairie-trefoil-2012",
+  "name": "Prairie Trefoil 2012",
+  "stableCarId": "saved-car:Prairie Trefoil 2012",
+  "referenceVehicle": "2012 United States Chevrolet Sonic, LS1.8Ecotec five-doorhatchback5MT,standard15-inchalloys,manualwindows",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "28f3a73e63ed8f80a4953001e3e453372cf9ca4daa0408916727d32750769acd",
+    "dashboard": "204089ece6fc578291780a6f7c15cf6fb915456bc24038d1bbd31d90222c354f",
+    "tires": "a742d6d7a6484d9643299c4ce8a716ca1a8135c182c9f81d751e5b14fdbbdf0d"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

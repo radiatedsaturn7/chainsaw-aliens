@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "cranberry-clover-2004",
+  "name": "Cranberry Clover 2004",
+  "stableCarId": "saved-car:Cranberry Clover 2004",
+  "referenceVehicle": "2004 US Infiniti Q45 Luxury model4.5V8 RWD5AT standard17-inchalloywheels; notPremium18-inch active-damping package,JourneyPackage or2002preliminarylaunchspec.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "96c7c7a53db9f8a47cfa2c2fa8e6d361eb41b75b7a2ac63ca2a693a0bf9ba1a1",
+    "dashboard": "4a698fc9a67c18ace63113cb9af582209629516cbbe1d2fe35c360bccbfdfe02",
+    "tires": "cf768b34aee06c5b4c83e0e6486eea7704f1e63d77bda6074c9b895e2812d3ca"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

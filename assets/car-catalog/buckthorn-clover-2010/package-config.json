@@ -1,0 +1,68 @@
+{
+  "id": "buckthorn-clover-2010",
+  "name": "Buckthorn Clover 2010",
+  "stableCarId": "saved-car:Buckthorn Clover 2010",
+  "runtimeId": "saved-car:Buckthorn Clover 2010",
+  "candidateId": "dodge-caliber-express-2010-us-5mt-supplemental",
+  "referenceVehicle": "2010 United States Dodge Caliber, Express2.0 dualVVT naturallyaspirated FWD five-speedmanual, standard15-inch wheelcovers, cloth; not CVT,Heat,Rush orSRT4",
+  "identity": {
+    "year": 2010,
+    "make": "Dodge",
+    "model": "Caliber",
+    "trim": "Express2.0 dualVVT naturallyaspirated FWD five-speedmanual, standard15-inch wheelcovers, cloth; not CVT,Heat,Rush orSRT4",
+    "market": "United States"
+  },
+  "bodyClass": "five-door-hatchback",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Dodge/Caliber/Dodge_US%20Caliber_2010.pdf",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "engineDisplacementL",
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "transmission",
+        "gearCount",
+        "tireSize"
+      ]
+    }
+  ]
+}

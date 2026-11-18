@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "water-avens-1995",
+  "name": "Water Avens 1995",
+  "stableCarId": "saved-car:Water Avens 1995",
+  "referenceVehicle": "1995 Volkswagen Corrado VR6 German2.9 Type53i road coupe; modeled5MT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "517dad38aa272adb985f5b6c83c350f27d0cccc4552561ef9a0e2ba87a3566b5",
+    "dashboard": "58368edd86a74fadb778efcb02a45485e8621656aafbae97c07298ae54284b34",
+    "tires": "103f99ec0c82048b8342074518852a53ffcee9210e7ae3b5209bef97b177271e"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

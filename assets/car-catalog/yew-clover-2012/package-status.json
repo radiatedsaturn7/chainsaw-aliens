@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "yew-clover-2012",
+  "name": "Yew Clover 2012",
+  "stableCarId": "saved-car:Yew Clover 2012",
+  "referenceVehicle": "2012 United States Ford Explorer, base 3.5-liter Ti-VCT V6 FWD six-speed automatic, standard 17-inch covered steel wheels; not EcoBoost, XLT or 4WD",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "yew-clover-2012",
+  "sourceHashes": {
+    "body": "978889d2261627ca64fa79b1dbdb97d1ae1bf933c13ebaf9185754f854abb5f6",
+    "dashboard": "c512b11a1da8989f68bd390b86b34db48a109bcd44caae29dd22fb15e30b464a",
+    "tires": "69e05e7a0a7d374b9e7ad38a7eba32111141a76804caef9b1060c63ca8acb56f"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

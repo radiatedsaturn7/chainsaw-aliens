@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "broadleaf-dock-2011",
+  "name": "Broadleaf Dock 2011",
+  "stableCarId": "saved-car:Broadleaf Dock 2011",
+  "referenceVehicle": "2011 France Alfa Romeo Giulietta Quadrifoglio Verde1750TBi five-door six-speed manual,standard17inch tires; Dynamic340Nm reference,notlaterTCT240CV",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "6705d3b2cec65da17693faf3153aad2a797eb6f57a7b52b334da65a7bc5e61f3",
+    "dashboard": "c165314df41c27cb840302fc8f9812cce0143800675269938fc5442039c2ebe8",
+    "tires": "3f223f0d2a06478e2727c1cc30fa45f69f48aa31d765699c9a1eab2774c52e71"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

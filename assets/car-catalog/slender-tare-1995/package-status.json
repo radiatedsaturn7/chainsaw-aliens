@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "slender-tare-1995",
+  "name": "Slender Tare 1995",
+  "stableCarId": "saved-car:Slender Tare 1995",
+  "referenceVehicle": "1995 Japan-built / UK homologation Nissan NISMO GT-R LM Road Car, BCNR33 one-off UK-registered homologation coupe, 2.568L RB26DETT twin turbo, modeled RWD five-speed; not Le Mans race car",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "a609b48bae7e68fb2b3205de43069e24bf0d459c31631c179992ecfff69a7b94",
+    "dashboard": "8422e984e339e5b2de70a6d64f10531e96d6e032fc4f64cc195e21e32f45437c",
+    "tires": "39023f5bc12a32d4df27fcefd07542e27fa882a41afce962127fe83da5d3350c"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

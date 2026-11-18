@@ -1,0 +1,70 @@
+{
+  "id": "spotted-medick-1981",
+  "name": "Spotted Medick 1981",
+  "stableCarId": "saved-car:Spotted Medick 1981",
+  "candidateId": "volkswagen-scirocco-s-1981-roster-candidate",
+  "referenceVehicle": "1981 US Volkswagen Scirocco S Mk1, 1715cc fuel-injected SOHC gasoline four-cylinder and standard five-speed manual; not later Mk2 GTX16V or Mk3 R.",
+  "identity": {
+    "year": 1981,
+    "make": "Volkswagen",
+    "model": "Scirocco S",
+    "trim": "US Mk1 1.7 fuel-injected SOHC gasoline three-door five-speed manual",
+    "market": "United States"
+  },
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      250,
+      480,
+      490,
+      170
+    ],
+    "wheel": [
+      490,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://xr793.com/wp-content/uploads/2019/10/1981-VW-Scirocco.pdf",
+      "fields": [
+        "identity",
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "geometry",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "tires",
+        "fuelTankUSgal",
+        "topSpeedMph"
+      ]
+    }
+  ]
+}

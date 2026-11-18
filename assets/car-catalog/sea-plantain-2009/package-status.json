@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "sea-plantain-2009",
+  "name": "Sea Plantain 2009",
+  "stableCarId": "saved-car:Sea Plantain 2009",
+  "referenceVehicle": "2009 German Mercedes-Benz SL 65 AMG Black Series R230230.479 M275.9835.980L biturboV12 fixedroofcoupe5AT,notstandardSL65roadster",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "7ac43bb77fcda1b885edfe18635a5f73bbcd7ba80b4d98170e10fa53eaebd92e",
+    "dashboard": "159b68a8c2a7801d0d6426fca30a62c7d569ed794b11d94bc34c787486830410",
+    "tires": "0747f55b9c267ad76a52f78811c26d3b9e7a5287f93071a6a3b179508d30b65d"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

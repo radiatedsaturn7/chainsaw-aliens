@@ -1,0 +1,79 @@
+{
+  "id": "copper-trefoil-2012",
+  "name": "Copper Trefoil 2012",
+  "stableCarId": "saved-car:Copper Trefoil 2012",
+  "runtimeId": "saved-car:Copper Trefoil 2012",
+  "candidateId": "kia-sorento-lx-v6-2012-us-fwd-6at-canonical-candidate",
+  "referenceVehicle": "2012 United States Kia Sorento, LX3.5V6 FWD6AT,standard18-inchwheels,unladen",
+  "identity": {
+    "year": 2012,
+    "make": "Kia",
+    "model": "Sorento",
+    "trim": "LX3.5V6 FWD6AT,standard18-inchwheels,unladen",
+    "market": "United States"
+  },
+  "bodyClass": "five-door-suv",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Kia/Sorento/Kia_US%20Sorento_2012.pdf",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "absEnabled",
+        "tractionControlEnabled",
+        "engineDisplacementL",
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "groundClearanceM",
+        "tireSize",
+        "fuelTankUSgal"
+      ]
+    }
+  ]
+}

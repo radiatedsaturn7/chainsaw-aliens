@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "cow-parsley-2008",
+  "name": "Cow Parsley 2008",
+  "stableCarId": "saved-car:Cow Parsley 2008",
+  "referenceVehicle": "2008 US Mitsubishi Lancer Evolution X GSR 4B11T five-speed manual; no Sight, Sound and Spoiler Package; not MR TC-SST",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "cow-parsley-2008",
+  "sourceHashes": {
+    "body": "bcc4f72bbd56269bedb2c3c710bc71047b5fed770539d06ebb3e69a8a46c07f7",
+    "dashboard": "311a25f32bbe4cb55e48538e6e61f4a2924166de23fa82877ff81bcd87b425fa",
+    "tires": "2c8685e383cee29b7f9376a4b5f73eeed9b7fd5e424db431ae99951d1084f6b7"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

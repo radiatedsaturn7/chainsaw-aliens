@@ -1,0 +1,54 @@
+{
+  "id": "corn-mint-2009",
+  "name": "Corn Mint 2009",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1440,
+      465,
+      140,
+      135
+    ],
+    "wheel": [
+      1510,
+      740,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://www.press.bmwgroup.com/united-kingdom/article/detail/T0020215EN_GB/the-new-mini-john-cooper-works-convertible",
+      "fields": [
+        "torqueNm",
+        "engineDisplacementL",
+        "identity"
+      ]
+    },
+    {
+      "url": "https://www.press.bmwgroup.com/global/article/detail/T0012284EN/1959-%E2%80%93-2009-fifty-years-of-mini",
+      "fields": [
+        "powerKw",
+        "transmission",
+        "gearCount"
+      ]
+    }
+  ]
+}

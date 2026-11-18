@@ -1,0 +1,78 @@
+{
+  "id": "bitter-vetch-2010",
+  "name": "Bitter Vetch 2010",
+  "stableCarId": "saved-car:Bitter Vetch 2010",
+  "candidateId": "renault-megane-r-s-250-2010-roster-candidate",
+  "referenceVehicle": "2010 Germany Renault Megane III R.S.250 three-door Coupe Sport chassis 6MT, no Cup package or LSD",
+  "identity": {
+    "year": 2010,
+    "make": "Renault",
+    "model": "Megane III R.S.250",
+    "trim": "three-door Coupe Sport chassis 6MT, no Cup package or LSD",
+    "market": "Germany"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      468,
+      456,
+      167
+    ],
+    "wheel": [
+      496,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://presse.renault.de/preiswerter-kompaktsportwagen/",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "drivetrain",
+        "transmission",
+        "gearCount"
+      ]
+    },
+    {
+      "url": "https://presse.renault.de/dynamik-a-la-francaise/",
+      "fields": [
+        "identity",
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "transmission",
+        "gearCount"
+      ]
+    }
+  ]
+}

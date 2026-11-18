@@ -1,0 +1,758 @@
+{
+  "source": {
+    "kind": "exact identity index for local art integration candidate",
+    "sourceCommit": "5ff9af5a3d3e6d73dc2f355258ae22e46e8b79d7"
+  },
+  "queue": [
+    {
+      "id": "source-whitecurrant-clover-2010",
+      "name": "Whitecurrant Clover 2010",
+      "stableCarId": "saved-car:Whitecurrant Clover 2010",
+      "runtimeId": "saved-car:Whitecurrant Clover 2010",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "US 2010 Acura MDX base 3.7 V6 SH-AWD, 6AT. Five-door seven-seat SUV, no Technology/Advance package.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://hondanews.com/en-US/releases/release-90436797ceb4d5d5fbf975004c34bb27-2010-acura-mdx-introduction",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-goldenberry-clover-2010",
+      "name": "Goldenberry Clover 2010",
+      "stableCarId": "saved-car:Goldenberry Clover 2010",
+      "runtimeId": "saved-car:Goldenberry Clover 2010",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "US 2010 Acura ZDX base 3.7 V6 SH-AWD, 6AT. Five-door five-seat coupe-roof crossover, no Technology/Advance package.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://hondanews.com/en-US/releases/release-f5fd245b002706792aff59004c34bb15-2010-acura-zdx-specifications",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-apple-clover-2003",
+      "name": "Apple Clover 2003",
+      "stableCarId": "saved-car:Apple Clover 2003",
+      "runtimeId": "saved-car:Apple Clover 2003",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "US 2003 Acura CL Type-S 3.2 V6, 6MT, non-navigation. Two-door four-seat luxury coupe; manual cockpit.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://acuranews.com/en-US/releases/2003-acura-3-2-cl-and-cl-type-s-specifications",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-pear-clover-2013",
+      "name": "Pear Clover 2013",
+      "stableCarId": "saved-car:Pear Clover 2013",
+      "runtimeId": "saved-car:Pear Clover 2013",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "US 2013 Acura ILX 2.4 Premium, 6MT. Four-door compact sedan, standard17-inch alloys, nonhybrid original-generation appearance.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://hondanews.com/en-US/releases/release-17040050707d4f50ae771efc1b2c0a6f-2013-ilx-introduction",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-peach-clover-2009",
+      "name": "Peach Clover 2009",
+      "stableCarId": "saved-car:Peach Clover 2009",
+      "runtimeId": "saved-car:Peach Clover 2009",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "US 2009 BMW128i E82 Coupe,3.0 naturally aspirated six,6MT,non-Sport. Ordinary two-door coupe;not135i,hatchback orconvertible.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/BMW/1%20Series/BMW_US%201SeriesCoupe_2009.pdf",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-plum-clover-2008",
+      "name": "Plum Clover 2008",
+      "stableCarId": "saved-car:Plum Clover 2008",
+      "runtimeId": "saved-car:Plum Clover 2008",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "US 2008 BMW550i E60,4.8V8,6MT,non-Sport. Ordinary four-door sedan,notM5.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/BMW/5%20Series/BMW_US%205Series_2008-v2.pdf",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-apricot-clover-2010",
+      "name": "Apricot Clover 2010",
+      "stableCarId": "saved-car:Apricot Clover 2010",
+      "runtimeId": "saved-car:Apricot Clover 2010",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "US 2010 BMW Z4 E89 sDrive35i,twin-turbo six,6MT. Two-seat retractable-hardtop roadster,ROOF UP,standard17-inch wheels;not35is or earlierE86.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/BMW/Z4/BMW_US%20Z4_2010.pdf",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-nectarine-clover-2009",
+      "name": "Nectarine Clover 2009",
+      "stableCarId": "saved-car:Nectarine Clover 2009",
+      "runtimeId": "saved-car:Nectarine Clover 2009",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "US 2009 Audi A5 3.2FSI quattro,6MT. Two-door coupe,standard chassis/body,noS5/RS5 treatment.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Audi/A5/Audi_US%20A5_2009.pdf",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-cherry-clover-1967",
+      "name": "Cherry Clover 1967",
+      "stableCarId": "saved-car:Cherry Clover 1967",
+      "runtimeId": "saved-car:Cherry Clover 1967",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "Japan1967 Prince Gloria Super6 S41D,column-shift3-speed plus overdrive. Four-door six-seat road sedan,period column-shift cabin,not1964 competition car.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/Prince_Gloria_Super6.html",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-damson-clover-1970",
+      "name": "Damson Clover 1970",
+      "stableCarId": "saved-car:Damson Clover 1970",
+      "runtimeId": "saved-car:Damson Clover 1970",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "Japan1970 Nissan Laurel2000GX KPC30,G20 twin-carb,4MT. Pillarless two-door hardtop,five seats,VINYL ROOF.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/laurel_hardtop_2000gx.html",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-greengage-clover-1982",
+      "name": "Greengage Clover 1982",
+      "stableCarId": "saved-car:Greengage Clover 1982",
+      "runtimeId": "saved-car:Greengage Clover 1982",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "Japan1982 Nissan Cedric Turbo Brougham K430,L20E-T,3AT. Four-door five-seat luxury hardtop,retainK430 generation,notY30taxi orY34.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/cedric_4door_htturbo_brough.html",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-mirabelle-clover-1966",
+      "name": "Mirabelle Clover 1966",
+      "stableCarId": "saved-car:Mirabelle Clover 1966",
+      "runtimeId": "saved-car:Mirabelle Clover 1966",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "Japan1966 Datsun Truck1300,520,J-series1299cc,column-shift4MT. Two-door regular-cab compact pickup,three seats,EMPTY BED,not320or620.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/datsuntruck1300.html",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-sloe-clover-2010",
+      "name": "Sloe Clover 2010",
+      "stableCarId": "saved-car:Sloe Clover 2010",
+      "runtimeId": "saved-car:Sloe Clover 2010",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "US2010 Volvo XC60 T6 AWD,turbo six,6-speedGeartronic. Five-door SUV,standard non-R-Design exterior.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Volvo/XC60/Volvo_US%20XC60_2010.pdf",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-quince-clover-2010",
+      "name": "Quince Clover 2010",
+      "stableCarId": "saved-car:Quince Clover 2010",
+      "runtimeId": "saved-car:Quince Clover 2010",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "US2010 Volvo V70 3.2FWD,federal235hp,6-speedGeartronic. Ordinary five-door station wagon,NOT raised/claddedXC70.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Volvo/V70/Volvo_US%20V70_2010.pdf",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-medlar-clover-2010",
+      "name": "Medlar Clover 2010",
+      "stableCarId": "saved-car:Medlar Clover 2010",
+      "runtimeId": "saved-car:Medlar Clover 2010",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "US2010 Volkswagen Eos Komfort2.0TSI,6MT. Retractable-hardtop convertible ROOF UP,Komfort notLux orVR6.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Volkswagen/Eos/VW_US%20Eos_2010.pdf",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-loquat-clover-2009",
+      "name": "Loquat Clover 2009",
+      "stableCarId": "saved-car:Loquat Clover 2009",
+      "runtimeId": "saved-car:Loquat Clover 2009",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "US2009 Audi Q5 Premium3.2FSI quattro,6-speedTiptronic. Five-door SUV,standard18-inch wheels,notPremiumPlus orSQ5.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Audi/Q5/Audi_US%20Q5_2009.pdf",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-persimmon-clover-2012",
+      "name": "Persimmon Clover 2012",
+      "stableCarId": "saved-car:Persimmon Clover 2012",
+      "runtimeId": "saved-car:Persimmon Clover 2012",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "US2012 Hyundai Genesis3.8GDI sedan,RWD,8AT. Four-door sedan,standard17-inch wheels,Hyundai-era body,notCoupe orR-Spec.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Hyundai/Genesis/Hyundai_US%20Genesis_2012.pdf",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-pawpaw-clover-2012",
+      "name": "Pawpaw Clover 2012",
+      "stableCarId": "saved-car:Pawpaw Clover 2012",
+      "runtimeId": "saved-car:Pawpaw Clover 2012",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "US2012 Hyundai Genesis Coupe base2.0T,RWD,6MT. Two-door coupe,standard18-inch wheels,2012BODY,not2013update orR-Spec.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Hyundai/Genesis%20Coupe/Hyundai_US%20GenesisCoupe_2012.pdf",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-fig-clover-2012",
+      "name": "Fig Clover 2012",
+      "stableCarId": "saved-car:Fig Clover 2012",
+      "runtimeId": "saved-car:Fig Clover 2012",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "US2012 Lincoln MKS standard3.7V6,FWD,6AT. Four-door sedan,standard18-inch wheels,noEcoBoost/appearancepackage.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Lincoln/MKS/Lincoln_US%20MKS_2012.pdf",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-date-clover-2008",
+      "name": "Date Clover 2008",
+      "stableCarId": "saved-car:Date Clover 2008",
+      "runtimeId": "saved-car:Date Clover 2008",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "UK March2008 Hyundai i10 Classic1.1SOHC,5MT. Five-door hatchback,RHD,standard14-inch steel wheels,notStyle orlater1.2.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.scribd.com/document/36810349/i10-PDF-Brochure",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-olive-clover-2007",
+      "name": "Olive Clover 2007",
+      "stableCarId": "saved-car:Olive Clover 2007",
+      "runtimeId": "saved-car:Olive Clover 2007",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "Germany July2007 Fiat Linea Active1.4 8V,5MT. Four-door sedan,baseActive trim,notT-Jet orMultijet.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/de-de/fiat/press/kurz-gemeldet-neues-von-fiat-64",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-pomegranate-clover-2006",
+      "name": "Pomegranate Clover 2006",
+      "stableCarId": "saved-car:Pomegranate Clover 2006",
+      "runtimeId": "saved-car:Pomegranate Clover 2006",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "Germany June2006 Renault Vel Satis base2.0dCi150FAP,6MT. Tall five-door executive hatchback,base trim,notInitiale173 orV6.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://presse.renault.de/ab-werk-mit-partikelfilter/",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-guava-clover-2011",
+      "name": "Guava Clover 2011",
+      "stableCarId": "saved-car:Guava Clover 2011",
+      "runtimeId": "saved-car:Guava Clover 2011",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "Germany2011 Renault Latitude Initiale2.0 16V140,M4Rpetrol,6MT. Four-door executive sedan,Initiale cabin,notdiesel/CVT orSamsung-badged substitute.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://presse.renault.de/limousine-mit-top-raumangebot-und-luxurioser-ausstattung-1/",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-feijoa-clover-2010",
+      "name": "Feijoa Clover 2010",
+      "stableCarId": "saved-car:Feijoa Clover 2010",
+      "runtimeId": "saved-car:Feijoa Clover 2010",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "Germany September2010 Renault Wind Dynamique TCe100,1.2turbo,5MT. Two-seat coupe-roadster with ROTATING HARDTOP,notGordini or1.6 133.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://presse.renault.de/neuer-renault-wind-startet-ab-16900-euro/",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-kumquat-clover-2012",
+      "name": "Kumquat Clover 2012",
+      "stableCarId": "saved-car:Kumquat Clover 2012",
+      "runtimeId": "saved-car:Kumquat Clover 2012",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "US2012 Hyundai Santa Fe GLS2.4,FWD,6AT. Five-door SUV,standard17-inch wheels,retain2012generation,notV6/AWD.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Hyundai/Santa%20Fe/Hyundai_US%20SantaFe_2012.pdf",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-citron-clover-2012",
+      "name": "Citron Clover 2012",
+      "stableCarId": "saved-car:Citron Clover 2012",
+      "runtimeId": "saved-car:Citron Clover 2012",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "US2012 Hyundai Tucson GL2.0petrol,FWD,5MT. Five-door SUV,standard16-inch wheels,basicGL notGLS2.4.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Hyundai/Tucson/Hyundai_US%20Tucson_2012.pdf",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-pomelo-clover-2007",
+      "name": "Pomelo Clover 2007",
+      "stableCarId": "saved-car:Pomelo Clover 2007",
+      "runtimeId": "saved-car:Pomelo Clover 2007",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "US2007 Chrysler Pacifica Touring FWD29T,4.0V6,6-speedAutoStick. Original five-door crossover wagon,standard17-inch wheels,NOT laterminivan orSignaturepackage.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Chrysler/Pacifica/Chrysler_US%20Pacifica_2007.pdf",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-tangerine-clover-2011",
+      "name": "Tangerine Clover 2011",
+      "stableCarId": "saved-car:Tangerine Clover 2011",
+      "runtimeId": "saved-car:Tangerine Clover 2011",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "Europe2011 Kia Picanto TA1.25Kappa,five-door,5MT,non-ISG.14-inch wheels,noinventednationaltrim. Mirror2012page contains2011launchdossier.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.netcarshow.com/kia/2012-picanto/",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-mandarin-clover-2013",
+      "name": "Mandarin Clover 2013",
+      "stableCarId": "saved-car:Mandarin Clover 2013",
+      "runtimeId": "saved-car:Mandarin Clover 2013",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "Germany January2013 Opel Adam base1.2naturallyaspirated,5MT. Three-door four-seat hatchback,baseAdam,notJam/Glam/Slam orlaterturbo.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.netcarshow.com/opel/2013-adam/",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-clementine-clover-2010",
+      "name": "Clementine Clover 2010",
+      "stableCarId": "saved-car:Clementine Clover 2010",
+      "runtimeId": "saved-car:Clementine Clover 2010",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "UK2010 Vauxhall Meriva S1.4 16V100,5MT. Second-generation five-seat mini-MPV,REAR-HINGED FLEXDOORS,RHD,noSEpanoramicroof.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.netcarshow.com/vauxhall/2011-meriva/",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        },
+        {
+          "url": "https://www.carsuk.net/vauxhall-at-geneva-vauxhall-meriva-2010-uk-prices/",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    },
+    {
+      "id": "source-bergamot-clover-2013",
+      "name": "Bergamot Clover 2013",
+      "stableCarId": "saved-car:Bergamot Clover 2013",
+      "runtimeId": "saved-car:Bergamot Clover 2013",
+      "runtimeDocumentId": null,
+      "candidateId": null,
+      "referenceVehicle": "GermanyMY2013 Opel Mokka entry1.6ecoFLEX115,FWD,5MT. First-generation five-door SUV,standardroof/basewheels,notMokkaX,MokkaB orturboAWD.",
+      "identity": null,
+      "bodyClass": null,
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.netcarshow.com/opel/2013-mokka/",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "runtimeDocumentIdVerified": false,
+      "handoffScope": "source-generation-only"
+    }
+  ]
+}

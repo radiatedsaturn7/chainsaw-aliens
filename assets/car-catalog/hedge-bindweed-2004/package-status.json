@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "hedge-bindweed-2004",
+  "name": "Hedge Bindweed 2004",
+  "stableCarId": "saved-car:Hedge Bindweed 2004",
+  "referenceVehicle": "2004 European Maserati MC12 Stradale road coupe with hardtop fitted,5998cc naturally aspiratedV12,RWD six-speed Cambiocorsa automatedmanual; notGT1racecar orVersioneCorse.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "hedge-bindweed-2004",
+  "sourceHashes": {
+    "body": "5236e1b88f06485b29d24923f8d4794454738453fb06aa2f47520e51cbcdc2fd",
+    "dashboard": "237995f0f3fffa932dbbfbfacaef25081bb6be179726e18812ff6b4448f3a28b",
+    "tires": "398db5a74d3b97af63b356686b83eedabdf6081ce94d4062303a2d19c653df35"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

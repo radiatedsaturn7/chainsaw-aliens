@@ -1,0 +1,71 @@
+{
+  "id": "red-campion-2013",
+  "name": "Red Campion 2013",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      198,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      475,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://news.mazdausa.com/vehicles-2013-mx-5-miata",
+      "fields": [
+        "identity",
+        "powerHp",
+        "torqueLbFt",
+        "powerRpm",
+        "torqueRpm",
+        "transmission",
+        "gearCount",
+        "curbLb",
+        "redlineRpm",
+        "tireSize",
+        "drivetrain",
+        "dragCoefficient",
+        "absEnabled",
+        "tractionControlEnabled"
+      ]
+    },
+    {
+      "url": "https://news.mazdausa.com/download/2013-MX-5-Miata-Specifications.pdf",
+      "fields": [
+        "engineDisplacementL",
+        "lengthIn",
+        "widthIn",
+        "heightIn",
+        "wheelbaseIn",
+        "trackFrontIn",
+        "trackRearIn",
+        "fuelTankUSgal",
+        "frontWeightDistribution"
+      ]
+    }
+  ]
+}

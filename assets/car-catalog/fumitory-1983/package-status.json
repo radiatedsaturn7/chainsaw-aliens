@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "fumitory-1983",
+  "name": "Fumitory 1983",
+  "stableCarId": "saved-car:Fumitory 1983",
+  "referenceVehicle": "1983 Volkswagen Golf I GTI German1.8 standard three-door 4+E manual",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "bae9d0491925895b335df409dd93d1cbb1a2a1e0e4431af8231e11fbd7e88393",
+    "dashboard": "2cedbee77c6ee10a7ee14084caa5d136467a489f8730b4e1b439cb4b047b4951",
+    "tires": "a7055d5849c0245f36460743c000e2142bd439c1827fc538824193b19fa0ae75"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

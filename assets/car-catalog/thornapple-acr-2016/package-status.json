@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "thornapple-acr-2016",
+  "name": "Thornapple ACR 2016",
+  "stableCarId": "saved-car:Thornapple ACR 2016",
+  "referenceVehicle": "2016 US Dodge Viper ACR six-speed manual, standard ACR aero, no optional Extreme Aero Package; not base SRT or earlier 600hp ACR",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "0d2ffa3860b2195f2bb8cef195c3a21ec1f0de108fe9f1bafaa8e8de319f9ee2",
+    "dashboard": "0d3b4c66a038be5d1ce5ae19927604e417bdf92e0d081893139ada408c620b45",
+    "tires": "455ac2cde2501c5df99a61a8fc5dd3522f66d15e82248297361c69861f16ac26"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

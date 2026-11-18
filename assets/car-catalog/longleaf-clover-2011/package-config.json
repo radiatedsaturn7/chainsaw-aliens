@@ -1,0 +1,70 @@
+{
+  "id": "longleaf-clover-2011",
+  "name": "Longleaf Clover 2011",
+  "stableCarId": "saved-car:Longleaf Clover 2011",
+  "runtimeId": "saved-car:Longleaf Clover 2011",
+  "candidateId": "volkswagen-jetta-2011-us-s-2-0-5mt",
+  "referenceVehicle": "2011 US Volkswagen Jetta S2.0SOHC8-valve gasoline sedan5MT standard15inch steel wheels,notSE2.5/GLI/TDI",
+  "identity": {
+    "year": 2011,
+    "make": "Volkswagen",
+    "model": "Jetta",
+    "trim": "S2.0SOHC8-valve gasoline sedan5MT standard15inch steel wheels,notSE2.5/GLI/TDI",
+    "market": "United States"
+  },
+  "bodyClass": "sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Volkswagen/Jetta/VW_US%20Jetta_2011.pdf",
+      "fields": [
+        "powerKw",
+        "publishedPowerHp",
+        "torqueNm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "identity"
+      ]
+    }
+  ]
+}

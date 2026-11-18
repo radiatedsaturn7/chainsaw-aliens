@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "fern-clover-2007",
+  "name": "Fern Clover 2007",
+  "stableCarId": "saved-car:Fern Clover 2007",
+  "referenceVehicle": "2007 United States Acura RDX, base2.3turbo five-speed automatic AWD without TechnologyPackage, standard18-inchalloys; not laterV6 orFWD",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "fern-clover-2007",
+  "sourceHashes": {
+    "body": "73f1d48a9fc42f675cfce3e800af82b6b0081124a9a5ea09fc39e0393bdbe662",
+    "dashboard": "fd977bddd5edec01412f864e3afcd78128b367674568bf05d9c9f1c937960224",
+    "tires": "a4bbe8a38ac78ea7cf899c7a1590d3d1248092c243e42a3de1d1e0d07b3932e3"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

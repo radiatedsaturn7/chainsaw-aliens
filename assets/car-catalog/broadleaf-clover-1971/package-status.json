@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "broadleaf-clover-1971",
+  "name": "Broadleaf Clover 1971",
+  "stableCarId": "saved-car:Broadleaf Clover 1971",
+  "referenceVehicle": "1971 United States Ford Mustang Mach 1, 429CJ-R DualRamInduction,wide-ratio4MT,noDragPack",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "db596b632431f886bf30d28f2d51fecb6234e262a69d7ff55ba1a428a10b0d54",
+    "dashboard": "694a378bf2a4ec576d55cbc0166da4e1aac22eb2933eba380982b20dfd1aa84f",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

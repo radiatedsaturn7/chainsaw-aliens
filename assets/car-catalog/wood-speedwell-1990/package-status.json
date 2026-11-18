@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "wood-speedwell-1990",
+  "name": "Wood Speedwell 1990",
+  "stableCarId": "saved-car:Wood Speedwell 1990",
+  "referenceVehicle": "1990 Germany Mercedes-Benz 190 E 2.5-16 Evolution II W201 type201.036 catalyst road sedan, standard five-speed manual; not DTM or EvoI",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "7b61d065970f8eda75230f5b3e1bdcee5dcf1e4543bcdb4ee23a3f82a6c06fea",
+    "dashboard": "8c175c6dab5aee6eb447a2454aa40c55bf2e1b89fd4f67abf14a977830a4200c",
+    "tires": "c10236566240590368ee75927d2f8fe9b76f7ca0dae7d9a94285b71f957d86c3"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

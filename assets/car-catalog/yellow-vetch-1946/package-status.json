@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "yellow-vetch-1946",
+  "name": "Yellow Vetch 1946",
+  "stableCarId": "saved-car:Yellow Vetch 1946",
+  "referenceVehicle": "1946 United States Ford Super Deluxe Station Wagon, 100-horsepower-reference V8, eight-passenger wood-bodied wagon, manual transmission",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "e16c673672220a5836180e3d56ebbb285f7d308486e75fa490e0e2119cb3e012",
+    "dashboard": "933694931594a3674c44baf23bc05a6506329844d38e1c96ad4f7c6d401c5950",
+    "tires": "f0f285ad0d1152eb3ba70c305fc2da73b8b3f9f4fad18df417f578602e2f990f"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

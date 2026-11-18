@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "tufted-vetch-1956",
+  "name": "Tufted Vetch 1956",
+  "stableCarId": "saved-car:Tufted Vetch 1956",
+  "referenceVehicle": "1956 US Ford F-100 standardcab110in-wheelbase6.5-foot pickup,223cuin CostCutter OHV inline-six,standard column-shift3MT/nooverdrive,3.92axle,RWD; noCustomCab,Fordomatic,V8orlongbox",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "0e7f13e41beda983c7f9122ff8d408795b113d4b3fe5eb7f9d65b60e55659c8d",
+    "dashboard": "fd7eb068138bef6aa2ced528c219ffc0c1f7300cc49bf4b4aec3bb9c74ee815a",
+    "tires": "7e3bf76b1f58cbed749290e7b46c8a32cf75548a9bd5ffa6dbc8606c39e0e134"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}
