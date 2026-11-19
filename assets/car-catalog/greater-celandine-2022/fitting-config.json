@@ -1,0 +1,243 @@
+{
+  "id": "greater-celandine-2022",
+  "name": "Greater Celandine 2022",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "e70a91a892a690f52e34e15d3f9deea47095dcd22a7bd462c0575e7375826817",
+  "sourceDirectory": "assets/car-catalog/greater-celandine-2022",
+  "sourceHashes": {
+    "body": "e8c7bef0e2df090a320631339f3520069cd960edbbaf3a13696737a502ce9716",
+    "dashboard": "fb3df26a9da10d9940389971e689f517ffd4b6ad118e47566ef46028fee308a2",
+    "tires": "2e1664a30dc2b684d70e4507764bc8772ff6b72b7ef1a0af718348a108d52e67"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 101.74,
+        "y": 335.55,
+        "radius": 21.45
+      },
+      {
+        "wheel": "fr",
+        "x": 336.26,
+        "y": 335.55,
+        "radius": 21.45
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 648.0,
+        "y": 295.5,
+        "radius": 29.5
+      },
+      {
+        "wheel": "rr",
+        "x": 818.0,
+        "y": 246.5,
+        "radius": 18.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 955.0,
+        "y": 277.5,
+        "radius": 35.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1228.5,
+        "y": 279.0,
+        "radius": 37.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 441.0,
+        "y": 669.5,
+        "radius": 16.5
+      },
+      {
+        "wheel": "rr",
+        "x": 594.5,
+        "y": 698.0,
+        "radius": 26.0
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 106.93,
+        "y": 744.225,
+        "radius": 20.775
+      },
+      {
+        "wheel": "rl",
+        "x": 334.07000000000005,
+        "y": 744.225,
+        "radius": 20.775
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1563.5,
+        "y": 280.0,
+        "radius": 28.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1734.5,
+        "y": 248.0,
+        "radius": 19.0
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 965.0,
+        "y": 698.5,
+        "radius": 37.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1239.5,
+        "y": 697.0,
+        "radius": 36.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1368.0,
+        "y": 668.5,
+        "radius": 18.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1526.0,
+        "y": 712.5,
+        "radius": 28.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1672,
+      941
+    ],
+    "cluster": [
+      201,
+      565,
+      401,
+      188
+    ],
+    "wheel": [
+      401,
+      711.0,
+      268
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e7e6de",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "nearWheelProbe": {
+      "horizontalProjectionFactor": 0.85,
+      "inwardAxleOffset": 0.4,
+      "accepted": false
+    },
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 0.7159153022886104,
+      "tireScaleY": 1.188401646094026,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.3060777660340434,
+      "frontTireOffsetY": -0.3214148927949737,
+      "rearTireOffsetX": -0.7076149561166877,
+      "rearTireOffsetY": 0.32101155986416907
+    },
+    "rearRight": {
+      "tireScaleX": 1.1973732472513368,
+      "tireScaleY": 1.2509381638871415,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.503006670645747,
+      "frontTireOffsetY": 0.7335742545025098,
+      "rearTireOffsetX": -0.11446452188541639,
+      "rearTireOffsetY": -0.649729308239982
+    },
+    "rearLeft": {
+      "tireScaleX": 1.2867195353225744,
+      "tireScaleY": 1.2124685842856164,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.10180456987530828,
+      "frontTireOffsetY": 0.7505951517914073,
+      "rearTireOffsetX": -0.3096532813643622,
+      "rearTireOffsetY": -0.5667502055288797
+    },
+    "frontLeft": {
+      "tireScaleX": 0.7295350132868708,
+      "tireScaleY": 1.2110100285631755,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.3792324835967136,
+      "frontTireOffsetY": -0.3735276015204395,
+      "rearTireOffsetX": 0.7776952935140691,
+      "rearTireOffsetY": 0.3731242685896322
+    },
+    "right": {
+      "tireScaleX": 1.1789294051011798,
+      "tireScaleY": 1.387073369452658,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010400000000001908,
+      "frontTireOffsetY": -0.38929923220630863,
+      "rearTireOffsetX": 0.01438016528925392,
+      "rearTireOffsetY": -0.33392501607288555
+    },
+    "left": {
+      "tireScaleX": 1.190508020584746,
+      "tireScaleY": 1.4006962285677964,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010399999999997855,
+      "frontTireOffsetY": -0.38918457652709854,
+      "rearTireOffsetX": 0.014380165289257209,
+      "rearTireOffsetY": -0.3340396717520937
+    }
+  }
+}
