@@ -2215,7 +2215,10 @@
       "catalog-hawthorn-clover-2011-tires": "art/catalog-hawthorn-clover-2011-tires/document.json",
       "catalog-sea-carrot-2012-body": "art/catalog-sea-carrot-2012-body/document.json",
       "catalog-sea-carrot-2012-dashboard": "art/catalog-sea-carrot-2012-dashboard/document.json",
-      "catalog-sea-carrot-2012-tires": "art/catalog-sea-carrot-2012-tires/document.json"
+      "catalog-sea-carrot-2012-tires": "art/catalog-sea-carrot-2012-tires/document.json",
+      "catalog-coast-clover-2008-body": "art/catalog-coast-clover-2008-body/document.json",
+      "catalog-coast-clover-2008-dashboard": "art/catalog-coast-clover-2008-dashboard/document.json",
+      "catalog-coast-clover-2008-tires": "art/catalog-coast-clover-2008-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
