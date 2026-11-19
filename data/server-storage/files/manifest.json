@@ -2266,7 +2266,10 @@
       "catalog-sloe-clover-2010-tires": "art/catalog-sloe-clover-2010-tires/document.json",
       "catalog-water-avens-2012-body": "art/catalog-water-avens-2012-body/document.json",
       "catalog-water-avens-2012-dashboard": "art/catalog-water-avens-2012-dashboard/document.json",
-      "catalog-water-avens-2012-tires": "art/catalog-water-avens-2012-tires/document.json"
+      "catalog-water-avens-2012-tires": "art/catalog-water-avens-2012-tires/document.json",
+      "catalog-yellow-vetchling-2016-body": "art/catalog-yellow-vetchling-2016-body/document.json",
+      "catalog-yellow-vetchling-2016-dashboard": "art/catalog-yellow-vetchling-2016-dashboard/document.json",
+      "catalog-yellow-vetchling-2016-tires": "art/catalog-yellow-vetchling-2016-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
