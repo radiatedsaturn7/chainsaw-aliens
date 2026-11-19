@@ -2410,7 +2410,10 @@
       "catalog-pawpaw-clover-2012-tires": "art/catalog-pawpaw-clover-2012-tires/document.json",
       "catalog-cherry-clover-1967-body": "art/catalog-cherry-clover-1967-body/document.json",
       "catalog-cherry-clover-1967-dashboard": "art/catalog-cherry-clover-1967-dashboard/document.json",
-      "catalog-cherry-clover-1967-tires": "art/catalog-cherry-clover-1967-tires/document.json"
+      "catalog-cherry-clover-1967-tires": "art/catalog-cherry-clover-1967-tires/document.json",
+      "catalog-fragrant-agrimony-1992-body": "art/catalog-fragrant-agrimony-1992-body/document.json",
+      "catalog-fragrant-agrimony-1992-dashboard": "art/catalog-fragrant-agrimony-1992-dashboard/document.json",
+      "catalog-fragrant-agrimony-1992-tires": "art/catalog-fragrant-agrimony-1992-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

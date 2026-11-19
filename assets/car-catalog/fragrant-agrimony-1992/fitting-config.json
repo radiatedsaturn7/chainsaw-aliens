@@ -1,0 +1,386 @@
+{
+  "id": "fragrant-agrimony-1992",
+  "name": "Fragrant Agrimony 1992",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "606438494fa6ae0c6fc5f9a1c061ae9d27d296a76748226a742385f2a4b42171",
+  "sourceDirectory": "assets/car-catalog/fragrant-agrimony-1992",
+  "sourceHashes": {
+    "body": "991d477a1b7384b3b3b77cc95b38b9c7ee5e72fa0a3283621b31de7583868871",
+    "dashboard": "2a66798f79708aaa1c6fdc1055841e1107fd81235643643cece4c9e0e728454a",
+    "tires": "032f5c8fac4e62ee8fc3c3d4bb7f8eeb2d57a0d4894de2308003819a87723096"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 78.62,
+        "y": 365.15,
+        "radius": 23.849999999999998
+      },
+      {
+        "wheel": "fr",
+        "x": 339.38,
+        "y": 365.15,
+        "radius": 23.849999999999998
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 654.0,
+        "y": 318.5,
+        "radius": 30.5
+      },
+      {
+        "wheel": "rr",
+        "x": 818.0,
+        "y": 292.5,
+        "radius": 19.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 970.0,
+        "y": 299.5,
+        "radius": 39.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1235.5,
+        "y": 298.0,
+        "radius": 38.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1378.0,
+        "y": 293.5,
+        "radius": 14.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1505.0,
+        "y": 310.5,
+        "radius": 25.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 78.98,
+        "y": 798.85,
+        "radius": 24.15
+      },
+      {
+        "wheel": "rl",
+        "x": 343.02,
+        "y": 798.85,
+        "radius": 24.15
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 678.0,
+        "y": 750.5,
+        "radius": 29.5
+      },
+      {
+        "wheel": "fl",
+        "x": 827.0,
+        "y": 726.5,
+        "radius": 16.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 984.5,
+        "y": 729.0,
+        "radius": 38.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1253.0,
+        "y": 728.5,
+        "radius": 38.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1388.0,
+        "y": 716.5,
+        "radius": 16.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1524.0,
+        "y": 740.5,
+        "radius": 25.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      280,
+      445,
+      490,
+      120
+    ],
+    "wheel": [
+      525,
+      640.530769230769,
+      300
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e4efff",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ],
+    "renderedInstrumentPodBounds": [
+      248,
+      396,
+      552,
+      180
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false,
+    "projectedPodRepair": {
+      "id": "fragrant-agrimony-1992",
+      "status": "proposal",
+      "minimumDeltaY": 55.53076923076899,
+      "maximumDeltaY": 105.2375,
+      "deltaY": 57.53076923076899,
+      "evidence": [
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "speed",
+          "minimumDeltaY": -51.52421875,
+          "maximumDeltaY": 105.2375
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "rpm",
+          "minimumDeltaY": -51.52421875,
+          "maximumDeltaY": 105.2375
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "gear",
+          "minimumDeltaY": -51.52421875,
+          "maximumDeltaY": 105.2375
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "speed",
+          "minimumDeltaY": 55.53076923076899,
+          "maximumDeltaY": 189.76923076923043
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "rpm",
+          "minimumDeltaY": 55.53076923076899,
+          "maximumDeltaY": 189.76923076923043
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "gear",
+          "minimumDeltaY": 55.53076923076899,
+          "maximumDeltaY": 189.76923076923043
+        }
+      ],
+      "accepted": false
+    },
+    "laneGeometry": "Oblique per-wheel hull from isolated native wheel width/height and body-only alpha; body contact rows and unsupported columns measured in native coordinates; source untouched.",
+    "sideContact": "Actual 2048px native left body-only/isolated masks showed zero overlap down to -3px. Six native px per axle up, keeping both measured diameter/width untouched, provides explicit overlap estimated 82/96 opaque pixels with whole rounded profile and lower contact maintained."
+  },
+  "nativeTireTransformOverrides": {
+    "front": {
+      "tireScaleX": 0.4175974884154559,
+      "tireScaleY": 0.4175974884154559,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -2.220851625889317E-16,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0
+    },
+    "frontRight": {
+      "tireScaleX": 0.8565351598925776,
+      "tireScaleY": 1.0019777892532014,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.32844576010231336,
+      "frontTireOffsetY": -0.4964287961950003,
+      "rearTireOffsetX": -0.5478261451157869,
+      "rearTireOffsetY": 0.5914991891044938
+    },
+    "right": {
+      "tireScaleX": 1.1806226944371137,
+      "tireScaleY": 1.0625604249934024,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0.03216337976624765,
+      "rearTireOffsetX": 6.344131569286608E-17,
+      "rearTireOffsetY": -0.032163379766247883
+    },
+    "rearRight": {
+      "tireScaleX": 0.8354135798910661,
+      "tireScaleY": 1.1651143191757305,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.8498978569280262,
+      "frontTireOffsetY": 1.1028984350713595,
+      "rearTireOffsetX": -0.525461310540726,
+      "rearTireOffsetY": -0.7238645948031163
+    },
+    "rear": {
+      "tireScaleX": 0.4192602975318305,
+      "tireScaleY": 0.4192602975318305,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 1.399940412199636E-16
+    },
+    "rearLeft": {
+      "tireScaleX": 0.9187206301956048,
+      "tireScaleY": 1.026587660102518,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.5676012113171168,
+      "frontTireOffsetY": 0.7607086131884552,
+      "rearTireOffsetX": 0.3123672348557274,
+      "rearTireOffsetY": -0.6141750829943228
+    },
+    "left": {
+      "tireScaleX": 1.1378761546201417,
+      "tireScaleY": 1.0240885391581276,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.2108270233660494,
+      "rearTireOffsetX": -6.344131569286608E-17,
+      "rearTireOffsetY": -0.1945783820393563
+    },
+    "frontLeft": {
+      "tireScaleX": 0.920960045873123,
+      "tireScaleY": 1.0298673416564135,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.5232618849955311,
+      "frontTireOffsetY": -0.3700347948455278,
+      "rearTireOffsetX": 0.9175311906989227,
+      "rearTireOffsetY": 0.7683860084759846
+    }
+  },
+  "nativeBodyTransformOverrides": {
+    "front": {
+      "bodyScaleX": 1.8877766546929136,
+      "bodyScaleY": 1.5317560112059916,
+      "bodyOffsetX": 0.01302274182321117,
+      "bodyOffsetY": 2.0148115544875735,
+      "bodyRotationDeg": 0
+    },
+    "frontRight": {
+      "bodyScaleX": 2.8012813567299033,
+      "bodyScaleY": 2.272980517363324,
+      "bodyOffsetX": -4.947628664798584,
+      "bodyOffsetY": 1.457751944254382,
+      "bodyRotationDeg": 0
+    },
+    "right": {
+      "bodyScaleX": 2.708614550031994,
+      "bodyScaleY": 2.1977899815306436,
+      "bodyOffsetX": -4.1937308763586,
+      "bodyOffsetY": 0.2921108764418071,
+      "bodyRotationDeg": 0
+    },
+    "rearRight": {
+      "bodyScaleX": 2.841541916279101,
+      "bodyScaleY": 2.305648234675483,
+      "bodyOffsetX": -0.3157421264375202,
+      "bodyOffsetY": -0.9562314410387427,
+      "bodyRotationDeg": 0
+    },
+    "rear": {
+      "bodyScaleX": 1.4573547791926849,
+      "bodyScaleY": 1.1825085017015997,
+      "bodyOffsetX": 0.010053495993327388,
+      "bodyOffsetY": -0.860051892038049,
+      "bodyRotationDeg": 0
+    },
+    "rearLeft": {
+      "bodyScaleX": 2.6687618459920897,
+      "bodyScaleY": 2.165453201210693,
+      "bodyOffsetX": 0.6243195251504252,
+      "bodyOffsetY": -0.9162369834049329,
+      "bodyRotationDeg": 0
+    },
+    "left": {
+      "bodyScaleX": 2.678350700310966,
+      "bodyScaleY": 2.1732336688878435,
+      "bodyOffsetX": 4.142372522113478,
+      "bodyOffsetY": 0.3460699263983889,
+      "bodyRotationDeg": 0
+    },
+    "frontLeft": {
+      "bodyScaleX": 3.025372448255952,
+      "bodyScaleY": 2.4548096949037017,
+      "bodyOffsetX": 5.442320831016013,
+      "bodyOffsetY": 1.5573058019877686,
+      "bodyRotationDeg": 0
+    }
+  },
+  "allowCardinalTireOverrides": true
+}
