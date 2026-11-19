@@ -1747,7 +1747,13 @@
       "catalog-arrowleaf-clover-1972-tires": "art/catalog-arrowleaf-clover-1972-tires/document.json",
       "catalog-bilberry-clover-2005-body": "art/catalog-bilberry-clover-2005-body/document.json",
       "catalog-bilberry-clover-2005-dashboard": "art/catalog-bilberry-clover-2005-dashboard/document.json",
-      "catalog-bilberry-clover-2005-tires": "art/catalog-bilberry-clover-2005-tires/document.json"
+      "catalog-bilberry-clover-2005-tires": "art/catalog-bilberry-clover-2005-tires/document.json",
+      "catalog-holly-clover-2010-body": "art/catalog-holly-clover-2010-body/document.json",
+      "catalog-holly-clover-2010-dashboard": "art/catalog-holly-clover-2010-dashboard/document.json",
+      "catalog-holly-clover-2010-tires": "art/catalog-holly-clover-2010-tires/document.json",
+      "catalog-field-scabious-2022-body": "art/catalog-field-scabious-2022-body/document.json",
+      "catalog-field-scabious-2022-dashboard": "art/catalog-field-scabious-2022-dashboard/document.json",
+      "catalog-field-scabious-2022-tires": "art/catalog-field-scabious-2022-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
