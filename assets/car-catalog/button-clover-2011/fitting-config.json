@@ -1,0 +1,264 @@
+{
+  "id": "button-clover-2011",
+  "name": "Button Clover 2011",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "e26e33f56da26231b8a00881c372f3e5fa7f3f2751036f003021047aed103f9d",
+  "sourceDirectory": "assets/car-catalog/button-clover-2011",
+  "sourceHashes": {
+    "body": "6c2440feab60ed696673d4c2290f027fd202013235ed3dd71fd84f7532ca5bbb",
+    "dashboard": "6e959d2356916348321af3fe9069dc5172ca49fb7539289659ef03e2a08fd7f0",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 92.71,
+        "y": 299.075,
+        "radius": 23.925
+      },
+      {
+        "wheel": "fr",
+        "x": 354.29,
+        "y": 299.075,
+        "radius": 23.925
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 711.5,
+        "y": 245.0,
+        "radius": 20.0
+      },
+      {
+        "wheel": "rr",
+        "x": 839.5,
+        "y": 219.0,
+        "radius": 12.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 972.5,
+        "y": 695.0,
+        "radius": 36.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1245.5,
+        "y": 694.5,
+        "radius": 36.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 476.5,
+        "y": 667.0,
+        "radius": 13.0
+      },
+      {
+        "wheel": "rr",
+        "x": 606.0,
+        "y": 676.5,
+        "radius": 24.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 84.88,
+        "y": 737.1,
+        "radius": 24.9
+      },
+      {
+        "wheel": "rl",
+        "x": 357.12,
+        "y": 737.1,
+        "radius": 24.9
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1602.0,
+        "y": 235.5,
+        "radius": 23.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1725.0,
+        "y": 222.5,
+        "radius": 11.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 969.5,
+        "y": 249.5,
+        "radius": 36.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1241.0,
+        "y": 250.5,
+        "radius": 34.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1375.5,
+        "y": 657.0,
+        "radius": 11.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1499.5,
+        "y": 687.0,
+        "radius": 19.0
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      531,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      599.0,
+      297
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e2e9e8",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false
+  },
+  "allowCardinalTireOverrides": true,
+  "nativeTireTransformOverrides": {
+    "front": {
+      "tireScaleX": 0.4709516543802219,
+      "tireScaleY": 0.4709516543802219,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0
+    },
+    "frontRight": {
+      "tireScaleX": 0.8652231750973838,
+      "tireScaleY": 1.1880568370293347,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.8698183306072554,
+      "frontTireOffsetY": 0.14378385732826016,
+      "rearTireOffsetX": -1.3887389917642818,
+      "rearTireOffsetY": 0.84393117949079
+    },
+    "right": {
+      "tireScaleX": 1.0786700519905972,
+      "tireScaleY": 1.0786700519905972,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.006172252544864324,
+      "rearTireOffsetX": -7.612957883143929E-16,
+      "rearTireOffsetY": 0.006172252544863724
+    },
+    "rearRight": {
+      "tireScaleX": 0.9872895665854569,
+      "tireScaleY": 1.3701361093508626,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.8975260142838619,
+      "frontTireOffsetY": 1.2044450606563444,
+      "rearTireOffsetX": -0.5749675372699815,
+      "rearTireOffsetY": -0.25581687565453326
+    },
+    "rear": {
+      "tireScaleX": 0.4568976017918479,
+      "tireScaleY": 0.4568976017918479,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 1.6970259873125366E-17
+    },
+    "rearLeft": {
+      "tireScaleX": 1.05257692301311,
+      "tireScaleY": 1.275716141028531,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.8703335278777257,
+      "frontTireOffsetY": 1.1617395306044958,
+      "rearTireOffsetX": 0.6203169966546231,
+      "rearTireOffsetY": -0.22311134560268422
+    },
+    "left": {
+      "tireScaleX": 1.0846295550402691,
+      "tireScaleY": 1.0846295550402691,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 2.0301221021717147E-15,
+      "frontTireOffsetY": 0.00292499484461246,
+      "rearTireOffsetX": -7.612957883143929E-16,
+      "rearTireOffsetY": -0.0029249948446130603
+    },
+    "frontLeft": {
+      "tireScaleX": 0.789001031938104,
+      "tireScaleY": 1.1957906314771818,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.8678400160183137,
+      "frontTireOffsetY": 0.33024642248291813,
+      "rearTireOffsetX": 1.5239193548612888,
+      "rearTireOffsetY": 0.8711025474334907
+    }
+  },
+  "nativeWheelFaceInsets": {
+    "rearRight": {
+      "fr": 0.5
+    },
+    "rearLeft": {
+      "fl": 0.5
+    }
+  }
+}

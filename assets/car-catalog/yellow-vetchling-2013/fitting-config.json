@@ -1,0 +1,219 @@
+{
+  "id": "yellow-vetchling-2013",
+  "name": "Yellow Vetchling 2013",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "cfca01b8c6139454f2869565121b4dac85015b28ae5b5054187f8dd7f3e25bb1",
+  "sourceDirectory": "assets/car-catalog/yellow-vetchling-2013",
+  "sourceHashes": {
+    "body": "3c69886b718f72ec6bc27b0dd5b9931106c0422a674b47c8b03bf8c8e2fd491a",
+    "dashboard": "1e3ede25d5c2bb99494cfb2ac5d46314cb9c1a5a259ff343eabfe0a44ff83249",
+    "tires": "40cb9b287ec0ec842686a78518ea038596007f9f959f9aaee3c92b86e4d965f4"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 94.65,
+        "y": 321.625,
+        "radius": 21.375
+      },
+      {
+        "wheel": "fr",
+        "x": 328.35,
+        "y": 321.625,
+        "radius": 21.375
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 691.0,
+        "y": 261.5,
+        "radius": 19.5
+      },
+      {
+        "wheel": "rr",
+        "x": 813.0,
+        "y": 237.5,
+        "radius": 13.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 960.5,
+        "y": 271.0,
+        "radius": 37.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1225.0,
+        "y": 266.5,
+        "radius": 38.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1376.5,
+        "y": 243.0,
+        "radius": 16.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1530.0,
+        "y": 263.5,
+        "radius": 30.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 96.74,
+        "y": 754.55,
+        "radius": 21.45
+      },
+      {
+        "wheel": "rl",
+        "x": 331.26,
+        "y": 754.55,
+        "radius": 21.45
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 657.0,
+        "y": 707.5,
+        "radius": 28.5
+      },
+      {
+        "wheel": "fl",
+        "x": 804.0,
+        "y": 681.5,
+        "radius": 14.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 954.0,
+        "y": 710.5,
+        "radius": 37.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1221.0,
+        "y": 714.5,
+        "radius": 37.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1369.5,
+        "y": 678.0,
+        "radius": 12.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1480.0,
+        "y": 703.5,
+        "radius": 19.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1942,
+      809
+    ],
+    "cluster": [
+      1250,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      1500,
+      579.0,
+      310
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#f4ead5",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false
+  },
+  "nativeTireTransformOverrides": {
+    "rearRight": {
+      "tireScaleX": 1.1354964854878338,
+      "tireScaleY": 1.4786329648060956,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.5928318671375482,
+      "frontTireOffsetY": 0.6869939957767752,
+      "rearTireOffsetX": 0.2697528918785137,
+      "rearTireOffsetY": -0.5083658107749647
+    },
+    "rearLeft": {
+      "tireScaleX": 1.5428947710680017,
+      "tireScaleY": 1.4085141510114798,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.8274521123356254,
+      "frontTireOffsetY": 0.5876637277588658,
+      "rearTireOffsetX": -0.07293152887543791,
+      "rearTireOffsetY": -0.40381878149633577
+    },
+    "frontRight": {
+      "tireScaleX": 0.5806976872760641,
+      "tireScaleY": 1.0220279296058727,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.8773461520781654,
+      "frontTireOffsetY": 0.012964937315165348,
+      "rearTireOffsetX": -0.9753927124590945,
+      "rearTireOffsetY": 1.2500172140792039
+    },
+    "frontLeft": {
+      "tireScaleX": 0.6151203122398153,
+      "tireScaleY": 1.0580069370524823,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.9849670223193534,
+      "frontTireOffsetY": 0.16754284782564366,
+      "rearTireOffsetX": 1.3130135827002862,
+      "rearTireOffsetY": 1.2191016319771082
+    }
+  }
+}

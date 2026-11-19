@@ -2302,7 +2302,16 @@
       "catalog-hairy-tare-1971-tires": "art/catalog-hairy-tare-1971-tires/document.json",
       "catalog-huckleberry-clover-2008-body": "art/catalog-huckleberry-clover-2008-body/document.json",
       "catalog-huckleberry-clover-2008-dashboard": "art/catalog-huckleberry-clover-2008-dashboard/document.json",
-      "catalog-huckleberry-clover-2008-tires": "art/catalog-huckleberry-clover-2008-tires/document.json"
+      "catalog-huckleberry-clover-2008-tires": "art/catalog-huckleberry-clover-2008-tires/document.json",
+      "catalog-button-clover-2011-body": "art/catalog-button-clover-2011-body/document.json",
+      "catalog-button-clover-2011-dashboard": "art/catalog-button-clover-2011-dashboard/document.json",
+      "catalog-button-clover-2011-tires": "art/catalog-button-clover-2011-tires/document.json",
+      "catalog-toothed-medick-2002-body": "art/catalog-toothed-medick-2002-body/document.json",
+      "catalog-toothed-medick-2002-dashboard": "art/catalog-toothed-medick-2002-dashboard/document.json",
+      "catalog-toothed-medick-2002-tires": "art/catalog-toothed-medick-2002-tires/document.json",
+      "catalog-yellow-vetchling-2013-body": "art/catalog-yellow-vetchling-2013-body/document.json",
+      "catalog-yellow-vetchling-2013-dashboard": "art/catalog-yellow-vetchling-2013-dashboard/document.json",
+      "catalog-yellow-vetchling-2013-tires": "art/catalog-yellow-vetchling-2013-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
