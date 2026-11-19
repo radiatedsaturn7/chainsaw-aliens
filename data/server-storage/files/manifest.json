@@ -2110,7 +2110,13 @@
       "catalog-field-sage-2016-tires": "art/catalog-field-sage-2016-tires/document.json",
       "catalog-gorse-clover-2005-body": "art/catalog-gorse-clover-2005-body/document.json",
       "catalog-gorse-clover-2005-dashboard": "art/catalog-gorse-clover-2005-dashboard/document.json",
-      "catalog-gorse-clover-2005-tires": "art/catalog-gorse-clover-2005-tires/document.json"
+      "catalog-gorse-clover-2005-tires": "art/catalog-gorse-clover-2005-tires/document.json",
+      "catalog-black-trefoil-2005-body": "art/catalog-black-trefoil-2005-body/document.json",
+      "catalog-black-trefoil-2005-dashboard": "art/catalog-black-trefoil-2005-dashboard/document.json",
+      "catalog-black-trefoil-2005-tires": "art/catalog-black-trefoil-2005-tires/document.json",
+      "catalog-soft-trefoil-2005-body": "art/catalog-soft-trefoil-2005-body/document.json",
+      "catalog-soft-trefoil-2005-dashboard": "art/catalog-soft-trefoil-2005-dashboard/document.json",
+      "catalog-soft-trefoil-2005-tires": "art/catalog-soft-trefoil-2005-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
