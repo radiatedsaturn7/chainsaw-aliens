@@ -2389,7 +2389,10 @@
       "catalog-bladder-campion-2010-tires": "art/catalog-bladder-campion-2010-tires/document.json",
       "catalog-snowberry-clover-2005-body": "art/catalog-snowberry-clover-2005-body/document.json",
       "catalog-snowberry-clover-2005-dashboard": "art/catalog-snowberry-clover-2005-dashboard/document.json",
-      "catalog-snowberry-clover-2005-tires": "art/catalog-snowberry-clover-2005-tires/document.json"
+      "catalog-snowberry-clover-2005-tires": "art/catalog-snowberry-clover-2005-tires/document.json",
+      "catalog-thimbleberry-clover-2007-body": "art/catalog-thimbleberry-clover-2007-body/document.json",
+      "catalog-thimbleberry-clover-2007-dashboard": "art/catalog-thimbleberry-clover-2007-dashboard/document.json",
+      "catalog-thimbleberry-clover-2007-tires": "art/catalog-thimbleberry-clover-2007-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
