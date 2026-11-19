@@ -1,0 +1,284 @@
+{
+  "id": "corn-mint-2009",
+  "name": "Corn Mint 2009",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "a10c1ca896173905043906f86b602a031446e165edc0568ea30953f5769d9791",
+  "sourceDirectory": "assets/car-catalog/corn-mint-2009",
+  "sourceHashes": {
+    "body": "91ea9d940bf9d0af7405821528ea50b3f1712fbe5a17a04464a76d98a7dc25a7",
+    "dashboard": "0ca03673728699dc4a6dcf8df9b20f05964d35a60ee87e7367e883b806462fe0",
+    "tires": "5968a259dbd79a01f00680a5d0efd60654fdd326e7e62a18c05be808419b0a01"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 80.97,
+        "y": 369.025,
+        "radius": 24.974999999999998
+      },
+      {
+        "wheel": "fr",
+        "x": 354.03000000000003,
+        "y": 369.025,
+        "radius": 24.974999999999998
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 704.5,
+        "y": 310.0,
+        "radius": 26.0
+      },
+      {
+        "wheel": "rr",
+        "x": 856.5,
+        "y": 274.0,
+        "radius": 14.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 968.5,
+        "y": 316.0,
+        "radius": 42.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1270.0,
+        "y": 318.5,
+        "radius": 42.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1368,
+        "y": 294,
+        "radius": 25
+      },
+      {
+        "wheel": "rr",
+        "x": 1531,
+        "y": 332,
+        "radius": 45
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 80.24,
+        "y": 809.8,
+        "radius": 25.2
+      },
+      {
+        "wheel": "rl",
+        "x": 355.76,
+        "y": 809.8,
+        "radius": 25.2
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 685.5,
+        "y": 757.0,
+        "radius": 29.0
+      },
+      {
+        "wheel": "fl",
+        "x": 850.0,
+        "y": 729.5,
+        "radius": 15.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 947.0,
+        "y": 763.5,
+        "radius": 42.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1249.0,
+        "y": 759.5,
+        "radius": 41.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1360,
+        "y": 727,
+        "radius": 24
+      },
+      {
+        "wheel": "fl",
+        "x": 1510,
+        "y": 775,
+        "radius": 47
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      852,
+      462,
+      270,
+      140
+    ],
+    "wheel": [
+      1510,
+      793,
+      280
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff",
+    "instrumentPodBounds": [
+      852,
+      462,
+      270,
+      140
+    ],
+    "renderedInstrumentPodBounds": [
+      852,
+      462,
+      270,
+      140
+    ],
+    "measuredDashboardWheel": true,
+    "dashboardGaugeFontSize": 17.4
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Manual full source aperture ellipse annotation: center-y from apex plus vertical radius, x from curved arch center; target two views use native authored anchor import, other six solved overrides preserved. No optimizer/grid.",
+    "annotatedApertures": {
+      "frontLeft": [
+        {
+          "wheel": "rl",
+          "cx": 1360,
+          "cy": 727,
+          "rx": 15,
+          "ry": 24
+        },
+        {
+          "wheel": "fl",
+          "cx": 1510,
+          "cy": 775,
+          "rx": 28,
+          "ry": 47
+        }
+      ],
+      "rearRight": [
+        {
+          "wheel": "fr",
+          "cx": 1368,
+          "cy": 294,
+          "rx": 15,
+          "ry": 25
+        },
+        {
+          "wheel": "rr",
+          "cx": 1531,
+          "cy": 332,
+          "rx": 32,
+          "ry": 45
+        }
+      ]
+    },
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 1.191247635518541,
+      "tireScaleY": 1.1366987788153162,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.6306899589863978,
+      "frontTireOffsetY": -0.016002247928715657,
+      "rearTireOffsetX": -1.102147810226069,
+      "rearTireOffsetY": 0.5398471941912437
+    },
+    "right": {
+      "tireScaleX": 1.141393130096433,
+      "tireScaleY": 1.141393130096433,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.04143934977652137,
+      "rearTireOffsetX": 8.247371040072591E-16,
+      "rearTireOffsetY": 0.04143934977652161
+    },
+    "rearRight": {
+      "tireScaleX": 1.3175669403930534,
+      "tireScaleY": 1.3175669403930534,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.6823798155348733,
+      "frontTireOffsetY": 0.4840786295530028,
+      "rearTireOffsetX": -0.23237981553487466,
+      "rearTireOffsetY": -0.4840786295530028
+    },
+    "rearLeft": {
+      "tireScaleX": 0.9575874040210615,
+      "tireScaleY": 1.085830775980326,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.4877428681606343,
+      "frontTireOffsetY": 0.7111903166670362,
+      "rearTireOffsetX": 0.25854947973088493,
+      "rearTireOffsetY": -0.3325621316652218
+    },
+    "left": {
+      "tireScaleX": 1.139503406371108,
+      "tireScaleY": 1.139503406371108,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -2.0301221021717147E-15,
+      "frontTireOffsetY": -0.06785713791703976,
+      "rearTireOffsetX": 4.4408920985006257E-16,
+      "rearTireOffsetY": 0.06785713791704
+    },
+    "frontLeft": {
+      "tireScaleX": 1.2318498509512834,
+      "tireScaleY": 1.2318498509512834,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.6878114972043073,
+      "frontTireOffsetY": -0.30323159850833586,
+      "rearTireOffsetX": 1.2378114972043068,
+      "rearTireOffsetY": 0.3032315985083352
+    }
+  },
+  "nativeWheelFaceInsets": {
+    "frontRight": {
+      "rr": 0.38010747666717537
+    },
+    "rearRight": {
+      "fr": 0.5
+    },
+    "rearLeft": {
+      "fl": 0.3036484053339134
+    },
+    "frontLeft": {
+      "rl": 0.38733566725669966
+    }
+  }
+}

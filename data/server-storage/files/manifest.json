@@ -2269,7 +2269,13 @@
       "catalog-water-avens-2012-tires": "art/catalog-water-avens-2012-tires/document.json",
       "catalog-yellow-vetchling-2016-body": "art/catalog-yellow-vetchling-2016-body/document.json",
       "catalog-yellow-vetchling-2016-dashboard": "art/catalog-yellow-vetchling-2016-dashboard/document.json",
-      "catalog-yellow-vetchling-2016-tires": "art/catalog-yellow-vetchling-2016-tires/document.json"
+      "catalog-yellow-vetchling-2016-tires": "art/catalog-yellow-vetchling-2016-tires/document.json",
+      "catalog-marsh-cinquefoil-1998-body": "art/catalog-marsh-cinquefoil-1998-body/document.json",
+      "catalog-marsh-cinquefoil-1998-dashboard": "art/catalog-marsh-cinquefoil-1998-dashboard/document.json",
+      "catalog-marsh-cinquefoil-1998-tires": "art/catalog-marsh-cinquefoil-1998-tires/document.json",
+      "catalog-corn-mint-2009-body": "art/catalog-corn-mint-2009-body/document.json",
+      "catalog-corn-mint-2009-dashboard": "art/catalog-corn-mint-2009-dashboard/document.json",
+      "catalog-corn-mint-2009-tires": "art/catalog-corn-mint-2009-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
