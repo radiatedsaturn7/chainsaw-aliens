@@ -1,0 +1,386 @@
+{
+  "id": "wood-anemone-2013",
+  "name": "Wood Anemone 2013",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "01df09c1adbe768905f73f80ea5eb196aff558f7c001dccf95a3d39e62503a02",
+  "sourceDirectory": "assets/car-catalog/wood-anemone-2013",
+  "sourceHashes": {
+    "body": "1868aa7e37021f5b0e1176480cffd7cfda46b7f06ab201df8c99579c4cc58844",
+    "dashboard": "35eade00db147db000c32711616c5f121500f41a30f1fd3c67acd340455eebb0",
+    "tires": "e425df6c56b0ceba9f1708d793f4e8d14c820d3396d8a74f94a27346c1230209"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 93.64,
+        "y": 337.8,
+        "radius": 22.2
+      },
+      {
+        "wheel": "fr",
+        "x": 336.36,
+        "y": 337.8,
+        "radius": 22.2
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 639.0,
+        "y": 299.5,
+        "radius": 31.5
+      },
+      {
+        "wheel": "rr",
+        "x": 833.0,
+        "y": 265.5,
+        "radius": 22.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 968.0,
+        "y": 294.5,
+        "radius": 40.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1261.0,
+        "y": 294.5,
+        "radius": 42.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 441.0,
+        "y": 697.5,
+        "radius": 18.5
+      },
+      {
+        "wheel": "rr",
+        "x": 616.5,
+        "y": 722.0,
+        "radius": 31.0
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 94.46,
+        "y": 760.95,
+        "radius": 22.05
+      },
+      {
+        "wheel": "rl",
+        "x": 335.54,
+        "y": 760.95,
+        "radius": 22.05
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1587.0,
+        "y": 288.5,
+        "radius": 28.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1742.5,
+        "y": 264.0,
+        "radius": 16.0
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 953.5,
+        "y": 719.0,
+        "radius": 42.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1250.5,
+        "y": 718.0,
+        "radius": 40.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1371.5,
+        "y": 693.0,
+        "radius": 19.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1521.0,
+        "y": 721.5,
+        "radius": 24.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      198,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      475,
+      669.1076923076921,
+      317
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#eed9ae",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ],
+    "renderedInstrumentPodBounds": [
+      96,
+      428,
+      712,
+      164
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "projectedPodRepair": {
+      "id": "wood-anemone-2013",
+      "status": "proposal",
+      "minimumDeltaY": 62.10769230769209,
+      "maximumDeltaY": 97.99921874999998,
+      "deltaY": 64.10769230769209,
+      "evidence": [
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "speed",
+          "minimumDeltaY": -42.762500000000045,
+          "maximumDeltaY": 97.99921874999998
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "rpm",
+          "minimumDeltaY": -42.762500000000045,
+          "maximumDeltaY": 97.99921874999998
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "gear",
+          "minimumDeltaY": -42.762500000000045,
+          "maximumDeltaY": 97.99921874999998
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "speed",
+          "minimumDeltaY": 62.10769230769209,
+          "maximumDeltaY": 180.3461538461538
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "rpm",
+          "minimumDeltaY": 62.10769230769209,
+          "maximumDeltaY": 180.3461538461538
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "gear",
+          "minimumDeltaY": 62.10769230769209,
+          "maximumDeltaY": 180.3461538461538
+        }
+      ],
+      "accepted": false
+    },
+    "nativeRenderReviewed": true,
+    "sourceTrimAttribution": "Fresh body-only, native wheels, composite and difference comparisons reviewed in four obliques. Exhausts and connected lower trim preserved. All eight native views and both cockpit sizes visually reviewed."
+  },
+  "nativeTireTransformOverrides": {
+    "front": {
+      "tireScaleX": 0.4467927566464052,
+      "tireScaleY": 0.4467927566464052,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -2.187224904969864e-16,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0
+    },
+    "frontRight": {
+      "tireScaleX": 1.3395202816183625,
+      "tireScaleY": 1.1895275667886205,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.08117900561533817,
+      "frontTireOffsetY": -0.5458017333283556,
+      "rearTireOffsetX": 0.06972115437567017,
+      "rearTireOffsetY": 0.629646679590885
+    },
+    "right": {
+      "tireScaleX": 1.2276634177318346,
+      "tireScaleY": 1.2276634177318346,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0.0014000304263922664,
+      "rearTireOffsetX": 1.2688263138573217e-16,
+      "rearTireOffsetY": -0.0014000304263920263
+    },
+    "rearRight": {
+      "tireScaleX": 1.5557380389049693,
+      "tireScaleY": 1.173105873475806,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.03422711790769553,
+      "frontTireOffsetY": 0.84176459215337,
+      "rearTireOffsetX": -0.04568496914736664,
+      "rearTireOffsetY": -0.7979196458908406
+    },
+    "rear": {
+      "tireScaleX": 0.4483045250317654,
+      "tireScaleY": 0.4483045250317654,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 3.0217909093131043e-16,
+      "rearTireOffsetY": -1.429225430080522e-16
+    },
+    "rearLeft": {
+      "tireScaleX": 1.4300848834902626,
+      "tireScaleY": 1.3588972005954338,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.3043894209453233,
+      "frontTireOffsetY": 0.809339636719809,
+      "rearTireOffsetX": 0.29293156970565215,
+      "rearTireOffsetY": -0.7654946904572786
+    },
+    "left": {
+      "tireScaleX": 1.1968806511077803,
+      "tireScaleY": 1.1968806511077803,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 2.0301221021717147e-15,
+      "frontTireOffsetY": -0.017276774989024128,
+      "rearTireOffsetX": -1.2688263138573217e-16,
+      "rearTireOffsetY": 0.01727677498902533
+    },
+    "frontLeft": {
+      "tireScaleX": 1.1327749735165704,
+      "tireScaleY": 1.1045687421276362,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.5664574020213103,
+      "frontTireOffsetY": -0.3011483492409823,
+      "rearTireOffsetX": 0.5549995507816416,
+      "rearTireOffsetY": 0.7849932955035109
+    }
+  },
+  "nativeBodyTransformOverrides": {
+    "front": {
+      "bodyScaleX": 2.1284502195618997,
+      "bodyScaleY": 1.5487683510325674,
+      "bodyOffsetX": 0.014618476782704448,
+      "bodyOffsetY": 1.5063223478302334,
+      "bodyRotationDeg": 0
+    },
+    "frontRight": {
+      "bodyScaleX": 2.754519629647394,
+      "bodyScaleY": 2.0043282128411386,
+      "bodyOffsetX": -4.943166505663138,
+      "bodyOffsetY": 1.4021041952015338,
+      "bodyRotationDeg": 0
+    },
+    "right": {
+      "bodyScaleX": 2.549731977967427,
+      "bodyScaleY": 1.8553143290823275,
+      "bodyOffsetX": -4.9045372865744605,
+      "bodyOffsetY": -0.11025615502164439,
+      "bodyRotationDeg": 0
+    },
+    "rearRight": {
+      "bodyScaleX": 2.546960132494732,
+      "bodyScaleY": 1.8532973937071855,
+      "bodyOffsetX": -1.0739909414172413,
+      "bodyOffsetY": -0.8105188082809148,
+      "bodyRotationDeg": 0
+    },
+    "rear": {
+      "bodyScaleX": 1.653893785011654,
+      "bodyScaleY": 1.2034570161207463,
+      "bodyOffsetX": 0.011359160611343455,
+      "bodyOffsetY": -1.1785041666059453,
+      "bodyRotationDeg": 0
+    },
+    "rearLeft": {
+      "bodyScaleX": 2.7050114851015663,
+      "bodyScaleY": 1.96830357543773,
+      "bodyOffsetX": 1.0772387258205391,
+      "bodyOffsetY": -0.7115869600540392,
+      "bodyRotationDeg": 0
+    },
+    "left": {
+      "bodyScaleX": 2.5153921533483374,
+      "bodyScaleY": 1.8303269307108483,
+      "bodyOffsetX": 4.883959335351826,
+      "bodyOffsetY": -0.12223990730184303,
+      "bodyRotationDeg": 0
+    },
+    "frontLeft": {
+      "bodyScaleX": 2.9949163240519288,
+      "bodyScaleY": 2.1792530424494285,
+      "bodyOffsetX": 5.656324771882025,
+      "bodyOffsetY": 1.525446275750557,
+      "bodyRotationDeg": 0
+    }
+  },
+  "allowCardinalTireOverrides": true
+}
