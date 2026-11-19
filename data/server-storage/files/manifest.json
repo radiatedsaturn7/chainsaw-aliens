@@ -2197,7 +2197,10 @@
       "catalog-arrowleaf-trefoil-2012-tires": "art/catalog-arrowleaf-trefoil-2012-tires/document.json",
       "catalog-yellow-bartsia-2018-body": "art/catalog-yellow-bartsia-2018-body/document.json",
       "catalog-yellow-bartsia-2018-dashboard": "art/catalog-yellow-bartsia-2018-dashboard/document.json",
-      "catalog-yellow-bartsia-2018-tires": "art/catalog-yellow-bartsia-2018-tires/document.json"
+      "catalog-yellow-bartsia-2018-tires": "art/catalog-yellow-bartsia-2018-tires/document.json",
+      "catalog-pincherry-clover-2005-body": "art/catalog-pincherry-clover-2005-body/document.json",
+      "catalog-pincherry-clover-2005-dashboard": "art/catalog-pincherry-clover-2005-dashboard/document.json",
+      "catalog-pincherry-clover-2005-tires": "art/catalog-pincherry-clover-2005-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
