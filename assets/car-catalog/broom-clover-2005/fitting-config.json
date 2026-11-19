@@ -1,0 +1,231 @@
+{
+  "id": "broom-clover-2005",
+  "name": "Broom Clover 2005",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "134ee15c35a6a2a9759d12448f0cbbe61eb0aae15b40753a373e1cb64b118650",
+  "sourceDirectory": "assets/car-catalog/broom-clover-2005",
+  "sourceHashes": {
+    "body": "400d6efb2026ab98bcf66f94c6610875c3b73300a36c3a0b039b869fb19f1fca",
+    "dashboard": "dc299711c35c1b7010c0a9850a853eb6e00a4e58e42e6ba58586414f96354772",
+    "tires": "f9e17c09a271da13d79116fc670fd8a5638a0c941a5109895ef1490fc54bfbfe"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 90.46,
+        "y": 318.95,
+        "radius": 22.05
+      },
+      {
+        "wheel": "fr",
+        "x": 331.54,
+        "y": 318.95,
+        "radius": 22.05
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 683.5,
+        "y": 268.0,
+        "radius": 24.0
+      },
+      {
+        "wheel": "rr",
+        "x": 830.5,
+        "y": 246.0,
+        "radius": 15.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 979.0,
+        "y": 713.5,
+        "radius": 33.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1236.0,
+        "y": 713.5,
+        "radius": 33.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 483.0,
+        "y": 691.5,
+        "radius": 14.5
+      },
+      {
+        "wheel": "rr",
+        "x": 623.5,
+        "y": 712.0,
+        "radius": 23.0
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 96.27,
+        "y": 759.275,
+        "radius": 22.724999999999998
+      },
+      {
+        "wheel": "rl",
+        "x": 344.73,
+        "y": 759.275,
+        "radius": 22.724999999999998
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1564.5,
+        "y": 270.0,
+        "radius": 26.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1722.5,
+        "y": 247.0,
+        "radius": 17.0
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 982.5,
+        "y": 270.0,
+        "radius": 34.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1239.0,
+        "y": 268.5,
+        "radius": 33.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1385.5,
+        "y": 686.0,
+        "radius": 15.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1530.0,
+        "y": 708.5,
+        "radius": 22.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      243,
+      462,
+      434,
+      144
+    ],
+    "wheel": [
+      460.0,
+      793,
+      420
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8",
+    "instrumentPodBounds": [
+      243,
+      462,
+      434,
+      144
+    ],
+    "renderedInstrumentPodBounds": [
+      243,
+      462,
+      434,
+      144
+    ],
+    "dashboardGaugeFontSize": 18
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Extended-height aperture proposals only on previously held views; native quick guards and visual acceptance required",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "nativeRenderReviewed": true
+  },
+  "runtimeBodyFrameReplacement": {
+    "id": "broom-clover-2005",
+    "sourceCommit": "3e41d69fce1965befee586f7f7a4657bbcbdc448",
+    "sourceBodySha256": "400d6efb2026ab98bcf66f94c6610875c3b73300a36c3a0b039b869fb19f1fca",
+    "candidateSha256": "fbe4620766c2ace6f0e70365608d01c2d2b45138a0d1fd7397f8e11d095a0b6f",
+    "mapping": [
+      0,
+      1,
+      6,
+      5,
+      4,
+      3,
+      2,
+      7
+    ],
+    "replacedFrame": 4,
+    "importerCrop": [
+      69,
+      569,
+      303,
+      210
+    ],
+    "nativePadding": [
+      61,
+      1
+    ],
+    "originalSourceBbox": [
+      70,
+      572,
+      371,
+      778
+    ],
+    "candidateBbox": [
+      180,
+      191,
+      1268,
+      893
+    ],
+    "nativePlacement": [
+      62,
+      16,
+      301,
+      194
+    ],
+    "uniformScale": 0.2766544117647059,
+    "sevenFrameHashesUnchanged": true,
+    "nativeFrameBoundsUnchanged": true,
+    "originalImagesChanged": false,
+    "accepted": true,
+    "reproduction": "Replace frame 4 only after standard native sheet import; crop candidate alpha bbox, uniformly resize to nativePlacement width/height, paste on transparent 426x212 frame at nativePlacement origin. Retain other seven frames and frameBounds."
+  }
+}
