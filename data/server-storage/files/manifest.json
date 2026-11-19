@@ -2233,7 +2233,10 @@
       "catalog-valley-clover-2005-tires": "art/catalog-valley-clover-2005-tires/document.json",
       "catalog-rain-clover-2012-body": "art/catalog-rain-clover-2012-body/document.json",
       "catalog-rain-clover-2012-dashboard": "art/catalog-rain-clover-2012-dashboard/document.json",
-      "catalog-rain-clover-2012-tires": "art/catalog-rain-clover-2012-tires/document.json"
+      "catalog-rain-clover-2012-tires": "art/catalog-rain-clover-2012-tires/document.json",
+      "catalog-field-gentian-2017-body": "art/catalog-field-gentian-2017-body/document.json",
+      "catalog-field-gentian-2017-dashboard": "art/catalog-field-gentian-2017-dashboard/document.json",
+      "catalog-field-gentian-2017-tires": "art/catalog-field-gentian-2017-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

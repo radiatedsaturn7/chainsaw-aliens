@@ -1,0 +1,267 @@
+{
+  "id": "field-gentian-2017",
+  "name": "Field Gentian 2017",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "6e7c4ae7a523c78a231a32906a3b56c626119d1f512a4b319a3c09f42045741a",
+  "sourceDirectory": "assets/car-catalog/field-gentian-2017",
+  "sourceHashes": {
+    "body": "f3e7e470375da588e457611de28ad775c8fad5cff890c81621817a9777452ffa",
+    "dashboard": "873d38aa45bf200bc325920fc92fe7eb0ed55b19e95737309252dcf5787af930",
+    "tires": "2b4efb2e5b243d80324db5a377544b9ca81f544dbaecc0627c17dc71cdd687ee"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 89.82,
+        "y": 337.65,
+        "radius": 22.349999999999998
+      },
+      {
+        "wheel": "fr",
+        "x": 334.18,
+        "y": 337.65,
+        "radius": 22.349999999999998
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 672.0,
+        "y": 280.5,
+        "radius": 25.5
+      },
+      {
+        "wheel": "rr",
+        "x": 828.0,
+        "y": 255.5,
+        "radius": 15.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 961.5,
+        "y": 283.0,
+        "radius": 35.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1239.5,
+        "y": 282.0,
+        "radius": 34.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1378.0,
+        "y": 257.5,
+        "radius": 14.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1533.0,
+        "y": 273.5,
+        "radius": 25.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 87.25999999999999,
+        "y": 777.45,
+        "radius": 23.55
+      },
+      {
+        "wheel": "rl",
+        "x": 344.74,
+        "y": 777.45,
+        "radius": 23.55
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 680.5,
+        "y": 718.0,
+        "radius": 24.0
+      },
+      {
+        "wheel": "fl",
+        "x": 831.0,
+        "y": 704.5,
+        "radius": 14.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 973.5,
+        "y": 726.0,
+        "radius": 34.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1250.5,
+        "y": 725.0,
+        "radius": 34.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1373.0,
+        "y": 698.5,
+        "radius": 16.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1533.5,
+        "y": 724.0,
+        "radius": 27.0
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      324,
+      421,
+      380,
+      137
+    ],
+    "wheel": [
+      514.0,
+      793,
+      420
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5",
+    "instrumentPodBounds": [
+      324,
+      421,
+      380,
+      137
+    ],
+    "renderedInstrumentPodBounds": [
+      324,
+      421,
+      380,
+      137
+    ],
+    "measuredDashboardWheel": true
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Stable source dark-pod intersection, explicit dashboard-space wheel, fixed native exterior transforms; requires guards and visual review",
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false
+  },
+  "nativeTireTransformOverrides": {
+    "front": {
+      "tireScaleX": 0.4401857174585658,
+      "tireScaleY": 0.4401857174585658,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 6.680873675287411e-16,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0
+    },
+    "frontRight": {
+      "tireScaleX": 0.9292586708506333,
+      "tireScaleY": 1.2295040097332828,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.5165522016875108,
+      "frontTireOffsetY": -0.32871472509813765,
+      "rearTireOffsetX": -0.520472862844536,
+      "rearTireOffsetY": 0.740652293024716
+    },
+    "right": {
+      "tireScaleX": 1.0993819494738257,
+      "tireScaleY": 1.0993819494738257,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0.036913189942332954,
+      "rearTireOffsetX": 4.4408920985006257e-16,
+      "rearTireOffsetY": -0.03691318994233391
+    },
+    "rearRight": {
+      "tireScaleX": 0.9715213693276908,
+      "tireScaleY": 1.3533009410032881,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.1293117016245033,
+      "frontTireOffsetY": 1.1660160528092947,
+      "rearTireOffsetX": 0.13011831319475167,
+      "rearTireOffsetY": -0.46738786780748365
+    },
+    "rear": {
+      "tireScaleX": 0.45492568349564627,
+      "tireScaleY": 0.45492568349564627,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 8.847290407957435e-16,
+      "rearTireOffsetY": -1.0461323117517239e-16
+    },
+    "rearLeft": {
+      "tireScaleX": 1.0902896240014879,
+      "tireScaleY": 1.3283151689054025,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.09219877920163788,
+      "frontTireOffsetY": 1.1923290671784876,
+      "rearTireOffsetX": 0.053005390771887914,
+      "rearTireOffsetY": -0.4337008821766758
+    },
+    "left": {
+      "tireScaleX": 1.0718265277386902,
+      "tireScaleY": 1.0718265277386902,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.0028376523700272263,
+      "rearTireOffsetX": -9.516197353929913e-16,
+      "rearTireOffsetY": 0.002837652370026266
+    },
+    "frontLeft": {
+      "tireScaleX": 0.9990502316663731,
+      "tireScaleY": 1.3218453637181184,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.3599349280076827,
+      "frontTireOffsetY": -0.4106189401915721,
+      "rearTireOffsetX": 0.3760142668506586,
+      "rearTireOffsetY": 0.7225565081181513
+    }
+  },
+  "nativeWheelFaceInsets": {
+    "frontRight": {
+      "rr": 0.39561546279483467
+    },
+    "rearRight": {
+      "fr": 0.38609172763214783
+    },
+    "rearLeft": {
+      "fl": 0.3361216832233282
+    },
+    "frontLeft": {
+      "rl": 0.4256027842207182
+    }
+  }
+}
