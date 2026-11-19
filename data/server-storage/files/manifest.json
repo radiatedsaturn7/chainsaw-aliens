@@ -1924,7 +1924,22 @@
       "catalog-golden-trefoil-2012-tires": "art/catalog-golden-trefoil-2012-tires/document.json",
       "catalog-greater-trefoil-2015-body": "art/catalog-greater-trefoil-2015-body/document.json",
       "catalog-greater-trefoil-2015-dashboard": "art/catalog-greater-trefoil-2015-dashboard/document.json",
-      "catalog-greater-trefoil-2015-tires": "art/catalog-greater-trefoil-2015-tires/document.json"
+      "catalog-greater-trefoil-2015-tires": "art/catalog-greater-trefoil-2015-tires/document.json",
+      "catalog-blackthorn-clover-2012-body": "art/catalog-blackthorn-clover-2012-body/document.json",
+      "catalog-blackthorn-clover-2012-dashboard": "art/catalog-blackthorn-clover-2012-dashboard/document.json",
+      "catalog-blackthorn-clover-2012-tires": "art/catalog-blackthorn-clover-2012-tires/document.json",
+      "catalog-dogwood-clover-2008-body": "art/catalog-dogwood-clover-2008-body/document.json",
+      "catalog-dogwood-clover-2008-dashboard": "art/catalog-dogwood-clover-2008-dashboard/document.json",
+      "catalog-dogwood-clover-2008-tires": "art/catalog-dogwood-clover-2008-tires/document.json",
+      "catalog-flathead-clover-2012-body": "art/catalog-flathead-clover-2012-body/document.json",
+      "catalog-flathead-clover-2012-dashboard": "art/catalog-flathead-clover-2012-dashboard/document.json",
+      "catalog-flathead-clover-2012-tires": "art/catalog-flathead-clover-2012-tires/document.json",
+      "catalog-moss-clover-2003-body": "art/catalog-moss-clover-2003-body/document.json",
+      "catalog-moss-clover-2003-dashboard": "art/catalog-moss-clover-2003-dashboard/document.json",
+      "catalog-moss-clover-2003-tires": "art/catalog-moss-clover-2003-tires/document.json",
+      "catalog-seaside-clover-2014-body": "art/catalog-seaside-clover-2014-body/document.json",
+      "catalog-seaside-clover-2014-dashboard": "art/catalog-seaside-clover-2014-dashboard/document.json",
+      "catalog-seaside-clover-2014-tires": "art/catalog-seaside-clover-2014-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
