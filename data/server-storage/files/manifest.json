@@ -2224,7 +2224,10 @@
       "catalog-vipers-bugloss-1980-tires": "art/catalog-vipers-bugloss-1980-tires/document.json",
       "catalog-copper-trefoil-2012-body": "art/catalog-copper-trefoil-2012-body/document.json",
       "catalog-copper-trefoil-2012-dashboard": "art/catalog-copper-trefoil-2012-dashboard/document.json",
-      "catalog-copper-trefoil-2012-tires": "art/catalog-copper-trefoil-2012-tires/document.json"
+      "catalog-copper-trefoil-2012-tires": "art/catalog-copper-trefoil-2012-tires/document.json",
+      "catalog-egyptian-clover-1986-body": "art/catalog-egyptian-clover-1986-body/document.json",
+      "catalog-egyptian-clover-1986-dashboard": "art/catalog-egyptian-clover-1986-dashboard/document.json",
+      "catalog-egyptian-clover-1986-tires": "art/catalog-egyptian-clover-1986-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
