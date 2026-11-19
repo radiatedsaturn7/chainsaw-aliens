@@ -1975,7 +1975,10 @@
       "catalog-longleaf-clover-2011-tires": "art/catalog-longleaf-clover-2011-tires/document.json",
       "catalog-broom-clover-2005-body": "art/catalog-broom-clover-2005-body/document.json",
       "catalog-broom-clover-2005-dashboard": "art/catalog-broom-clover-2005-dashboard/document.json",
-      "catalog-broom-clover-2005-tires": "art/catalog-broom-clover-2005-tires/document.json"
+      "catalog-broom-clover-2005-tires": "art/catalog-broom-clover-2005-tires/document.json",
+      "catalog-lush-clover-2005-body": "art/catalog-lush-clover-2005-body/document.json",
+      "catalog-lush-clover-2005-dashboard": "art/catalog-lush-clover-2005-dashboard/document.json",
+      "catalog-lush-clover-2005-tires": "art/catalog-lush-clover-2005-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
