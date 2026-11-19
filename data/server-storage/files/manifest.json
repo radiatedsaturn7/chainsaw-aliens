@@ -2341,7 +2341,10 @@
       "catalog-alpine-trefoil-2010-tires": "art/catalog-alpine-trefoil-2010-tires/document.json",
       "catalog-silver-trefoil-2003-body": "art/catalog-silver-trefoil-2003-body/document.json",
       "catalog-silver-trefoil-2003-dashboard": "art/catalog-silver-trefoil-2003-dashboard/document.json",
-      "catalog-silver-trefoil-2003-tires": "art/catalog-silver-trefoil-2003-tires/document.json"
+      "catalog-silver-trefoil-2003-tires": "art/catalog-silver-trefoil-2003-tires/document.json",
+      "catalog-sierra-clover-2004-body": "art/catalog-sierra-clover-2004-body/document.json",
+      "catalog-sierra-clover-2004-dashboard": "art/catalog-sierra-clover-2004-dashboard/document.json",
+      "catalog-sierra-clover-2004-tires": "art/catalog-sierra-clover-2004-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
