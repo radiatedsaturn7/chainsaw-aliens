@@ -1,0 +1,309 @@
+{
+  "id": "coastal-trefoil-2012",
+  "name": "Coastal Trefoil 2012",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "fc05b7b77a0e3dbfb45d98c4324967b2cc31aa8d5ca25c25651c227f633294af",
+  "sourceDirectory": "assets/car-catalog/coastal-trefoil-2012",
+  "sourceHashes": {
+    "body": "d3e8d45fc654ca17044454032f04672ab2d2759bc67d58ccef3190c9079ce5b8",
+    "dashboard": "04bc0044ebbdf079051cfb308a5bf907cf79aafda1a1d256c97cfb414149dd71",
+    "tires": "d39ac725d97e84f651de904808da0c13523f7790cb4c741e9877bbf68d34c79b"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 78.55,
+        "y": 339.875,
+        "radius": 22.125
+      },
+      {
+        "wheel": "fr",
+        "x": 320.45,
+        "y": 339.875,
+        "radius": 22.125
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 605.0,
+        "y": 297.5,
+        "radius": 28.5
+      },
+      {
+        "wheel": "rr",
+        "x": 794.0,
+        "y": 269.5,
+        "radius": 21.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 932.5,
+        "y": 292.0,
+        "radius": 39.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1230.5,
+        "y": 291.0,
+        "radius": 39.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 403.0,
+        "y": 690.5,
+        "radius": 16.5
+      },
+      {
+        "wheel": "rr",
+        "x": 563.5,
+        "y": 719.0,
+        "radius": 27.0
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 78.28999999999999,
+        "y": 753.925,
+        "radius": 21.075
+      },
+      {
+        "wheel": "rl",
+        "x": 308.71000000000004,
+        "y": 753.925,
+        "radius": 21.075
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1571.0,
+        "y": 288.5,
+        "radius": 28.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1740.0,
+        "y": 260.5,
+        "radius": 17.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 925.5,
+        "y": 719.0,
+        "radius": 40.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1244.5,
+        "y": 717.0,
+        "radius": 39.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1372.0,
+        "y": 691.5,
+        "radius": 17.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1537.0,
+        "y": 724.5,
+        "radius": 27.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      220,
+      490,
+      550,
+      185
+    ],
+    "wheel": [
+      490,
+      656.1923076923073,
+      320
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#f5e8d4",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ],
+    "renderedInstrumentPodBounds": [
+      128,
+      416,
+      636,
+      176
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "projectedPodRepair": {
+      "id": "coastal-trefoil-2012",
+      "status": "proposal",
+      "minimumDeltaY": 55.19230769230725,
+      "maximumDeltaY": 104.19609374999997,
+      "deltaY": 57.19230769230725,
+      "evidence": [
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "speed",
+          "minimumDeltaY": -48.56562499999998,
+          "maximumDeltaY": 104.19609374999997
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "rpm",
+          "minimumDeltaY": -48.56562499999998,
+          "maximumDeltaY": 104.19609374999997
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "gear",
+          "minimumDeltaY": -48.56562499999998,
+          "maximumDeltaY": 104.19609374999997
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "speed",
+          "minimumDeltaY": 55.19230769230725,
+          "maximumDeltaY": 185.43076923076862
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "rpm",
+          "minimumDeltaY": 55.19230769230725,
+          "maximumDeltaY": 185.43076923076862
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "gear",
+          "minimumDeltaY": 55.19230769230725,
+          "maximumDeltaY": 185.43076923076862
+        }
+      ],
+      "accepted": false
+    },
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 1.237216043382271,
+      "tireScaleY": 1.206409216948414,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.1121581126842221,
+      "frontTireOffsetY": -0.6538647441983642,
+      "rearTireOffsetX": 0.10070026144455319,
+      "rearTireOffsetY": 0.7377096904608924
+    },
+    "rearRight": {
+      "tireScaleX": 1.0352772730576338,
+      "tireScaleY": 1.1661138410691585,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.10951090242102546,
+      "frontTireOffsetY": 0.7064597728761974,
+      "rearTireOffsetX": -0.10104809250366989,
+      "rearTireOffsetY": -0.686863105807002
+    },
+    "rearLeft": {
+      "tireScaleX": 0.8934179134749971,
+      "tireScaleY": 0.8934179134749971,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.09917784760745732,
+      "frontTireOffsetY": 0.7121333095087543,
+      "rearTireOffsetX": -0.09917784760745761,
+      "rearTireOffsetY": -0.7121333095087545
+    },
+    "frontLeft": {
+      "tireScaleX": 1.2442377764370292,
+      "tireScaleY": 1.213256108016083,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.2688343586850459,
+      "frontTireOffsetY": -0.5316157888387933,
+      "rearTireOffsetX": 0.2573765074453761,
+      "rearTireOffsetY": 0.6154607351013224
+    },
+    "right": {
+      "tireScaleX": 1.0997365214792156,
+      "tireScaleY": 1.0997365214792156,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0.018789650443746808,
+      "rearTireOffsetX": -1.3322676295501877e-15,
+      "rearTireOffsetY": -0.018789650443745847
+    },
+    "left": {
+      "tireScaleX": 1.0536821265197536,
+      "tireScaleY": 1.0536821265197536,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.03510542841527511,
+      "rearTireOffsetX": -1.7129155237073842e-15,
+      "rearTireOffsetY": 0.03510542841527511
+    }
+  },
+  "tireImportOpaqueThreshold": 248
+}

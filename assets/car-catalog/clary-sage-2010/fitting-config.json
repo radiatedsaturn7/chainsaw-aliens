@@ -1,0 +1,308 @@
+{
+  "id": "clary-sage-2010",
+  "name": "Clary Sage 2010",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "7080c2fd51cc0a93b4ad74fe03dac413fa95123a31bc7b1905cb12c580469a0c",
+  "sourceDirectory": "assets/car-catalog/clary-sage-2010",
+  "sourceHashes": {
+    "body": "ab82286c0162e1fc126c6610580159ae18f563b107cdf557c47378923f7a45a2",
+    "dashboard": "b7f6b08f6bf66a98833cb1447bd607c88a0d4ef42b9803ed55d0c715614f842f",
+    "tires": "084cc75d87042fd075ae3595e580ef3efb0f896e5a75152c4e35963fa2419e56"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 92.81,
+        "y": 345.825,
+        "radius": 23.175
+      },
+      {
+        "wheel": "fr",
+        "x": 346.19,
+        "y": 345.825,
+        "radius": 23.175
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 656.0,
+        "y": 318.5,
+        "radius": 30.5
+      },
+      {
+        "wheel": "rr",
+        "x": 820.5,
+        "y": 278.0,
+        "radius": 21.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 969.0,
+        "y": 748.5,
+        "radius": 40.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1250.0,
+        "y": 748.5,
+        "radius": 42.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 453.0,
+        "y": 725.5,
+        "radius": 20.5
+      },
+      {
+        "wheel": "rr",
+        "x": 612.5,
+        "y": 753.0,
+        "radius": 32.0
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 91.99,
+        "y": 771.675,
+        "radius": 23.325
+      },
+      {
+        "wheel": "rl",
+        "x": 347.01,
+        "y": 771.675,
+        "radius": 23.325
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1571.0,
+        "y": 310.5,
+        "radius": 28.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1725.0,
+        "y": 277.5,
+        "radius": 17.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 968.5,
+        "y": 313.0,
+        "radius": 43.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1247.5,
+        "y": 310.0,
+        "radius": 40.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1381.5,
+        "y": 711.0,
+        "radius": 17.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1515.5,
+        "y": 749.0,
+        "radius": 27.0
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1280,
+      495,
+      430,
+      155
+    ],
+    "wheel": [
+      1500,
+      679.1076923076922,
+      320
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#f5e8d4",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ],
+    "renderedInstrumentPodBounds": [
+      1252,
+      436,
+      500,
+      156
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "projectedPodRepair": {
+      "id": "clary-sage-2010",
+      "status": "proposal",
+      "minimumDeltaY": 70.10769230769225,
+      "maximumDeltaY": 96.44999999999997,
+      "deltaY": 72.10769230769225,
+      "evidence": [
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "speed",
+          "minimumDeltaY": -36.311718750000054,
+          "maximumDeltaY": 96.44999999999997
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "rpm",
+          "minimumDeltaY": -36.311718750000054,
+          "maximumDeltaY": 96.44999999999997
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "gear",
+          "minimumDeltaY": -36.311718750000054,
+          "maximumDeltaY": 96.44999999999997
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "speed",
+          "minimumDeltaY": 70.10769230769225,
+          "maximumDeltaY": 180.3461538461538
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "rpm",
+          "minimumDeltaY": 70.10769230769225,
+          "maximumDeltaY": 180.3461538461538
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "gear",
+          "minimumDeltaY": 70.10769230769225,
+          "maximumDeltaY": 180.3461538461538
+        }
+      ],
+      "accepted": false
+    },
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 0.8218443301151718,
+      "tireScaleY": 0.8218443301151718,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.11448750397286031,
+      "frontTireOffsetY": -0.35314983927828386,
+      "rearTireOffsetX": -0.11448750397286031,
+      "rearTireOffsetY": 0.3531498392782834
+    },
+    "rearRight": {
+      "tireScaleX": 0.9483715439126118,
+      "tireScaleY": 0.9483715439126118,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.02158170549891012,
+      "frontTireOffsetY": 0.5905339177237175,
+      "rearTireOffsetX": -0.02158170549890673,
+      "rearTireOffsetY": -0.5905339177237195
+    },
+    "rearLeft": {
+      "tireScaleX": 1.471215174972876,
+      "tireScaleY": 1.1783701200603396,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.12096806232988702,
+      "frontTireOffsetY": 0.44337297959079364,
+      "rearTireOffsetX": -0.13242591356955413,
+      "rearTireOffsetY": -0.3995280333282649
+    },
+    "frontLeft": {
+      "tireScaleX": 0.7914381823390921,
+      "tireScaleY": 0.7914381823390921,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.4751754534155581,
+      "frontTireOffsetY": -0.3378886184873911,
+      "rearTireOffsetX": 0.47517545341555767,
+      "rearTireOffsetY": 0.33788861848739155
+    },
+    "right": {
+      "tireScaleX": 1.1563329029864646,
+      "tireScaleY": 1.1563329029864646,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.0030190672934990222,
+      "rearTireOffsetX": 6.344131569286608e-17,
+      "rearTireOffsetY": 0.003019067293498782
+    },
+    "left": {
+      "tireScaleX": 1.1996805761329068,
+      "tireScaleY": 1.3472164931077126,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.016000000000000007,
+      "frontTireOffsetY": -0.2238648614011863,
+      "rearTireOffsetX": -0.004628099173554272,
+      "rearTireOffsetY": -0.22027473526588318
+    }
+  }
+}

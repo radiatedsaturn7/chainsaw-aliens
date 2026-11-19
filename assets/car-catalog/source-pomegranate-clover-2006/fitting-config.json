@@ -1,0 +1,290 @@
+{
+  "id": "pomegranate-clover-2006",
+  "name": "Pomegranate Clover 2006",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "4028bef51cbe9b5d1a5ba2f9bfb8f805eec98f962492aa0127506aa5ed8b9920",
+  "sourceDirectory": "assets/car-catalog/source-pomegranate-clover-2006",
+  "sourceHashes": {
+    "body": "6e38b12db63bc7a8fc6c94896ba24dadd5262756d526206d13f4cec8c0c05178",
+    "dashboard": "497876e4939cdaf8f8d1bb651f07b653042b518991e8d01b84c9a060a202e814",
+    "tires": "b4c9c1ffe49fc931d809df5fafeb39d8f51c108a0317501176ca6d2ca804540f"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    3,
+    4,
+    5,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 61.599999999999994,
+        "y": 327.5,
+        "radius": 25.5
+      },
+      {
+        "wheel": "fr",
+        "x": 340.40000000000003,
+        "y": 327.5,
+        "radius": 25.5
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 661,
+        "y": 295.5,
+        "radius": 24.5
+      },
+      {
+        "wheel": "rr",
+        "x": 820,
+        "y": 274,
+        "radius": 16
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 924,
+        "y": 714.5,
+        "radius": 38.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1242,
+        "y": 714.5,
+        "radius": 38.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1380,
+        "y": 273,
+        "radius": 14
+      },
+      {
+        "wheel": "rr",
+        "x": 1521,
+        "y": 287.5,
+        "radius": 21.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 64.43,
+        "y": 742.475,
+        "radius": 24.525
+      },
+      {
+        "wheel": "rl",
+        "x": 332.57,
+        "y": 742.475,
+        "radius": 24.525
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 624,
+        "y": 705.5,
+        "radius": 22.5
+      },
+      {
+        "wheel": "fl",
+        "x": 790,
+        "y": 689,
+        "radius": 16
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 933,
+        "y": 300.5,
+        "radius": 38.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1242,
+        "y": 299,
+        "radius": 38
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1350.5,
+        "y": 681,
+        "radius": 14
+      },
+      {
+        "wheel": "fl",
+        "x": 1493,
+        "y": 704.5,
+        "radius": 23.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      396,
+      397,
+      111
+    ],
+    "wheel": [
+      476,
+      561.5,
+      377
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e2e9e8",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "automatic model-specific alpha measurements; unreviewed seeds",
+    "sourceImagesReviewed": false,
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "evidence": [
+      {
+        "slot": "front",
+        "method": "silhouette-seeded tread; must pass clipping guard",
+        "supportRows": 0
+      },
+      {
+        "slot": "frontRight",
+        "method": "multiline alpha apertures",
+        "supportRows": 2
+      },
+      {
+        "slot": "right",
+        "method": "multiline alpha apertures",
+        "supportRows": 6
+      },
+      {
+        "slot": "rearRight",
+        "method": "multiline alpha apertures",
+        "supportRows": 3
+      },
+      {
+        "slot": "rear",
+        "method": "silhouette-seeded tread; must pass clipping guard",
+        "supportRows": 0
+      },
+      {
+        "slot": "rearLeft",
+        "method": "multiline alpha apertures",
+        "supportRows": 2
+      },
+      {
+        "slot": "left",
+        "method": "multiline alpha apertures",
+        "supportRows": 6
+      },
+      {
+        "slot": "frontLeft",
+        "sourceTracks": [
+          3,
+          7
+        ],
+        "method": "two distinct persistent tracks of at least three source rows; no competing persistent gap"
+      },
+      {
+        "slot": "frontLeft",
+        "method": "multiline alpha apertures",
+        "supportRows": 0
+      }
+    ],
+    "repair": "Driver-aligned opening proposal based on measured cluster and wheel; requires native glyph/coverage guards and visual review. No fit acceptance.",
+    "nativeRenderReviewed": true
+  },
+  "allowSideTireOverrides": true,
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 1.0052644286526717,
+      "tireScaleY": 0.9552237309300847,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.6821606560139256,
+      "frontTireOffsetY": -0.6178241732949121,
+      "rearTireOffsetX": -0.6936185072535954,
+      "rearTireOffsetY": 0.9016691195574401
+    },
+    "rearRight": {
+      "tireScaleX": 0.9140020946000693,
+      "tireScaleY": 1.147763281232879,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.48725830987952357,
+      "frontTireOffsetY": 1.1712814388236827,
+      "rearTireOffsetX": -0.3264516983092744,
+      "rearTireOffsetY": -0.512653253821872
+    },
+    "rearLeft": {
+      "tireScaleX": 0.8877220347463586,
+      "tireScaleY": 1.114761947968003,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.18457617264700568,
+      "frontTireOffsetY": 1.1517558323304353,
+      "rearTireOffsetX": 0.04538278421725142,
+      "rearTireOffsetY": -0.49312764732862235
+    },
+    "frontLeft": {
+      "tireScaleX": 1.0303845396028588,
+      "tireScaleY": 0.9406417289297496,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.7857594153526642,
+      "frontTireOffsetY": -0.4133861247780269,
+      "rearTireOffsetX": 0.8343015641129943,
+      "rearTireOffsetY": 0.837231071040555
+    },
+    "right": {
+      "tireScaleX": 1.011600014973552,
+      "tireScaleY": 1.1902014109040735,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010399999999999902,
+      "frontTireOffsetY": -0.3663703715447472,
+      "rearTireOffsetX": 0.01438016528925614,
+      "rearTireOffsetY": -0.3568538767344462
+    },
+    "left": {
+      "tireScaleX": 1.074030023829406,
+      "tireScaleY": 1.2061135197003847,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.016000000000000007,
+      "frontTireOffsetY": -0.33949892849168845,
+      "rearTireOffsetX": -0.004628099173552752,
+      "rearTireOffsetY": -0.2446406681753818
+    }
+  }
+}

@@ -1,0 +1,263 @@
+{
+  "id": "chokecherry-clover-2010",
+  "name": "Chokecherry Clover 2010",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "4a4de6a006d5ff55266261eb81b10c1821d896b430aee1b1ebb3ae0483cb0533",
+  "sourceDirectory": "assets/car-catalog/chokecherry-clover-2010",
+  "sourceHashes": {
+    "body": "ac7ecf18377e3f2aafd595c9662261d888a6f8ca1c990dc369d89813788a4e72",
+    "dashboard": "e94a7bd6dfe1f086e5fe22af974881d2e35cead718116065115218e5d9d34774",
+    "tires": "d04d7469f8e7f15d1392a59b5044f584db44f590f4b4dc421b13048ca1fac7a3"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 51.92,
+        "y": 344.4,
+        "radius": 21.599999999999998
+      },
+      {
+        "wheel": "fr",
+        "x": 288.08,
+        "y": 344.4,
+        "radius": 21.599999999999998
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 558,
+        "y": 317.65,
+        "radius": 34.65
+      },
+      {
+        "wheel": "rr",
+        "x": 726,
+        "y": 309.4,
+        "radius": 41.4
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 873,
+        "y": 313.5,
+        "radius": 42.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1213,
+        "y": 312,
+        "radius": 42
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1355,
+        "y": 307.45,
+        "radius": 36.45
+      },
+      {
+        "wheel": "rr",
+        "x": 1524,
+        "y": 313.5,
+        "radius": 31.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 57.57,
+        "y": 782.525,
+        "radius": 20.474999999999998
+      },
+      {
+        "wheel": "rl",
+        "x": 281.43,
+        "y": 782.525,
+        "radius": 20.474999999999998
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 582,
+        "y": 746.95,
+        "radius": 31.95
+      },
+      {
+        "wheel": "fl",
+        "x": 726,
+        "y": 744.2,
+        "radius": 34.2
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 855,
+        "y": 749.5,
+        "radius": 42.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1201,
+        "y": 750,
+        "radius": 43
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1350,
+        "y": 746.4,
+        "radius": 41.4
+      },
+      {
+        "wheel": "fl",
+        "x": 1523,
+        "y": 754.1,
+        "radius": 35.1
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      695.0,
+      480
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#f4ead5",
+    "viewportWheelScale": 1.7449504217803995,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "automatic model-specific alpha measurements; unreviewed seeds",
+    "sourceImagesReviewed": false,
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "evidence": [
+      {
+        "slot": "front",
+        "method": "silhouette-seeded tread; must pass clipping guard",
+        "supportRows": 0
+      },
+      {
+        "slot": "frontRight",
+        "method": "multiline alpha apertures",
+        "supportRows": 2
+      },
+      {
+        "slot": "right",
+        "method": "multiline alpha apertures",
+        "supportRows": 6
+      },
+      {
+        "slot": "rearRight",
+        "method": "multiline alpha apertures",
+        "supportRows": 3
+      },
+      {
+        "slot": "rear",
+        "method": "silhouette-seeded tread; must pass clipping guard",
+        "supportRows": 0
+      },
+      {
+        "slot": "rearLeft",
+        "method": "multiline alpha apertures",
+        "supportRows": 3
+      },
+      {
+        "slot": "left",
+        "method": "multiline alpha apertures",
+        "supportRows": 6
+      },
+      {
+        "slot": "frontLeft",
+        "method": "multiline alpha apertures",
+        "supportRows": 2
+      }
+    ],
+    "repair": "Vertical-extent oblique seed followed by bounded native solver. Driver-aligned instrument opening only; center clusters retain dashboard placement. All inferred values require native and visual guards.",
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 1.4936224870459407,
+      "tireScaleY": 1.4936224870459407,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.28947246537642346,
+      "frontTireOffsetY": -1.131962246816152,
+      "rearTireOffsetX": -0.28947246537641846,
+      "rearTireOffsetY": 1.1319622468161519
+    },
+    "rearRight": {
+      "tireScaleX": 1.4408325167920122,
+      "tireScaleY": 1.4408325167920122,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.12548905948581973,
+      "frontTireOffsetY": 1.2580416481937629,
+      "rearTireOffsetX": -0.12548905948581945,
+      "rearTireOffsetY": -1.258041648193761
+    },
+    "rearLeft": {
+      "tireScaleX": 1.4128974290797425,
+      "tireScaleY": 1.4128974290797425,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.5570730278156588,
+      "frontTireOffsetY": 1.3281198522548396,
+      "rearTireOffsetX": 0.5570730278156539,
+      "rearTireOffsetY": -1.3281198522548376
+    },
+    "frontLeft": {
+      "tireScaleX": 1.4282497691541134,
+      "tireScaleY": 1.4282497691541134,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.3423448060337743,
+      "frontTireOffsetY": -1.1492118739113832,
+      "rearTireOffsetX": 0.3423448060337761,
+      "rearTireOffsetY": 1.149211873911384
+    }
+  }
+}

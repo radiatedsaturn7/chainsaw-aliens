@@ -1,0 +1,236 @@
+{
+  "id": "gooseberry-clover-2005",
+  "name": "Gooseberry Clover 2005",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "87b379eabaf0758b79a167ed3fc1d670b6227a2ab92fcb5bc3e72bf124a5077d",
+  "sourceDirectory": "assets/car-catalog/gooseberry-clover-2005",
+  "sourceHashes": {
+    "body": "972c8c416ec2521cd17da66f37e5204a421acd23dcabf9a51dad93585eecaf8a",
+    "dashboard": "73b610e2ced5bdb3439d875edcba14d818256affb2627feac2c0dabca51f58dd",
+    "tires": "ea28ce8eb1b94904edbd84eae6082c5969377cdc272b7f27dbce143f10af26f2"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 84.28999999999999,
+        "y": 338.925,
+        "radius": 21.075
+      },
+      {
+        "wheel": "fr",
+        "x": 314.71000000000004,
+        "y": 338.925,
+        "radius": 21.075
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 620.0,
+        "y": 306.5,
+        "radius": 27.5
+      },
+      {
+        "wheel": "rr",
+        "x": 798.0,
+        "y": 265.5,
+        "radius": 19.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 952.5,
+        "y": 297.0,
+        "radius": 39.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1254.5,
+        "y": 296.0,
+        "radius": 37.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1391.5,
+        "y": 263.0,
+        "radius": 16.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1546.0,
+        "y": 289.5,
+        "radius": 26.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 83.28999999999999,
+        "y": 772.925,
+        "radius": 21.075
+      },
+      {
+        "wheel": "rl",
+        "x": 313.71000000000004,
+        "y": 772.925,
+        "radius": 21.075
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 635.0,
+        "y": 732.5,
+        "radius": 26.5
+      },
+      {
+        "wheel": "fl",
+        "x": 791.0,
+        "y": 700.5,
+        "radius": 16.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 941.0,
+        "y": 732.5,
+        "radius": 39.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1258.0,
+        "y": 734.5,
+        "radius": 41.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1396.5,
+        "y": 693.0,
+        "radius": 14.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1526.0,
+        "y": 729.5,
+        "radius": 19.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      264,
+      448,
+      444,
+      132
+    ],
+    "wheel": [
+      485.0,
+      793,
+      420
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4",
+    "instrumentPodBounds": [
+      264,
+      448,
+      444,
+      132
+    ],
+    "renderedInstrumentPodBounds": [
+      264,
+      448,
+      444,
+      132
+    ],
+    "dashboardGaugeFontSize": 18
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Cockpit-only family repair; retain solved wheel transforms; source bounds or original authored cluster; native guards and visual review required",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 0.6800062020186818,
+      "tireScaleY": 0.6800062020186818,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.48075173523329334,
+      "frontTireOffsetY": -0.6825476704910362,
+      "rearTireOffsetX": -0.48075173523329334,
+      "rearTireOffsetY": 0.6825476704910359
+    },
+    "rearRight": {
+      "tireScaleX": 0.8629493038085015,
+      "tireScaleY": 0.8629493038085015,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.12582852569790035,
+      "frontTireOffsetY": 0.9028908179920333,
+      "rearTireOffsetX": -0.12582852569790298,
+      "rearTireOffsetY": -0.9028908179920327
+    },
+    "rearLeft": {
+      "tireScaleX": 0.8160815995985261,
+      "tireScaleY": 0.8160815995985261,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.3246225305115133,
+      "frontTireOffsetY": 0.8014288194398879,
+      "rearTireOffsetX": 0.32462253051151124,
+      "rearTireOffsetY": -0.8014288194398884
+    },
+    "frontLeft": {
+      "tireScaleX": 0.9018218909315928,
+      "tireScaleY": 0.8793664187310936,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -1.0635662181733976,
+      "frontTireOffsetY": -0.4900070095133518,
+      "rearTireOffsetX": 1.0521083669337286,
+      "rearTireOffsetY": 0.7738519557758793
+    },
+    "right": {
+      "tireScaleX": 1.113384824621601,
+      "tireScaleY": 1.113384824621601,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0.02074270236249443,
+      "rearTireOffsetX": -2.157004733557447e-15,
+      "rearTireOffsetY": -0.02074270236249347
+    },
+    "left": {
+      "tireScaleX": 1.1138805366327655,
+      "tireScaleY": 1.0848009729785006,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.0296000000000001,
+      "frontTireOffsetY": -0.12251844337086468,
+      "rearTireOffsetX": 0.014380165289257209,
+      "rearTireOffsetY": -0.16070580490832967
+    }
+  }
+}

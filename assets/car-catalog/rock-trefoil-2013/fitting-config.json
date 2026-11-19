@@ -1,0 +1,319 @@
+{
+  "id": "rock-trefoil-2013",
+  "name": "Rock Trefoil 2013",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "7d2b80a0a878a224fb8ece43ffcb0de2289553b2dd7814398de1ca324b24f027",
+  "sourceDirectory": "assets/car-catalog/rock-trefoil-2013",
+  "sourceHashes": {
+    "body": "09616bfee6f83d2f36801d7794fe9c19146d6e441fcf52ef1b5e8b41a0618e3c",
+    "dashboard": "0aff8538687214ef44be94d855991239f25b2c310e6c1f92643d1f24b2cb4fe5",
+    "tires": "d36935ad7cb5650fa3f54f6f71e07d530077f5217c289797b157da2fbcb973af"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 60.1,
+        "y": 367.75,
+        "radius": 29.25
+      },
+      {
+        "wheel": "fr",
+        "x": 379.90000000000003,
+        "y": 367.75,
+        "radius": 29.25
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 680,
+        "y": 318.5,
+        "radius": 27.5
+      },
+      {
+        "wheel": "rr",
+        "x": 849,
+        "y": 293.5,
+        "radius": 18.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 973,
+        "y": 320,
+        "radius": 37
+      },
+      {
+        "wheel": "rr",
+        "x": 1259,
+        "y": 318,
+        "radius": 40
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1368,
+        "y": 300.5,
+        "radius": 15.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1531,
+        "y": 313,
+        "radius": 26
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 74.13,
+        "y": 809.225,
+        "radius": 26.775
+      },
+      {
+        "wheel": "rl",
+        "x": 366.87,
+        "y": 809.225,
+        "radius": 26.775
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 689,
+        "y": 748,
+        "radius": 22
+      },
+      {
+        "wheel": "fl",
+        "x": 847,
+        "y": 734.5,
+        "radius": 14.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 955,
+        "y": 755,
+        "radius": 39
+      },
+      {
+        "wheel": "fl",
+        "x": 1242,
+        "y": 757.5,
+        "radius": 37.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1364,
+        "y": 726.5,
+        "radius": 18.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1532,
+        "y": 756.5,
+        "radius": 27.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      744,
+      372,
+      520,
+      84
+    ],
+    "wheel": [
+      470,
+      753,
+      360
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff",
+    "viewportWheelScale": 1.74,
+    "instrumentPodBounds": [
+      744,
+      372,
+      520,
+      84
+    ]
+  },
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "automatic model-specific alpha measurements; unreviewed seeds",
+    "sourceImagesReviewed": false,
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "evidence": [
+      {
+        "slot": "front",
+        "method": "silhouette-seeded tread; must pass clipping guard",
+        "supportRows": 0
+      },
+      {
+        "slot": "frontRight",
+        "sourceTracks": [
+          1,
+          3,
+          6
+        ],
+        "method": "two distinct persistent tracks of at least three source rows; no competing persistent gap"
+      },
+      {
+        "slot": "frontRight",
+        "method": "multiline alpha apertures",
+        "supportRows": 0
+      },
+      {
+        "slot": "right",
+        "method": "multiline alpha apertures",
+        "supportRows": 6
+      },
+      {
+        "slot": "rearRight",
+        "method": "multiline alpha apertures",
+        "supportRows": 3
+      },
+      {
+        "slot": "rear",
+        "method": "silhouette-seeded tread; must pass clipping guard",
+        "supportRows": 0
+      },
+      {
+        "slot": "rearLeft",
+        "method": "multiline alpha apertures",
+        "supportRows": 2
+      },
+      {
+        "slot": "left",
+        "method": "multiline alpha apertures",
+        "supportRows": 6
+      },
+      {
+        "slot": "frontLeft",
+        "sourceTracks": [
+          3,
+          1,
+          6
+        ],
+        "method": "two distinct persistent tracks of at least three source rows; no competing persistent gap"
+      },
+      {
+        "slot": "frontLeft",
+        "method": "multiline alpha apertures",
+        "supportRows": 0
+      }
+    ],
+    "repair": "Driver-aligned opening proposal based on measured cluster and wheel; requires native glyph/coverage guards and visual review. No fit acceptance.",
+    "podProposal": {
+      "id": "rock-trefoil-2013",
+      "status": "proposal",
+      "candidates": [
+        {
+          "sourceBounds": [
+            676,
+            352,
+            640,
+            116
+          ],
+          "innerRectangle": [
+            744,
+            372,
+            520,
+            84
+          ],
+          "area": 3682,
+          "centerDistance": 4.0
+        }
+      ],
+      "accepted": false,
+      "sourceSha256": "0aff8538687214ef44be94d855991239f25b2c310e6c1f92643d1f24b2cb4fe5",
+      "inferenceSha256": "1f58f703cd2d3ac35138ebe7621b5930b6db0113fbdcf60899343db5acc4844a",
+      "productionWrites": 0
+    },
+    "repairRule": "Validated source pod seed, explicit gauge coordinate space; native/visual gates required",
+    "nativeRenderReviewed": true
+  },
+  "allowSideTireOverrides": true,
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 1.0275123617164696,
+      "tireScaleY": 0.9974379385179551,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.24832800213798464,
+      "frontTireOffsetY": -0.3498960028666272,
+      "rearTireOffsetX": -0.2597858533776522,
+      "rearTireOffsetY": 0.7737409491291545
+    },
+    "rearRight": {
+      "tireScaleX": 1.0472362128787518,
+      "tireScaleY": 1.282888806066221,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.09835988042693672,
+      "frontTireOffsetY": 1.0510516146378948,
+      "rearTireOffsetX": -0.03755326885669061,
+      "rearTireOffsetY": -0.532423429636085
+    },
+    "rearLeft": {
+      "tireScaleX": 0.9442126556666485,
+      "tireScaleY": 1.1443793788953847,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.22895612879585606,
+      "frontTireOffsetY": 1.167981786296856,
+      "rearTireOffsetX": 0.18976274036610616,
+      "rearTireOffsetY": -0.4693536012950453
+    },
+    "frontLeft": {
+      "tireScaleX": 1.20684821849138,
+      "tireScaleY": 0.9666253477466432,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.3072172946847165,
+      "frontTireOffsetY": -0.2580984332904899,
+      "rearTireOffsetX": 0.29575944344504684,
+      "rearTireOffsetY": 0.6819433795530199
+    },
+    "right": {
+      "tireScaleX": 1.1731083777758844,
+      "tireScaleY": 1.1731083777758844,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -2.0301221021717147e-15,
+      "frontTireOffsetY": 0.037785958012623314,
+      "rearTireOffsetX": -1.7763568394002503e-15,
+      "rearTireOffsetY": -0.037785958012624035
+    },
+    "left": {
+      "tireScaleX": 1.1397953698355587,
+      "tireScaleY": 1.1397953698355587,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -2.0301221021717147e-15,
+      "frontTireOffsetY": 0.04698312024057475,
+      "rearTireOffsetX": -2.5376526277146434e-16,
+      "rearTireOffsetY": -0.04698312024057355
+    }
+  }
+}

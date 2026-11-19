@@ -1,0 +1,345 @@
+{
+  "id": "pink-trefoil-2003",
+  "name": "Pink Trefoil 2003",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "dbd84134e2aa25405dcd5c453b8857fe7bcb60f5bf05920cdf6267229f5ff0bb",
+  "sourceDirectory": "assets/car-catalog/pink-trefoil-2003",
+  "sourceHashes": {
+    "body": "86f14a1c28900b32bf89fbdf5e8b781cd7379a466e63c0c230ce31e7ab9f08f6",
+    "dashboard": "f213dcfa74c3d4a90b01155343c8fe5cf27107943e663d12dda40fca9afc6401",
+    "tires": "1ff7480d6d5f41472a04e0e7a852167ed3af7538e15e6990172fb8874d9af505"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 101.93,
+        "y": 337.225,
+        "radius": 20.775
+      },
+      {
+        "wheel": "fr",
+        "x": 329.07000000000005,
+        "y": 337.225,
+        "radius": 20.775
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 648.5,
+        "y": 303,
+        "radius": 26
+      },
+      {
+        "wheel": "rr",
+        "x": 804.5,
+        "y": 279,
+        "radius": 19
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 948,
+        "y": 311.5,
+        "radius": 38.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1228,
+        "y": 315,
+        "radius": 42
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 436.5,
+        "y": 704,
+        "radius": 14
+      },
+      {
+        "wheel": "rr",
+        "x": 568,
+        "y": 737.5,
+        "radius": 26.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 96.1,
+        "y": 766.25,
+        "radius": 21.75
+      },
+      {
+        "wheel": "rl",
+        "x": 333.90000000000003,
+        "y": 766.25,
+        "radius": 21.75
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1589,
+        "y": 300.5,
+        "radius": 27.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1735.5,
+        "y": 273,
+        "radius": 17
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 959,
+        "y": 740.5,
+        "radius": 43.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1247,
+        "y": 736.5,
+        "radius": 39.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1388.5,
+        "y": 705,
+        "radius": 17
+      },
+      {
+        "wheel": "fl",
+        "x": 1524,
+        "y": 731.5,
+        "radius": 24.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      220,
+      490,
+      550,
+      185
+    ],
+    "wheel": [
+      490,
+      674.0,
+      320
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#f5e8d4",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "automatic model-specific alpha measurements; unreviewed seeds",
+    "sourceImagesReviewed": false,
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "evidence": [
+      {
+        "slot": "front",
+        "method": "silhouette-seeded tread; must pass clipping guard",
+        "supportRows": 0
+      },
+      {
+        "slot": "frontRight",
+        "sourceTracks": [
+          3,
+          6,
+          1
+        ],
+        "method": "two distinct persistent tracks of at least three source rows; no competing persistent gap"
+      },
+      {
+        "slot": "frontRight",
+        "method": "multiline alpha apertures",
+        "supportRows": 0
+      },
+      {
+        "slot": "right",
+        "method": "multiline alpha apertures",
+        "supportRows": 6
+      },
+      {
+        "slot": "rearRight",
+        "sourceTracks": [
+          3,
+          5,
+          1
+        ],
+        "method": "two distinct persistent tracks of at least three source rows; no competing persistent gap"
+      },
+      {
+        "slot": "rearRight",
+        "method": "multiline alpha apertures",
+        "supportRows": 0
+      },
+      {
+        "slot": "rear",
+        "method": "silhouette-seeded tread; must pass clipping guard",
+        "supportRows": 0
+      },
+      {
+        "slot": "rearLeft",
+        "sourceTracks": [
+          1,
+          3,
+          5,
+          1
+        ],
+        "method": "two distinct persistent tracks of at least three source rows; no competing persistent gap"
+      },
+      {
+        "slot": "rearLeft",
+        "method": "multiline alpha apertures",
+        "supportRows": 0
+      },
+      {
+        "slot": "left",
+        "method": "multiline alpha apertures",
+        "supportRows": 6
+      },
+      {
+        "slot": "frontLeft",
+        "sourceTracks": [
+          3,
+          5
+        ],
+        "method": "two distinct persistent tracks of at least three source rows; no competing persistent gap"
+      },
+      {
+        "slot": "frontLeft",
+        "method": "multiline alpha apertures",
+        "supportRows": 0
+      }
+    ],
+    "repair": "Driver-aligned opening proposal based on measured cluster and wheel; requires native glyph/coverage guards and visual review. No fit acceptance.",
+    "podProposal": {
+      "id": "pink-trefoil-2003",
+      "status": "proposal",
+      "candidates": [
+        {
+          "sourceBounds": [
+            180,
+            440,
+            620,
+            152
+          ],
+          "innerRectangle": [
+            256,
+            468,
+            468,
+            112
+          ],
+          "area": 5158,
+          "centerDistance": 7.0
+        }
+      ],
+      "accepted": false,
+      "sourceSha256": "f213dcfa74c3d4a90b01155343c8fe5cf27107943e663d12dda40fca9afc6401",
+      "inferenceSha256": "1f58f703cd2d3ac35138ebe7621b5930b6db0113fbdcf60899343db5acc4844a",
+      "productionWrites": 0
+    },
+    "repairRule": "Validated source pod seed; native and visual gates still required",
+    "nativeRenderReviewed": true
+  },
+  "allowSideTireOverrides": true,
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 1.1698200330946946,
+      "tireScaleY": 1.0464995721493662,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.23109340881053295,
+      "frontTireOffsetY": -0.7217662108357757,
+      "rearTireOffsetX": -0.24255126005020144,
+      "rearTireOffsetY": 0.7656111570983033
+    },
+    "rearRight": {
+      "tireScaleX": 0.7858857695667021,
+      "tireScaleY": 0.7858857695667021,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.5071400083664723,
+      "frontTireOffsetY": 0.5342698715227224,
+      "rearTireOffsetX": -0.5071400083664721,
+      "rearTireOffsetY": -0.5342698715227225
+    },
+    "rearLeft": {
+      "tireScaleX": 0.8357252226879697,
+      "tireScaleY": 0.8357252226879697,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.07091312481769635,
+      "frontTireOffsetY": 0.6521203947117482,
+      "rearTireOffsetX": 0.07091312481769378,
+      "rearTireOffsetY": -0.6521203947117494
+    },
+    "frontLeft": {
+      "tireScaleX": 1.0860013790604097,
+      "tireScaleY": 0.8698330449539462,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.554440930515649,
+      "frontTireOffsetY": -0.6105642273303428,
+      "rearTireOffsetX": 0.5429830792759796,
+      "rearTireOffsetY": 0.6944091735928711
+    },
+    "right": {
+      "tireScaleX": 1.101236603256213,
+      "tireScaleY": 1.1840753851069548,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010399999999999882,
+      "frontTireOffsetY": -0.18358493308817792,
+      "rearTireOffsetX": 0.014380165289256196,
+      "rearTireOffsetY": -0.1996393151910154
+    },
+    "left": {
+      "tireScaleX": 1.1088840796677144,
+      "tireScaleY": 1.192298130836864,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010400000000001908,
+      "frontTireOffsetY": -0.19061431342567292,
+      "rearTireOffsetX": 0.014380165289256445,
+      "rearTireOffsetY": -0.19260993485352035
+    }
+  }
+}

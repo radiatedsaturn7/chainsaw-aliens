@@ -1,0 +1,236 @@
+{
+  "id": "black-medick-1982",
+  "name": "Black Medick 1982",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "dec41f89bd94e288f47cd1c70e1cf363f84baa318278541722109382501b0b5b",
+  "sourceDirectory": "assets/car-catalog/black-medick-1982",
+  "sourceHashes": {
+    "body": "5fea5ff58b74b2d725ef5a303d0a61e57dab264c788cba5e42d16e77edeac031",
+    "dashboard": "99bdb20d9aabb53012d3c5c525defaef2b11f46fd4823749670817b886038586",
+    "tires": "1832e062c46b45ec0860257cc5a3267b57095b2a7b5a999d405e315106895e5a"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 108.02,
+        "y": 348.15,
+        "radius": 20.849999999999998
+      },
+      {
+        "wheel": "fr",
+        "x": 335.98,
+        "y": 348.15,
+        "radius": 20.849999999999998
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 642.0,
+        "y": 328.5,
+        "radius": 29.5
+      },
+      {
+        "wheel": "rr",
+        "x": 817.5,
+        "y": 279.0,
+        "radius": 21.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 973.0,
+        "y": 324.5,
+        "radius": 41.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1246.0,
+        "y": 322.5,
+        "radius": 39.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1394.5,
+        "y": 278.0,
+        "radius": 14.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1524.0,
+        "y": 313.5,
+        "radius": 26.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 114.67,
+        "y": 786.275,
+        "radius": 19.724999999999998
+      },
+      {
+        "wheel": "rl",
+        "x": 330.33000000000004,
+        "y": 786.275,
+        "radius": 19.724999999999998
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 656.0,
+        "y": 754.5,
+        "radius": 28.5
+      },
+      {
+        "wheel": "fl",
+        "x": 801.0,
+        "y": 712.5,
+        "radius": 19.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 968.0,
+        "y": 763.5,
+        "radius": 41.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1245.5,
+        "y": 761.0,
+        "radius": 40.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1391.5,
+        "y": 710.0,
+        "radius": 17.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1538.0,
+        "y": 766.5,
+        "radius": 26.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      264,
+      532,
+      424,
+      116
+    ],
+    "wheel": [
+      426.0,
+      887,
+      420
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de",
+    "instrumentPodBounds": [
+      264,
+      532,
+      424,
+      116
+    ],
+    "renderedInstrumentPodBounds": [
+      264,
+      532,
+      424,
+      116
+    ],
+    "dashboardGaugeFontSize": 18
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Cockpit-only family repair; retain solved wheel transforms; source bounds or original authored cluster; native guards and visual review required",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 0.8674906278319873,
+      "tireScaleY": 0.8674906278319873,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.15760413650878258,
+      "frontTireOffsetY": -0.2892244433133506,
+      "rearTireOffsetX": -0.15760413650877986,
+      "rearTireOffsetY": 0.2892244433133517
+    },
+    "rearRight": {
+      "tireScaleX": 0.9775515522485447,
+      "tireScaleY": 0.9775515522485447,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.6247238229150134,
+      "frontTireOffsetY": 0.4762430920348431,
+      "rearTireOffsetX": -0.6247238229150154,
+      "rearTireOffsetY": -0.4762430920348418
+    },
+    "rearLeft": {
+      "tireScaleX": 0.9402161550205274,
+      "tireScaleY": 0.9402161550205274,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.6197257160648597,
+      "frontTireOffsetY": 0.42063448171026174,
+      "rearTireOffsetX": 0.6197257160648628,
+      "rearTireOffsetY": -0.42063448171026036
+    },
+    "frontLeft": {
+      "tireScaleX": 0.8234778561646134,
+      "tireScaleY": 0.8234778561646134,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.6046391783174713,
+      "frontTireOffsetY": -0.08064066989994328,
+      "rearTireOffsetX": 0.6046391783174704,
+      "rearTireOffsetY": 0.08064066989994091
+    },
+    "right": {
+      "tireScaleX": 1.3413307383869646,
+      "tireScaleY": 1.3063132375818443,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.06960000000000213,
+      "frontTireOffsetY": -0.17505436814547512,
+      "rearTireOffsetX": 0.014380165289256584,
+      "rearTireOffsetY": -0.16816988013371995
+    },
+    "left": {
+      "tireScaleX": 1.318876974187793,
+      "tireScaleY": 1.2844456634127828,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010400000000003955,
+      "frontTireOffsetY": -0.2712100778198618,
+      "rearTireOffsetX": 0.014380165289256584,
+      "rearTireOffsetY": -0.2520141704593313
+    }
+  }
+}

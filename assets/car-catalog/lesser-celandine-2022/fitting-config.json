@@ -1,0 +1,326 @@
+{
+  "id": "lesser-celandine-2022",
+  "name": "Lesser Celandine 2022",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "280568bc4ed81aaaceffb135cd0066532e5887fddcacc59780367abd8cb45a89",
+  "sourceDirectory": "assets/car-catalog/lesser-celandine-2022",
+  "sourceHashes": {
+    "body": "71f71704bc009ac69721e33cd1cbf92d16237fe44395e0faed7502f9f3cb29f4",
+    "dashboard": "e22ec87262db0c9799eddd207b8cca03747788f7f89f494c0e96dc2ef8c6a0bb",
+    "tires": "fea09b7e61f8ecba20bfc69fb328850db38da5bf6a6d720993e62e6fd834d27f"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 77.55,
+        "y": 334.875,
+        "radius": 22.125
+      },
+      {
+        "wheel": "fr",
+        "x": 319.45,
+        "y": 334.875,
+        "radius": 22.125
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 627.5,
+        "y": 293,
+        "radius": 23
+      },
+      {
+        "wheel": "rr",
+        "x": 781.5,
+        "y": 276,
+        "radius": 17
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 917,
+        "y": 299.5,
+        "radius": 35.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1214,
+        "y": 301,
+        "radius": 38
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1377,
+        "y": 272.5,
+        "radius": 16.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1521,
+        "y": 289.5,
+        "radius": 23.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 73.19,
+        "y": 765.175,
+        "radius": 21.825
+      },
+      {
+        "wheel": "rl",
+        "x": 311.81,
+        "y": 765.175,
+        "radius": 21.825
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 624,
+        "y": 726,
+        "radius": 23
+      },
+      {
+        "wheel": "fl",
+        "x": 780,
+        "y": 708,
+        "radius": 16
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 932,
+        "y": 739.5,
+        "radius": 40.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1243,
+        "y": 737,
+        "radius": 38
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1382,
+        "y": 710.5,
+        "radius": 16.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1528,
+        "y": 729.5,
+        "radius": 22.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      632.0,
+      310
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#f4ead5",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "automatic model-specific alpha measurements; unreviewed seeds",
+    "sourceImagesReviewed": false,
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "evidence": [
+      {
+        "slot": "front",
+        "method": "silhouette-seeded tread; must pass clipping guard",
+        "supportRows": 0
+      },
+      {
+        "slot": "frontRight",
+        "sourceTracks": [
+          7,
+          3
+        ],
+        "method": "two distinct persistent tracks of at least three source rows; no competing persistent gap"
+      },
+      {
+        "slot": "frontRight",
+        "method": "multiline alpha apertures",
+        "supportRows": 0
+      },
+      {
+        "slot": "right",
+        "method": "multiline alpha apertures",
+        "supportRows": 5
+      },
+      {
+        "slot": "rearRight",
+        "method": "multiline alpha apertures",
+        "supportRows": 3
+      },
+      {
+        "slot": "rear",
+        "method": "silhouette-seeded tread; must pass clipping guard",
+        "supportRows": 0
+      },
+      {
+        "slot": "rearLeft",
+        "method": "multiline alpha apertures",
+        "supportRows": 2
+      },
+      {
+        "slot": "left",
+        "method": "multiline alpha apertures",
+        "supportRows": 6
+      },
+      {
+        "slot": "frontLeft",
+        "sourceTracks": [
+          3,
+          7,
+          1
+        ],
+        "method": "two distinct persistent tracks of at least three source rows; no competing persistent gap"
+      },
+      {
+        "slot": "frontLeft",
+        "method": "multiline alpha apertures",
+        "supportRows": 0
+      }
+    ],
+    "repair": "Driver-aligned opening proposal based on measured cluster and wheel; requires native glyph/coverage guards and visual review. No fit acceptance.",
+    "podProposal": {
+      "id": "lesser-celandine-2022",
+      "status": "proposal",
+      "candidates": [
+        {
+          "sourceBounds": [
+            220,
+            364,
+            592,
+            208
+          ],
+          "innerRectangle": [
+            300,
+            404,
+            428,
+            156
+          ],
+          "area": 6375,
+          "centerDistance": 59.0
+        }
+      ],
+      "accepted": false,
+      "sourceSha256": "e22ec87262db0c9799eddd207b8cca03747788f7f89f494c0e96dc2ef8c6a0bb",
+      "inferenceSha256": "1f58f703cd2d3ac35138ebe7621b5930b6db0113fbdcf60899343db5acc4844a",
+      "productionWrites": 0
+    },
+    "repairRule": "driver pod-center +150 source px seed, held-out Lace calibration",
+    "nativeRenderReviewed": true
+  },
+  "allowSideTireOverrides": true,
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 1.2131698664321215,
+      "tireScaleY": 1.1563160178578402,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.40934276230368716,
+      "frontTireOffsetY": -0.517039676023634,
+      "rearTireOffsetX": -0.4208006135433555,
+      "rearTireOffsetY": 0.940884622286163
+    },
+    "rearRight": {
+      "tireScaleX": 1.398367581539219,
+      "tireScaleY": 1.332834649233681,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.22112494609628194,
+      "frontTireOffsetY": 1.1790899770049756,
+      "rearTireOffsetX": -0.23258279733594905,
+      "rearTireOffsetY": -0.5152450307424463
+    },
+    "rearLeft": {
+      "tireScaleX": 1.234672249301232,
+      "tireScaleY": 1.203928763642139,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.11794638710275854,
+      "frontTireOffsetY": 0.9730953210649439,
+      "rearTireOffsetX": 0.1064885358630869,
+      "rearTireOffsetY": -0.5492503748024132
+    },
+    "frontLeft": {
+      "tireScaleX": 1.212150236477015,
+      "tireScaleY": 1.1553441717198834,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.5549373127457721,
+      "frontTireOffsetY": -0.4063122552783112,
+      "rearTireOffsetX": 0.5434794615061032,
+      "rearTireOffsetY": 0.9301572015408411
+    },
+    "right": {
+      "tireScaleX": 1.1294284953433735,
+      "tireScaleY": 1.1294284953433735,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.018609845087234005,
+      "rearTireOffsetX": -6.344131569286608e-16,
+      "rearTireOffsetY": 0.018609845087234726
+    },
+    "left": {
+      "tireScaleX": 1.1495456639226405,
+      "tireScaleY": 1.1495456639226405,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.035314781872479654,
+      "rearTireOffsetX": 1.2688263138573217e-16,
+      "rearTireOffsetY": 0.035314781872480376
+    }
+  }
+}
