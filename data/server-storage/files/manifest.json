@@ -2161,7 +2161,10 @@
       "catalog-boysenberry-clover-2010-tires": "art/catalog-boysenberry-clover-2010-tires/document.json",
       "catalog-cedar-clover-2010-body": "art/catalog-cedar-clover-2010-body/document.json",
       "catalog-cedar-clover-2010-dashboard": "art/catalog-cedar-clover-2010-dashboard/document.json",
-      "catalog-cedar-clover-2010-tires": "art/catalog-cedar-clover-2010-tires/document.json"
+      "catalog-cedar-clover-2010-tires": "art/catalog-cedar-clover-2010-tires/document.json",
+      "catalog-field-bindweed-1997-body": "art/catalog-field-bindweed-1997-body/document.json",
+      "catalog-field-bindweed-1997-dashboard": "art/catalog-field-bindweed-1997-dashboard/document.json",
+      "catalog-field-bindweed-1997-tires": "art/catalog-field-bindweed-1997-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
