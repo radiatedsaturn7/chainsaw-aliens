@@ -1,0 +1,339 @@
+{
+  "id": "hemp-agrimony-2022",
+  "name": "Hemp Agrimony 2022",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "a1553b9e5463c6846ec5da0c7d23f8db4b7d03d51aba931c724b127c679a4822",
+  "sourceDirectory": "assets/car-catalog/hemp-agrimony-2022",
+  "sourceHashes": {
+    "body": "0a4c92879b7244dc165826d15f4c453264bf0c11f1e47a72455291bbf55efb8f",
+    "dashboard": "1564373b7f98be593e516aa0ec99b94b9a9b3cbac9997434142817b94fa650cd",
+    "tires": "e0c322d7389ee53dd1e2d4524cc10ffb68ed464b3f03035fac4eddf1bfc43bfe"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 75.46,
+        "y": 334.95,
+        "radius": 22.05
+      },
+      {
+        "wheel": "fr",
+        "x": 316.54,
+        "y": 334.95,
+        "radius": 22.05
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 630.5,
+        "y": 290.0,
+        "radius": 27.0
+      },
+      {
+        "wheel": "rr",
+        "x": 807.0,
+        "y": 256.5,
+        "radius": 18.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 941.5,
+        "y": 289.0,
+        "radius": 38.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1249.0,
+        "y": 289.5,
+        "radius": 38.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 414.0,
+        "y": 692.5,
+        "radius": 15.5
+      },
+      {
+        "wheel": "rr",
+        "x": 561.5,
+        "y": 720.0,
+        "radius": 25.0
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 70.64,
+        "y": 760.8,
+        "radius": 22.2
+      },
+      {
+        "wheel": "rl",
+        "x": 313.36,
+        "y": 760.8,
+        "radius": 22.2
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1584.5,
+        "y": 284.0,
+        "radius": 24.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1733.0,
+        "y": 254.5,
+        "radius": 14.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 927.5,
+        "y": 723.0,
+        "radius": 40.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1236.0,
+        "y": 721.5,
+        "radius": 38.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1371.5,
+        "y": 687.0,
+        "radius": 15.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1518.0,
+        "y": 719.5,
+        "radius": 22.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      220,
+      490,
+      550,
+      185
+    ],
+    "wheel": [
+      490,
+      668.1923076923074,
+      320
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#f5e8d4",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ],
+    "renderedInstrumentPodBounds": [
+      96,
+      424,
+      728,
+      168
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false,
+    "projectedPodRepair": {
+      "id": "hemp-agrimony-2022",
+      "status": "proposal",
+      "minimumDeltaY": 63.1923076923074,
+      "maximumDeltaY": 101.09765624999997,
+      "deltaY": 65.1923076923074,
+      "evidence": [
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "speed",
+          "minimumDeltaY": -43.66406249999999,
+          "maximumDeltaY": 101.09765624999997
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "rpm",
+          "minimumDeltaY": -43.66406249999999,
+          "maximumDeltaY": 101.09765624999997
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "gear",
+          "minimumDeltaY": -43.66406249999999,
+          "maximumDeltaY": 101.09765624999997
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "speed",
+          "minimumDeltaY": 63.1923076923074,
+          "maximumDeltaY": 185.43076923076922
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "rpm",
+          "minimumDeltaY": 63.1923076923074,
+          "maximumDeltaY": 185.43076923076922
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "gear",
+          "minimumDeltaY": 63.1923076923074,
+          "maximumDeltaY": 185.43076923076922
+        }
+      ],
+      "accepted": false
+    }
+  },
+  "nativeTireTransformOverrides": {
+    "front": {
+      "tireScaleX": 0.43358571063276685,
+      "tireScaleY": 0.43358571063276685,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -2.188688366717922e-16,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0
+    },
+    "frontRight": {
+      "tireScaleX": 1.1046750935292176,
+      "tireScaleY": 1.0496858679469945,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.12299585867406551,
+      "frontTireOffsetY": -0.3282215872139839,
+      "rearTireOffsetX": -0.1344537099137344,
+      "rearTireOffsetY": 0.6120665334765124
+    },
+    "right": {
+      "tireScaleX": 0.9827100559437476,
+      "tireScaleY": 0.9827100559437476,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.0067934450498643014,
+      "rearTireOffsetX": 3.172065784643304e-16,
+      "rearTireOffsetY": 0.0067934450498643014
+    },
+    "rearRight": {
+      "tireScaleX": 1.1640633111554777,
+      "tireScaleY": 1.1061178207718612,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.45561750757115427,
+      "frontTireOffsetY": 0.8862528172573663,
+      "rearTireOffsetX": -0.4670753588108274,
+      "rearTireOffsetY": -0.6624078709948372
+    },
+    "rear": {
+      "tireScaleX": 0.435413183206923,
+      "tireScaleY": 0.435413183206923,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 6.038004033080708e-16,
+      "rearTireOffsetY": 1.4279063591744919e-16
+    },
+    "rearLeft": {
+      "tireScaleX": 0.8164176511859438,
+      "tireScaleY": 1.063131473783884,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.24090795495971098,
+      "frontTireOffsetY": 0.6335230079253759,
+      "rearTireOffsetX": 0.24171456652995935,
+      "rearTireOffsetY": -0.3948948229235632
+    },
+    "left": {
+      "tireScaleX": 1.0176879065531241,
+      "tireScaleY": 1.0176879065531241,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.023900632716556566,
+      "rearTireOffsetX": 1.9032394707859823e-16,
+      "rearTireOffsetY": 0.023900632716556566
+    },
+    "frontLeft": {
+      "tireScaleX": 1.0602167765785697,
+      "tireScaleY": 1.0105309034462409,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.49624608489376276,
+      "frontTireOffsetY": -0.15687784023359436,
+      "rearTireOffsetX": 0.4847882336540915,
+      "rearTireOffsetY": 0.5807227864961227
+    }
+  },
+  "nativeWheelFaceInsets": {
+    "frontRight": {
+      "rr": 0.4268174719270543
+    },
+    "rearRight": {
+      "fr": 0.4292471574658405
+    },
+    "rearLeft": {
+      "fl": 0.3166026068773735
+    },
+    "frontLeft": {
+      "rl": 0.42758582385315447
+    }
+  }
+}

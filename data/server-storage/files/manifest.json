@@ -2251,7 +2251,16 @@
       "catalog-ribwort-plantain-2011-tires": "art/catalog-ribwort-plantain-2011-tires/document.json",
       "catalog-sweet-violet-2016-body": "art/catalog-sweet-violet-2016-body/document.json",
       "catalog-sweet-violet-2016-dashboard": "art/catalog-sweet-violet-2016-dashboard/document.json",
-      "catalog-sweet-violet-2016-tires": "art/catalog-sweet-violet-2016-tires/document.json"
+      "catalog-sweet-violet-2016-tires": "art/catalog-sweet-violet-2016-tires/document.json",
+      "catalog-hawberry-clover-2004-body": "art/catalog-hawberry-clover-2004-body/document.json",
+      "catalog-hawberry-clover-2004-dashboard": "art/catalog-hawberry-clover-2004-dashboard/document.json",
+      "catalog-hawberry-clover-2004-tires": "art/catalog-hawberry-clover-2004-tires/document.json",
+      "catalog-heath-bedstraw-2019-body": "art/catalog-heath-bedstraw-2019-body/document.json",
+      "catalog-heath-bedstraw-2019-dashboard": "art/catalog-heath-bedstraw-2019-dashboard/document.json",
+      "catalog-heath-bedstraw-2019-tires": "art/catalog-heath-bedstraw-2019-tires/document.json",
+      "catalog-hemp-agrimony-2022-body": "art/catalog-hemp-agrimony-2022-body/document.json",
+      "catalog-hemp-agrimony-2022-dashboard": "art/catalog-hemp-agrimony-2022-dashboard/document.json",
+      "catalog-hemp-agrimony-2022-tires": "art/catalog-hemp-agrimony-2022-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
