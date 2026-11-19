@@ -1912,7 +1912,19 @@
       "catalog-hackberry-clover-2008-tires": "art/catalog-hackberry-clover-2008-tires/document.json",
       "catalog-fig-clover-2012-body": "art/catalog-fig-clover-2012-body/document.json",
       "catalog-fig-clover-2012-dashboard": "art/catalog-fig-clover-2012-dashboard/document.json",
-      "catalog-fig-clover-2012-tires": "art/catalog-fig-clover-2012-tires/document.json"
+      "catalog-fig-clover-2012-tires": "art/catalog-fig-clover-2012-tires/document.json",
+      "catalog-chokeberry-clover-1999-body": "art/catalog-chokeberry-clover-1999-body/document.json",
+      "catalog-chokeberry-clover-1999-dashboard": "art/catalog-chokeberry-clover-1999-dashboard/document.json",
+      "catalog-chokeberry-clover-1999-tires": "art/catalog-chokeberry-clover-1999-tires/document.json",
+      "catalog-marsh-sowthistle-1997-body": "art/catalog-marsh-sowthistle-1997-body/document.json",
+      "catalog-marsh-sowthistle-1997-dashboard": "art/catalog-marsh-sowthistle-1997-dashboard/document.json",
+      "catalog-marsh-sowthistle-1997-tires": "art/catalog-marsh-sowthistle-1997-tires/document.json",
+      "catalog-golden-trefoil-2012-body": "art/catalog-golden-trefoil-2012-body/document.json",
+      "catalog-golden-trefoil-2012-dashboard": "art/catalog-golden-trefoil-2012-dashboard/document.json",
+      "catalog-golden-trefoil-2012-tires": "art/catalog-golden-trefoil-2012-tires/document.json",
+      "catalog-greater-trefoil-2015-body": "art/catalog-greater-trefoil-2015-body/document.json",
+      "catalog-greater-trefoil-2015-dashboard": "art/catalog-greater-trefoil-2015-dashboard/document.json",
+      "catalog-greater-trefoil-2015-tires": "art/catalog-greater-trefoil-2015-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
