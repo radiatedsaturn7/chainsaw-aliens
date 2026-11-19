@@ -1939,7 +1939,10 @@
       "catalog-moss-clover-2003-tires": "art/catalog-moss-clover-2003-tires/document.json",
       "catalog-seaside-clover-2014-body": "art/catalog-seaside-clover-2014-body/document.json",
       "catalog-seaside-clover-2014-dashboard": "art/catalog-seaside-clover-2014-dashboard/document.json",
-      "catalog-seaside-clover-2014-tires": "art/catalog-seaside-clover-2014-tires/document.json"
+      "catalog-seaside-clover-2014-tires": "art/catalog-seaside-clover-2014-tires/document.json",
+      "catalog-green-trefoil-2005-body": "art/catalog-green-trefoil-2005-body/document.json",
+      "catalog-green-trefoil-2005-dashboard": "art/catalog-green-trefoil-2005-dashboard/document.json",
+      "catalog-green-trefoil-2005-tires": "art/catalog-green-trefoil-2005-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

@@ -1,0 +1,235 @@
+{
+  "id": "green-trefoil-2005",
+  "name": "Green Trefoil 2005",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "835a9a1179901f2879589ba05225ada5ab80a0973d66c30c867a57592b220132",
+  "sourceDirectory": "assets/car-catalog/green-trefoil-2005",
+  "sourceHashes": {
+    "body": "838efbdf2ed3520b614998276e7bbab40fe838bb2b91df9e694c16bf08f26053",
+    "dashboard": "00492cda4dd4613b02263fc0a8de670e3cfc5670a465dda11512d0b6ae1c05e3",
+    "tires": "357525b62b37839fec23218689d75198f525871aa26d717fdbcb7e644562bd05"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 77.25999999999999,
+        "y": 317.45,
+        "radius": 23.55
+      },
+      {
+        "wheel": "fr",
+        "x": 334.74,
+        "y": 317.45,
+        "radius": 23.55
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 641.5,
+        "y": 273.0,
+        "radius": 27.0
+      },
+      {
+        "wheel": "rr",
+        "x": 817.5,
+        "y": 243.0,
+        "radius": 15.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 948.5,
+        "y": 709.0,
+        "radius": 33.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1239.0,
+        "y": 707.5,
+        "radius": 33.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 436.0,
+        "y": 678.5,
+        "radius": 12.5
+      },
+      {
+        "wheel": "rr",
+        "x": 566.0,
+        "y": 700.5,
+        "radius": 22.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 70.43,
+        "y": 752.475,
+        "radius": 24.525
+      },
+      {
+        "wheel": "rl",
+        "x": 338.57,
+        "y": 752.475,
+        "radius": 24.525
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1619,
+        "y": 285,
+        "radius": 30
+      },
+      {
+        "wheel": "fl",
+        "x": 1727,
+        "y": 257,
+        "radius": 16
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 970.0,
+        "y": 269.5,
+        "radius": 32.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1247.5,
+        "y": 270.0,
+        "radius": 32.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1378.5,
+        "y": 671.0,
+        "radius": 12.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1512.0,
+        "y": 699.5,
+        "radius": 20.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      259,
+      448,
+      446,
+      124
+    ],
+    "wheel": [
+      482.0,
+      793,
+      418
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8",
+    "instrumentPodBounds": [
+      259,
+      448,
+      446,
+      124
+    ],
+    "renderedInstrumentPodBounds": [
+      259,
+      448,
+      446,
+      124
+    ],
+    "measuredDashboardWheel": true
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Stable source dark-pod intersection, explicit dashboard-space wheel, fixed native exterior transforms; requires guards and visual review",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 1.2371001546923377,
+      "tireScaleY": 1.2062962139006248,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.13061444041256434,
+      "frontTireOffsetY": -0.5973613591666636,
+      "rearTireOffsetX": -0.14207229165223467,
+      "rearTireOffsetY": 0.7412063054291922
+    },
+    "right": {
+      "tireScaleX": 1.006590974961147,
+      "tireScaleY": 1.225107135523749,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010400000000001908,
+      "frontTireOffsetY": -0.3772321110261073,
+      "rearTireOffsetX": 0.014380165289255502,
+      "rearTireOffsetY": -0.3859921372530865
+    },
+    "rearRight": {
+      "tireScaleX": 1.0029568128798796,
+      "tireScaleY": 1.2518205177503252,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.859245684284306,
+      "frontTireOffsetY": 1.1968996527882294,
+      "rearTireOffsetX": -0.7984390727140606,
+      "rearTireOffsetY": -0.33827146778641715
+    },
+    "left": {
+      "tireScaleX": 1.0358874894659125,
+      "tireScaleY": 1.0358874894659125,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 2.0301221021717147e-15,
+      "frontTireOffsetY": 0.005357446640115891,
+      "rearTireOffsetX": 6.344131569286608e-17,
+      "rearTireOffsetY": -0.00535744664011541
+    },
+    "frontLeft": {
+      "tireScaleX": 0.7940951915910607,
+      "tireScaleY": 0.9831718525789986,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.7350990877356571,
+      "frontTireOffsetY": -0.14302099292004455,
+      "rearTireOffsetX": 0.7711784265786329,
+      "rearTireOffsetY": 0.6949585608466234
+    }
+  },
+  "manualArchReview": {
+    "view": "rearLeft",
+    "sourceFrame": 3,
+    "coordinates": "original body sheet pixels",
+    "evidence": "Near opening apex approximately(1618,247),lower side opening extends to320; far apex(1731,232),lower opening to279. Centers/radii manually constrained from visible source arch. Prior automatic centers at262.5/241.5 were near upper arch, not circle centers. Native calibration only target view; all other solved tire transforms preserved.",
+    "pending": "native guard and visual review; not acceptance",
+    "secondConstraint": "First circular cover proposal fills near gap but projects distant wheel beyond nose. Narrow far opening width approximately30px constrains distant circle radius16, center1727/257; near radius30 constrained by lower opening width. One bounded re-annotation, no numerical guard change."
+  }
+}
