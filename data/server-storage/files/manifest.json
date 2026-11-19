@@ -2101,7 +2101,16 @@
       "catalog-greengage-clover-1982-tires": "art/catalog-greengage-clover-1982-tires/document.json",
       "catalog-common-restharrow-1966-body": "art/catalog-common-restharrow-1966-body/document.json",
       "catalog-common-restharrow-1966-dashboard": "art/catalog-common-restharrow-1966-dashboard/document.json",
-      "catalog-common-restharrow-1966-tires": "art/catalog-common-restharrow-1966-tires/document.json"
+      "catalog-common-restharrow-1966-tires": "art/catalog-common-restharrow-1966-tires/document.json",
+      "catalog-bayberry-clover-2017-body": "art/catalog-bayberry-clover-2017-body/document.json",
+      "catalog-bayberry-clover-2017-dashboard": "art/catalog-bayberry-clover-2017-dashboard/document.json",
+      "catalog-bayberry-clover-2017-tires": "art/catalog-bayberry-clover-2017-tires/document.json",
+      "catalog-field-sage-2016-body": "art/catalog-field-sage-2016-body/document.json",
+      "catalog-field-sage-2016-dashboard": "art/catalog-field-sage-2016-dashboard/document.json",
+      "catalog-field-sage-2016-tires": "art/catalog-field-sage-2016-tires/document.json",
+      "catalog-gorse-clover-2005-body": "art/catalog-gorse-clover-2005-body/document.json",
+      "catalog-gorse-clover-2005-dashboard": "art/catalog-gorse-clover-2005-dashboard/document.json",
+      "catalog-gorse-clover-2005-tires": "art/catalog-gorse-clover-2005-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
