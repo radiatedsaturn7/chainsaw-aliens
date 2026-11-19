@@ -1,0 +1,356 @@
+{
+  "id": "curled-dock-2015",
+  "name": "Curled Dock 2015",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "0bb07621e4fece93f3e525edc786aa21c8db87b55eececaf539e0b7e033327f5",
+  "sourceDirectory": "assets/car-catalog/curled-dock-2015",
+  "sourceHashes": {
+    "body": "542a2eeaefcce5137109b133418a52242bea99db18bb98493c88a08beca5d4bf",
+    "dashboard": "a023bd4b2f5dcba7c928918f57babcb40460c9144ffe83b498819172fff59669",
+    "tires": "e4eccd8588db84c1a3307bb1649a88f977980a5677afd7ffc5a574d8f3fb8cd2"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 107.2,
+        "y": 324.0,
+        "radius": 21.0
+      },
+      {
+        "wheel": "fr",
+        "x": 336.8,
+        "y": 324.0,
+        "radius": 21.0
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 644.5,
+        "y": 280.0,
+        "radius": 26.0
+      },
+      {
+        "wheel": "rr",
+        "x": 821.5,
+        "y": 252.0,
+        "radius": 19.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 953.0,
+        "y": 270.5,
+        "radius": 35.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1245.0,
+        "y": 273.5,
+        "radius": 37.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 437.0,
+        "y": 676.5,
+        "radius": 16.5
+      },
+      {
+        "wheel": "rr",
+        "x": 611.5,
+        "y": 709.0,
+        "radius": 30.0
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 104.56,
+        "y": 746.7,
+        "radius": 21.3
+      },
+      {
+        "wheel": "rl",
+        "x": 337.44,
+        "y": 746.7,
+        "radius": 21.3
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1583.5,
+        "y": 271.0,
+        "radius": 25.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1730.5,
+        "y": 243.0,
+        "radius": 15.0
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 967.5,
+        "y": 702.0,
+        "radius": 38.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1259.0,
+        "y": 699.5,
+        "radius": 35.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1376.0,
+        "y": 675.5,
+        "radius": 14.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1524.0,
+        "y": 710.5,
+        "radius": 24.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1400,
+      455,
+      340,
+      100
+    ],
+    "wheel": [
+      1565,
+      740,
+      340
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae",
+    "instrumentPodBounds": [
+      1370,
+      430,
+      430,
+      200
+    ],
+    "renderedInstrumentPodBounds": [
+      1370,
+      430,
+      430,
+      200
+    ],
+    "dashboardGaugeFontSize": 18
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Cockpit-only family repair; retain solved wheel transforms; source bounds or original authored cluster; native guards and visual review required",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "front": {
+      "tireScaleX": 0.44094138849932635,
+      "tireScaleY": 0.44094138849932635,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 2.2146544662122668e-16,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0
+    },
+    "frontRight": {
+      "tireScaleX": 1.2537173448777112,
+      "tireScaleY": 1.1215525703897387,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.1477103322672493,
+      "frontTireOffsetY": -0.46927712965391793,
+      "rearTireOffsetX": -0.15916818350692097,
+      "rearTireOffsetY": 0.7531220759164459
+    },
+    "right": {
+      "tireScaleX": 1.1315262511929383,
+      "tireScaleY": 1.2706805947507358,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.016000000000002033,
+      "frontTireOffsetY": -0.21983584412887444,
+      "rearTireOffsetX": -0.00462809917355364,
+      "rearTireOffsetY": -0.22430375253819598
+    },
+    "rearRight": {
+      "tireScaleX": 0.9320216734969284,
+      "tireScaleY": 1.2670621443618375,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.21458036665107846,
+      "frontTireOffsetY": 0.5974613529346853,
+      "rearTireOffsetX": 0.20304317656843346,
+      "rearTireOffsetY": -0.5778646858654907
+    },
+    "rear": {
+      "tireScaleX": 0.4459892063429632,
+      "tireScaleY": 0.4459892063429632,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": -2.9709539262870653e-16,
+      "rearTireOffsetY": -2.1077713666225804e-16
+    },
+    "rearLeft": {
+      "tireScaleX": 1.386839412783625,
+      "tireScaleY": 1.3178044306765901,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.13077564342156411,
+      "frontTireOffsetY": 0.6578392097069453,
+      "rearTireOffsetX": 0.1193177921818973,
+      "rearTireOffsetY": -0.6139942634444179
+    },
+    "left": {
+      "tireScaleX": 1.1133258703849205,
+      "tireScaleY": 1.084260787145683,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.0296000000000001,
+      "frontTireOffsetY": -0.16418252012660628,
+      "rearTireOffsetX": 0.034380165289255506,
+      "rearTireOffsetY": -0.07904172815258734
+    },
+    "frontLeft": {
+      "tireScaleX": 1.1940331581567523,
+      "tireScaleY": 1.1643015906941732,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.5643122710939904,
+      "frontTireOffsetY": -0.4793520193360955,
+      "rearTireOffsetX": 0.5528544198543224,
+      "rearTireOffsetY": 0.5631969655986243
+    }
+  },
+  "nativeBodyTransformOverrides": {
+    "front": {
+      "bodyScaleX": 2.2700081319123617,
+      "bodyScaleY": 1.4806710349141707,
+      "bodyOffsetX": -1.7763568394002505e-15,
+      "bodyOffsetY": 1.7530259815967042,
+      "bodyRotationDeg": 0
+    },
+    "frontRight": {
+      "bodyScaleX": 2.992346171627403,
+      "bodyScaleY": 1.951834550932815,
+      "bodyOffsetX": -5.438150394092572,
+      "bodyOffsetY": 1.6200508706498036,
+      "bodyRotationDeg": 0
+    },
+    "right": {
+      "bodyScaleX": 2.6292820308024267,
+      "bodyScaleY": 1.7150166516583047,
+      "bodyOffsetX": -4.52122328271364,
+      "bodyOffsetY": 0.09861938200331179,
+      "bodyRotationDeg": 0
+    },
+    "rearRight": {
+      "bodyScaleX": 2.736244261076111,
+      "bodyScaleY": 1.7847855101789307,
+      "bodyOffsetX": -0.8476581539299364,
+      "bodyOffsetY": -0.6051263603882562,
+      "bodyRotationDeg": 0
+    },
+    "rear": {
+      "bodyScaleX": 1.7092600200487822,
+      "bodyScaleY": 1.1149086944860138,
+      "bodyOffsetX": 0,
+      "bodyOffsetY": -1.0131016658739227,
+      "bodyRotationDeg": 0
+    },
+    "rearLeft": {
+      "bodyScaleX": 3.002705642028651,
+      "bodyScaleY": 1.9585917812460196,
+      "bodyOffsetX": 0.7704570384961329,
+      "bodyOffsetY": -0.4549652473113886,
+      "bodyRotationDeg": 0
+    },
+    "left": {
+      "bodyScaleX": 2.6337919485224996,
+      "bodyScaleY": 1.7179583611808744,
+      "bodyOffsetX": 4.511888631588487,
+      "bodyOffsetY": 0.14001318045033614,
+      "bodyRotationDeg": 0
+    },
+    "frontLeft": {
+      "bodyScaleX": 3.2124815163735048,
+      "bodyScaleY": 2.0954234765160047,
+      "bodyOffsetX": 6.0282527170124895,
+      "bodyOffsetY": 1.6877174672050292,
+      "bodyRotationDeg": 0
+    }
+  },
+  "allowCardinalTireOverrides": true,
+  "bodyAlphaRemoval": {
+    "sourceSha256": "542a2eeaefcce5137109b133418a52242bea99db18bb98493c88a08beca5d4bf",
+    "reason": "Individually diagnosed source lobes below verified seams; preserve fascia, exhaust and diffuser. Import-copy only.",
+    "polygons": [
+      [
+        [
+          1376,
+          306
+        ],
+        [
+          1411,
+          305
+        ],
+        [
+          1411,
+          312
+        ],
+        [
+          1376,
+          312
+        ]
+      ],
+      [
+        [
+          786,
+          739
+        ],
+        [
+          830,
+          736
+        ],
+        [
+          830,
+          744
+        ],
+        [
+          786,
+          744
+        ]
+      ]
+    ],
+    "maximumChangedPixels": 1500
+  }
+}
