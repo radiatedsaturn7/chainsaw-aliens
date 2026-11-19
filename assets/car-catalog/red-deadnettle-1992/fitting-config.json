@@ -1,0 +1,308 @@
+{
+  "id": "red-deadnettle-1992",
+  "name": "Red Deadnettle 1992",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "e5a99bee15855a5f309909e4dedb447aac80f08b245f0f646ed39c5a1e1d05d5",
+  "sourceDirectory": "assets/car-catalog/red-deadnettle-1992",
+  "sourceHashes": {
+    "body": "c77152e9a53f96eaf7a022958bdda5870db46beca3b17a19009776ba0063d31d",
+    "dashboard": "3b998f8a8fbb0190b14a95ea7110143be64151f9b1f6c2f72ffc933bc1bb5d5a",
+    "tires": "5dad375bb25ec08f094cf96e8e2ba9db22b62d6d27207dc939308f4fc24df08b"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 82.17,
+        "y": 346.525,
+        "radius": 23.474999999999998
+      },
+      {
+        "wheel": "fr",
+        "x": 338.83,
+        "y": 346.525,
+        "radius": 23.474999999999998
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 651.5,
+        "y": 305.0,
+        "radius": 29.0
+      },
+      {
+        "wheel": "rr",
+        "x": 821.5,
+        "y": 261.0,
+        "radius": 18.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 962.5,
+        "y": 291.0,
+        "radius": 38.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1239.5,
+        "y": 292.0,
+        "radius": 39.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 426.0,
+        "y": 701.5,
+        "radius": 13.5
+      },
+      {
+        "wheel": "rr",
+        "x": 561.0,
+        "y": 730.5,
+        "radius": 25.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 69.99,
+        "y": 771.675,
+        "radius": 23.325
+      },
+      {
+        "wheel": "rl",
+        "x": 325.01,
+        "y": 771.675,
+        "radius": 23.325
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1549.5,
+        "y": 297.0,
+        "radius": 30.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1720.5,
+        "y": 268.0,
+        "radius": 19.0
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 926.0,
+        "y": 733.5,
+        "radius": 42.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1246.5,
+        "y": 736.0,
+        "radius": 40.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1375.0,
+        "y": 687.5,
+        "radius": 13.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1503.0,
+        "y": 731.5,
+        "radius": 24.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1230,
+      470,
+      470,
+      160
+    ],
+    "wheel": [
+      1470,
+      662.1923076923073,
+      320
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#f5e8d4",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ],
+    "renderedInstrumentPodBounds": [
+      1172,
+      420,
+      628,
+      172
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "projectedPodRepair": {
+      "id": "red-deadnettle-1992",
+      "status": "proposal",
+      "minimumDeltaY": 59.192307692307324,
+      "maximumDeltaY": 102.64687499999998,
+      "deltaY": 61.192307692307324,
+      "evidence": [
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "speed",
+          "minimumDeltaY": -46.114843750000034,
+          "maximumDeltaY": 102.64687499999998
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "rpm",
+          "minimumDeltaY": -46.114843750000034,
+          "maximumDeltaY": 102.64687499999998
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "gear",
+          "minimumDeltaY": -46.114843750000034,
+          "maximumDeltaY": 102.64687499999998
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "speed",
+          "minimumDeltaY": 59.192307692307324,
+          "maximumDeltaY": 185.43076923076862
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "rpm",
+          "minimumDeltaY": 59.192307692307324,
+          "maximumDeltaY": 185.43076923076862
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "gear",
+          "minimumDeltaY": 59.192307692307324,
+          "maximumDeltaY": 185.43076923076862
+        }
+      ],
+      "accepted": false
+    },
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 1.336464598240055,
+      "tireScaleY": 1.2200633084289734,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.16116518662705245,
+      "frontTireOffsetY": -0.34492074815410817,
+      "rearTireOffsetX": -0.1726230378667214,
+      "rearTireOffsetY": 0.3887656944166361
+    },
+    "rearRight": {
+      "tireScaleX": 0.9657058245876536,
+      "tireScaleY": 1.3452000567431865,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.5060065516469571,
+      "frontTireOffsetY": 0.7620374617747709,
+      "rearTireOffsetX": -0.5051999400767099,
+      "rearTireOffsetY": -0.10340927677296138
+    },
+    "rearLeft": {
+      "tireScaleX": 1.5441002398447738,
+      "tireScaleY": 1.179125029282177,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.054105633823845756,
+      "frontTireOffsetY": 0.6956003328634232,
+      "rearTireOffsetX": -0.06556348506351428,
+      "rearTireOffsetY": -0.471755386600895
+    },
+    "frontLeft": {
+      "tireScaleX": 1.251989403138199,
+      "tireScaleY": 1.1493305993798104,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.9144915131965946,
+      "frontTireOffsetY": -0.16890794586004776,
+      "rearTireOffsetX": 0.9030336619569244,
+      "rearTireOffsetY": 0.3527528921225757
+    },
+    "right": {
+      "tireScaleX": 1.2076721258701366,
+      "tireScaleY": 1.2076721258701366,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.029651192051209675,
+      "rearTireOffsetX": 1.2688263138573217e-16,
+      "rearTireOffsetY": 0.029651192051209436
+    },
+    "left": {
+      "tireScaleX": 1.1374311053887103,
+      "tireScaleY": 1.1374311053887103,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0.030418165589609036,
+      "rearTireOffsetX": -1.2688263138573217e-16,
+      "rearTireOffsetY": -0.030418165589609275
+    }
+  }
+}

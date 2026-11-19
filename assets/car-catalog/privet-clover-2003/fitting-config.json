@@ -1,0 +1,308 @@
+{
+  "id": "privet-clover-2003",
+  "name": "Privet Clover 2003",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "811324c86ce32f60841c7afafb66e2e830837456981947b90bf8432b7080e6b2",
+  "sourceDirectory": "assets/car-catalog/privet-clover-2003",
+  "sourceHashes": {
+    "body": "e12c893050d65b51f485b87f2e3b3f6e6cb1ddbe19d0aa81395000d98813e3d6",
+    "dashboard": "e9cf7fb31da1da4f979c152181e82ecef591f087200e022154fad0ec11a33b13",
+    "tires": "943fd53d8a824c42f8c8f782a01f0b9f191d59c9545ac586900269bd11948a1d"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 93.62,
+        "y": 316.15,
+        "radius": 23.849999999999998
+      },
+      {
+        "wheel": "fr",
+        "x": 354.38,
+        "y": 316.15,
+        "radius": 23.849999999999998
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 675.5,
+        "y": 266.0,
+        "radius": 27.0
+      },
+      {
+        "wheel": "rr",
+        "x": 838.5,
+        "y": 232.0,
+        "radius": 13.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 971.5,
+        "y": 705.0,
+        "radius": 30.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1224.5,
+        "y": 704.0,
+        "radius": 30.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 486.0,
+        "y": 680.5,
+        "radius": 14.5
+      },
+      {
+        "wheel": "rr",
+        "x": 648.5,
+        "y": 704.0,
+        "radius": 26.0
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 93.17,
+        "y": 752.525,
+        "radius": 23.474999999999998
+      },
+      {
+        "wheel": "rl",
+        "x": 349.83,
+        "y": 752.525,
+        "radius": 23.474999999999998
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1566.0,
+        "y": 258.5,
+        "radius": 26.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1729.5,
+        "y": 234.0,
+        "radius": 14.0
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 992.0,
+        "y": 259.5,
+        "radius": 29.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1246.5,
+        "y": 261.0,
+        "radius": 30.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1378.5,
+        "y": 675.0,
+        "radius": 13.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1539.5,
+        "y": 709.0,
+        "radius": 27.0
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      652.1923076923077,
+      297
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e2e9e8",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ],
+    "renderedInstrumentPodBounds": [
+      180,
+      412,
+      552,
+      180
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "projectedPodRepair": {
+      "id": "privet-clover-2003",
+      "status": "proposal",
+      "minimumDeltaY": 51.19230769230775,
+      "maximumDeltaY": 104.19609374999997,
+      "deltaY": 53.19230769230775,
+      "evidence": [
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "speed",
+          "minimumDeltaY": -52.565625000000026,
+          "maximumDeltaY": 104.19609374999997
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "rpm",
+          "minimumDeltaY": -52.565625000000026,
+          "maximumDeltaY": 104.19609374999997
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "gear",
+          "minimumDeltaY": -52.565625000000026,
+          "maximumDeltaY": 104.19609374999997
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "speed",
+          "minimumDeltaY": 51.19230769230775,
+          "maximumDeltaY": 185.43076923076922
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "rpm",
+          "minimumDeltaY": 51.19230769230775,
+          "maximumDeltaY": 185.43076923076922
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "gear",
+          "minimumDeltaY": 51.19230769230775,
+          "maximumDeltaY": 185.43076923076922
+        }
+      ],
+      "accepted": false
+    },
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 0.8284866711094163,
+      "tireScaleY": 0.8284866711094163,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.032606818253718375,
+      "frontTireOffsetY": -0.5181969198562342,
+      "rearTireOffsetX": -0.032606818253719735,
+      "rearTireOffsetY": 0.5181969198562345
+    },
+    "rearRight": {
+      "tireScaleX": 0.8865853849874094,
+      "tireScaleY": 0.8865853849874094,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.17784832229632302,
+      "frontTireOffsetY": 0.7796798698150263,
+      "rearTireOffsetX": 0.1778483222963233,
+      "rearTireOffsetY": -0.7796798698150263
+    },
+    "rearLeft": {
+      "tireScaleX": 0.9057979853335809,
+      "tireScaleY": 0.9057979853335809,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.21454353898759063,
+      "frontTireOffsetY": 0.7532685213423863,
+      "rearTireOffsetX": -0.2145435389875886,
+      "rearTireOffsetY": -0.7532685213423852
+    },
+    "frontLeft": {
+      "tireScaleX": 1.1333455870570837,
+      "tireScaleY": 1.1001735143061682,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.09555502929846993,
+      "frontTireOffsetY": -0.2140315906345782,
+      "rearTireOffsetX": 0.08409717805879965,
+      "rearTireOffsetY": 0.5378765368971072
+    },
+    "right": {
+      "tireScaleX": 1.0164158927850413,
+      "tireScaleY": 1.2590224259321559,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.07599999999999996,
+      "frontTireOffsetY": -0.3932752707604547,
+      "rearTireOffsetX": 0.01719008264462748,
+      "rearTireOffsetY": -0.3783368533791425
+    },
+    "left": {
+      "tireScaleX": 1.0097492248662152,
+      "tireScaleY": 1.2507645026985414,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.07599999999999996,
+      "frontTireOffsetY": -0.38243811311298365,
+      "rearTireOffsetX": 0.01719008264462659,
+      "rearTireOffsetY": -0.3891740110266145
+    }
+  }
+}

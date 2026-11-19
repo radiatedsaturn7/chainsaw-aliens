@@ -1,0 +1,308 @@
+{
+  "id": "lesser-stitchwort-2013",
+  "name": "Lesser Stitchwort 2013",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "d837aca868e31951ff2fc8b58f9319bf831bfe56b8e35ff84cd3d22abf9d7e50",
+  "sourceDirectory": "assets/car-catalog/lesser-stitchwort-2013",
+  "sourceHashes": {
+    "body": "cf605f3453791ebda96d866fde1ca32cb8a140a5908318edf08e5e24eff984d2",
+    "dashboard": "886d33bd89e0bc7e77a57511247a8cb1931bb7f1dc269a351eb3065d74b12044",
+    "tires": "2cbcd93f8a22ac1c95bea440cc695c82056abbdcfc5a315312e3cd45605c4014"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 100.93,
+        "y": 349.225,
+        "radius": 20.775
+      },
+      {
+        "wheel": "fr",
+        "x": 328.07000000000005,
+        "y": 349.225,
+        "radius": 20.775
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 648.0,
+        "y": 299.5,
+        "radius": 26.5
+      },
+      {
+        "wheel": "rr",
+        "x": 817.5,
+        "y": 272.0,
+        "radius": 19.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 957.0,
+        "y": 297.5,
+        "radius": 41.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1255.5,
+        "y": 297.0,
+        "radius": 42.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 431.5,
+        "y": 705.0,
+        "radius": 18.0
+      },
+      {
+        "wheel": "rr",
+        "x": 593.0,
+        "y": 727.5,
+        "radius": 29.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 97.2,
+        "y": 764.0,
+        "radius": 21.0
+      },
+      {
+        "wheel": "rl",
+        "x": 326.8,
+        "y": 764.0,
+        "radius": 21.0
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1568.0,
+        "y": 297.5,
+        "radius": 27.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1730.5,
+        "y": 277.0,
+        "radius": 18.0
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 923.0,
+        "y": 729.5,
+        "radius": 43.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1231.5,
+        "y": 726.0,
+        "radius": 43.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1370.5,
+        "y": 698.0,
+        "radius": 19.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1525.0,
+        "y": 727.5,
+        "radius": 26.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      255,
+      480,
+      470,
+      165
+    ],
+    "wheel": [
+      490,
+      652.1923076923077,
+      320
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#f5e8d4",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ],
+    "renderedInstrumentPodBounds": [
+      216,
+      412,
+      556,
+      180
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "projectedPodRepair": {
+      "id": "lesser-stitchwort-2013",
+      "status": "proposal",
+      "minimumDeltaY": 51.19230769230775,
+      "maximumDeltaY": 104.19609374999997,
+      "deltaY": 53.19230769230775,
+      "evidence": [
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "speed",
+          "minimumDeltaY": -52.565625000000026,
+          "maximumDeltaY": 104.19609374999997
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "rpm",
+          "minimumDeltaY": -52.565625000000026,
+          "maximumDeltaY": 104.19609374999997
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "gear",
+          "minimumDeltaY": -52.565625000000026,
+          "maximumDeltaY": 104.19609374999997
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "speed",
+          "minimumDeltaY": 51.19230769230775,
+          "maximumDeltaY": 185.43076923076922
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "rpm",
+          "minimumDeltaY": 51.19230769230775,
+          "maximumDeltaY": 185.43076923076922
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "gear",
+          "minimumDeltaY": 51.19230769230775,
+          "maximumDeltaY": 185.43076923076922
+        }
+      ],
+      "accepted": false
+    },
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 1.2043765826116828,
+      "tireScaleY": 1.1743874626516078,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.18576448319300334,
+      "frontTireOffsetY": -0.38921586193064406,
+      "rearTireOffsetX": -0.19722233443267412,
+      "rearTireOffsetY": 0.7130608081931715
+    },
+    "rearRight": {
+      "tireScaleX": 1.0219531104923536,
+      "tireScaleY": 1.2936686183569086,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.15462673593359055,
+      "frontTireOffsetY": 0.8294467932081933,
+      "rearTireOffsetX": -0.15382012436333958,
+      "rearTireOffsetY": -0.6908186082063813
+    },
+    "rearLeft": {
+      "tireScaleX": 0.9743771762877167,
+      "tireScaleY": 1.2688248985594377,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.07247637982627178,
+      "frontTireOffsetY": 0.8636543644449299,
+      "rearTireOffsetX": 0.07328299139652042,
+      "rearTireOffsetY": -0.625026179443119
+    },
+    "frontLeft": {
+      "tireScaleX": 1.2837938878647042,
+      "tireScaleY": 1.2214396532622611,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.40028415744654966,
+      "frontTireOffsetY": -0.3284974409309296,
+      "rearTireOffsetX": 0.38882630620687886,
+      "rearTireOffsetY": 0.6523423871934563
+    },
+    "right": {
+      "tireScaleX": 1.1962486591965307,
+      "tireScaleY": 1.1962486591965307,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0.008212801590405097,
+      "rearTireOffsetX": 2.2204460492503127e-15,
+      "rearTireOffsetY": -0.008212801590404857
+    },
+    "left": {
+      "tireScaleX": 1.1988106643128928,
+      "tireScaleY": 1.1988106643128928,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.0627593114637643,
+      "rearTireOffsetX": 3.172065784643304e-16,
+      "rearTireOffsetY": 0.06275931146376358
+    }
+  }
+}

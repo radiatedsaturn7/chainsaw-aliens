@@ -1,0 +1,308 @@
+{
+  "id": "musk-mallow-1985",
+  "name": "Musk Mallow 1985",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "f1d4249266cfa3040ff7980da6bf429c12bc1754a69d21cd3ca4977714b5b167",
+  "sourceDirectory": "assets/car-catalog/musk-mallow-1985",
+  "sourceHashes": {
+    "body": "2de0178357d6ee48ee7b090203eda7a57e8bb9bd1c5809d1ca7ac0f15e45e857",
+    "dashboard": "d97ed2e7d51792af6b814f15cc91faf42af9b79c8e3ec1d92d411340c6b54be8",
+    "tires": "0dc3e6f42f88ecf7cdbfe442c55806bb360d441de8993837951f2993e2fa3c89"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 95.52,
+        "y": 294.9,
+        "radius": 17.099999999999998
+      },
+      {
+        "wheel": "fr",
+        "x": 282.48,
+        "y": 294.9,
+        "radius": 17.099999999999998
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 628.5,
+        "y": 272.0,
+        "radius": 20.0
+      },
+      {
+        "wheel": "rr",
+        "x": 751.5,
+        "y": 240.0,
+        "radius": 12.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 959.5,
+        "y": 271.0,
+        "radius": 29.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1179.5,
+        "y": 272.0,
+        "radius": 31.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1400.0,
+        "y": 245.5,
+        "radius": 11.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1506.5,
+        "y": 272.0,
+        "radius": 20.0
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 94.97,
+        "y": 733.525,
+        "radius": 17.474999999999998
+      },
+      {
+        "wheel": "rl",
+        "x": 286.03,
+        "y": 733.525,
+        "radius": 17.474999999999998
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 637.0,
+        "y": 713.5,
+        "radius": 19.5
+      },
+      {
+        "wheel": "fl",
+        "x": 745.0,
+        "y": 684.5,
+        "radius": 10.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 962.5,
+        "y": 709.0,
+        "radius": 30.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1190.5,
+        "y": 712.0,
+        "radius": 30.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1400.5,
+        "y": 682.0,
+        "radius": 12.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1516.5,
+        "y": 715.0,
+        "radius": 20.0
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      675.1076923076921,
+      310
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#f4ead5",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ],
+    "renderedInstrumentPodBounds": [
+      224,
+      432,
+      564,
+      160
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "projectedPodRepair": {
+      "id": "musk-mallow-1985",
+      "status": "proposal",
+      "minimumDeltaY": 66.10769230769216,
+      "maximumDeltaY": 96.44999999999997,
+      "deltaY": 68.10769230769216,
+      "evidence": [
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "speed",
+          "minimumDeltaY": -40.311718750000004,
+          "maximumDeltaY": 96.44999999999997
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "rpm",
+          "minimumDeltaY": -40.311718750000004,
+          "maximumDeltaY": 96.44999999999997
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "gear",
+          "minimumDeltaY": -40.311718750000004,
+          "maximumDeltaY": 96.44999999999997
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "speed",
+          "minimumDeltaY": 66.10769230769216,
+          "maximumDeltaY": 180.3461538461538
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "rpm",
+          "minimumDeltaY": 66.10769230769216,
+          "maximumDeltaY": 180.3461538461538
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "gear",
+          "minimumDeltaY": 66.10769230769216,
+          "maximumDeltaY": 180.3461538461538
+        }
+      ],
+      "accepted": false
+    },
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 0.7037779116321055,
+      "tireScaleY": 0.7037779116321055,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.486010831640151,
+      "frontTireOffsetY": -0.430549188191542,
+      "rearTireOffsetX": -0.48601083164015335,
+      "rearTireOffsetY": 0.4305491881915424
+    },
+    "rearRight": {
+      "tireScaleX": 0.820349544169699,
+      "tireScaleY": 0.820349544169699,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.4929280691976143,
+      "frontTireOffsetY": 0.4480031322776419,
+      "rearTireOffsetX": -0.49292806919761234,
+      "rearTireOffsetY": -0.44800313227764055
+    },
+    "rearLeft": {
+      "tireScaleX": 0.782227945749715,
+      "tireScaleY": 0.782227945749715,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.5193517889511524,
+      "frontTireOffsetY": 0.3950241613854827,
+      "rearTireOffsetX": 0.5193517889511537,
+      "rearTireOffsetY": -0.39502416138548346
+    },
+    "frontLeft": {
+      "tireScaleX": 0.725471682479114,
+      "tireScaleY": 0.725471682479114,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.5744734692752806,
+      "frontTireOffsetY": -0.38125416683637575,
+      "rearTireOffsetX": 0.5744734692752812,
+      "rearTireOffsetY": 0.3812541668363762
+    },
+    "right": {
+      "tireScaleX": 1.1324310323367581,
+      "tireScaleY": 1.1487668539980793,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010399999999997876,
+      "frontTireOffsetY": -0.29339675905844986,
+      "rearTireOffsetX": 0.014380165289256959,
+      "rearTireOffsetY": -0.26982748922074484
+    },
+    "left": {
+      "tireScaleX": 1.0574483324027455,
+      "tireScaleY": 1.244144403474344,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010399999999999882,
+      "frontTireOffsetY": -0.4001942315869139,
+      "rearTireOffsetX": 0.014380165289256196,
+      "rearTireOffsetY": -0.4230300166922799
+    }
+  }
+}
