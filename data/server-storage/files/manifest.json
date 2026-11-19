@@ -2362,7 +2362,10 @@
       "catalog-large-birdsfoot-1960-tires": "art/catalog-large-birdsfoot-1960-tires/document.json",
       "catalog-bur-medick-1967-body": "art/catalog-bur-medick-1967-body/document.json",
       "catalog-bur-medick-1967-dashboard": "art/catalog-bur-medick-1967-dashboard/document.json",
-      "catalog-bur-medick-1967-tires": "art/catalog-bur-medick-1967-tires/document.json"
+      "catalog-bur-medick-1967-tires": "art/catalog-bur-medick-1967-tires/document.json",
+      "catalog-water-figwort-1961-body": "art/catalog-water-figwort-1961-body/document.json",
+      "catalog-water-figwort-1961-dashboard": "art/catalog-water-figwort-1961-dashboard/document.json",
+      "catalog-water-figwort-1961-tires": "art/catalog-water-figwort-1961-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
