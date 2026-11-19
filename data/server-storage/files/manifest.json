@@ -2068,7 +2068,13 @@
       "catalog-elder-clover-2010-tires": "art/catalog-elder-clover-2010-tires/document.json",
       "catalog-water-forgetmenot-2008-body": "art/catalog-water-forgetmenot-2008-body/document.json",
       "catalog-water-forgetmenot-2008-dashboard": "art/catalog-water-forgetmenot-2008-dashboard/document.json",
-      "catalog-water-forgetmenot-2008-tires": "art/catalog-water-forgetmenot-2008-tires/document.json"
+      "catalog-water-forgetmenot-2008-tires": "art/catalog-water-forgetmenot-2008-tires/document.json",
+      "catalog-yellow-vetch-1946-body": "art/catalog-yellow-vetch-1946-body/document.json",
+      "catalog-yellow-vetch-1946-dashboard": "art/catalog-yellow-vetch-1946-dashboard/document.json",
+      "catalog-yellow-vetch-1946-tires": "art/catalog-yellow-vetch-1946-tires/document.json",
+      "catalog-winterberry-clover-2015-body": "art/catalog-winterberry-clover-2015-body/document.json",
+      "catalog-winterberry-clover-2015-dashboard": "art/catalog-winterberry-clover-2015-dashboard/document.json",
+      "catalog-winterberry-clover-2015-tires": "art/catalog-winterberry-clover-2015-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
