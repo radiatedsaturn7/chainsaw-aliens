@@ -1,0 +1,321 @@
+{
+  "id": "cup-clover-1997",
+  "name": "Cup Clover 1997",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "42954649fc6acddc3288af12fcc0e07d63ba369ee843a1ede0e78b66ace5eaf9",
+  "sourceDirectory": "assets/car-catalog/cup-clover-1997",
+  "sourceHashes": {
+    "body": "3be7c96d5e2b72cb9b8587f1788bdceac98f496ae96a0f8c0fe39b007615e4b0",
+    "dashboard": "7c54931a895f17a7ab1a87519a0dba8b6b2103c7167dd84bc51d34470387d12b",
+    "tires": "e63bf31a0d06da060572c02882b9bc1609c649193a6673d3e84260611f35e78d"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 86.34,
+        "y": 313.55,
+        "radius": 24.45
+      },
+      {
+        "wheel": "fr",
+        "x": 353.66,
+        "y": 313.55,
+        "radius": 24.45
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 706.5,
+        "y": 256.0,
+        "radius": 22.0
+      },
+      {
+        "wheel": "rr",
+        "x": 836.0,
+        "y": 206.5,
+        "radius": 13.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 979.5,
+        "y": 703.0,
+        "radius": 32.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1237.0,
+        "y": 701.5,
+        "radius": 36.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 493.5,
+        "y": 676.0,
+        "radius": 14.0
+      },
+      {
+        "wheel": "rr",
+        "x": 624.0,
+        "y": 694.5,
+        "radius": 25.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 87.43,
+        "y": 735.475,
+        "radius": 24.525
+      },
+      {
+        "wheel": "rl",
+        "x": 355.57,
+        "y": 735.475,
+        "radius": 24.525
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1584.0,
+        "y": 241.5,
+        "radius": 27.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1723.5,
+        "y": 227.0,
+        "radius": 15.0
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 976.5,
+        "y": 251.0,
+        "radius": 35.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1235.0,
+        "y": 254.5,
+        "radius": 32.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1379.0,
+        "y": 654.5,
+        "radius": 12.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1507.0,
+        "y": 707.5,
+        "radius": 23.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      595.0,
+      297
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e2e9e8",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "nearWheelProbe": {
+      "horizontalProjectionFactor": 0.85,
+      "inwardAxleOffset": 0.4,
+      "accepted": false
+    },
+    "nativeRenderReviewed": true,
+    "sourceTrimAttribution": "Independent source analysis of four obliques finds continuous aero lips, arch returns, rocker trim or exhausts; preserve source. Fresh native views and both cockpit sizes reviewed."
+  },
+  "nativeTireTransformOverrides": {
+    "front": {
+      "tireScaleX": 0.453975005009659,
+      "tireScaleY": 0.453975005009659,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -2.29128755716695e-16,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0
+    },
+    "frontRight": {
+      "tireScaleX": 0.7377216581705821,
+      "tireScaleY": 1.1202273293946727,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.8023853260830993,
+      "frontTireOffsetY": 0.3867217088711893,
+      "rearTireOffsetX": -1.2063059872401245,
+      "rearTireOffsetY": 0.12521585905538948
+    },
+    "right": {
+      "tireScaleX": 1.20614144074081,
+      "tireScaleY": 1.20614144074081,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0.058088145361262944,
+      "rearTireOffsetX": 5.075305255429287e-16,
+      "rearTireOffsetY": -0.058088145361261743
+    },
+    "rearRight": {
+      "tireScaleX": 1.350006204382812,
+      "tireScaleY": 1.424644487689274,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.5835574450679406,
+      "frontTireOffsetY": 0.7927091690808041,
+      "rearTireOffsetX": -0.19501529630760972,
+      "rearTireOffsetY": -0.5088642228182753
+    },
+    "rear": {
+      "tireScaleX": 0.4836124462922257,
+      "tireScaleY": 0.4836124462922257,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": -2.8433800930554165e-16,
+      "rearTireOffsetY": 1.344841935904589e-16
+    },
+    "rearLeft": {
+      "tireScaleX": 1.3322973887074203,
+      "tireScaleY": 1.4893852170233555,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.4356533547304642,
+      "frontTireOffsetY": 0.7787760148902626,
+      "rearTireOffsetX": 0.024195503490794468,
+      "rearTireOffsetY": -0.7349310686277347
+    },
+    "left": {
+      "tireScaleX": 1.152099810251615,
+      "tireScaleY": 1.152099810251615,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0.09480352883439423,
+      "rearTireOffsetX": 5.075305255429287e-16,
+      "rearTireOffsetY": -0.094803528834394
+    },
+    "frontLeft": {
+      "tireScaleX": 1.0726264385717854,
+      "tireScaleY": 0.997859041935577,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.7845405587851707,
+      "frontTireOffsetY": 0.353721560573546,
+      "rearTireOffsetX": 1.2280827075455005,
+      "rearTireOffsetY": 0.05012338568898299
+    }
+  },
+  "nativeBodyTransformOverrides": {
+    "front": {
+      "bodyScaleX": 1.5304888725964176,
+      "bodyScaleY": 1.0590927046299794,
+      "bodyOffsetX": -1.7763568394002505e-15,
+      "bodyOffsetY": 1.66672512255081,
+      "bodyRotationDeg": 0
+    },
+    "frontRight": {
+      "bodyScaleX": 2.583288739545536,
+      "bodyScaleY": 1.7876263637017027,
+      "bodyOffsetX": -5.57755156616809,
+      "bodyOffsetY": 2.446086804696653,
+      "bodyRotationDeg": 0
+    },
+    "right": {
+      "bodyScaleX": 2.264958349907859,
+      "bodyScaleY": 1.5673428978341368,
+      "bodyOffsetX": -4.11809038465037,
+      "bodyOffsetY": 0.434301594579914,
+      "bodyRotationDeg": 0
+    },
+    "rearRight": {
+      "bodyScaleX": 2.391131381443012,
+      "bodyScaleY": 1.654654174389341,
+      "bodyOffsetX": -0.49484429743519165,
+      "bodyOffsetY": 0.0036416660583538803,
+      "bodyRotationDeg": 0
+    },
+    "rear": {
+      "bodyScaleX": 1.2414038218434262,
+      "bodyScaleY": 0.8590469063546362,
+      "bodyOffsetX": 0.009370499862948467,
+      "bodyOffsetY": -0.6259367024729976,
+      "bodyRotationDeg": 0
+    },
+    "rearLeft": {
+      "bodyScaleX": 2.378678670498424,
+      "bodyScaleY": 1.6460369439406772,
+      "bodyOffsetX": 0.7478576801980692,
+      "bodyOffsetY": -0.06688952800363723,
+      "bodyRotationDeg": 0
+    },
+    "left": {
+      "bodyScaleX": 2.256196422055217,
+      "bodyScaleY": 1.561279675792225,
+      "bodyOffsetX": 4.186179188426748,
+      "bodyOffsetY": 0.5204971079304518,
+      "bodyRotationDeg": 0
+    },
+    "frontLeft": {
+      "bodyScaleX": 2.596649334288667,
+      "bodyScaleY": 1.79687184641989,
+      "bodyOffsetX": 5.629189437109315,
+      "bodyOffsetY": 2.4201079703478023,
+      "bodyRotationDeg": 0
+    }
+  },
+  "allowCardinalTireOverrides": true
+}
