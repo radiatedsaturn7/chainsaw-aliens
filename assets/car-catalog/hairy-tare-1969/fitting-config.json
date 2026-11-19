@@ -1,0 +1,321 @@
+{
+  "id": "hairy-tare-1969",
+  "name": "Hairy Tare 1969",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "4bd2fcfbdea74a8666068755e7ac8364ec8df9888e4b25a46ecc58f3f2fc7c8a",
+  "sourceDirectory": "assets/car-catalog/hairy-tare-1969",
+  "sourceHashes": {
+    "body": "e2cbfd5e590cb1ee6d0e11fc1f150c7ae6d3592141105f6fe21e81c24606e6e1",
+    "dashboard": "a2be08e4dff0fec08635be97f24cf065bd6dbe1618a05b312a138262675d46fc",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 94.35,
+        "y": 317.375,
+        "radius": 23.625
+      },
+      {
+        "wheel": "fr",
+        "x": 352.65000000000003,
+        "y": 317.375,
+        "radius": 23.625
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 702.0,
+        "y": 275.5,
+        "radius": 23.5
+      },
+      {
+        "wheel": "rr",
+        "x": 831.5,
+        "y": 248.0,
+        "radius": 14.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 970.5,
+        "y": 717.0,
+        "radius": 35.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1223.0,
+        "y": 718.5,
+        "radius": 38.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 488.5,
+        "y": 687.0,
+        "radius": 13.0
+      },
+      {
+        "wheel": "rr",
+        "x": 613.5,
+        "y": 709.0,
+        "radius": 25.0
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 93.35,
+        "y": 748.375,
+        "radius": 23.625
+      },
+      {
+        "wheel": "rl",
+        "x": 351.65000000000003,
+        "y": 748.375,
+        "radius": 23.625
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1583.0,
+        "y": 270.5,
+        "radius": 25.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1721.5,
+        "y": 250.0,
+        "radius": 15.0
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 995.0,
+        "y": 278.5,
+        "radius": 38.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1246.5,
+        "y": 276.0,
+        "radius": 36.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1385.0,
+        "y": 683.5,
+        "radius": 13.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1507.0,
+        "y": 715.5,
+        "radius": 23.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      631.0,
+      297
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e2e9e8",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "nearWheelProbe": {
+      "horizontalProjectionFactor": 0.85,
+      "inwardAxleOffset": 0.4,
+      "accepted": false
+    },
+    "nativeRenderReviewed": true,
+    "visualReview": "All eight native exterior views and desktop/handheld cockpit reviewed. Rear oblique tire height increased 12 percent to cover measured arches; remaining views and cockpit unchanged. All views reviewed, no source edits."
+  },
+  "nativeTireTransformOverrides": {
+    "front": {
+      "tireScaleX": 0.40399208380415147,
+      "tireScaleY": 0.40399208380415147,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0
+    },
+    "frontRight": {
+      "tireScaleX": 0.9217976459215292,
+      "tireScaleY": 0.9630345903515256,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.8826492456297498,
+      "frontTireOffsetY": -0.49944577684706054,
+      "rearTireOffsetX": -1.2941070968694248,
+      "rearTireOffsetY": 0.6832907231095892
+    },
+    "right": {
+      "tireScaleX": 1.3637499788384158,
+      "tireScaleY": 1.0081443913897155,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.0759999999999979,
+      "frontTireOffsetY": -0.31714280240413906,
+      "rearTireOffsetX": -0.013719008264464295,
+      "rearTireOffsetY": -0.43073305799919476
+    },
+    "rearRight": {
+      "tireScaleX": 0.6946080504256904,
+      "tireScaleY": 0.9152482546785569,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 1.0768238466976199,
+      "frontTireOffsetY": 0.721623348963033,
+      "rearTireOffsetX": -0.6768238466976182,
+      "rearTireOffsetY": -0.7216233489630339
+    },
+    "rear": {
+      "tireScaleX": 0.39966041371016536,
+      "tireScaleY": 0.39966041371016536,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": -6.907433699519762e-17
+    },
+    "rearLeft": {
+      "tireScaleX": 0.7229676760720222,
+      "tireScaleY": 0.9526162320007823,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.66515621571379,
+      "frontTireOffsetY": 0.7474138465396196,
+      "rearTireOffsetX": 0.2651562157137894,
+      "rearTireOffsetY": -0.7474138465396184
+    },
+    "left": {
+      "tireScaleX": 1.2293355276884597,
+      "tireScaleY": 1.0449351985351907,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.02000000000000001,
+      "frontTireOffsetY": -0.48775265635559767,
+      "rearTireOffsetX": -0.1109090909090894,
+      "rearTireOffsetY": -0.4485110799081376
+    },
+    "frontLeft": {
+      "tireScaleX": 0.6496606286567611,
+      "tireScaleY": 0.8965621025033801,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.9779590778880722,
+      "frontTireOffsetY": -0.28451131112095657,
+      "rearTireOffsetX": 1.3815012266484026,
+      "rearTireOffsetY": 0.5483562573834851
+    }
+  },
+  "nativeBodyTransformOverrides": {
+    "front": {
+      "bodyScaleX": 1.7515935201660944,
+      "bodyScaleY": 1.1586802722701437,
+      "bodyOffsetX": -8.881784197001252e-16,
+      "bodyOffsetY": 2.250986716162575,
+      "bodyRotationDeg": 0
+    },
+    "frontRight": {
+      "bodyScaleX": 2.8840662717198926,
+      "bodyScaleY": 1.9078117465544557,
+      "bodyOffsetX": -5.9728487483085,
+      "bodyOffsetY": 1.8250125578753207,
+      "bodyRotationDeg": 0
+    },
+    "right": {
+      "bodyScaleX": 2.719662783073288,
+      "bodyScaleY": 1.7990587300617102,
+      "bodyOffsetX": -4.1432383654580285,
+      "bodyOffsetY": 0.004444057560061639,
+      "bodyRotationDeg": 0
+    },
+    "rearRight": {
+      "bodyScaleX": 2.74753149847939,
+      "bodyScaleY": 1.8174939037380207,
+      "bodyOffsetX": -0.2767783776840389,
+      "bodyOffsetY": -0.5398498733566172,
+      "bodyRotationDeg": 0
+    },
+    "rear": {
+      "bodyScaleX": 1.3461183662603515,
+      "bodyScaleY": 0.8904581897394122,
+      "bodyOffsetX": 0,
+      "bodyOffsetY": -0.720050032546327,
+      "bodyRotationDeg": 0
+    },
+    "rearLeft": {
+      "bodyScaleX": 2.8036356663455884,
+      "bodyScaleY": 1.8546068478944544,
+      "bodyOffsetX": 0.7881130420417959,
+      "bodyOffsetY": -0.4842198646949678,
+      "bodyRotationDeg": 0
+    },
+    "left": {
+      "bodyScaleX": 2.730476551594455,
+      "bodyScaleY": 1.8062120450917767,
+      "bodyOffsetX": 4.2008991941111,
+      "bodyOffsetY": -0.020669961874500355,
+      "bodyRotationDeg": 0
+    },
+    "frontLeft": {
+      "bodyScaleX": 2.9768943258513354,
+      "bodyScaleY": 1.9692175657682238,
+      "bodyOffsetX": 6.169399893481118,
+      "bodyOffsetY": 1.9050329038357954,
+      "bodyRotationDeg": 0
+    }
+  },
+  "allowCardinalTireOverrides": true
+}

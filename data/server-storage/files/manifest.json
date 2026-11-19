@@ -2167,7 +2167,10 @@
       "catalog-field-bindweed-1997-tires": "art/catalog-field-bindweed-1997-tires/document.json",
       "catalog-orange-hawkweed-1991-body": "art/catalog-orange-hawkweed-1991-body/document.json",
       "catalog-orange-hawkweed-1991-dashboard": "art/catalog-orange-hawkweed-1991-dashboard/document.json",
-      "catalog-orange-hawkweed-1991-tires": "art/catalog-orange-hawkweed-1991-tires/document.json"
+      "catalog-orange-hawkweed-1991-tires": "art/catalog-orange-hawkweed-1991-tires/document.json",
+      "catalog-hairy-tare-1969-body": "art/catalog-hairy-tare-1969-body/document.json",
+      "catalog-hairy-tare-1969-dashboard": "art/catalog-hairy-tare-1969-dashboard/document.json",
+      "catalog-hairy-tare-1969-tires": "art/catalog-hairy-tare-1969-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
