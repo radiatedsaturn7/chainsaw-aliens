@@ -2143,7 +2143,10 @@
       "catalog-pine-clover-2012-tires": "art/catalog-pine-clover-2012-tires/document.json",
       "catalog-violet-trefoil-2012-body": "art/catalog-violet-trefoil-2012-body/document.json",
       "catalog-violet-trefoil-2012-dashboard": "art/catalog-violet-trefoil-2012-dashboard/document.json",
-      "catalog-violet-trefoil-2012-tires": "art/catalog-violet-trefoil-2012-tires/document.json"
+      "catalog-violet-trefoil-2012-tires": "art/catalog-violet-trefoil-2012-tires/document.json",
+      "catalog-bithynian-vetch-1958-body": "art/catalog-bithynian-vetch-1958-body/document.json",
+      "catalog-bithynian-vetch-1958-dashboard": "art/catalog-bithynian-vetch-1958-dashboard/document.json",
+      "catalog-bithynian-vetch-1958-tires": "art/catalog-bithynian-vetch-1958-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
