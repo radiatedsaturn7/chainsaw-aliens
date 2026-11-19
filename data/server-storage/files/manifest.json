@@ -2374,7 +2374,10 @@
       "catalog-elderberry-clover-2015-tires": "art/catalog-elderberry-clover-2015-tires/document.json",
       "catalog-wild-madder-2013-body": "art/catalog-wild-madder-2013-body/document.json",
       "catalog-wild-madder-2013-dashboard": "art/catalog-wild-madder-2013-dashboard/document.json",
-      "catalog-wild-madder-2013-tires": "art/catalog-wild-madder-2013-tires/document.json"
+      "catalog-wild-madder-2013-tires": "art/catalog-wild-madder-2013-tires/document.json",
+      "catalog-biting-stonecrop-2012-body": "art/catalog-biting-stonecrop-2012-body/document.json",
+      "catalog-biting-stonecrop-2012-dashboard": "art/catalog-biting-stonecrop-2012-dashboard/document.json",
+      "catalog-biting-stonecrop-2012-tires": "art/catalog-biting-stonecrop-2012-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
