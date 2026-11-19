@@ -2080,7 +2080,10 @@
       "catalog-mouseear-hawkweed-1986-tires": "art/catalog-mouseear-hawkweed-1986-tires/document.json",
       "catalog-spring-vetch-1970-body": "art/catalog-spring-vetch-1970-body/document.json",
       "catalog-spring-vetch-1970-dashboard": "art/catalog-spring-vetch-1970-dashboard/document.json",
-      "catalog-spring-vetch-1970-tires": "art/catalog-spring-vetch-1970-tires/document.json"
+      "catalog-spring-vetch-1970-tires": "art/catalog-spring-vetch-1970-tires/document.json",
+      "catalog-slender-speedwell-1997-body": "art/catalog-slender-speedwell-1997-body/document.json",
+      "catalog-slender-speedwell-1997-dashboard": "art/catalog-slender-speedwell-1997-dashboard/document.json",
+      "catalog-slender-speedwell-1997-tires": "art/catalog-slender-speedwell-1997-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
