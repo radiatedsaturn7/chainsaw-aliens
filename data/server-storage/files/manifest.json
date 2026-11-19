@@ -2119,7 +2119,16 @@
       "catalog-soft-trefoil-2005-tires": "art/catalog-soft-trefoil-2005-tires/document.json",
       "catalog-feijoa-clover-2010-body": "art/catalog-feijoa-clover-2010-body/document.json",
       "catalog-feijoa-clover-2010-dashboard": "art/catalog-feijoa-clover-2010-dashboard/document.json",
-      "catalog-feijoa-clover-2010-tires": "art/catalog-feijoa-clover-2010-tires/document.json"
+      "catalog-feijoa-clover-2010-tires": "art/catalog-feijoa-clover-2010-tires/document.json",
+      "catalog-river-clover-2013-body": "art/catalog-river-clover-2013-body/document.json",
+      "catalog-river-clover-2013-dashboard": "art/catalog-river-clover-2013-dashboard/document.json",
+      "catalog-river-clover-2013-tires": "art/catalog-river-clover-2013-tires/document.json",
+      "catalog-tufted-vetch-1956-body": "art/catalog-tufted-vetch-1956-body/document.json",
+      "catalog-tufted-vetch-1956-dashboard": "art/catalog-tufted-vetch-1956-dashboard/document.json",
+      "catalog-tufted-vetch-1956-tires": "art/catalog-tufted-vetch-1956-tires/document.json",
+      "catalog-guelder-clover-2013-body": "art/catalog-guelder-clover-2013-body/document.json",
+      "catalog-guelder-clover-2013-dashboard": "art/catalog-guelder-clover-2013-dashboard/document.json",
+      "catalog-guelder-clover-2013-tires": "art/catalog-guelder-clover-2013-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
