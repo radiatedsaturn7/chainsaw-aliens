@@ -1879,7 +1879,13 @@
       "catalog-bee-clover-2017-tires": "art/catalog-bee-clover-2017-tires/document.json",
       "catalog-knotted-clover-2015-body": "art/catalog-knotted-clover-2015-body/document.json",
       "catalog-knotted-clover-2015-dashboard": "art/catalog-knotted-clover-2015-dashboard/document.json",
-      "catalog-knotted-clover-2015-tires": "art/catalog-knotted-clover-2015-tires/document.json"
+      "catalog-knotted-clover-2015-tires": "art/catalog-knotted-clover-2015-tires/document.json",
+      "catalog-myrtle-clover-2005-body": "art/catalog-myrtle-clover-2005-body/document.json",
+      "catalog-myrtle-clover-2005-dashboard": "art/catalog-myrtle-clover-2005-dashboard/document.json",
+      "catalog-myrtle-clover-2005-tires": "art/catalog-myrtle-clover-2005-tires/document.json",
+      "catalog-nectarine-clover-2009-body": "art/catalog-nectarine-clover-2009-body/document.json",
+      "catalog-nectarine-clover-2009-dashboard": "art/catalog-nectarine-clover-2009-dashboard/document.json",
+      "catalog-nectarine-clover-2009-tires": "art/catalog-nectarine-clover-2009-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
