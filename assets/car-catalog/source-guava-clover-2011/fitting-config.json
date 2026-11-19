@@ -1,0 +1,258 @@
+{
+  "id": "guava-clover-2011",
+  "name": "Guava Clover 2011",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "103138517ebcc45fab87d629ea169c2490e9bddde5208c5ed3528a14e14fd17e",
+  "sourceDirectory": "assets/car-catalog/source-guava-clover-2011",
+  "sourceHashes": {
+    "body": "a12f4739a14d5df8cdb520ac13be51ae5ad81e79fde945fb6d4c7f9d2581fcbf",
+    "dashboard": "9e475f7c15383fddd68ccd9cd6e57acc338afc1dc8fb2a2e06b7a12b1a03a657",
+    "tires": "bc93477bc7287b79ad0f8dbbdffd17b7eb51ab7d2eca701d3e9b37b7ae221b3c"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    3,
+    4,
+    5,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 92.25999999999999,
+        "y": 315.45,
+        "radius": 23.55
+      },
+      {
+        "wheel": "fr",
+        "x": 349.74,
+        "y": 315.45,
+        "radius": 23.55
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 676.0,
+        "y": 262.5,
+        "radius": 25.5
+      },
+      {
+        "wheel": "rr",
+        "x": 830.5,
+        "y": 241.0,
+        "radius": 16.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 977.5,
+        "y": 704.0,
+        "radius": 32.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1226.5,
+        "y": 706.0,
+        "radius": 33.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1372.5,
+        "y": 239.0,
+        "radius": 13.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1493.5,
+        "y": 256.0,
+        "radius": 21.0
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 98.0,
+        "y": 747.5,
+        "radius": 22.5
+      },
+      {
+        "wheel": "rl",
+        "x": 344.0,
+        "y": 747.5,
+        "radius": 22.5
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 694.0,
+        "y": 701.5,
+        "radius": 24.5
+      },
+      {
+        "wheel": "fl",
+        "x": 840.5,
+        "y": 679.0,
+        "radius": 15.0
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 987.0,
+        "y": 263.5,
+        "radius": 33.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1238.5,
+        "y": 260.0,
+        "radius": 32.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1383.0,
+        "y": 678.5,
+        "radius": 14.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1530.0,
+        "y": 701.5,
+        "radius": 24.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      260,
+      370,
+      380,
+      100
+    ],
+    "wheel": [
+      476,
+      793,
+      400
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8",
+    "instrumentPodBounds": [
+      220,
+      350,
+      440,
+      170
+    ],
+    "renderedInstrumentPodBounds": [
+      220,
+      350,
+      440,
+      170
+    ],
+    "measuredDashboardWheel": true,
+    "dashboardGaugeFontSize": 18
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "tireAlphaRepair": "Source-hash verified near-opaque import copy, previous native transforms preserved. No source pixels modified.",
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 1.2885503183732983,
+      "tireScaleY": 1.152713510387824,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.32683793728265476,
+      "frontTireOffsetY": -0.4963448784460859,
+      "rearTireOffsetX": -0.33829578852232367,
+      "rearTireOffsetY": 0.8201898247086142
+    },
+    "rearRight": {
+      "tireScaleX": 1.1994794766670507,
+      "tireScaleY": 1.169612295226664,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.835778639244085,
+      "frontTireOffsetY": 1.0767743842520756,
+      "rearTireOffsetX": -0.7472364904837523,
+      "rearTireOffsetY": -0.6129294379895469
+    },
+    "rearLeft": {
+      "tireScaleX": 1.3156351405204605,
+      "tireScaleY": 1.2828756692534249,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.32073544487538586,
+      "frontTireOffsetY": 0.8306751932127622,
+      "rearTireOffsetX": 0.3092775936357191,
+      "rearTireOffsetY": -0.7468302469502335
+    },
+    "frontLeft": {
+      "tireScaleX": 1.2213354566488548,
+      "tireScaleY": 1.1620148458311546,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.453627632026539,
+      "frontTireOffsetY": -0.3954850928968343,
+      "rearTireOffsetX": 0.44216978078687014,
+      "rearTireOffsetY": 0.8193300391593636
+    },
+    "right": {
+      "tireScaleX": 1.1134972694144705,
+      "tireScaleY": 1.1972583404864616,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010399999999999882,
+      "frontTireOffsetY": -0.310515951565397,
+      "rearTireOffsetX": 0.014380165289254808,
+      "rearTireOffsetY": -0.3127082967137954
+    },
+    "left": {
+      "tireScaleX": 1.1191321733623478,
+      "tireScaleY": 1.203317121172097,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010400000000001929,
+      "frontTireOffsetY": -0.30284544407315556,
+      "rearTireOffsetX": 0.03438016528925734,
+      "rearTireOffsetY": -0.32037880420603787
+    }
+  },
+  "tireImportOpaqueThreshold": 248,
+  "bodyAlphaRemoval": {
+    "sourceSha256": "a12f4739a14d5df8cdb520ac13be51ae5ad81e79fde945fb6d4c7f9d2581fcbf",
+    "reason": "Two independently reviewed painted rear-oblique tire islands below the bumpers; import-copy alpha only, source and native wheel placement preserved.",
+    "rectangles": [
+      [
+        1675,
+        291,
+        46,
+        20
+      ],
+      [
+        472,
+        729,
+        48,
+        17
+      ]
+    ],
+    "maximumChangedPixels": 1406
+  }
+}
