@@ -1,0 +1,238 @@
+{
+  "id": "bush-vetch-2017",
+  "name": "Bush Vetch 2017",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "698d08aa3e3bb1a9d92426f6a20a8bb999e5947d63f24dcd64170f0482788c5a",
+  "sourceDirectory": "assets/car-catalog/bush-vetch-2017",
+  "sourceHashes": {
+    "body": "c07ebdaca13d6110d2cbe7293e2af93793665bcfd14bfeb0008a002b2afae3fb",
+    "dashboard": "669ceae38408136f66d955b563547c0a11070e81928a9a95949a298d3ea8e121",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 94.09,
+        "y": 310.425,
+        "radius": 22.575
+      },
+      {
+        "wheel": "fr",
+        "x": 340.91,
+        "y": 310.425,
+        "radius": 22.575
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 682.0,
+        "y": 269.5,
+        "radius": 27.5
+      },
+      {
+        "wheel": "rr",
+        "x": 833.5,
+        "y": 238.0,
+        "radius": 18.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 971.5,
+        "y": 715.0,
+        "radius": 39.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1233.5,
+        "y": 716.0,
+        "radius": 40.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 486.5,
+        "y": 688.0,
+        "radius": 14.0
+      },
+      {
+        "wheel": "rr",
+        "x": 602.0,
+        "y": 706.5,
+        "radius": 23.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 92.25999999999999,
+        "y": 745.45,
+        "radius": 23.55
+      },
+      {
+        "wheel": "rl",
+        "x": 349.74,
+        "y": 745.45,
+        "radius": 23.55
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1581.5,
+        "y": 265.0,
+        "radius": 29.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1720.5,
+        "y": 242.0,
+        "radius": 16.0
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 981.5,
+        "y": 272.0,
+        "radius": 40.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1243.0,
+        "y": 271.5,
+        "radius": 39.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1374.5,
+        "y": 678.0,
+        "radius": 15.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1506.5,
+        "y": 708.0,
+        "radius": 28.0
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      531,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      605.0,
+      297
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e2e9e8",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 0.8498862108210585,
+      "tireScaleY": 1.133829517009226,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.26458315462923887,
+      "frontTireOffsetY": -0.47773157050503295,
+      "rearTireOffsetX": -0.24112034471188495,
+      "rearTireOffsetY": 0.48232823757422827
+    },
+    "rearRight": {
+      "tireScaleX": 1.0112632559897234,
+      "tireScaleY": 1.269899532771729,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.5536918311782301,
+      "frontTireOffsetY": 0.6747544302633645,
+      "rearTireOffsetX": -0.5328852196079832,
+      "rearTireOffsetY": -0.15612624526155483
+    },
+    "rearLeft": {
+      "tireScaleX": 1.5484749978198336,
+      "tireScaleY": 1.247733399006057,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.08370551860119621,
+      "frontTireOffsetY": 0.60937556470059,
+      "rearTireOffsetX": 0.07224766736152682,
+      "rearTireOffsetY": -0.42553061843806195
+    },
+    "frontLeft": {
+      "tireScaleX": 1.0849291840456732,
+      "tireScaleY": 1.072690696701873,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.56581884544951,
+      "frontTireOffsetY": -0.21468687785790408,
+      "rearTireOffsetX": 0.5693609942098409,
+      "rearTireOffsetY": 0.49353182412043173
+    },
+    "right": {
+      "tireScaleX": 1.1254693115748158,
+      "tireScaleY": 1.3241747160320119,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010399999999999902,
+      "frontTireOffsetY": -0.37790734967651735,
+      "rearTireOffsetX": 0.01438016528925689,
+      "rearTireOffsetY": -0.34531689860267484
+    },
+    "left": {
+      "tireScaleX": 1.1276212605453222,
+      "tireScaleY": 1.3267065988542528,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010399999999999902,
+      "frontTireOffsetY": -0.36865707270384046,
+      "rearTireOffsetX": 0.014380165289255752,
+      "rearTireOffsetY": -0.3545671755753527
+    }
+  }
+}
