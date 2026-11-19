@@ -2395,7 +2395,10 @@
       "catalog-thimbleberry-clover-2007-tires": "art/catalog-thimbleberry-clover-2007-tires/document.json",
       "catalog-beech-clover-2012-body": "art/catalog-beech-clover-2012-body/document.json",
       "catalog-beech-clover-2012-dashboard": "art/catalog-beech-clover-2012-dashboard/document.json",
-      "catalog-beech-clover-2012-tires": "art/catalog-beech-clover-2012-tires/document.json"
+      "catalog-beech-clover-2012-tires": "art/catalog-beech-clover-2012-tires/document.json",
+      "catalog-slender-trefoil-2003-body": "art/catalog-slender-trefoil-2003-body/document.json",
+      "catalog-slender-trefoil-2003-dashboard": "art/catalog-slender-trefoil-2003-dashboard/document.json",
+      "catalog-slender-trefoil-2003-tires": "art/catalog-slender-trefoil-2003-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
