@@ -1,0 +1,330 @@
+{
+  "id": "hawthorn-clover-2011",
+  "name": "Hawthorn Clover 2011",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "1381d7ddf17a564a62b8bd2a95b1ac78ab100a0e8137a5b1c16ef6425006fc58",
+  "sourceDirectory": "assets/car-catalog/hawthorn-clover-2011",
+  "sourceHashes": {
+    "body": "486782c24de9b1ee1f139df06abec502cbbfbc5cbb9e7c119eb845d282303c59",
+    "dashboard": "1907f34bbfb448579ce9479328b342d7be631019dcd066e0ac13b303235209f4",
+    "tires": "86ddc4c5a975bd3cdc1f73984bf4823cc2fb4bd7d0703a4d2c3c1e7e55106a5e"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 102.37,
+        "y": 349.025,
+        "radius": 21.974999999999998
+      },
+      {
+        "wheel": "fr",
+        "x": 342.63,
+        "y": 349.025,
+        "radius": 21.974999999999998
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 647.0,
+        "y": 314.5,
+        "radius": 28.5
+      },
+      {
+        "wheel": "rr",
+        "x": 823.0,
+        "y": 278.5,
+        "radius": 19.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 955.0,
+        "y": 743.5,
+        "radius": 37.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1225.0,
+        "y": 745.5,
+        "radius": 40.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 460.5,
+        "y": 715.0,
+        "radius": 18.0
+      },
+      {
+        "wheel": "rr",
+        "x": 634.0,
+        "y": 743.5,
+        "radius": 31.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 101.19,
+        "y": 784.175,
+        "radius": 21.825
+      },
+      {
+        "wheel": "rl",
+        "x": 339.81,
+        "y": 784.175,
+        "radius": 21.825
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1574.0,
+        "y": 304.5,
+        "radius": 27.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1727.5,
+        "y": 277.0,
+        "radius": 16.0
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 985.5,
+        "y": 313.0,
+        "radius": 41.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1257.0,
+        "y": 309.5,
+        "radius": 37.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1382.5,
+        "y": 716.0,
+        "radius": 20.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1546.5,
+        "y": 749.0,
+        "radius": 28.0
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      426.0,
+      887,
+      420
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de",
+    "instrumentPodBounds": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "renderedInstrumentPodBounds": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "dashboardGaugeFontSize": 18
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Cockpit-only family repair; retain solved wheel transforms; source bounds or original authored cluster; native guards and visual review required",
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 0.7562303620725432,
+      "tireScaleY": 0.7562303620725432,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.14250463168961358,
+      "frontTireOffsetY": -0.6307425694427267,
+      "rearTireOffsetX": -0.1425046316896145,
+      "rearTireOffsetY": 0.6307425694427267
+    },
+    "rearRight": {
+      "tireScaleX": 0.9173224191808032,
+      "tireScaleY": 1.2470788443765168,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.25512778915865875,
+      "frontTireOffsetY": 0.7159174120080489,
+      "rearTireOffsetX": 0.24359059907601405,
+      "rearTireOffsetY": -0.6963207449388537
+    },
+    "rearLeft": {
+      "tireScaleX": 0.891101726015297,
+      "tireScaleY": 1.1516821752764874,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.10748339559043413,
+      "frontTireOffsetY": 0.6718469020693492,
+      "rearTireOffsetX": -0.1066767840201849,
+      "rearTireOffsetY": -0.29321871706753727
+    },
+    "frontLeft": {
+      "tireScaleX": 1.1220769743500658,
+      "tireScaleY": 1.0150266955065057,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.3150859975217245,
+      "frontTireOffsetY": -0.3677744189885803,
+      "rearTireOffsetX": 0.30362814628205514,
+      "rearTireOffsetY": 0.6916193652511098
+    },
+    "right": {
+      "tireScaleX": 1.1923156825895427,
+      "tireScaleY": 1.282005744139625,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010399999999999882,
+      "frontTireOffsetY": -0.40075801534831507,
+      "rearTireOffsetX": 0.014380165289255377,
+      "rearTireOffsetY": -0.22246623293087744
+    },
+    "left": {
+      "tireScaleX": 1.2003669241539905,
+      "tireScaleY": 1.2176827512915294,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010399999999997855,
+      "frontTireOffsetY": -0.19133111438143102,
+      "rearTireOffsetX": 0.03438016528925728,
+      "rearTireOffsetY": -0.09189313389776138
+    }
+  },
+  "bodyAlphaRemoval": {
+    "sourceSha256": "486782c24de9b1ee1f139df06abec502cbbfbc5cbb9e7c119eb845d282303c59",
+    "reason": "Individually verified four bumper lobes; rearLeft extension only x1396..1410 row346; frontLeft below measured seam. Preserve original, fascia and attached fender/lamp.",
+    "maximumChangedPixels": 1500,
+    "polygons": [
+      [
+        [
+          444,
+          355
+        ],
+        [
+          484,
+          356
+        ],
+        [
+          484,
+          363
+        ],
+        [
+          444,
+          363
+        ]
+      ],
+      [
+        [
+          1383,
+          338
+        ],
+        [
+          1420,
+          339
+        ],
+        [
+          1420,
+          346
+        ],
+        [
+          1411,
+          346
+        ],
+        [
+          1411,
+          347
+        ],
+        [
+          1396,
+          347
+        ],
+        [
+          1396,
+          346
+        ],
+        [
+          1383,
+          346
+        ]
+      ],
+      [
+        [
+          804,
+          777
+        ],
+        [
+          847,
+          775
+        ],
+        [
+          847,
+          784
+        ],
+        [
+          804,
+          784
+        ]
+      ],
+      [
+        [
+          1711,
+          793
+        ],
+        [
+          1748,
+          792
+        ],
+        [
+          1748,
+          803
+        ],
+        [
+          1711,
+          803
+        ]
+      ]
+    ]
+  }
+}
