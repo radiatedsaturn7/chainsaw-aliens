@@ -2173,7 +2173,10 @@
       "catalog-hairy-tare-1969-tires": "art/catalog-hairy-tare-1969-tires/document.json",
       "catalog-spearleaf-clover-1988-body": "art/catalog-spearleaf-clover-1988-body/document.json",
       "catalog-spearleaf-clover-1988-dashboard": "art/catalog-spearleaf-clover-1988-dashboard/document.json",
-      "catalog-spearleaf-clover-1988-tires": "art/catalog-spearleaf-clover-1988-tires/document.json"
+      "catalog-spearleaf-clover-1988-tires": "art/catalog-spearleaf-clover-1988-tires/document.json",
+      "catalog-white-stonecrop-2012-body": "art/catalog-white-stonecrop-2012-body/document.json",
+      "catalog-white-stonecrop-2012-dashboard": "art/catalog-white-stonecrop-2012-dashboard/document.json",
+      "catalog-white-stonecrop-2012-tires": "art/catalog-white-stonecrop-2012-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
