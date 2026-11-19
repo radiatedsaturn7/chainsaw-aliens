@@ -2116,7 +2116,10 @@
       "catalog-black-trefoil-2005-tires": "art/catalog-black-trefoil-2005-tires/document.json",
       "catalog-soft-trefoil-2005-body": "art/catalog-soft-trefoil-2005-body/document.json",
       "catalog-soft-trefoil-2005-dashboard": "art/catalog-soft-trefoil-2005-dashboard/document.json",
-      "catalog-soft-trefoil-2005-tires": "art/catalog-soft-trefoil-2005-tires/document.json"
+      "catalog-soft-trefoil-2005-tires": "art/catalog-soft-trefoil-2005-tires/document.json",
+      "catalog-feijoa-clover-2010-body": "art/catalog-feijoa-clover-2010-body/document.json",
+      "catalog-feijoa-clover-2010-dashboard": "art/catalog-feijoa-clover-2010-dashboard/document.json",
+      "catalog-feijoa-clover-2010-tires": "art/catalog-feijoa-clover-2010-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

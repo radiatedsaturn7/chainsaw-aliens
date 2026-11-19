@@ -1,0 +1,174 @@
+{
+  "id": "feijoa-clover-2010",
+  "name": "Feijoa Clover 2010",
+  "rosterCommit": "d8db5fdb5b28e893ae3249ecca39e7c202c464c6",
+  "expectedDocumentSha256": "655e864a8cb6d19e500d3f2dc9676094cfc09aa4ad8225fe680ac0533a51f47d",
+  "sourceDirectory": "assets/car-catalog/source-feijoa-clover-2010",
+  "sourceHashes": {
+    "body": "78738b86dd2a63b0e3d6048b167719691d01b329c8b7049851c0906a5b20bb13",
+    "dashboard": "8473f1250f162e7d64e7e971f30d4461aa28adb8762619b65d51c4354fbecfb6",
+    "tires": "1f0412f1e7599f689e2a2874e01eaf21ff5bf4d9b68164ae6bb3f027f3f92ec2"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    3,
+    4,
+    5,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 91,
+        "y": 345,
+        "radius": 25
+      },
+      {
+        "wheel": "fr",
+        "x": 350,
+        "y": 345,
+        "radius": 25
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 681,
+        "y": 294,
+        "radius": 32
+      },
+      {
+        "wheel": "rr",
+        "x": 825,
+        "y": 274,
+        "radius": 26
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 979,
+        "y": 728,
+        "radius": 40
+      },
+      {
+        "wheel": "rr",
+        "x": 1260,
+        "y": 732,
+        "radius": 42
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1381,
+        "y": 288,
+        "radius": 27
+      },
+      {
+        "wheel": "rr",
+        "x": 1524,
+        "y": 296,
+        "radius": 34
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 92,
+        "y": 770,
+        "radius": 25
+      },
+      {
+        "wheel": "rl",
+        "x": 348,
+        "y": 770,
+        "radius": 25
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 699,
+        "y": 737,
+        "radius": 36
+      },
+      {
+        "wheel": "fl",
+        "x": 831,
+        "y": 723,
+        "radius": 23
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 958,
+        "y": 284,
+        "radius": 40
+      },
+      {
+        "wheel": "fl",
+        "x": 1238,
+        "y": 282,
+        "radius": 42
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1385,
+        "y": 717,
+        "radius": 26
+      },
+      {
+        "wheel": "fl",
+        "x": 1546,
+        "y": 745,
+        "radius": 36
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      325,
+      420,
+      290,
+      100
+    ],
+    "wheel": [
+      476,
+      760,
+      380
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8",
+    "measuredDashboardWheel": true,
+    "dashboardGaugeFontSize": 17.4
+  },
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "family": "two-seat retractable-hardtop roadster",
+    "method": "Individual body arch and dashboard aperture inspection in source pixels, cross-referenced with existing native segmentation. Straight-on tread centers remain inferred.",
+    "sourceImagesReviewed": true,
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "iteration": "Raise wheel pivot 80 source pixels toward actual recessed instrument panel; independent renders required.",
+    "wave075": "Use retained source-measured wheel dimensions rather than 1.8 viewport enlargement, with native both-viewport guard and visual review.",
+    "wave075Pod": "Source black recessed instrument pod uses fixed rectangle rather than moving wheel-relative glyphs; retain independent wheel below text, requires native review.",
+    "nativeRenderReviewed": true,
+    "visualReview": "All eight native exterior views and both cockpit sizes reviewed. Fixed instruments inset inside source recessed pod, measured wheel positioned below glyphs; exterior views unchanged. No image edits. Instrument rectangle narrowed within physical black pod."
+  }
+}
