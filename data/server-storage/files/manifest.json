@@ -2326,7 +2326,13 @@
       "catalog-wall-speedwell-2008-tires": "art/catalog-wall-speedwell-2008-tires/document.json",
       "catalog-checkerberry-clover-2021-body": "art/catalog-checkerberry-clover-2021-body/document.json",
       "catalog-checkerberry-clover-2021-dashboard": "art/catalog-checkerberry-clover-2021-dashboard/document.json",
-      "catalog-checkerberry-clover-2021-tires": "art/catalog-checkerberry-clover-2021-tires/document.json"
+      "catalog-checkerberry-clover-2021-tires": "art/catalog-checkerberry-clover-2021-tires/document.json",
+      "catalog-mountain-clover-2009-body": "art/catalog-mountain-clover-2009-body/document.json",
+      "catalog-mountain-clover-2009-dashboard": "art/catalog-mountain-clover-2009-dashboard/document.json",
+      "catalog-mountain-clover-2009-tires": "art/catalog-mountain-clover-2009-tires/document.json",
+      "catalog-woolly-clover-2018-body": "art/catalog-woolly-clover-2018-body/document.json",
+      "catalog-woolly-clover-2018-dashboard": "art/catalog-woolly-clover-2018-dashboard/document.json",
+      "catalog-woolly-clover-2018-tires": "art/catalog-woolly-clover-2018-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
