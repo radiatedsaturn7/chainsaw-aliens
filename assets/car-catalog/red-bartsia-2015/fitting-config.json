@@ -1,0 +1,353 @@
+{
+  "id": "red-bartsia-2015",
+  "name": "Red Bartsia 2015",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "fe7a16d0215c4884ba944f6b0b4cbbbcf8ea13f031bae4032f0e89105fa1f7b5",
+  "sourceDirectory": "assets/car-catalog/red-bartsia-2015",
+  "sourceHashes": {
+    "body": "65ba118b6b65f72672ffc0a73668a8dea0fd329677096f595bc8511cdc904051",
+    "dashboard": "5f0643ebe25507bd6e84821dd4bb45adc158836c832f84ee967e82aedf5a4bd2",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 81.33,
+        "y": 328.725,
+        "radius": 25.275
+      },
+      {
+        "wheel": "fr",
+        "x": 357.67,
+        "y": 328.725,
+        "radius": 25.275
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 688,
+        "y": 265,
+        "radius": 24
+      },
+      {
+        "wheel": "rr",
+        "x": 843,
+        "y": 254,
+        "radius": 16
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 967,
+        "y": 718.5,
+        "radius": 31.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1227,
+        "y": 720.5,
+        "radius": 33.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 454,
+        "y": 697,
+        "radius": 17
+      },
+      {
+        "wheel": "rr",
+        "x": 616,
+        "y": 709,
+        "radius": 24
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 88.25,
+        "y": 769.625,
+        "radius": 24.375
+      },
+      {
+        "wheel": "rl",
+        "x": 354.75,
+        "y": 769.625,
+        "radius": 24.375
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1589,
+        "y": 266,
+        "radius": 23
+      },
+      {
+        "wheel": "fl",
+        "x": 1738,
+        "y": 254,
+        "radius": 14
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 989,
+        "y": 275.5,
+        "radius": 33.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1250,
+        "y": 273.5,
+        "radius": 31.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1373,
+        "y": 698.5,
+        "radius": 15.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1527,
+        "y": 710,
+        "radius": 24
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1370,
+      430,
+      340,
+      100
+    ],
+    "wheel": [
+      1547,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8",
+    "measuredDashboardWheel": true
+  },
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "automatic model-specific alpha measurements; unreviewed seeds",
+    "sourceImagesReviewed": false,
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false,
+    "evidence": [
+      {
+        "slot": "front",
+        "method": "silhouette-seeded tread; must pass clipping guard",
+        "supportRows": 0
+      },
+      {
+        "slot": "frontRight",
+        "method": "multiline alpha apertures",
+        "supportRows": 2
+      },
+      {
+        "slot": "right",
+        "method": "multiline alpha apertures",
+        "supportRows": 5
+      },
+      {
+        "slot": "rearRight",
+        "method": "multiline alpha apertures",
+        "supportRows": 3
+      },
+      {
+        "slot": "rear",
+        "method": "silhouette-seeded tread; must pass clipping guard",
+        "supportRows": 0
+      },
+      {
+        "slot": "rearLeft",
+        "method": "multiline alpha apertures",
+        "supportRows": 3
+      },
+      {
+        "slot": "left",
+        "method": "multiline alpha apertures",
+        "supportRows": 6
+      },
+      {
+        "slot": "frontLeft",
+        "method": "multiline alpha apertures",
+        "supportRows": 2
+      }
+    ],
+    "wave077": "Four native oblique wheel footprints measured about 2/3 aperture diameter in recovered seed; 1.5 trial preserves centers. Gauge cluster raised within black pod and measured wheel used. All-view review mandatory.",
+    "isolatedDistalFenderSeating": "Exact original closed-body mapped fenders and current fitted isolated RGBA masks; scoped lateral registration only (RR -11.5 px on FR; RL +8.5 on FL; FL -4 on RL). Near wheels, contact bottoms, scale, other angles and cockpit protected. No source art or stats changed."
+  },
+  "nativeBodyTransformOverrides": {
+    "front": {
+      "bodyScaleX": 1.750607450149356,
+      "bodyScaleY": 1.2394253325566456,
+      "bodyOffsetX": -1.7763568394002505e-15,
+      "bodyOffsetY": 2.0265620759209786,
+      "bodyRotationDeg": 0
+    },
+    "frontRight": {
+      "bodyScaleX": 2.9439368421231107,
+      "bodyScaleY": 2.084299309512761,
+      "bodyOffsetX": -6.046491493807604,
+      "bodyOffsetY": 1.8656814741617922,
+      "bodyRotationDeg": 0
+    },
+    "right": {
+      "bodyScaleX": 2.7491657917007153,
+      "bodyScaleY": 1.946401933421057,
+      "bodyOffsetX": -4.22324581316572,
+      "bodyOffsetY": 0.22303226188856265,
+      "bodyRotationDeg": 0
+    },
+    "rearRight": {
+      "bodyScaleX": 2.6072359783751744,
+      "bodyScaleY": 1.8459160100544545,
+      "bodyOffsetX": -0.6263556104554571,
+      "bodyOffsetY": -0.5304411025005681,
+      "bodyRotationDeg": 0
+    },
+    "rear": {
+      "bodyScaleX": 1.3543284273841012,
+      "bodyScaleY": 0.9588608579029222,
+      "bodyOffsetX": 0,
+      "bodyOffsetY": -0.9583994428603422,
+      "bodyRotationDeg": 0
+    },
+    "rearLeft": {
+      "bodyScaleX": 2.775916434530109,
+      "bodyScaleY": 1.9653413160805422,
+      "bodyOffsetX": 0.38075150755319065,
+      "bodyOffsetY": -0.4919386805217536,
+      "bodyRotationDeg": 0
+    },
+    "left": {
+      "bodyScaleX": 2.7386325894336614,
+      "bodyScaleY": 1.9389444547489447,
+      "bodyOffsetX": 4.2834548209991725,
+      "bodyOffsetY": 0.2654927283991421,
+      "bodyRotationDeg": 0
+    },
+    "frontLeft": {
+      "bodyScaleX": 2.8998808853740545,
+      "bodyScaleY": 2.053107811475813,
+      "bodyOffsetX": 6.082592217630014,
+      "bodyOffsetY": 1.8002843192616649,
+      "bodyRotationDeg": 0
+    }
+  },
+  "nativeTireTransformOverrides": {
+    "front": {
+      "tireScaleX": 0.4280105606893123,
+      "tireScaleY": 0.4280105606893123,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -4.4146069417004955e-16,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0
+    },
+    "frontRight": {
+      "tireScaleX": 1.0468016349666946,
+      "tireScaleY": 1.3748714257191441,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.4222568061735164,
+      "frontTireOffsetY": -0.5656581300371766,
+      "rearTireOffsetX": -0.793666000589164,
+      "rearTireOffsetY": 1.4082274709344966
+    },
+    "right": {
+      "tireScaleX": 1.0936538643737115,
+      "tireScaleY": 1.0936538643737115,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.04474624710666397,
+      "rearTireOffsetX": 2.7279765747932416e-15,
+      "rearTireOffsetY": 0.04474624710666349
+    },
+    "rearRight": {
+      "tireScaleX": 1.1360008919174276,
+      "tireScaleY": 1.3548442821304858,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.014025006505205734,
+      "frontTireOffsetY": 1.2595333556459656,
+      "rearTireOffsetX": -0.014025006505205734,
+      "rearTireOffsetY": -0.6881716665118809
+    },
+    "rear": {
+      "tireScaleX": 0.426050961194409,
+      "tireScaleY": 0.426050961194409,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": -3.528717165821311e-17
+    },
+    "rearLeft": {
+      "tireScaleX": 1.1591010900113017,
+      "tireScaleY": 1.3793302971134496,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.25349602367435486,
+      "frontTireOffsetY": 1.2422059214791235,
+      "rearTireOffsetX": 0.09373149247131994,
+      "rearTireOffsetY": -0.6715065057104426
+    },
+    "left": {
+      "tireScaleX": 1.0894636196826242,
+      "tireScaleY": 1.0894636196826242,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.044584128005095355,
+      "rearTireOffsetX": 8.247371040072591e-16,
+      "rearTireOffsetY": 0.044584128005095834
+    },
+    "frontLeft": {
+      "tireScaleX": 1.0311362691561716,
+      "tireScaleY": 1.2286802701945123,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.4938280544922596,
+      "frontTireOffsetY": -0.7452995377569605,
+      "rearTireOffsetX": 0.7683478938429505,
+      "rearTireOffsetY": 1.2486463987496694
+    }
+  },
+  "allowSideTireOverrides": true,
+  "allowCardinalTireOverrides": true,
+  "nativeWheelFaceInsets": {
+    "rearRight": {
+      "fr": 0.5
+    },
+    "rearLeft": {
+      "fl": 0.5
+    }
+  }
+}

@@ -2416,7 +2416,10 @@
       "catalog-fragrant-agrimony-1992-tires": "art/catalog-fragrant-agrimony-1992-tires/document.json",
       "catalog-alder-clover-2005-body": "art/catalog-alder-clover-2005-body/document.json",
       "catalog-alder-clover-2005-dashboard": "art/catalog-alder-clover-2005-dashboard/document.json",
-      "catalog-alder-clover-2005-tires": "art/catalog-alder-clover-2005-tires/document.json"
+      "catalog-alder-clover-2005-tires": "art/catalog-alder-clover-2005-tires/document.json",
+      "catalog-red-bartsia-2015-body": "art/catalog-red-bartsia-2015-body/document.json",
+      "catalog-red-bartsia-2015-dashboard": "art/catalog-red-bartsia-2015-dashboard/document.json",
+      "catalog-red-bartsia-2015-tires": "art/catalog-red-bartsia-2015-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
