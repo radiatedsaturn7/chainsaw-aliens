@@ -1,0 +1,236 @@
+{
+  "id": "smooth-sowthistle-1992",
+  "name": "Smooth Sowthistle 1992",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "d8c667d39ddb1be7724fc1b32c39a58ec11545aeb9777823473d8d4db60f09ec",
+  "sourceDirectory": "assets/car-catalog/smooth-sowthistle-1992",
+  "sourceHashes": {
+    "body": "addf5bb0cd2dde51d172327f53a452144a4924146fdb2f24a417bed7033461e9",
+    "dashboard": "8bac4ab6be6d0933b6c2292ff9196bc2a2579466b1911685dd10957bf7f2305b",
+    "tires": "e3ba6ca1f0d754261e5609a2e5047d49af71c9b150027f11b4cfa58a426930ff"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 108.57,
+        "y": 342.525,
+        "radius": 20.474999999999998
+      },
+      {
+        "wheel": "fr",
+        "x": 332.43,
+        "y": 342.525,
+        "radius": 20.474999999999998
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 647.5,
+        "y": 314.0,
+        "radius": 30.0
+      },
+      {
+        "wheel": "rr",
+        "x": 814.5,
+        "y": 270.0,
+        "radius": 17.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 950.5,
+        "y": 744.0,
+        "radius": 38.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1238.0,
+        "y": 746.5,
+        "radius": 40.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 460.5,
+        "y": 718.0,
+        "radius": 18.0
+      },
+      {
+        "wheel": "rr",
+        "x": 610.5,
+        "y": 747.0,
+        "radius": 30.0
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 104.84,
+        "y": 782.3,
+        "radius": 20.7
+      },
+      {
+        "wheel": "rl",
+        "x": 331.15999999999997,
+        "y": 782.3,
+        "radius": 20.7
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1566.5,
+        "y": 310.0,
+        "radius": 29.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1729.0,
+        "y": 282.5,
+        "radius": 17.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 965.5,
+        "y": 311.0,
+        "radius": 41.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1253.0,
+        "y": 307.5,
+        "radius": 37.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1378.0,
+        "y": 705.5,
+        "radius": 14.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1520.5,
+        "y": 746.0,
+        "radius": 26.0
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      200,
+      504,
+      516,
+      76
+    ],
+    "wheel": [
+      458.0,
+      793,
+      420
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae",
+    "instrumentPodBounds": [
+      200,
+      504,
+      516,
+      76
+    ],
+    "renderedInstrumentPodBounds": [
+      200,
+      504,
+      516,
+      76
+    ],
+    "dashboardGaugeFontSize": 18
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Independent cockpit repair retaining solved wheels; bounded dark-pod search with stability check; no automatic visual acceptance",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 0.8735779694687492,
+      "tireScaleY": 0.8735779694687492,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.24373598355208548,
+      "frontTireOffsetY": -0.35866430888003803,
+      "rearTireOffsetX": -0.24373598355208456,
+      "rearTireOffsetY": 0.35866430888003803
+    },
+    "rearRight": {
+      "tireScaleX": 0.938958388261431,
+      "tireScaleY": 0.938958388261431,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.5552588435056108,
+      "frontTireOffsetY": 0.6747761505890986,
+      "rearTireOffsetX": -0.5552588435056112,
+      "rearTireOffsetY": -0.6747761505890991
+    },
+    "rearLeft": {
+      "tireScaleX": 0.9250718249100365,
+      "tireScaleY": 1.257613984191422,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.1763231342455716,
+      "frontTireOffsetY": 0.6915278046632876,
+      "rearTireOffsetX": 0.1647859441629272,
+      "rearTireOffsetY": -0.6719311375940935
+    },
+    "frontLeft": {
+      "tireScaleX": 0.9684907165431993,
+      "tireScaleY": 1.2486055039403419,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.6295273213317001,
+      "frontTireOffsetY": -0.3895904143091957,
+      "rearTireOffsetX": 0.6179901312490569,
+      "rearTireOffsetY": 0.4091870813783902
+    },
+    "right": {
+      "tireScaleX": 1.2248866025578282,
+      "tireScaleY": 1.2248866025578282,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.05118654629194759,
+      "rearTireOffsetX": -6.344131569286608e-17,
+      "rearTireOffsetY": 0.051186546291948076
+    },
+    "left": {
+      "tireScaleX": 1.2400086593795296,
+      "tireScaleY": 1.2400086593795296,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.06980048318018606,
+      "rearTireOffsetX": -9.516197353929913e-16,
+      "rearTireOffsetY": 0.06980048318018653
+    }
+  }
+}
