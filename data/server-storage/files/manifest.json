@@ -1612,7 +1612,19 @@
       "catalog-gooseberry-clover-2005-tires": "art/catalog-gooseberry-clover-2005-tires/document.json",
       "catalog-haresfoot-clover-1997-body": "art/catalog-haresfoot-clover-1997-body/document.json",
       "catalog-haresfoot-clover-1997-dashboard": "art/catalog-haresfoot-clover-1997-dashboard/document.json",
-      "catalog-haresfoot-clover-1997-tires": "art/catalog-haresfoot-clover-1997-tires/document.json"
+      "catalog-haresfoot-clover-1997-tires": "art/catalog-haresfoot-clover-1997-tires/document.json",
+      "catalog-bergamot-clover-2013-body": "art/catalog-bergamot-clover-2013-body/document.json",
+      "catalog-bergamot-clover-2013-dashboard": "art/catalog-bergamot-clover-2013-dashboard/document.json",
+      "catalog-bergamot-clover-2013-tires": "art/catalog-bergamot-clover-2013-tires/document.json",
+      "catalog-ivy-speedwell-1992-body": "art/catalog-ivy-speedwell-1992-body/document.json",
+      "catalog-ivy-speedwell-1992-dashboard": "art/catalog-ivy-speedwell-1992-dashboard/document.json",
+      "catalog-ivy-speedwell-1992-tires": "art/catalog-ivy-speedwell-1992-tires/document.json",
+      "catalog-island-clover-2006-body": "art/catalog-island-clover-2006-body/document.json",
+      "catalog-island-clover-2006-dashboard": "art/catalog-island-clover-2006-dashboard/document.json",
+      "catalog-island-clover-2006-tires": "art/catalog-island-clover-2006-tires/document.json",
+      "catalog-juneberry-clover-2007-body": "art/catalog-juneberry-clover-2007-body/document.json",
+      "catalog-juneberry-clover-2007-dashboard": "art/catalog-juneberry-clover-2007-dashboard/document.json",
+      "catalog-juneberry-clover-2007-tires": "art/catalog-juneberry-clover-2007-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
