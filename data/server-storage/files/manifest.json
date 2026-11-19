@@ -2062,7 +2062,13 @@
       "catalog-wood-dock-2012-tires": "art/catalog-wood-dock-2012-tires/document.json",
       "catalog-wood-forgetmenot-2023-body": "art/catalog-wood-forgetmenot-2023-body/document.json",
       "catalog-wood-forgetmenot-2023-dashboard": "art/catalog-wood-forgetmenot-2023-dashboard/document.json",
-      "catalog-wood-forgetmenot-2023-tires": "art/catalog-wood-forgetmenot-2023-tires/document.json"
+      "catalog-wood-forgetmenot-2023-tires": "art/catalog-wood-forgetmenot-2023-tires/document.json",
+      "catalog-elder-clover-2010-body": "art/catalog-elder-clover-2010-body/document.json",
+      "catalog-elder-clover-2010-dashboard": "art/catalog-elder-clover-2010-dashboard/document.json",
+      "catalog-elder-clover-2010-tires": "art/catalog-elder-clover-2010-tires/document.json",
+      "catalog-water-forgetmenot-2008-body": "art/catalog-water-forgetmenot-2008-body/document.json",
+      "catalog-water-forgetmenot-2008-dashboard": "art/catalog-water-forgetmenot-2008-dashboard/document.json",
+      "catalog-water-forgetmenot-2008-tires": "art/catalog-water-forgetmenot-2008-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
