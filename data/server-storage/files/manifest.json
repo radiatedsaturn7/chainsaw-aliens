@@ -2236,7 +2236,10 @@
       "catalog-rain-clover-2012-tires": "art/catalog-rain-clover-2012-tires/document.json",
       "catalog-field-gentian-2017-body": "art/catalog-field-gentian-2017-body/document.json",
       "catalog-field-gentian-2017-dashboard": "art/catalog-field-gentian-2017-dashboard/document.json",
-      "catalog-field-gentian-2017-tires": "art/catalog-field-gentian-2017-tires/document.json"
+      "catalog-field-gentian-2017-tires": "art/catalog-field-gentian-2017-tires/document.json",
+      "catalog-purple-vetch-2021-body": "art/catalog-purple-vetch-2021-body/document.json",
+      "catalog-purple-vetch-2021-dashboard": "art/catalog-purple-vetch-2021-dashboard/document.json",
+      "catalog-purple-vetch-2021-tires": "art/catalog-purple-vetch-2021-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
