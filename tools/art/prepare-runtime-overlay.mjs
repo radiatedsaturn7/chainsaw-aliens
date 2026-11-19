@@ -21,10 +21,16 @@ import {requiresRuntimeSourceAlias,verifyRuntimeSourceAlias} from './verify-runt
 
 import {fragrantMode,validateFragrant,applyFragrantControls,applyFragrantAlpha} from './fragrant-exact-alpha-replay.mjs';
 
+import {applyExactAlderLobes} from './alder-exact-near-lobes.mjs';
+
 const args=process.argv.slice(2);
 const replayTokens=args.flatMap((arg,i)=>arg.startsWith('--measured-replay')?[i]:[]);
-const measuredReplay=replayTokens.length>0;
-if(measuredReplay)assert.ok(args.length===4&&replayTokens.length===1&&replayTokens[0]===3&&args[3]==='--measured-replay'
+const alderTokens=args.flatMap((arg,i)=>arg.startsWith('--alder-exact-near-lobes')?[i]:[]);
+const alder=alderTokens.length>0;
+if(alder)assert.ok(args.length===4&&alderTokens.length===1&&alderTokens[0]===3&&args[3]==='--alder-exact-near-lobes'
+  &&args.slice(0,3).every(a=>a&&!a.startsWith('--')),'Usage: prepare-runtime-overlay.mjs DOC CONFIG OUTPUT --alder-exact-near-lobes');
+const measuredReplay=replayTokens.length>0||alder;
+if(measuredReplay&&!alder)assert.ok(args.length===4&&replayTokens.length===1&&replayTokens[0]===3&&args[3]==='--measured-replay'
   &&args.slice(0,3).every(a=>a&&!a.startsWith('--')),'Usage: prepare-runtime-overlay.mjs DOC CONFIG OUTPUT --measured-replay');
 const pawpawTokens=args.flatMap((arg,i)=>arg.startsWith('--pawpaw-exact-248')?[i]:[]);
 const pawpaw248=pawpawTokens.length>0;
@@ -51,6 +57,11 @@ const readInput=(measuredReplay||pawpaw248||cherry||fragrant)?readMeasuredFile:f
 const inputBytes=readInput(documentPath),configBytes=readInput(configPath),cfg=JSON.parse(configBytes);
 
 if(fragrant)validateFragrant(cfg,configBytes,inputBytes);
+if(alder){
+  assert.equal(cfg.id,'alder-clover-2005','The exact near-lobes mode is Alder only');
+  assert.equal(sha(configBytes),'30f6922f529ee21c5cf0cc135628fece91a00246fa52ade87843d8bb8ff1b109','Unreviewed Alder fitting config');
+  assert.equal(documentPath,path.join(production,'files/cars/Alder Clover 2005/document.json'),'Alder exact roster path required');
+}
 assert.match(cfg.expectedDocumentSha256||'',/^[a-f0-9]{64}$/);
 assert.equal(sha(inputBytes),cfg.expectedDocumentSha256,'Vehicle changed since fitting input was recorded');
 assert.match(cfg.rosterCommit||'',/^[a-f0-9]{40}$/);
@@ -250,6 +261,7 @@ if(fragrant){
   assert.equal(sha(packNative(built.art[ownRefs[0]])),'3fb30a2f6273ed70cb628a29840ff675ff16c5497b06ae5988e75683b3e0d915','Fragrant stock-packed native body differs');
   assert.deepEqual(ownRefs.slice(1).map(ref=>sha(packNative(built.art[ref]))),['1187b7d754df1edb2c0d741b4ba581f8ea9dd544ee3db1bf931901e01a397423','59b9c0c66ffa9949fa2d6fc13b3c6afb2c40fc82e347dfe6356c8234e8cdd139']);
 }
+const alderProof=alder?applyExactAlderLobes({source:images.body,art:built.art,overlayBytes,packNative}):null;
 if(measuredReplay||aliasBinding||fragrant){
   checkMeasuredOutput(output,repo,source);
   fs.mkdirSync(output,{mode:0o700});
@@ -270,7 +282,8 @@ const status={id:cfg.id,status:'runtime-prepared-awaiting-visual-fitting',runtim
   sharedSteeringWheelReference:car.art.interior.steeringWheel.artRef,
   fittingConfigSha256:sha((measuredReplay||aliasBinding||fragrant)?configBytes:fs.readFileSync(configPath)),nonArtFieldsPreserved:true,
   deferred:['per-car exterior and cockpit fitting review','fixed rear camera and smoke','full gameplay and manifest acceptance']};
-if(measuredReplay)status.measuredReplay={mode:'measured-replay',version:1,overlaySha256:sha(overlayBytes),
+if(alder)status.exactAlderSourceLobes={mode:'alder-exact-near-lobes',baseCommit:'4393634f8ea5efa37ca7ba39d8b73d79dc13babb',...alderProof};
+if(measuredReplay&&!alder)status.measuredReplay={mode:'measured-replay',version:1,overlaySha256:sha(overlayBytes),
   packageStatusSha256:pinnedSource.packageStatusSha256,packageConfigSha256:pinnedSource.packageConfigSha256,
   inertConfigFields:['measurementReview','cockpitCalibration.instrumentPodBounds','cockpitCalibration.renderedInstrumentPodBounds']};
 if(aliasBinding)status.sourceAlias={mode:'verified-source-alias',version:1,sourcePackageId:aliasBinding.sourcePackageId,
