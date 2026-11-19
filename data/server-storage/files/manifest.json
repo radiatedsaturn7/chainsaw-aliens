@@ -2296,7 +2296,10 @@
       "catalog-bolander-clover-2018-tires": "art/catalog-bolander-clover-2018-tires/document.json",
       "catalog-snow-clover-2011-body": "art/catalog-snow-clover-2011-body/document.json",
       "catalog-snow-clover-2011-dashboard": "art/catalog-snow-clover-2011-dashboard/document.json",
-      "catalog-snow-clover-2011-tires": "art/catalog-snow-clover-2011-tires/document.json"
+      "catalog-snow-clover-2011-tires": "art/catalog-snow-clover-2011-tires/document.json",
+      "catalog-hairy-tare-1971-body": "art/catalog-hairy-tare-1971-body/document.json",
+      "catalog-hairy-tare-1971-dashboard": "art/catalog-hairy-tare-1971-dashboard/document.json",
+      "catalog-hairy-tare-1971-tires": "art/catalog-hairy-tare-1971-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
