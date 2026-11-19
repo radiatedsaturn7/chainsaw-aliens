@@ -2344,7 +2344,13 @@
       "catalog-silver-trefoil-2003-tires": "art/catalog-silver-trefoil-2003-tires/document.json",
       "catalog-sierra-clover-2004-body": "art/catalog-sierra-clover-2004-body/document.json",
       "catalog-sierra-clover-2004-dashboard": "art/catalog-sierra-clover-2004-dashboard/document.json",
-      "catalog-sierra-clover-2004-tires": "art/catalog-sierra-clover-2004-tires/document.json"
+      "catalog-sierra-clover-2004-tires": "art/catalog-sierra-clover-2004-tires/document.json",
+      "catalog-tufted-vetch-2014-body": "art/catalog-tufted-vetch-2014-body/document.json",
+      "catalog-tufted-vetch-2014-dashboard": "art/catalog-tufted-vetch-2014-dashboard/document.json",
+      "catalog-tufted-vetch-2014-tires": "art/catalog-tufted-vetch-2014-tires/document.json",
+      "catalog-redwood-clover-2012-body": "art/catalog-redwood-clover-2012-body/document.json",
+      "catalog-redwood-clover-2012-dashboard": "art/catalog-redwood-clover-2012-dashboard/document.json",
+      "catalog-redwood-clover-2012-tires": "art/catalog-redwood-clover-2012-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
