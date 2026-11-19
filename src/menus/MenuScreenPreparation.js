@@ -21,17 +21,18 @@ export function prepareMenuScreen(resources,document,screen,parameters,{bounds={
     }
     const art=ref=>resources.request(`art:${ref}`,()=>resources.prepareArt(ref));
     const visualLoads=[...refs].filter(Boolean).map(art);
-    const carRefs=new Set(),liveCarRefs=new Set();
+    const carRefs=new Set(),liveCarRefs=new Set(),showroomEntries=[];
     const screenCar=ref=>liveCarRefs.has(ref)?resources.car(ref):resources.stockCar(ref);
     if(elements.some(e=>e.type==='car-showroom')){
       // The manifest supplies names; hydrate only this page, not the catalog.
       const choices=resources.choices('cars',document,parameters);
       for(const element of elements.filter(e=>e.type==='car-showroom')){
         for(const choice of showroomPage(choices,parameters[element.binding],element.maxVisible).entries){
-          carRefs.add(choice.value);liveCarRefs.add(choice.value);
+          carRefs.add(choice.value);liveCarRefs.add(choice.value);showroomEntries.push(choice);
         }
       }
     }
+    resources.retainShowroomPage?.(showroomEntries);
     for(const e of elements)if(e.type.startsWith('car-')||(['property-display','asset-preview'].includes(e.type)&&e.dataSource==='cars')){
       const ref=e.assetRef||parameters[e.binding];if(typeof ref==='string'&&ref){carRefs.add(ref);if(e.property!=='stock')liveCarRefs.add(ref);}
     }
@@ -50,7 +51,7 @@ export function prepareMenuScreen(resources,document,screen,parameters,{bounds={
       for(const artRef of resources.exteriorArtRefs(readyCar)){
         if(!isCurrent())return;
         if(preparedRefs.has(artRef))continue;preparedRefs.add(artRef);
-        await resources.request(`car-art:${artRef}`,()=>resources.prepareCarArt(artRef));
+        await (resources.requestExteriorArt ? resources.requestExteriorArt(ref,artRef) : resources.request(`car-art:${artRef}`,()=>resources.prepareCarArt(artRef)));
       }
     }
     // Drawing may discover dependent assets (garage-installed tires, map race

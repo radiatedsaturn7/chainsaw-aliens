@@ -23284,8 +23284,10 @@ export default class RaceEditor {
     drawShadowLayer = true,
     forceDefaultShadowLayer = false,
     shadowAnchorY = null,
-    shadowGroundY = null
+    shadowGroundY = null,
+    showroomArt = false
   } = {}) {
+    const getSprite=(ref,options)=>this.getRaceArtSpriteCanvas(ref,{...options,showroomArt});
     const choice = artChoice || this.getRaceCarProjectedArtRef(car, 0, 0);
     car = resolveCarAngleLayers(car, choice.viewSlot || getCarViewSlot(0, 0));
     if(car.art?.bodyModel?.ref)drawBodyLayer=false;
@@ -23307,12 +23309,12 @@ export default class RaceEditor {
     const wheelH = wheelBaseH * 0.36 * artScale.tireY;
     const tireCompound = car?.setup?.tireCompoundByWheel?.fl || car?.setup?.defaultTireCompound || 'tarmac';
     const tireEntry = this.getCarTireArtEntry(car);
-    const tireCanvas = tireEntry?.artRef ? this.getRaceArtSpriteCanvas(tireEntry.artRef, { frameIndex: tireEntry.frameIndex || 0 }) : null;
+    const tireCanvas = tireEntry?.artRef ? getSprite(tireEntry.artRef, { frameIndex: tireEntry.frameIndex || 0 }) : null;
     const tireSurfaces = car.art?.tireSurfaces;
     const treadSurface = tireSurfaces?.tread;
     const wheelSurface = tireSurfaces?.wheel;
-    const treadTexture = treadSurface?.artRef ? this.getRaceArtSpriteCanvas(treadSurface.artRef, { frameIndex:treadSurface.frameIndex || 0 }) : null;
-    const wheelTexture = wheelSurface?.artRef ? this.getRaceArtSpriteCanvas(wheelSurface.artRef, { frameIndex:wheelSurface.frameIndex || 0 }) : null;
+    const treadTexture = treadSurface?.artRef ? getSprite(treadSurface.artRef, { frameIndex:treadSurface.frameIndex || 0 }) : null;
+    const wheelTexture = wheelSurface?.artRef ? getSprite(wheelSurface.artRef, { frameIndex:wheelSurface.frameIndex || 0 }) : null;
     // Sprite bodies hold their authored viewing angle until the next frame.
     // Their tire cylinders must hold that same bearing; steering/spin remain live.
     const wheelBearing = choice.artRef && !car.art?.bodyModel?.ref
@@ -23321,9 +23323,9 @@ export default class RaceEditor {
         : Math.max(0, RACE_CAR_SHELL_FRAME_SLOTS.indexOf(choice.viewSlot)) * Math.PI / 4;
 
     const shadowCanvas = car?.art?.shadowArtRef
-      ? this.getRaceArtSpriteCanvas(car.art.shadowArtRef, { frameIndex: Number(car.art.shadowFrameIndex) || 0 })
+      ? getSprite(car.art.shadowArtRef, { frameIndex: Number(car.art.shadowFrameIndex) || 0 })
       : null;
-    const shellCanvas = choice?.artRef ? this.getRaceArtSpriteCanvas(choice.artRef, { frameIndex: choice.frameIndex || 0 }) : null;
+    const shellCanvas = choice?.artRef ? getSprite(choice.artRef, { frameIndex: choice.frameIndex || 0 }) : null;
     if (shellCanvas && tireCanvas && !car.art?.bodyModel?.ref && !car.art?.wheelModel?.ref) {
       // A flat body has one perspective scale. Projecting its hubs separately
       // makes the wheels leave their painted wells as depth or attitude changes.
@@ -23538,7 +23540,7 @@ export default class RaceEditor {
     billboardAddOns
       .filter((entry) => entry?.enabled !== false && entry?.artRef)
       .forEach((entry) => {
-        const addOnCanvas = this.getRaceArtSpriteCanvas(entry.artRef, { frameIndex: entry.frameIndex || 0 });
+        const addOnCanvas = getSprite(entry.artRef, { frameIndex: entry.frameIndex || 0 });
         if (!addOnCanvas || typeof ctx.drawImage !== 'function') return;
         const scale = Number(entry.scale || 1) || 1;
         const drawW = bodyW * 0.6 * scale;
@@ -23548,7 +23550,7 @@ export default class RaceEditor {
       });
     if (!Array.isArray(car.art?.fx) && layerVisibility.brakes && braking) {
       const brakeCanvas = car?.art?.brakeLightArtRef
-        ? this.getRaceArtSpriteCanvas(car.art.brakeLightArtRef, { frameIndex: Number(car.art.brakeLightFrameIndex) || 0 })
+        ? getSprite(car.art.brakeLightArtRef, { frameIndex: Number(car.art.brakeLightFrameIndex) || 0 })
         : null;
       if (brakeCanvas && typeof ctx.drawImage === 'function') {
         const previousSmoothing = ctx.imageSmoothingEnabled;
@@ -23585,7 +23587,7 @@ export default class RaceEditor {
           auxLampPower:session?.mechanical?.effects?.lights??1,lampPower:session?.mechanical?.effects?.instruments??1,headlights:session===this.playtestSession?this.raceHeadlightsEnabled():(session?.mechanical?.headlights??raceStartsWithHeadlights(this.selectedRace)),precipitation:forcing.precipitationRateMmPerS>0,temperatureC:forcing.ambientTemperatureC,night:this.selectedRace?.timeOfDay==='night',damage:session?.damage},
         previewId:preview&&this.carArtActiveComponent==='brakes'&&this.carFxTestEnabled?(this.carFxId||car.art.fx[0]?.id):null,
         x:bodyX,y:bodyY,width:bodyW,height:bodyH,rotation:bodyRotation,bodyFrame:fxBodyFrame,
-        getArt:(ref,options)=>this.getRaceArtSpriteCanvas(ref,options)});
+        getArt:(ref,options)=>getSprite(ref,options)});
     }
 
   }
@@ -32334,9 +32336,10 @@ export default class RaceEditor {
     });
   }
 
-  getRaceArtSpriteCanvas(artRef = '', { frameIndex = 0 } = {}) {
+  getRaceArtSpriteCanvas(artRef = '', { frameIndex = 0, showroomArt = false } = {}) {
     const canvas = getRaceArtSpriteCanvasShared(artRef, {
       frameIndex,
+      showroomArt,
       cache: this.raceArtSpriteCache,
       playtestSession: this.playtestSession,
       racePreloadingArt: this.racePreloadingArt,

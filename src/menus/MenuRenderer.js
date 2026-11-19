@@ -63,11 +63,14 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
   if(!buttonOnly)screen=resolveMenuBackground(document,screen,parameters);
   // Authoring does not run MenuPlayer's selection initialization. Resolve the
   // same fallback for the showroom and every bound widget without editing the document.
+  const showroomPages=new Map();
   for(const element of screen.elements){
     if(element.type!=='car-showroom'||!element.binding||!menuElementVisible(element,screen.elements))continue;
     const choices=resources?.choices('cars',document,parameters)||[];
     if(choices.length&&!choices.some(choice=>choice.value===parameters[element.binding]))parameters={...parameters,[element.binding]:choices[0].value};
+    showroomPages.set(element,{choices,page:showroomPage(choices,parameters[element.binding],element.maxVisible)});
   }
+  if(!buttonOnly)resources?.retainShowroomPage?.([...showroomPages.values()].flatMap(x=>x.page.entries));
   ctx.save();ctx.beginPath();ctx.rect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.clip();
   if(!buttonOnly){ctx.fillStyle=screen.background;ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);
   const background=resources?.art(screen.backgroundArt,Math.floor(time*8));if(background)ctx.drawImage(background,bounds.x,bounds.y,bounds.w,bounds.h);
@@ -117,8 +120,8 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
     else if(element.type==='property-display'){const property=resources?.property(element,parameters);const shown=property==null?'—':typeof property==='number'?property.toFixed(element.decimals):typeof property==='object'?JSON.stringify(property):String(property);drawText(`${label}${label?': ':''}${shown}${element.suffix}`,b.x+b.w/2,b.y+b.h/2,Math.max(1,b.w-12));}
     else if(element.type==='asset-preview'){const image=resources?.assetArt(element,parameters,time);if(image)drawMenuImage(ctx,image,b,element.imageFit);else drawText('Choose an actor / item image',b.x+b.w/2,b.y+b.h/2,Math.max(1,b.w-12));}
     else if(element.type==='car-showroom'){
-      const choices=resources?.choices('cars',document,parameters)||[];
-      const page=showroomPage(choices,value,element.maxVisible),state=widgetStates.get(element.id)||{};
+      const choices=showroomPages.get(element)?.choices??resources?.choices('cars',document,parameters)??[];
+      const page=showroomPages.get(element)?.page??showroomPage(choices,value,element.maxVisible),state=widgetStates.get(element.id)||{};
       if(!choices.length)drawText('Save a car in the Car Editor to begin',b.x+b.w/2,b.y+b.h/2,b.w-16);
       for(const [i,entry] of page.entries.entries()){
         const selected=entry.value===(value||choices[0]?.value),card=garageCardBounds(b,page.entries.length,i);
@@ -128,7 +131,7 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
         ctx.save();ctx.globalAlpha*=selected?1:element.inactiveOpacity;
         ctx.fillStyle='#34434a';ctx.beginPath();ctx.ellipse(card.x+card.w/2,card.y+card.h*.8,card.w*.43,card.h*.09,0,0,Math.PI*2);ctx.fill();
         const preview={x:card.x+card.w*(1-scale)/2,y:card.y+card.h*(1-scale)/2,w:card.w*scale,h:card.h*.85*scale};
-        const car=resources?.car(entry.value),view={...element,type:'car-preview',animation:'none',angleBinding:'',angle:element.angle+(selected&&!editing?elapsed/element.duration*360:0)};
+        const car=resources?.car(entry.value),view={...element,type:'car-preview',showroomPreview:true,animation:'none',angleBinding:'',angle:element.angle+(selected&&!editing?elapsed/element.duration*360:0)};
         const draw=(context,area)=>drawCarComponent(context,area,view,car,resources,time,parameters,fontFamily);
         if(!selected&&resources?.drawParkedCar)resources.drawParkedCar(ctx,preview,car,element.angle,draw);else draw(ctx,preview);
         ctx.fillStyle=element.color;drawText(entry.label,card.x+card.w/2,card.y+card.h-4,card.w-8);ctx.restore();

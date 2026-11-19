@@ -14,8 +14,20 @@ const ASSET_REF_MARKER = '__chainsawAssetRef';
 let syncQueue = Promise.resolve();
 const volatileFiles = new Map();
 const volatileFileSources = new Map();
+let showroomEpoch=0;
+const showroomRevisions=new Map();
+function invalidateShowroomArt(folder,name){
+  if(folder==='art')showroomRevisions.set(name,(showroomRevisions.get(name)||0)+1);
+}
+export function staticShowroomArtVersion(name){
+  return isProjectStorageReadOnly()?`${showroomEpoch}:${showroomRevisions.get(name)||0}`:null;
+}
 let serverIndex = DEFAULT_FOLDERS.reduce((acc, folder) => { acc[folder] = {}; return acc; }, {});
 let storageApiAvailable = true;
+function setStorageApiAvailability(available){
+  if(storageApiAvailable!==available)showroomEpoch++;
+  storageApiAvailable=available;
+}
 
 function hasOwn(object, key) {
   return Object.prototype.hasOwnProperty.call(object || {}, key);
@@ -155,6 +167,7 @@ function updateCachedPayload(payload, source = 'server') {
       if (Number(JSON.parse(current).savedAt || 0) > Number(payload.savedAt || 0)) return false;
     } catch { /* Replace invalid cache entries. */ }
   }
+  invalidateShowroomArt(payload.folder,payload.name);
   volatileFiles.set(key, raw);
   volatileFileSources.set(key, source);
   if (!serverIndex[payload.folder]) serverIndex[payload.folder] = {};
@@ -267,11 +280,11 @@ async function probeStorageApi() {
   try {
     const payload = await requestJson('/__storage/index');
     serverIndex = normalizeIndex(payload.index);
-    storageApiAvailable = true;
+    setStorageApiAvailability(true);
     return true;
   } catch (error) {
     if (!isStorageApiUnavailable(error)) throw error;
-    storageApiAvailable = false;
+    setStorageApiAvailability(false);
     return false;
   }
 }
@@ -288,7 +301,7 @@ async function fetchServerIndex(folder = null) {
       return serverIndex;
     } catch (error) {
       if (!isStorageApiUnavailable(error)) throw error;
-      storageApiAvailable = false;
+      setStorageApiAvailability(false);
     }
   }
   return hydrateStaticStorageFiles();
@@ -373,6 +386,28 @@ async function fetchStaticFile(folder, name) {
   })().finally(() => staticLoads.delete(key));
   staticLoads.set(key, load);
   return load;
+}
+
+// Static showroom-only read. Never claims, replaces, or removes a shared
+// payload, editable save, manifest entry, or pending shared fetch.
+export async function readStaticShowroomArt(name,{isCurrent=()=>true}={}) {
+  if (typeof name !== 'string' || !name || !isCurrent()) return null;
+  const version=staticShowroomArtVersion(name);if(version===null)return null;
+  const folders = await loadStaticManifest();
+  const path = folders.art?.[name];
+  if (typeof path !== 'string' || !isCurrent() || version!==staticShowroomArtVersion(name)) return null;
+  const url = `${staticDocumentRoot}/${path.split('/').map(encodeURIComponent).join('/')}`;
+  const [stored, metadata] = await Promise.all([
+    requestStatic(url),
+    requestStatic(url.replace(/\/document\.json$/, '/metadata.json')).catch(error => {
+      if (error.status === 404) return {};
+      throw error;
+    })
+  ]);
+  if (metadata.deleted || !isCurrent() || version!==staticShowroomArtVersion(name)) return null;
+  const data=await decodeStoredProjectDocument(stored,url);
+  if(!isCurrent()||version!==staticShowroomArtVersion(name))return null;
+  return {savedAt:Number(metadata.savedAt || 0), data, showroomVersion:version};
 }
 
 async function hydrateStaticStorageFiles() {
@@ -478,6 +513,7 @@ export function setServerStorageEnabled(enabled) {
 export function upsertCachedProjectFile(folder, name, raw) {
   if (!folder || !name || typeof raw !== 'string') return;
   const key = fileKey(folder, name);
+  invalidateShowroomArt(folder,name);
   volatileFiles.set(key, raw);
   volatileFileSources.set(key, 'cache');
   if (!serverIndex[folder]) serverIndex[folder] = {};
@@ -501,6 +537,7 @@ export function upsertCachedProjectFile(folder, name, raw) {
 export function deleteCachedProjectFile(folder, name) {
   if (!folder || !name) return;
   const key = fileKey(folder, name);
+  invalidateShowroomArt(folder,name);
   volatileFiles.delete(key);
   volatileFileSources.delete(key);
   if (serverIndex[folder]) delete serverIndex[folder][name];
@@ -534,7 +571,7 @@ async function hydrateProjectFileOnly(folder, name, options = {}) {
   if (storageApiAvailable || requireNewest) {
     try {
       const serverPayload = await fetchServerFile(folder, name, options);
-      storageApiAvailable = true;
+      setStorageApiAvailability(true);
       if (cachedPayload
         && Number(cachedPayload.savedAt || 0) > Number(serverPayload?.savedAt || 0)) {
         updateCachedPayload(cachedPayload, cachedSource);
@@ -543,7 +580,7 @@ async function hydrateProjectFileOnly(folder, name, options = {}) {
       return serverPayload;
     } catch (error) {
       if (!isStorageApiUnavailable(error)) throw error;
-      storageApiAvailable = false;
+      setStorageApiAvailability(false);
     }
   }
   if (cachedPayload) {
@@ -583,13 +620,14 @@ export function listCachedProjectFiles(folder) {
 }
 
 export function clearCachedProjectFilesForTests() {
+  showroomEpoch++;showroomRevisions.clear();
   volatileFiles.clear();
   volatileFileSources.clear();
   staticManifestPromise = null;
   staticDocumentRoot = STATIC_STORAGE_ROOT;
   staticLoads.clear();
   serverIndex = DEFAULT_FOLDERS.reduce((acc, folder) => { acc[folder] = {}; return acc; }, {});
-  storageApiAvailable = true;
+  setStorageApiAvailability(true);
 }
 
 export function listServerIndexedFiles(folder = null) {
@@ -619,11 +657,11 @@ export async function saveServerFile(folder, name, data, options = {}) {
       data: hasOwn(responseFile, 'data') ? responseFile.data : data
     };
     updateCachedPayload(savedFile, 'server');
-    storageApiAvailable = true;
+    setStorageApiAvailability(true);
     return { ...savedFile, persisted: true };
   } catch (error) {
     if (!isStorageApiUnavailable(error)) throw error;
-    if (isHardStorageApiUnavailable(error)) storageApiAvailable = false;
+    if (isHardStorageApiUnavailable(error)) setStorageApiAvailability(false);
     return { version, folder, name, savedAt, data, persisted: false, reason: getStorageSaveFailureReason(error) };
   }
 }
@@ -638,7 +676,7 @@ export async function deleteServerFile(folder, name) {
     await requestJson(`/__storage/file?folder=${encodeURIComponent(folder)}&name=${encodeURIComponent(name)}`, { method: 'DELETE' });
   } catch (error) {
     if (!isStorageApiUnavailable(error)) throw error;
-    storageApiAvailable = false;
+    setStorageApiAvailability(false);
     throw new Error('Published project files are read-only; deletion requires the storage server.');
   }
   deleteCachedProjectFile(folder, name);
@@ -656,7 +694,7 @@ export async function listServerFileVersions(folder, name) {
     return Array.isArray(payload.versions) ? payload.versions : [];
   } catch (error) {
     if (!isStorageApiUnavailable(error)) throw error;
-    storageApiAvailable = false;
+    setStorageApiAvailability(false);
     return [];
   }
 }
@@ -668,7 +706,7 @@ export async function loadServerFileVersion(folder, name, versionId) {
     return payload.file || null;
   } catch (error) {
     if (!isStorageApiUnavailable(error)) throw error;
-    storageApiAvailable = false;
+    setStorageApiAvailability(false);
     return null;
   }
 }
@@ -689,7 +727,7 @@ export async function restoreServerFileVersion(folder, name, versionId) {
     return restored;
   } catch (error) {
     if (!isStorageApiUnavailable(error)) throw error;
-    storageApiAvailable = false;
+    setStorageApiAvailability(false);
     return null;
   }
 }
@@ -701,7 +739,7 @@ export async function deleteServerFileVersion(folder, name, versionId) {
     return { ok: true };
   } catch (error) {
     if (!isStorageApiUnavailable(error)) throw error;
-    storageApiAvailable = false;
+    setStorageApiAvailability(false);
     return { ok: false };
   }
 }
@@ -740,7 +778,7 @@ export async function renameServerFile(folder, oldName, newName) {
     return renamed;
   } catch (error) {
     if (!isStorageApiUnavailable(error)) throw error;
-    storageApiAvailable = false;
+    setStorageApiAvailability(false);
     return renameServerFile(folder, oldName, newName);
   }
 }

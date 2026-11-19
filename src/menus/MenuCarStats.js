@@ -9,7 +9,7 @@ export function drawCarComponent(ctx,b,e,car,resources,time,parameters,fontFamil
     ctx.save();const yaw=e.angleBinding?Number(parameters[e.angleBinding]??e.angle)*Math.PI/180:e.animation==='spin'?(e.loop?time/e.duration:Math.min(1,time/e.duration))*Math.PI*2:e.angle*Math.PI/180;
     const choice=renderer.getRaceCarProjectedArtRef(car,0,yaw);
     if(car.art?.bodyModel?.ref||!choice.artRef){resources.carPreview.draw(ctx,b,car,yaw+Math.PI,time);ctx.restore();return;}
-    resources.carPreview.drawSprite(ctx,b,car,choice);ctx.restore();return;
+    resources.carPreview.drawSprite(ctx,b,car,choice,{showroomArt:e.showroomPreview===true});ctx.restore();return;
   }
   const tuning=resources.tuning(car);
   if(e.type==='car-stats'){
