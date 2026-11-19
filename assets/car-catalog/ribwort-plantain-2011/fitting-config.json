@@ -1,0 +1,267 @@
+{
+  "id": "ribwort-plantain-2011",
+  "name": "Ribwort Plantain 2011",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "d753563c5ce5da13ecfc1ab83298b8913ee1d7bcb0e62d35ed7ded3b4843e3be",
+  "sourceDirectory": "assets/car-catalog/ribwort-plantain-2011",
+  "sourceHashes": {
+    "body": "d7134d66717299a54980d331f27ee314441ba412d9f9b86cf8c8af6b39199c88",
+    "dashboard": "cd5dff65abea71f06565c8cb54ea20b5ca45db707f168e93c728aa7f92d62bf1",
+    "tires": "66affe81af7d93278a3287ea3d5c0b580effe17e62113af5338cee068226db62"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 103.23,
+        "y": 316.475,
+        "radius": 18.525
+      },
+      {
+        "wheel": "fr",
+        "x": 305.77,
+        "y": 316.475,
+        "radius": 18.525
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 657.5,
+        "y": 283.0,
+        "radius": 22.0
+      },
+      {
+        "wheel": "rr",
+        "x": 787.5,
+        "y": 262.0,
+        "radius": 16.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 991.5,
+        "y": 290.0,
+        "radius": 30.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1224.5,
+        "y": 290.0,
+        "radius": 32.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1413.5,
+        "y": 268.0,
+        "radius": 16.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1544.0,
+        "y": 280.5,
+        "radius": 23.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 106.42,
+        "y": 753.15,
+        "radius": 17.849999999999998
+      },
+      {
+        "wheel": "rl",
+        "x": 301.58000000000004,
+        "y": 753.15,
+        "radius": 17.849999999999998
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 648.5,
+        "y": 722.0,
+        "radius": 23.0
+      },
+      {
+        "wheel": "fl",
+        "x": 774.5,
+        "y": 713.0,
+        "radius": 18.0
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 979.5,
+        "y": 734.0,
+        "radius": 34.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1216.5,
+        "y": 733.0,
+        "radius": 32.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1401.5,
+        "y": 706.0,
+        "radius": 16.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1525.0,
+        "y": 725.5,
+        "radius": 21.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      293,
+      384,
+      398,
+      120
+    ],
+    "wheel": [
+      492.0,
+      793,
+      420
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5",
+    "instrumentPodBounds": [
+      293,
+      384,
+      398,
+      120
+    ],
+    "renderedInstrumentPodBounds": [
+      293,
+      384,
+      398,
+      120
+    ],
+    "measuredDashboardWheel": true
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Stable source dark-pod intersection, explicit dashboard-space wheel, fixed native exterior transforms; requires guards and visual review",
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false
+  },
+  "nativeTireTransformOverrides": {
+    "front": {
+      "tireScaleX": 0.4661566449192288,
+      "tireScaleY": 0.4661566449192288,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 2.2564177926138744e-16,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0
+    },
+    "frontRight": {
+      "tireScaleX": 0.9765388900207136,
+      "tireScaleY": 1.0779956454603532,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.05189258853457582,
+      "frontTireOffsetY": -0.3868028999336636,
+      "rearTireOffsetX": -0.06835043977424658,
+      "rearTireOffsetY": 0.650647846196193
+    },
+    "right": {
+      "tireScaleX": 1.1006590948607962,
+      "tireScaleY": 1.3395960667590128,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010399999999999882,
+      "frontTireOffsetY": -0.371291656631389,
+      "rearTireOffsetX": -0.02561983471074384,
+      "rearTireOffsetY": -0.3519325916478042
+    },
+    "rearRight": {
+      "tireScaleX": 0.9814016461789061,
+      "tireScaleY": 1.3739209214901829,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.4098184906096188,
+      "frontTireOffsetY": 0.7868713136444782,
+      "rearTireOffsetX": 0.4382813005269746,
+      "rearTireOffsetY": -0.7672746465752835
+    },
+    "rear": {
+      "tireScaleX": 0.4580126213845674,
+      "tireScaleY": 0.4580126213845674,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": -8.696922761815618e-16,
+      "rearTireOffsetY": 1.0283523535930629e-16
+    },
+    "rearLeft": {
+      "tireScaleX": 1.0229902233204538,
+      "tireScaleY": 1.2949814773380435,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.11503009846412615,
+      "frontTireOffsetY": 0.8913040145061324,
+      "rearTireOffsetX": -0.11422348689387862,
+      "rearTireOffsetY": -0.7126758295043212
+    },
+    "left": {
+      "tireScaleX": 1.149712730681333,
+      "tireScaleY": 1.1196977125205578,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.029600000000002125,
+      "frontTireOffsetY": -0.19275707592150346,
+      "rearTireOffsetX": 0.014380165289256001,
+      "rearTireOffsetY": -0.23046717235768957
+    },
+    "frontLeft": {
+      "tireScaleX": 0.8897753009875927,
+      "tireScaleY": 1.0664475006978702,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.12134923833128146,
+      "frontTireOffsetY": -0.5385483456851006,
+      "rearTireOffsetX": 0.20489138709161114,
+      "rearTireOffsetY": 0.682393291947629
+    }
+  },
+  "nativeWheelFaceInsets": {
+    "frontRight": {
+      "rr": 0.40344172921070454
+    },
+    "rearRight": {
+      "fr": 0.39318443654711444
+    },
+    "rearLeft": {
+      "fl": 0.3350419872411147
+    },
+    "frontLeft": {
+      "rl": 0.44280054297113475
+    }
+  }
+}
