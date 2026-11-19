@@ -1978,7 +1978,13 @@
       "catalog-broom-clover-2005-tires": "art/catalog-broom-clover-2005-tires/document.json",
       "catalog-lush-clover-2005-body": "art/catalog-lush-clover-2005-body/document.json",
       "catalog-lush-clover-2005-dashboard": "art/catalog-lush-clover-2005-dashboard/document.json",
-      "catalog-lush-clover-2005-tires": "art/catalog-lush-clover-2005-tires/document.json"
+      "catalog-lush-clover-2005-tires": "art/catalog-lush-clover-2005-tires/document.json",
+      "catalog-lark-clover-2009-body": "art/catalog-lark-clover-2009-body/document.json",
+      "catalog-lark-clover-2009-dashboard": "art/catalog-lark-clover-2009-dashboard/document.json",
+      "catalog-lark-clover-2009-tires": "art/catalog-lark-clover-2009-tires/document.json",
+      "catalog-prickly-sowthistle-1997-body": "art/catalog-prickly-sowthistle-1997-body/document.json",
+      "catalog-prickly-sowthistle-1997-dashboard": "art/catalog-prickly-sowthistle-1997-dashboard/document.json",
+      "catalog-prickly-sowthistle-1997-tires": "art/catalog-prickly-sowthistle-1997-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
