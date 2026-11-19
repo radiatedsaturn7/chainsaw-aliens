@@ -1,0 +1,308 @@
+{
+  "id": "woolly-trefoil-1996",
+  "name": "Woolly Trefoil 1996",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "8bdec8f4a50410c44e2935f9f044d413b1860eab860a5f2080d91be225eb0baf",
+  "sourceDirectory": "assets/car-catalog/woolly-trefoil-1996",
+  "sourceHashes": {
+    "body": "b609f30b270ec46797b47810bb7c47fc523ff3d119135634847b36e793c01a93",
+    "dashboard": "2880b96bdf8ca5b1e07ec98d57e90005b0253bc46affbceef87aa861b39577e9",
+    "tires": "548a09bf0361f1a6264b2260247cc8f15aa1dc9c09f6420f08e0107290e66675"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 99.83,
+        "y": 330.475,
+        "radius": 21.525
+      },
+      {
+        "wheel": "fr",
+        "x": 335.17,
+        "y": 330.475,
+        "radius": 21.525
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 627.5,
+        "y": 299.0,
+        "radius": 25.0
+      },
+      {
+        "wheel": "rr",
+        "x": 799.5,
+        "y": 266.0,
+        "radius": 17.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 927.0,
+        "y": 720.5,
+        "radius": 38.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1229.5,
+        "y": 722.0,
+        "radius": 40.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 432.5,
+        "y": 693.0,
+        "radius": 16.0
+      },
+      {
+        "wheel": "rr",
+        "x": 585.0,
+        "y": 725.5,
+        "radius": 26.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 96.38,
+        "y": 753.85,
+        "radius": 21.15
+      },
+      {
+        "wheel": "rl",
+        "x": 327.62,
+        "y": 753.85,
+        "radius": 21.15
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1560.0,
+        "y": 296.5,
+        "radius": 27.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1731.0,
+        "y": 265.5,
+        "radius": 15.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 962.0,
+        "y": 300.5,
+        "radius": 41.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1257.0,
+        "y": 295.5,
+        "radius": 36.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1377.0,
+        "y": 683.5,
+        "radius": 13.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1524.0,
+        "y": 726.5,
+        "radius": 24.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      220,
+      490,
+      550,
+      185
+    ],
+    "wheel": [
+      490,
+      669.1076923076921,
+      320
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#f5e8d4",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ],
+    "renderedInstrumentPodBounds": [
+      168,
+      428,
+      660,
+      164
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "projectedPodRepair": {
+      "id": "woolly-trefoil-1996",
+      "status": "proposal",
+      "minimumDeltaY": 62.10769230769209,
+      "maximumDeltaY": 97.99921874999998,
+      "deltaY": 64.10769230769209,
+      "evidence": [
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "speed",
+          "minimumDeltaY": -42.762500000000045,
+          "maximumDeltaY": 97.99921874999998
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "rpm",
+          "minimumDeltaY": -42.762500000000045,
+          "maximumDeltaY": 97.99921874999998
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "gear",
+          "minimumDeltaY": -42.762500000000045,
+          "maximumDeltaY": 97.99921874999998
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "speed",
+          "minimumDeltaY": 62.10769230769209,
+          "maximumDeltaY": 180.3461538461538
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "rpm",
+          "minimumDeltaY": 62.10769230769209,
+          "maximumDeltaY": 180.3461538461538
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "gear",
+          "minimumDeltaY": 62.10769230769209,
+          "maximumDeltaY": 180.3461538461538
+        }
+      ],
+      "accepted": false
+    },
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 1.1562826928510217,
+      "tireScaleY": 1.0268079976251814,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.3232435251396999,
+      "frontTireOffsetY": -0.6314421002993732,
+      "rearTireOffsetX": -0.33470137637937114,
+      "rearTireOffsetY": 0.6752870465619022
+    },
+    "rearRight": {
+      "tireScaleX": 0.862550068887135,
+      "tireScaleY": 1.1726170871145365,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.46297938765108376,
+      "frontTireOffsetY": 0.6526540470588438,
+      "rearTireOffsetX": -0.4545165777337266,
+      "rearTireOffsetY": -0.6330573799896497
+    },
+    "rearLeft": {
+      "tireScaleX": 0.9254832193623522,
+      "tireScaleY": 0.9254832193623522,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.06726613849674686,
+      "frontTireOffsetY": 0.6686642116383613,
+      "rearTireOffsetX": -0.06726613849674512,
+      "rearTireOffsetY": -0.6686642116383619
+    },
+    "frontLeft": {
+      "tireScaleX": 0.8588477004676763,
+      "tireScaleY": 1.163427813816624,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.630242061209841,
+      "frontTireOffsetY": -0.23012427011797743,
+      "rearTireOffsetX": 0.6187842099701726,
+      "rearTireOffsetY": 0.41396921638050554
+    },
+    "right": {
+      "tireScaleX": 1.1961508817400661,
+      "tireScaleY": 1.2134058905893177,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010400000000001929,
+      "frontTireOffsetY": -0.15435452342197342,
+      "rearTireOffsetX": 0.014380165289256834,
+      "rearTireOffsetY": -0.1288697248572206
+    },
+    "left": {
+      "tireScaleX": 1.2725575535291822,
+      "tireScaleY": 1.3682836829164666,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010400000000001929,
+      "frontTireOffsetY": -0.3239372961926044,
+      "rearTireOffsetX": 0.01438016528925632,
+      "rearTireOffsetY": -0.29928695208658773
+    }
+  }
+}
