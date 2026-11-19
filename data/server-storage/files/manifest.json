@@ -2137,7 +2137,13 @@
       "catalog-alsike-clover-1930-tires": "art/catalog-alsike-clover-1930-tires/document.json",
       "catalog-canyon-clover-2018-body": "art/catalog-canyon-clover-2018-body/document.json",
       "catalog-canyon-clover-2018-dashboard": "art/catalog-canyon-clover-2018-dashboard/document.json",
-      "catalog-canyon-clover-2018-tires": "art/catalog-canyon-clover-2018-tires/document.json"
+      "catalog-canyon-clover-2018-tires": "art/catalog-canyon-clover-2018-tires/document.json",
+      "catalog-pine-clover-2012-body": "art/catalog-pine-clover-2012-body/document.json",
+      "catalog-pine-clover-2012-dashboard": "art/catalog-pine-clover-2012-dashboard/document.json",
+      "catalog-pine-clover-2012-tires": "art/catalog-pine-clover-2012-tires/document.json",
+      "catalog-violet-trefoil-2012-body": "art/catalog-violet-trefoil-2012-body/document.json",
+      "catalog-violet-trefoil-2012-dashboard": "art/catalog-violet-trefoil-2012-dashboard/document.json",
+      "catalog-violet-trefoil-2012-tires": "art/catalog-violet-trefoil-2012-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
