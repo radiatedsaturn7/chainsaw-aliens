@@ -19,6 +19,8 @@ import {validateMeasuredPrep,applyMeasuredPrep,canonicalizeMeasuredTireMetadata,
 
 import {requiresRuntimeSourceAlias,verifyRuntimeSourceAlias} from './verify-runtime-source-alias.mjs';
 
+import {fragrantMode,validateFragrant,applyFragrantControls,applyFragrantAlpha} from './fragrant-exact-alpha-replay.mjs';
+
 const args=process.argv.slice(2);
 const replayTokens=args.flatMap((arg,i)=>arg.startsWith('--measured-replay')?[i]:[]);
 const measuredReplay=replayTokens.length>0;
@@ -32,6 +34,10 @@ const cherryTokens=args.flatMap((arg,i)=>arg.startsWith('--cherry-exact-opening'
 const cherry=cherryTokens.length>0;
 if(cherry)assert.ok(!pawpaw248&&!measuredReplay&&args.length===4&&cherryTokens.length===1&&cherryTokens[0]===3&&args[3]==='--cherry-exact-opening'
   &&args.slice(0,3).every(a=>a&&!a.startsWith('--')),'Usage: prepare-runtime-overlay.mjs DOC CONFIG OUTPUT --cherry-exact-opening');
+const fragrantTokens=args.flatMap((arg,i)=>arg.startsWith('--fragrant')?[i]:[]);
+const fragrant=fragrantTokens.length>0;
+if(fragrant)assert.ok(!measuredReplay&&!pawpaw248&&!cherry&&args.length===4&&fragrantTokens.length===1&&fragrantTokens[0]===3&&args[3]===fragrantMode&&args.slice(0,3).every(a=>a&&!a.startsWith('--')),
+  'Usage: prepare-runtime-overlay.mjs DOC CONFIG OUTPUT --fragrant-exact-alpha');
 const [documentArg,configArg,outputArg]=args;
 assert.ok(documentArg&&configArg&&outputArg,'Expected car document, fitting config and empty output directory');
 const documentPath=path.resolve(documentArg),configPath=path.resolve(configArg),output=path.resolve(outputArg);
@@ -41,9 +47,10 @@ assert.ok(output!==production&&!output.startsWith(production+path.sep),'Offline 
 assert.ok(!output.includes(path.sep+'data'+path.sep+'server-storage'),'Never target production storage in another checkout');
 assert.ok(!fs.existsSync(output)||fs.readdirSync(output).length===0,'Output directory must be empty');
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
-const readInput=(measuredReplay||pawpaw248||cherry)?readMeasuredFile:fs.readFileSync;
+const readInput=(measuredReplay||pawpaw248||cherry||fragrant)?readMeasuredFile:fs.readFileSync;
 const inputBytes=readInput(documentPath),configBytes=readInput(configPath),cfg=JSON.parse(configBytes);
 
+if(fragrant)validateFragrant(cfg,configBytes,inputBytes);
 assert.match(cfg.expectedDocumentSha256||'',/^[a-f0-9]{64}$/);
 assert.equal(sha(inputBytes),cfg.expectedDocumentSha256,'Vehicle changed since fitting input was recorded');
 assert.match(cfg.rosterCommit||'',/^[a-f0-9]{40}$/);
@@ -123,9 +130,10 @@ let pinnedSource;
 if(aliasBinding){
   Object.assign(images,decodeFrozenSource(aliasBinding.pngBytes,decodePng));
   Object.assign(sourceHashes,cfg.sourceHashes);
-}else if(measuredReplay){
+}else if(measuredReplay||fragrant){
   checkMeasuredOutput(output,repo,source);
   pinnedSource=freezeMeasuredSource(repo,source,cfg,decodePng);
+  if(fragrant)assert.deepEqual([pinnedSource.packageStatusSha256,pinnedSource.packageConfigSha256],['d921f6a2749c0222a2acc0ca7e9ca0ba53e50add3882ebafaabc9f6bc4a0de5d','63a4d6db70da57d5b7657616a5f2595dbc0307dcdc6165ba1141a7a94f783a21'],'Unreviewed Fragrant package markers');
   Object.assign(images,pinnedSource.images);
   Object.assign(sourceHashes,cfg.sourceHashes);
 }else{
@@ -158,6 +166,7 @@ if(cherry){
   assert.deepEqual(w.map(g=>g.source),['speed','rpm','gear']);
   w.forEach((g,i)=>{const [x,width]=cherryInsets[i];Object.assign(g,{x,width});});
 }
+if(fragrant)applyFragrantControls(car,cfg);
 if(cfg.cockpitCalibration.gaugeBackground){
   assert.match(cfg.cockpitCalibration.gaugeBackground,/^#[0-9a-f]{6}([0-9a-f]{2})?$/i,'Use an explicit per-car gauge backing color');
   const widgets=car.art.gauges.interior.widgets,values=widgets.filter(widget=>widget.showValue!==false);
@@ -192,7 +201,7 @@ if(pawpaw248){
     cfg.nativeBodyTransformOverrides,'The pinned Pawpaw config must describe the existing source body placement exactly');
   applyMeasuredPrep(car,pawpawControls);
 }
-if(measuredReplay)applyMeasuredPrep(car,cfg);
+if(measuredReplay||fragrant)applyMeasuredPrep(car,cfg);
 if(cherry)applyMeasuredPrep(car,cherryControls);
 let tires;
 if(pawpaw248){
@@ -207,7 +216,7 @@ if(pawpaw248){
 const tireDoc=carSheetDocument(tires,prepareCarSheet(tires,{columns:2,rows:1}));
 const tireRef=`catalog-${cfg.id}-tires`;assignCarTireSheet(car,tireRef,tireDoc);built.art[tireRef]=tireDoc;
 for(const layer of Object.values(car.art.angleLayers)){layer.tires.tireMode='auto';layer.tires.visible=true;}
-if(measuredReplay||pawpaw248||cherry)canonicalizeMeasuredTireMetadata(car);
+if(measuredReplay||pawpaw248||cherry||fragrant)canonicalizeMeasuredTireMetadata(car);
 for(const value of Object.values(car.art.tireTreads||{}))Object.assign(value,car.art.tireSurfaces.tread);
 const next={...original,car},withoutArt=doc=>{const copy=structuredClone(doc);delete copy.car.art;return copy;};
 assert.deepEqual(withoutArt(next),withoutArt(original),'Non-art vehicle fields changed');
@@ -234,7 +243,14 @@ if(cherry){
     '6532424b89c6cb757eae1abb1bbe605c0ac478d72992bedf17514a2900a78a88','cac4c9e76afb8db1e50b80e47ed07f9c529ab674e9477812385d3a64ae1a47a9'];
   assert.deepEqual(ownRefs.map(ref=>sha(packNative(built.art[ref]))),refs,'Cherry native documents differ from reviewed proof');
 }
-if(measuredReplay||aliasBinding){
+let fragrantEvidence;
+if(fragrant){
+  assert.equal(sha(overlayBytes),'9044797b399c4cb11607c3313300698b7b768be9b983baf447f4055ea218dde0','Fragrant fitting overlay differs from exact reviewed proof');
+  fragrantEvidence=applyFragrantAlpha(built,images.body,car,packNative);
+  assert.equal(sha(packNative(built.art[ownRefs[0]])),'3fb30a2f6273ed70cb628a29840ff675ff16c5497b06ae5988e75683b3e0d915','Fragrant stock-packed native body differs');
+  assert.deepEqual(ownRefs.slice(1).map(ref=>sha(packNative(built.art[ref]))),['1187b7d754df1edb2c0d741b4ba581f8ea9dd544ee3db1bf931901e01a397423','59b9c0c66ffa9949fa2d6fc13b3c6afb2c40fc82e347dfe6356c8234e8cdd139']);
+}
+if(measuredReplay||aliasBinding||fragrant){
   checkMeasuredOutput(output,repo,source);
   fs.mkdirSync(output,{mode:0o700});
 }else fs.mkdirSync(output,{recursive:true});
@@ -252,7 +268,7 @@ const status={id:cfg.id,status:'runtime-prepared-awaiting-visual-fitting',runtim
   productionIntegrated:false,gameplayAccepted:false,inputDocumentSha256:cfg.expectedDocumentSha256,
   rosterCommit:cfg.rosterCommit,identityHandoff:queue.source,sourceHashes,nativeHashes,
   sharedSteeringWheelReference:car.art.interior.steeringWheel.artRef,
-  fittingConfigSha256:sha((measuredReplay||aliasBinding)?configBytes:fs.readFileSync(configPath)),nonArtFieldsPreserved:true,
+  fittingConfigSha256:sha((measuredReplay||aliasBinding||fragrant)?configBytes:fs.readFileSync(configPath)),nonArtFieldsPreserved:true,
   deferred:['per-car exterior and cockpit fitting review','fixed rear camera and smoke','full gameplay and manifest acceptance']};
 if(measuredReplay)status.measuredReplay={mode:'measured-replay',version:1,overlaySha256:sha(overlayBytes),
   packageStatusSha256:pinnedSource.packageStatusSha256,packageConfigSha256:pinnedSource.packageConfigSha256,
@@ -261,5 +277,6 @@ if(aliasBinding)status.sourceAlias={mode:'verified-source-alias',version:1,sourc
   runtimeDocumentId:cfg.id,overlaySha256:sha(overlayBytes),...aliasBinding.pins};
 if(pawpaw248)status.exactPawpawOptics={threshold:248,overlaySha256:sha(overlayBytes),...pawpawAlphaPixels};
 if(cherry)status.exactCherryOptics={mode:'stock-tire-measured-opening',version:1,overlaySha256:sha(overlayBytes),wheelOpeningInsets:cherryInsets};
+if(fragrant)status.exactFragrantAlpha={...fragrantEvidence,overlaySha256:sha(overlayBytes),packageStatusSha256:pinnedSource.packageStatusSha256,packageConfigSha256:pinnedSource.packageConfigSha256};
 fs.writeFileSync(path.join(output,'runtime-preparation.json'),JSON.stringify(status,null,2)+'\n');
 console.log(JSON.stringify({id:cfg.id,status:status.status,ownManifestKeys:ownRefs,productionWrites:0}));
