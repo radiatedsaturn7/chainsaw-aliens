@@ -2377,7 +2377,13 @@
       "catalog-wild-madder-2013-tires": "art/catalog-wild-madder-2013-tires/document.json",
       "catalog-biting-stonecrop-2012-body": "art/catalog-biting-stonecrop-2012-body/document.json",
       "catalog-biting-stonecrop-2012-dashboard": "art/catalog-biting-stonecrop-2012-dashboard/document.json",
-      "catalog-biting-stonecrop-2012-tires": "art/catalog-biting-stonecrop-2012-tires/document.json"
+      "catalog-biting-stonecrop-2012-tires": "art/catalog-biting-stonecrop-2012-tires/document.json",
+      "catalog-yellow-melilot-1966-body": "art/catalog-yellow-melilot-1966-body/document.json",
+      "catalog-yellow-melilot-1966-dashboard": "art/catalog-yellow-melilot-1966-dashboard/document.json",
+      "catalog-yellow-melilot-1966-tires": "art/catalog-yellow-melilot-1966-tires/document.json",
+      "catalog-rosebay-willowherb-1988-body": "art/catalog-rosebay-willowherb-1988-body/document.json",
+      "catalog-rosebay-willowherb-1988-dashboard": "art/catalog-rosebay-willowherb-1988-dashboard/document.json",
+      "catalog-rosebay-willowherb-1988-tires": "art/catalog-rosebay-willowherb-1988-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

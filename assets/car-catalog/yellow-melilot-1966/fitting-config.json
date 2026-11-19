@@ -1,0 +1,192 @@
+{
+  "id": "yellow-melilot-1966",
+  "name": "Yellow Melilot 1966",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "13aeb6f82be72f096852b4754f27d7f69e9366a378b14263afb7d12538d5f775",
+  "sourceDirectory": "assets/car-catalog/yellow-melilot-1966",
+  "sourceHashes": {
+    "body": "ae163dbbfcffe6214fd1190a9deb18884363d2dab1e209f5fd04dd90ad31ac9d",
+    "dashboard": "ca089eae75bdb5d58e4acd0ca51928b19334b5f675544aae77397c3780c9256e",
+    "tires": "917be7a5684cabef2565df923a88936ed1f6b0230d3626cc410b988769342b9c"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 113.58,
+        "y": 342.35,
+        "radius": 19.65
+      },
+      {
+        "wheel": "fr",
+        "x": 328.42,
+        "y": 342.35,
+        "radius": 19.65
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 641.5,
+        "y": 314.0,
+        "radius": 30.0
+      },
+      {
+        "wheel": "rr",
+        "x": 806.5,
+        "y": 285.0,
+        "radius": 18.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 951.5,
+        "y": 316.0,
+        "radius": 41.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1232.5,
+        "y": 316.0,
+        "radius": 40.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 457.0,
+        "y": 723.5,
+        "radius": 16.5
+      },
+      {
+        "wheel": "rr",
+        "x": 600.0,
+        "y": 755.5,
+        "radius": 26.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 100.74,
+        "y": 777.55,
+        "radius": 21.45
+      },
+      {
+        "wheel": "rl",
+        "x": 335.26,
+        "y": 777.55,
+        "radius": 21.45
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1571.5,
+        "y": 309.0,
+        "radius": 27.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1708.5,
+        "y": 278.0,
+        "radius": 15.0
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 950.5,
+        "y": 763.0,
+        "radius": 42.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1240.0,
+        "y": 758.5,
+        "radius": 39.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1384.0,
+        "y": 720.5,
+        "radius": 15.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1517.5,
+        "y": 752.0,
+        "radius": 25.0
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      220,
+      490,
+      550,
+      185
+    ],
+    "wheel": [
+      490,
+      607.0,
+      320
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#f5e8d4",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false
+  },
+  "nativeTireTransformOverrides": {
+    "left": {
+      "tireScaleX": 1.2303471300786852,
+      "tireScaleY": 1.2303471300786852,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.4476519300693732,
+      "rearTireOffsetX": 4.4408920985006257E-16,
+      "rearTireOffsetY": -0.2523480699306282
+    }
+  }
+}
