@@ -2191,7 +2191,10 @@
       "catalog-redcurrant-clover-1999-tires": "art/catalog-redcurrant-clover-1999-tires/document.json",
       "catalog-water-dock-1986-body": "art/catalog-water-dock-1986-body/document.json",
       "catalog-water-dock-1986-dashboard": "art/catalog-water-dock-1986-dashboard/document.json",
-      "catalog-water-dock-1986-tires": "art/catalog-water-dock-1986-tires/document.json"
+      "catalog-water-dock-1986-tires": "art/catalog-water-dock-1986-tires/document.json",
+      "catalog-arrowleaf-trefoil-2012-body": "art/catalog-arrowleaf-trefoil-2012-body/document.json",
+      "catalog-arrowleaf-trefoil-2012-dashboard": "art/catalog-arrowleaf-trefoil-2012-dashboard/document.json",
+      "catalog-arrowleaf-trefoil-2012-tires": "art/catalog-arrowleaf-trefoil-2012-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
