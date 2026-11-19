@@ -2155,7 +2155,13 @@
       "catalog-mandarin-clover-2013-tires": "art/catalog-mandarin-clover-2013-tires/document.json",
       "catalog-partridgeberry-clover-2009-body": "art/catalog-partridgeberry-clover-2009-body/document.json",
       "catalog-partridgeberry-clover-2009-dashboard": "art/catalog-partridgeberry-clover-2009-dashboard/document.json",
-      "catalog-partridgeberry-clover-2009-tires": "art/catalog-partridgeberry-clover-2009-tires/document.json"
+      "catalog-partridgeberry-clover-2009-tires": "art/catalog-partridgeberry-clover-2009-tires/document.json",
+      "catalog-boysenberry-clover-2010-body": "art/catalog-boysenberry-clover-2010-body/document.json",
+      "catalog-boysenberry-clover-2010-dashboard": "art/catalog-boysenberry-clover-2010-dashboard/document.json",
+      "catalog-boysenberry-clover-2010-tires": "art/catalog-boysenberry-clover-2010-tires/document.json",
+      "catalog-cedar-clover-2010-body": "art/catalog-cedar-clover-2010-body/document.json",
+      "catalog-cedar-clover-2010-dashboard": "art/catalog-cedar-clover-2010-dashboard/document.json",
+      "catalog-cedar-clover-2010-tires": "art/catalog-cedar-clover-2010-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
