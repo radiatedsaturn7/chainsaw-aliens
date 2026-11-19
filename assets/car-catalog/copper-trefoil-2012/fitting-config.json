@@ -1,0 +1,373 @@
+{
+  "id": "copper-trefoil-2012",
+  "name": "Copper Trefoil 2012",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "5c63cc152620b45b21eccb478026694705c487e640dfb17ae36359c5a154c477",
+  "sourceDirectory": "assets/car-catalog/copper-trefoil-2012",
+  "sourceHashes": {
+    "body": "076895f03c886bfca9b26053c247f3c06b085c61e69605833610f9c5bbb0ee59",
+    "dashboard": "79fa9775381bfcc758d7ab47715f6b4448394bfa4538fb7e3a0ee87db0fa5228",
+    "tires": "74a93441871651b25f8445608d67de1b793b80aea08bcfcb61d0b0fdcd83a27c"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 89.89,
+        "y": 317.925,
+        "radius": 24.075
+      },
+      {
+        "wheel": "fr",
+        "x": 353.11,
+        "y": 317.925,
+        "radius": 24.075
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 689,
+        "y": 282.5,
+        "radius": 27.5
+      },
+      {
+        "wheel": "rr",
+        "x": 831.5,
+        "y": 257,
+        "radius": 17
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 969,
+        "y": 733,
+        "radius": 39
+      },
+      {
+        "wheel": "rr",
+        "x": 1235,
+        "y": 733.5,
+        "radius": 39.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 713,
+        "y": 720,
+        "radius": 24
+      },
+      {
+        "wheel": "rr",
+        "x": 836,
+        "y": 708.5,
+        "radius": 14.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 97.45,
+        "y": 756.125,
+        "radius": 22.875
+      },
+      {
+        "wheel": "rl",
+        "x": 347.55,
+        "y": 756.125,
+        "radius": 22.875
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1611,
+        "y": 274,
+        "radius": 23
+      },
+      {
+        "wheel": "fl",
+        "x": 1737,
+        "y": 257.5,
+        "radius": 14.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 981,
+        "y": 288,
+        "radius": 41
+      },
+      {
+        "wheel": "fl",
+        "x": 1245,
+        "y": 285.5,
+        "radius": 40.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1381,
+        "y": 697.5,
+        "radius": 15.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1514,
+        "y": 722.5,
+        "radius": 25.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      650.0,
+      297
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e2e9e8",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "automatic model-specific alpha measurements; unreviewed seeds",
+    "sourceImagesReviewed": false,
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false,
+    "evidence": [
+      {
+        "slot": "front",
+        "method": "silhouette-seeded tread; must pass clipping guard",
+        "supportRows": 0
+      },
+      {
+        "slot": "frontRight",
+        "sourceTracks": [
+          7,
+          3
+        ],
+        "method": "two distinct persistent tracks of at least three source rows; no competing persistent gap"
+      },
+      {
+        "slot": "frontRight",
+        "method": "multiline alpha apertures",
+        "supportRows": 0
+      },
+      {
+        "slot": "right",
+        "method": "multiline alpha apertures",
+        "supportRows": 6
+      },
+      {
+        "slot": "rearRight",
+        "method": "multiline alpha apertures",
+        "supportRows": 4
+      },
+      {
+        "slot": "rear",
+        "method": "silhouette-seeded tread; must pass clipping guard",
+        "supportRows": 0
+      },
+      {
+        "slot": "rearLeft",
+        "method": "multiline alpha apertures",
+        "supportRows": 3
+      },
+      {
+        "slot": "left",
+        "method": "multiline alpha apertures",
+        "supportRows": 6
+      },
+      {
+        "slot": "frontLeft",
+        "sourceTracks": [
+          3,
+          7
+        ],
+        "method": "two distinct persistent tracks of at least three source rows; no competing persistent gap"
+      },
+      {
+        "slot": "frontLeft",
+        "method": "multiline alpha apertures",
+        "supportRows": 0
+      }
+    ],
+    "repair": "Driver-aligned opening proposal based on measured cluster and wheel; requires native glyph/coverage guards and visual review. No fit acceptance.",
+    "podProposal": {
+      "id": "copper-trefoil-2012",
+      "status": "proposal",
+      "candidates": [
+        {
+          "sourceBounds": [
+            160,
+            380,
+            544,
+            212
+          ],
+          "innerRectangle": [
+            244,
+            420,
+            388,
+            160
+          ],
+          "area": 6151,
+          "centerDistance": 66.0
+        }
+      ],
+      "accepted": false,
+      "sourceSha256": "79fa9775381bfcc758d7ab47715f6b4448394bfa4538fb7e3a0ee87db0fa5228",
+      "inferenceSha256": "1f58f703cd2d3ac35138ebe7621b5930b6db0113fbdcf60899343db5acc4844a",
+      "productionWrites": 0
+    },
+    "repairRule": "driver pod-center +150 source px seed, held-out Lace calibration"
+  },
+  "allowSideTireOverrides": true,
+  "nativeTireTransformOverrides": {
+    "rearRight": {
+      "tireScaleX": 0.8970886129158167,
+      "tireScaleY": 0.8970886129158167,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -10.77249209441385,
+      "frontTireOffsetY": 1.9430422266560579,
+      "rearTireOffsetX": -10.701100677838442,
+      "rearTireOffsetY": -0.3054860812367721
+    },
+    "front": {
+      "tireScaleX": 0.40561916942327403,
+      "tireScaleY": 0.40561916942327403,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0
+    },
+    "frontRight": {
+      "tireScaleX": 1.1689041431348828,
+      "tireScaleY": 1.0380161616608656,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.48228141567437377,
+      "frontTireOffsetY": -0.6770094212921901,
+      "rearTireOffsetX": -0.49373926691404346,
+      "rearTireOffsetY": 0.7208543675547191
+    },
+    "right": {
+      "tireScaleX": 1.0840412767725693,
+      "tireScaleY": 1.0996790546726731,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010399999999999882,
+      "frontTireOffsetY": -0.27104788384288314,
+      "rearTireOffsetX": 0.014380165289256196,
+      "rearTireOffsetY": -0.29217636443631023
+    },
+    "rear": {
+      "tireScaleX": 0.4066111116876769,
+      "tireScaleY": 0.4066111116876769,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 6.04349144142476e-16,
+      "rearTireOffsetY": 1.4292040570936935e-16
+    },
+    "rearLeft": {
+      "tireScaleX": 0.9613176169708857,
+      "tireScaleY": 1.171186760515918,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.4393904379852462,
+      "frontTireOffsetY": 1.043824484733349,
+      "rearTireOffsetX": 0.36019704955549736,
+      "rearTireOffsetY": -0.4851962997315372
+    },
+    "left": {
+      "tireScaleX": 1.1337316997009628,
+      "tireScaleY": 1.1041338909198033,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010399999999999902,
+      "frontTireOffsetY": -0.2109354993273754,
+      "rearTireOffsetX": 0.03438016528925595,
+      "rearTireOffsetY": -0.21228874895181885
+    },
+    "frontLeft": {
+      "tireScaleX": 1.0273699245698904,
+      "tireScaleY": 0.9293550473245953,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.6118400807964639,
+      "frontTireOffsetY": -0.28793102599320247,
+      "rearTireOffsetX": 0.6003822295567947,
+      "rearTireOffsetY": 0.7117759722557299
+    }
+  },
+  "fittedBodyReplacement": {
+    "physicalFrame": 5,
+    "logicalView": "rearRight",
+    "originalSourceSha256": "076895f03c886bfca9b26053c247f3c06b085c61e69605833610f9c5bbb0ee59",
+    "candidateFile": "assets/car-catalog/copper-trefoil-2012/rear-right-candidate.png",
+    "candidateSha256": "a7a8abd0b2881c710d03597440e465ca85dbf758df4d41c444ab9c0d5c2ce228",
+    "cropAlpha128": [
+      149,
+      76,
+      1674,
+      772
+    ],
+    "nativeFrameSize": [
+      446,
+      243
+    ],
+    "nativePlacement": [
+      21,
+      43,
+      403,
+      184
+    ],
+    "uniformScale": 0.2642622950819672,
+    "retainedFrameBounds": [
+      21,
+      15,
+      403,
+      212
+    ],
+    "method": "Uniform width registration with bottom pinned; replace only native frame5, retain all other frames exactly."
+  }
+}
