@@ -4,8 +4,8 @@
   "name": "Pawpaw Clover 2012",
   "stableCarId": "saved-car:Pawpaw Clover 2012",
   "referenceVehicle": "US2012 Hyundai Genesis Coupe base2.0T,RWD,6MT. Two-door coupe,standard18-inch wheels,2012BODY,not2013update orR-Spec.",
-  "runtimeDocumentIdVerified": false,
-  "runtimeDocumentId": null,
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "pawpaw-clover-2012",
   "sourceHashes": {
     "body": "7a725840853bfa6a7d0ec6d8593f2cf92a4b4b10090e2e600bb414dbb71612bc",
     "dashboard": "40778c908d23fb11dcd43aa99cead2a07b7d3ce491be12c051b9d9b33db8d297",

@@ -18146,6 +18146,36 @@
           ]
         }
       ]
+    },
+    {
+      "id": "pawpaw-clover-2012",
+      "name": "Pawpaw Clover 2012",
+      "stableCarId": "saved-car:Pawpaw Clover 2012",
+      "runtimeId": "saved-car:Pawpaw Clover 2012",
+      "runtimeDocumentId": "pawpaw-clover-2012",
+      "runtimeDocumentIdVerified": true,
+      "candidateId": "hyundai-genesis-coupe-2-0t-2012-us-supplemental",
+      "referenceVehicle": "2012 United States Hyundai Genesis Coupe, base2.0T RWD6MT,standard18-inchwheels andopendifferential; notR-Spec,Premium,3.8 or2013powerupgrade",
+      "identity": {
+        "year": 2012,
+        "make": "Hyundai",
+        "model": "Genesis Coupe",
+        "trim": "base2.0T RWD6MT,standard18-inchwheels andopendifferential; notR-Spec,Premium,3.8 or2013powerupgrade",
+        "market": "United States"
+      },
+      "bodyClass": "coupe",
+      "staged": false,
+      "status": "placeholder",
+      "identityStatus": "handoff-ready",
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Hyundai/Genesis%20Coupe/Hyundai_US%20GenesisCoupe_2012.pdf",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ],
+      "sourcePackageId": "source-pawpaw-clover-2012"
     }
   ]
 }

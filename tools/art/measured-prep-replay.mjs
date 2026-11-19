@@ -133,6 +133,9 @@ export function freezeMeasuredSource(repo,source,cfg,decodePng){
     assert.equal(hash,status.sourceHashes?.[role],'Source marker hash differs: '+role);
     data[role]=bytes;
   }
+  return {images:decodeFrozenSource(data,decodePng),packageStatusSha256:measuredSha(packageStatus),packageConfigSha256:measuredSha(packageConfig)};
+}
+export function decodeFrozenSource(data,decodePng){
   // Use the exact unchanged importer on immutable buffers snapshotted into a private directory.
   const snapshot=fs.mkdtempSync(path.join(os.tmpdir(),'measured-catalog-source-'));
   try {
@@ -142,6 +145,6 @@ export function freezeMeasuredSource(repo,source,cfg,decodePng){
       fs.writeFileSync(png,bytes,{mode:0o400,flag:'wx'});
       images[role]=decodePng(png);
     }
-    return {images,packageStatusSha256:measuredSha(packageStatus),packageConfigSha256:measuredSha(packageConfig)};
+    return images;
   }finally{fs.rmSync(snapshot,{recursive:true,force:true});}
 }
