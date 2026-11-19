@@ -1646,6 +1646,7 @@ export const LATEST_MAJOR_WORK = {
 };
 
 export const LATEST_CHANGES = [
+  {"date": "2026-11-19", "time": "19:51 UTC", "title": "Refined digital pedals and slide recovery", "details": ["Add saved On/Off digital pedal assists, normal and double-tap aggressive throttle, immediate lift, and held double-tap handbrake.", "Preserve power as wheelspin settles; fix zero-throttle reapplication and powered-slip feedback when momentum opposes the engaged gear.", "Include calibration harness and regression tests for pedal gestures, limiter protection, ABS, drivetrain layouts and reverse motion."]},
   {date:"2026-11-13",time:"19:25 UTC",title:"Hemlock RT and Hawthorn V",details:["Add source-backed V8 wagon and sports sedan with original eight-view bodies and fitted shared-wheel cockpits.","Keep paired OEM unit discrepancies, simulation estimates and conservative differential behavior explicit."]},
   {"date": "2026-11-13", "time": "18:20 UTC", "title": "Rotarypetal and Thistle 190", "details": ["Add two distinct source-backed car-editor vehicles with original eight-view artwork and individually fitted shared-wheel cockpits.", "Keep rotary and differential abstractions, secondary Peugeot gearing and simulation estimates explicit."]},
   {date:'2026-11-13',time:'15:34 UTC',title:'Expanded campaign menu loading',details:['Preserve every campaign menu page beyond the former 100-screen cutoff.','Validate the browser build using the same pinned GitHub assets as Pages.']},

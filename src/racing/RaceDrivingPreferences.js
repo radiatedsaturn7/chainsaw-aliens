@@ -3,6 +3,7 @@ import {DIGITAL_THROTTLE_MODES,DRIVING_INTENT_STYLES} from './DigitalThrottle.js
 const fields={
  transmissionMode:['raceTransmission','automatic',['automatic','manual']],
  absEnabled:['raceAbs',true],tractionControlEnabled:['raceTractionControl',true],
+ brakeAssistEnabled:['raceBrakeAssist',false],
  launchControlEnabled:['raceLaunchControl',false],
  digitalThrottleMode:['raceDigitalThrottle','off',DIGITAL_THROTTLE_MODES],
  cameraView:['raceCameraView','third-person',['third-person','first-person']],
@@ -13,7 +14,8 @@ const fields={
 };
 export function restoreRaceDrivingPreferences(input,progress={}){
  for(const [field,[key,fallback,options]] of Object.entries(fields)){
-  const value=progress[key];input[field]=options?options.includes(value)?value:fallback:typeof value==='boolean'?value:fallback;
+  const saved=progress[key];
+  const value=key==='raceDigitalThrottle' && ['progressive','adaptive'].includes(saved)?'on':saved;input[field]=options?options.includes(value)?value:fallback:typeof value==='boolean'?value:fallback;
  }
  input.autoShift=input.transmissionMode!=='manual';
 }

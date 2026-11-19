@@ -1,0 +1,236 @@
+DIGITAL PEDAL CALIBRATION
+
+Run from the repository root:
+  npm run calibrate:pedals -- --output=artifacts/digital-pedals/report.json
+  npm run test:digital-pedals
+  node tools/vehicle-validation/calibrate-digital-pedals.mjs --help
+
+Scope
+  Original saved cars: RTG-001, CT-86, BUSE-019, PZ-24.
+  All eight selectable surfaces from RACE_SURFACES, using production Track State
+  profiles and the saved per-wheel tire definitions, dimensions, and pressures.
+  Snow is 25.4 mm. Wet surfaces retain their authored water/contamination defaults.
+  Automatic transmission. Digital throttle and brake assistance enabled.
+  ABS and traction control tested together off and on; stability control off.
+  Physics fixed at 120 Hz; button shaping at 60 Hz; virtual driver decisions 10 Hz.
+
+Course stages (isolated starts so a bad launch cannot invalidate later stages)
+  1. 402.336 m (quarter-mile) launch, then hold service brake to below 0.5 m/s.
+     A binary steering driver maintains the straight centerline.
+  2. Separate 60 mph stop for like-for-like braking comparisons.
+  3. Level slalom, 220 m: six alternating gates, 30 m spacing, +/-3 m offset.
+  4. Same slalom, uphill 7%.
+  5. Same slalom, downhill 7%.
+  Slaloms begin at 10 m/s; the driver uses on/off throttle/brake around that speed.
+  Contact heights follow each wheel's actual position and the grade. These are
+  uniform analytical test surfaces, not visual/editor tracks or imported roads.
+
+Inputs and limitations
+  This tests simulated-gamepad button demands after gesture recognition, through
+  RaceEditor.updateRacePedalAxes and production HandlingAssist/VehicleDynamicsRunner.
+  It does not emulate browser touch dispatch. Separate controller tests cover the
+  double-tap/hold handbrake gesture; the slalom driver never requests handbrake.
+  Candidate function injection is regression-tested against the editor path.
+  This is a repeatable controller benchmark, not an expert AI driver. Failed or
+  unstable cases remain in the report; completed does not mean stable or on line.
+  Samples are recorded once per second; summary metrics accumulate at 60 Hz.
+  Maximum case duration 90 s. Exits on >25 m path error or >1 rad roll.
+  No tire forces, engine, clutch, transmission, suspension, or car files are tuned.
+
+Saved-car caveat
+  At calibration time all four named documents use AWD and 374 hp. Their brake
+  bias and rev limits differ. Therefore --drivetrains=fwd,rwd adds explicitly
+  synthetic drivetrain-only RTG fixtures, without modifying saved car documents.
+  Always include those fixtures when claiming FWD/RWD/AWD coverage.
+
+Comparisons and checkpointing
+  Copy the two pedal modules to artifacts before editing them, then pass their
+  paths with --throttle=... --brake=... for an exact controller baseline.
+  --feedback=... can inject a candidate digitalPedalFeedback module.
+  --resume=report.json reuses completed cases; only resume the SAME controller,
+  vehicle documents, course, and surface definitions. It is not a cache validator.
+  Every result is checkpointed; interrupted runs can continue without starting over.
+  summarize-digital-pedals.mjs before.json after.json comparison.json reports paired
+  metrics and flags regressions for review. A flag is not automatically excused
+  by a faster lap. Verify stopped/completed, sideslip, path error and entry speed.
+  Fixed-speed braking is the comparable stopping metric; quarter-mile exit speeds
+  differ, so their subsequent stopping distances must not be compared in isolation.
+  Bounded input history and no telemetry history speed up tests; exact physics
+  parity against the unbounded/transient configuration has a regression test.
+
+Selected calibration
+  Throttle remains pedal-spin-travel-v10. More aggressive slowing was screened
+  and rejected because gains did not carry across surfaces and drivetrains.
+  Brake-tire-peak-v5 blends tire peak-slip feedback in only when the load-weighted
+  supported tire peak is narrow. This preserves dry braking despite unloaded
+  rear tires, while responding earlier to loose-surface lock. Original physical
+  slip remains in diagnostics. Existing rear-pair protection, ABS, analog pedals,
+  immediate release and the handbrake gesture remain in control.
+  ABS-on results from earlier candidates may be reused where the controller
+  branch is unchanged; those rows explicitly carry equivalentControllerReuse.
+  A 600-step release/reapply test verifies pressure-history invariance, and the
+  final report requires every ABS-on fixed-speed stopping result to match exactly.
+
+Final report command (fails until all 480 paired cases are present)
+  node tools/vehicle-validation/report-digital-pedals.mjs artifacts/digital-pedals
+  Outputs summary.json and comparison.csv. Inspect all comparison regression
+  flags as well as non-completions; these are measurements, not a claim that
+  every car/tire/surface combination can complete a slalom at the target speed.
+
+2026-11-19 dual throttle trial:
+advanceDigitalThrottle now selects traction-focused demand for an ordinary hold,
+and the unchanged advanceAggressiveDigitalThrottle for double-tap-and-hold.
+The first press is immediate; the second press must start within 300ms of the
+first. Release ends aggressive mode. This is pedal shaping, independent of TC;
+analog/off/countdown bypass remains unchanged. Debug pedal text shows the hold
+style. Unit coverage: tests/unit/digitalThrottleModes.test.js; old pedal response
+regressions intentionally exercise advanceAggressiveDigitalThrottle.
+Normal hold cuts sustained excess driven-wheel tread speed, with a 70ms attack /
+35ms recovery feedback filter and bounded proportional demand reduction. It
+stores delivered demand only; returning grip allows the existing smooth ramp.
+The allowance is bounded from tire peak-slip feedback, not a grip-force change.
+Live eight-second hold comparisons on asphalt/gravel use RTG AWD, BUSE FWD and
+PZ RWD, ABS/TC off: artifacts/digital-throttle-holds.json. These are launch checks,
+not full quarter-mile/slalom validation or proof of optimal performance.
+
+2026-11-19 corrected-car / dual-mode calibration methodology:
+The current harness explicitly drives traction holds and aggressive double-tap
+holds using real button edges. Traction releases last at least 350ms; aggressive
+holds start with a 50ms press, 50ms release, then held throttle. This prevents the
+10Hz virtual driver accidentally changing modes while controlling slalom speed.
+Each mode uses the same gesture driver for its before/after comparison.
+The corrected RTG-001 AWD, CT-86 MR2 RWD, BUSE-019 Clio FWD and PZ-24 M3 RWD
+retain their saved Tarmac tires and all physical specifications. These are not
+matching-surface tire comparisons or a promise that every surface is passable.
+There are 640 cases per complete version: 4 cars x 8 surfaces x ABS/TC on/off x
+2 throttle modes x (quarter-mile and stop, 60mph stop, level/up7%/down7% slalom).
+The three slaloms are separate reproducible courses, each with three left/right
+cycles. Steering is fixed; only pedal response is eligible for optimization.
+Default runs exercise RaceEditor wiring; candidate module runs have exact parity
+coverage. Simulation uses 120Hz physics and 60Hz input, with 10Hz binary driver
+decisions. Tests include failed/timed-out cases; no physical limits are bypassed.
+Artifacts: artifacts/digital-pedals-dual. Baseline modules are frozen there, and
+baseline-manifest.json hashes original controller, physics, car and tire inputs.
+Matrix version 3 includes throttleStyle in case/resume keys; older results are
+rejected. Resume only unchanged sources and fixture configuration. The dedicated
+report-dual-pedals.mjs requires all 640 unique cases in both versions before it
+will produce a summary and comparison CSV.
+
+Final corrected-car calibration results (2026-11-19):
+640 baseline scenarios executed. The changed ABS branch has 320 measured cases;
+47 were retained from the equivalent TC-enabled candidate after trajectory
+parity checks. The 320 unchanged non-ABS results are explicitly reused: 2,400
+release/reapply steps at each of 30/60/120Hz verify identical demand/history,
+and a source manifest verifies no car, tire, force-model or steering changes.
+The selected throttle remains pedal-dual-hold-v11. Six throttle alternatives
+were screened; promising launch gains produced gravel tracking or stop-stability
+regressions in longer runs. No car-specific exceptions or tire grip boosts added.
+The selected brake is brake-abs-ramp-v6: ABS-on initial application reaches full
+pressure in 0.2s; non-ABS ramp, lock relief, corrections and handbrake are retained.
+Dry 60mph ABS stops in metres (before -> after): RTG 45.07 -> 43.47;
+CT 40.27 -> 39.19; BUSE 41.10 -> 40.06; PZ 40.49 -> 39.20.
+All quarter-mile times remain exactly unchanged. No final regression flags.
+561/640 course completions before and after. 79 existing failures/timeouts remain:
+78 slaloms and one acceleration/stop case, mostly loose/snow/slush surfaces.
+These results do NOT prove every failed case unavoidable; this is a fixed binary
+virtual driver on uniform surfaces with saved Tarmac tires, not a full-race or
+human handling validation. No steering, physics or tire changes were permitted.
+98 focused unit/integration tests pass, including production editor wiring,
+both gestures, 30/60/120Hz behavior, handbrake, launch control and car specs.
+Reports: artifacts/digital-pedals-dual/{summary.json,selection.json,comparison.csv}.
+Rebuild the full report after completed runs with:
+  node tools/vehicle-validation/report-dual-pedals.mjs artifacts/digital-pedals-dual
+
+Follow-up feel trial: normal holds closer to aggressive (2026-11-19).
+User explicitly prefers more permissible wheelspin over the earlier traction
+objective. v12 adds 0.04 to the normalized slip allowance (bounded .16-.34),
+blends correction over 0.12 excess slip, and lowers ordinary relief gain from
+1.5 to 1.0. Gain returns smoothly to 1.5 for large excess slip; the previous
+2.5/s maximum relief remains. Feedback filter timing is unchanged. First trial
+was too loose, so the margin and blend band were narrowed and strong-spin relief
+restored. Aggressive core, release, braking, tire forces and steering unchanged.
+91 targeted tests pass. Focused comparison: eight 8-second launches and twelve
+level/up/down gravel slaloms, four original cars, ABS/TC off, saved Tarmac tires.
+All 12 slaloms finish, but some RWD yaw/path metrics worsen with the freer pedal.
+This is an intentional feel trial, NOT a repeat or replacement of the preceding
+640-case validation, and not a claim of globally improved performance.
+Before/after data and earlier rejected feel trials: artifacts/digital-pedals-relaxed.
+
+2026-11-19 17:33 UTC — v13 soft half-redline recovery trial
+Normal held digital throttle now relaxes slip cuts below 50% of configured
+redline, progressively through a 12%-redline band. This restores only the
+existing pedal ramp; it does not force RPM, change gears or alter tire forces.
+Recovery fades out over 15%-35% delivered pedal and 0.03-0.12 rad body slip.
+Severe wheelspin, neutral, shifting and limiter retain protection. Release
+is immediate; aggressive double-tap and analog/off bypass remain unchanged.
+An initial unrestricted recovery caused CT gravel slalom failures; a pedal
+gate alone still failed uphill. Both trials were rejected. The final body-slip
+guard preserves all 12 level/up/down gravel slalom completions and peak beta.
+94 targeted unit/integration tests pass. Final focused comparison covers
+16 eight-second launches (four cars, asphalt/gravel, ABS/TC both on/off) and
+12 gravel slaloms with ABS/TC off, using saved Tarmac tires. Short launches
+intentionally do not finish the quarter-mile. Gravel aids-off launch distance
+improved modestly: RTG 65.03->66.07m, CT 28.71->29.06m, BUSE 29.65->29.96m,
+PZ 25.46->26.05m. Slalom recovery metrics are mixed, not a universal handling
+improvement: PZ level spends longer below 20% pedal, uphill spends less.
+Existing high RWD yaw remains. This is a restrained feel trial, not a hard
+RPM floor or a rerun of the full 640-case surface matrix.
+Artifacts: digital-pedals-rpm/guarded.json is final; comparison.json and
+final.json are partial rejected runs. Final comparison reuses deterministic
+baseline rows from the first run where available; all final candidate rows
+were simulated anew with matching telemetry.
+
+2026-11-19 17:47 UTC — v14 stop compounding cuts during settling spin
+Capture ad9c3565, Rally Turkey, uprated 627 hp RTG: v13 recovery was
+disabled during sideways corner exits. At 10-11s, held demand fell to 8-10%
+and roughly 1000 RPM. At 55-56s, RPM stayed above target while demand remained
+low. Address the repeated slip cut itself, rather than raise the RPM target.
+Compute fall rate from the existing filtered driven-wheel spin. Smoothly
+suspend additional cuts over 0.15-0.9 spin units/s decline; fade this relief
+out for excess spin 0.8-2.0. Hold current delivered demand, never increase it
+purely because spin is falling. Rising/steady spin keeps normal relief.
+Limiter activity or its residual resistance disables the hold. Delivered
+pedal remains the stored demand; release/brake/bypass/aggressive unchanged.
+95 focused tests pass, including settling vs growing slip through a slide at
+30/60/120 Hz, severe spin and limiter protections, release and brake.
+28 focused physical comparisons: 16 eight-second launches on asphalt/gravel
+with ABS/TC on/off, 12 gravel slaloms (four original cars, aids off). All
+slaloms finish; gravel launches improve modestly. Path metrics remain mixed:
+BUSE uphill RMS worsens 0.69->2.39m; PZ uphill improves 3.71->2.08m but
+peak yaw increases 66.3->69.6deg. No claim of universal handling improvement.
+Four additional gravel comparisons use captured RTG tuning, including 627 hp,
+with the harness saved tire setup and synthetic course (not an exact replay
+of race geometry/damage/tires). All three slaloms finish; eight-second launch
+distance 118.35->119.28m, peak yaw 4.21->6.12deg.
+Open-loop recording replay at 120 Hz uses sampled/held recorded filtered slip
+and motion. At 10.15-10.8s minimum pedal increases 11.2->17.2%; at 55-55.8s
+17.1->22.3%. These differ from actual capture values because telemetry is
+sampled and already filtered; they demonstrate controller response only,
+not predicted closed-loop car motion. Requires another player feel test.
+Artifacts: digital-pedals-settling/{results,uprated,replay}.json and tests.log.
+Baseline original-car rows reused from v13 guarded.json; all candidate rows
+simulated anew. No full 640-case rerun or tire/gearbox/steering changes.
+
+2026-11-19 18:35 UTC — v15 reapplication and opposite-motion bugs
+Turkey capture e0d7f4f7 exposed zero output on reapplication at 41.7-42.1s,
+then hidden powered slip while traveling backward in first at 42.7-43.4s.
+Fade ordinary slip-cut authority from zero to full over 0-8% previously
+delivered pedal. This preserves the core bounded ramp after a release instead
+of using zero as a permanent ceiling. It is not a forced pedal floor; limiter
+caps, release, brake, bypass and aggressive behavior retain authority.
+Powered slip now uses engaged gear direction (chassis gear, powertrain fallback);
+missing/neutral gear preserves legacy travel-direction fallback. Braking still
+uses actual travel direction. Both wheel-speed and slip-only paths fixed.
+97 focused tests pass, covering 30/60/120Hz reapplication, first/reverse,
+AWD/FWD/RWD, zero crossings, limiter and unchanged braking. Seven captured
+backward-motion snapshots now detect powered slip instead of zero; brake
+feedback matches exactly. These snapshots use recorded slip ratios and do not
+reconstruct complete wheel telemetry or simulate the original race.
+28 focused comparisons vs saved v14 baseline: 16 short launches, 12 gravel
+slaloms. All slaloms finish. Most results identical; PZ gravel launch changes
+26.55->26.50m and level slalom RMS path error worsens 4.34->6.52m, so this
+is a correctness fix, not a claim of universal handling improvement.
+Four additional uprated RTG cases (captured tuning, harness tires/course):
+all three slaloms finish. Eight-second launches intentionally do not finish
+the quarter mile. No full surface-matrix rerun. No tire/gearbox changes.
+Artifacts: digital-pedals-reapply/{results,uprated,capture-check}.json, tests.log.
