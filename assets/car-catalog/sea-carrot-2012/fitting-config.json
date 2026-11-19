@@ -1,0 +1,241 @@
+{
+  "id": "sea-carrot-2012",
+  "name": "Sea Carrot 2012",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "9f104dda533be1dcf00b1fc4f2a0ff260e6df4a413587b50f8a12cdc97091779",
+  "sourceDirectory": "assets/car-catalog/sea-carrot-2012",
+  "sourceHashes": {
+    "body": "4774ebb3b75b40319e65f1f14069aa411d93c21bfd171c1cd9c8b107ddbe8419",
+    "dashboard": "a417ce197a893719a381366d91cd2e2bda306966429ba5c4378179d71488eb2a",
+    "tires": "54677eea6f474c5398c762bf2263935ad7704e7a2a6731202b45619f33106975"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 54.68,
+        "y": 343.6,
+        "radius": 26.4
+      },
+      {
+        "wheel": "fr",
+        "x": 343.32,
+        "y": 343.6,
+        "radius": 26.4
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 658.0,
+        "y": 282.5,
+        "radius": 27.5
+      },
+      {
+        "wheel": "rr",
+        "x": 830.0,
+        "y": 250.5,
+        "radius": 18.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 975.0,
+        "y": 289.5,
+        "radius": 38.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1263.0,
+        "y": 290.5,
+        "radius": 40.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1376.5,
+        "y": 261.0,
+        "radius": 13.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1520.5,
+        "y": 280.0,
+        "radius": 26.0
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 56.87,
+        "y": 781.275,
+        "radius": 25.724999999999998
+      },
+      {
+        "wheel": "rl",
+        "x": 338.13,
+        "y": 781.275,
+        "radius": 25.724999999999998
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 667.5,
+        "y": 724.0,
+        "radius": 25.0
+      },
+      {
+        "wheel": "fl",
+        "x": 811.0,
+        "y": 703.5,
+        "radius": 12.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 929.5,
+        "y": 732.0,
+        "radius": 43.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1230.5,
+        "y": 729.0,
+        "radius": 39.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1363.5,
+        "y": 687.0,
+        "radius": 13.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1501.0,
+        "y": 720.5,
+        "radius": 22.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1280,
+      400,
+      470,
+      170
+    ],
+    "wheel": [
+      1515,
+      753,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff",
+    "viewportWheelScale": 0.98
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false
+  },
+  "nativeTireTransformOverrides": {
+    "front": {
+      "tireScaleX": 0.4330610995343189,
+      "tireScaleY": 0.4330610995343189,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 2.1776615612909273e-16,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0
+    },
+    "frontRight": {
+      "tireScaleX": 1.248904920415064,
+      "tireScaleY": 1.1903763885139411,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.12029461089128338,
+      "frontTireOffsetY": -0.17723776159739307,
+      "rearTireOffsetX": -0.5794231528787195,
+      "rearTireOffsetY": 0.6010827078599228
+    },
+    "right": {
+      "tireScaleX": 1.1300445105461892,
+      "tireScaleY": 1.1300445105461892,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.019490573897492137,
+      "rearTireOffsetX": 5.709718412357947e-16,
+      "rearTireOffsetY": 0.019490573897491897
+    },
+    "rearRight": {
+      "tireScaleX": 1.1029450627025061,
+      "tireScaleY": 1.3766188550810277,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 1.0493292757276158,
+      "frontTireOffsetY": 0.8502429746203878,
+      "rearTireOffsetX": -0.26057382129573026,
+      "rearTireOffsetY": -0.3316147896185764
+    },
+    "rear": {
+      "tireScaleX": 0.4327869402302156,
+      "tireScaleY": 0.4327869402302156,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 3.0402367199599626e-16,
+      "rearTireOffsetY": -2.1569246999715952e-16
+    },
+    "rearLeft": {
+      "tireScaleX": 1.3029801021911902,
+      "tireScaleY": 1.273134540123001,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -1.2164933559238351,
+      "frontTireOffsetY": 1.1097846258801336,
+      "rearTireOffsetX": 0.5579698665849344,
+      "rearTireOffsetY": -0.3059396796176051
+    },
+    "left": {
+      "tireScaleX": 1.1479817249993034,
+      "tireScaleY": 1.1479817249993034,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.05434130848148501,
+      "rearTireOffsetX": -5.709718412357947e-16,
+      "rearTireOffsetY": 0.05434130848148573
+    },
+    "frontLeft": {
+      "tireScaleX": 0.8136768696190289,
+      "tireScaleY": 1.11858113536859,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.7145025575666226,
+      "frontTireOffsetY": 0.06406323295519709,
+      "rearTireOffsetX": 1.1902290650679181,
+      "rearTireOffsetY": 0.5278743349713811
+    }
+  }
+}
