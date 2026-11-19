@@ -1,0 +1,223 @@
+{
+  "id": "pale-clover-2017",
+  "name": "Pale Clover 2017",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "a374c820572c2a7dfc528a861c03d7daa76f9fc10d1caa4275f45798d2849393",
+  "sourceDirectory": "assets/car-catalog/pale-clover-2017",
+  "sourceHashes": {
+    "body": "17ab75ff9d039ab72528192a2a9a14c2c8a889ac4ce0c88a77c77fa964a623b6",
+    "dashboard": "b69e40508cd66c4b0a877001613532daa6a3eaa75c3071b7b2588afb4b55546d",
+    "tires": "9899ab42c8bbe6ce03b5f5b2699ffb618fec8c0da9382c0bc42faa8709624e0e"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 91.98,
+        "y": 321.85,
+        "radius": 24.15
+      },
+      {
+        "wheel": "fr",
+        "x": 356.02,
+        "y": 321.85,
+        "radius": 24.15
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 687.0,
+        "y": 259.5,
+        "radius": 23.5
+      },
+      {
+        "wheel": "rr",
+        "x": 835.5,
+        "y": 244.0,
+        "radius": 18.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 973.0,
+        "y": 265.5,
+        "radius": 34.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1233.0,
+        "y": 265.5,
+        "radius": 36.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1381.0,
+        "y": 240.5,
+        "radius": 17.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1530.5,
+        "y": 256.0,
+        "radius": 26.0
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 92.62,
+        "y": 756.15,
+        "radius": 23.849999999999998
+      },
+      {
+        "wheel": "rl",
+        "x": 353.38,
+        "y": 756.15,
+        "radius": 23.849999999999998
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 688.5,
+        "y": 703.0,
+        "radius": 26.0
+      },
+      {
+        "wheel": "fl",
+        "x": 840.0,
+        "y": 683.5,
+        "radius": 17.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 985.0,
+        "y": 708.5,
+        "radius": 35.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1246.0,
+        "y": 708.5,
+        "radius": 34.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1376.0,
+        "y": 685.5,
+        "radius": 15.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1510.5,
+        "y": 703.0,
+        "radius": 22.0
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      324,
+      456,
+      360,
+      128
+    ],
+    "wheel": [
+      504.0,
+      793,
+      420
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5",
+    "instrumentPodBounds": [
+      324,
+      456,
+      360,
+      128
+    ],
+    "renderedInstrumentPodBounds": [
+      324,
+      456,
+      360,
+      128
+    ],
+    "dashboardGaugeFontSize": 18
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Extended-height aperture proposals only on previously held views; native quick guards and visual acceptance required",
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false,
+    "laneGeometry": "Oblique per-wheel hull from isolated native wheel width/height and body-only alpha; body contact rows and unsupported columns measured in native coordinates; source untouched.",
+    "originalFace": "Intact native original gutter segmentation retained, original dark rim resized into verified tire annulus; Library replacement checked independently as proportional reference only, not imported."
+  },
+  "nativeTireTransformOverrides": {
+    "rearRight": {
+      "tireScaleX": 1.1567622560445712,
+      "tireScaleY": 1.2927592902899427,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.20575931871345046,
+      "frontTireOffsetY": 1.5020495374637957,
+      "rearTireOffsetX": 0.3725383647985809,
+      "rearTireOffsetY": -0.16804258334837996
+    },
+    "rearLeft": {
+      "tireScaleX": 1.1245572607975385,
+      "tireScaleY": 1.2567227068673992,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.17961528265084928,
+      "frontTireOffsetY": 1.3771311434333757,
+      "rearTireOffsetX": -0.3507857646713483,
+      "rearTireOffsetY": -0.27026276321195936
+    },
+    "frontRight": {
+      "tireScaleX": 0.6206239354828754,
+      "tireScaleY": 1.245276098438996,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.21434073255235284,
+      "frontTireOffsetY": -0.057696488803058554,
+      "rearTireOffsetX": -0.6356886691655129,
+      "rearTireOffsetY": 1.181075167056571
+    },
+    "frontLeft": {
+      "tireScaleX": 0.5917243035609613,
+      "tireScaleY": 1.2614827968736226,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.41555903792016013,
+      "frontTireOffsetY": 0.08567665059970242,
+      "rearTireOffsetX": 0.9299894840727386,
+      "rearTireOffsetY": 1.3145714885442028
+    }
+  },
+  "wheelFaceAnnulus": {
+    "version": 1,
+    "inset": 0.85
+  }
+}

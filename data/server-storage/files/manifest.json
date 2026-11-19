@@ -2332,7 +2332,10 @@
       "catalog-mountain-clover-2009-tires": "art/catalog-mountain-clover-2009-tires/document.json",
       "catalog-woolly-clover-2018-body": "art/catalog-woolly-clover-2018-body/document.json",
       "catalog-woolly-clover-2018-dashboard": "art/catalog-woolly-clover-2018-dashboard/document.json",
-      "catalog-woolly-clover-2018-tires": "art/catalog-woolly-clover-2018-tires/document.json"
+      "catalog-woolly-clover-2018-tires": "art/catalog-woolly-clover-2018-tires/document.json",
+      "catalog-pale-clover-2017-body": "art/catalog-pale-clover-2017-body/document.json",
+      "catalog-pale-clover-2017-dashboard": "art/catalog-pale-clover-2017-dashboard/document.json",
+      "catalog-pale-clover-2017-tires": "art/catalog-pale-clover-2017-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
