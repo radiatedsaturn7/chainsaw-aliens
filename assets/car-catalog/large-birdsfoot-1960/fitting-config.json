@@ -1,0 +1,239 @@
+{
+  "id": "large-birdsfoot-1960",
+  "name": "Large Birdsfoot 1960",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "ea9574b0be98bf3d93c09c189c4f8fe97143f3dca2f3d7c95620471e9b7535f9",
+  "sourceDirectory": "assets/car-catalog/large-birdsfoot-1960",
+  "sourceHashes": {
+    "body": "24e8b0d86b52a023786a59b591e2fd29cdf9eb3931a9c1e01b91b8337545e4d0",
+    "dashboard": "2c435b7053a6173348ecb0024e8b647d6c4f6d1c75cd82fc51fb0e13f65cc435",
+    "tires": "75cdc5d51fe100430aaa4ca3150910fa9cf57b66a18f7952caaece98a9efd77e"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 90.17,
+        "y": 318.525,
+        "radius": 23.474999999999998
+      },
+      {
+        "wheel": "fr",
+        "x": 346.83,
+        "y": 318.525,
+        "radius": 23.474999999999998
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 689.5,
+        "y": 286.0,
+        "radius": 31.0
+      },
+      {
+        "wheel": "rr",
+        "x": 831.0,
+        "y": 228.5,
+        "radius": 15.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 982.0,
+        "y": 723.5,
+        "radius": 43.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1239.5,
+        "y": 723.0,
+        "radius": 43.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 486.0,
+        "y": 671.5,
+        "radius": 14.5
+      },
+      {
+        "wheel": "rr",
+        "x": 610.0,
+        "y": 719.5,
+        "radius": 27.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 99.92,
+        "y": 749.4,
+        "radius": 21.599999999999998
+      },
+      {
+        "wheel": "rl",
+        "x": 336.08,
+        "y": 749.4,
+        "radius": 21.599999999999998
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1570.0,
+        "y": 279.5,
+        "radius": 32.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1719.0,
+        "y": 234.5,
+        "radius": 16.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 977.5,
+        "y": 281.0,
+        "radius": 44.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1233.0,
+        "y": 278.5,
+        "radius": 43.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1384.5,
+        "y": 673.0,
+        "radius": 17.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1519.0,
+        "y": 726.5,
+        "radius": 28.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      539,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      627.0,
+      297
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e2e9e8",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false,
+    "laneGeometry": "Oblique per-wheel hull from isolated native wheel width/height and body-only alpha; body contact rows and unsupported columns measured in native coordinates; source untouched.",
+    "groundContactSeats": "Direct side full alpha aperture spans ~102 px wide with 104\u2013106 px circles plausible. Register both physical side contact bottoms 19px below exact measured lower original body edge; preserve measured radial shape and the source-authored body."
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 0.7731902431109099,
+      "tireScaleY": 0.8905242422872254,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.47629280382975253,
+      "frontTireOffsetY": 0.1825649604098063,
+      "rearTireOffsetX": -0.7811897965131601,
+      "rearTireOffsetY": -0.19185251461431113
+    },
+    "rearRight": {
+      "tireScaleX": 0.8254940313168172,
+      "tireScaleY": 1.0169163602958047,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.6439773936138641,
+      "frontTireOffsetY": -0.2905198623660606,
+      "rearTireOffsetX": -0.23990852117511402,
+      "rearTireOffsetY": 0.2627713538455413
+    },
+    "rearLeft": {
+      "tireScaleX": 0.9026188401238651,
+      "tireScaleY": 1.006306603528205,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.013991518830987357,
+      "frontTireOffsetY": -0.060714859487714073,
+      "rearTireOffsetX": -0.20658424054604696,
+      "rearTireOffsetY": -0.044162031593850626
+    },
+    "frontLeft": {
+      "tireScaleX": 0.763685372129763,
+      "tireScaleY": 0.9365870162095506,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.3762113562200289,
+      "frontTireOffsetY": 0.26226648643235934,
+      "rearTireOffsetX": 0.7466952196699455,
+      "rearTireOffsetY": -0.2815337049200326
+    },
+    "right": {
+      "tireScaleX": 1.1559217547649236,
+      "tireScaleY": 1.1559217547649236,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.850227866694741,
+      "rearTireOffsetX": -1.2688263138573217e-16,
+      "rearTireOffsetY": -0.8371541848085472
+    },
+    "left": {
+      "tireScaleX": 1.1792983882848849,
+      "tireScaleY": 1.1792983882848849,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.8520689949396277,
+      "rearTireOffsetX": -8.881784197001251e-16,
+      "rearTireOffsetY": -0.8389669815942766
+    }
+  }
+}
