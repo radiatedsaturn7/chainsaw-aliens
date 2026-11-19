@@ -1,0 +1,216 @@
+{
+  "id": "sea-arrowgrass-1982",
+  "name": "Sea Arrowgrass 1982",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "eccc409dc999c4387a4dfcf4568771c01d4b01ebe069692ea10349e29d584d37",
+  "sourceDirectory": "assets/car-catalog/sea-arrowgrass-1982",
+  "sourceHashes": {
+    "body": "de463eac664b0760464aedc43c9e74bd219bac5a033f9e3f2d5a899126535ddc",
+    "dashboard": "aa4a304e242b88f562e6e1cf2ad3d6262c4622ee1f73c902a067ce9944cf514d",
+    "tires": "72edf0e96b8ec09ea6510c8a7da9f6d986cbeae6e0b64dccf4e3ab28011d7a76"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 104.39,
+        "y": 334.675,
+        "radius": 20.325
+      },
+      {
+        "wheel": "fr",
+        "x": 326.61,
+        "y": 334.675,
+        "radius": 20.325
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 640.5,
+        "y": 302.0,
+        "radius": 24.0
+      },
+      {
+        "wheel": "rr",
+        "x": 797.0,
+        "y": 270.5,
+        "radius": 18.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 972.5,
+        "y": 303.0,
+        "radius": 40.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1254.5,
+        "y": 297.0,
+        "radius": 39.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1389.0,
+        "y": 270.5,
+        "radius": 13.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1521.0,
+        "y": 303.5,
+        "radius": 24.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 88.46,
+        "y": 748.95,
+        "radius": 22.05
+      },
+      {
+        "wheel": "rl",
+        "x": 329.54,
+        "y": 748.95,
+        "radius": 22.05
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 653.5,
+        "y": 722.0,
+        "radius": 25.0
+      },
+      {
+        "wheel": "fl",
+        "x": 789.5,
+        "y": 688.0,
+        "radius": 14.0
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 925.5,
+        "y": 716.0,
+        "radius": 40.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1222.0,
+        "y": 717.5,
+        "radius": 40.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1385.5,
+        "y": 677.0,
+        "radius": 13.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1514.0,
+        "y": 715.5,
+        "radius": 18.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      220,
+      490,
+      550,
+      185
+    ],
+    "wheel": [
+      490,
+      611.0,
+      320
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#f5e8d4",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false,
+    "laneEnvelope": "Unchanged opaque body liners; set common radial per front-oblique to each exact crown and lower jamb on native alpha. Achieve bottom ~2 px beyond paired jambs, compensate independently for true axle contact, preserve credible physical tread/height ratio."
+  },
+  "nativeTireTransformOverrides": {
+    "rearLeft": {
+      "tireScaleX": 0.7403539625251,
+      "tireScaleY": 0.944998972921189,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.23464679345831427,
+      "frontTireOffsetY": 0.5423569088781031,
+      "rearTireOffsetX": 0.23464679345831402,
+      "rearTireOffsetY": -0.308034405730457
+    },
+    "rearRight": {
+      "tireScaleY": 0.9421598101293596,
+      "frontTireOffsetY": 0.5576224254192902,
+      "rearTireOffsetY": -0.2549299211719743
+    },
+    "frontRight": {
+      "tireScaleX": 0.6262167818587264,
+      "tireScaleY": 0.7636790022667397,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.22412449713932903,
+      "frontTireOffsetY": -0.38280764650724675,
+      "rearTireOffsetX": -0.24209092156187115,
+      "rearTireOffsetY": 0.5135325375978298
+    },
+    "frontLeft": {
+      "tireScaleX": 0.6179697932385165,
+      "tireScaleY": 0.7536216990713618,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.6417522265798349,
+      "frontTireOffsetY": -0.08603535769983611,
+      "rearTireOffsetX": 0.6430135418247614,
+      "rearTireOffsetY": 0.5790343177198515
+    }
+  }
+}

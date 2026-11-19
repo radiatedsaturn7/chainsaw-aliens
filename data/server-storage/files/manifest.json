@@ -2398,7 +2398,13 @@
       "catalog-beech-clover-2012-tires": "art/catalog-beech-clover-2012-tires/document.json",
       "catalog-slender-trefoil-2003-body": "art/catalog-slender-trefoil-2003-body/document.json",
       "catalog-slender-trefoil-2003-dashboard": "art/catalog-slender-trefoil-2003-dashboard/document.json",
-      "catalog-slender-trefoil-2003-tires": "art/catalog-slender-trefoil-2003-tires/document.json"
+      "catalog-slender-trefoil-2003-tires": "art/catalog-slender-trefoil-2003-tires/document.json",
+      "catalog-sea-campion-2006-body": "art/catalog-sea-campion-2006-body/document.json",
+      "catalog-sea-campion-2006-dashboard": "art/catalog-sea-campion-2006-dashboard/document.json",
+      "catalog-sea-campion-2006-tires": "art/catalog-sea-campion-2006-tires/document.json",
+      "catalog-sea-arrowgrass-1982-body": "art/catalog-sea-arrowgrass-1982-body/document.json",
+      "catalog-sea-arrowgrass-1982-dashboard": "art/catalog-sea-arrowgrass-1982-dashboard/document.json",
+      "catalog-sea-arrowgrass-1982-tires": "art/catalog-sea-arrowgrass-1982-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
