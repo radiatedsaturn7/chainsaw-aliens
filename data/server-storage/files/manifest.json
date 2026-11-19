@@ -2383,7 +2383,13 @@
       "catalog-yellow-melilot-1966-tires": "art/catalog-yellow-melilot-1966-tires/document.json",
       "catalog-rosebay-willowherb-1988-body": "art/catalog-rosebay-willowherb-1988-body/document.json",
       "catalog-rosebay-willowherb-1988-dashboard": "art/catalog-rosebay-willowherb-1988-dashboard/document.json",
-      "catalog-rosebay-willowherb-1988-tires": "art/catalog-rosebay-willowherb-1988-tires/document.json"
+      "catalog-rosebay-willowherb-1988-tires": "art/catalog-rosebay-willowherb-1988-tires/document.json",
+      "catalog-bladder-campion-2010-body": "art/catalog-bladder-campion-2010-body/document.json",
+      "catalog-bladder-campion-2010-dashboard": "art/catalog-bladder-campion-2010-dashboard/document.json",
+      "catalog-bladder-campion-2010-tires": "art/catalog-bladder-campion-2010-tires/document.json",
+      "catalog-snowberry-clover-2005-body": "art/catalog-snowberry-clover-2005-body/document.json",
+      "catalog-snowberry-clover-2005-dashboard": "art/catalog-snowberry-clover-2005-dashboard/document.json",
+      "catalog-snowberry-clover-2005-tires": "art/catalog-snowberry-clover-2005-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
