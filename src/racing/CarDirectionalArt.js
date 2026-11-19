@@ -1,3 +1,4 @@
+import { wheelFaceInsetFraction } from './CarWheelCylinder.js';
 import { RACE_CAR_SHELL_FRAME_SLOTS } from './raceData.js';
 
 export const CAR_EXTERIOR_COMPONENTS = ['body', 'tires', 'brakes', 'shadow'];
@@ -59,6 +60,13 @@ export function normalizeCarAngleLayers(layers = {}) {
       if (Object.keys(transforms).length) normalized.transforms = transforms;
       if (typeof entry.visible === 'boolean') normalized.visible = entry.visible;
       if (component === 'body' && typeof entry.fitToCar === 'boolean') normalized.fitToCar = entry.fitToCar;
+      if (component === 'tires' && entry.faceInsetByWheel && typeof entry.faceInsetByWheel === 'object') {
+        const insets = Object.fromEntries(['fl','fr','rl','rr'].flatMap(id => {
+          const value=wheelFaceInsetFraction(entry.faceInsetByWheel[id]);
+          return value ? [[id,value]] : [];
+        }));
+        if (Object.keys(insets).length) normalized.faceInsetByWheel=insets;
+      }
       if (component === 'tires' && typeof entry.cylinder === 'boolean') normalized.cylinder = entry.cylinder;
       if (component === 'tires' && ['auto', 'hidden', 'front', 'rear', 'left', 'right', 'visible'].includes(entry.tireMode)) normalized.tireMode = entry.tireMode;
       return [[component, normalized]];

@@ -35,9 +35,18 @@ test('standalone tire normalization retains graphic placement and visibility',()
   assert.deepEqual(normalizeTireDefinition(JSON.parse(JSON.stringify(tire))).graphics,{...tire.graphics,angleLayers:{}});
 });
 
-test('a scale or position drag is one undo step and updates live mirrored art on undo/redo',()=>{
+test('a scale or position drag is one undo step and restores art in recreated previews',()=>{
   const e=editor();
-  e.carEditorPreviewPlaytest={carId:e.selectedCar.id,session:{runtimeCar:structuredClone(e.selectedCar)}};
+  const installPreview=()=>{
+    // History restoration disposes the prior simulation. A replacement preview
+    // must receive restored art through the same synchronizer used at install.
+    const session={running:true,runtimeCar:structuredClone(e.selectedCar)};
+    session.runtimeCar.art={};
+    e.carEditorPreviewPlaytest={carId:e.getRaceCarProjectIdentity(e.selectedCar),session};
+    e.syncCarAnglePreviewArt(e.selectedCar,{prepareFrames:false});
+    return session;
+  };
+  installPreview();
   for(const id of ['tire-x','front-offset-x','tire-spacing']){
     const before=structuredClone(e.selectedCar.art);const count=e.raceHistory.length;
     const region={id,min:0.1,max:3,track:{x:0,w:100}};
@@ -46,10 +55,17 @@ test('a scale or position drag is one undo step and updates live mirrored art on
     e.handlePointerUp({id:'drag'});
     assert.equal(e.raceHistory.length,count+1);
     const after=structuredClone(e.selectedCar.art);
-    e.undoRaceHistory();assert.deepEqual(e.selectedCar.art,before);
-    assert.deepEqual(e.carEditorPreviewPlaytest.session.runtimeCar.art,before);
-    e.redoRaceHistory();assert.deepEqual(e.selectedCar.art,after);
     assert.deepEqual(e.carEditorPreviewPlaytest.session.runtimeCar.art,after);
+    const outgoing=e.carEditorPreviewPlaytest.session;
+    e.undoRaceHistory();assert.deepEqual(e.selectedCar.art,before);
+    assert.equal(e.carEditorPreviewPlaytest,null);
+    assert.equal(outgoing.running,false);
+    const restored=installPreview();assert.notEqual(restored,outgoing);
+    assert.deepEqual(restored.runtimeCar.art,before);
+    e.redoRaceHistory();assert.deepEqual(e.selectedCar.art,after);
+    assert.equal(e.carEditorPreviewPlaytest,null);
+    assert.equal(restored.running,false);
+    assert.deepEqual(installPreview().runtimeCar.art,after);
   }
 });
 

@@ -1,0 +1,266 @@
+{
+  "id": "hedge-bedstraw-2005",
+  "name": "Hedge Bedstraw 2005",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "30603542e19a59a2411b3b50590497e60fef190d9a375097c8c869d60982146b",
+  "sourceDirectory": "assets/car-catalog/hedge-bedstraw-2005",
+  "sourceHashes": {
+    "body": "07b7f1e3d14a99f5005ff3c04f64cf059e66c47bf4a0199e5497eb8432d64710",
+    "dashboard": "f544c286560490f24c717522dda2fb763d6359d08d02416075b50eb107b8065e",
+    "tires": "172e4fea2b096a41df8a74c1be193f03af2209cb023ad348dec01a6f036af441"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 98.83,
+        "y": 328.475,
+        "radius": 21.525
+      },
+      {
+        "wheel": "fr",
+        "x": 334.17,
+        "y": 328.475,
+        "radius": 21.525
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 651.5,
+        "y": 279.0,
+        "radius": 27.0
+      },
+      {
+        "wheel": "rr",
+        "x": 812.0,
+        "y": 236.5,
+        "radius": 17.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 956.0,
+        "y": 278.5,
+        "radius": 36.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1235.0,
+        "y": 275.5,
+        "radius": 39.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1365.5,
+        "y": 242.0,
+        "radius": 14.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1499.0,
+        "y": 271.5,
+        "radius": 24.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 84.28,
+        "y": 754.1,
+        "radius": 21.9
+      },
+      {
+        "wheel": "rl",
+        "x": 323.72,
+        "y": 754.1,
+        "radius": 21.9
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 683.5,
+        "y": 705.0,
+        "radius": 22.0
+      },
+      {
+        "wheel": "fl",
+        "x": 793.0,
+        "y": 659.5,
+        "radius": 10.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 938.5,
+        "y": 717.0,
+        "radius": 42.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1235.0,
+        "y": 715.5,
+        "radius": 37.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1371.5,
+        "y": 664.0,
+        "radius": 14.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1501.0,
+        "y": 709.5,
+        "radius": 22.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1210,
+      490,
+      520,
+      185
+    ],
+    "wheel": [
+      1470,
+      605.0,
+      320
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#f5e8d4",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false,
+    "nearWheelProbe": {
+      "horizontalProjectionFactor": 0.85,
+      "inwardAxleOffset": 0.4,
+      "accepted": false
+    }
+  },
+  "nativeTireTransformOverrides": {
+    "front": {
+      "tireScaleX": 0.46307803364332056,
+      "tireScaleY": 0.46307803364332056,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0
+    },
+    "frontRight": {
+      "tireScaleX": 0.901196786368577,
+      "tireScaleY": 1.048271626822985,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.3895635372200672,
+      "frontTireOffsetY": 0.012041270076921483,
+      "rearTireOffsetX": -0.48569602673255197,
+      "rearTireOffsetY": 0.3668036761856075
+    },
+    "right": {
+      "tireScaleX": 1.1987303251888488,
+      "tireScaleY": 1.1987303251888488,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0.0650229106932834,
+      "rearTireOffsetX": 2.5376526277146434e-16,
+      "rearTireOffsetY": -0.06502291069328366
+    },
+    "rearRight": {
+      "tireScaleX": 1.2343912462603324,
+      "tireScaleY": 1.384168095837071,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 1.0749484538150749,
+      "frontTireOffsetY": 0.7461390315846952,
+      "rearTireOffsetX": -0.2864063050547465,
+      "rearTireOffsetY": -0.022294085322167416
+    },
+    "rear": {
+      "tireScaleX": 0.47200612517961016,
+      "tireScaleY": 0.47200612517961016,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 1.1343377380991742e-15,
+      "rearTireOffsetY": -3.353194327151276e-17
+    },
+    "rearLeft": {
+      "tireScaleX": 0.6928981152610036,
+      "tireScaleY": 1.1596970420469432,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.9834243371748658,
+      "frontTireOffsetY": 0.13302551434364687,
+      "rearTireOffsetX": 0.880247149636194,
+      "rearTireOffsetY": 0.3506026706581631
+    },
+    "left": {
+      "tireScaleX": 1.199370030146044,
+      "tireScaleY": 1.199370030146044,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.015688671061880127,
+      "rearTireOffsetX": -2.5376526277146434e-16,
+      "rearTireOffsetY": 0.015688671061880845
+    },
+    "frontLeft": {
+      "tireScaleX": 0.7380599267303137,
+      "tireScaleY": 1.1172264700428343,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.8600618273515934,
+      "frontTireOffsetY": 0.28548718994614886,
+      "rearTireOffsetX": 1.006537989950366,
+      "rearTireOffsetY": 0.25645037798043
+    }
+  },
+  "allowCardinalTireOverrides": true,
+  "nativeWheelFaceInsets": {
+    "rearLeft": {
+      "fl": 0.5
+    }
+  }
+}

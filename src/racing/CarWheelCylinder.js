@@ -1,3 +1,9 @@
+// Opt-in inward face-plane displacement, expressed as a fraction of tread width.
+// Reject malformed values rather than coercing or clamping imported artwork.
+export function wheelFaceInsetFraction(value) {
+  return typeof value === 'number' && Number.isFinite(value) && value > 0 && value <= 0.5 ? value : 0;
+}
+
 // Steering rotates the wheel in the car's frame; camera bearing is the
 // inverse view rotation. Never add steering to the camera's orbit angle.
 export function getWheelCameraBearing(cameraBearing = 0, steeringAngle = 0) {
@@ -27,7 +33,7 @@ function writeTriangle(scratch,index,surface,a,b,c,ux,uy,vx,vy,wx,wy) {
 }
 const depthOrder=(a,b)=>a.depth-b.depth;
 // Axle is X; spin is around that axle, steering/view bearing around Y.
-export function buildWheelCylinder({ width = 20, height = 50, bearing = 0, spin = 0, segments = 24 } = {}, scratch = null) {
+export function buildWheelCylinder({ width = 20, height = 50, bearing = 0, spin = 0, segments = 24, faceInsetFraction = 0 } = {}, scratch = null) {
   scratch ||= createWheelCylinderScratch();
   const radius=height/2,half=width/2,sin=Math.sin(bearing),cos=Math.cos(bearing);
   const project=(target,x,y,z)=>{target.x=x*cos-z*sin;target.y=-y;target.z=x*sin+z*cos;};
@@ -49,6 +55,19 @@ export function buildWheelCylinder({ width = 20, height = 50, bearing = 0, spin 
       writeTriangle(scratch,count++,'wheel',scratch.center,side<0?a:b,side<0?d:c,
         .5,.5,.5-Math.cos(i/segments*Math.PI*2)*.5,.5-Math.sin(i/segments*Math.PI*2)*.5,
         .5-Math.cos((i+1)/segments*Math.PI*2)*.5,.5-Math.sin((i+1)/segments*Math.PI*2)*.5);
+    }
+  }
+  const inset = wheelFaceInsetFraction(faceInsetFraction) * (Number.isFinite(width) && width > 0 ? width : 0);
+  if (inset) {
+    for (let i=0;i<count;i++) {
+      const triangle=scratch.triangles[i];
+      if (triangle.surface !== 'wheel') continue;
+      const side=Math.sign(sin);
+      for (const point of triangle.points) {
+        point.x-=side*inset*cos;
+        point.z-=side*inset*sin;
+      }
+      triangle.depth=(triangle.points[0].z+triangle.points[1].z+triangle.points[2].z)/3;
     }
   }
   scratch.triangles.length=count;

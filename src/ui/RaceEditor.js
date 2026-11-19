@@ -23403,6 +23403,7 @@ export default class RaceEditor {
       if (treadTexture && wheelTexture && tireCanvas && tireEntry.cylinder !== false && tireEntry.artRef === treadSurface.artRef) {
         drawWheelCylinder(ctx, { tread:treadTexture, wheel:wheelTexture,
           treadBounds:treadSurface.bounds, wheelBounds:wheelSurface.bounds,
+          faceInsetFraction:tireEntry.faceInsetByWheel?.[wheelId],
           width:drawWidth, height:drawHeight, bearing:getWheelCameraBearing(wheelBearing, session?.vehicleRenderState?.wheels?.[wheelId]?.steeringAngleRad ?? turn), spin:-Number(scroll || 0)*Math.PI*2 });
       } else if (tireCanvas && typeof ctx.drawImage === 'function') {
         const scaledTire = this.getRaceCarBillboardLayerCanvas(tireCanvas, drawWidth, drawHeight, `tire:${tireEntry?.artRef || tireCompound}:${tireEntry?.frameIndex || 0}`);

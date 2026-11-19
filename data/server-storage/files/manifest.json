@@ -2206,7 +2206,10 @@
       "catalog-longstalk-clover-2012-tires": "art/catalog-longstalk-clover-2012-tires/document.json",
       "catalog-wood-speedwell-1990-body": "art/catalog-wood-speedwell-1990-body/document.json",
       "catalog-wood-speedwell-1990-dashboard": "art/catalog-wood-speedwell-1990-dashboard/document.json",
-      "catalog-wood-speedwell-1990-tires": "art/catalog-wood-speedwell-1990-tires/document.json"
+      "catalog-wood-speedwell-1990-tires": "art/catalog-wood-speedwell-1990-tires/document.json",
+      "catalog-hedge-bedstraw-2005-body": "art/catalog-hedge-bedstraw-2005-body/document.json",
+      "catalog-hedge-bedstraw-2005-dashboard": "art/catalog-hedge-bedstraw-2005-dashboard/document.json",
+      "catalog-hedge-bedstraw-2005-tires": "art/catalog-hedge-bedstraw-2005-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
