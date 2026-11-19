@@ -1,0 +1,319 @@
+{
+  "id": "meadow-sage-2011",
+  "name": "Meadow Sage 2011",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "529b086d1a53a5af812c5fbbe3dc43eb0f4de2597e81b8c341810b1653c9fa10",
+  "sourceDirectory": "assets/car-catalog/meadow-sage-2011",
+  "sourceHashes": {
+    "body": "8b8f201701e4a51e7acdf8bb732bc824fb8d5f2c5cbdc817d571dbd8d6e63921",
+    "dashboard": "406880a97e2526abcfb0569a354e1f5f1e8cd263629f3d60ec2a5177c34a08c5",
+    "tires": "82c6472cc622f50180bf72f952532fb542e1da0a4295f93d3c1c6539d57fce71"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 90.45,
+        "y": 337.125,
+        "radius": 22.875
+      },
+      {
+        "wheel": "fr",
+        "x": 340.55,
+        "y": 337.125,
+        "radius": 22.875
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 641.5,
+        "y": 295.0,
+        "radius": 27.0
+      },
+      {
+        "wheel": "rr",
+        "x": 814.0,
+        "y": 258.5,
+        "radius": 16.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 944.0,
+        "y": 287.5,
+        "radius": 36.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1243.0,
+        "y": 286.5,
+        "radius": 37.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 424.5,
+        "y": 691.0,
+        "radius": 15.0
+      },
+      {
+        "wheel": "rr",
+        "x": 580.0,
+        "y": 718.5,
+        "radius": 29.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 86.9,
+        "y": 760.75,
+        "radius": 23.25
+      },
+      {
+        "wheel": "rl",
+        "x": 341.1,
+        "y": 760.75,
+        "radius": 23.25
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1579.5,
+        "y": 285.0,
+        "radius": 28.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1734.0,
+        "y": 255.5,
+        "radius": 15.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 951.5,
+        "y": 719.0,
+        "radius": 41.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1254.5,
+        "y": 717.0,
+        "radius": 37.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1372.5,
+        "y": 674.0,
+        "radius": 13.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1500.0,
+        "y": 711.5,
+        "radius": 21.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1450,
+      505,
+      340,
+      80
+    ],
+    "wheel": [
+      1635,
+      760,
+      330
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae",
+    "dashboardGaugeFontSize": 18,
+    "instrumentPodBounds": [
+      1390,
+      490,
+      470,
+      215
+    ],
+    "renderedInstrumentPodBounds": [
+      1390,
+      490,
+      470,
+      215
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "nearWheelProbe": {
+      "horizontalProjectionFactor": 0.85,
+      "inwardAxleOffset": 0.4,
+      "accepted": false
+    },
+    "nativeRenderReviewed": true,
+    "sourceTrimAttribution": "Native body-only/composite/difference evidence distinguishes continuous trim/exhaust from tires. All views and both cockpit sizes reviewed; source unchanged."
+  },
+  "nativeTireTransformOverrides": {
+    "front": {
+      "tireScaleX": 0.43951303183816565,
+      "tireScaleY": 0.43951303183816565,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 8.808045106348595e-16,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0
+    },
+    "frontRight": {
+      "tireScaleX": 1.1079117439821897,
+      "tireScaleY": 1.1965491885805413,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.056149444083146344,
+      "frontTireOffsetY": -0.23287050429320533,
+      "rearTireOffsetX": -0.46760729532281525,
+      "rearTireOffsetY": 0.5167154505557339
+    },
+    "right": {
+      "tireScaleX": 1.0448729378962764,
+      "tireScaleY": 1.0448729378962764,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 2.0301221021717147e-15,
+      "frontTireOffsetY": 0.016791461606960788,
+      "rearTireOffsetX": 6.344131569286608e-16,
+      "rearTireOffsetY": -0.01679146160696055
+    },
+    "rearRight": {
+      "tireScaleX": 0.8408245244689019,
+      "tireScaleY": 1.1624136938655047,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.6625993561296191,
+      "frontTireOffsetY": 0.6731437884322119,
+      "rearTireOffsetX": -0.2617927445593684,
+      "rearTireOffsetY": -0.43451560343040246
+    },
+    "rear": {
+      "tireScaleX": 0.4386201552630229,
+      "tireScaleY": 0.4386201552630229,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 8.982045240970825e-16,
+      "rearTireOffsetY": 0
+    },
+    "rearLeft": {
+      "tireScaleX": 1.2404910010464179,
+      "tireScaleY": 1.295984805681732,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.4874276569777617,
+      "frontTireOffsetY": 0.6152137646833259,
+      "rearTireOffsetX": 0.07596980573809203,
+      "rearTireOffsetY": -0.5713688184207979
+    },
+    "left": {
+      "tireScaleX": 1.1273132977487748,
+      "tireScaleY": 1.1273132977487748,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -2.0301221021717147e-15,
+      "frontTireOffsetY": -0.037096038763681095,
+      "rearTireOffsetX": 1.3957089452430537e-15,
+      "rearTireOffsetY": 0.03709603876368134
+    },
+    "frontLeft": {
+      "tireScaleX": 0.7943394700239124,
+      "tireScaleY": 1.091824816241905,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.8177606109812325,
+      "frontTireOffsetY": 0.11823981216548407,
+      "rearTireOffsetX": 1.2538399498242074,
+      "rearTireOffsetY": 0.43369775576109565
+    }
+  },
+  "nativeBodyTransformOverrides": {
+    "front": {
+      "bodyScaleX": 2.150216800991069,
+      "bodyScaleY": 1.422707090484166,
+      "bodyOffsetX": 0.013940720960781583,
+      "bodyOffsetY": 1.5722869458266815,
+      "bodyRotationDeg": 0
+    },
+    "frontRight": {
+      "bodyScaleX": 3.1120185551673556,
+      "bodyScaleY": 2.059090442468027,
+      "bodyOffsetX": -5.288961547288329,
+      "bodyOffsetY": 1.7374147658439976,
+      "bodyRotationDeg": 0
+    },
+    "right": {
+      "bodyScaleX": 2.5855004974724785,
+      "bodyScaleY": 1.7107158164279042,
+      "bodyOffsetX": -4.5254036982980725,
+      "bodyOffsetY": 0.16977276420637682,
+      "bodyRotationDeg": 0
+    },
+    "rearRight": {
+      "bodyScaleX": 2.7721878680505627,
+      "bodyScaleY": 1.8342389168440414,
+      "bodyOffsetX": -0.541232795016322,
+      "bodyOffsetY": -0.608782259271283,
+      "bodyRotationDeg": 0
+    },
+    "rear": {
+      "bodyScaleX": 1.6117629784839302,
+      "bodyScaleY": 1.06643507604073,
+      "bodyOffsetX": 0,
+      "bodyOffsetY": -0.979686306520631,
+      "bodyRotationDeg": 0
+    },
+    "rearLeft": {
+      "bodyScaleX": 2.952219423123824,
+      "bodyScaleY": 1.9533581469586814,
+      "bodyOffsetX": 0.7640042795953317,
+      "bodyOffsetY": -0.5249853566930303,
+      "bodyRotationDeg": 0
+    },
+    "left": {
+      "bodyScaleX": 2.551368477703864,
+      "bodyScaleY": 1.6881321092803407,
+      "bodyOffsetX": 4.443359829462406,
+      "bodyOffsetY": 0.12045572421425971,
+      "bodyRotationDeg": 0
+    },
+    "frontLeft": {
+      "bodyScaleX": 3.2994918253419843,
+      "bodyScaleY": 2.183133539252855,
+      "bodyOffsetX": 6.337047433840365,
+      "bodyOffsetY": 2.043051007338646,
+      "bodyRotationDeg": 0
+    }
+  },
+  "allowCardinalTireOverrides": true
+}
