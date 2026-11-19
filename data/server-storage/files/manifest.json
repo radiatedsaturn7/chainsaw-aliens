@@ -2281,7 +2281,13 @@
       "catalog-rowan-clover-2010-tires": "art/catalog-rowan-clover-2010-tires/document.json",
       "catalog-basil-thyme-2020-body": "art/catalog-basil-thyme-2020-body/document.json",
       "catalog-basil-thyme-2020-dashboard": "art/catalog-basil-thyme-2020-dashboard/document.json",
-      "catalog-basil-thyme-2020-tires": "art/catalog-basil-thyme-2020-tires/document.json"
+      "catalog-basil-thyme-2020-tires": "art/catalog-basil-thyme-2020-tires/document.json",
+      "catalog-barrel-medick-2006-body": "art/catalog-barrel-medick-2006-body/document.json",
+      "catalog-barrel-medick-2006-dashboard": "art/catalog-barrel-medick-2006-dashboard/document.json",
+      "catalog-barrel-medick-2006-tires": "art/catalog-barrel-medick-2006-tires/document.json",
+      "catalog-foothill-clover-2018-body": "art/catalog-foothill-clover-2018-body/document.json",
+      "catalog-foothill-clover-2018-dashboard": "art/catalog-foothill-clover-2018-dashboard/document.json",
+      "catalog-foothill-clover-2018-tires": "art/catalog-foothill-clover-2018-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

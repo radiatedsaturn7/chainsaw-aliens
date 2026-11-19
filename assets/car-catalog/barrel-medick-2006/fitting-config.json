@@ -1,0 +1,261 @@
+{
+  "id": "barrel-medick-2006",
+  "name": "Barrel Medick 2006",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "caf5d1bc09da17af848612f8eb6a77ba535d82563e7d1bf50dbcadf5d2e85413",
+  "sourceDirectory": "assets/car-catalog/barrel-medick-2006",
+  "sourceHashes": {
+    "body": "4ec433b9e1aef4230d7a907fe0cbea3596aa967ec465617e4fb205cef6a6d860",
+    "dashboard": "c1bf846547caee4cdf0ba4d3e962b01339b003e29c201a47e497279441a5869a",
+    "tires": "50ca06f8526d45e53724ff12292a4154e7e66da5a61c9add2b945aeace6d8fc9"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 78.77,
+        "y": 327.525,
+        "radius": 26.474999999999998
+      },
+      {
+        "wheel": "fr",
+        "x": 368.23,
+        "y": 327.525,
+        "radius": 26.474999999999998
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 699.0,
+        "y": 278.5,
+        "radius": 20.5
+      },
+      {
+        "wheel": "rr",
+        "x": 845.5,
+        "y": 233.0,
+        "radius": 13.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 980.5,
+        "y": 714.0,
+        "radius": 29.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1250.5,
+        "y": 709.5,
+        "radius": 30.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 477.0,
+        "y": 684.5,
+        "radius": 12.5
+      },
+      {
+        "wheel": "rr",
+        "x": 615.5,
+        "y": 698.0,
+        "radius": 21.0
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 82.6,
+        "y": 751.5,
+        "radius": 25.5
+      },
+      {
+        "wheel": "rl",
+        "x": 361.40000000000003,
+        "y": 751.5,
+        "radius": 25.5
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1573.5,
+        "y": 260.0,
+        "radius": 24.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1736.5,
+        "y": 245.0,
+        "radius": 14.0
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 966.5,
+        "y": 267.0,
+        "radius": 31.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1237.0,
+        "y": 270.0,
+        "radius": 30.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1367.5,
+        "y": 671.0,
+        "radius": 12.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1508.0,
+        "y": 708.5,
+        "radius": 19.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      531,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      599.0,
+      297
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e2e9e8",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false
+  },
+  "nativeTireTransformOverrides": {
+    "front": {
+      "tireScaleX": 0.46718581345553906,
+      "tireScaleY": 0.46718581345553906,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 9.075453386116442E-16,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0
+    },
+    "frontRight": {
+      "tireScaleX": 0.7391385940363312,
+      "tireScaleY": 1.2724115201566404,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.47006786477590295,
+      "frontTireOffsetY": -0.24121626194668314,
+      "rearTireOffsetX": -0.8239885259329272,
+      "rearTireOffsetY": 0.21714255291165502
+    },
+    "right": {
+      "tireScaleX": 0.908047561817057,
+      "tireScaleY": 1.2712282965349482,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.01599999999999998,
+      "frontTireOffsetY": 0.08504208612345879,
+      "rearTireOffsetX": 0.06446280991735605,
+      "rearTireOffsetY": -0.06544541905426382
+    },
+    "rearRight": {
+      "tireScaleX": 0.8798520609894444,
+      "tireScaleY": 1.3712236185110929,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.8430396290106024,
+      "frontTireOffsetY": 1.272384517757207,
+      "rearTireOffsetX": -0.3472330174403561,
+      "rearTireOffsetY": 0.10389613701097192
+    },
+    "rear": {
+      "tireScaleX": 0.46701329545324016,
+      "tireScaleY": 0.46701329545324016,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 2.8786869111549544E-16,
+      "rearTireOffsetY": -1.0211558299705076E-16
+    },
+    "rearLeft": {
+      "tireScaleX": 1.023796253677444,
+      "tireScaleY": 1.2778308496348336,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.031506114918234046,
+      "frontTireOffsetY": 1.1424464211857455,
+      "rearTireOffsetX": -0.17768727351151484,
+      "rearTireOffsetY": -0.20381823618393471
+    },
+    "left": {
+      "tireScaleX": 0.921227610364385,
+      "tireScaleY": 1.3456177281476829,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.01599999999999998,
+      "frontTireOffsetY": 0.05768238708430268,
+      "rearTireOffsetX": 0.004462809917354517,
+      "rearTireOffsetY": -0.038085720015109625
+    },
+    "frontLeft": {
+      "tireScaleX": 0.7560491902137386,
+      "tireScaleY": 1.1675508783759638,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.5823673273439819,
+      "frontTireOffsetY": 0.019475939297407624,
+      "rearTireOffsetX": 0.853446666186957,
+      "rearTireOffsetY": 0.4124616286291714
+    }
+  },
+  "allowCardinalTireOverrides": true,
+  "nativeWheelFaceInsets": {
+    "frontRight": {
+      "rr": 0.3
+    }
+  }
+}
