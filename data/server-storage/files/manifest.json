@@ -2218,7 +2218,10 @@
       "catalog-sea-carrot-2012-tires": "art/catalog-sea-carrot-2012-tires/document.json",
       "catalog-coast-clover-2008-body": "art/catalog-coast-clover-2008-body/document.json",
       "catalog-coast-clover-2008-dashboard": "art/catalog-coast-clover-2008-dashboard/document.json",
-      "catalog-coast-clover-2008-tires": "art/catalog-coast-clover-2008-tires/document.json"
+      "catalog-coast-clover-2008-tires": "art/catalog-coast-clover-2008-tires/document.json",
+      "catalog-vipers-bugloss-1980-body": "art/catalog-vipers-bugloss-1980-body/document.json",
+      "catalog-vipers-bugloss-1980-dashboard": "art/catalog-vipers-bugloss-1980-dashboard/document.json",
+      "catalog-vipers-bugloss-1980-tires": "art/catalog-vipers-bugloss-1980-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

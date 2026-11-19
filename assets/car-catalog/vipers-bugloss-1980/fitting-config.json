@@ -1,0 +1,307 @@
+{
+  "id": "vipers-bugloss-1980",
+  "name": "Vipers Bugloss 1980",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "c84da69c641949f5b36d07b16a6975b867ba9f62a2fb8837330131e03cb64df9",
+  "sourceDirectory": "assets/car-catalog/vipers-bugloss-1980",
+  "sourceHashes": {
+    "body": "f389268b8a690e9a963485f600929d9f706f039a2bedd3cde3c86ed39b4594cf",
+    "dashboard": "96ba6dfdccd6c00810cfdd6afe349be0b49449fcc3af419cee406c2c5a381f6e",
+    "tires": "7a5a04780c0c58b95286b0d48d8e5a670c365f6bcfba951e604131f112dd7c8a"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 92.0,
+        "y": 352.5,
+        "radius": 22.5
+      },
+      {
+        "wheel": "fr",
+        "x": 338.0,
+        "y": 352.5,
+        "radius": 22.5
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 643.5,
+        "y": 331.0,
+        "radius": 32.0
+      },
+      {
+        "wheel": "rr",
+        "x": 815.0,
+        "y": 283.5,
+        "radius": 22.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 945.0,
+        "y": 325.5,
+        "radius": 37.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1239.0,
+        "y": 320.5,
+        "radius": 41.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 446.0,
+        "y": 720.5,
+        "radius": 20.5
+      },
+      {
+        "wheel": "rr",
+        "x": 598.0,
+        "y": 743.5,
+        "radius": 31.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 87.99,
+        "y": 774.675,
+        "radius": 23.325
+      },
+      {
+        "wheel": "rl",
+        "x": 343.01,
+        "y": 774.675,
+        "radius": 23.325
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1582.0,
+        "y": 320.5,
+        "radius": 30.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1718.5,
+        "y": 291.0,
+        "radius": 17.0
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 941.5,
+        "y": 748.0,
+        "radius": 44.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1249.0,
+        "y": 748.5,
+        "radius": 40.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1363.0,
+        "y": 702.5,
+        "radius": 14.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1499.0,
+        "y": 742.5,
+        "radius": 27.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      198,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      475,
+      656.1923076923073,
+      317
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#eed9ae",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ],
+    "renderedInstrumentPodBounds": [
+      148,
+      416,
+      552,
+      176
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false,
+    "projectedPodRepair": {
+      "id": "vipers-bugloss-1980",
+      "status": "proposal",
+      "minimumDeltaY": 55.19230769230725,
+      "maximumDeltaY": 104.19609374999997,
+      "deltaY": 57.19230769230725,
+      "evidence": [
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "speed",
+          "minimumDeltaY": -48.56562499999998,
+          "maximumDeltaY": 104.19609374999997
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "rpm",
+          "minimumDeltaY": -48.56562499999998,
+          "maximumDeltaY": 104.19609374999997
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "gear",
+          "minimumDeltaY": -48.56562499999998,
+          "maximumDeltaY": 104.19609374999997
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "speed",
+          "minimumDeltaY": 55.19230769230725,
+          "maximumDeltaY": 185.43076923076862
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "rpm",
+          "minimumDeltaY": 55.19230769230725,
+          "maximumDeltaY": 185.43076923076862
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "gear",
+          "minimumDeltaY": 55.19230769230725,
+          "maximumDeltaY": 185.43076923076862
+        }
+      ],
+      "accepted": false
+    }
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 0.8906664338557057,
+      "tireScaleY": 0.8906664338557057,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.6515016621250385,
+      "frontTireOffsetY": -0.3637872888452721,
+      "rearTireOffsetX": -0.6515016621250422,
+      "rearTireOffsetY": 0.36378728884527234
+    },
+    "rearRight": {
+      "tireScaleX": 1.0079382536016652,
+      "tireScaleY": 1.0079382536016652,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.24435472779888273,
+      "frontTireOffsetY": 0.7160200270586785,
+      "rearTireOffsetX": -0.24435472779888165,
+      "rearTireOffsetY": -0.7160200270586783
+    },
+    "rearLeft": {
+      "tireScaleX": 1.025736717584941,
+      "tireScaleY": 1.025736717584941,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.4157114559566376,
+      "frontTireOffsetY": 0.5639910686563365,
+      "rearTireOffsetX": 0.41571145595663656,
+      "rearTireOffsetY": -0.5639910686563383
+    },
+    "frontLeft": {
+      "tireScaleX": 1.307822966198428,
+      "tireScaleY": 1.2427213154676782,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -1.1570626259552446,
+      "frontTireOffsetY": -0.4249903934929112,
+      "rearTireOffsetX": 1.6472065218869616,
+      "rearTireOffsetY": 0.46883533975544
+    },
+    "right": {
+      "tireScaleX": 1.2589639490848676,
+      "tireScaleY": 1.2589639490848676,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0.12977416960032576,
+      "rearTireOffsetX": -5.075305255429287e-16,
+      "rearTireOffsetY": -0.1297741696003277
+    },
+    "left": {
+      "tireScaleX": 1.2762039490929062,
+      "tireScaleY": 1.2762039490929062,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0.0523999664340003,
+      "rearTireOffsetX": 5.075305255429287e-16,
+      "rearTireOffsetY": -0.0523999664340003
+    }
+  }
+}
