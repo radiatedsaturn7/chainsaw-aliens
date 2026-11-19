@@ -1984,7 +1984,10 @@
       "catalog-lark-clover-2009-tires": "art/catalog-lark-clover-2009-tires/document.json",
       "catalog-prickly-sowthistle-1997-body": "art/catalog-prickly-sowthistle-1997-body/document.json",
       "catalog-prickly-sowthistle-1997-dashboard": "art/catalog-prickly-sowthistle-1997-dashboard/document.json",
-      "catalog-prickly-sowthistle-1997-tires": "art/catalog-prickly-sowthistle-1997-tires/document.json"
+      "catalog-prickly-sowthistle-1997-tires": "art/catalog-prickly-sowthistle-1997-tires/document.json",
+      "catalog-cream-clover-1958-body": "art/catalog-cream-clover-1958-body/document.json",
+      "catalog-cream-clover-1958-dashboard": "art/catalog-cream-clover-1958-dashboard/document.json",
+      "catalog-cream-clover-1958-tires": "art/catalog-cream-clover-1958-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
