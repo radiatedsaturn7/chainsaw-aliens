@@ -1909,7 +1909,10 @@
       "catalog-apricot-clover-2010-tires": "art/catalog-apricot-clover-2010-tires/document.json",
       "catalog-hackberry-clover-2008-body": "art/catalog-hackberry-clover-2008-body/document.json",
       "catalog-hackberry-clover-2008-dashboard": "art/catalog-hackberry-clover-2008-dashboard/document.json",
-      "catalog-hackberry-clover-2008-tires": "art/catalog-hackberry-clover-2008-tires/document.json"
+      "catalog-hackberry-clover-2008-tires": "art/catalog-hackberry-clover-2008-tires/document.json",
+      "catalog-fig-clover-2012-body": "art/catalog-fig-clover-2012-body/document.json",
+      "catalog-fig-clover-2012-dashboard": "art/catalog-fig-clover-2012-dashboard/document.json",
+      "catalog-fig-clover-2012-tires": "art/catalog-fig-clover-2012-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
