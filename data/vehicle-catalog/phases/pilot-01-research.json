@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 1,
+  "vehicles": [
+    {
+      "candidateId": "subaru-impreza-2024-base-us",
+      "id": "starflower-20-2024",
+      "name": "Starflower 20 2024",
+      "referenceVehicle": "2024 US Subaru Impreza Base, standard equipment, five-door hatchback, AWD Lineartronic CVT, no optional moonroof package",
+      "researchStatus": "primary-source-anchors-reviewed",
+      "source": {
+        "url": "https://www.subaru.com/content/dam/subaru/downloads/pdf/brochures/2024/MY24_Impreza_Brochure.pdf",
+        "publisher": "Subaru of America",
+        "access": "Full factory PDF text read 2026-11-17",
+        "pages": [
+          8,
+          9,
+          12
+        ],
+        "fields": [
+          "trim",
+          "displacement",
+          "power/rpm",
+          "torque/rpm",
+          "curb mass",
+          "dimensions/tracks",
+          "AWD/CVT",
+          "fuel capacity",
+          "suspension distinction"
+        ]
+      },
+      "facts": {
+        "powerHp": 152,
+        "torqueLbFt": 145,
+        "powerRpm": 6000,
+        "torqueRpm": 4000,
+        "curbLb": 3171,
+        "engineDisplacementL": 2.0,
+        "lengthIn": 176.2,
+        "widthIn": 70.1,
+        "heightIn": 58.3,
+        "wheelbaseIn": 105.1,
+        "trackFrontIn": 60.6,
+        "trackRearIn": 60.8,
+        "fuelTankUSgal": 16.6,
+        "drivetrain": "awd",
+        "transmission": "cvt",
+        "wheelDiameterIn": 16,
+        "sportTunedSuspension": false
+      },
+      "simulationEstimates": {
+        "tireSize": [
+          205,
+          55,
+          16
+        ],
+        "cvtMinRatio": 0.55,
+        "cvtMaxRatio": 3.6,
+        "finalDrive": 3.7,
+        "reverseRatio": 3.6,
+        "cruiseRpm": 1800,
+        "ratioRatePerSecond": 1,
+        "frontWeightDistribution": 0.59,
+        "dragCoefficient": 0.3,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.13,
+        "suspensionTravelM": 0.15,
+        "tireGrip": 0.78,
+        "spring": 0.42,
+        "antiRollRear": 0
+      },
+      "limits": [
+        "CVT bounds/final/reverse ratios, width/aspect tire sizing, RPM calibration, off-peak torque, load/inertia, handling, steering, aero, brakes, suspension rates and performance targets are simulation estimates, not factory calibration. Wheel diameter is factory equipment.",
+        "Native continuous CVT uses one forward ratio and existing approximate controller. No eight-speed gearbox, simulated manual steps, EyeSight, OEM active torque vectoring or SI-DRIVE modes claimed.",
+        "RTG-001 graphics/cockpit are shared placeholders, not this vehicle body, wheel appearance or cabin. Original art and vehicle-specific cockpit fitting remain Phase3.",
+        "Source mass excludes optional equipment; meaningful Base/RS engine/mass/suspension distinctions justify two variants."
+      ]
+    },
+    {
+      "candidateId": "subaru-impreza-2024-rs-us",
+      "id": "starflower-25-2024",
+      "name": "Starflower 25 2024",
+      "referenceVehicle": "2024 US Subaru Impreza RS, standard equipment, five-door hatchback, AWD Lineartronic CVT, no optional moonroof package",
+      "researchStatus": "primary-source-anchors-reviewed",
+      "source": {
+        "url": "https://www.subaru.com/content/dam/subaru/downloads/pdf/brochures/2024/MY24_Impreza_Brochure.pdf",
+        "publisher": "Subaru of America",
+        "access": "Full factory PDF text read 2026-11-17",
+        "pages": [
+          8,
+          9,
+          12
+        ],
+        "fields": [
+          "trim",
+          "displacement",
+          "power/rpm",
+          "torque/rpm",
+          "curb mass",
+          "dimensions/tracks",
+          "AWD/CVT",
+          "fuel capacity",
+          "suspension distinction"
+        ]
+      },
+      "facts": {
+        "powerHp": 182,
+        "torqueLbFt": 178,
+        "powerRpm": 5800,
+        "torqueRpm": 3700,
+        "curbLb": 3275,
+        "engineDisplacementL": 2.5,
+        "lengthIn": 176.2,
+        "widthIn": 70.1,
+        "heightIn": 58.3,
+        "wheelbaseIn": 105.1,
+        "trackFrontIn": 60.6,
+        "trackRearIn": 60.8,
+        "fuelTankUSgal": 16.6,
+        "drivetrain": "awd",
+        "transmission": "cvt",
+        "wheelDiameterIn": 18,
+        "sportTunedSuspension": true
+      },
+      "simulationEstimates": {
+        "tireSize": [
+          225,
+          40,
+          18
+        ],
+        "cvtMinRatio": 0.55,
+        "cvtMaxRatio": 3.6,
+        "finalDrive": 3.7,
+        "reverseRatio": 3.6,
+        "cruiseRpm": 1800,
+        "ratioRatePerSecond": 1,
+        "frontWeightDistribution": 0.59,
+        "dragCoefficient": 0.3,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.13,
+        "suspensionTravelM": 0.15,
+        "tireGrip": 0.84,
+        "spring": 0.48,
+        "antiRollRear": 0.24
+      },
+      "limits": [
+        "CVT bounds/final/reverse ratios, width/aspect tire sizing, RPM calibration, off-peak torque, load/inertia, handling, steering, aero, brakes, suspension rates and performance targets are simulation estimates, not factory calibration. Wheel diameter is factory equipment.",
+        "Native continuous CVT uses one forward ratio and existing approximate controller. No eight-speed gearbox, simulated manual steps, EyeSight, OEM active torque vectoring or SI-DRIVE modes claimed.",
+        "RTG-001 graphics/cockpit are shared placeholders, not this vehicle body, wheel appearance or cabin. Original art and vehicle-specific cockpit fitting remain Phase3.",
+        "Source mass excludes optional equipment; meaningful Base/RS engine/mass/suspension distinctions justify two variants."
+      ]
+    }
+  ]
+}

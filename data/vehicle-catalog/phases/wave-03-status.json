@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "base": "b71e82d76f86e66fed403d8e1dab051863ee33aa",
+  "historicalSlots": 660,
+  "localEntries": 215,
+  "systemTemplates": 3,
+  "sharedPlaceholders": 5,
+  "previousFinishedBaselineReported": 210,
+  "newAuthored": 2,
+  "newUnitTested": 2,
+  "newBrowserDriveVerified": 0,
+  "newOriginalArtFinished": 0,
+  "explicitCandidateMappings": 5,
+  "newEntries": [
+    {
+      "id": "snowbell-gt-2023",
+      "name": "Snowbell GT 2023",
+      "candidateId": "kia-ev6-gt-2023-us"
+    },
+    {
+      "id": "arrowleaf-gt-2013",
+      "name": "Arrowleaf GT 2013",
+      "candidateId": "dodge-dart-2013-gt-candidate"
+    }
+  ],
+  "notes": [
+    "Counts exclude separate Echo branch. Previous full reconciliation snapshot is immutable; this is an additive wave receipt, not a replacement 660-slot list.",
+    "Browser launch blocked by sandbox; no drive verification inferred from unit movement."
+  ]
+}

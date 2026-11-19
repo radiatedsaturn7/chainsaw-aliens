@@ -30,7 +30,7 @@ export function runBrakeTurnCase({mode='single-touch',stability=true,bias=null,s
   axes.leftX=command?command.steering:(t<.3?0:steering);axes.rightTrigger=command?command.throttle:(t<1?.15:0);editor.raceInput.inputClockMs=t*1000;
   if(mode.endsWith('touch')){
    if(brake&&!previousBrake)editor.handleRacePlaytestPointerDown({playtestControl:'brake'},{id:'brake'});
-   if(!brake&&previousBrake)editor.raceInput.activeBrakePointerId=null;
+   if(!brake&&previousBrake)editor.handlePointerUp({id:'brake'});
   }else axes.leftTrigger=brake?1:0;
   previousBrake=brake;editor.applyRaceAnalogInput();editor.updatePlaytestSafely(1/fps);
   const s=runner.state,slip=Math.abs(Math.atan2(s.bodyLateralSpeedMps,Math.max(.1,Math.abs(s.bodyLongitudinalSpeedMps))))*180/Math.PI;

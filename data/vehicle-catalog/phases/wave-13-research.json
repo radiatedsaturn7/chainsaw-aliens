@@ -1,0 +1,234 @@
+{
+  "schemaVersion": 1,
+  "base": "370356737b257f32be0787f299e660d80bb1e302",
+  "scope": "Two distinct existing BMW slots; reviewed factory engine anchors with explicit estimates.",
+  "vehicles": [
+    {
+      "candidateId": "bmw-m5-1995-roster-candidate",
+      "id": "goldilocks-1995",
+      "name": "Goldilocks 1995",
+      "identity": {
+        "year": 1995,
+        "make": "BMW",
+        "model": "M5 E34",
+        "trim": "3.8 S38B38 sedan, final-facelift6MT, catalyst; not Touring",
+        "market": "Europe"
+      },
+      "referenceVehicle": "1995 European BMW M5 E34 3.8 S38B38 sedan, final-facelift6MT, catalyst; not Touring",
+      "facts": {
+        "powerKw": 250,
+        "torqueNm": 400,
+        "powerRpm": 6900,
+        "torqueRpm": 4750,
+        "engineDisplacementL": 3.795,
+        "transmission": "manual",
+        "gearCount": 6
+      },
+      "simulationEstimates": {
+        "drivetrain": "rwd",
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.95,
+        "spring": 0.53,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.1,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 240,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "aspiration": "Naturally Aspirated",
+        "curbKg": 1725,
+        "lengthM": 4.72,
+        "widthM": 1.751,
+        "heightM": 1.392,
+        "wheelbaseM": 2.761,
+        "trackFrontIn": 58.8,
+        "trackRearIn": 59.1,
+        "tireSize": [
+          245,
+          40,
+          18
+        ],
+        "gearRatios": [
+          4.23,
+          2.53,
+          1.67,
+          1.23,
+          1,
+          0.83
+        ],
+        "finalDrive": 3.23,
+        "frontWeightDistribution": 0.52,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 5.7,
+        "fuelTankUSgal": 23.8,
+        "wheelWellAware": true
+      },
+      "sources": [
+        {
+          "url": "https://www.bmw-m.com/en/topics/magazine-article-pool/the-bmw-m5-of-1988.html",
+          "publisher": "BMW Group / BMW M",
+          "fields": [
+            "powerKw",
+            "engineDisplacementL",
+            "gearCount",
+            "transmission"
+          ],
+          "access": "Factory E34 history distinguishes1992 S38B38 and mid1994 six-speed facelift. Its360Nm paragraph describes earlier engine; not adopted for3.8. Read2026-11-17."
+        },
+        {
+          "url": "https://www.bmw-m.com/en/topics/magazine-article-pool/bmw-m5-touring-e34.html",
+          "publisher": "BMW Group / BMW M",
+          "fields": [
+            "torqueNm",
+            "torqueRpm",
+            "powerRpm"
+          ],
+          "access": "Factory engine history explicitly states S38B38 shared with facelift sedan; engine anchors only, not wagon mass or geometry. Read2026-11-17."
+        },
+        {
+          "url": "https://www.bmwgroup-classic.com/en/models/bmw-classics/product-description-page.ad-1525-1.bmw-m5-e34-340-hp.html",
+          "publisher": "BMW Group / BMW M",
+          "fields": [
+            "1995 production range"
+          ],
+          "access": "Archive corroborates3.8 production throughJuly1995. Archive content may be AI-assisted; engine anchors independently corroborated above. Read2026-11-17."
+        }
+      ],
+      "limits": [
+        "Not earlier3.5/232kW, US-market variant, Touring, special-edition20Years, or existing2003 E39 V8 Meadowrue.1995 is within verified final-sedan production.",
+        "No EDC/active-suspension emulation; generic dampers/LSD. Runtime1725kg is an estimate, not the early-model1670kg quoted in the overview.",
+        "All nonsourced values are explicit simulation estimates: curb mass, dimensions, tires, ratios/final drive, power-envelope interpolation, grip, steering/brake balance, load distribution, suspension and performance. Generic wheel-well-aware collision geometry is estimated, not a measured shell.",
+        "Shared RTG-001 art/cockpit references only; no original-art completion or independently verified keyboard/touch driving claimed."
+      ]
+    },
+    {
+      "candidateId": "bmw-850csi-1995-roster-candidate",
+      "id": "saxifrage-1995",
+      "name": "Saxifrage 1995",
+      "identity": {
+        "year": 1995,
+        "make": "BMW",
+        "model": "850CSi E31",
+        "trim": "S70 V12 six-speed manual European coupe; not850i/Ci or M8 prototype",
+        "market": "Europe"
+      },
+      "referenceVehicle": "1995 European BMW 850CSi E31 S70 V12 six-speed manual European coupe; not850i/Ci or M8 prototype",
+      "facts": {
+        "powerKw": 280,
+        "torqueNm": 550,
+        "engineDisplacementL": 5.6,
+        "transmission": "manual",
+        "gearCount": 6
+      },
+      "simulationEstimates": {
+        "drivetrain": "rwd",
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.94,
+        "spring": 0.51,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.1,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 240,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "aspiration": "Naturally Aspirated",
+        "curbKg": 1865,
+        "lengthM": 4.78,
+        "widthM": 1.855,
+        "heightM": 1.34,
+        "wheelbaseM": 2.684,
+        "trackFrontIn": 61.4,
+        "trackRearIn": 60.7,
+        "tireSize": [
+          235,
+          45,
+          17
+        ],
+        "gearRatios": [
+          4.25,
+          2.53,
+          1.68,
+          1.24,
+          1,
+          0.83
+        ],
+        "finalDrive": 2.93,
+        "frontWeightDistribution": 0.52,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 5.8,
+        "fuelTankUSgal": 23.8,
+        "wheelWellAware": true,
+        "frontTire": [
+          235,
+          45,
+          17
+        ],
+        "rearTire": [
+          265,
+          40,
+          17
+        ],
+        "powerRpm": 5300,
+        "torqueRpm": 4000
+      },
+      "sources": [
+        {
+          "url": "https://www.press.bmwgroup.com/south-africa/article/detail/T0182584EN/timelessly-alluring%3A-25-years-of-the-bmw-8-series?language=en",
+          "publisher": "BMW Group / BMW M",
+          "fields": [
+            "powerKw",
+            "torqueNm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "2014 manufacturer anniversary release; CSi-specific5.6/280kW/550Nm/manual-only paragraphs. The1790kg and220kW paragraphs are850i, not this car. Read2026-11-17."
+        },
+        {
+          "url": "https://www.bmwgroup-classic.com/en/models/bmw-classics/product-description-page.ad-213-1.bmw-850csi.html",
+          "publisher": "BMW Group / BMW M",
+          "fields": [
+            "1992\u20131996 production range"
+          ],
+          "access": "Archive flags AI-created content; used only as production-range corroboration.1995 also represented by CSi ArtCar in factory anniversary account; no artwork imitation. Read2026-11-17."
+        }
+      ],
+      "limits": [
+        "Not850i5.0/220kW,850Ci5.4/240kW,840CiV8 or M8 prototype. Rated kW controls conversion, not inconsistent retrospective hp labels. Runtime5.6L follows rounded factory displacement; no exact5576cc claim.",
+        "No active rear steering (AHK), EDC or ASC+T algorithm emulation. Steering remains front-only and generic traction assistance.1865kg, rpm anchors, staggered tires, ratios and body geometry are provisional.",
+        "All nonsourced values are explicit simulation estimates: curb mass, dimensions, tires, ratios/final drive, power-envelope interpolation, grip, steering/brake balance, load distribution, suspension and performance. Generic wheel-well-aware collision geometry is estimated, not a measured shell.",
+        "Shared RTG-001 art/cockpit references only; no original-art completion or independently verified keyboard/touch driving claimed."
+      ]
+    }
+  ],
+  "deferred": [
+    {
+      "candidateId": "renault-sport-clio-v6-2003-roster-candidate",
+      "reason": "Exact PhaseII road identity already represented by VesperV6 2003; duplicate rejected."
+    },
+    {
+      "candidateId": "nissan-figaro-1991-roster-candidate",
+      "reason": "Already Marigold1991 Japan3AT; duplicate rejected."
+    },
+    {
+      "candidateId": "bmw-m635csi-1986-roster-candidate",
+      "reason": "Exact catalyst/market source requires corroboration; not implemented."
+    }
+  ]
+}

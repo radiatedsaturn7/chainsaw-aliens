@@ -15,6 +15,8 @@ import {stopCodriver,updateCodriverEvents} from '../racing/RaceCodriver.js';
 import {cockpitDashboardRect,cockpitWheelLayout,cockpitGaugeBounds} from '../racing/CarCockpitLayout.js';
 import { normalizeCvtTuning, validateCvt } from '../racing/simulation/CvtTransmissionModel.js';
 import {raceDriftScoreVariables} from '../racing/RaceDriftScore.js';
+import {digitalPedalFeedback} from '../racing/DigitalPedalFeedback.js';
+import {advanceDigitalBrake} from '../racing/DigitalBrake.js';
 import {advanceDigitalThrottle, observeDrivingIntent, DIGITAL_THROTTLE_MODES, DRIVING_INTENT_STYLES} from '../racing/DigitalThrottle.js';
 import {DEBUG_ROAD_SURFACES, debugRoadTextureSettings} from '../racing/RaceDebugRoad.js';
 import { doodadVisualLayout } from '../racing/RaceDoodadVisualBounds.js';
@@ -1577,6 +1579,7 @@ export default class RaceEditor {
   }
 
   clearRaceTouchControls() {
+    this.raceInput.lastTouchBrakeTapMs = null;
     this.raceInput.activeDpadPointerId = null;
     this.raceInput.activeDpadMenuDirection = null;
     this.raceInput.activeThrottlePointerId = null;
@@ -17018,10 +17021,16 @@ export default class RaceEditor {
 
   cycleRaceDigitalThrottle(delta=1) {
     const index=Math.max(0,DIGITAL_THROTTLE_MODES.indexOf(this.raceInput.digitalThrottleMode||'off'));
-    this.raceInput.digitalThrottleMode=DIGITAL_THROTTLE_MODES[(index+(delta<0?-1:1)+3)%3];
+    this.raceInput.digitalThrottleMode=DIGITAL_THROTTLE_MODES[(index+(delta<0?-1:1)+DIGITAL_THROTTLE_MODES.length)%DIGITAL_THROTTLE_MODES.length];
     if(this.playtestSession)this.playtestSession.digitalThrottle={output:0};
     this.raceInput.throttleAxis=0;
     void this.saveDrivingPreference({raceDigitalThrottle:this.raceInput.digitalThrottleMode});
+  }
+
+  toggleRaceBrakeAssist() {
+    this.raceInput.brakeAssistEnabled = !this.raceInput.brakeAssistEnabled;
+    if(this.playtestSession)this.playtestSession.digitalBrake={output:this.raceInput.brakeAxis||0};
+    void this.saveDrivingPreference({raceBrakeAssist:this.raceInput.brakeAssistEnabled});
   }
 
   getRaceRuntimeRoadTextures() {
@@ -20325,7 +20334,9 @@ export default class RaceEditor {
   updateRacePedalAxes(seconds = 0, {tuning = {}} = {}) {
     const dt = Math.max(0, Number(seconds) || 0);
     const throttleTarget = clamp(Number(this.raceInput.rawThrottleAxis || 0), 0, 1);
-    const brakeTarget = clamp(Number(this.raceInput.rawBrakeAxis || 0), 0, 1);
+    const touchHandbrake = this.raceInput.handbrake && this.raceInput.activeBrakePointerId != null;
+    const brakeTarget = touchHandbrake ? 0 : clamp(Number(this.raceInput.rawBrakeAxis || 0), 0, 1);
+    if(touchHandbrake)this.raceInput.brakeAxis=0;
     const followAxis = (current, target, analogActive, pressRate, releaseRate) => {
       if (analogActive) {
         return target;
@@ -20354,12 +20365,23 @@ export default class RaceEditor {
     const session=this.playtestSession;
     if(session){
       const chassis=getAuthoritativeChassisState(session)||{};
+      const feedback=digitalPedalFeedback(chassis,tuning);
       const staging=Number(session.countdownRemainingMs||0)>1000;
+      session.digitalBrake=advanceDigitalBrake(session.digitalBrake,{
+        enabled:this.raceInput.brakeAssistEnabled===true,raw:brakeTarget,
+        absEnabled:this.raceInput.absEnabled!==false,
+        legacy:this.raceInput.brakeAxis,analog:this.raceInput.analogBrakeActive===true,dt,...feedback,feedbackValid:feedback.brakeFeedbackValid
+      });
+      this.raceInput.brakeAxis=session.digitalBrake.output;
       session.digitalThrottle=advanceDigitalThrottle(session.digitalThrottle,{
         mode:this.raceInput.digitalThrottleMode||'off',raw:throttleTarget,legacy:this.raceInput.throttleAxis,
         analog:this.raceInput.analogThrottleActive===true,brake:brakeTarget,staging,
-        launchEnabled:session.launchControlEnabled===true,dt,tuning,
-        gear:Number(chassis.gear??session.gear??this.raceInput.gear??1)
+        launchEnabled:session.launchControlEnabled===true,dt,...feedback,
+        engineRpm:Number(chassis.engineRpm),lateralSpeedMps:Number(chassis.bodyLateralSpeedMps)||0,
+        maxRpm:Number(session.vehicleDynamicsRunner?.config?.maxRpm||tuning?.revLimitRpm||tuning?.redlineRpm),
+        gear:Number(chassis.gear),shifting:Number(chassis.powertrainState?.shiftTimeRemainingSeconds)>0,
+        revLimiterActive:chassis.powertrainState?.revLimiterActive===true,
+        speedMps:Number(chassis.bodyLongitudinalSpeedMps??session.speedMps)||0,handbrake:this.raceInput.handbrake===true
       });
       this.raceInput.throttleAxis=session.digitalThrottle.output;
       session.drivingIntent=observeDrivingIntent(session.drivingIntent,{
@@ -20393,9 +20415,10 @@ export default class RaceEditor {
       this.raceInput.analogSteeringActive = true;
       this.raceInput.analogSteeringCenteredMs = 0;
     }
-    // A touch brake has no travel to smooth. Include the release frame so
+    // Without pedal assistance, touch braking remains immediate. Include release so
     // letting go does not leave residual brake pressure fighting the throttle.
-    const directTouchBrake = heldBrake || this.raceInput.touchBrakeWasHeld === true;
+    const directTouchBrake = this.raceInput.brakeAssistEnabled !== true
+      && (heldBrake || this.raceInput.touchBrakeWasHeld === true);
     this.raceInput.touchBrakeWasHeld = heldBrake;
     if (!axes) {
       if (!touchSteering) {
@@ -20573,7 +20596,7 @@ export default class RaceEditor {
         {id:'race-debug-visibility',label:'Visibility (Auto)',value:this.raceInput.pauseMenuMode!=='debug-weather'?'':Number.isFinite(this.getRaceWeatherState().visibilityDistanceM)?Math.round(this.getRaceWeatherState().visibilityDistanceM)+' m':'Clear',onClick:()=>this.adjustRaceDebugEnvironment('visibilityDistanceM'),onAdjust:d=>this.adjustRaceDebugEnvironment('visibilityDistanceM',d)},
         {id:'race-debug-car',label:'Swap car',value:'Restart race',onClick:()=>this.selectRaceDebugCar().catch(error=>{this.status='Car swap failed: '+error.message;this.game?.showSystemToast?.(this.status);})},
         {id:'race-debug-tires',label:'Swap tires',value:this.raceInput.pauseMenuMode==='debug-vehicle'?this.getSelectedCarTireLabel(this.getRaceSessionCar()||this.selectedCar):'',onClick:()=>this.selectRaceDebugTires().catch(error=>{this.status='Tire swap failed: '+error.message;this.game?.showSystemToast?.(this.status);})},
-        {id:'race-debug-input-pedal',label:'Digital throttle',value:this.raceInput.digitalThrottleMode||'off',onClick:()=>this.cycleRaceDigitalThrottle(),onAdjust:d=>this.cycleRaceDigitalThrottle(d)},
+        {id:'race-debug-input-pedal',label:'Digital throttle',value:this.raceInput.digitalThrottleMode==='off'||!this.raceInput.digitalThrottleMode?'Off':'On',onClick:()=>this.cycleRaceDigitalThrottle(),onAdjust:d=>this.cycleRaceDigitalThrottle(d)},
         {id:'race-debug-input-intent',label:'Intent display',value:this.raceInput.drivingIntentVisible?'On':'Off',onClick:()=>{this.raceInput.drivingIntentVisible=!this.raceInput.drivingIntentVisible;},onAdjust:()=>{this.raceInput.drivingIntentVisible=!this.raceInput.drivingIntentVisible;}},
         {id:'race-debug-input-style',label:'Intent preference',value:this.raceInput.drivingIntentStyle||'rally',onClick:()=>{const i=DRIVING_INTENT_STYLES.indexOf(this.raceInput.drivingIntentStyle||'rally');this.raceInput.drivingIntentStyle=DRIVING_INTENT_STYLES[(i+1)%3];},onAdjust:d=>{const i=DRIVING_INTENT_STYLES.indexOf(this.raceInput.drivingIntentStyle||'rally');this.raceInput.drivingIntentStyle=DRIVING_INTENT_STYLES[(i+(d<0?-1:1)+3)%3];}},
         {id:'race-debug-road-surface',label:'Surface',value:DEBUG_ROAD_SURFACES.find(s=>s.id===this.playtestSession?.debugRoad?.surface)?.label||'Authored',onClick:()=>this.adjustRaceDebugRoad('surface'),onAdjust:d=>this.adjustRaceDebugRoad('surface',d)},
@@ -20646,7 +20669,7 @@ export default class RaceEditor {
       const group=this.raceInput.pauseMenuMode.slice(6);
       return [...debugRows.filter(row=>row.id!=='race-pause-back'&&groupFor(row.id)===group),back];
     }
-    if (['settings','car-controls','car-lights','car-signals'].includes(this.raceInput.pauseMenuMode)) {
+    if (['settings','car-controls','car-lights','car-signals','car-assists'].includes(this.raceInput.pauseMenuMode)) {
       const settingsRows = [
         {
           id: 'race-toggle-abs',
@@ -20693,7 +20716,11 @@ export default class RaceEditor {
       const back=settingsRows.at(-1);
       if(this.raceInput.pauseMenuMode==='car-lights')return [...settingsRows.slice(2,5),back];
       if(this.raceInput.pauseMenuMode==='car-signals')return [...settingsRows.slice(6,9),back];
+      if(this.raceInput.pauseMenuMode==='car-assists')return [
+        {id:'race-throttle-assist',label:'Throttle assist',value:this.raceInput.digitalThrottleMode==='off'||!this.raceInput.digitalThrottleMode?'Off':'On',onClick:()=>this.cycleRaceDigitalThrottle(),onAdjust:d=>this.cycleRaceDigitalThrottle(d)},
+        {id:'race-brake-assist',label:'Brake assist',value:this.raceInput.brakeAssistEnabled?'Adaptive':'Off',onClick:()=>this.toggleRaceBrakeAssist(),onAdjust:()=>this.toggleRaceBrakeAssist()},back];
       if(this.raceInput.pauseMenuMode==='car-controls')return [
+        {id:'race-car-assists',label:'Driving Assists',value:'›',onClick:()=>open('car-assists')},
         ...settingsRows.slice(0,2),
         {id:'race-launch-control',label:'Launch Control',value:this.raceInput.launchControlEnabled===true?'On':'Off',onClick:()=>this.toggleRaceLaunchControl(),onAdjust:()=>this.toggleRaceLaunchControl()},
         {id:'race-car-lights',label:'Lights',value:'›',onClick:()=>open('car-lights')},
@@ -20766,8 +20793,8 @@ export default class RaceEditor {
       this.raceInput.pauseMenuMode='main';
       this.raceInput.pauseMenuIndex=Math.max(0,this.getRacePauseMenuRows().findIndex(r=>r.id==='race-vehicle-feedback'));return;
     }
-    if (['car-lights','car-signals'].includes(this.raceInput.pauseMenuMode)) {
-      const id=this.raceInput.pauseMenuMode==='car-lights'?'race-car-lights':'race-car-signals';
+    if (['car-lights','car-signals','car-assists'].includes(this.raceInput.pauseMenuMode)) {
+      const id={'car-lights':'race-car-lights','car-signals':'race-car-signals','car-assists':'race-car-assists'}[this.raceInput.pauseMenuMode];
       this.raceInput.pauseMenuMode='car-controls';
       this.raceInput.pauseMenuIndex=Math.max(0,this.getRacePauseMenuRows().findIndex(row=>row.id===id));return;
     }
@@ -24590,7 +24617,7 @@ export default class RaceEditor {
       ctx.fillStyle='#fff';ctx.font=`600 10px ${UI_SUITE.font.family}`;
       ctx.textAlign='left';ctx.textBaseline='top';
       ctx.fillText(`Intent (observe): ${intent.label}`,x+6,y+6);
-      ctx.fillText(`Pedal ${Math.round((pedal?.output||0)*100)}% | ${this.raceInput.digitalThrottleMode||'off'} | ${intent.style}`,x+6,y+24);
+      ctx.fillText(`Pedal ${Math.round((pedal?.output||0)*100)}% | ${pedal?.throttleStyle||this.raceInput.digitalThrottleMode||'off'} | ${intent.style}`,x+6,y+24);
       ctx.restore();
     }
     this.drawRaceSelectResetProgress(ctx, bounds);
@@ -25245,11 +25272,12 @@ export default class RaceEditor {
       : this.raceInput.pauseMenuMode === 'vehicle-feedback' ? 'Car Feedback'
       : this.raceInput.pauseMenuMode === 'car-lights' ? 'Lights'
       : this.raceInput.pauseMenuMode === 'car-signals' ? 'Signals'
+      : this.raceInput.pauseMenuMode === 'car-assists' ? 'Driving Assists'
       : this.raceInput.pauseMenuMode === 'car-controls' ? 'Car Controls'
       : this.raceInput.pauseMenuMode?.startsWith('debug')
         ? ({'debug-performance':'Recording','debug-ai':'AI racers','debug-input':'Input assistance','debug-road':'Road','debug-weather':'Weather & lighting','debug-vehicle':'Vehicle & indicators','debug-overlays':'Debug overlays'}[this.raceInput.pauseMenuMode]||'Debug')
         : 'Paused';
-    const footer = ['settings','car-controls','car-lights','car-signals'].includes(this.raceInput.pauseMenuMode) || this.raceInput.pauseMenuMode?.startsWith('debug')
+    const footer = ['settings','car-controls','car-lights','car-signals','car-assists'].includes(this.raceInput.pauseMenuMode) || this.raceInput.pauseMenuMode?.startsWith('debug')
       ? 'D-pad: Navigate   Left/Right: Change   B: Back'
       : 'D-pad: Navigate   A: Select   START: Return';
     const menu = drawInGameTextMenu(ctx, {
@@ -25392,15 +25420,17 @@ export default class RaceEditor {
         this.backRacePauseMenu();
         return true;
       }
-      // A second distinct touch press requests the replayable physics pulse.
-      // Keyboard/service-brake triggers retain ordinary braking behavior.
+      // Hold the handbrake for the second distinct touch press. The direct
+      // command is recorded by physics and released by pointer-up/cancel;
+      // a timed pulse would expire while held or linger after release.
       const now = Number(this.raceInput.inputClockMs) || 0;
       const previous = this.raceInput.lastTouchBrakeTapMs;
-      if (!this.raceInput.brake && previous !== null && previous !== undefined
+      const alreadyHeld = this.raceInput.activeBrakePointerId != null;
+      if (!alreadyHeld && previous !== null && previous !== undefined
         && now > previous && now - previous <= 300) {
-        this.raceInput.handbrakeHoldSequence += 1;
+        this.raceInput.handbrake = true;
         this.raceInput.lastTouchBrakeTapMs = null;
-      } else if (!this.raceInput.brake) {
+      } else if (!alreadyHeld) {
         this.raceInput.lastTouchBrakeTapMs = now;
       }
       this.raceInput.brake = true;

@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "base": "a6398ad5baf5889b27d18a374aa78c7d8454c8ca",
+  "scope": "Eight distinct candidates audited; statuses describe actual source access, not eight completed research records. No Echo merge.",
+  "candidates": [
+    {
+      "candidateId": "subaru-forester-2024-wilderness-us",
+      "status": "implemented-primary-anchors",
+      "runtimeId": "briar-trail-2024",
+      "duplicateAudit": "Existing Briar 2024 Base and Briar XT 2004 differ in trim/year; no Wilderness present.",
+      "source": "https://www.subaru.com/content/dam/subaru/downloads/pdf/brochures/2025/2025_Forester_Brochure_120424.pdf"
+    },
+    {
+      "candidateId": "mitsubishi-eclipse-1995-rs-us-pending",
+      "status": "source-located-not-spec-reviewed",
+      "reference": "1995 US Eclipse RS 2.0 naturally aspirated 5MT",
+      "source": "https://importarchive.com/mitsubishi/eclipse/1995-1999",
+      "next": "Read factory brochure MMSA-ADV-5618 specification pages; no GS/GSX mass substitution.",
+      "duplicateAudit": "Nightcoil GT 1995 is GSX AWD turbo; Bluebell GT 2006 is V6."
+    },
+    {
+      "candidateId": "dodge-dart-2013-gt-candidate",
+      "status": "partial-primary-anchors",
+      "reference": "2013 US Dodge Dart GT 2.4 six-speed manual",
+      "source": "https://www.prnewswire.com/news-releases/new-2013-dodge-dart-gt-model-to-debut-at-north-american-international-auto-show-186012022.html",
+      "publisher": "Chrysler Group LLC factory release, 2013-01-08",
+      "facts": {
+        "engineL": 2.4,
+        "powerHp": 184,
+        "torqueLbFt": 174,
+        "manualGears": 6,
+        "wheelIn": 18
+      },
+      "next": "Verify production trim curb mass, dimensions, RPM anchors; do not confuse earlier proposed R/T or automatic.",
+      "duplicateAudit": "No Dart production reference in current catalog."
+    },
+    {
+      "candidateId": "dodge-viper-2016-acr-candidate",
+      "status": "partial-primary-anchors",
+      "reference": "2016 US Dodge Viper ACR 6MT; package not yet selected",
+      "source": "https://media.stellantisnorthamerica.com/newsrelease.do?id=16940",
+      "facts": {
+        "engineL": 8.4,
+        "powerHp": 645,
+        "torqueLbFt": 600
+      },
+      "next": "Factory search excerpt accessible but full page unavailable. Resolve standard versus Extreme Aero package, mass and technical sheet before building.",
+      "duplicateAudit": "Old Fireweed is 2016 base SRT, not ACR; neither silently counted as the other."
+    },
+    {
+      "candidateId": "ford-mustang-2024-dark-horse-candidate",
+      "status": "primary-access-unresolved",
+      "reference": "2024 US Mustang Dark Horse 6MT, standard package",
+      "source": "https://media.ford.com/content/dam/fordmedia/North%20America/US/product/2024/mustang/pdf/2024-Mustang-Technical-Specs.pdf",
+      "next": "Retrieve readable Ford technical sheet; UK automatic output/mass not interchangeable.",
+      "duplicateAudit": "Ironbloom GT 2005 differs in generation and trim."
+    },
+    {
+      "candidateId": "ferrari-roma-2020-candidate",
+      "reference": "2020 Ferrari Roma coupe 8DCT",
+      "status": "primary-access-unresolved",
+      "source": "https://www.ferrari.com/en-EN/auto/ferrari-roma",
+      "next": "Factory page returned verification wall. Obtain readable primary specs; retain metric PS/kW distinction and do not call dry mass curb mass.",
+      "duplicateAudit": "No Ferrari production reference found in current roster; no old eleven overlap."
+    },
+    {
+      "candidateId": "ferrari-f40-1987-candidate",
+      "reference": "1987 Ferrari F40 road 5MT",
+      "status": "primary-access-unresolved",
+      "source": "https://www.ferrari.com/en-EN/auto/f40",
+      "next": "Factory page returned verification wall. Obtain readable primary specs; retain metric PS/kW distinction and do not call dry mass curb mass.",
+      "duplicateAudit": "No Ferrari production reference found in current roster; no old eleven overlap."
+    },
+    {
+      "candidateId": "ferrari-f355-1994-berlinetta-candidate",
+      "reference": "1994 Ferrari F355 Berlinetta 6MT",
+      "status": "primary-access-unresolved",
+      "source": "https://www.ferrari.com/en-EN/auto/f355-berlinetta",
+      "next": "Factory page returned verification wall. Obtain readable primary specs; retain metric PS/kW distinction and do not call dry mass curb mass.",
+      "duplicateAudit": "No Ferrari production reference found in current roster; no old eleven overlap."
+    }
+  ],
+  "additionalConfirmedMapping": {
+    "candidateId": "abarth-124-spider-2017-candidate",
+    "runtimeName": "Nettle Turbo 2017",
+    "reference": "2017 US Fiat 124 Spider Abarth 6MT",
+    "decision": "Covered; do not build duplicate."
+  },
+  "additionalVerifiedExistingMappings": {
+    "nissan-sentra-2024-s-us": "2024 Sentinel Sedan",
+    "kia-carnival-2024-lx-7pass-us": "2024 Caravan-9",
+    "citroen-c4-coupe-2005-vts180-eu": "2005 Flint Coupe",
+    "local-motors-rally-fighter-pending-build": "Dustjack V8",
+    "tamo-racemo-pending": "Ember Pod Prototype",
+    "volkswagen-tiguan-2024-s-fwd-us": "Trailglass 2024"
+  },
+  "mappingLimits": [
+    "Racemo backlog has no production year; current representative is explicitly a prototype, not production. Rally Fighter backlog is undated and matches the representative build without inventing a year.",
+    "S660 alpha remains unresolved: runtime provenance establishes 2018 JP 6MT but does not prove alpha trim. Do not count a fuzzy match.",
+    "Sport quattro 1983 is not long-wheelbase Linum A1; ST205 1994 is not Melilot ST185; Impreza Sport is not Base/RS."
+  ]
+}

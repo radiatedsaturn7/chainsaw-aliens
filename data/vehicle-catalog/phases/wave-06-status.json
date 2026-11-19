@@ -1,0 +1,51 @@
+{
+  "base": "4e7caa29cfdc2aafd83a4e20a1a6a331d3397a08",
+  "historicalSlots": 660,
+  "localNonSystemEntries": 225,
+  "systemTemplates": 3,
+  "sharedPlaceholders": 15,
+  "previousFinishedReported": 210,
+  "newAuthored": 3,
+  "newUnitTested": 3,
+  "newDriveVerified": 0,
+  "newOriginalArtFinished": 0,
+  "registeredPickerCases": 6,
+  "stagingObserved": "dd0f1f81ad1c058eaf9155f17911e882a1572d64",
+  "entries": [
+    {
+      "id": "pearlwort-1987",
+      "name": "Pearlwort 1987",
+      "candidateId": "nissan-be-1-1987-roster-candidate",
+      "documentSha256": "72c4689eb39efb9e0dcd7cf91e273e9d48adc0da2271d2c1ae836f7f4f481894"
+    },
+    {
+      "id": "chickweed-1200-1963",
+      "name": "Chickweed 1200 1963",
+      "candidateId": "volkswagen-beetle-1963-roster-candidate",
+      "documentSha256": "c263abba0b45f0b0a8fda4a69aba7d9a3e757185b6ae350f3d97c30876f34da4"
+    },
+    {
+      "id": "glasswort-181-1973",
+      "name": "Glasswort 181 1973",
+      "candidateId": "volkswagen-thing-1973-roster-candidate",
+      "documentSha256": "25a349149f2bcbf5455ac531594cccab89a7fb54257c4a5986e5e067dbf9398b"
+    }
+  ],
+  "units": {
+    "passed": 68,
+    "failed": 0,
+    "skipped": 0
+  },
+  "priorDocumentsByteIdentical": true,
+  "browser": "Official Headless Shell with chromiumSandbox:true: No usable sandbox before page load; six cases discovered, zero passed drives.",
+  "evidence": {
+    "units.log": "144a67b8f30b0647c2c2dc1e2119d577f51f4677e9fb6a384499948d6649a839",
+    "discovery.log": "21c69629a89a193438ab3c813d7e5503154cc29b769d6eb9fac3231b50cb982c",
+    "browser.log": "d29372cd3e4aa9f80e1afd3129a1d550596e32ddf1e29520d7dd20c31b7e9189"
+  },
+  "manifestValidation": {
+    "documents": 2222,
+    "assets": 16,
+    "passed": true
+  }
+}

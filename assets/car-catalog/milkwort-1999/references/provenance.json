@@ -1,0 +1,53 @@
+{
+  "referenceVehicle": "1999 United States Ford Escort LX four-door sedan,2.0L SOHC8v split-port injection,standard5MT,FWD,manual windows/mirrors,cloth seats,14inch covers. Not ZX2,SE Sport,wagon,European Escort or personal-owner replica.",
+  "sources": [
+    {
+      "url": "https://xr793.com/wp-content/uploads/2023/02/1999-Ford-Escort.pdf",
+      "fields": [
+        "US LX trim and equipment",
+        "SAE net power/torque and RPM",
+        "dimensions",
+        "tires",
+        "fuel capacity",
+        "steering",
+        "suspension",
+        "brakes",
+        "five-speed standard"
+      ],
+      "access": "Original Ford brochure PDFpage11,printed20/21,visually reviewed full-resolution. LX sedan distinct from SE and ZX2."
+    }
+  ],
+  "verifiedFacts": {
+    "market": "US",
+    "year": 1999,
+    "trim": "LX sedan",
+    "powerHp": 110,
+    "powerRpm": 5000,
+    "torqueLbFt": 125,
+    "torqueRpm": 3750,
+    "engine": "2.0L SOHC8v split-port injection",
+    "wheelbaseIn": 98.4,
+    "lengthIn": 174.7,
+    "widthIn": 67,
+    "heightIn": 53.3,
+    "trackFrontIn": 56.5,
+    "trackRearIn": 56.5,
+    "tires": "P185/65R14",
+    "fuelUSGal": 12.8,
+    "steeringRatio": 17,
+    "brakes": "front disc/rear drum;ABS optional",
+    "suspension": "independent MacPherson front;independent quadralink rear",
+    "gearbox": "standard five-speed manual overdrive"
+  },
+  "collection": {
+    "name": "First Keys",
+    "targetCollectionSize": 20
+  },
+  "estimates": [
+    "1120kg modeled mass is explicitly estimated; brochure has no curb-weight table. No factory trim-specific mass claim.61percent front,.53mCG,140mmclearance,Cd.33,30psi,suspension rates,brake balance,105mph and10.5sec are simulation estimates.",
+    "Factory110SAE-net hp5000rpm and125SAE-net lbft3750rpm anchor curve;remaining curve,800idle5500red6000cut,shift/launch behavior are estimates. No racing upgrade.",
+    "Five-speed count factory;3.25/1.95/1.25/.90/.68 ratios,4.06final,2.92reverse are estimated, not verified Ford gearing. Auto Assist automates same manual,not optional factory4AT.",
+    "Open front differential modeled zero locking;optional ABS not asserted standard. Generic shared moving tire artwork simplifies factory14inch steel covers,without changing tire size.",
+    "Original burgundy logo-free2994 ordinary sedan and grey cloth cabin;live digital retrofit instruments include tachometer although LX factory tachometer absent. Cabin geometry artistic,not exact factory reconstruction. No runtime/race changes."
+  ]
+}

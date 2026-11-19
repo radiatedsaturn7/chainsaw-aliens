@@ -1,0 +1,311 @@
+{
+  "schemaVersion": 1,
+  "base": "4109684f7968c322d4973ebe48eaf1a9611554af",
+  "scope": "Three distinct US Lexus backlog slots: large V6 sedan, compact V6 sedan, V8 coupe. No year-only or badge-only duplicate.",
+  "vehicles": [
+    {
+      "candidateId": "lexus-gs350-f-sport-2013-roster-candidate",
+      "id": "yellow-wort-2013",
+      "name": "Yellow Wort 2013",
+      "identity": {
+        "year": 2013,
+        "make": "Lexus",
+        "model": "GS 350 F SPORT",
+        "trim": "RWD 3.5 V6 six-speed automatic, without optional rear steering",
+        "market": "United States"
+      },
+      "referenceVehicle": "2013 US Lexus GS 350 F SPORT, RWD 3.5 V6 six-speed automatic, without optional rear steering",
+      "facts": {
+        "powerHp": 306,
+        "powerRpm": 6400,
+        "torqueLbFt": 277,
+        "torqueRpm": 4800,
+        "engineDisplacementL": 3.5,
+        "transmission": "automatic",
+        "gearCount": 6,
+        "drivetrain": "rwd",
+        "curbKg": 1685.09565455,
+        "lengthM": 4.84886,
+        "widthM": 1.8389600000000002,
+        "heightM": 1.45542,
+        "wheelbaseM": 2.8498799999999997
+      },
+      "simulationEstimates": {
+        "reverseRatio": 3.17,
+        "cgHeightM": 0.51,
+        "groundClearanceM": 0.135,
+        "dragCoefficient": 0.3,
+        "tireGrip": 0.97,
+        "spring": 0.51,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.87,
+        "rearDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 200,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "aspiration": "Naturally aspirated",
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 6600,
+        "revLimitRpm": 6800,
+        "fuelTankUSgal": 17.4,
+        "torqueConverterSlip": 0.06,
+        "torqueConverterMultiplication": 1.65,
+        "launchRpm": 2100,
+        "trackFrontIn": 62,
+        "trackRearIn": 62.6,
+        "tireSize": [
+          235,
+          40,
+          19
+        ],
+        "gearRatios": [
+          3.52,
+          2.04,
+          1.4,
+          1,
+          0.72,
+          0.59
+        ],
+        "finalDrive": 3.77,
+        "topSpeedMph": 143,
+        "zeroToSixtySec": 5.7,
+        "transmissionLabel": "6-speed torque-converter automatic (estimated ratios)"
+      },
+      "sources": [
+        {
+          "url": "https://pressroom.lexus.com/lexus-2013-gs-350-f-sport-2011-sema/",
+          "publisher": "Lexus USA Newsroom",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "drivetrain",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM"
+          ],
+          "access": "Factory US F SPORT announcement; preliminary specification table, read 2026-11-17. Selected RWD column, not AWD."
+        }
+      ],
+      "limits": [
+        "Mass and dimensions are explicitly preliminary factory launch figures, not a weighed option-equipped vehicle. No Lexus Dynamic Handling rear steer. Tires and ratios remain estimates.",
+        "All parameters outside verifiedFacts are modeling estimates, including gearing, load distribution, tire grip, steering/brake calibration, suspension, torque curve and performance. No adaptive damping, active rear steering or proprietary stability logic is emulated.",
+        "Shared RTG-001 art and instruments only; no original art completion or independent desktop/touch acceptance claimed. Generic wheel-well-aware collision geometry."
+      ]
+    },
+    {
+      "candidateId": "lexus-is-350-f-sport-2014-roster-candidate",
+      "id": "meadow-saffron-2014",
+      "name": "Meadow Saffron 2014",
+      "identity": {
+        "year": 2014,
+        "make": "Lexus",
+        "model": "IS 350 F SPORT",
+        "trim": "RWD 3.5 V6 eight-speed automatic, standard F SPORT package",
+        "market": "United States"
+      },
+      "referenceVehicle": "2014 US Lexus IS 350 F SPORT, RWD 3.5 V6 eight-speed automatic, standard F SPORT package",
+      "facts": {
+        "powerHp": 306,
+        "powerRpm": 6400,
+        "torqueLbFt": 277,
+        "torqueRpm": 4800,
+        "engineDisplacementL": 3.5,
+        "transmission": "automatic",
+        "gearCount": 8,
+        "drivetrain": "rwd"
+      },
+      "simulationEstimates": {
+        "reverseRatio": 3.17,
+        "cgHeightM": 0.51,
+        "groundClearanceM": 0.135,
+        "dragCoefficient": 0.3,
+        "tireGrip": 0.97,
+        "spring": 0.51,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.87,
+        "rearDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 200,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "aspiration": "Naturally aspirated",
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 6600,
+        "revLimitRpm": 6800,
+        "fuelTankUSgal": 17.4,
+        "torqueConverterSlip": 0.06,
+        "torqueConverterMultiplication": 1.65,
+        "launchRpm": 2100,
+        "curbKg": 1630,
+        "lengthM": 4.665,
+        "widthM": 1.81,
+        "heightM": 1.43,
+        "wheelbaseM": 2.8,
+        "trackFrontIn": 60.4,
+        "trackRearIn": 61,
+        "tireSize": [
+          225,
+          40,
+          18
+        ],
+        "gearRatios": [
+          4.6,
+          2.72,
+          1.86,
+          1.46,
+          1.23,
+          1,
+          0.82,
+          0.69
+        ],
+        "finalDrive": 3.13,
+        "topSpeedMph": 143,
+        "zeroToSixtySec": 5.6,
+        "transmissionLabel": "8-speed torque-converter automatic (estimated ratios)"
+      },
+      "sources": [
+        {
+          "url": "https://pressroom.lexus.com/lexus-third-generation-is-sport-sedan-2014/",
+          "publisher": "Lexus USA Newsroom",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "drivetrain"
+          ],
+          "access": "March 2013 factory launch for MY2014; RWD eight-speed explicitly distinguished from AWD. Read 2026-11-17."
+        }
+      ],
+      "limits": [
+        "Not IS F V8, IS250, or six-speed AWD. AVS simplified to fixed dampers. Mass is provisional F SPORT estimate, not a factory trim weight.",
+        "All parameters outside verifiedFacts are modeling estimates, including gearing, load distribution, tire grip, steering/brake calibration, suspension, torque curve and performance. No adaptive damping, active rear steering or proprietary stability logic is emulated.",
+        "Shared RTG-001 art and instruments only; no original art completion or independent desktop/touch acceptance claimed. Generic wheel-well-aware collision geometry."
+      ]
+    },
+    {
+      "candidateId": "lexus-rc-f-2015-roster-candidate",
+      "id": "wild-clary-2015",
+      "name": "Wild Clary 2015",
+      "identity": {
+        "year": 2015,
+        "make": "Lexus",
+        "model": "RC F",
+        "trim": "standard 5.0 V8 RWD eight-speed automatic, Torsen differential, no optional TVD or carbon package",
+        "market": "United States"
+      },
+      "referenceVehicle": "2015 US Lexus RC F, standard 5.0 V8 RWD eight-speed automatic, Torsen differential, no optional TVD or carbon package",
+      "facts": {
+        "powerHp": 467,
+        "engineDisplacementL": 5,
+        "transmission": "automatic",
+        "gearCount": 8,
+        "wheelbaseM": 2.7304999999999997,
+        "frontTire": [
+          255,
+          35,
+          19
+        ],
+        "rearTire": [
+          275,
+          35,
+          19
+        ]
+      },
+      "simulationEstimates": {
+        "reverseRatio": 3.17,
+        "cgHeightM": 0.51,
+        "groundClearanceM": 0.135,
+        "dragCoefficient": 0.3,
+        "tireGrip": 1.04,
+        "spring": 0.59,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.87,
+        "rearDifferentialAccel": 0.24,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 200,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "aspiration": "Naturally aspirated",
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 7100,
+        "revLimitRpm": 7300,
+        "fuelTankUSgal": 17.4,
+        "torqueConverterSlip": 0.06,
+        "torqueConverterMultiplication": 1.65,
+        "launchRpm": 2100,
+        "drivetrain": "rwd",
+        "torqueLbFt": 389,
+        "powerRpm": 7100,
+        "torqueRpm": 4800,
+        "curbKg": 1795,
+        "lengthM": 4.705,
+        "widthM": 1.845,
+        "heightM": 1.39,
+        "trackFrontIn": 61.2,
+        "trackRearIn": 61.4,
+        "tireSize": [
+          255,
+          35,
+          19
+        ],
+        "gearRatios": [
+          4.6,
+          2.72,
+          1.86,
+          1.46,
+          1.23,
+          1,
+          0.82,
+          0.69
+        ],
+        "finalDrive": 2.94,
+        "topSpeedMph": 168,
+        "zeroToSixtySec": 4.4,
+        "transmissionLabel": "8-speed torque-converter automatic (estimated ratios)"
+      },
+      "sources": [
+        {
+          "url": "https://pressroom.lexus.com/2015-lexus-rc-f-product-news/",
+          "publisher": "Lexus USA Newsroom",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "wheelbaseM",
+            "frontTire",
+            "rearTire"
+          ],
+          "access": "September 2014 MY2015 factory release; 467 US horsepower, 5.0 V8, eight-speed and staggered tires. Read 2026-11-17."
+        }
+      ],
+      "limits": [
+        "Standard Torsen approximated by generic limited-slip parameter, not TVD. No active wing simulation. Torque and peak rpm anchors remain estimated; source gives engine maximum 7100rpm but not a torque table. Not Track Edition or IS F.",
+        "All parameters outside verifiedFacts are modeling estimates, including gearing, load distribution, tire grip, steering/brake calibration, suspension, torque curve and performance. No adaptive damping, active rear steering or proprietary stability logic is emulated.",
+        "Shared RTG-001 art and instruments only; no original art completion or independent desktop/touch acceptance claimed. Generic wheel-well-aware collision geometry."
+      ]
+    }
+  ],
+  "deferred": []
+}

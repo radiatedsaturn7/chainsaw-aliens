@@ -1,0 +1,41 @@
+{
+  "referenceVehicle": "Tommi Makinen / Risto Mannisenmaki, 1999 Monte Carlo-winning Mitsubishi Lancer Evolution VI Group A. Not road Tommi Makinen Edition, Evolution IX, Group N or later Lancer WRC.",
+  "sources": [
+    {
+      "url": "https://www.mitsubishi-motors.com/en/brand/motorsports/wrc/1999/",
+      "fields": [
+        "driver and co-driver",
+        "Monte Carlo result",
+        "Group A identity",
+        "season reference engine output and dimensions",
+        "later differential chronology"
+      ],
+      "access": "Manufacturer retrospective season history and technical table. Specifications are season references, not a certified Monte Carlo setup sheet."
+    }
+  ],
+  "verifiedFacts": {
+    "driver": "Tommi Makinen",
+    "coDriver": "Risto Mannisenmaki",
+    "event": "1999 Monte Carlo",
+    "achievement": "overall rally win",
+    "referencePowerPS": 290,
+    "referenceTorqueKgfM": 52,
+    "referenceDisplacementCc": 1997,
+    "referenceLengthMm": 4350,
+    "referenceWidthMm": 1770,
+    "eventDaySetupVerified": false
+  },
+  "collection": {
+    "name": "Legends",
+    "driver": "Tommi Makinen",
+    "event": "1999 Monte Carlo",
+    "targetCollectionSize": 25
+  },
+  "estimates": [
+    "Factory season values:290PS converted to286.03 mechanical hp;52kgf-m converted to509.9458Nm and376.12lbft. No unsupported claim of exact Monte Carlo output or SAE certification. Torque and power RPM,curve,idle1100,red7000,cut7400,turbo response and shift dynamics are estimates.",
+    "1230kg running mass,59percent front,2.51m wheelbase,1.42m height,1.51m tracks,CG.5,180mm clearance,Cd.39,12.5 steering ratio,80L fuel,205/65R15 Rally tires30psi,125mph4.4sec and suspension/brakes are modeling estimates. Only4.35m length and1.77m width are taken from factory race table.",
+    "Six-speed count and2.8/2/1.55/1.24/1.03/.88 ratios,4.53final,3.0reverse are estimates, not verified Monte Carlo gearing. Auto Assist automates this estimated manual.",
+    "Existing fixed50percent AWD and passive LSD settings approximate competition traction; NO active rear differential, which factory history dates to later1999Sanremo. No active drivetrain or runtime changes. Tire compound does not reproduce event ice,studding or tire swaps.",
+    "Original copper/ivory2994 four-door rally body and stripped LHD cockpit, no sponsors,logos or driver likeness. Lower rear-wing opening treatment is artistic; factory account does not date its closure. Live retrofit gauges and cockpit layout are original estimates, not verified event geometry."
+  ]
+}

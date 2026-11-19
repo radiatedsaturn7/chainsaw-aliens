@@ -189,18 +189,28 @@ test('repeated keyboard service-brake taps never issue a timed handbrake command
  }
 });
 
-test('double touch brake taps request one timed handbrake pulse, not a stuck brake',()=>{
+test('double touch brake holds handbrake until that pointer releases',()=>{
  const editor=new RaceEditor({});editor.playtestSession={running:true};
+ editor.isLivePlaytestSession=()=>true;
  const tap=t=>{editor.raceInput.inputClockMs=t;editor.handleRacePlaytestPointerDown({playtestControl:'brake'},{id:'r'});};
- tap(1000);assert.equal(editor.raceInput.handbrakeHoldSequence,0);
- tap(1100);assert.equal(editor.raceInput.handbrakeHoldSequence,0,'duplicate down is not a tap');
- editor.raceInput.brake=false;tap(1200);
- assert.equal(editor.raceInput.handbrakeHoldSequence,1);
- assert.equal(editor.raceInput.handbrakeHoldSeconds,.36);
- assert.equal(editor.raceInput.handbrake,false,'pulse is owned by physics, not a sticky button');
- editor.raceInput.brake=false;tap(1300);
- assert.equal(editor.raceInput.handbrakeHoldSequence,1,'triple tap does not extend the pulse');
- editor.raceInput.brake=false;tap(1800);
- assert.equal(editor.raceInput.handbrakeHoldSequence,1,'slow taps are normal braking');
+ const release=()=>editor.handlePointerUp({id:'r'});
+ tap(1000);assert.equal(editor.raceInput.handbrake,false);
+ tap(1100);assert.equal(editor.raceInput.handbrake,false,'duplicate down is not a tap');
+ release();tap(1200);
+ assert.equal(editor.raceInput.handbrake,true);
+ assert.equal(editor.raceInput.handbrakeHoldSequence,0,'no lingering timed pulse');
+ for(let frame=0;frame<180;frame++){
+  editor.raceInput.inputClockMs+=1000/60;
+  editor.applyRaceAnalogInput();editor.updateRacePedalAxes(1/60);
+  assert.equal(editor.raceInput.handbrake,true,'held for longer than the old 360ms pulse');
+ }
+ editor.handlePointerUp({id:'other'});
+ assert.equal(editor.raceInput.handbrake,true,'another finger cannot release the brake');
+ release();assert.equal(editor.raceInput.handbrake,false);
+ tap(4300);assert.equal(editor.raceInput.handbrake,false,'third tap is ordinary braking');
+ release();tap(4400);assert.equal(editor.raceInput.handbrake,true);
+ release();assert.equal(editor.raceInput.handbrake,false,'quick release has no minimum pulse');
+ tap(5000);release();tap(5100);
+ editor.clearRaceTouchControls();assert.equal(editor.raceInput.handbrake,false);
  editor.resetRacePlaytestInputs();assert.equal(editor.raceInput.lastTouchBrakeTapMs,null);
 });

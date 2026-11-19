@@ -1,0 +1,216 @@
+{
+  "schemaVersion": 1,
+  "base": "72ec74b583e082238d23ccf39a3137821ca01845",
+  "scope": "Two distinct existing French hot-hatch slots with factory anchors and explicit uncertain inputs.",
+  "vehicles": [
+    {
+      "candidateId": "renault-clio-williams-1993-roster-candidate",
+      "id": "goldentuft-1993",
+      "name": "Goldentuft 1993",
+      "identity": {
+        "year": 1993,
+        "make": "Renault",
+        "model": "Clio Williams",
+        "trim": "first-series European 2.0 naturally aspirated three-door road car, five-speed manual; not rally Group A/N",
+        "market": "France"
+      },
+      "referenceVehicle": "1993 France Renault Clio Williams, first-series European 2.0 naturally aspirated three-door road car, five-speed manual; not rally Group A/N",
+      "facts": {
+        "powerKw": 110.3248125,
+        "engineDisplacementL": 1.998,
+        "lengthM": 3.71,
+        "widthM": 1.64,
+        "heightM": 1.37,
+        "drivetrain": "fwd"
+      },
+      "simulationEstimates": {
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.33,
+        "tireGrip": 0.94,
+        "spring": 0.5,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 240,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 990,
+        "torqueNm": 175,
+        "powerRpm": 6100,
+        "torqueRpm": 4500,
+        "wheelbaseM": 2.472,
+        "trackFrontIn": 55.5,
+        "trackRearIn": 53.9,
+        "tireSize": [
+          185,
+          55,
+          15
+        ],
+        "gearRatios": [
+          3.09,
+          1.86,
+          1.32,
+          1.03,
+          0.8
+        ],
+        "finalDrive": 4.06,
+        "frontWeightDistribution": 0.63,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "topSpeedMph": 133,
+        "zeroToSixtySec": 7.6,
+        "fuelTankUSgal": 13.2,
+        "aspiration": "Naturally Aspirated",
+        "torqueLbFt": 129.07337612352148
+      },
+      "sources": [
+        {
+          "url": "https://theoriginals.renault.com/es/clio-williams",
+          "publisher": "Renault The Originals Museum",
+          "fields": [
+            "powerKw",
+            "engineDisplacementL",
+            "dimensions",
+            "drivetrain",
+            "1993-1995 production"
+          ],
+          "access": "Factory museum lists150CV,1998cc and rounded dimensions. Display vehicle dated1994; production-range/engine-family anchors only, not individual1993 chassis certification. Read 2026-11-17."
+        },
+        {
+          "url": "https://www.renaultgroup.com/magazine/nos-actualites-groupe/renault-clio-notre-histoire-vos-histoires/",
+          "publisher": "Renault Group",
+          "fields": [
+            "1993 introduction",
+            "150 metric horsepower"
+          ],
+          "access": "Factory retrospective confirms1993 Williams introduction and150 chevaux. Uses metricPS/CV conversion, not mechanicalhp. Read 2026-11-17."
+        }
+      ],
+      "limits": [
+        "Not existing later Clio200 Vervain, mid-engineV6 Vesper, Twingo133 Sorrel or a Williams-branded race car. Initial numbered-series interpretation; no specific chassis claim.",
+        "Primary sources verify engine power/displacement, broad geometry and introduction. Torque175Nm, manual gearbox calibration and990kg are provisional estimates pending a period trim-specific sheet. No fictional racing upgrades.",
+        "All parameters not in verifiedFacts are explicit simulation estimates, including mass, gearing, rpm calibration, geometry not cited, load distribution, torque interpolation, grip, suspension, steering/brake balance and performance. Generic wheel-well-aware collider is not a measured shell.",
+        "Shared RTG-001 exterior and cockpit references; no new original-art completion or independent desktop/touch driving acceptance."
+      ]
+    },
+    {
+      "candidateId": "peugeot-308-gti-2011-roster-candidate",
+      "id": "bog-asphodel-2011",
+      "name": "Bog Asphodel 2011",
+      "identity": {
+        "year": 2011,
+        "make": "Peugeot",
+        "model": "308 GTi T7 facelift",
+        "trim": "1.6 THP200 five-door hatchback, six-speed manual; not CC, SW or later T9 GTi270",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2011 Germany Peugeot 308 GTi T7 facelift, 1.6 THP200 five-door hatchback, six-speed manual; not CC, SW or later T9 GTi270",
+      "facts": {
+        "powerKw": 147,
+        "torqueNm": 275,
+        "engineDisplacementL": 1.598,
+        "transmission": "manual",
+        "gearCount": 6,
+        "lengthM": 4.28
+      },
+      "simulationEstimates": {
+        "drivetrain": "fwd",
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.33,
+        "tireGrip": 0.94,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 240,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "curbKg": 1399,
+        "widthM": 1.815,
+        "heightM": 1.498,
+        "wheelbaseM": 2.608,
+        "trackFrontIn": 60.4,
+        "trackRearIn": 60.2,
+        "tireSize": [
+          225,
+          40,
+          18
+        ],
+        "gearRatios": [
+          3.54,
+          1.92,
+          1.32,
+          0.98,
+          0.78,
+          0.65
+        ],
+        "finalDrive": 4.18,
+        "frontWeightDistribution": 0.64,
+        "powerRpm": 6000,
+        "torqueRpm": 3000,
+        "redlineRpm": 6800,
+        "revLimitRpm": 7000,
+        "topSpeedMph": 147,
+        "zeroToSixtySec": 7.4,
+        "fuelTankUSgal": 15.9,
+        "aspiration": "Turbocharged"
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/de-de/peugeot/press/peugeot-308-gti-kompromisslose-emotion-langfassung",
+          "publisher": "Peugeot / Stellantis Media",
+          "fields": [
+            "powerKw",
+            "torqueNm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "July2010 German factory technical launch:147kW plateau5500-6800rpm and275Nm1700-4500rpm. Runtime single-point anchors inside these bands are estimates, not exact peak-speed claims. Read 2026-11-17."
+        },
+        {
+          "url": "https://www.media.stellantis.com/de-de/peugeot/press/peugeot-308-franzosischer-erfolgstyp-im-neuen-outfit-langfassung",
+          "publisher": "Peugeot / Stellantis Media",
+          "fields": [
+            "2011 facelift GTi identity"
+          ],
+          "access": "May2011 German factory facelift release confirms GTi200PS five-door distinct from CC200 and wagon. Read 2026-11-17."
+        },
+        {
+          "url": "https://www.media.stellantis.com/de-de/peugeot/press/peugeot-308-beliebte-kompakt-limousine-mit-umfangreicher-modellpflege",
+          "publisher": "Peugeot / Stellantis Media",
+          "fields": [
+            "lengthM"
+          ],
+          "access": "May2011 factory hatchback release gives rounded4.28m length. Read 2026-11-17."
+        }
+      ],
+      "limits": [
+        "Uses source147kW rather than treating200PS as200mechanicalhp. Twin-scroll turbo behavior is an estimated torque curve, not a measured transient model.",
+        "Factory wide torque/power plateaus are documented but generic five-point runtime interpolation does not reproduce full certified curves. Mass1399kg, ratios and tire section/aspect remain provisional;18-inch wheel diameter corroborated.",
+        "All parameters not in verifiedFacts are explicit simulation estimates, including mass, gearing, rpm calibration, geometry not cited, load distribution, torque interpolation, grip, suspension, steering/brake balance and performance. Generic wheel-well-aware collider is not a measured shell.",
+        "Shared RTG-001 exterior and cockpit references; no new original-art completion or independent desktop/touch driving acceptance."
+      ]
+    }
+  ],
+  "deferred": [
+    {
+      "candidateId": "renault-m-gane-r26-r-2008-roster-candidate",
+      "reason": "Factory history confirms model but UK technical release body inaccessible. Do not confuse ClioV6 230hp text with R26.R specifications."
+    }
+  ]
+}

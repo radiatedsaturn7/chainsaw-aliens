@@ -1,0 +1,65 @@
+{
+  "referenceVehicle": "2005 US Dodge Neon SE four-door sedan, standard five-speed manual, naturally aspirated 1995cc SOHC16v, front-wheel drive. No SXT, SRT4, SRT Design, sport package or optional ABS. Original fictional Cornsalad 2005.",
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Dodge/Neon/Dodge_US%20Neon_2005.pdf",
+      "fields": [
+        "Exact US SE standard trim, cloth seats, wheel covers, standard gearbox, factory output and fuel capacity"
+      ],
+      "access": "Original Dodge brochure, page5 visually inspected."
+    },
+    {
+      "url": "https://s3.amazonaws.com/chryslermedia.iconicweb.com/mediasite/specs/2005NeonSpecs.pdf",
+      "fields": [
+        "Exact2005 SE engine, transaxle ratios, dimensions, estimated curb weight, axle distribution, Cd, steering, tires, brakes, trim equipment"
+      ],
+      "access": "Dodge Brand Product Information pages10\u201313 and feature availability; actual gearing and dimension page11 visually inspected."
+    }
+  ],
+  "verifiedFacts": {
+    "market": "US",
+    "year": 2005,
+    "trim": "SE sedan",
+    "engine": "1995cc SOHC16v naturally aspirated I4",
+    "powerHpSAENet": 132,
+    "powerRpm": 5600,
+    "torqueLbFtSAENet": 130,
+    "torqueRpm": 4600,
+    "manualMaxRpm": 6752,
+    "curbKgManufacturerEstimate": 1171,
+    "frontWeightFraction": 0.64,
+    "lengthM": 4.43,
+    "widthM": 1.711,
+    "heightM": 1.421,
+    "wheelbaseM": 2.667,
+    "frontTrackM": 1.474,
+    "rearDrumTrackM": 1.472,
+    "groundClearanceM": 0.154,
+    "dragCoefficient": 0.342,
+    "steeringRatio": 18,
+    "tires": "P175/70R14 all-season touring, steel14x5.5 with covers",
+    "gearRatios": [
+      3.5,
+      1.95,
+      1.36,
+      0.97,
+      0.72
+    ],
+    "finalDrive": 3.55,
+    "reverse": 3.42,
+    "fuelUSGal": 12.5,
+    "brakes": "vented front disc, rear drum; optional ABS not fitted",
+    "suspension": "MacPherson front, Chapman strut rear"
+  },
+  "collection": {
+    "name": "First Keys",
+    "targetCollectionSize": 20
+  },
+  "estimates": [
+    "1171kg is the manufacturer-published SE estimated curb weight, not an independently weighed exact5MT example. No added driver mass; source fluid/equipment accounting unresolved. Metric dimensions retained where rounded inch conversions differ.",
+    "132 SAE-net hp5600rpm and130 SAE-net lbft4600rpm anchor the curve;6752rpm manual limiter is factory reference. Estimated800idle,6500redline,remaining torque curve,shift/launch logic and transmission efficiency. Auto Assist automates the same sourced5MT,not the optional4AT.",
+    "CG .53m,overhang split,hood/cabin geometry,30psi,normalized suspension and damping,brake balance,open-differential locking parameters,112mph and9.5sec0\u201360 are simulation estimates. Tire radius uses nominal175/70R14 geometry,not exact loaded rolling radius.",
+    "Original mineral-gray logo-free2994 ordinary sedan and grey cloth LHD cabin. Live digital retrofit adds RPM although baseSE has no standard tachometer. Shared moving-wheel artwork simplifies stock small covers; no sport body kit,wing,scoop or power upgrade.",
+    "The 2002 Canadian brochure is not used as evidence for the US trim."
+  ]
+}

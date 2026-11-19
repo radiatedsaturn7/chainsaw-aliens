@@ -1,0 +1,1278 @@
+{
+  "car": {
+    "id": "storksbill-1977",
+    "name": "Storksbill 1977",
+    "class": "road",
+    "art": {
+      "body": null,
+      "artRef": null,
+      "shell": null,
+      "tires": [],
+      "spoilers": [],
+      "turnFrames": {
+        "left": null,
+        "center": null,
+        "right": null
+      },
+      "shellFrames": {
+        "mode": "8-way",
+        "artRef": null,
+        "slots": {
+          "front": null,
+          "frontRight": null,
+          "right": null,
+          "rearRight": null,
+          "rear": null,
+          "rearLeft": null,
+          "left": null,
+          "frontLeft": null
+        },
+        "reverseFrameIndex": null
+      },
+      "tireTreads": {
+        "tarmac": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "rain": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "dirt": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "offroad": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "drift": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "snow": {
+          "artRef": null,
+          "frameIndex": 0
+        }
+      },
+      "interior": {
+        "dashboard": {
+          "artRef": null,
+          "frameIndex": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "steeringWheel": {
+          "artRef": "steeringwheel",
+          "frameIndex": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "offsetX": 0,
+          "offsetY": 0,
+          "centerX": 0.498046875,
+          "centerY": 0.5448717948717948,
+          "coordinateSpace": "dashboard",
+          "anchorX": 0.2734375,
+          "anchorY": 0.83984375,
+          "width": 0.25390625
+        },
+        "wipers": {
+          "artRef": "windshieldwiper",
+          "frameIndex": 0,
+          "pivotX": 0,
+          "pivotY": 0.5,
+          "width": 0.35640000000000005,
+          "parkAngle": 1,
+          "sweepAngle": -80,
+          "cycleSeconds": 1.6,
+          "mounts": [
+            {
+              "x": 0.18,
+              "y": 0.24
+            },
+            {
+              "x": 0.6,
+              "y": 0.24
+            }
+          ]
+        }
+      },
+      "addOns": [],
+      "tireSurfaces": {
+        "tread": {
+          "artRef": "catalog-storksbill-1977-wheels",
+          "frameIndex": 0,
+          "region": {
+            "x": 138,
+            "y": 27,
+            "width": 120,
+            "height": 347
+          },
+          "bounds": {
+            "x": 138.5,
+            "y": 27.5,
+            "width": 119,
+            "height": 346
+          }
+        },
+        "wheel": {
+          "artRef": "catalog-storksbill-1977-wheels",
+          "frameIndex": 2,
+          "region": {
+            "x": 198,
+            "y": 202.5,
+            "radius": 187.91287874970146
+          },
+          "bounds": {
+            "x": 10.08722125029854,
+            "y": 14.58722125029854,
+            "width": 375.8255574994029,
+            "height": 375.8255574994029
+          }
+        }
+      },
+      "angleLayers": {
+        "front": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "catalog-storksbill-1977-wheels",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 120,
+              "height": 347
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 119,
+              "height": 346
+            }
+          }
+        },
+        "frontRight": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "catalog-storksbill-1977-wheels",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 120,
+              "height": 347
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 119,
+              "height": 346
+            }
+          }
+        },
+        "right": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "catalog-storksbill-1977-wheels",
+            "frameIndex": 2,
+            "region": {
+              "x": 198,
+              "y": 202.5,
+              "radius": 187.91287874970146
+            },
+            "bounds": {
+              "x": 10.08722125029854,
+              "y": 14.58722125029854,
+              "width": 375.8255574994029,
+              "height": 375.8255574994029
+            }
+          }
+        },
+        "rearRight": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "catalog-storksbill-1977-wheels",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 120,
+              "height": 347
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 119,
+              "height": 346
+            }
+          }
+        },
+        "rear": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "catalog-storksbill-1977-wheels",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 120,
+              "height": 347
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 119,
+              "height": 346
+            }
+          }
+        },
+        "rearLeft": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "catalog-storksbill-1977-wheels",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 120,
+              "height": 347
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 119,
+              "height": 346
+            }
+          }
+        },
+        "left": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "catalog-storksbill-1977-wheels",
+            "frameIndex": 2,
+            "region": {
+              "x": 198,
+              "y": 202.5,
+              "radius": 187.91287874970146
+            },
+            "bounds": {
+              "x": 10.08722125029854,
+              "y": 14.58722125029854,
+              "width": 375.8255574994029,
+              "height": 375.8255574994029
+            }
+          }
+        },
+        "frontLeft": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "catalog-storksbill-1977-wheels",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 120,
+              "height": 347
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 119,
+              "height": 346
+            }
+          }
+        }
+      },
+      "smoke": {
+        "asphalt": "burnoutsmoke",
+        "wet-asphalt": "waterspray",
+        "water": "waterspray",
+        "dirt": "dirtsmoke",
+        "mud": "dirtsmoke",
+        "gravel": "gravelsmoke",
+        "wet-gravel": "gravelsmoke",
+        "grass": "dirtsmoke",
+        "sand": "dirtsmoke",
+        "rock-solid": "gravelsmoke",
+        "snow": "snowsmoke",
+        "slush": "snowsmoke",
+        "ice": "snowsmoke",
+        "skidSmoke": "burnoutsmoke",
+        "dirtDust": "dirtsmoke",
+        "gravelDust": "gravelsmoke",
+        "grassDust": "dirtsmoke",
+        "snowDust": "snowsmoke",
+        "wetSpray": "waterspray"
+      },
+      "gauges": {
+        "interior": {
+          "coordinateSpace": "dashboard",
+          "enabled": true,
+          "widgets": [
+            {
+              "opacity": 1,
+              "damageArtTint": false,
+              "artCrop": null,
+              "mapScreenX": 0,
+              "mapScreenY": 0,
+              "mapScreenWidth": 1,
+              "mapScreenHeight": 1,
+              "mapOpacity": 1,
+              "mapOrientation": "north",
+              "mapProjection": "flat",
+              "mapPitch": 45,
+              "mapPlayerY": 0.75,
+              "mapMode": "whole",
+              "mapRangeM": 300,
+              "mapLineColor": "#d9e6d2",
+              "mapLineWidth": 2,
+              "mapLineBorderColor": "#101916",
+              "mapLineBorderWidth": 1,
+              "mapBorderColor": "#101916",
+              "mapBorderWidth": 0,
+              "playerMarkerShape": "circle",
+              "playerMarkerColor": "#58d6ff",
+              "playerMarkerSize": 10,
+              "carMarkerShape": "circle",
+              "carMarkerColor": "#f2d45c",
+              "carMarkerSize": 6,
+              "startMarkerShape": "square",
+              "startMarkerColor": "#61e79a",
+              "startMarkerSize": 6,
+              "finishMarkerShape": "square",
+              "finishMarkerColor": "#ff4f4f",
+              "finishMarkerSize": 6,
+              "circuitMarkerShape": "line",
+              "circuitMarkerColor": "#ffd34d",
+              "circuitMarkerSize": 10,
+              "carMarkerArtRef": "",
+              "startMarkerArtRef": "",
+              "finishMarkerArtRef": "",
+              "circuitMarkerArtRef": "",
+              "tachometer": {
+                "displayMode": "needle",
+                "darkColor": "#252525",
+                "darkOpacity": 1,
+                "majorCutout": false,
+                "minorCutout": false,
+                "autoScale": true,
+                "autoRedline": true,
+                "redline": 6500,
+                "showFace": true,
+                "safeColor": "#ffffff",
+                "dangerColor": "#ff3030",
+                "arcWidth": 8,
+                "radius": 0.9,
+                "majorInterval": 1000,
+                "minorInterval": 100,
+                "majorLength": 0.16,
+                "minorLength": 0.08,
+                "majorWidth": 2,
+                "minorWidth": 1,
+                "majorColor": "#ffffff",
+                "minorColor": "#bbbbbb",
+                "showLabels": true,
+                "labelRadius": 0.65,
+                "labelDivisor": 1000,
+                "font": {
+                  "fontFamily": "monospace",
+                  "fontData": "",
+                  "fontFileName": "",
+                  "fontSize": 10,
+                  "fontWeight": 400,
+                  "fontItalic": false,
+                  "fontUnderline": false,
+                  "textColor": "#ffffff",
+                  "outline": 1
+                }
+              },
+              "fuelIconArtRef": "",
+              "fuelShowIcon": true,
+              "fuelIconOffsetX": 0,
+              "fuelIconOffsetY": 0,
+              "fuelIconScale": 1,
+              "fuelIconAngle": null,
+              "safeArcArtRef": "",
+              "dangerArcArtRef": "",
+              "id": "cockpit-speed",
+              "source": "speed",
+              "format": "number",
+              "textAlign": "center",
+              "name": "Speed (MPH)",
+              "enabled": true,
+              "x": 0.13541666666666666,
+              "y": 0.5322265625,
+              "width": 0.09459635416666667,
+              "height": 0.1025390625,
+              "min": 0,
+              "max": 200,
+              "units": "MPH",
+              "color": "#fff1cf",
+              "background": "rgba(0,0,0,0)",
+              "fontFamily": "monospace",
+              "fontData": "",
+              "fontFileName": "",
+              "fontSize": 20,
+              "fontWeight": 700,
+              "fontItalic": false,
+              "fontUnderline": false,
+              "textColor": "#fff1cf",
+              "outline": 0,
+              "highBeamArtRef": "",
+              "markerArtRef": "",
+              "artRef": "",
+              "needleArtRef": "",
+              "overlayArtRef": "",
+              "frameIndex": 0,
+              "startAngle": 135,
+              "sweepAngle": 270,
+              "needlePivotX": 0.5,
+              "needlePivotY": 0.85,
+              "lapTextTemplate": "",
+              "progressTextTemplate": "",
+              "textTemplate": "",
+              "showValue": true,
+              "vertical": false
+            },
+            {
+              "opacity": 1,
+              "damageArtTint": false,
+              "artCrop": null,
+              "mapScreenX": 0,
+              "mapScreenY": 0,
+              "mapScreenWidth": 1,
+              "mapScreenHeight": 1,
+              "mapOpacity": 1,
+              "mapOrientation": "north",
+              "mapProjection": "flat",
+              "mapPitch": 45,
+              "mapPlayerY": 0.75,
+              "mapMode": "whole",
+              "mapRangeM": 300,
+              "mapLineColor": "#d9e6d2",
+              "mapLineWidth": 2,
+              "mapLineBorderColor": "#101916",
+              "mapLineBorderWidth": 1,
+              "mapBorderColor": "#101916",
+              "mapBorderWidth": 0,
+              "playerMarkerShape": "circle",
+              "playerMarkerColor": "#58d6ff",
+              "playerMarkerSize": 10,
+              "carMarkerShape": "circle",
+              "carMarkerColor": "#f2d45c",
+              "carMarkerSize": 6,
+              "startMarkerShape": "square",
+              "startMarkerColor": "#61e79a",
+              "startMarkerSize": 6,
+              "finishMarkerShape": "square",
+              "finishMarkerColor": "#ff4f4f",
+              "finishMarkerSize": 6,
+              "circuitMarkerShape": "line",
+              "circuitMarkerColor": "#ffd34d",
+              "circuitMarkerSize": 10,
+              "carMarkerArtRef": "",
+              "startMarkerArtRef": "",
+              "finishMarkerArtRef": "",
+              "circuitMarkerArtRef": "",
+              "tachometer": {
+                "displayMode": "needle",
+                "darkColor": "#252525",
+                "darkOpacity": 1,
+                "majorCutout": false,
+                "minorCutout": false,
+                "autoScale": true,
+                "autoRedline": true,
+                "redline": 6500,
+                "showFace": true,
+                "safeColor": "#ffffff",
+                "dangerColor": "#ff3030",
+                "arcWidth": 8,
+                "radius": 0.9,
+                "majorInterval": 1000,
+                "minorInterval": 100,
+                "majorLength": 0.16,
+                "minorLength": 0.08,
+                "majorWidth": 2,
+                "minorWidth": 1,
+                "majorColor": "#ffffff",
+                "minorColor": "#bbbbbb",
+                "showLabels": true,
+                "labelRadius": 0.65,
+                "labelDivisor": 1000,
+                "font": {
+                  "fontFamily": "monospace",
+                  "fontData": "",
+                  "fontFileName": "",
+                  "fontSize": 10,
+                  "fontWeight": 400,
+                  "fontItalic": false,
+                  "fontUnderline": false,
+                  "textColor": "#ffffff",
+                  "outline": 1
+                }
+              },
+              "fuelIconArtRef": "",
+              "fuelShowIcon": true,
+              "fuelIconOffsetX": 0,
+              "fuelIconOffsetY": 0,
+              "fuelIconScale": 1,
+              "fuelIconAngle": null,
+              "safeArcArtRef": "",
+              "dangerArcArtRef": "",
+              "id": "cockpit-rpm",
+              "source": "rpm",
+              "format": "number",
+              "textAlign": "center",
+              "name": "Engine RPM",
+              "enabled": true,
+              "x": 0.23391927083333333,
+              "y": 0.5322265625,
+              "width": 0.13805338541666665,
+              "height": 0.1025390625,
+              "min": 0,
+              "max": 8000,
+              "units": "",
+              "color": "#fff1cf",
+              "background": "rgba(0,0,0,0)",
+              "fontFamily": "monospace",
+              "fontData": "",
+              "fontFileName": "",
+              "fontSize": 19.047546386718746,
+              "fontWeight": 700,
+              "fontItalic": false,
+              "fontUnderline": false,
+              "textColor": "#fff1cf",
+              "outline": 0,
+              "highBeamArtRef": "",
+              "markerArtRef": "",
+              "artRef": "",
+              "needleArtRef": "",
+              "overlayArtRef": "",
+              "frameIndex": 0,
+              "startAngle": 135,
+              "sweepAngle": 270,
+              "needlePivotX": 0.5,
+              "needlePivotY": 0.85,
+              "lapTextTemplate": "",
+              "progressTextTemplate": "",
+              "textTemplate": "",
+              "showValue": true,
+              "vertical": false
+            },
+            {
+              "opacity": 1,
+              "damageArtTint": false,
+              "artCrop": null,
+              "mapScreenX": 0,
+              "mapScreenY": 0,
+              "mapScreenWidth": 1,
+              "mapScreenHeight": 1,
+              "mapOpacity": 1,
+              "mapOrientation": "north",
+              "mapProjection": "flat",
+              "mapPitch": 45,
+              "mapPlayerY": 0.75,
+              "mapMode": "whole",
+              "mapRangeM": 300,
+              "mapLineColor": "#d9e6d2",
+              "mapLineWidth": 2,
+              "mapLineBorderColor": "#101916",
+              "mapLineBorderWidth": 1,
+              "mapBorderColor": "#101916",
+              "mapBorderWidth": 0,
+              "playerMarkerShape": "circle",
+              "playerMarkerColor": "#58d6ff",
+              "playerMarkerSize": 10,
+              "carMarkerShape": "circle",
+              "carMarkerColor": "#f2d45c",
+              "carMarkerSize": 6,
+              "startMarkerShape": "square",
+              "startMarkerColor": "#61e79a",
+              "startMarkerSize": 6,
+              "finishMarkerShape": "square",
+              "finishMarkerColor": "#ff4f4f",
+              "finishMarkerSize": 6,
+              "circuitMarkerShape": "line",
+              "circuitMarkerColor": "#ffd34d",
+              "circuitMarkerSize": 10,
+              "carMarkerArtRef": "",
+              "startMarkerArtRef": "",
+              "finishMarkerArtRef": "",
+              "circuitMarkerArtRef": "",
+              "tachometer": {
+                "displayMode": "needle",
+                "darkColor": "#252525",
+                "darkOpacity": 1,
+                "majorCutout": false,
+                "minorCutout": false,
+                "autoScale": true,
+                "autoRedline": true,
+                "redline": 6500,
+                "showFace": true,
+                "safeColor": "#ffffff",
+                "dangerColor": "#ff3030",
+                "arcWidth": 8,
+                "radius": 0.9,
+                "majorInterval": 1000,
+                "minorInterval": 100,
+                "majorLength": 0.16,
+                "minorLength": 0.08,
+                "majorWidth": 2,
+                "minorWidth": 1,
+                "majorColor": "#ffffff",
+                "minorColor": "#bbbbbb",
+                "showLabels": true,
+                "labelRadius": 0.65,
+                "labelDivisor": 1000,
+                "font": {
+                  "fontFamily": "monospace",
+                  "fontData": "",
+                  "fontFileName": "",
+                  "fontSize": 10,
+                  "fontWeight": 400,
+                  "fontItalic": false,
+                  "fontUnderline": false,
+                  "textColor": "#ffffff",
+                  "outline": 1
+                }
+              },
+              "fuelIconArtRef": "",
+              "fuelShowIcon": true,
+              "fuelIconOffsetX": 0,
+              "fuelIconOffsetY": 0,
+              "fuelIconScale": 1,
+              "fuelIconAngle": null,
+              "safeArcArtRef": "",
+              "dangerArcArtRef": "",
+              "id": "cockpit-gear",
+              "source": "gear",
+              "format": "number",
+              "textAlign": "center",
+              "name": "Gear",
+              "enabled": true,
+              "x": 0.37587890625000003,
+              "y": 0.5322265625,
+              "width": 0.04534505208333334,
+              "height": 0.1025390625,
+              "min": 0,
+              "max": 200,
+              "units": "",
+              "color": "#fff1cf",
+              "background": "rgba(0,0,0,0)",
+              "fontFamily": "monospace",
+              "fontData": "",
+              "fontFileName": "",
+              "fontSize": 20,
+              "fontWeight": 700,
+              "fontItalic": false,
+              "fontUnderline": false,
+              "textColor": "#fff1cf",
+              "outline": 0,
+              "highBeamArtRef": "",
+              "markerArtRef": "",
+              "artRef": "",
+              "needleArtRef": "",
+              "overlayArtRef": "",
+              "frameIndex": 0,
+              "startAngle": 135,
+              "sweepAngle": 270,
+              "needlePivotX": 0.5,
+              "needlePivotY": 0.85,
+              "lapTextTemplate": "",
+              "progressTextTemplate": "",
+              "textTemplate": "",
+              "showValue": true,
+              "vertical": false
+            },
+            {
+              "opacity": 1,
+              "damageArtTint": false,
+              "artCrop": null,
+              "mapScreenX": 0,
+              "mapScreenY": 0,
+              "mapScreenWidth": 1,
+              "mapScreenHeight": 1,
+              "mapOpacity": 1,
+              "mapOrientation": "north",
+              "mapProjection": "flat",
+              "mapPitch": 45,
+              "mapPlayerY": 0.75,
+              "mapMode": "whole",
+              "mapRangeM": 300,
+              "mapLineColor": "#d9e6d2",
+              "mapLineWidth": 2,
+              "mapLineBorderColor": "#101916",
+              "mapLineBorderWidth": 1,
+              "mapBorderColor": "#101916",
+              "mapBorderWidth": 0,
+              "playerMarkerShape": "circle",
+              "playerMarkerColor": "#58d6ff",
+              "playerMarkerSize": 10,
+              "carMarkerShape": "circle",
+              "carMarkerColor": "#f2d45c",
+              "carMarkerSize": 6,
+              "startMarkerShape": "square",
+              "startMarkerColor": "#61e79a",
+              "startMarkerSize": 6,
+              "finishMarkerShape": "square",
+              "finishMarkerColor": "#ff4f4f",
+              "finishMarkerSize": 6,
+              "circuitMarkerShape": "line",
+              "circuitMarkerColor": "#ffd34d",
+              "circuitMarkerSize": 10,
+              "carMarkerArtRef": "",
+              "startMarkerArtRef": "",
+              "finishMarkerArtRef": "",
+              "circuitMarkerArtRef": "",
+              "tachometer": {
+                "displayMode": "needle",
+                "darkColor": "#252525",
+                "darkOpacity": 1,
+                "majorCutout": false,
+                "minorCutout": false,
+                "autoScale": false,
+                "autoRedline": false,
+                "redline": 15,
+                "showFace": true,
+                "safeColor": "#ffffff",
+                "dangerColor": "#ff3030",
+                "arcWidth": 8,
+                "radius": 0.9,
+                "majorInterval": 25,
+                "minorInterval": 5,
+                "majorLength": 0.16,
+                "minorLength": 0.08,
+                "majorWidth": 2,
+                "minorWidth": 1,
+                "majorColor": "#ffffff",
+                "minorColor": "#bbbbbb",
+                "showLabels": true,
+                "labelRadius": 0.65,
+                "labelDivisor": 1000,
+                "font": {
+                  "fontFamily": "monospace",
+                  "fontData": "",
+                  "fontFileName": "",
+                  "fontSize": 10,
+                  "fontWeight": 400,
+                  "fontItalic": false,
+                  "fontUnderline": false,
+                  "textColor": "#ffffff",
+                  "outline": 1
+                }
+              },
+              "fuelIconArtRef": "",
+              "fuelShowIcon": true,
+              "fuelIconOffsetX": 0,
+              "fuelIconOffsetY": 0,
+              "fuelIconScale": 1,
+              "fuelIconAngle": null,
+              "safeArcArtRef": "",
+              "dangerArcArtRef": "",
+              "id": "cockpit-reserve",
+              "source": "fuel",
+              "format": "bar",
+              "textAlign": "center",
+              "name": "Fuel reserve (0–100%)",
+              "enabled": true,
+              "x": 0.13346354166666666,
+              "y": 0.64208984375,
+              "width": 0.2897135416666667,
+              "height": 0.01220703125,
+              "min": 0,
+              "max": 100,
+              "units": "",
+              "color": "#fff1cf",
+              "background": "#35302a",
+              "fontFamily": "monospace",
+              "fontData": "",
+              "fontFileName": "",
+              "fontSize": 18,
+              "fontWeight": 400,
+              "fontItalic": false,
+              "fontUnderline": false,
+              "textColor": "#fff1cf",
+              "outline": 0,
+              "highBeamArtRef": "",
+              "markerArtRef": "",
+              "artRef": "",
+              "needleArtRef": "",
+              "overlayArtRef": "",
+              "frameIndex": 0,
+              "startAngle": 135,
+              "sweepAngle": 270,
+              "needlePivotX": 0.5,
+              "needlePivotY": 0.85,
+              "lapTextTemplate": "",
+              "progressTextTemplate": "",
+              "textTemplate": "",
+              "showValue": false,
+              "vertical": false
+            }
+          ]
+        }
+      }
+    },
+    "camera": {
+      "trackingMode": "fixed-rear"
+    },
+    "dimensions": {
+      "lengthM": 3.71,
+      "widthM": 1.75,
+      "wheelbaseM": 2.18,
+      "trackFrontM": 1.43,
+      "trackRearM": 1.46
+    },
+    "audio": {
+      "engineSoundId": null
+    },
+    "setup": {
+      "defaultTireCompound": "sport",
+      "tireCompoundByWheel": {
+        "fl": "sport",
+        "fr": "sport",
+        "rl": "sport",
+        "rr": "sport"
+      },
+      "tirePressurePsi": {
+        "fl": 28,
+        "fr": 28,
+        "rl": 28,
+        "rr": 28
+      },
+      "tireSize": {
+        "widthMm": 205,
+        "aspectRatio": 65,
+        "wheelDiameterIn": 14
+      }
+    },
+    "defaultTransmissionType": "manual",
+    "transmissions": {
+      "manual": {
+        "type": "manual",
+        "label": "5MT",
+        "shiftMode": "manual",
+        "shiftTimeMs": 210,
+        "clutchDelayMs": 70,
+        "launchRpm": 2800,
+        "autoUpshiftRpm": 7500,
+        "autoDownshiftRpm": 3400,
+        "gearRatios": [
+          2.9,
+          1.95,
+          1.43,
+          1.12,
+          0.9
+        ],
+        "reverseRatio": 3.1,
+        "gearFinalDrive": 4.5,
+        "drivetrainEfficiency": 0.88,
+        "engineProfile": null,
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1
+      },
+      "automatic": {
+        "type": "automatic",
+        "label": "Auto Assist (5MT)",
+        "shiftMode": "automatic",
+        "shiftTimeMs": 210,
+        "clutchDelayMs": 70,
+        "launchRpm": 2800,
+        "autoUpshiftRpm": 7500,
+        "autoDownshiftRpm": 3400,
+        "gearRatios": [
+          2.9,
+          1.95,
+          1.43,
+          1.12,
+          0.9
+        ],
+        "reverseRatio": 3.1,
+        "gearFinalDrive": 4.5,
+        "drivetrainEfficiency": 0.88,
+        "engineProfile": null,
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1
+      }
+    },
+    "tuning": {
+      "drivetrain": "rwd",
+      "powerHp": 280,
+      "torqueLbFt": 200,
+      "weightKg": 950,
+      "frontWeightDistribution": 0.43,
+      "engineDisplacementL": 2.418,
+      "aspiration": "Naturally Aspirated",
+      "tireGrip": 0.96,
+      "brakeBalance": 0.6,
+      "brakePressure": 1,
+      "redlineRpm": 7800,
+      "revLimitRpm": 8000,
+      "revLimiterDropRpm": 350,
+      "idleRpm": 1100,
+      "torquePeakStartRpm": 6000,
+      "torquePeakEndRpm": 6000,
+      "torqueFalloffRpm": 7800,
+      "wheelRadiusM": 0.31105,
+      "topSpeedMph": 140,
+      "zeroToSixtySec": 5,
+      "dragCoefficient": 0.4,
+      "accelerationCalibration": 1,
+      "drivetrainEfficiency": 0.88,
+      "differentialAccel": 0.65,
+      "differentialDecel": 0.3,
+      "rearDifferentialAccel": 0.65,
+      "rearDifferentialDecel": 0.3,
+      "gearFinalDrive": 4.5,
+      "camberFront": -1.2,
+      "camberRear": -1.5,
+      "toeFront": 0,
+      "toeRear": 0.1,
+      "casterFront": 5,
+      "aeroFront": 0,
+      "aeroRear": 0.1,
+      "springFront": 0.6,
+      "springRear": 0.65,
+      "rideHeightFront": 0.35,
+      "rideHeightRear": 0.37,
+      "suspensionTravelFront": 0.14,
+      "suspensionTravelRear": 0.15,
+      "dampingFront": 0.58,
+      "dampingRear": 0.62,
+      "bumpFront": 0.53,
+      "bumpRear": 0.57,
+      "reboundFront": 0.65,
+      "reboundRear": 0.68,
+      "antiRollFront": 0.4,
+      "antiRollRear": 0.35,
+      "gearRatios": [
+        2.9,
+        1.95,
+        1.43,
+        1.12,
+        0.9
+      ],
+      "physics": {
+        "bodyShapePreset": "car",
+        "bodyProfile": {
+          "preset": "car",
+          "overallLengthM": 3.71,
+          "overallWidthM": 1.75,
+          "overallHeightM": 1.114,
+          "groundClearanceM": 0.14,
+          "frontOverhangM": 0.78,
+          "rearOverhangM": 0.75,
+          "lowerBodyHeightM": 0.42,
+          "hood": {
+            "lengthM": 0.9,
+            "widthM": 1.6,
+            "heightM": 0.15
+          },
+          "cabin": {
+            "centerZM": 0.1,
+            "lengthM": 1.45,
+            "widthM": 1.4,
+            "heightM": 0.5
+          },
+          "bed": {
+            "centerZM": -1,
+            "lengthM": 0,
+            "widthM": 0,
+            "heightM": 0
+          },
+          "cgPositionM": {
+            "x": 0,
+            "y": 0.43,
+            "z": 0
+          },
+          "collisionFriction": 0.62,
+          "collisionRestitution": 0.08,
+          "wheelWellAware": true,
+          "wheelWellClearanceMarginM": 0.06,
+          "maximumTireDeflectionM": 0.04,
+          "wheelRadiusM": 0.31105,
+          "trackWidthM": 1.445,
+          "frontAxleDistanceFromCgM": 1.2426,
+          "rearAxleDistanceFromCgM": 0.9374,
+          "customColliders": []
+        }
+      },
+      "reverseRatio": 3.1,
+      "engineCurve": {
+        "rpmMin": 1100,
+        "rpmMax": 8000,
+        "torquePoints": [
+          {
+            "rpm": 1100,
+            "torqueLbFt": 85
+          },
+          {
+            "rpm": 2500,
+            "torqueLbFt": 125
+          },
+          {
+            "rpm": 4000,
+            "torqueLbFt": 165
+          },
+          {
+            "rpm": 6000,
+            "torqueLbFt": 200
+          },
+          {
+            "rpm": 7000,
+            "torqueLbFt": 198
+          },
+          {
+            "rpm": 7800,
+            "torqueLbFt": 188.53333333333333
+          },
+          {
+            "rpm": 8000,
+            "torqueLbFt": 170
+          }
+        ]
+      },
+      "frontDifferentialAccel": 0,
+      "frontDifferentialDecel": 0,
+      "steeringRatio": 14,
+      "centerDifferentialBalance": 0.5,
+      "cgHeightM": 0.43,
+      "wheelbaseM": 2.18,
+      "garageEngineCurve": true,
+      "absEnabled": false,
+      "tractionControlEnabled": false
+    },
+    "description": "Sandro Munari / Silvio Maiga, 1977 Monte Carlo-winning Stratos HF Group 4 inspiration. Short-wheelbase mid-engine 2.4 V6, rear drive and five-speed manual. Original unbranded 2994 interpretation; event-day setup figures remain estimates.",
+    "category": "Legends",
+    "mechanics": {
+      "fuelTankGallons": 20.08
+    }
+  },
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "provenance": {
+    "referenceVehicle": "1977 Lancia Stratos HF Group 4, Sandro Munari / Silvio Maiga, Monte Carlo winner. Mid-engine naturally aspirated Dino V6, RWD,5MT. Not Stradale,Stratos Zero,Group5 turbo or 037.",
+    "collection": {
+      "name": "Legends",
+      "driver": "Sandro Munari",
+      "codriver": "Silvio Maiga",
+      "event": "Rallye Monte Carlo",
+      "year": 1977
+    },
+    "sources": [
+      {
+        "url": "https://www.media.stellantis.com/de-de/lancia/press/edle-uhr-zum-30-jahrestag-des-lancia-monte-siegs-schweizer-manufaktur-girard-perrigaux-erinnert-an-den-1976er-sieg-von-sandro-munari-und-silvio-maiga-auf-dem-legendaren-lancia-stratos",
+        "fields": [
+          "variant"
+        ],
+        "access": "Manufacturer winners table explicitly lists1977 Munari/Maiga Stratos HF."
+      },
+      {
+        "url": "https://historicdb.fia.com/sites/default/files/car_attachment/1662976801/homologation_form_number_640_group_4.pdf",
+        "fields": [
+          "variant",
+          "tuning"
+        ],
+        "access": "FIA Group4 homologation640 identifies Stratos HF and2418cc; no event-specific gearbox/setup inferred."
+      },
+      {
+        "url": "https://www.wrc.com/en/misc/lancia-stratos-hf",
+        "fields": [
+          "tuning",
+          "transmissions"
+        ],
+        "access": "Organizer family reference: mid-engine Dino2.4V6,up to280bhp competition,5-speed manual. Not an event-day dynamometer sheet."
+      },
+      {
+        "url": "https://www.media.stellantis.com/em-en/heritage-hub-italy/press/heritage-gems-shine-at-chantilly-arts-elegance-richard-mille-2024",
+        "fields": [
+          "tuning"
+        ],
+        "access": "Manufacturer confirms Stratos architecture:rear-mid engine,RWD; road-car output deliberately not transplanted."
+      },
+      {
+        "url": "https://www.media.stellantis.com/de-de/heritage-hub-italy/press/lancia-stratos-hf-und-lancia-delta-hf-integrale-sind-die-stars-im-museum-autoworld",
+        "fields": [
+          "variant",
+          "art"
+        ],
+        "access": "Group4 manufacturer history:midengineV6,wedge coupe,24-valve versions up to300PS. Not proof of exact1977MonteCarlo tune."
+      }
+    ],
+    "verifiedFacts": {
+      "crew": [
+        "Sandro Munari",
+        "Silvio Maiga"
+      ],
+      "event": "1977 Rallye Monte Carlo",
+      "result": "winner",
+      "trim": "Stratos HF Group 4",
+      "engineCc": 2418,
+      "engineLayout": "rear-mid V6",
+      "drivetrain": "rwd",
+      "transmission": "5-speed manual",
+      "competitionFamilyPowerBhpUpTo": 280
+    },
+    "estimates": [
+      "280bhp is selected from WRC competition-family reference,not measured1977MonteCarlo output.950kg,200lbft,7800redline,torque curve,140mph and5s0-60 targets are simulation estimates. No unsupported24-valve claim for this exact event.",
+      "All individual ratios/final drive,shift/launch behavior,dimensions/tracks/CG,collider geometry,suspension,alignment,aerodynamics,brake bias,limited-slip setup,tank76L and205/65R14 equal tires are approximate game setup,not verified event-day equipment; historic rear stagger is not reproduced.",
+      "Original logo-free eight-view body,blank rally dash and gold wheels are2994-inspired interpretation,not replica of sponsor livery or exact cockpit. Live digital gauges,shared steeringwheel and generic sound are gameplay conventions.",
+      "Auto Assist uses the five manual ratios for accessibility,not a factory automatic. Native wheel importer only solidifies near-opaque alpha on decoded copy;original PNG retained."
+    ]
+  },
+  "wheelFit": "cover",
+  "cockpitCalibration": {
+    "size": [
+      1536,
+      1024
+    ],
+    "cluster": [
+      205,
+      545,
+      445,
+      125
+    ],
+    "wheel": [
+      420,
+      860,
+      390
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#fff1cf"
+  },
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 55,
+        "y": 342,
+        "radius": 26
+      },
+      {
+        "wheel": "fr",
+        "x": 389,
+        "y": 342,
+        "radius": 26
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 720,
+        "y": 311,
+        "radius": 52
+      },
+      {
+        "wheel": "rr",
+        "x": 848,
+        "y": 273,
+        "radius": 46
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 1001,
+        "y": 298,
+        "radius": 47
+      },
+      {
+        "wheel": "rr",
+        "x": 1250,
+        "y": 286,
+        "radius": 46
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1367,
+        "y": 280,
+        "radius": 39
+      },
+      {
+        "wheel": "rr",
+        "x": 1498,
+        "y": 306,
+        "radius": 56
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 54,
+        "y": 750,
+        "radius": 26
+      },
+      {
+        "wheel": "rl",
+        "x": 390,
+        "y": 750,
+        "radius": 26
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 714,
+        "y": 742,
+        "radius": 54
+      },
+      {
+        "wheel": "fl",
+        "x": 844,
+        "y": 719,
+        "radius": 39
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 970,
+        "y": 730,
+        "radius": 54
+      },
+      {
+        "wheel": "fl",
+        "x": 1219,
+        "y": 734,
+        "radius": 48
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "fl",
+        "x": 1468,
+        "y": 742,
+        "radius": 45
+      },
+      {
+        "wheel": "rl",
+        "x": 1368,
+        "y": 690,
+        "radius": 37
+      }
+    ]
+  },
+  "wheelsPng": "wheels.png"
+}

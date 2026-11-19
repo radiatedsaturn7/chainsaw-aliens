@@ -55,3 +55,45 @@ test('catalog pilot hydrates published art and renders eight body angles plus da
  await testInfo.attach('catalog-pilot-render-stats',{body:Buffer.from(JSON.stringify(result,null,2)),contentType:'application/json'});
  // This is an asset-render smoke test, not a claim of collision/handling QA.
 });
+
+// Shared-art phase-2 pilot: keyboard and touch picker-to-drive acceptance.
+import '../helpers/carCatalogPlaceholderPickerCases.js';
+
+import '../helpers/carCatalogPlaceholderWave02PickerCases.js';
+
+import "../helpers/carCatalogPlaceholderWave03PickerCases.js";
+
+import "../helpers/carCatalogPlaceholderWave04PickerCases.js";
+
+import "../helpers/carCatalogPlaceholderWave05PickerCases.js";
+
+import "../helpers/carCatalogPlaceholderWave06PickerCases.js";
+// Register the two Tutsan paged-picker/input cases in staging catalog CI.
+import "../helpers/tutsanStaticPickerCases.js";
+
+import "../helpers/carCatalogPlaceholderWave07PickerCases.js";
+
+import "../helpers/carCatalogPlaceholderWave08PickerCases.js";
+
+// Full navigation coverage remains separate from each car's bounded setup and real drive.
+import '../helpers/carCatalogPickerTraversalCases.js';
+
+import '../helpers/carCatalogPlaceholderWave09PickerCases.js';
+
+import '../helpers/carCatalogPlaceholderWave10PickerCases.js';
+
+import '../helpers/carCatalogPlaceholderWave11PickerCases.js';
+
+import '../helpers/carCatalogPlaceholderWave12PickerCases.js';
+
+import '../helpers/carCatalogPlaceholderWave13PickerCases.js';
+
+import '../helpers/carCatalogPlaceholderWave14PickerCases.js';
+
+import '../helpers/carCatalogPlaceholderWave15PickerCases.js';
+
+import '../helpers/carCatalogPlaceholderWave16PickerCases.js';
+
+import '../helpers/carCatalogPlaceholderWave17PickerCases.js';
+
+import '../helpers/carCatalogPlaceholderWave18PickerCases.js';

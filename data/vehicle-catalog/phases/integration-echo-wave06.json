@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "scope": "Local integration only, unpublished; hosted browser verification pending",
+  "parents": [
+    "03c2068d2fb2435eb638113be9a20040da91ea2f",
+    "177ca2095399edf9adbf9a0fd6f29cafe2cc4fbe"
+  ],
+  "commonStagingBase": "dd0f1f81ad1c058eaf9155f17911e882a1572d64",
+  "implementedNonSystemEntries": 226,
+  "systemTemplates": 3,
+  "sharedPlaceholders": 15,
+  "previousFinishedReported": 210,
+  "echoOriginalArtAuthored": 1,
+  "newIndependentlyDriveVerified": 0,
+  "newOriginalArtAccepted": 0,
+  "targetedUnitsPassed": 78,
+  "placeholderDriveCases": 30,
+  "echoDriveCases": 2,
+  "conflictsResolved": [
+    "manifest folders union preserving existing mappings",
+    "catalog spec imports union preserving all scenarios"
+  ],
+  "pendingBranchesPreserved": {
+    "release/tutsan-echo-2003-20261117": "177ca2095399edf9adbf9a0fd6f29cafe2cc4fbe",
+    "release/660-phase2-pilot-01": "a6398ad5baf5889b27d18a374aa78c7d8454c8ca"
+  },
+  "legacyRuntimeIdCollision": {
+    "id": "starter-rwd",
+    "names": [
+      "2022 Subaru WRX",
+      "BUSE-019",
+      "CT-86",
+      "PZ-24",
+      "RTG-001"
+    ],
+    "presentOnOriginalStaging": true,
+    "unchanged": true
+  },
+  "countBasis": "Manifest non-system entries, not claim of globally unique legacy runtime IDs",
+  "sourceDocumentsAndEchoAssetsByteIdentical": true,
+  "configuredWorkflowUnits": {
+    "passed": 738,
+    "failed": 0,
+    "skipped": 0
+  },
+  "manifestValidation": {
+    "documents": 2226,
+    "assets": 16,
+    "passed": true
+  }
+}

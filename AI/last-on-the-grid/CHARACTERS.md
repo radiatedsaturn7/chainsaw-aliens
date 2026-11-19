@@ -1,5 +1,7 @@
 # Character Bible — Draft
 
+> **CURRENT ARC REVIEW:** [Character Arcs v0.1](CHARACTER_ARCS.md) expands both characters, especially Rob's usefulness/love confusion and Cait's uncertainty around the word “love.” This older file remains a reference snapshot, not sole current canon.
+
 ## Rob
 - **Status:** Human; mechanically skilled; mortality matters to the ending.
 - **Behavior:** Guarded, practical, avoids difficult explanations. His promise to Cait drives the route even when he questions the point.

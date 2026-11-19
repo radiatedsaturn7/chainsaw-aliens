@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 1,
+  "base": "b71e82d76f86e66fed403d8e1dab051863ee33aa",
+  "duplicateAudit": {
+    "S660": "Kestrel 660 already has 830 kg, 658cc, RWD, 47kW-equivalent output and exact six manual ratios. Alpha not proven; no duplicate built.",
+    "EV6": "No EV6 reference in 213-entry runtime or 210 staging snapshot. Existing LEAF/i-MiEV/Roadster are distinct.",
+    "Dart": "No Dart reference in local/staging production provenance. Not existing Neon SRT4/SE or old eleven."
+  },
+  "vehicles": [
+    {
+      "id": "snowbell-gt-2023",
+      "name": "Snowbell GT 2023",
+      "candidateId": "kia-ev6-gt-2023-us",
+      "identity": {
+        "year": 2023,
+        "make": "Kia",
+        "model": "EV6",
+        "trim": "GT",
+        "market": "US"
+      },
+      "referenceVehicle": "2023 United States Kia EV6 GT AWD, 77.4 kWh nominal pack, single-speed reduction; not GT-Line, European 585 PS or later 641 hp model",
+      "source": {
+        "url": "https://www.kiamedia.com/us/en/models/ev6/2023/specifications",
+        "publisher": "Kia America",
+        "access": "Official GT-column table retrieved through web search 2026-11-17; retained as published, including separate hp/kW ratings.",
+        "fields": [
+          "576 hp",
+          "430 kW",
+          "545 lb-ft",
+          "4795 lb minimum AWD curb",
+          "AWD",
+          "10.65 reduction",
+          "77.4 kWh nominal",
+          "184.8/74.4/60.8 inches L/W/H",
+          "114.2 inch wheelbase",
+          "12.56 steering ratio",
+          "21 inch wheels",
+          "161 mph/3.4 s published performance"
+        ]
+      },
+      "facts": {
+        "powerHp": 576,
+        "peakPowerKw": 430,
+        "torqueLbFt": 545,
+        "curbLb": 4795,
+        "lengthIn": 184.8,
+        "widthIn": 74.4,
+        "heightIn": 60.8,
+        "wheelbaseIn": 114.2,
+        "drivetrain": "awd",
+        "transmission": "electric",
+        "nominalBatteryKwh": 77.4,
+        "finalDrive": 10.65,
+        "steeringRatio": 12.56,
+        "topSpeedMph": 161,
+        "zeroToSixtySec": 3.4,
+        "wheelDiameterIn": 21
+      },
+      "simulationEstimates": {
+        "trackFrontIn": 64.1,
+        "trackRearIn": 64.4,
+        "tireSize": [
+          255,
+          40,
+          21
+        ],
+        "frontWeightDistribution": 0.49,
+        "cgHeightM": 0.51,
+        "groundClearanceM": 0.155,
+        "dragCoefficient": 0.3,
+        "tireGrip": 0.93,
+        "spring": 0.58,
+        "antiRollRear": 0.31,
+        "suspensionTravelM": 0.15,
+        "maxMotorRpm": 21000,
+        "usableBatteryKwh": 74,
+        "driveEfficiency": 0.92,
+        "regenEfficiency": 0.78,
+        "maxRegenTorqueNm": 110,
+        "maxRegenPowerKw": 65,
+        "standstillLossKw": 0.4,
+        "regenFullSpeedRadps": 6,
+        "liftOffRegen": 0.18
+      },
+      "limits": [
+        "Combined motor approximation, not individual front/rear motor maps or OEM GT/Drift-mode/torque-vectoring controls. Existing AWD differential balance is estimated.",
+        "Runtime uses published 430 kW and converts to about 576.64 mechanical hp; retains published 576 hp separately. Neither is European 585 PS.",
+        "77.4 kWh is nominal, not usable. 74 kWh usable, 21000 RPM motor cutoff, regen, efficiency, parasitic draw, load distribution, tracks, ground clearance and handling are explicit estimates.",
+        "Official tire string 255/40R201 is malformed. 255/40R21 is an explicitly estimated interpretation consistent with its published 21-inch wheel; not a silently corrected factory fact.",
+        "Published 161 mph and 3.4-second acceleration are references, not simulated validation claims. Body/cockpit remain RTG-001 placeholders; gauge fuel channel is adapted to traction-battery percent."
+      ]
+    },
+    {
+      "id": "arrowleaf-gt-2013",
+      "name": "Arrowleaf GT 2013",
+      "candidateId": "dodge-dart-2013-gt-candidate",
+      "identity": {
+        "year": 2013,
+        "make": "Dodge",
+        "model": "Dart",
+        "trim": "GT 6MT",
+        "market": "US"
+      },
+      "referenceVehicle": "2013 US Dodge Dart GT, 2.4L Tigershark MultiAir2, six-speed manual sedan; not SE/SXT, proposed R/T or optional automatic",
+      "source": {
+        "url": "https://www.prnewswire.com/news-releases/new-2013-dodge-dart-gt-model-to-debut-at-north-american-international-auto-show-186012022.html",
+        "publisher": "Chrysler Group LLC",
+        "access": "Factory January 8 2013 GT announcement read; supersedes proposed R/T branding, not a trim-specific curb-weight sheet.",
+        "fields": [
+          "2.4L",
+          "184 hp",
+          "174 lb-ft",
+          "six-speed manual standard",
+          "18-inch wheels",
+          "sport suspension with frequency-sensing dampers"
+        ]
+      },
+      "facts": {
+        "powerHp": 184,
+        "torqueLbFt": 174,
+        "engineDisplacementL": 2.4,
+        "transmission": "manual",
+        "gearCount": 6,
+        "wheelDiameterIn": 18
+      },
+      "simulationEstimates": {
+        "drivetrain": "fwd",
+        "curbLb": 3307,
+        "lengthIn": 183.9,
+        "widthIn": 72,
+        "heightIn": 57.7,
+        "wheelbaseIn": 106.4,
+        "trackFrontIn": 61.7,
+        "trackRearIn": 61.6,
+        "fuelTankUSgal": 15.8,
+        "powerRpm": 6250,
+        "torqueRpm": 4800,
+        "tireSize": [
+          225,
+          40,
+          18
+        ],
+        "gearRatios": [
+          3.91,
+          2.12,
+          1.36,
+          0.98,
+          0.76,
+          0.62
+        ],
+        "finalDrive": 3.9,
+        "reverseRatio": 4.0,
+        "frontWeightDistribution": 0.61,
+        "cgHeightM": 0.53,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.3,
+        "tireGrip": 0.85,
+        "spring": 0.49,
+        "antiRollRear": 0.24,
+        "suspensionTravelM": 0.16,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "topSpeedMph": 125,
+        "zeroToSixtySec": 8.2
+      },
+      "limits": [
+        "Primary trim anchors are restricted to fields above. Approximate 1500kg mass (3307lb), family geometry, FWD layout, fuel capacity, RPM peaks, ratios/final drive, tires beyond wheel diameter and all handling/performance calibration are modeling estimates, not verified GT factory specifications.",
+        "Earlier 2013 factory brochure still labels the planned performance car R/T; do not claim that preproduction trim proves GT mass/gearing. No unrelated SXT/automatic mass imported as GT evidence.",
+        "Six-speed manual uses ordinary existing game clutch/shift semantics. Frequency-sensing damping is approximated by fixed spring/damper settings; no new global controller.",
+        "RTG-001 exterior and cockpit are shared placeholders, not Dart appearance or fitted original instruments."
+      ]
+    }
+  ]
+}

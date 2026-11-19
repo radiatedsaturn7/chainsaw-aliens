@@ -43,6 +43,9 @@ jobs:
       - name: Run handling and tire-surface regressions
         run: node --test tests/unit/handlingAssistOrientation.test.js tests/unit/tireSurfaceRuntime.test.js tests/unit/raceControllerMapping.test.js tests/unit/stabilityBrakeDirection.test.js tests/unit/stockRtgBraking.test.js tests/unit/tireSupportForce.test.js tests/unit/stockRtgYawRecovery.test.js
 
+      - name: Run digital pedal regressions
+        run: node --test tests/unit/digitalThrottleModes.test.js tests/unit/digitalThrottle.test.js tests/unit/digitalBrake.test.js tests/unit/digitalPedalFeedback.test.js tests/unit/digitalPedalCalibration.test.js tests/unit/raceLaunchControl.test.js
+
       - name: Run editor and race regression unit tests
         run: node --test tests/unit/editorMenuLayout.test.js tests/unit/editorMenuSpec.test.js tests/unit/portraitEditorMenuModels.test.js tests/unit/raceImageTrace.test.js tests/unit/raceTrackImport.test.js tests/unit/raceRouteImport.test.js tests/unit/raceTrackImportIntegration.test.js tests/unit/raceTerrainGuardBudget.test.js tests/unit/raceAdaptiveTerrain.test.js tests/unit/reverseRaceRoute.test.js tests/unit/raceImportedCircuitRegression.test.js tests/unit/raceTireTrackRenderer.test.js tests/unit/steeringCommandMapping.test.js tests/unit/racePauseRestart.test.js
       - name: Validate GPS America campaign

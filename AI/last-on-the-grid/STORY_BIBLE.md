@@ -1,11 +1,18 @@
 # Last on the Grid — Story Bible
+
+> **CURRENT REVIEW PACKAGE (2026-11-17):** [Review Dashboard](REVIEW_DASHBOARD.md) · [Narrative Blueprint v0.1](NARRATIVE_BLUEPRINT.md) · [Chapter Treatments](CHAPTER_TREATMENTS/README.md) · [Literary Companion](LITERARY_COMPANION/CHAPTER_ANALYSIS.md). This older bible remains a historical snapshot; newer ideas are **proposed**, not approved canon. In the latest review, the dead-scientist scene is mapped to Mission 07, the dog encounter is optional (Rob feeds it if retained), Cait initiates the California trip, and the ending remains deliberately reserved.
 > REVIEW DRAFT · 2026-11-13 · Not all entries are canon.
 
 ## Premise [ESTABLISHED]
-Year 2994. Across a frozen, decaying United States after an AI catastrophe, Rob (a human) and Cait (an android) drive west from Rhode Island toward the Pacific. Rob promised Cait he would show her the ocean; after that, she is free to leave. Their journey is both a racing game and a story about loneliness, autonomy, love, mortality and what remains of humanity.
+Year 2994. Roughly a decade after a rapid migration of humanity into digital Heaven, Rob (one of the last, perhaps the last, biological humans outside) and Cait (an android) drive west through a snowy, recently abandoned United States toward the Pacific. Rob promised Cait he would show her the ocean; after that, she is free to leave. Their journey is both a racing game and a story about loneliness, autonomy, love, mortality and what remains of humanity.
 
 ## Tone and storytelling [ESTABLISHED DIRECTION]
 Restrained, character-driven dialogue. Let the world and silences communicate more than exposition. Racing and car customization must remain enjoyable independently of the narrative. Avoid dumping the biggest revelations in the opening act.
+
+## World chronology — the Ascension [CORE DECISION / DATES PROVISIONAL]
+Humanity did not vanish a thousand years before the game. Over a few years, almost everyone **chose to upload into digital Heaven**. The last major wave occurred approximately **ten years before 2994**; 2980–2984 are draft chronology anchors, not finalized dates. Rob witnessed the exodus, remained in the physical world and has been effectively alone *as a biological human* for about a decade. He built Cait at some point during that period; how long they have lived together is **OPEN**. His former acquaintances in Heaven, including Evelyn in the current treatment, can therefore remember him personally without immortality lore.
+
+Heaven might recall a technological Rapture, while the abandoned outside resembles Rob's purgatory. These are interpretations, not established supernatural events. Ten years of neglect calls for a mix of **nearly intact homes and weather-damaged roads**; spectacular ruins need additional causes. See [The Ascension world history](WORLD_LORE/THE_ASCENSION.md).
 
 ## Opening [ESTABLISHED]
 1. Start in gameplay on snowy Tower Hill Road, Cumberland, Rhode Island. Cait retrieves fuel and must return as a storm shifts. The timed segment can be failed; either outcome proceeds to the garage.
@@ -43,7 +50,7 @@ The Pacific coast is the story destination, not necessarily the final listed rac
 ## Narrative beats [PROPOSED / DISCUSSED]
 - Early encounter with a starving dog: Rob shares food, but the dog does not become a permanent companion. Demonstrates care beyond self-interest.
 - Machine City: robots performing inherited work; Cait questions the human civilization that made them.
-- Data Center City: uploaded humans, a synthetic “Heaven,” bodies/husks and machines attempting their own civilization. Rob has not joined them; exact reasons unresolved.
+- Data Center City: humans who uploaded in a fast, voluntary migration roughly ten years ago still live in digital “Heaven.” Some are Rob's former friends. He was invited in and tried to persuade them to come out; the competing perspectives are essential. The origins of husks and the exact nature of mind upload remain unresolved.
 - Conflict: Cait presses westward, Rob resists or withdraws. His maintenance of the car can become a loaded argument, not an ownership claim.
 - Ending concept: Rob dies near the destination or before Cait can return; Cait initially leaves, returns too late, and eventually tries to reconstruct him from surviving cells. A possible 10,000-year aftermath has been discussed. **This is a concept, not locked staging.**
 

@@ -138,3 +138,43 @@ test(`${name} measured wheel wells coincide with production rig after editor rou
   }
  });
 });
+
+// Pilot cases register here so existing Vehicle Catalog CI executes them.
+import '../helpers/carCatalogPlaceholderPilotCases.js';
+
+import '../helpers/carCatalogPlaceholderWave02Cases.js';
+
+import "../helpers/carCatalogPlaceholderWave03Cases.js";
+
+import "../helpers/carCatalogPlaceholderWave04Cases.js";
+
+import "../helpers/carCatalogPlaceholderWave05Cases.js";
+
+import "../helpers/carCatalogPlaceholderWave06Cases.js";
+
+import "../helpers/carCatalogPlaceholderWave07Cases.js";
+
+import "../helpers/carCatalogPlaceholderWave08Cases.js";
+
+// Keep bounded picker planning regressions in the existing Vehicle Catalog unit gate.
+import '../helpers/carCatalogPickerPlanCases.js';
+
+import '../helpers/carCatalogPlaceholderWave09Cases.js';
+
+import '../helpers/carCatalogPlaceholderWave10Cases.js';
+
+import '../helpers/carCatalogPlaceholderWave11Cases.js';
+
+import '../helpers/carCatalogPlaceholderWave12Cases.js';
+
+import '../helpers/carCatalogPlaceholderWave13Cases.js';
+
+import '../helpers/carCatalogPlaceholderWave14Cases.js';
+
+import '../helpers/carCatalogPlaceholderWave15Cases.js';
+
+import '../helpers/carCatalogPlaceholderWave16Cases.js';
+
+import '../helpers/carCatalogPlaceholderWave17Cases.js';
+
+import '../helpers/carCatalogPlaceholderWave18Cases.js';
