@@ -1,0 +1,315 @@
+{
+  "id": "checkerberry-clover-2021",
+  "name": "Checkerberry Clover 2021",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "b07d7c6461401c5d9a675d9f80bd089d61b544da62b35d585f4a7ae7b37eb4ef",
+  "sourceDirectory": "assets/car-catalog/checkerberry-clover-2021",
+  "sourceHashes": {
+    "body": "a196b96576f5f08c8a19d17c09ede766a1bb5c9df6aa7e74153d9e088354d58c",
+    "dashboard": "e62c82ca997879273d19af2e9dfc7c779e15be04b0bbd5a5cea3bf324b2ab8f1",
+    "tires": "48ad7496f99f0a77b24e533b4cfd7ac8877a70e2bc6164bea6079d3de40448a3"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 57.69,
+        "y": 365.425,
+        "radius": 25.575
+      },
+      {
+        "wheel": "fr",
+        "x": 337.31,
+        "y": 365.425,
+        "radius": 25.575
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 666.0,
+        "y": 300.5,
+        "radius": 29.5
+      },
+      {
+        "wheel": "rr",
+        "x": 822.0,
+        "y": 268.5,
+        "radius": 17.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 964.5,
+        "y": 300.0,
+        "radius": 45.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1262.5,
+        "y": 299.0,
+        "radius": 43.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "rr",
+        "x": 619.5,
+        "y": 727.0,
+        "radius": 32.0
+      },
+      {
+        "wheel": "fr",
+        "x": 794.5,
+        "y": 701.0,
+        "radius": 21.0
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 71.53,
+        "y": 786.225,
+        "radius": 23.775
+      },
+      {
+        "wheel": "rl",
+        "x": 331.47,
+        "y": 786.225,
+        "radius": 23.775
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "fl",
+        "x": 1378.0,
+        "y": 264.5,
+        "radius": 18.5
+      },
+      {
+        "wheel": "rl",
+        "x": 1536.5,
+        "y": 292.0,
+        "radius": 30.0
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 921.0,
+        "y": 733.5,
+        "radius": 45.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1235.5,
+        "y": 732.0,
+        "radius": 46.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1369.0,
+        "y": 685.5,
+        "radius": 16.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1519.5,
+        "y": 722.0,
+        "radius": 29.0
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1260,
+      430,
+      490,
+      170
+    ],
+    "wheel": [
+      1500,
+      679.1076923076922,
+      360
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e4efff",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ],
+    "renderedInstrumentPodBounds": [
+      1308,
+      436,
+      452,
+      156
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false,
+    "projectedPodRepair": {
+      "id": "checkerberry-clover-2021",
+      "status": "proposal",
+      "minimumDeltaY": 70.10769230769225,
+      "maximumDeltaY": 96.44999999999997,
+      "deltaY": 72.10769230769225,
+      "evidence": [
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "speed",
+          "minimumDeltaY": -36.311718750000054,
+          "maximumDeltaY": 96.44999999999997
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "rpm",
+          "minimumDeltaY": -36.311718750000054,
+          "maximumDeltaY": 96.44999999999997
+        },
+        {
+          "viewport": [
+            1280,
+            720
+          ],
+          "source": "gear",
+          "minimumDeltaY": -36.311718750000054,
+          "maximumDeltaY": 96.44999999999997
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "speed",
+          "minimumDeltaY": 70.10769230769225,
+          "maximumDeltaY": 180.3461538461538
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "rpm",
+          "minimumDeltaY": 70.10769230769225,
+          "maximumDeltaY": 180.3461538461538
+        },
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "source": "gear",
+          "minimumDeltaY": 70.10769230769225,
+          "maximumDeltaY": 180.3461538461538
+        }
+      ],
+      "accepted": false
+    },
+    "laneRegistration": "Corrected axle labels against confirmed exact mapped rear source body. Nearest cavity at taillight is rear wheel, distant at hood is front wheel. Projections captured native per wheel, no source edit.",
+    "laneGeometry": "Oblique per-wheel hull from isolated native wheel width/height and body-only alpha; body contact rows and unsupported columns measured in native coordinates; source untouched.",
+    "laneFacing": "Rear-left distant front rim projects inward in the exact confirmed profile; face plane fit translates only along 3D axle toward the measured aperture centroid, preserving tread/contact cylinder and all originals."
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 1.186624635217912,
+      "tireScaleY": 1.157077540856477,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.4941946921527933,
+      "frontTireOffsetY": -0.24523531776810162,
+      "rearTireOffsetX": -1.0556525433924617,
+      "rearTireOffsetY": 0.6290802640306311
+    },
+    "right": {
+      "tireScaleX": 1.1599228483746074,
+      "tireScaleY": 1.1599228483746074,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0.013313983753407466,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": -0.013313983753405785
+    },
+    "rearRight": {
+      "tireScaleX": 0.9110474526474877,
+      "tireScaleY": 1.374816974976452,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 7.585480370252657,
+      "frontTireOffsetY": 1.045365162784093,
+      "rearTireOffsetX": -7.947738282228277,
+      "rearTireOffsetY": -0.18540785247124347
+    },
+    "rearLeft": {
+      "tireScaleX": 0.868617269379235,
+      "tireScaleY": 1.3885523596635299,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -7.104202143363506,
+      "frontTireOffsetY": 1.0746979930136087,
+      "rearTireOffsetX": 7.718131186012869,
+      "rearTireOffsetY": 0.0276199452801964
+    },
+    "left": {
+      "tireScaleX": 1.1234921325221068,
+      "tireScaleY": 1.1234921325221068,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.02935807577954017,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0.029358075779538008
+    },
+    "frontLeft": {
+      "tireScaleX": 1.2127209264498597,
+      "tireScaleY": 1.107097268175974,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.5221638073811208,
+      "frontTireOffsetY": -0.09765557780506046,
+      "rearTireOffsetX": 1.0607059561414514,
+      "rearTireOffsetY": 0.56150052406759
+    }
+  },
+  "nativeWheelFaceInsets": {
+    "rearLeft": {
+      "fl": 0.5
+    }
+  }
+}

@@ -1,0 +1,219 @@
+{
+  "id": "hedge-bindweed-2004",
+  "name": "Hedge Bindweed 2004",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "fa46c753151e93c9a48d50e853f8799f90065c690d9fde4921b674cdcd621296",
+  "sourceDirectory": "assets/car-catalog/hedge-bindweed-2004",
+  "sourceHashes": {
+    "body": "5236e1b88f06485b29d24923f8d4794454738453fb06aa2f47520e51cbcdc2fd",
+    "dashboard": "237995f0f3fffa932dbbfbfacaef25081bb6be179726e18812ff6b4448f3a28b",
+    "tires": "398db5a74d3b97af63b356686b83eedabdf6081ce94d4062303a2d19c653df35"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 113.58,
+        "y": 322.35,
+        "radius": 19.65
+      },
+      {
+        "wheel": "fr",
+        "x": 328.42,
+        "y": 322.35,
+        "radius": 19.65
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 681.0,
+        "y": 255.5,
+        "radius": 17.5
+      },
+      {
+        "wheel": "rr",
+        "x": 808.5,
+        "y": 233.0,
+        "radius": 15.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 1006.0,
+        "y": 258.5,
+        "radius": 26.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1229.0,
+        "y": 255.5,
+        "radius": 29.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 505.0,
+        "y": 672.5,
+        "radius": 11.5
+      },
+      {
+        "wheel": "rr",
+        "x": 621.0,
+        "y": 690.5,
+        "radius": 18.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 104.56,
+        "y": 735.7,
+        "radius": 21.3
+      },
+      {
+        "wheel": "rl",
+        "x": 337.44,
+        "y": 735.7,
+        "radius": 21.3
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1608.0,
+        "y": 255.5,
+        "radius": 16.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1705.0,
+        "y": 238.5,
+        "radius": 9.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 981.5,
+        "y": 692.0,
+        "radius": 30.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1213.5,
+        "y": 695.0,
+        "radius": 26.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1406.5,
+        "y": 661.0,
+        "radius": 11.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1500.5,
+        "y": 693.0,
+        "radius": 15.0
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      220,
+      490,
+      550,
+      185
+    ],
+    "wheel": [
+      490,
+      599.0,
+      320
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#f5e8d4",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 0.6787582670116782,
+      "tireScaleY": 1.086013227218685,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.41012872290763,
+      "frontTireOffsetY": -0.08535382313592987,
+      "rearTireOffsetX": -0.4101287229076288,
+      "rearTireOffsetY": 1.0180638082294837
+    },
+    "rearRight": {
+      "tireScaleX": 0.7466372227164725,
+      "tireScaleY": 1.224485045255015,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.2886617173333455,
+      "frontTireOffsetY": 1.2444074752611936,
+      "rearTireOffsetX": -0.28866171733334467,
+      "rearTireOffsetY": -0.019844935574144018
+    },
+    "rearLeft": {
+      "tireScaleX": 0.6750181392107407,
+      "tireScaleY": 1.1880319250109037,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.7441663109289002,
+      "frontTireOffsetY": 1.317876725786474,
+      "rearTireOffsetX": 0.7441663109289015,
+      "rearTireOffsetY": 0.01688968968849036
+    },
+    "frontLeft": {
+      "tireScaleX": 0.5616663739824611,
+      "tireScaleY": 1.1008660930056238,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -1.1787101982900583,
+      "frontTireOffsetY": 0.2899073711955564,
+      "rearTireOffsetX": 1.1787101982900574,
+      "rearTireOffsetY": 0.9867920420351997
+    }
+  }
+}

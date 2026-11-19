@@ -2317,7 +2317,16 @@
       "catalog-white-clover-2004-tires": "art/catalog-white-clover-2004-tires/document.json",
       "catalog-sedge-clover-2008-body": "art/catalog-sedge-clover-2008-body/document.json",
       "catalog-sedge-clover-2008-dashboard": "art/catalog-sedge-clover-2008-dashboard/document.json",
-      "catalog-sedge-clover-2008-tires": "art/catalog-sedge-clover-2008-tires/document.json"
+      "catalog-sedge-clover-2008-tires": "art/catalog-sedge-clover-2008-tires/document.json",
+      "catalog-hedge-bindweed-2004-body": "art/catalog-hedge-bindweed-2004-body/document.json",
+      "catalog-hedge-bindweed-2004-dashboard": "art/catalog-hedge-bindweed-2004-dashboard/document.json",
+      "catalog-hedge-bindweed-2004-tires": "art/catalog-hedge-bindweed-2004-tires/document.json",
+      "catalog-wall-speedwell-2008-body": "art/catalog-wall-speedwell-2008-body/document.json",
+      "catalog-wall-speedwell-2008-dashboard": "art/catalog-wall-speedwell-2008-dashboard/document.json",
+      "catalog-wall-speedwell-2008-tires": "art/catalog-wall-speedwell-2008-tires/document.json",
+      "catalog-checkerberry-clover-2021-body": "art/catalog-checkerberry-clover-2021-body/document.json",
+      "catalog-checkerberry-clover-2021-dashboard": "art/catalog-checkerberry-clover-2021-dashboard/document.json",
+      "catalog-checkerberry-clover-2021-tires": "art/catalog-checkerberry-clover-2021-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
