@@ -15,5 +15,6 @@ for(const steering of [-.3,.3])test(`stock RTG brake taps remain controllable tu
  assert.ok(Math.abs(single.maxSlip-singleTrigger.maxSlip)<.001,'single touch taps deliver the same braking as trigger pulses');
  assert.ok(Math.abs(single.maxYaw-singleTrigger.maxYaw)<.001);
  assert.ok(touch.handbrakeFrames>0,'double touch intentionally activates the handbrake');
- assert.ok(touch.handbrakeFrames<60*.5,'the handbrake pulse releases within half a second');
+ assert.ok(touch.handbrakeFrames<=Math.ceil(touch.fps*.1)+1,'handbrake follows the second touch hold');
+ assert.ok(touch.trace.filter(row=>row.t>=1.4).every(row=>!row.handbrake),'pointer release must clear handbrake');
 });
