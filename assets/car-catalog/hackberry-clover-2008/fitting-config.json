@@ -1,0 +1,255 @@
+{
+  "id": "hackberry-clover-2008",
+  "name": "Hackberry Clover 2008",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "1f5331cbdb908634fade3c138d0cb876da6f8543cc522e876c3632cc271a85e8",
+  "sourceDirectory": "assets/car-catalog/hackberry-clover-2008",
+  "sourceHashes": {
+    "body": "de1e58173a06cca0f79ae9032bbdbfcfdc339b130d231fae09fc47e7ca4da5f0",
+    "dashboard": "4dcc2b89bc72063180d4acd790683f87e41b96e1e600a53299a32bf584a3e6d8",
+    "tires": "23c8d698145ae26ef702efbe09ffd8742d17e285efc5971606326306668c7356"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 53.61,
+        "y": 316.325,
+        "radius": 24.675
+      },
+      {
+        "wheel": "fr",
+        "x": 323.39,
+        "y": 316.325,
+        "radius": 24.675
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 657.0,
+        "y": 264.5,
+        "radius": 26.5
+      },
+      {
+        "wheel": "rr",
+        "x": 811.0,
+        "y": 233.5,
+        "radius": 16.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 948.0,
+        "y": 271.5,
+        "radius": 37.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1226.5,
+        "y": 271.0,
+        "radius": 39.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1375.5,
+        "y": 239.0,
+        "radius": 18.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1542.0,
+        "y": 259.5,
+        "radius": 28.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 51.980000000000004,
+        "y": 754.85,
+        "radius": 24.15
+      },
+      {
+        "wheel": "rl",
+        "x": 316.02,
+        "y": 754.85,
+        "radius": 24.15
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 647.5,
+        "y": 705.0,
+        "radius": 25.0
+      },
+      {
+        "wheel": "fl",
+        "x": 792.0,
+        "y": 683.5,
+        "radius": 15.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 944.5,
+        "y": 712.0,
+        "radius": 40.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1234.0,
+        "y": 711.5,
+        "radius": 39.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1372.0,
+        "y": 679.5,
+        "radius": 15.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1512.0,
+        "y": 704.5,
+        "radius": 23.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      338,
+      384,
+      328,
+      131
+    ],
+    "wheel": [
+      502.0,
+      793,
+      420
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5",
+    "instrumentPodBounds": [
+      338,
+      384,
+      328,
+      131
+    ],
+    "renderedInstrumentPodBounds": [
+      338,
+      384,
+      328,
+      131
+    ],
+    "measuredDashboardWheel": true
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Stable source dark-pod intersection, explicit dashboard-space wheel, fixed native exterior transforms; requires guards and visual review",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 1.1464420283884338,
+      "tireScaleY": 1.0519585135820988,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.3652137018290992,
+      "frontTireOffsetY": -0.2708432809677964,
+      "rearTireOffsetX": -0.3716715530687691,
+      "rearTireOffsetY": 0.5746882272303259
+    },
+    "rearRight": {
+      "tireScaleX": 1.4201474881290697,
+      "tireScaleY": 1.1727986166948627,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.27032323843735584,
+      "frontTireOffsetY": 0.8615370597660514,
+      "rearTireOffsetX": 0.258865387197687,
+      "rearTireOffsetY": -0.6776921135035239
+    },
+    "rearLeft": {
+      "tireScaleX": 1.2362840996245352,
+      "tireScaleY": 1.2055004787009398,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.3022143820539914,
+      "frontTireOffsetY": 0.8431779727897444,
+      "rearTireOffsetX": 0.2907565308143215,
+      "rearTireOffsetY": -0.6593330265272167
+    },
+    "frontLeft": {
+      "tireScaleX": 1.1384838679005156,
+      "tireScaleY": 1.1117954080105228,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.477771224563932,
+      "frontTireOffsetY": -0.26938023664565863,
+      "rearTireOffsetX": 0.5663133733242616,
+      "rearTireOffsetY": 0.6932251829081872
+    },
+    "right": {
+      "tireScaleX": 1.0976399335936586,
+      "tireScaleY": 1.0976399335936586,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0.0023128643899221514,
+      "rearTireOffsetX": 1.4591502609359198e-15,
+      "rearTireOffsetY": -0.0023128643899223917
+    },
+    "left": {
+      "tireScaleX": 1.0830086231994471,
+      "tireScaleY": 1.0830086231994471,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 2.0301221021717147e-15,
+      "frontTireOffsetY": -0.0157167538473372,
+      "rearTireOffsetX": -9.516197353929913e-16,
+      "rearTireOffsetY": 0.015716753847336
+    }
+  },
+  "bodyAlphaRemoval": {
+    "sourceSha256": "de1e58173a06cca0f79ae9032bbdbfcfdc339b130d231fae09fc47e7ca4da5f0",
+    "reason": "Individually measured painted far-tire lobes below both rear-oblique bumpers. Import alpha derivative only; preserve source, cockpit and native wheel transforms. Requires paired render review.",
+    "rectangles": [
+      [
+        1677,
+        287,
+        57,
+        15
+      ],
+      [
+        414,
+        744,
+        60,
+        15
+      ]
+    ],
+    "maximumChangedPixels": 1755
+  }
+}

@@ -1903,7 +1903,13 @@
       "catalog-peach-clover-2009-tires": "art/catalog-peach-clover-2009-tires/document.json",
       "catalog-guava-clover-2011-body": "art/catalog-guava-clover-2011-body/document.json",
       "catalog-guava-clover-2011-dashboard": "art/catalog-guava-clover-2011-dashboard/document.json",
-      "catalog-guava-clover-2011-tires": "art/catalog-guava-clover-2011-tires/document.json"
+      "catalog-guava-clover-2011-tires": "art/catalog-guava-clover-2011-tires/document.json",
+      "catalog-apricot-clover-2010-body": "art/catalog-apricot-clover-2010-body/document.json",
+      "catalog-apricot-clover-2010-dashboard": "art/catalog-apricot-clover-2010-dashboard/document.json",
+      "catalog-apricot-clover-2010-tires": "art/catalog-apricot-clover-2010-tires/document.json",
+      "catalog-hackberry-clover-2008-body": "art/catalog-hackberry-clover-2008-body/document.json",
+      "catalog-hackberry-clover-2008-dashboard": "art/catalog-hackberry-clover-2008-dashboard/document.json",
+      "catalog-hackberry-clover-2008-tires": "art/catalog-hackberry-clover-2008-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
