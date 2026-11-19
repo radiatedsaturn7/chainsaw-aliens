@@ -2299,7 +2299,10 @@
       "catalog-snow-clover-2011-tires": "art/catalog-snow-clover-2011-tires/document.json",
       "catalog-hairy-tare-1971-body": "art/catalog-hairy-tare-1971-body/document.json",
       "catalog-hairy-tare-1971-dashboard": "art/catalog-hairy-tare-1971-dashboard/document.json",
-      "catalog-hairy-tare-1971-tires": "art/catalog-hairy-tare-1971-tires/document.json"
+      "catalog-hairy-tare-1971-tires": "art/catalog-hairy-tare-1971-tires/document.json",
+      "catalog-huckleberry-clover-2008-body": "art/catalog-huckleberry-clover-2008-body/document.json",
+      "catalog-huckleberry-clover-2008-dashboard": "art/catalog-huckleberry-clover-2008-dashboard/document.json",
+      "catalog-huckleberry-clover-2008-tires": "art/catalog-huckleberry-clover-2008-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
