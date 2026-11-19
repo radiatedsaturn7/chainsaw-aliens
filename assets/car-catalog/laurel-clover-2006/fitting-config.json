@@ -1,0 +1,238 @@
+{
+  "id": "laurel-clover-2006",
+  "name": "Laurel Clover 2006",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "71b1dd47f31ad77ed35301ca9481e029abd9974bae38612b5b3838ffbe53c47d",
+  "sourceDirectory": "assets/car-catalog/laurel-clover-2006",
+  "sourceHashes": {
+    "body": "e29af02e051103c065e7fc51ee6a6c12fe19e52e007b44ac8a6a499b80c72a30",
+    "dashboard": "f2bc44aad036333ee8d2a368d55fa7aff8249491ed4e790d8b6aed7b4e282089",
+    "tires": "db9ad4cf5f1cb2a5d0e5bd1bc1e96730fb0201d3d2c6514f126ced39ce49ea68"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 104.92,
+        "y": 334.4,
+        "radius": 21.599999999999998
+      },
+      {
+        "wheel": "fr",
+        "x": 341.08,
+        "y": 334.4,
+        "radius": 21.599999999999998
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 649.5,
+        "y": 303,
+        "radius": 25
+      },
+      {
+        "wheel": "rr",
+        "x": 818.5,
+        "y": 273,
+        "radius": 17
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 945,
+        "y": 736,
+        "radius": 33
+      },
+      {
+        "wheel": "rr",
+        "x": 1236,
+        "y": 744,
+        "radius": 37
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 459,
+        "y": 711,
+        "radius": 17
+      },
+      {
+        "wheel": "rr",
+        "x": 620,
+        "y": 733.5,
+        "radius": 23.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 107.48,
+        "y": 763.6,
+        "radius": 20.4
+      },
+      {
+        "wheel": "rl",
+        "x": 330.52,
+        "y": 763.6,
+        "radius": 20.4
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1583,
+        "y": 296,
+        "radius": 21
+      },
+      {
+        "wheel": "fl",
+        "x": 1738,
+        "y": 270,
+        "radius": 15
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 980,
+        "y": 307.5,
+        "radius": 36.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1268,
+        "y": 300.5,
+        "radius": 33.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1390,
+        "y": 703.5,
+        "radius": 14.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1533,
+        "y": 733.5,
+        "radius": 20.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      426,
+      730.5,
+      284
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e7e6de",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Visible left edge of near rim cut by body in frontLeft/rearRight. One bounded positiveX0.18 wheel placement trial; exact prior scales and other views retained. Not accepted until native review.",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "nativeRenderReviewed": true
+  },
+  "allowSideTireOverrides": true,
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 1.1054339485329163,
+      "tireScaleY": 0.9734437349890322,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.2201488988876907,
+      "frontTireOffsetY": -0.5541832435820655,
+      "rearTireOffsetX": -0.23160675012735787,
+      "rearTireOffsetY": 0.738028189844594
+    },
+    "right": {
+      "tireScaleX": 1.1291743322374899,
+      "tireScaleY": 1.1291743322374899,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.15213773528183727,
+      "rearTireOffsetX": 9.516197353929913e-16,
+      "rearTireOffsetY": 0.15213773528183655
+    },
+    "rearRight": {
+      "tireScaleX": 1.2188236951683609,
+      "tireScaleY": 1.1126685075511704,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.1747607265390799,
+      "frontTireOffsetY": 0.9755951088906086,
+      "rearTireOffsetX": -0.006218577778751622,
+      "rearTireOffsetY": -0.5517501626280782
+    },
+    "rearLeft": {
+      "tireScaleX": 1.176578443174613,
+      "tireScaleY": 1.1472815001883194,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.055715348717537846,
+      "frontTireOffsetY": 0.8077133833440172,
+      "rearTireOffsetX": -0.19574250252213382,
+      "rearTireOffsetY": -0.42386843708148886
+    },
+    "left": {
+      "tireScaleX": 1.1255185031775994,
+      "tireScaleY": 1.1255185031775994,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.13409046862801194,
+      "rearTireOffsetX": -1.4591502609359198e-15,
+      "rearTireOffsetY": 0.13409046862801313
+    },
+    "frontLeft": {
+      "tireScaleX": 1.0209224012252933,
+      "tireScaleY": 0.9955013121719998,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.4557883679933609,
+      "frontTireOffsetY": -0.32052332228219804,
+      "rearTireOffsetX": 0.6243305167536901,
+      "rearTireOffsetY": 0.8043682685447272
+    }
+  }
+}

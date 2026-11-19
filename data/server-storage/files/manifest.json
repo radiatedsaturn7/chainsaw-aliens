@@ -1948,7 +1948,13 @@
       "catalog-knotted-figwort-1991-tires": "art/catalog-knotted-figwort-1991-tires/document.json",
       "catalog-persimmon-clover-2012-body": "art/catalog-persimmon-clover-2012-body/document.json",
       "catalog-persimmon-clover-2012-dashboard": "art/catalog-persimmon-clover-2012-dashboard/document.json",
-      "catalog-persimmon-clover-2012-tires": "art/catalog-persimmon-clover-2012-tires/document.json"
+      "catalog-persimmon-clover-2012-tires": "art/catalog-persimmon-clover-2012-tires/document.json",
+      "catalog-laurel-clover-2006-body": "art/catalog-laurel-clover-2006-body/document.json",
+      "catalog-laurel-clover-2006-dashboard": "art/catalog-laurel-clover-2006-dashboard/document.json",
+      "catalog-laurel-clover-2006-tires": "art/catalog-laurel-clover-2006-tires/document.json",
+      "catalog-hoary-willowherb-2001-body": "art/catalog-hoary-willowherb-2001-body/document.json",
+      "catalog-hoary-willowherb-2001-dashboard": "art/catalog-hoary-willowherb-2001-dashboard/document.json",
+      "catalog-hoary-willowherb-2001-tires": "art/catalog-hoary-willowherb-2001-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
