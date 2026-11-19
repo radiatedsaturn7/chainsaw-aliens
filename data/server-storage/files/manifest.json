@@ -2185,7 +2185,10 @@
       "catalog-buckshorn-plantain-2002-tires": "art/catalog-buckshorn-plantain-2002-tires/document.json",
       "catalog-frost-clover-2009-body": "art/catalog-frost-clover-2009-body/document.json",
       "catalog-frost-clover-2009-dashboard": "art/catalog-frost-clover-2009-dashboard/document.json",
-      "catalog-frost-clover-2009-tires": "art/catalog-frost-clover-2009-tires/document.json"
+      "catalog-frost-clover-2009-tires": "art/catalog-frost-clover-2009-tires/document.json",
+      "catalog-redcurrant-clover-1999-body": "art/catalog-redcurrant-clover-1999-body/document.json",
+      "catalog-redcurrant-clover-1999-dashboard": "art/catalog-redcurrant-clover-1999-dashboard/document.json",
+      "catalog-redcurrant-clover-1999-tires": "art/catalog-redcurrant-clover-1999-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
