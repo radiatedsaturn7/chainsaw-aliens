@@ -18176,6 +18176,24 @@
         }
       ],
       "sourcePackageId": "source-pawpaw-clover-2012"
+    },
+    {
+      "id": "cherry-clover-1967",
+      "name": "Cherry Clover 1967",
+      "stableCarId": "saved-car:Cherry Clover 1967",
+      "sourcePackageId": "source-cherry-clover-1967",
+      "runtimeId": "saved-car:Cherry Clover 1967",
+      "runtimeDocumentId": "cherry-clover-1967",
+      "runtimeDocumentIdVerified": true,
+      "status": "placeholder",
+      "sources": [
+        {
+          "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/Prince_Gloria_Super6.html",
+          "fields": [
+            "exact identity and visual configuration"
+          ]
+        }
+      ]
     }
   ]
 }

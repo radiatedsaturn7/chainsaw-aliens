@@ -28,6 +28,10 @@ const pawpawTokens=args.flatMap((arg,i)=>arg.startsWith('--pawpaw-exact-248')?[i
 const pawpaw248=pawpawTokens.length>0;
 if(pawpaw248)assert.ok(!measuredReplay&&args.length===4&&pawpawTokens.length===1&&pawpawTokens[0]===3&&args[3]==='--pawpaw-exact-248'
   &&args.slice(0,3).every(a=>a&&!a.startsWith('--')),'Usage: prepare-runtime-overlay.mjs DOC CONFIG OUTPUT --pawpaw-exact-248');
+const cherryTokens=args.flatMap((arg,i)=>arg.startsWith('--cherry-exact-opening')?[i]:[]);
+const cherry=cherryTokens.length>0;
+if(cherry)assert.ok(!pawpaw248&&!measuredReplay&&args.length===4&&cherryTokens.length===1&&cherryTokens[0]===3&&args[3]==='--cherry-exact-opening'
+  &&args.slice(0,3).every(a=>a&&!a.startsWith('--')),'Usage: prepare-runtime-overlay.mjs DOC CONFIG OUTPUT --cherry-exact-opening');
 const [documentArg,configArg,outputArg]=args;
 assert.ok(documentArg&&configArg&&outputArg,'Expected car document, fitting config and empty output directory');
 const documentPath=path.resolve(documentArg),configPath=path.resolve(configArg),output=path.resolve(outputArg);
@@ -37,7 +41,7 @@ assert.ok(output!==production&&!output.startsWith(production+path.sep),'Offline 
 assert.ok(!output.includes(path.sep+'data'+path.sep+'server-storage'),'Never target production storage in another checkout');
 assert.ok(!fs.existsSync(output)||fs.readdirSync(output).length===0,'Output directory must be empty');
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
-const readInput=(measuredReplay||pawpaw248)?readMeasuredFile:fs.readFileSync;
+const readInput=(measuredReplay||pawpaw248||cherry)?readMeasuredFile:fs.readFileSync;
 const inputBytes=readInput(documentPath),configBytes=readInput(configPath),cfg=JSON.parse(configBytes);
 
 assert.match(cfg.expectedDocumentSha256||'',/^[a-f0-9]{64}$/);
@@ -66,14 +70,34 @@ if(pawpaw248){
   delete pawpawControls.tireImportOpaqueThreshold;
   validateMeasuredPrep(pawpawControls);
 }
+let cherryControls;
+const cherryInsets=[[.155,.16],[.33,.30],[.675,.09]];
+if(cherry){
+  assert.equal(cfg.id,'cherry-clover-1967','The exact opening mode is only for Cherry Clover 1967');
+  assert.equal(sha(configBytes),'6a20082878b1e854d7d282ee28b786b701dc93c4a1711234a074f9c1a7b2dd2d','Unreviewed Cherry fitting config bytes');
+  assert.ok(aliasRequired,'Verified Cherry source alias is mandatory');
+  cherryControls=structuredClone(cfg);
+  assert.equal(cherryControls.cockpitCalibration.wheelOpening,true);
+  assert.deepEqual(cherryControls.cockpitCalibration.wheelOpeningInsets,cherryInsets);
+  delete cherryControls.cockpitCalibration.wheelOpeningInsets;
+  assert.deepEqual(Object.keys(cherryControls.nativeTireTransformOverrides).sort(),['front','left','rear','right']);
+  validateMeasuredPrep(cherryControls);
+}
 let aliasBinding;
 if(aliasRequired){
-  assert.ok(pawpaw248&&!measuredReplay&&cfg.id==='pawpaw-clover-2012',
-    'Source aliases have no generic replay; verified Pawpaw requires --pawpaw-exact-248');
+  assert.ok(!measuredReplay&&((pawpaw248&&cfg.id==='pawpaw-clover-2012')||(cherry&&cfg.id==='cherry-clover-1967')),
+    'Source aliases have no generic replay; use the exact approved per-car option');
   assert.ok(readMeasuredFile(documentPath).equals(inputBytes)&&readMeasuredFile(configPath).equals(configBytes),
     'Alias document or fitting config changed during snapshot');
   checkMeasuredOutput(output,repo,source);
   aliasBinding=verifyRuntimeSourceAlias({repo,documentPath,cfg,source,original,queue,identity,phases,sha});
+  if(cherry){
+    assert.equal(aliasBinding.sourcePackageId,'source-cherry-clover-1967');
+    assert.equal(aliasBinding.pins.packageConfigSha256,'df5af443162c7437fa290933b92a92be56434b0e520265fc1b6f49b53483c821');
+    assert.equal(aliasBinding.pins.packageStatusSha256,'a89b23e4771d214c9ca961902419b30b8dc4e035a1d7cf5b5e1af73c527e92ef');
+    assert.equal(aliasBinding.pins.queueRecordSha256,'3197807095376edfba900bae5a3be71a431a9bd1b766be657220d1aea45e30fb');
+    assert.equal(aliasBinding.pins.historicalRecordSha256,'caf99992cbd8419133f42aa5162c7f437ae44357d13bdf9a8b6a1830752d61f9');
+  }
   if(pawpaw248){
     assert.equal(aliasBinding.sourcePackageId,'source-pawpaw-clover-2012');
     assert.equal(aliasBinding.pins.historicalRecordSha256,'f27e5cac996bd14b7d1c0f6b4a12c8640bbd4bd33e4c8459b3954bdf3e591896');
@@ -128,6 +152,12 @@ const built=buildCatalogDocuments({car:structuredClone(original.car),mapping:cfg
 const car=structuredClone(original.car);car.art=built.car.car.art;
 Object.assign(car.art.interior.dashboard,{scaleX:1,scaleY:1,offsetX:0,offsetY:0});
 applyCockpitAnchors(car,cfg.cockpitCalibration);
+if(cherry){
+  assert.equal(car.art.gauges.interior.coordinateSpace,'wheel-opening');
+  const w=car.art.gauges.interior.widgets.filter(g=>g.showValue!==false);
+  assert.deepEqual(w.map(g=>g.source),['speed','rpm','gear']);
+  w.forEach((g,i)=>{const [x,width]=cherryInsets[i];Object.assign(g,{x,width});});
+}
 if(cfg.cockpitCalibration.gaugeBackground){
   assert.match(cfg.cockpitCalibration.gaugeBackground,/^#[0-9a-f]{6}([0-9a-f]{2})?$/i,'Use an explicit per-car gauge backing color');
   const widgets=car.art.gauges.interior.widgets,values=widgets.filter(widget=>widget.showValue!==false);
@@ -163,6 +193,7 @@ if(pawpaw248){
   applyMeasuredPrep(car,pawpawControls);
 }
 if(measuredReplay)applyMeasuredPrep(car,cfg);
+if(cherry)applyMeasuredPrep(car,cherryControls);
 let tires;
 if(pawpaw248){
   const data=new Uint8ClampedArray(images.tires.data);
@@ -176,7 +207,7 @@ if(pawpaw248){
 const tireDoc=carSheetDocument(tires,prepareCarSheet(tires,{columns:2,rows:1}));
 const tireRef=`catalog-${cfg.id}-tires`;assignCarTireSheet(car,tireRef,tireDoc);built.art[tireRef]=tireDoc;
 for(const layer of Object.values(car.art.angleLayers)){layer.tires.tireMode='auto';layer.tires.visible=true;}
-if(measuredReplay||pawpaw248)canonicalizeMeasuredTireMetadata(car);
+if(measuredReplay||pawpaw248||cherry)canonicalizeMeasuredTireMetadata(car);
 for(const value of Object.values(car.art.tireTreads||{}))Object.assign(value,car.art.tireSurfaces.tread);
 const next={...original,car},withoutArt=doc=>{const copy=structuredClone(doc);delete copy.car.art;return copy;};
 assert.deepEqual(withoutArt(next),withoutArt(original),'Non-art vehicle fields changed');
@@ -196,6 +227,12 @@ if(pawpaw248){
     dashboard:'379529c065f0d30f7cca70ec4f1b7cb659e1c2d0a4484c43787d3ccae5e1b58b',
     tires:'6dc938bdf7e855fc2493bae69561838d412586af30f13d012c9ca310fbe4c7fd'};
   for(const [role,h] of Object.entries(hashes))assert.equal(sha(packNative(built.art[`catalog-${cfg.id}-${role}`])),h,'Stale Pawpaw native '+role);
+}
+if(cherry){
+  assert.equal(sha(overlayBytes),'9c01c69704a95ccee19763698469ca4e23d1fc1ce9f9890aa806519477185ba2','Cherry overlay differs from independently reviewed proof');
+  const refs=['475aca61b281650442331acad85155bb7a408df0496f5b396156ed1e6c043213',
+    '6532424b89c6cb757eae1abb1bbe605c0ac478d72992bedf17514a2900a78a88','cac4c9e76afb8db1e50b80e47ed07f9c529ab674e9477812385d3a64ae1a47a9'];
+  assert.deepEqual(ownRefs.map(ref=>sha(packNative(built.art[ref]))),refs,'Cherry native documents differ from reviewed proof');
 }
 if(measuredReplay||aliasBinding){
   checkMeasuredOutput(output,repo,source);
@@ -223,5 +260,6 @@ if(measuredReplay)status.measuredReplay={mode:'measured-replay',version:1,overla
 if(aliasBinding)status.sourceAlias={mode:'verified-source-alias',version:1,sourcePackageId:aliasBinding.sourcePackageId,
   runtimeDocumentId:cfg.id,overlaySha256:sha(overlayBytes),...aliasBinding.pins};
 if(pawpaw248)status.exactPawpawOptics={threshold:248,overlaySha256:sha(overlayBytes),...pawpawAlphaPixels};
+if(cherry)status.exactCherryOptics={mode:'stock-tire-measured-opening',version:1,overlaySha256:sha(overlayBytes),wheelOpeningInsets:cherryInsets};
 fs.writeFileSync(path.join(output,'runtime-preparation.json'),JSON.stringify(status,null,2)+'\n');
 console.log(JSON.stringify({id:cfg.id,status:status.status,ownManifestKeys:ownRefs,productionWrites:0}));
