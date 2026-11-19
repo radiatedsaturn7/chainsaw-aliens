@@ -2365,7 +2365,13 @@
       "catalog-bur-medick-1967-tires": "art/catalog-bur-medick-1967-tires/document.json",
       "catalog-water-figwort-1961-body": "art/catalog-water-figwort-1961-body/document.json",
       "catalog-water-figwort-1961-dashboard": "art/catalog-water-figwort-1961-dashboard/document.json",
-      "catalog-water-figwort-1961-tires": "art/catalog-water-figwort-1961-tires/document.json"
+      "catalog-water-figwort-1961-tires": "art/catalog-water-figwort-1961-tires/document.json",
+      "catalog-forest-trefoil-2000-body": "art/catalog-forest-trefoil-2000-body/document.json",
+      "catalog-forest-trefoil-2000-dashboard": "art/catalog-forest-trefoil-2000-dashboard/document.json",
+      "catalog-forest-trefoil-2000-tires": "art/catalog-forest-trefoil-2000-tires/document.json",
+      "catalog-elderberry-clover-2015-body": "art/catalog-elderberry-clover-2015-body/document.json",
+      "catalog-elderberry-clover-2015-dashboard": "art/catalog-elderberry-clover-2015-dashboard/document.json",
+      "catalog-elderberry-clover-2015-tires": "art/catalog-elderberry-clover-2015-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
