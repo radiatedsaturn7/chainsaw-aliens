@@ -2089,7 +2089,19 @@
       "catalog-wild-pansy-1974-tires": "art/catalog-wild-pansy-1974-tires/document.json",
       "catalog-trailing-trefoil-2012-body": "art/catalog-trailing-trefoil-2012-body/document.json",
       "catalog-trailing-trefoil-2012-dashboard": "art/catalog-trailing-trefoil-2012-dashboard/document.json",
-      "catalog-trailing-trefoil-2012-tires": "art/catalog-trailing-trefoil-2012-tires/document.json"
+      "catalog-trailing-trefoil-2012-tires": "art/catalog-trailing-trefoil-2012-tires/document.json",
+      "catalog-hollyleaf-clover-2006-body": "art/catalog-hollyleaf-clover-2006-body/document.json",
+      "catalog-hollyleaf-clover-2006-dashboard": "art/catalog-hollyleaf-clover-2006-dashboard/document.json",
+      "catalog-hollyleaf-clover-2006-tires": "art/catalog-hollyleaf-clover-2006-tires/document.json",
+      "catalog-saskatoon-clover-2008-body": "art/catalog-saskatoon-clover-2008-body/document.json",
+      "catalog-saskatoon-clover-2008-dashboard": "art/catalog-saskatoon-clover-2008-dashboard/document.json",
+      "catalog-saskatoon-clover-2008-tires": "art/catalog-saskatoon-clover-2008-tires/document.json",
+      "catalog-greengage-clover-1982-body": "art/catalog-greengage-clover-1982-body/document.json",
+      "catalog-greengage-clover-1982-dashboard": "art/catalog-greengage-clover-1982-dashboard/document.json",
+      "catalog-greengage-clover-1982-tires": "art/catalog-greengage-clover-1982-tires/document.json",
+      "catalog-common-restharrow-1966-body": "art/catalog-common-restharrow-1966-body/document.json",
+      "catalog-common-restharrow-1966-dashboard": "art/catalog-common-restharrow-1966-dashboard/document.json",
+      "catalog-common-restharrow-1966-tires": "art/catalog-common-restharrow-1966-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
