@@ -1,0 +1,245 @@
+{
+  "id": "white-campion-2016",
+  "name": "White Campion 2016",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "4c501e8969df9fa909f311c56afa7f4ccf7cef633d8c1f191fabdd0824524634",
+  "sourceDirectory": "assets/car-catalog/white-campion-2016",
+  "sourceHashes": {
+    "body": "1ab5201736e088ea5147d80e2847f373bde42d5351b537d6248a7c5a727b9a1b",
+    "dashboard": "594552a0e8919b31e730e83e38a4cdc70f604ea2226561ed07e94181f72cfde9",
+    "tires": "63b1a1a9cc5f28ff6094871c2aab577ab744489140122787debcb6574d180b9e"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 88.34,
+        "y": 334.55,
+        "radius": 24.45
+      },
+      {
+        "wheel": "fr",
+        "x": 355.66,
+        "y": 334.55,
+        "radius": 24.45
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 675.5,
+        "y": 283.0,
+        "radius": 33.0
+      },
+      {
+        "wheel": "rr",
+        "x": 845.0,
+        "y": 248.5,
+        "radius": 19.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 971.0,
+        "y": 283.5,
+        "radius": 40.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1248.0,
+        "y": 281.5,
+        "radius": 40.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1374.0,
+        "y": 248.5,
+        "radius": 18.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1522.5,
+        "y": 282.0,
+        "radius": 32.0
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 81.6,
+        "y": 763.5,
+        "radius": 25.5
+      },
+      {
+        "wheel": "rl",
+        "x": 360.40000000000003,
+        "y": 763.5,
+        "radius": 25.5
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 698.5,
+        "y": 725.0,
+        "radius": 31.0
+      },
+      {
+        "wheel": "fl",
+        "x": 846.5,
+        "y": 690.0,
+        "radius": 17.0
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 970.0,
+        "y": 722.5,
+        "radius": 40.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1246.5,
+        "y": 723.0,
+        "radius": 40.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1374.0,
+        "y": 689.5,
+        "radius": 19.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1542.0,
+        "y": 726.5,
+        "radius": 32.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      343,
+      524,
+      346,
+      80
+    ],
+    "wheel": [
+      516.0,
+      793,
+      354
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff",
+    "instrumentPodBounds": [
+      343,
+      524,
+      346,
+      80
+    ],
+    "renderedInstrumentPodBounds": [
+      343,
+      524,
+      346,
+      80
+    ],
+    "measuredDashboardWheel": true,
+    "dashboardGaugeFontSize": 17.4
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Stable source dark-pod intersection, explicit dashboard-space wheel, fixed native exterior transforms; requires guards and visual review",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "readableFontInterval": {
+      "minimum": 17.31205742555049,
+      "maximum": 25.70192741087706,
+      "fontSize": 17.4,
+      "accepted": false
+    },
+    "tireRepair": "Source-bound alpha audit: 0.734 off-center circle becomes centered 0.988 diameter at 248. Import copy only; native render required.",
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 0.9126584479331026,
+      "tireScaleY": 1.2328794562769856,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.04958671231217791,
+      "frontTireOffsetY": -0.4553736637505558,
+      "rearTireOffsetX": -0.051123902394822604,
+      "rearTireOffsetY": 0.4549703308197507
+    },
+    "rearRight": {
+      "tireScaleX": 0.972580929064721,
+      "tireScaleY": 1.3222015244801437,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.14703785229674465,
+      "frontTireOffsetY": 0.42571218107484055,
+      "rearTireOffsetX": -0.1585750423793863,
+      "rearTireOffsetY": -0.4061155140056467
+    },
+    "rearLeft": {
+      "tireScaleX": 0.939595673575958,
+      "tireScaleY": 1.3153943226954166,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.19883244684464582,
+      "frontTireOffsetY": 0.3967386560182746,
+      "rearTireOffsetX": 0.1872952567620025,
+      "rearTireOffsetY": -0.3771419889490798
+    },
+    "frontLeft": {
+      "tireScaleX": 0.8985358512368317,
+      "tireScaleY": 1.1777927668059494,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.07680924010251167,
+      "frontTireOffsetY": -0.4046346551073019,
+      "rearTireOffsetX": 0.08027205001986698,
+      "rearTireOffsetY": 0.4092313221764968
+    },
+    "right": {
+      "tireScaleX": 1.135427139849368,
+      "tireScaleY": 1.135427139849368,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 2.0301221021717147e-15,
+      "frontTireOffsetY": 0.03745457780053163,
+      "rearTireOffsetX": 8.881784197001251e-16,
+      "rearTireOffsetY": -0.03745457780053163
+    },
+    "left": {
+      "tireScaleX": 1.1370686238558534,
+      "tireScaleY": 1.1370686238558534,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -2.0301221021717147e-15,
+      "frontTireOffsetY": 0.01118265325856349,
+      "rearTireOffsetX": 6.344131569286608e-16,
+      "rearTireOffsetY": -0.01118265325856349
+    }
+  },
+  "tireImportOpaqueThreshold": 248
+}

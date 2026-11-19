@@ -1,0 +1,242 @@
+{
+  "id": "stone-parsley-1994",
+  "name": "Stone Parsley 1994",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "cecc94832defd33e7cef6dea802d3e65bd0362b07d7c83c29829baf29895012c",
+  "sourceDirectory": "assets/car-catalog/stone-parsley-1994",
+  "sourceHashes": {
+    "body": "a20bc30ffe04dc2888c7dda5c87437e4e1bfc02aae97161af563cf47d22c5322",
+    "dashboard": "45b40806d902e6f6cfefe3ae005c316228b106669d53ec2ee5311dd049ae6b75",
+    "tires": "f24821a8ac518e1aeb225f0f4d08f62d93a4377792fddbe05995f8486f02cd19"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 105.56,
+        "y": 341.7,
+        "radius": 21.3
+      },
+      {
+        "wheel": "fr",
+        "x": 338.44,
+        "y": 341.7,
+        "radius": 21.3
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 654.0,
+        "y": 307.5,
+        "radius": 28.5
+      },
+      {
+        "wheel": "rr",
+        "x": 815.5,
+        "y": 266.0,
+        "radius": 23.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 973.5,
+        "y": 736.0,
+        "radius": 37.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1234.5,
+        "y": 738.0,
+        "radius": 38.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 459.5,
+        "y": 703.0,
+        "radius": 18.0
+      },
+      {
+        "wheel": "rr",
+        "x": 613.5,
+        "y": 738.0,
+        "radius": 30.0
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 103.83,
+        "y": 769.475,
+        "radius": 21.525
+      },
+      {
+        "wheel": "rl",
+        "x": 339.17,
+        "y": 769.475,
+        "radius": 21.525
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1580.0,
+        "y": 301.5,
+        "radius": 26.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1721.0,
+        "y": 273.5,
+        "radius": 18.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 992.5,
+        "y": 307.0,
+        "radius": 39.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1246.0,
+        "y": 300.5,
+        "radius": 34.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1390.0,
+        "y": 697.5,
+        "radius": 20.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1525.0,
+        "y": 734.5,
+        "radius": 26.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      1159,
+      460,
+      350,
+      131
+    ],
+    "wheel": [
+      1334.0,
+      887,
+      420
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de",
+    "instrumentPodBounds": [
+      1159,
+      460,
+      350,
+      131
+    ],
+    "renderedInstrumentPodBounds": [
+      1159,
+      460,
+      350,
+      131
+    ],
+    "measuredDashboardWheel": true
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Stable source dark-pod intersection, explicit dashboard-space wheel, fixed native exterior transforms; requires guards and visual review",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "tireRegionReview": "Explicit native circle from full source wheel silhouette; 99.5% near-opaque interior required; no pixels changed; render still required.",
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 0.8622719756120828,
+      "tireScaleY": 0.8622719756120828,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.036242021287206515,
+      "frontTireOffsetY": -0.3368685979930518,
+      "rearTireOffsetX": -0.03624202128720331,
+      "rearTireOffsetY": 0.3368685979930507
+    },
+    "rearRight": {
+      "tireScaleX": 1.1989683569259049,
+      "tireScaleY": 1.409067476977552,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.10852835298464827,
+      "frontTireOffsetY": 0.47657607734220564,
+      "rearTireOffsetX": -0.12006554306729014,
+      "rearTireOffsetY": -0.45697941027301026
+    },
+    "rearLeft": {
+      "tireScaleX": 1.4639691196901883,
+      "tireScaleY": 1.3910947255451527,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.2671481184675355,
+      "frontTireOffsetY": 0.6220597352480713,
+      "rearTireOffsetX": 0.2556902672278667,
+      "rearTireOffsetY": -0.5782147889855428
+    },
+    "frontLeft": {
+      "tireScaleX": 1.37501130086246,
+      "tireScaleY": 1.1355238558466791,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.43211696886544404,
+      "frontTireOffsetY": -0.014278559004329637,
+      "rearTireOffsetX": 0.4206591176257738,
+      "rearTireOffsetY": 0.398123505266858
+    },
+    "right": {
+      "tireScaleX": 1.2046827194671772,
+      "tireScaleY": 1.2046827194671772,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 2.0301221021717147e-15,
+      "frontTireOffsetY": -0.047653093894711875,
+      "rearTireOffsetX": 2.410769996328911e-15,
+      "rearTireOffsetY": 0.04765309389471212
+    },
+    "left": {
+      "tireScaleX": 1.2729643310968957,
+      "tireScaleY": 1.2729643310968957,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.1427940375063327,
+      "rearTireOffsetX": 6.344131569286608e-16,
+      "rearTireOffsetY": 0.1427940375063339
+    }
+  },
+  "measuredTireWheelRegion": {
+    "x": 348.5,
+    "y": 354.0,
+    "radius": 337.075
+  }
+}
