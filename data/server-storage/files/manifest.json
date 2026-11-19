@@ -1942,7 +1942,13 @@
       "catalog-seaside-clover-2014-tires": "art/catalog-seaside-clover-2014-tires/document.json",
       "catalog-green-trefoil-2005-body": "art/catalog-green-trefoil-2005-body/document.json",
       "catalog-green-trefoil-2005-dashboard": "art/catalog-green-trefoil-2005-dashboard/document.json",
-      "catalog-green-trefoil-2005-tires": "art/catalog-green-trefoil-2005-tires/document.json"
+      "catalog-green-trefoil-2005-tires": "art/catalog-green-trefoil-2005-tires/document.json",
+      "catalog-knotted-figwort-1991-body": "art/catalog-knotted-figwort-1991-body/document.json",
+      "catalog-knotted-figwort-1991-dashboard": "art/catalog-knotted-figwort-1991-dashboard/document.json",
+      "catalog-knotted-figwort-1991-tires": "art/catalog-knotted-figwort-1991-tires/document.json",
+      "catalog-persimmon-clover-2012-body": "art/catalog-persimmon-clover-2012-body/document.json",
+      "catalog-persimmon-clover-2012-dashboard": "art/catalog-persimmon-clover-2012-dashboard/document.json",
+      "catalog-persimmon-clover-2012-tires": "art/catalog-persimmon-clover-2012-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

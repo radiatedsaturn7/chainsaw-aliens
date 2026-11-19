@@ -1,0 +1,242 @@
+{
+  "id": "knotted-figwort-1991",
+  "name": "Knotted Figwort 1991",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "dd996b1ed62b7ea7b76d800644c1a4b292ee0086ac9251e029a0f17584ff4583",
+  "sourceDirectory": "assets/car-catalog/knotted-figwort-1991",
+  "sourceHashes": {
+    "body": "609277fc03b674e786af8b05ca2dc35f25dce751e2381f77b07441ccae9826e7",
+    "dashboard": "61139eb46777903727554a0162a7c0d2ffd8d65f6f2b376da46aae1c7e34ea39",
+    "tires": "22dd39dc7b059191d99679608fcf74f8a47cf71401e55653b6b79b6ce9a15e61"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 102.92,
+        "y": 328.4,
+        "radius": 21.599999999999998
+      },
+      {
+        "wheel": "fr",
+        "x": 339.08,
+        "y": 328.4,
+        "radius": 21.599999999999998
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 644.0,
+        "y": 294.5,
+        "radius": 24.5
+      },
+      {
+        "wheel": "rr",
+        "x": 806.0,
+        "y": 256.5,
+        "radius": 15.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 937.0,
+        "y": 285.5,
+        "radius": 35.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1221.0,
+        "y": 285.5,
+        "radius": 35.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 430.5,
+        "y": 681.0,
+        "radius": 17.0
+      },
+      {
+        "wheel": "rr",
+        "x": 592.5,
+        "y": 708.0,
+        "radius": 25.0
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 99.46,
+        "y": 748.95,
+        "radius": 22.05
+      },
+      {
+        "wheel": "rl",
+        "x": 340.54,
+        "y": 748.95,
+        "radius": 22.05
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1571.5,
+        "y": 281.0,
+        "radius": 24.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1729.0,
+        "y": 255.5,
+        "radius": 15.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 962.0,
+        "y": 709.5,
+        "radius": 35.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1254.0,
+        "y": 706.5,
+        "radius": 34.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1371.5,
+        "y": 685,
+        "radius": 25
+      },
+      {
+        "wheel": "fl",
+        "x": 1518,
+        "y": 728,
+        "radius": 35
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1300,
+      492,
+      476,
+      88
+    ],
+    "wheel": [
+      1538.0,
+      793,
+      420
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae",
+    "instrumentPodBounds": [
+      1300,
+      492,
+      476,
+      88
+    ],
+    "renderedInstrumentPodBounds": [
+      1300,
+      492,
+      476,
+      88
+    ],
+    "dashboardGaugeFontSize": 18
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Manual source aperture center/radius annotation from full-resolution crop; vertical center apex+bounded radius, not truncated alpha apex. Native import target-view calibration only; other solved tire transforms retained.",
+    "targetView": "frontLeft",
+    "sourceApertures": [
+      {
+        "wheel": "rl",
+        "x": 1371.5,
+        "y": 685,
+        "radius": 25
+      },
+      {
+        "wheel": "fl",
+        "x": 1518,
+        "y": 728,
+        "radius": 35
+      }
+    ],
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 0.703700531651503,
+      "tireScaleY": 0.703700531651503,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.40910084914462524,
+      "frontTireOffsetY": -0.5292926883402657,
+      "rearTireOffsetX": -0.40910084914462475,
+      "rearTireOffsetY": 0.5292926883402647
+    },
+    "rearRight": {
+      "tireScaleX": 0.7679983592770199,
+      "tireScaleY": 0.7679983592770199,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.22652575768465588,
+      "frontTireOffsetY": 0.7483670317060571,
+      "rearTireOffsetX": -0.22652575768465757,
+      "rearTireOffsetY": -0.7483670317060563
+    },
+    "rearLeft": {
+      "tireScaleX": 0.7555802511959248,
+      "tireScaleY": 0.7555802511959248,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.2404459233179832,
+      "frontTireOffsetY": 0.7677070854591792,
+      "rearTireOffsetX": 0.24044592331798376,
+      "rearTireOffsetY": -0.7677070854591774
+    },
+    "right": {
+      "tireScaleX": 1.0587329426415961,
+      "tireScaleY": 1.2456558159853275,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010399999999997855,
+      "frontTireOffsetY": -0.3620408163265307,
+      "rearTireOffsetX": 0.01438016528925671,
+      "rearTireOffsetY": -0.3611834319526627
+    },
+    "left": {
+      "tireScaleX": 1.0297265606514157,
+      "tireScaleY": 1.21152825938299,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010399999999999882,
+      "frontTireOffsetY": -0.4206118805934049,
+      "rearTireOffsetX": 0.01438016528925442,
+      "rearTireOffsetY": -0.30261236768578853
+    }
+  }
+}
