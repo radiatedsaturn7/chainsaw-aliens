@@ -2287,7 +2287,16 @@
       "catalog-barrel-medick-2006-tires": "art/catalog-barrel-medick-2006-tires/document.json",
       "catalog-foothill-clover-2018-body": "art/catalog-foothill-clover-2018-body/document.json",
       "catalog-foothill-clover-2018-dashboard": "art/catalog-foothill-clover-2018-dashboard/document.json",
-      "catalog-foothill-clover-2018-tires": "art/catalog-foothill-clover-2018-tires/document.json"
+      "catalog-foothill-clover-2018-tires": "art/catalog-foothill-clover-2018-tires/document.json",
+      "catalog-oak-clover-2011-body": "art/catalog-oak-clover-2011-body/document.json",
+      "catalog-oak-clover-2011-dashboard": "art/catalog-oak-clover-2011-dashboard/document.json",
+      "catalog-oak-clover-2011-tires": "art/catalog-oak-clover-2011-tires/document.json",
+      "catalog-bolander-clover-2018-body": "art/catalog-bolander-clover-2018-body/document.json",
+      "catalog-bolander-clover-2018-dashboard": "art/catalog-bolander-clover-2018-dashboard/document.json",
+      "catalog-bolander-clover-2018-tires": "art/catalog-bolander-clover-2018-tires/document.json",
+      "catalog-snow-clover-2011-body": "art/catalog-snow-clover-2011-body/document.json",
+      "catalog-snow-clover-2011-dashboard": "art/catalog-snow-clover-2011-dashboard/document.json",
+      "catalog-snow-clover-2011-tires": "art/catalog-snow-clover-2011-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

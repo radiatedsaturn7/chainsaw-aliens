@@ -1,0 +1,267 @@
+{
+  "id": "bolander-clover-2018",
+  "name": "Bolander Clover 2018",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "8d7ad63947cd03baf063fe02952a82a242127f81de834508dcc01d6069c9c649",
+  "sourceDirectory": "assets/car-catalog/bolander-clover-2018",
+  "sourceHashes": {
+    "body": "f24b94d46e327963865dd73f872b4a13ed2e95829e2e141ce5c2c71bfd0dde90",
+    "dashboard": "f42ce7dddf69455a856d4eba42a1899454c1be4563af0c064a7eda85a53edc3d",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 89.16,
+        "y": 323.7,
+        "radius": 24.3
+      },
+      {
+        "wheel": "fr",
+        "x": 354.84000000000003,
+        "y": 323.7,
+        "radius": 24.3
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 703.5,
+        "y": 264.0,
+        "radius": 19.0
+      },
+      {
+        "wheel": "rr",
+        "x": 827.5,
+        "y": 231.0,
+        "radius": 13.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 990.0,
+        "y": 712.5,
+        "radius": 29.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1245.5,
+        "y": 709.0,
+        "radius": 32.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 482.5,
+        "y": 694.0,
+        "radius": 11.0
+      },
+      {
+        "wheel": "rr",
+        "x": 618.0,
+        "y": 701.5,
+        "radius": 21.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 89.16,
+        "y": 752.7,
+        "radius": 24.3
+      },
+      {
+        "wheel": "rl",
+        "x": 354.84000000000003,
+        "y": 752.7,
+        "radius": 24.3
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1582.0,
+        "y": 265.5,
+        "radius": 23.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1729.0,
+        "y": 255.5,
+        "radius": 11.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 971.5,
+        "y": 268.0,
+        "radius": 32.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1228.5,
+        "y": 271.0,
+        "radius": 30.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1374.0,
+        "y": 674.5,
+        "radius": 12.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1492.0,
+        "y": 705.5,
+        "radius": 18.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      599.0,
+      297
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e2e9e8",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false
+  },
+  "allowCardinalTireOverrides": true,
+  "nativeTireTransformOverrides": {
+    "front": {
+      "tireScaleX": 0.4693754694581697,
+      "tireScaleY": 0.4693754694581697,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 2.2841436093451066E-16,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0
+    },
+    "frontRight": {
+      "tireScaleX": 0.9017040452043019,
+      "tireScaleY": 1.1469775527277648,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.8019754957436257,
+      "frontTireOffsetY": 0.2275997003932175,
+      "rearTireOffsetX": -1.1008961569006541,
+      "rearTireOffsetY": 0.604337867533361
+    },
+    "right": {
+      "tireScaleX": 1.0349414005906785,
+      "tireScaleY": 1.0349414005906785,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0.05612615093668256,
+      "rearTireOffsetX": 7.612957883143929E-16,
+      "rearTireOffsetY": -0.05612615093668136
+    },
+    "rearRight": {
+      "tireScaleX": 1.2298891946168624,
+      "tireScaleY": 1.3400775865448096,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.6737828165783283,
+      "frontTireOffsetY": 1.4184918554848804,
+      "rearTireOffsetX": -0.24791190236525706,
+      "rearTireOffsetY": -0.2864265953475966
+    },
+    "rear": {
+      "tireScaleX": 0.45760245678737876,
+      "tireScaleY": 0.45760245678737876,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": -3.3752048103786447E-17
+    },
+    "rearLeft": {
+      "tireScaleX": 1.0501593775310487,
+      "tireScaleY": 1.3510173621997412,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.18856966134420805,
+      "frontTireOffsetY": 1.190824471307049,
+      "rearTireOffsetX": -0.03984416898886526,
+      "rearTireOffsetY": -0.29219628630523736
+    },
+    "left": {
+      "tireScaleX": 1.028900886579449,
+      "tireScaleY": 1.028900886579449,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 2.0301221021717147E-15,
+      "frontTireOffsetY": 0.04597199319723415,
+      "rearTireOffsetX": -2.5376526277146434E-16,
+      "rearTireOffsetY": -0.04597199319723295
+    },
+    "frontLeft": {
+      "tireScaleX": 0.8354987359033818,
+      "tireScaleY": 1.1008489269392245,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.9295519487628785,
+      "frontTireOffsetY": 0.17746285458722613,
+      "rearTireOffsetX": 1.105631287605854,
+      "rearTireOffsetY": 0.7898064625344338
+    }
+  },
+  "nativeWheelFaceInsets": {
+    "rearRight": {
+      "fr": 0.5
+    },
+    "rearLeft": {
+      "fl": 0.5
+    },
+    "frontLeft": {
+      "rl": 0.5
+    }
+  }
+}
