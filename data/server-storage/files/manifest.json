@@ -1966,7 +1966,13 @@
       "catalog-red-campion-2013-tires": "art/catalog-red-campion-2013-tires/document.json",
       "catalog-showy-clover-1993-body": "art/catalog-showy-clover-1993-body/document.json",
       "catalog-showy-clover-1993-dashboard": "art/catalog-showy-clover-1993-dashboard/document.json",
-      "catalog-showy-clover-1993-tires": "art/catalog-showy-clover-1993-tires/document.json"
+      "catalog-showy-clover-1993-tires": "art/catalog-showy-clover-1993-tires/document.json",
+      "catalog-lesser-pimpernel-1970-body": "art/catalog-lesser-pimpernel-1970-body/document.json",
+      "catalog-lesser-pimpernel-1970-dashboard": "art/catalog-lesser-pimpernel-1970-dashboard/document.json",
+      "catalog-lesser-pimpernel-1970-tires": "art/catalog-lesser-pimpernel-1970-tires/document.json",
+      "catalog-longleaf-clover-2011-body": "art/catalog-longleaf-clover-2011-body/document.json",
+      "catalog-longleaf-clover-2011-dashboard": "art/catalog-longleaf-clover-2011-dashboard/document.json",
+      "catalog-longleaf-clover-2011-tires": "art/catalog-longleaf-clover-2011-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
