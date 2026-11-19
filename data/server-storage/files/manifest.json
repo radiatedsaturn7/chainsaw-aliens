@@ -2074,7 +2074,13 @@
       "catalog-yellow-vetch-1946-tires": "art/catalog-yellow-vetch-1946-tires/document.json",
       "catalog-winterberry-clover-2015-body": "art/catalog-winterberry-clover-2015-body/document.json",
       "catalog-winterberry-clover-2015-dashboard": "art/catalog-winterberry-clover-2015-dashboard/document.json",
-      "catalog-winterberry-clover-2015-tires": "art/catalog-winterberry-clover-2015-tires/document.json"
+      "catalog-winterberry-clover-2015-tires": "art/catalog-winterberry-clover-2015-tires/document.json",
+      "catalog-mouseear-hawkweed-1986-body": "art/catalog-mouseear-hawkweed-1986-body/document.json",
+      "catalog-mouseear-hawkweed-1986-dashboard": "art/catalog-mouseear-hawkweed-1986-dashboard/document.json",
+      "catalog-mouseear-hawkweed-1986-tires": "art/catalog-mouseear-hawkweed-1986-tires/document.json",
+      "catalog-spring-vetch-1970-body": "art/catalog-spring-vetch-1970-body/document.json",
+      "catalog-spring-vetch-1970-dashboard": "art/catalog-spring-vetch-1970-dashboard/document.json",
+      "catalog-spring-vetch-1970-tires": "art/catalog-spring-vetch-1970-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
