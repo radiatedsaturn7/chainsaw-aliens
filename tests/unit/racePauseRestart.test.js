@@ -61,13 +61,13 @@ test('racing pause nests Debug, lights and signals with parent-aware Back',()=>{
  const settings=e.getRacePauseMenuRows();
  assert.deepEqual(settings.map(r=>r.id),['race-car-controls','race-toggle-transmission','race-driving-guide','race-pace-notes','race-toggle-telemetry','race-fullscreen','race-debug','race-pause-back']);
  settings[0].onClick();
- assert.deepEqual(e.getRacePauseMenuRows().slice(0,-1).map(r=>r.id),['race-toggle-abs','race-toggle-tc','race-launch-control','race-car-lights','race-wipers','race-car-signals']);
- for(const [id,mode,children] of [['race-car-lights','car-lights',['race-headlights','race-highBeams','race-auxLights']],['race-car-signals','car-signals',['race-signal-left','race-signal-right','race-signal-hazards']]]){
+ assert.deepEqual(e.getRacePauseMenuRows().slice(0,-1).map(r=>r.id),['race-car-assists','race-toggle-abs','race-toggle-tc','race-launch-control','race-car-lights','race-wipers','race-car-signals']);
+ for(const [id,mode,children] of [['race-car-assists','car-assists',['race-throttle-assist','race-brake-assist']],['race-car-lights','car-lights',['race-headlights','race-highBeams','race-auxLights']],['race-car-signals','car-signals',['race-signal-left','race-signal-right','race-signal-hazards']]]){
   e.getRacePauseMenuRows().find(r=>r.id===id).onClick();assert.equal(e.raceInput.pauseMenuMode,mode);
   assert.deepEqual(e.getRacePauseMenuRows().slice(0,-1).map(r=>r.id),children);
   e.backRacePauseMenu();assert.equal(e.raceInput.pauseMenuMode,'car-controls');
  }
- const abs=e.raceInput.absEnabled;e.getRacePauseMenuRows()[0].onClick();assert.equal(e.raceInput.absEnabled,!abs);
+ const abs=e.raceInput.absEnabled;e.getRacePauseMenuRows().find(r=>r.id==='race-toggle-abs').onClick();assert.equal(e.raceInput.absEnabled,!abs);
  e.getRacePauseMenuRows().at(-1).onClick();assert.equal(e.raceInput.pauseMenuMode,'settings');
  e.getRacePauseMenuRows().find(r=>r.id==='race-debug').onClick();
  e.getRacePauseMenuRows().find(r=>r.id==='race-debug-menu-ai').onClick();
