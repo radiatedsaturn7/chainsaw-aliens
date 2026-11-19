@@ -2032,7 +2032,19 @@
       "catalog-medlar-clover-2010-tires": "art/catalog-medlar-clover-2010-tires/document.json",
       "catalog-spiny-restharrow-2001-body": "art/catalog-spiny-restharrow-2001-body/document.json",
       "catalog-spiny-restharrow-2001-dashboard": "art/catalog-spiny-restharrow-2001-dashboard/document.json",
-      "catalog-spiny-restharrow-2001-tires": "art/catalog-spiny-restharrow-2001-tires/document.json"
+      "catalog-spiny-restharrow-2001-tires": "art/catalog-spiny-restharrow-2001-tires/document.json",
+      "catalog-springbank-clover-2016-body": "art/catalog-springbank-clover-2016-body/document.json",
+      "catalog-springbank-clover-2016-dashboard": "art/catalog-springbank-clover-2016-dashboard/document.json",
+      "catalog-springbank-clover-2016-tires": "art/catalog-springbank-clover-2016-tires/document.json",
+      "catalog-suckling-clover-2019-body": "art/catalog-suckling-clover-2019-body/document.json",
+      "catalog-suckling-clover-2019-dashboard": "art/catalog-suckling-clover-2019-dashboard/document.json",
+      "catalog-suckling-clover-2019-tires": "art/catalog-suckling-clover-2019-tires/document.json",
+      "catalog-sulphur-clover-2021-body": "art/catalog-sulphur-clover-2021-body/document.json",
+      "catalog-sulphur-clover-2021-dashboard": "art/catalog-sulphur-clover-2021-dashboard/document.json",
+      "catalog-sulphur-clover-2021-tires": "art/catalog-sulphur-clover-2021-tires/document.json",
+      "catalog-trailing-tormentil-1994-body": "art/catalog-trailing-tormentil-1994-body/document.json",
+      "catalog-trailing-tormentil-1994-dashboard": "art/catalog-trailing-tormentil-1994-dashboard/document.json",
+      "catalog-trailing-tormentil-1994-tires": "art/catalog-trailing-tormentil-1994-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
