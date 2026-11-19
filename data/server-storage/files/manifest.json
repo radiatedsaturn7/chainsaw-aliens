@@ -2128,7 +2128,13 @@
       "catalog-tufted-vetch-1956-tires": "art/catalog-tufted-vetch-1956-tires/document.json",
       "catalog-guelder-clover-2013-body": "art/catalog-guelder-clover-2013-body/document.json",
       "catalog-guelder-clover-2013-dashboard": "art/catalog-guelder-clover-2013-dashboard/document.json",
-      "catalog-guelder-clover-2013-tires": "art/catalog-guelder-clover-2013-tires/document.json"
+      "catalog-guelder-clover-2013-tires": "art/catalog-guelder-clover-2013-tires/document.json",
+      "catalog-berseem-clover-1967-body": "art/catalog-berseem-clover-1967-body/document.json",
+      "catalog-berseem-clover-1967-dashboard": "art/catalog-berseem-clover-1967-dashboard/document.json",
+      "catalog-berseem-clover-1967-tires": "art/catalog-berseem-clover-1967-tires/document.json",
+      "catalog-alsike-clover-1930-body": "art/catalog-alsike-clover-1930-body/document.json",
+      "catalog-alsike-clover-1930-dashboard": "art/catalog-alsike-clover-1930-dashboard/document.json",
+      "catalog-alsike-clover-1930-tires": "art/catalog-alsike-clover-1930-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
