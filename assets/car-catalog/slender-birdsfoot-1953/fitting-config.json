@@ -1,0 +1,236 @@
+{
+  "id": "slender-birdsfoot-1953",
+  "name": "Slender Birdsfoot 1953",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "8de8f258bf24b4b89dbd055915d344f7cf82ca2bac8b10cd26c314dde066c8a2",
+  "sourceDirectory": "assets/car-catalog/slender-birdsfoot-1953",
+  "sourceHashes": {
+    "body": "ddd80ccfed56434ed9165ea3074b7b6d49022d0e1c2188d2ecfc68861974edea",
+    "dashboard": "2348a7cb2d1118e697e9765cbbdb2e8cadf09aec4069397e67373ab5107db84d",
+    "tires": "fa98be7776a058b56f3d5efa36a87d1a5a14fcd43af3a9f7d29a839efc9b8c00"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 99.09,
+        "y": 313.425,
+        "radius": 22.575
+      },
+      {
+        "wheel": "fr",
+        "x": 345.91,
+        "y": 313.425,
+        "radius": 22.575
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 671.5,
+        "y": 252.0,
+        "radius": 27.0
+      },
+      {
+        "wheel": "rr",
+        "x": 810.5,
+        "y": 215.0,
+        "radius": 17.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 967.5,
+        "y": 698.0,
+        "radius": 37.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1231.5,
+        "y": 699.0,
+        "radius": 38.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 490.5,
+        "y": 653.0,
+        "radius": 15.0
+      },
+      {
+        "wheel": "rr",
+        "x": 613.0,
+        "y": 689.5,
+        "radius": 24.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 99.18,
+        "y": 742.35,
+        "radius": 22.65
+      },
+      {
+        "wheel": "rl",
+        "x": 346.82,
+        "y": 742.35,
+        "radius": 22.65
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1555.0,
+        "y": 248.5,
+        "radius": 29.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1709.5,
+        "y": 216.0,
+        "radius": 18.0
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 983.0,
+        "y": 255.5,
+        "radius": 38.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1246.0,
+        "y": 253.5,
+        "radius": 37.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1392.0,
+        "y": 659.5,
+        "radius": 17.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1529.0,
+        "y": 696.5,
+        "radius": 27.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1218,
+      549,
+      504,
+      89
+    ],
+    "wheel": [
+      1470.0,
+      793,
+      286
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8",
+    "instrumentPodBounds": [
+      1218,
+      549,
+      504,
+      89
+    ],
+    "renderedInstrumentPodBounds": [
+      1218,
+      549,
+      504,
+      89
+    ],
+    "measuredDashboardWheel": true
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Stable source dark-pod intersection, explicit dashboard-space wheel, fixed native exterior transforms; requires guards and visual review",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 0.8605302594216853,
+      "tireScaleY": 0.9466531472868772,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.6655341041245415,
+      "frontTireOffsetY": 0.0839128039749805,
+      "rearTireOffsetX": -0.6694547652815662,
+      "rearTireOffsetY": 0.4280247639515982
+    },
+    "rearRight": {
+      "tireScaleX": 0.9087328439546423,
+      "tireScaleY": 1.0638341249505727,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.6834033375425631,
+      "frontTireOffsetY": 0.33852317435677093,
+      "rearTireOffsetX": -0.5675967259723161,
+      "rearTireOffsetY": 0.1851050106450403
+    },
+    "rearLeft": {
+      "tireScaleX": 0.8554859484912699,
+      "tireScaleY": 1.1056514529296082,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.11300389370816394,
+      "frontTireOffsetY": 0.43686563750506524,
+      "rearTireOffsetX": -0.11219728213791473,
+      "rearTireOffsetY": 0.011762547496745445
+    },
+    "frontLeft": {
+      "tireScaleX": 1.1276566566917074,
+      "tireScaleY": 0.9400211573668803,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.6293356136251433,
+      "frontTireOffsetY": -0.02156854388148932,
+      "rearTireOffsetX": 0.7128777623854746,
+      "rearTireOffsetY": 0.42541349014401775
+    },
+    "right": {
+      "tireScaleX": 0.9970965934340511,
+      "tireScaleY": 1.1731373613551006,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.0296000000000001,
+      "frontTireOffsetY": -0.3823836796867774,
+      "rearTireOffsetX": 0.014380165289257528,
+      "rearTireOffsetY": -0.3408405685924169
+    },
+    "left": {
+      "tireScaleX": 1.0140574120135775,
+      "tireScaleY": 1.2341944267248497,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010399999999999882,
+      "frontTireOffsetY": -0.4028812416277094,
+      "rearTireOffsetX": 0.01438016528925614,
+      "rearTireOffsetY": -0.36034300665148494
+    }
+  }
+}

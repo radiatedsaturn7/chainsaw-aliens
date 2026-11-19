@@ -1,0 +1,236 @@
+{
+  "id": "marsh-arrowgrass-2002",
+  "name": "Marsh Arrowgrass 2002",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "8b937b80d1fab434b11e2f7b594a5834652b10245120a1145d66c5a744309d65",
+  "sourceDirectory": "assets/car-catalog/marsh-arrowgrass-2002",
+  "sourceHashes": {
+    "body": "4c13d5d383701c4527e321f9ba2cd5ffdf307c653d1f2bd29801c56cedb6f48e",
+    "dashboard": "20e446d1e71bae57011ed9e2150d555fe7f84015fb7528da2a59421e8b3ad7b5",
+    "tires": "f35e728f12c80ac03f0aa4a82cd6a3da3febecaa76594a1bd83973fd5679bd5d"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 107.56,
+        "y": 337.7,
+        "radius": 21.3
+      },
+      {
+        "wheel": "fr",
+        "x": 340.44,
+        "y": 337.7,
+        "radius": 21.3
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 680.5,
+        "y": 290.0,
+        "radius": 25.0
+      },
+      {
+        "wheel": "rr",
+        "x": 823.5,
+        "y": 238.0,
+        "radius": 17.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 984.0,
+        "y": 285.5,
+        "radius": 35.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1251.0,
+        "y": 281.5,
+        "radius": 35.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 470.0,
+        "y": 687.5,
+        "radius": 16.5
+      },
+      {
+        "wheel": "rr",
+        "x": 605.0,
+        "y": 727.5,
+        "radius": 25.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 95.27,
+        "y": 766.275,
+        "radius": 22.724999999999998
+      },
+      {
+        "wheel": "rl",
+        "x": 343.73,
+        "y": 766.275,
+        "radius": 22.724999999999998
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1585.5,
+        "y": 284.0,
+        "radius": 27.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1727.0,
+        "y": 250.5,
+        "radius": 17.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 965.0,
+        "y": 727.5,
+        "radius": 36.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1230.0,
+        "y": 729.5,
+        "radius": 35.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1386.0,
+        "y": 688.5,
+        "radius": 17.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1526.5,
+        "y": 739.0,
+        "radius": 25.0
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      1178,
+      457,
+      320,
+      130
+    ],
+    "wheel": [
+      1338.0,
+      887,
+      420
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de",
+    "instrumentPodBounds": [
+      1178,
+      457,
+      320,
+      130
+    ],
+    "renderedInstrumentPodBounds": [
+      1178,
+      457,
+      320,
+      130
+    ],
+    "measuredDashboardWheel": true
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Stable source dark-pod intersection, explicit dashboard-space wheel, fixed native exterior transforms; requires guards and visual review",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 0.7289115054540607,
+      "tireScaleY": 1.0284787678708933,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.5230107794307495,
+      "frontTireOffsetY": -0.10983214281936438,
+      "rearTireOffsetX": -0.5245479695133941,
+      "rearTireOffsetY": 0.10942880988855999
+    },
+    "rearRight": {
+      "tireScaleX": 0.8159512867429324,
+      "tireScaleY": 1.0695416574296837,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.2693455995886304,
+      "frontTireOffsetY": 0.236949228985913,
+      "rearTireOffsetX": -0.270882789671274,
+      "rearTireOffsetY": -0.23735256191672024
+    },
+    "rearLeft": {
+      "tireScaleX": 0.8943220119697769,
+      "tireScaleY": 1.185709334174916,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.027153443349956563,
+      "frontTireOffsetY": 0.3440895350822603,
+      "rearTireOffsetX": 0.025616253267310773,
+      "rearTireOffsetY": -0.34449286801306667
+    },
+    "frontLeft": {
+      "tireScaleX": 0.7508970582757727,
+      "tireScaleY": 0.9842691559114698,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.4902971414811066,
+      "frontTireOffsetY": -0.10939395176217132,
+      "rearTireOffsetX": 0.488759951398461,
+      "rearTireOffsetY": 0.10899061883136604
+    },
+    "right": {
+      "tireScaleX": 1.050726654317079,
+      "tireScaleY": 1.050726654317079,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 2.0301221021717147e-15,
+      "frontTireOffsetY": 0.08106067274529911,
+      "rearTireOffsetX": 9.516197353929913e-16,
+      "rearTireOffsetY": -0.08106067274530054
+    },
+    "left": {
+      "tireScaleX": 1.0865788329362516,
+      "tireScaleY": 1.0865788329362516,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0.046149971553466396,
+      "rearTireOffsetX": -9.516197353929913e-16,
+      "rearTireOffsetY": -0.04614997155346592
+    }
+  }
+}
