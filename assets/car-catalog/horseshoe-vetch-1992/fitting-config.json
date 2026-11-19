@@ -1,0 +1,375 @@
+{
+  "id": "horseshoe-vetch-1992",
+  "name": "Horseshoe Vetch 1992",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "b3691bb10ff6d27887cb7f88837f280df7f093efecf8255e33f1b00880ad3ae3",
+  "sourceDirectory": "assets/car-catalog/horseshoe-vetch-1992",
+  "sourceHashes": {
+    "body": "028a929805a50811d88cdd1ab809f4f7524b0eabead340912437e07a597be456",
+    "dashboard": "a523f44f09568fdb6ace89ae7b5018a7334e9903469e72291dbab84679325adf",
+    "tires": "97539b80cb486b72d733478fadbd387c26edd49c2287e0edcf2a0cc859593383"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 111.34,
+        "y": 335.55,
+        "radius": 24.45
+      },
+      {
+        "wheel": "fr",
+        "x": 378.66,
+        "y": 335.55,
+        "radius": 24.45
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 632.5,
+        "y": 311,
+        "radius": 27
+      },
+      {
+        "wheel": "rr",
+        "x": 807.5,
+        "y": 279,
+        "radius": 18
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 940,
+        "y": 743.5,
+        "radius": 33.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1231,
+        "y": 747.5,
+        "radius": 37.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 450,
+        "y": 721,
+        "radius": 16
+      },
+      {
+        "wheel": "rr",
+        "x": 614,
+        "y": 739.5,
+        "radius": 22.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 105.02,
+        "y": 781.15,
+        "radius": 20.849999999999998
+      },
+      {
+        "wheel": "rl",
+        "x": 332.98,
+        "y": 781.15,
+        "radius": 20.849999999999998
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1569,
+        "y": 298.5,
+        "radius": 23.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1727,
+        "y": 278.5,
+        "radius": 15.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 960,
+        "y": 312.5,
+        "radius": 39.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1252,
+        "y": 307.5,
+        "radius": 35.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1379,
+        "y": 715.5,
+        "radius": 15.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1533.5,
+        "y": 745,
+        "radius": 25
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1220,
+      455,
+      475,
+      175
+    ],
+    "wheel": [
+      1470,
+      652.5,
+      320
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#f5e8d4",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "automatic model-specific alpha measurements; unreviewed seeds",
+    "sourceImagesReviewed": false,
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "evidence": [
+      {
+        "slot": "front",
+        "method": "silhouette-seeded tread; must pass clipping guard",
+        "supportRows": 0
+      },
+      {
+        "slot": "frontRight",
+        "sourceTracks": [
+          3,
+          6
+        ],
+        "method": "two distinct persistent tracks of at least three source rows; no competing persistent gap"
+      },
+      {
+        "slot": "frontRight",
+        "method": "multiline alpha apertures",
+        "supportRows": 0
+      },
+      {
+        "slot": "right",
+        "method": "multiline alpha apertures",
+        "supportRows": 6
+      },
+      {
+        "slot": "rearRight",
+        "method": "multiline alpha apertures",
+        "supportRows": 2
+      },
+      {
+        "slot": "rear",
+        "method": "silhouette-seeded tread; must pass clipping guard",
+        "supportRows": 0
+      },
+      {
+        "slot": "rearLeft",
+        "method": "multiline alpha apertures",
+        "supportRows": 3
+      },
+      {
+        "slot": "left",
+        "method": "multiline alpha apertures",
+        "supportRows": 6
+      },
+      {
+        "slot": "frontLeft",
+        "sourceTracks": [
+          3,
+          6
+        ],
+        "method": "two distinct persistent tracks of at least three source rows; no competing persistent gap"
+      },
+      {
+        "slot": "frontLeft",
+        "method": "multiline alpha apertures",
+        "supportRows": 0
+      }
+    ],
+    "repair": "Driver-aligned opening proposal based on measured cluster and wheel; requires native glyph/coverage guards and visual review. No fit acceptance.",
+    "nativeRenderReviewed": true
+  },
+  "allowSideTireOverrides": true,
+  "nativeBodyTransformOverrides": {
+    "front": {
+      "bodyScaleX": 1.9299667759546657,
+      "bodyScaleY": 1.3827231677680794,
+      "bodyOffsetX": -1.7763568394002505e-15,
+      "bodyOffsetY": 2.0954342719338586,
+      "bodyRotationDeg": 0
+    },
+    "frontRight": {
+      "bodyScaleX": 2.858471600481762,
+      "bodyScaleY": 2.0479497137654747,
+      "bodyOffsetX": -4.8395442518786425,
+      "bodyOffsetY": 1.2375682126896104,
+      "bodyRotationDeg": 0
+    },
+    "right": {
+      "bodyScaleX": 2.56196941205551,
+      "bodyScaleY": 1.8355209557480647,
+      "bodyOffsetX": -4.398255589066826,
+      "bodyOffsetY": -0.08712415429195064,
+      "bodyRotationDeg": 0
+    },
+    "rearRight": {
+      "bodyScaleX": 2.640593548648965,
+      "bodyScaleY": 1.8918511561266464,
+      "bodyOffsetX": -1.268090281191384,
+      "bodyOffsetY": -0.8488494172934683,
+      "bodyRotationDeg": 0
+    },
+    "rear": {
+      "bodyScaleX": 1.67705266165963,
+      "bodyScaleY": 1.20152305093275,
+      "bodyOffsetX": 0,
+      "bodyOffsetY": -1.0656431586824697,
+      "bodyRotationDeg": 0
+    },
+    "rearLeft": {
+      "bodyScaleX": 2.845364806795169,
+      "bodyScaleY": 2.0385593618115436,
+      "bodyOffsetX": 1.298879513946516,
+      "bodyOffsetY": -0.8443978436961822,
+      "bodyRotationDeg": 0
+    },
+    "left": {
+      "bodyScaleX": 2.553195544206005,
+      "bodyScaleY": 1.8292349250776945,
+      "bodyOffsetX": 4.553783742218075,
+      "bodyOffsetY": -0.19928775550708505,
+      "bodyRotationDeg": 0
+    },
+    "frontLeft": {
+      "bodyScaleX": 3.030749326619736,
+      "bodyScaleY": 2.1713779541835247,
+      "bodyOffsetX": 5.321633093217045,
+      "bodyOffsetY": 1.2650696111009403,
+      "bodyRotationDeg": 0
+    }
+  },
+  "nativeTireTransformOverrides": {
+    "front": {
+      "tireScaleX": 0.46676789369133687,
+      "tireScaleY": 0.46676789369133687,
+      "tireSpacingScale": 0.9,
+      "frontTireOffsetX": -0.72,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0
+    },
+    "frontRight": {
+      "tireScaleX": 0.7748362225258792,
+      "tireScaleY": 0.7748362225258792,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.129016184661069,
+      "frontTireOffsetY": -0.650506532988581,
+      "rearTireOffsetX": -0.12901618466106762,
+      "rearTireOffsetY": 0.6505065329885812
+    },
+    "right": {
+      "tireScaleX": 1.1322805049221678,
+      "tireScaleY": 1.1322805049221678,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.10216333281919993,
+      "rearTireOffsetX": -2.157004733557447e-15,
+      "rearTireOffsetY": 0.10216333281920184
+    },
+    "rearRight": {
+      "tireScaleX": 0.9269603400587406,
+      "tireScaleY": 1.1925232876882144,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.2404734776275499,
+      "frontTireOffsetY": 0.8930590866727302,
+      "rearTireOffsetX": -0.13966686605730091,
+      "rearTireOffsetY": -0.3744309016709183
+    },
+    "rear": {
+      "tireScaleX": 0.4433377010328155,
+      "tireScaleY": 0.4433377010328155,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": -2.1075163243933692e-16
+    },
+    "rearLeft": {
+      "tireScaleX": 1.2887042728669489,
+      "tireScaleY": 1.2566153834032716,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.1315919225680236,
+      "frontTireOffsetY": 0.8550085172030325,
+      "rearTireOffsetX": 0.1201340713283545,
+      "rearTireOffsetY": -0.531163570940502
+    },
+    "left": {
+      "tireScaleX": 1.1885843163313112,
+      "tireScaleY": 1.1885843163313112,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.12049758894111402,
+      "rearTireOffsetX": 1.2688263138573217e-16,
+      "rearTireOffsetY": 0.12049758894111402
+    },
+    "frontLeft": {
+      "tireScaleX": 0.8581427127667425,
+      "tireScaleY": 1.1283427728345718,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.32818266925822226,
+      "frontTireOffsetY": -0.6608650723266601,
+      "rearTireOffsetX": 0.3566454791755785,
+      "rearTireOffsetY": 0.6804617393958559
+    }
+  },
+  "allowCardinalTireOverrides": true
+}

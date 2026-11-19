@@ -1993,7 +1993,10 @@
       "catalog-aspen-clover-2012-tires": "art/catalog-aspen-clover-2012-tires/document.json",
       "catalog-curled-dock-2015-body": "art/catalog-curled-dock-2015-body/document.json",
       "catalog-curled-dock-2015-dashboard": "art/catalog-curled-dock-2015-dashboard/document.json",
-      "catalog-curled-dock-2015-tires": "art/catalog-curled-dock-2015-tires/document.json"
+      "catalog-curled-dock-2015-tires": "art/catalog-curled-dock-2015-tires/document.json",
+      "catalog-horseshoe-vetch-1992-body": "art/catalog-horseshoe-vetch-1992-body/document.json",
+      "catalog-horseshoe-vetch-1992-dashboard": "art/catalog-horseshoe-vetch-1992-dashboard/document.json",
+      "catalog-horseshoe-vetch-1992-tires": "art/catalog-horseshoe-vetch-1992-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
