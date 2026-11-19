@@ -2200,7 +2200,10 @@
       "catalog-yellow-bartsia-2018-tires": "art/catalog-yellow-bartsia-2018-tires/document.json",
       "catalog-pincherry-clover-2005-body": "art/catalog-pincherry-clover-2005-body/document.json",
       "catalog-pincherry-clover-2005-dashboard": "art/catalog-pincherry-clover-2005-dashboard/document.json",
-      "catalog-pincherry-clover-2005-tires": "art/catalog-pincherry-clover-2005-tires/document.json"
+      "catalog-pincherry-clover-2005-tires": "art/catalog-pincherry-clover-2005-tires/document.json",
+      "catalog-longstalk-clover-2012-body": "art/catalog-longstalk-clover-2012-body/document.json",
+      "catalog-longstalk-clover-2012-dashboard": "art/catalog-longstalk-clover-2012-dashboard/document.json",
+      "catalog-longstalk-clover-2012-tires": "art/catalog-longstalk-clover-2012-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
