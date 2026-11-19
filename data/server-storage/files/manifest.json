@@ -2086,7 +2086,10 @@
       "catalog-slender-speedwell-1997-tires": "art/catalog-slender-speedwell-1997-tires/document.json",
       "catalog-wild-pansy-1974-body": "art/catalog-wild-pansy-1974-body/document.json",
       "catalog-wild-pansy-1974-dashboard": "art/catalog-wild-pansy-1974-dashboard/document.json",
-      "catalog-wild-pansy-1974-tires": "art/catalog-wild-pansy-1974-tires/document.json"
+      "catalog-wild-pansy-1974-tires": "art/catalog-wild-pansy-1974-tires/document.json",
+      "catalog-trailing-trefoil-2012-body": "art/catalog-trailing-trefoil-2012-body/document.json",
+      "catalog-trailing-trefoil-2012-dashboard": "art/catalog-trailing-trefoil-2012-dashboard/document.json",
+      "catalog-trailing-trefoil-2012-tires": "art/catalog-trailing-trefoil-2012-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

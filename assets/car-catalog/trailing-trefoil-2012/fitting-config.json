@@ -1,0 +1,177 @@
+{
+  "id": "trailing-trefoil-2012",
+  "name": "Trailing Trefoil 2012",
+  "rosterCommit": "21a60e1a483127d6f3a83097acd20e6277605353",
+  "expectedDocumentSha256": "278ee714f7e1c9cc7a307ab0b5ec5561c54fe315fcf320802341140a36ff30ff",
+  "sourceDirectory": "assets/car-catalog/trailing-trefoil-2012",
+  "sourceHashes": {
+    "body": "0d46de1e291ac4cc76481146fa945b21f4908e169c916cbc9918b4bbdfa31912",
+    "dashboard": "998d755fe9b8e1044891471695e2d60542708dd3f1775c096a38e702cf531ea2",
+    "tires": "437b68ac8add5e6589ed2cddf9ae0170511a8cd347a6cbf6ebbb26bb08817bcf"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 47,
+        "y": 355,
+        "radius": 25
+      },
+      {
+        "wheel": "fr",
+        "x": 287,
+        "y": 355,
+        "radius": 25
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 584,
+        "y": 340,
+        "radius": 42
+      },
+      {
+        "wheel": "rr",
+        "x": 738,
+        "y": 322,
+        "radius": 29
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 885,
+        "y": 341,
+        "radius": 47
+      },
+      {
+        "wheel": "rr",
+        "x": 1220,
+        "y": 341,
+        "radius": 47
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1374,
+        "y": 324,
+        "radius": 25
+      },
+      {
+        "wheel": "rr",
+        "x": 1517,
+        "y": 341,
+        "radius": 39
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 50,
+        "y": 782,
+        "radius": 25
+      },
+      {
+        "wheel": "rl",
+        "x": 285,
+        "y": 782,
+        "radius": 25
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 576,
+        "y": 767,
+        "radius": 40
+      },
+      {
+        "wheel": "fl",
+        "x": 729,
+        "y": 749,
+        "radius": 26
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 870,
+        "y": 765,
+        "radius": 46
+      },
+      {
+        "wheel": "fl",
+        "x": 1207,
+        "y": 765,
+        "radius": 47
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1339,
+        "y": 752,
+        "radius": 24
+      },
+      {
+        "wheel": "fl",
+        "x": 1505,
+        "y": 774,
+        "radius": 40
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      690,
+      380,
+      580,
+      90
+    ],
+    "wheel": [
+      480,
+      753,
+      480
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff",
+    "measuredDashboardWheel": true
+  },
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "family": "minivan",
+    "method": "Individual source arch and dashboard aperture measurements; known geometry bounds used for straight tread overlap",
+    "sourceImagesReviewed": true,
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "confidence": {
+      "sideOblique": "manually reviewed provisional centers",
+      "straight": "silhouette overlap only",
+      "cockpit": "measured aperture, native readability gate required"
+    },
+    "iteration": "Central recessed instrument aperture measured at y375..475; expand text region from75 to90px within that opening to meet handheld legibility, retaining center dashboard layout.",
+    "wave071": "Retain measured 480-source-pixel wheel, remove 1.8 viewport enlargement that crosses central instruments on handheld.",
+    "nativeRenderReviewed": true,
+    "visualReview": "All eight exterior views and both cockpit sizes reviewed; measured dashboard-space steering wheel preserves central instrument visibility on handheld. Original images unchanged."
+  }
+}
