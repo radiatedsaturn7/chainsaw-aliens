@@ -1,0 +1,263 @@
+{
+  "id": "meadow-buttercup-2012",
+  "name": "Meadow Buttercup 2012",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "33db982b9390fe5bccdf34dacd2998fa9ba4ee736c5a868b3410d556d75891bb",
+  "sourceDirectory": "assets/car-catalog/meadow-buttercup-2012",
+  "sourceHashes": {
+    "body": "0dfad71b3462c2a3b1ed4331b50c8304cc1003da0a39d0e3bae28c38fcc134d6",
+    "dashboard": "7c9c00ba7a8e01cd1b0da0e48fca36b6d94a54d067026f323067e5aa917babae",
+    "tires": "57ebfc0e017a813601137780b78ea06055e7ce69d7279b75f5c54081a755d5e3"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 96.83,
+        "y": 326.475,
+        "radius": 21.525
+      },
+      {
+        "wheel": "fr",
+        "x": 332.17,
+        "y": 326.475,
+        "radius": 21.525
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 651.0,
+        "y": 289.5,
+        "radius": 25.5
+      },
+      {
+        "wheel": "rr",
+        "x": 816.0,
+        "y": 253.5,
+        "radius": 18.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 967.5,
+        "y": 282.0,
+        "radius": 38.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1245.5,
+        "y": 283.0,
+        "radius": 40.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 439.5,
+        "y": 688.0,
+        "radius": 16.0
+      },
+      {
+        "wheel": "rr",
+        "x": 582.0,
+        "y": 717.5,
+        "radius": 25.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 93.92,
+        "y": 757.4,
+        "radius": 21.599999999999998
+      },
+      {
+        "wheel": "rl",
+        "x": 330.08,
+        "y": 757.4,
+        "radius": 21.599999999999998
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1597.5,
+        "y": 273.0,
+        "radius": 22.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1729.0,
+        "y": 248.5,
+        "radius": 15.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 972.5,
+        "y": 718.0,
+        "radius": 40.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1252.0,
+        "y": 715.5,
+        "radius": 37.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1390.0,
+        "y": 675.5,
+        "radius": 13.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1501.0,
+        "y": 711.5,
+        "radius": 19.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      160,
+      545,
+      610,
+      110
+    ],
+    "wheel": [
+      460,
+      793,
+      260
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae",
+    "instrumentPodBounds": [
+      160,
+      545,
+      610,
+      110
+    ],
+    "renderedInstrumentPodBounds": [
+      160,
+      545,
+      610,
+      110
+    ],
+    "measuredDashboardWheel": true,
+    "dashboardGaugeFontSize": 18,
+    "measuredGaugeRects": {
+      "speed": [
+        165,
+        575,
+        110,
+        50
+      ],
+      "rpm": [
+        315,
+        575,
+        130,
+        50
+      ],
+      "gear": [
+        490,
+        575,
+        110,
+        50
+      ],
+      "fuel": [
+        660,
+        590,
+        90,
+        15
+      ]
+    }
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Four independent original circular apertures measured; native gauge bindings unchanged",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 1.0547431787500603,
+      "tireScaleY": 1.0116778903713004,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.4470815387858882,
+      "frontTireOffsetY": -0.45619332056328044,
+      "rearTireOffsetX": -0.458539390025554,
+      "rearTireOffsetY": 0.5800382668258091
+    },
+    "rearRight": {
+      "tireScaleX": 1.2239326732362095,
+      "tireScaleY": 1.193456604296757,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.545589425254644,
+      "frontTireOffsetY": 0.6838460507241181,
+      "rearTireOffsetX": -0.5570472764943148,
+      "rearTireOffsetY": -0.6000011044615876
+    },
+    "rearLeft": {
+      "tireScaleX": 1.1727657309849364,
+      "tireScaleY": 1.143563724985031,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.49737722238659965,
+      "frontTireOffsetY": 0.8757306466854888,
+      "rearTireOffsetX": 0.485919371146934,
+      "rearTireOffsetY": -0.5918857004229594
+    },
+    "frontLeft": {
+      "tireScaleX": 0.7052625728318703,
+      "tireScaleY": 0.8503511629478568,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -1.239086262529966,
+      "frontTireOffsetY": 0.05919897374529437,
+      "rearTireOffsetX": 1.275165601372941,
+      "rearTireOffsetY": 0.4927385941812837
+    },
+    "right": {
+      "tireScaleX": 1.1619121010927067,
+      "tireScaleY": 1.3670516030026074,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010399999999999882,
+      "frontTireOffsetY": -0.38142322882333307,
+      "rearTireOffsetX": 0.014380165289255557,
+      "rearTireOffsetY": -0.3418010194558618
+    },
+    "left": {
+      "tireScaleX": 1.1556764368650176,
+      "tireScaleY": 1.1723475838326716,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.0296000000000001,
+      "frontTireOffsetY": -0.17146117861088783,
+      "rearTireOffsetX": 0.014380165289257597,
+      "rearTireOffsetY": -0.11176306966830601
+    }
+  }
+}

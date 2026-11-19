@@ -1885,7 +1885,16 @@
       "catalog-myrtle-clover-2005-tires": "art/catalog-myrtle-clover-2005-tires/document.json",
       "catalog-nectarine-clover-2009-body": "art/catalog-nectarine-clover-2009-body/document.json",
       "catalog-nectarine-clover-2009-dashboard": "art/catalog-nectarine-clover-2009-dashboard/document.json",
-      "catalog-nectarine-clover-2009-tires": "art/catalog-nectarine-clover-2009-tires/document.json"
+      "catalog-nectarine-clover-2009-tires": "art/catalog-nectarine-clover-2009-tires/document.json",
+      "catalog-hoary-plantain-2015-body": "art/catalog-hoary-plantain-2015-body/document.json",
+      "catalog-hoary-plantain-2015-dashboard": "art/catalog-hoary-plantain-2015-dashboard/document.json",
+      "catalog-hoary-plantain-2015-tires": "art/catalog-hoary-plantain-2015-tires/document.json",
+      "catalog-heath-violet-1974-body": "art/catalog-heath-violet-1974-body/document.json",
+      "catalog-heath-violet-1974-dashboard": "art/catalog-heath-violet-1974-dashboard/document.json",
+      "catalog-heath-violet-1974-tires": "art/catalog-heath-violet-1974-tires/document.json",
+      "catalog-meadow-buttercup-2012-body": "art/catalog-meadow-buttercup-2012-body/document.json",
+      "catalog-meadow-buttercup-2012-dashboard": "art/catalog-meadow-buttercup-2012-dashboard/document.json",
+      "catalog-meadow-buttercup-2012-tires": "art/catalog-meadow-buttercup-2012-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

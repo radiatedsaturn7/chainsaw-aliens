@@ -1,0 +1,237 @@
+{
+  "id": "hoary-plantain-2015",
+  "name": "Hoary Plantain 2015",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "553a0d9f5d3403f94d03effa7651bafb1cb450824014cf0a586d4cfda4c45126",
+  "sourceDirectory": "assets/car-catalog/hoary-plantain-2015",
+  "sourceHashes": {
+    "body": "2c868eef646bee9db218281ac9269c352ab1bc01f3008986e83d2aac18b5503f",
+    "dashboard": "ef4c2865a62216141359ea28d8be9f7446bc519f6fef06566718d9dd78250775",
+    "tires": "dd54c17b86ae9018e56568f0b697fc775143d908e8ac020e3496a383fd46901e"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 109.38,
+        "y": 345.85,
+        "radius": 21.15
+      },
+      {
+        "wheel": "fr",
+        "x": 340.62,
+        "y": 345.85,
+        "radius": 21.15
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 669.0,
+        "y": 298.5,
+        "radius": 24.5
+      },
+      {
+        "wheel": "rr",
+        "x": 821.0,
+        "y": 250.5,
+        "radius": 17.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 958.5,
+        "y": 730.0,
+        "radius": 39.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1238.5,
+        "y": 734.0,
+        "radius": 42.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 459.0,
+        "y": 691.5,
+        "radius": 14.5
+      },
+      {
+        "wheel": "rr",
+        "x": 602.0,
+        "y": 727.5,
+        "radius": 25.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 106.2,
+        "y": 764.0,
+        "radius": 21.0
+      },
+      {
+        "wheel": "rl",
+        "x": 335.8,
+        "y": 764.0,
+        "radius": 21.0
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1578.0,
+        "y": 287.5,
+        "radius": 27.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1730.0,
+        "y": 250.5,
+        "radius": 15.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 978.0,
+        "y": 296.5,
+        "radius": 42.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1261.0,
+        "y": 292.5,
+        "radius": 39.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1377.0,
+        "y": 682.5,
+        "radius": 13.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1503.0,
+        "y": 732.5,
+        "radius": 20.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      250,
+      435,
+      340,
+      100
+    ],
+    "wheel": [
+      420,
+      805,
+      390
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de",
+    "instrumentPodBounds": [
+      250,
+      435,
+      340,
+      100
+    ],
+    "renderedInstrumentPodBounds": [
+      250,
+      435,
+      340,
+      100
+    ],
+    "measuredDashboardWheel": true,
+    "dashboardGaugeFontSize": 14
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Visual source-space inset inside original instrument pod; preserve exact native exterior transforms",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 0.6535488472317017,
+      "tireScaleY": 0.9483347079847194,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.610487826027833,
+      "frontTireOffsetY": -0.3295360080188241,
+      "rearTireOffsetX": -0.6120250161104762,
+      "rearTireOffsetY": 0.3291326750880188
+    },
+    "rearRight": {
+      "tireScaleX": 1.312024866660362,
+      "tireScaleY": 1.1737134112647338,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.5385432929255972,
+      "frontTireOffsetY": 0.5490963325201789,
+      "rearTireOffsetX": -0.550001144165267,
+      "rearTireOffsetY": -0.5052513862576516
+    },
+    "rearLeft": {
+      "tireScaleX": 0.8435159485342699,
+      "tireScaleY": 0.8435159485342699,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.271095333738129,
+      "frontTireOffsetY": 0.48658763979518543,
+      "rearTireOffsetX": 0.2710953337381261,
+      "rearTireOffsetY": -0.4865876397951847
+    },
+    "frontLeft": {
+      "tireScaleX": 0.8800343095610615,
+      "tireScaleY": 0.7749570983906735,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.9806150160667844,
+      "frontTireOffsetY": 0.1601689622770086,
+      "rearTireOffsetX": 0.9841571648271165,
+      "rearTireOffsetY": 0.22367598398552108
+    },
+    "right": {
+      "tireScaleX": 1.2146383431175685,
+      "tireScaleY": 1.1829283420411758,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.0296000000000001,
+      "frontTireOffsetY": -0.3447893854843992,
+      "rearTireOffsetX": 0.014380165289255627,
+      "rearTireOffsetY": -0.3184348627947935
+    },
+    "left": {
+      "tireScaleX": 1.216069012544091,
+      "tireScaleY": 1.1843216616431087,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.029599999999998072,
+      "frontTireOffsetY": -0.30393645439228595,
+      "rearTireOffsetX": 0.014380165289257028,
+      "rearTireOffsetY": -0.27928779388690866
+    }
+  }
+}

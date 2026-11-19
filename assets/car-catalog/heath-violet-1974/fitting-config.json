@@ -1,0 +1,237 @@
+{
+  "id": "heath-violet-1974",
+  "name": "Heath Violet 1974",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "0b96d6760a7c12d272d99227945d4e4cad51481973b688d7d251306970841af7",
+  "sourceDirectory": "assets/car-catalog/heath-violet-1974",
+  "sourceHashes": {
+    "body": "43cc05dd7e156ad59c1179d7324d53696de3c2d3ee73847577ded0fcdeb8283e",
+    "dashboard": "e442b9e03b43a76231fbf777de817324d73295789d935cf82fabd0d166f67232",
+    "tires": "37b654d8fcc9e0ecc2e80c0804539b6866478b796af472acb974165ab175f796"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 97.56,
+        "y": 324.7,
+        "radius": 21.3
+      },
+      {
+        "wheel": "fr",
+        "x": 330.44,
+        "y": 324.7,
+        "radius": 21.3
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 627.0,
+        "y": 307.5,
+        "radius": 30.5
+      },
+      {
+        "wheel": "rr",
+        "x": 810.0,
+        "y": 264.5,
+        "radius": 20.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 940.5,
+        "y": 714.0,
+        "radius": 36.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1217.0,
+        "y": 716.5,
+        "radius": 38.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 455.0,
+        "y": 688.5,
+        "radius": 19.5
+      },
+      {
+        "wheel": "rr",
+        "x": 611.0,
+        "y": 720.5,
+        "radius": 29.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 95.00999999999999,
+        "y": 737.325,
+        "radius": 21.675
+      },
+      {
+        "wheel": "rl",
+        "x": 331.99,
+        "y": 737.325,
+        "radius": 21.675
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1567.0,
+        "y": 291.5,
+        "radius": 27.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1724.0,
+        "y": 259.5,
+        "radius": 15.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 990.0,
+        "y": 292.5,
+        "radius": 39.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1263.5,
+        "y": 290.0,
+        "radius": 36.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1379.5,
+        "y": 683.0,
+        "radius": 15.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1519.0,
+        "y": 725.5,
+        "radius": 26.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      340,
+      580,
+      420,
+      115
+    ],
+    "wheel": [
+      550,
+      887,
+      350
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de",
+    "instrumentPodBounds": [
+      340,
+      580,
+      420,
+      115
+    ],
+    "renderedInstrumentPodBounds": [
+      340,
+      580,
+      420,
+      115
+    ],
+    "measuredDashboardWheel": true,
+    "dashboardGaugeFontSize": 14
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Visual source-space inset inside original instrument pod; preserve exact native exterior transforms",
+    "runtimeFitAccepted": true,
+    "gameplayAccepted": false,
+    "nativeRenderReviewed": true
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 0.8147027590167902,
+      "tireScaleY": 1.0679050984398755,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.16959789341898104,
+      "frontTireOffsetY": -0.4383952771882167,
+      "rearTireOffsetX": -0.17113508350162623,
+      "rearTireOffsetY": 0.4379919442574107
+    },
+    "rearRight": {
+      "tireScaleX": 0.9053680224786516,
+      "tireScaleY": 0.9053680224786516,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.2976129622219765,
+      "frontTireOffsetY": 0.5828404819739212,
+      "rearTireOffsetX": -0.29761296222197814,
+      "rearTireOffsetY": -0.5828404819739232
+    },
+    "rearLeft": {
+      "tireScaleX": 0.9149158825180862,
+      "tireScaleY": 0.9149158825180862,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.030043294576379328,
+      "frontTireOffsetY": 0.5241175856945122,
+      "rearTireOffsetX": -0.03004329457638324,
+      "rearTireOffsetY": -0.5241175856945132
+    },
+    "frontLeft": {
+      "tireScaleX": 0.7957686582278618,
+      "tireScaleY": 0.7957686582278618,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.6951355662546269,
+      "frontTireOffsetY": -0.3487664059805145,
+      "rearTireOffsetX": 0.6951355662546278,
+      "rearTireOffsetY": 0.34876640598051406
+    },
+    "right": {
+      "tireScaleX": 1.1443245020552495,
+      "tireScaleY": 1.1144501518854866,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010399999999999902,
+      "frontTireOffsetY": -0.3095713993472843,
+      "rearTireOffsetX": -0.025619834710742792,
+      "rearTireOffsetY": -0.3136528489319093
+    },
+    "left": {
+      "tireScaleX": 1.1869252480184163,
+      "tireScaleY": 1.1559387398898657,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.010399999999999902,
+      "frontTireOffsetY": -0.3101139235711875,
+      "rearTireOffsetX": 0.03438016528925696,
+      "rearTireOffsetY": -0.3131103247080071
+    }
+  }
+}
