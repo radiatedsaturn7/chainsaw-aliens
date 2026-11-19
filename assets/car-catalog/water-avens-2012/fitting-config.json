@@ -1,0 +1,329 @@
+{
+  "id": "water-avens-2012",
+  "name": "Water Avens 2012",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "9dfecb0c4f6501d2f7ea01a1c16435da91bdfa82691d69e63fb04fa18b1bbaab",
+  "sourceDirectory": "assets/car-catalog/water-avens-2012",
+  "sourceHashes": {
+    "body": "2d26366f58f79b4425bdb0fcc50939b5b3de0aec32f827fb3bc976cef805d288",
+    "dashboard": "1a4181b867144cfafe7dc2e99bcd26ad87a6b60e892b1650409dcf54ce055058",
+    "tires": "e26a48c01c740f27571d9740ab8801bd7388331e7f705e839246ff9a1ac663e7"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 75.13,
+        "y": 345.225,
+        "radius": 26.775
+      },
+      {
+        "wheel": "fr",
+        "x": 367.87,
+        "y": 345.225,
+        "radius": 26.775
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 682.5,
+        "y": 268.0,
+        "radius": 25.0
+      },
+      {
+        "wheel": "rr",
+        "x": 842.5,
+        "y": 248.0,
+        "radius": 14.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 977.0,
+        "y": 279.5,
+        "radius": 34.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1252.5,
+        "y": 281.0,
+        "radius": 35.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1375.0,
+        "y": 257.5,
+        "radius": 15.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1535.5,
+        "y": 276.0,
+        "radius": 25.0
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 79.96,
+        "y": 783.2,
+        "radius": 25.8
+      },
+      {
+        "wheel": "rl",
+        "x": 362.04,
+        "y": 783.2,
+        "radius": 25.8
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 693.5,
+        "y": 717.0,
+        "radius": 24.0
+      },
+      {
+        "wheel": "fl",
+        "x": 848.5,
+        "y": 694.0,
+        "radius": 14.0
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 963.0,
+        "y": 721.5,
+        "radius": 35.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1245.5,
+        "y": 720.0,
+        "radius": 34.0
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1372.5,
+        "y": 691.0,
+        "radius": 14.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1528.5,
+        "y": 713.0,
+        "radius": 26.0
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      284,
+      447,
+      356,
+      114
+    ],
+    "wheel": [
+      462.0,
+      793,
+      420
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff",
+    "instrumentPodBounds": [
+      284,
+      447,
+      356,
+      114
+    ],
+    "renderedInstrumentPodBounds": [
+      284,
+      447,
+      356,
+      114
+    ],
+    "dashboardGaugeFontSize": 18
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "Extended-height aperture proposals only on previously held views; native quick guards and visual acceptance required",
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false
+  },
+  "nativeTireTransformOverrides": {
+    "front": {
+      "tireScaleX": 0.4174203683617212,
+      "tireScaleY": 0.4174203683617212,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 2.2023150934208345e-16,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0
+    },
+    "frontRight": {
+      "tireScaleX": 1.0266383226360538,
+      "tireScaleY": 1.2452360045040283,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.15145432903785838,
+      "frontTireOffsetY": -0.2888537970418687,
+      "rearTireOffsetX": -0.4660146733786253,
+      "rearTireOffsetY": 0.8807913649684473
+    },
+    "right": {
+      "tireScaleX": 1.0688016437694572,
+      "tireScaleY": 1.0688016437694572,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": -0.025960333663285175,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0.025960333663285654
+    },
+    "rearRight": {
+      "tireScaleX": 1.0339376607552115,
+      "tireScaleY": 1.2983730443395847,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.011247033265795292,
+      "frontTireOffsetY": 1.1773972530102674,
+      "rearTireOffsetX": 0.012053644836039379,
+      "rearTireOffsetY": -0.5187690680084571
+    },
+    "rear": {
+      "tireScaleX": 0.4216849152556638,
+      "tireScaleY": 0.4216849152556638,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 1.4158226457066537e-16
+    },
+    "rearLeft": {
+      "tireScaleX": 0.9837449183165095,
+      "tireScaleY": 1.1985102568779857,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.3052171108877859,
+      "frontTireOffsetY": 1.091545885274403,
+      "rearTireOffsetX": 0.3060237224580368,
+      "rearTireOffsetY": -0.33291770027259165
+    },
+    "left": {
+      "tireScaleX": 1.0572083212618186,
+      "tireScaleY": 1.0572083212618186,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 2.0301221021717147e-15,
+      "frontTireOffsetY": -0.025189362856979595,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0.025189362856979113
+    },
+    "frontLeft": {
+      "tireScaleX": 1.022869770208625,
+      "tireScaleY": 1.2317540744307327,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.5541390922974151,
+      "frontTireOffsetY": -0.2964442537205949,
+      "rearTireOffsetX": 0.6202184311403903,
+      "rearTireOffsetY": 0.8483818216471736
+    }
+  },
+  "nativeBodyTransformOverrides": {
+    "front": {
+      "bodyScaleX": 1.680050354977373,
+      "bodyScaleY": 1.267045302497865,
+      "bodyOffsetX": -8.881784197001252e-16,
+      "bodyOffsetY": 2.1588472814250377,
+      "bodyRotationDeg": 0
+    },
+    "frontRight": {
+      "bodyScaleX": 2.936918502892979,
+      "bodyScaleY": 2.2149388450679672,
+      "bodyOffsetX": -6.053758988519473,
+      "bodyOffsetY": 2.5061890659741395,
+      "bodyRotationDeg": 0
+    },
+    "right": {
+      "bodyScaleX": 2.6954005812766435,
+      "bodyScaleY": 2.03279302595819,
+      "bodyOffsetX": -5.049875429491234,
+      "bodyOffsetY": 0.46156368911543255,
+      "bodyRotationDeg": 0
+    },
+    "rearRight": {
+      "bodyScaleX": 2.753268378252869,
+      "bodyScaleY": 2.0764352418640426,
+      "bodyOffsetX": -1.067682419933222,
+      "bodyOffsetY": -0.35530127888291446,
+      "bodyRotationDeg": 0
+    },
+    "rear": {
+      "bodyScaleX": 1.3298486283748383,
+      "bodyScaleY": 1.002933306506912,
+      "bodyOffsetX": 0.00946646233182502,
+      "bodyOffsetY": -0.9814917774913688,
+      "bodyRotationDeg": 0
+    },
+    "rearLeft": {
+      "bodyScaleX": 2.6474000847155166,
+      "bodyScaleY": 1.9965924421452366,
+      "bodyOffsetX": 0.8294379576853679,
+      "bodyOffsetY": -0.2917408119180599,
+      "bodyRotationDeg": 0
+    },
+    "left": {
+      "bodyScaleX": 2.6286118943069567,
+      "bodyScaleY": 1.9824229332795802,
+      "bodyOffsetX": 5.044883393520407,
+      "bodyOffsetY": 0.5025219303923936,
+      "bodyRotationDeg": 0
+    },
+    "frontLeft": {
+      "bodyScaleX": 2.8819651205476604,
+      "bodyScaleY": 2.173494596238924,
+      "bodyOffsetX": 6.011858455944644,
+      "bodyOffsetY": 2.382062809779039,
+      "bodyRotationDeg": 0
+    }
+  },
+  "allowCardinalTireOverrides": true,
+  "nativeWheelFaceInsets": {
+    "frontRight": {
+      "rr": 0.39453886877332495
+    },
+    "rearRight": {
+      "fr": 0.46759864031176285,
+      "rr": 0.4254103307886327
+    },
+    "rearLeft": {
+      "fl": 0.38266613807015776,
+      "rl": 0.4430359433899763
+    },
+    "frontLeft": {
+      "fl": 0.45171149041100433,
+      "rl": 0.4740686079507833
+    }
+  }
+}
