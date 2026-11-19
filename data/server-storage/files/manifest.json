@@ -2311,7 +2311,13 @@
       "catalog-toothed-medick-2002-tires": "art/catalog-toothed-medick-2002-tires/document.json",
       "catalog-yellow-vetchling-2013-body": "art/catalog-yellow-vetchling-2013-body/document.json",
       "catalog-yellow-vetchling-2013-dashboard": "art/catalog-yellow-vetchling-2013-dashboard/document.json",
-      "catalog-yellow-vetchling-2013-tires": "art/catalog-yellow-vetchling-2013-tires/document.json"
+      "catalog-yellow-vetchling-2013-tires": "art/catalog-yellow-vetchling-2013-tires/document.json",
+      "catalog-white-clover-2004-body": "art/catalog-white-clover-2004-body/document.json",
+      "catalog-white-clover-2004-dashboard": "art/catalog-white-clover-2004-dashboard/document.json",
+      "catalog-white-clover-2004-tires": "art/catalog-white-clover-2004-tires/document.json",
+      "catalog-sedge-clover-2008-body": "art/catalog-sedge-clover-2008-body/document.json",
+      "catalog-sedge-clover-2008-dashboard": "art/catalog-sedge-clover-2008-dashboard/document.json",
+      "catalog-sedge-clover-2008-tires": "art/catalog-sedge-clover-2008-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
