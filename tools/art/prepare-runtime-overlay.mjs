@@ -15,8 +15,14 @@ import {prepareCarSheet,carSheetDocument,assignCarTireSheet} from '../../src/rac
 import {normalizeTireSheetOpacity} from '../../src/racing/CarTireTextureFit.js';
 import {applyCockpitAnchors} from '../../scripts/car-catalog-cockpit.mjs';
 import {normalizeGauge} from '../../src/racing/CarGauges.js';
+import {validateMeasuredPrep,applyMeasuredPrep,canonicalizeMeasuredTireMetadata,readMeasuredFile,checkMeasuredOutput,freezeMeasuredSource} from './measured-prep-replay.mjs';
 
-const [documentArg,configArg,outputArg]=process.argv.slice(2);
+const args=process.argv.slice(2);
+const replayTokens=args.flatMap((arg,i)=>arg.startsWith('--measured-replay')?[i]:[]);
+const measuredReplay=replayTokens.length>0;
+if(measuredReplay)assert.ok(args.length===4&&replayTokens.length===1&&replayTokens[0]===3&&args[3]==='--measured-replay'
+  &&args.slice(0,3).every(a=>a&&!a.startsWith('--')),'Usage: prepare-runtime-overlay.mjs DOC CONFIG OUTPUT --measured-replay');
+const [documentArg,configArg,outputArg]=args;
 assert.ok(documentArg&&configArg&&outputArg,'Expected car document, fitting config and empty output directory');
 const documentPath=path.resolve(documentArg),configPath=path.resolve(configArg),output=path.resolve(outputArg);
 const repo=path.resolve(new URL('../../',import.meta.url).pathname);
@@ -25,7 +31,9 @@ assert.ok(output!==production&&!output.startsWith(production+path.sep),'Offline 
 assert.ok(!output.includes(path.sep+'data'+path.sep+'server-storage'),'Never target production storage in another checkout');
 assert.ok(!fs.existsSync(output)||fs.readdirSync(output).length===0,'Output directory must be empty');
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
-const inputBytes=fs.readFileSync(documentPath),cfg=JSON.parse(fs.readFileSync(configPath));
+const readInput=measuredReplay?readMeasuredFile:fs.readFileSync;
+const inputBytes=readInput(documentPath),configBytes=readInput(configPath),cfg=JSON.parse(configBytes);
+if(measuredReplay)validateMeasuredPrep(cfg);
 assert.match(cfg.expectedDocumentSha256||'',/^[a-f0-9]{64}$/);
 assert.equal(sha(inputBytes),cfg.expectedDocumentSha256,'Vehicle changed since fitting input was recorded');
 assert.match(cfg.rosterCommit||'',/^[a-f0-9]{40}$/);
@@ -52,6 +60,13 @@ for(const [key,length] of [['size',2],['cluster',4],['wheel',3]]){
   assert.ok(Array.isArray(values)&&values.length===length&&values.every(Number.isFinite),`Invalid cockpit ${key}`);
 }
 const source=path.resolve(cfg.sourceDirectory),images={},sourceHashes={};
+let pinnedSource;
+if(measuredReplay){
+  checkMeasuredOutput(output,repo,source);
+  pinnedSource=freezeMeasuredSource(repo,source,cfg,decodePng);
+  Object.assign(images,pinnedSource.images);
+  Object.assign(sourceHashes,cfg.sourceHashes);
+}else{
 const marker=path.join(source,'package-status.json'),sourceStatus=fs.existsSync(marker)?JSON.parse(fs.readFileSync(marker)):null;
 if(sourceStatus){
   assert.equal(sourceStatus.id,cfg.id);
@@ -64,6 +79,7 @@ for(const role of ['body','dashboard','tires']){
   assert.equal(sourceHashes[role],cfg.sourceHashes?.[role],`Stale ${role} source`);
   if(sourceStatus)assert.equal(sourceHashes[role],sourceStatus.sourceHashes[role]);
   images[role]=decodePng(file);
+}
 }
 assert.deepEqual(cfg.cockpitCalibration.size,[images.dashboard.width,images.dashboard.height]);
 const built=buildCatalogDocuments({car:structuredClone(original.car),mapping:cfg.mapping,
@@ -102,17 +118,23 @@ if(cfg.steeringWheelSource){
   assert.equal(frameIndex,0,'Reviewed reusable steering wheels each have one frame');
   Object.assign(car.art.interior.steeringWheel,{artRef,frameIndex});
 }
+if(measuredReplay)applyMeasuredPrep(car,cfg);
 const tires=normalizeTireSheetOpacity(images.tires);
 const tireDoc=carSheetDocument(tires,prepareCarSheet(tires,{columns:2,rows:1}));
 const tireRef=`catalog-${cfg.id}-tires`;assignCarTireSheet(car,tireRef,tireDoc);built.art[tireRef]=tireDoc;
 for(const layer of Object.values(car.art.angleLayers)){layer.tires.tireMode='auto';layer.tires.visible=true;}
+if(measuredReplay)canonicalizeMeasuredTireMetadata(car);
 for(const value of Object.values(car.art.tireTreads||{}))Object.assign(value,car.art.tireSurfaces.tread);
 const next={...original,car},withoutArt=doc=>{const copy=structuredClone(doc);delete copy.car.art;return copy;};
 assert.deepEqual(withoutArt(next),withoutArt(original),'Non-art vehicle fields changed');
 assert.equal(sha(fs.readFileSync(documentPath)),cfg.expectedDocumentSha256,'Input document mutated');
 const ownRefs=['body','dashboard','tires'].map(role=>`catalog-${cfg.id}-${role}`);
 assert.deepEqual(Object.keys(built.art).sort(),[...ownRefs].sort());
-fs.mkdirSync(output,{recursive:true});const nativeHashes={},manifest={folders:{art:{}}};
+if(measuredReplay){
+  checkMeasuredOutput(output,repo,source);
+  fs.mkdirSync(output,{mode:0o700});
+}else fs.mkdirSync(output,{recursive:true});
+const nativeHashes={},manifest={folders:{art:{}}};
 for(const [ref,doc] of Object.entries(built.art)){
   const relative=`art/${ref}/document.json`,dest=path.join(output,relative);
   const bytes=Buffer.from(JSON.stringify({__chainsawStorage:'compact-v1',encoding:'json-gzip-base64',
@@ -123,13 +145,17 @@ for(const [ref,doc] of Object.entries(built.art)){
 }
 const overlay={id:cfg.id,name:cfg.name,rosterCommit:cfg.rosterCommit,
   expectedDocumentSha256:cfg.expectedDocumentSha256,art:car.art};
-fs.writeFileSync(path.join(output,'art-overlay.json'),JSON.stringify(overlay,null,2)+'\n');
+const overlayBytes=Buffer.from(JSON.stringify(overlay,null,2)+'\n');
+fs.writeFileSync(path.join(output,'art-overlay.json'),overlayBytes);
 fs.writeFileSync(path.join(output,'manifest-delta.json'),JSON.stringify(manifest,null,2)+'\n');
 const status={id:cfg.id,status:'runtime-prepared-awaiting-visual-fitting',runtimeFitted:false,
   productionIntegrated:false,gameplayAccepted:false,inputDocumentSha256:cfg.expectedDocumentSha256,
   rosterCommit:cfg.rosterCommit,identityHandoff:queue.source,sourceHashes,nativeHashes,
   sharedSteeringWheelReference:car.art.interior.steeringWheel.artRef,
-  fittingConfigSha256:sha(fs.readFileSync(configPath)),nonArtFieldsPreserved:true,
+  fittingConfigSha256:sha(measuredReplay?configBytes:fs.readFileSync(configPath)),nonArtFieldsPreserved:true,
   deferred:['per-car exterior and cockpit fitting review','fixed rear camera and smoke','full gameplay and manifest acceptance']};
+if(measuredReplay)status.measuredReplay={mode:'measured-replay',version:1,overlaySha256:sha(overlayBytes),
+  packageStatusSha256:pinnedSource.packageStatusSha256,packageConfigSha256:pinnedSource.packageConfigSha256,
+  inertConfigFields:['measurementReview','cockpitCalibration.instrumentPodBounds','cockpitCalibration.renderedInstrumentPodBounds']};
 fs.writeFileSync(path.join(output,'runtime-preparation.json'),JSON.stringify(status,null,2)+'\n');
 console.log(JSON.stringify({id:cfg.id,status:status.status,ownManifestKeys:ownRefs,productionWrites:0}));
