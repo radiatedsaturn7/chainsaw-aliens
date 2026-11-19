@@ -2146,7 +2146,16 @@
       "catalog-violet-trefoil-2012-tires": "art/catalog-violet-trefoil-2012-tires/document.json",
       "catalog-bithynian-vetch-1958-body": "art/catalog-bithynian-vetch-1958-body/document.json",
       "catalog-bithynian-vetch-1958-dashboard": "art/catalog-bithynian-vetch-1958-dashboard/document.json",
-      "catalog-bithynian-vetch-1958-tires": "art/catalog-bithynian-vetch-1958-tires/document.json"
+      "catalog-bithynian-vetch-1958-tires": "art/catalog-bithynian-vetch-1958-tires/document.json",
+      "catalog-white-melilot-1997-body": "art/catalog-white-melilot-1997-body/document.json",
+      "catalog-white-melilot-1997-dashboard": "art/catalog-white-melilot-1997-dashboard/document.json",
+      "catalog-white-melilot-1997-tires": "art/catalog-white-melilot-1997-tires/document.json",
+      "catalog-mandarin-clover-2013-body": "art/catalog-mandarin-clover-2013-body/document.json",
+      "catalog-mandarin-clover-2013-dashboard": "art/catalog-mandarin-clover-2013-dashboard/document.json",
+      "catalog-mandarin-clover-2013-tires": "art/catalog-mandarin-clover-2013-tires/document.json",
+      "catalog-partridgeberry-clover-2009-body": "art/catalog-partridgeberry-clover-2009-body/document.json",
+      "catalog-partridgeberry-clover-2009-dashboard": "art/catalog-partridgeberry-clover-2009-dashboard/document.json",
+      "catalog-partridgeberry-clover-2009-tires": "art/catalog-partridgeberry-clover-2009-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
