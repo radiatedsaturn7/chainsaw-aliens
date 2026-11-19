@@ -2371,7 +2371,10 @@
       "catalog-forest-trefoil-2000-tires": "art/catalog-forest-trefoil-2000-tires/document.json",
       "catalog-elderberry-clover-2015-body": "art/catalog-elderberry-clover-2015-body/document.json",
       "catalog-elderberry-clover-2015-dashboard": "art/catalog-elderberry-clover-2015-dashboard/document.json",
-      "catalog-elderberry-clover-2015-tires": "art/catalog-elderberry-clover-2015-tires/document.json"
+      "catalog-elderberry-clover-2015-tires": "art/catalog-elderberry-clover-2015-tires/document.json",
+      "catalog-wild-madder-2013-body": "art/catalog-wild-madder-2013-body/document.json",
+      "catalog-wild-madder-2013-dashboard": "art/catalog-wild-madder-2013-dashboard/document.json",
+      "catalog-wild-madder-2013-tires": "art/catalog-wild-madder-2013-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
