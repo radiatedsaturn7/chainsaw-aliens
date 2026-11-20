@@ -1,0 +1,119 @@
+name: Level Editor camera round-trip 673 (diagnostic only)
+on:
+  push:
+    branches: ['dot/diagnostic-673-camera-roundtrip-20261120']
+    paths: ['.github/workflows/diagnostic-673-camera-roundtrip.yml']
+permissions:
+  contents: read
+jobs:
+  camera-roundtrip:
+    name: Protected Chromium camera round-trip (${{ matrix.variant }})
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [original-observed, legal-observed]
+    env:
+      REVISION: '9265553ab21803af258010bf85be6056c4288241'
+      EXPECTED_TREE: 'b2670e979703908cf8d41aaf4c0f1e1acc3e0df6'
+      VARIANT: ${{ matrix.variant }}
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.REVISION }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Fence exact checkout and apply only named observation overlay
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$REVISION"
+          test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          spec=tests/playwright/editor-flows.spec.js
+          test "$(git hash-object "$spec")" = db6ae4600de5019902f479ac17846fdcfdcec6d5
+          test "$(git rev-parse HEAD:src/ui/LevelEditorCore.js)" = 31eca071ff02d20eac16c08131037cec5539cc9d
+          test "$(git rev-parse HEAD:src/game/Input.js)" = 5a32a8508a78633c474034bb67f06c7e692fe5c0
+          test "$(git rev-parse HEAD:package-lock.json)" = 71d9cce5e4c06f526b49a6d80c0eae694a8f3f6f
+          test "$(git rev-parse HEAD:playwright.config.js)" = 9e93a2ca786f76d8617ee53994a21ddee5bccb67
+          test "$(git rev-parse HEAD:tools/playwright/static-server.cjs)" = a6d55f8749e170a93e9237f4ea1389526a03404b
+          overlay="$RUNNER_TEMP/673-camera.patch"
+          case "$VARIANT" in
+            original-observed)
+              sha=7963ad2742bbb82ff13291c65e349e7bdd92b0083dbc212f156eddfd110a0fe6; blob=f39e3ba669c97b11ef2031927130755541b21d19
+              printf '%s' 'LS0tIGEvdGVzdHMvcGxheXdyaWdodC9lZGl0b3ItZmxvd3Muc3BlYy5qcworKysgYi90ZXN0cy9wbGF5d3JpZ2h0L2VkaXRvci1mbG93cy5zcGVjLmpzCkBAIC0xNTIsNyArMTUyLDcgQEAKICAgfQogfSk7CiAKLXRlc3QoJ3JlZ3Jlc3Npb246IGVkaXRvciBzdXJ2aXZlcyBwbGF5dGVzdCByb3VuZCB0cmlwIGFuZCBzdGlsbCBoYW5kbGVzIGlucHV0JywgYXN5bmMgKHsgcGFnZSB9KSA9PiB7Cit0ZXN0KCdyZWdyZXNzaW9uOiBlZGl0b3Igc3Vydml2ZXMgcGxheXRlc3Qgcm91bmQgdHJpcCBhbmQgc3RpbGwgaGFuZGxlcyBpbnB1dCcsIGFzeW5jICh7IHBhZ2UgfSwgaW5mbykgPT4gewogICBhd2FpdCB3YWl0Rm9yR2FtZVJlYWR5KHBhZ2UpOwogCiAgIGF3YWl0IHBhZ2UuZXZhbHVhdGUoKCkgPT4gewpAQCAtMTY2LDggKzE2NiwzNCBAQAogICBhd2FpdCBwYWdlLndhaXRGb3JGdW5jdGlvbigoKSA9PiB3aW5kb3cuX19nYW1lLnN0YXRlID09PSAncGxheWluZycgJiYgd2luZG93Ll9fZ2FtZS5wbGF5dGVzdEFjdGl2ZSA9PT0gdHJ1ZSk7CiAKICAgYXdhaXQgcGFnZS5ldmFsdWF0ZSgoKSA9PiB7Ci0gICAgd2luZG93Ll9fZ2FtZS5yZXR1cm5Ub0VkaXRvckZyb21QbGF5dGVzdCgpOworICAgIGNvbnN0IGdhbWUgPSB3aW5kb3cuX19nYW1lLCBlZGl0b3IgPSBnYW1lLmVkaXRvcjsKKyAgICBjb25zdCBldmVudHMgPSBbXTsKKyAgICBjb25zdCBzbmFwc2hvdHMgPSAobGFiZWwpID0+IHsKKyAgICAgIGlmIChldmVudHMubGVuZ3RoID49IDEwMCkgcmV0dXJuOworICAgICAgY29uc3QgYm91bmRzID0gZWRpdG9yLmdldENhbWVyYUJvdW5kcygpOworICAgICAgZXZlbnRzLnB1c2goeyBsYWJlbCwgdGltZTogcGVyZm9ybWFuY2Uubm93KCksIHN0YXRlOiBnYW1lLnN0YXRlLCBhY3RpdmU6IGVkaXRvci5hY3RpdmUsCisgICAgICAgIHBsYXl0ZXN0QWN0aXZlOiBnYW1lLnBsYXl0ZXN0QWN0aXZlLCB4OiBlZGl0b3IuY2FtZXJhLngsIHk6IGVkaXRvci5jYW1lcmEueSwgem9vbTogZWRpdG9yLnpvb20sCisgICAgICAgIHdvcmxkOiB7IHdpZHRoOiBnYW1lLndvcmxkLndpZHRoLCBoZWlnaHQ6IGdhbWUud29ybGQuaGVpZ2h0LCB0aWxlU2l6ZTogZ2FtZS53b3JsZC50aWxlU2l6ZSB9LAorICAgICAgICB2aWV3cG9ydDogeyAuLi5nYW1lLnZpZXdwb3J0IH0sIGVkaXRvckJvdW5kczogeyAuLi5lZGl0b3IuZWRpdG9yQm91bmRzIH0sIGJvdW5kcywKKyAgICAgICAgcmlnaHQ6IEJvb2xlYW4oZ2FtZS5pbnB1dC5pc0Rvd25Db2RlKCdBcnJvd1JpZ2h0JykpLCBzZWxlY3RlZDogZ2FtZS5lZGl0b3IgPT09IGVkaXRvciB9KTsKKyAgICB9OworICAgIHdpbmRvdy5fX2VkaXRvckNhbWVyYVByb2JlID0geyBldmVudHMsIHNuYXBzaG90cyB9OworICAgIHdpbmRvdy5hZGRFdmVudExpc3RlbmVyKCdrZXlkb3duJywgZXZlbnQgPT4geyBpZihldmVudC5jb2RlPT09J0Fycm93UmlnaHQnKXNuYXBzaG90cygncmlnaHQta2V5ZG93bicpOyB9KTsKKyAgICB3aW5kb3cuYWRkRXZlbnRMaXN0ZW5lcigna2V5dXAnLCBldmVudCA9PiB7IGlmKGV2ZW50LmNvZGU9PT0nQXJyb3dSaWdodCcpc25hcHNob3RzKCdyaWdodC1rZXl1cCcpOyB9KTsKKyAgICBmb3IgKGNvbnN0IFttZXRob2QsbGltaXRdIG9mIFtbJ2RyYXcnLDhdLFsnY2xhbXBDYW1lcmEnLDIwXSxbJ2hhbmRsZUtleWJvYXJkJywxNV1dKSB7CisgICAgICBjb25zdCBvcmlnaW5hbD1lZGl0b3JbbWV0aG9kXTtsZXQgY2FsbHM9MDsKKyAgICAgIGVkaXRvclttZXRob2RdPWZ1bmN0aW9uKC4uLmFyZ3MpeworICAgICAgICBjb25zdCBzYW1wbGVkPWNhbGxzKys8bGltaXQ7CisgICAgICAgIGlmKHNhbXBsZWQpc25hcHNob3RzKG1ldGhvZCsnIGJlZm9yZScpOworICAgICAgICB0cnl7cmV0dXJuIG9yaWdpbmFsLmFwcGx5KHRoaXMsYXJncyk7fQorICAgICAgICBmaW5hbGx5e2lmKHNhbXBsZWQpc25hcHNob3RzKG1ldGhvZCsnIGFmdGVyJyk7fQorICAgICAgfTsKKyAgICB9CisgICAgc25hcHNob3RzKCdyZXR1cm4gYmVmb3JlJyk7CisgICAgZ2FtZS5yZXR1cm5Ub0VkaXRvckZyb21QbGF5dGVzdCgpOworICAgIHNuYXBzaG90cygncmV0dXJuIGFmdGVyJyk7CiAgIH0pOworICB0cnkgewogICBhd2FpdCBwYWdlLndhaXRGb3JGdW5jdGlvbigoKSA9PiB3aW5kb3cuX19nYW1lLnN0YXRlID09PSAnZWRpdG9yJyAmJiB3aW5kb3cuX19nYW1lLnBsYXl0ZXN0QWN0aXZlID09PSBmYWxzZSk7CiAKICAgY29uc3QgaW5wdXRSZXNldENoZWNrID0gYXdhaXQgcGFnZS5ldmFsdWF0ZSgoKSA9PiB7CkBAIC0xOTEsMTQgKzIxNywyMSBAQAogICB9KTsKICAgZXhwZWN0KGlucHV0UmVzZXRDaGVjay5hY3RpdmVBZnRlclVwKS50b0JlRmFsc3koKTsKIAotICBjb25zdCBiZWZvcmVYID0gYXdhaXQgcGFnZS5ldmFsdWF0ZSgoKSA9PiB3aW5kb3cuX19nYW1lLmVkaXRvci5jYW1lcmEueCk7CisgIGNvbnN0IGJlZm9yZVggPSBhd2FpdCBwYWdlLmV2YWx1YXRlKCgpID0+IHsgd2luZG93Ll9fZWRpdG9yQ2FtZXJhUHJvYmUuc25hcHNob3RzKCdhc3NlcnRpb24tYmVmb3JlJyk7IHJldHVybiB3aW5kb3cuX19nYW1lLmVkaXRvci5jYW1lcmEueDsgfSk7CiAgIGF3YWl0IHBhZ2Uua2V5Ym9hcmQuZG93bignQXJyb3dSaWdodCcpOwogICBhd2FpdCBwYWdlLndhaXRGb3JUaW1lb3V0KDE1MCk7CiAgIGF3YWl0IHBhZ2Uua2V5Ym9hcmQudXAoJ0Fycm93UmlnaHQnKTsKICAgYXdhaXQgcGFnZS53YWl0Rm9yVGltZW91dCg1MCk7Ci0gIGNvbnN0IGFmdGVyWCA9IGF3YWl0IHBhZ2UuZXZhbHVhdGUoKCkgPT4gd2luZG93Ll9fZ2FtZS5lZGl0b3IuY2FtZXJhLngpOworICBjb25zdCBhZnRlclggPSBhd2FpdCBwYWdlLmV2YWx1YXRlKCgpID0+IHsgd2luZG93Ll9fZWRpdG9yQ2FtZXJhUHJvYmUuc25hcHNob3RzKCdhc3NlcnRpb24tYWZ0ZXInKTsgcmV0dXJuIHdpbmRvdy5fX2dhbWUuZWRpdG9yLmNhbWVyYS54OyB9KTsKIAogICBleHBlY3QoYWZ0ZXJYKS50b0JlR3JlYXRlclRoYW5PckVxdWFsKGJlZm9yZVgpOworICB9IGZpbmFsbHkgeworICAgIGNvbnN0IGV2ZW50cyA9IGF3YWl0IHBhZ2UuZXZhbHVhdGUoKCkgPT4geworICAgICAgd2luZG93Ll9fZWRpdG9yQ2FtZXJhUHJvYmUuc25hcHNob3RzKCdhc3NlcnRpb24tZmluaXNoJyk7CisgICAgICByZXR1cm4gd2luZG93Ll9fZWRpdG9yQ2FtZXJhUHJvYmUuZXZlbnRzOworICAgIH0pOworICAgIGF3YWl0IGluZm8uYXR0YWNoKCdhY3R1YWwtZWRpdG9yLWNhbWVyYS1ib3VuZHMnLCB7IGJvZHk6SlNPTi5zdHJpbmdpZnkoZXZlbnRzKSwgY29udGVudFR5cGU6J2FwcGxpY2F0aW9uL2pzb24nIH0pOworICB9CiB9KTsKIAogdGVzdCgnc2hhcmVkIGNvbmZpcm0gb3ZlcmxheXMga2VlcCBjYW5jZWwgYmVmb3JlIHByaW1hcnkgYWN0aW9uJywgYXN5bmMgKHsgcGFnZSB9KSA9PiB7Cg==' | base64 -d > "$overlay" ;;
+            legal-observed)
+              sha=4299b806c49596c36700f24679c21018c987ee0746ca26285669614233556e43; blob=44c8bb66036e10095afb1652395c17afa4ffe5a9
+              printf '%s' 'LS0tIGEvdGVzdHMvcGxheXdyaWdodC9lZGl0b3ItZmxvd3Muc3BlYy5qcworKysgYi90ZXN0cy9wbGF5d3JpZ2h0L2VkaXRvci1mbG93cy5zcGVjLmpzCkBAIC0xNTIsNyArMTUyLDcgQEAKICAgfQogfSk7CiAKLXRlc3QoJ3JlZ3Jlc3Npb246IGVkaXRvciBzdXJ2aXZlcyBwbGF5dGVzdCByb3VuZCB0cmlwIGFuZCBzdGlsbCBoYW5kbGVzIGlucHV0JywgYXN5bmMgKHsgcGFnZSB9KSA9PiB7Cit0ZXN0KCdyZWdyZXNzaW9uOiBlZGl0b3Igc3Vydml2ZXMgcGxheXRlc3Qgcm91bmQgdHJpcCBhbmQgc3RpbGwgaGFuZGxlcyBpbnB1dCcsIGFzeW5jICh7IHBhZ2UgfSwgaW5mbykgPT4gewogICBhd2FpdCB3YWl0Rm9yR2FtZVJlYWR5KHBhZ2UpOwogCiAgIGF3YWl0IHBhZ2UuZXZhbHVhdGUoKCkgPT4gewpAQCAtMTY2LDggKzE2NiwzNCBAQAogICBhd2FpdCBwYWdlLndhaXRGb3JGdW5jdGlvbigoKSA9PiB3aW5kb3cuX19nYW1lLnN0YXRlID09PSAncGxheWluZycgJiYgd2luZG93Ll9fZ2FtZS5wbGF5dGVzdEFjdGl2ZSA9PT0gdHJ1ZSk7CiAKICAgYXdhaXQgcGFnZS5ldmFsdWF0ZSgoKSA9PiB7Ci0gICAgd2luZG93Ll9fZ2FtZS5yZXR1cm5Ub0VkaXRvckZyb21QbGF5dGVzdCgpOworICAgIGNvbnN0IGdhbWUgPSB3aW5kb3cuX19nYW1lLCBlZGl0b3IgPSBnYW1lLmVkaXRvcjsKKyAgICBjb25zdCBldmVudHMgPSBbXTsKKyAgICBjb25zdCBzbmFwc2hvdHMgPSAobGFiZWwpID0+IHsKKyAgICAgIGlmIChldmVudHMubGVuZ3RoID49IDEwMCkgcmV0dXJuOworICAgICAgY29uc3QgYm91bmRzID0gZWRpdG9yLmdldENhbWVyYUJvdW5kcygpOworICAgICAgZXZlbnRzLnB1c2goeyBsYWJlbCwgdGltZTogcGVyZm9ybWFuY2Uubm93KCksIHN0YXRlOiBnYW1lLnN0YXRlLCBhY3RpdmU6IGVkaXRvci5hY3RpdmUsCisgICAgICAgIHBsYXl0ZXN0QWN0aXZlOiBnYW1lLnBsYXl0ZXN0QWN0aXZlLCB4OiBlZGl0b3IuY2FtZXJhLngsIHk6IGVkaXRvci5jYW1lcmEueSwgem9vbTogZWRpdG9yLnpvb20sCisgICAgICAgIHdvcmxkOiB7IHdpZHRoOiBnYW1lLndvcmxkLndpZHRoLCBoZWlnaHQ6IGdhbWUud29ybGQuaGVpZ2h0LCB0aWxlU2l6ZTogZ2FtZS53b3JsZC50aWxlU2l6ZSB9LAorICAgICAgICB2aWV3cG9ydDogeyAuLi5nYW1lLnZpZXdwb3J0IH0sIGVkaXRvckJvdW5kczogeyAuLi5lZGl0b3IuZWRpdG9yQm91bmRzIH0sIGJvdW5kcywKKyAgICAgICAgcmlnaHQ6IEJvb2xlYW4oZ2FtZS5pbnB1dC5pc0Rvd25Db2RlKCdBcnJvd1JpZ2h0JykpLCBzZWxlY3RlZDogZ2FtZS5lZGl0b3IgPT09IGVkaXRvciB9KTsKKyAgICB9OworICAgIHdpbmRvdy5fX2VkaXRvckNhbWVyYVByb2JlID0geyBldmVudHMsIHNuYXBzaG90cyB9OworICAgIHdpbmRvdy5hZGRFdmVudExpc3RlbmVyKCdrZXlkb3duJywgZXZlbnQgPT4geyBpZihldmVudC5jb2RlPT09J0Fycm93UmlnaHQnKXNuYXBzaG90cygncmlnaHQta2V5ZG93bicpOyB9KTsKKyAgICB3aW5kb3cuYWRkRXZlbnRMaXN0ZW5lcigna2V5dXAnLCBldmVudCA9PiB7IGlmKGV2ZW50LmNvZGU9PT0nQXJyb3dSaWdodCcpc25hcHNob3RzKCdyaWdodC1rZXl1cCcpOyB9KTsKKyAgICBmb3IgKGNvbnN0IFttZXRob2QsbGltaXRdIG9mIFtbJ2RyYXcnLDhdLFsnY2xhbXBDYW1lcmEnLDIwXSxbJ2hhbmRsZUtleWJvYXJkJywxNV1dKSB7CisgICAgICBjb25zdCBvcmlnaW5hbD1lZGl0b3JbbWV0aG9kXTtsZXQgY2FsbHM9MDsKKyAgICAgIGVkaXRvclttZXRob2RdPWZ1bmN0aW9uKC4uLmFyZ3MpeworICAgICAgICBjb25zdCBzYW1wbGVkPWNhbGxzKys8bGltaXQ7CisgICAgICAgIGlmKHNhbXBsZWQpc25hcHNob3RzKG1ldGhvZCsnIGJlZm9yZScpOworICAgICAgICB0cnl7cmV0dXJuIG9yaWdpbmFsLmFwcGx5KHRoaXMsYXJncyk7fQorICAgICAgICBmaW5hbGx5e2lmKHNhbXBsZWQpc25hcHNob3RzKG1ldGhvZCsnIGFmdGVyJyk7fQorICAgICAgfTsKKyAgICB9CisgICAgc25hcHNob3RzKCdyZXR1cm4gYmVmb3JlJyk7CisgICAgZ2FtZS5yZXR1cm5Ub0VkaXRvckZyb21QbGF5dGVzdCgpOworICAgIHNuYXBzaG90cygncmV0dXJuIGFmdGVyJyk7CiAgIH0pOworICB0cnkgewogICBhd2FpdCBwYWdlLndhaXRGb3JGdW5jdGlvbigoKSA9PiB3aW5kb3cuX19nYW1lLnN0YXRlID09PSAnZWRpdG9yJyAmJiB3aW5kb3cuX19nYW1lLnBsYXl0ZXN0QWN0aXZlID09PSBmYWxzZSk7CiAKICAgY29uc3QgaW5wdXRSZXNldENoZWNrID0gYXdhaXQgcGFnZS5ldmFsdWF0ZSgoKSA9PiB7CkBAIC0xOTEsMTQgKzIxNywzMyBAQAogICB9KTsKICAgZXhwZWN0KGlucHV0UmVzZXRDaGVjay5hY3RpdmVBZnRlclVwKS50b0JlRmFsc3koKTsKIAotICBjb25zdCBiZWZvcmVYID0gYXdhaXQgcGFnZS5ldmFsdWF0ZSgoKSA9PiB3aW5kb3cuX19nYW1lLmVkaXRvci5jYW1lcmEueCk7CisgIC8vIE1lYXN1cmUgaW5wdXQgYWZ0ZXIgdGhlIHJldHVybmVkIGVkaXRvciBoYXMgZHJhd24gaXRzIG93biB2aWV3cG9ydC4KKyAgYXdhaXQgcGFnZS5ldmFsdWF0ZSgoKSA9PiBuZXcgUHJvbWlzZShyZXNvbHZlID0+IHJlcXVlc3RBbmltYXRpb25GcmFtZSgoKSA9PiByZXF1ZXN0QW5pbWF0aW9uRnJhbWUocmVzb2x2ZSkpKSk7CisgIGNvbnN0IGJlZm9yZSA9IGF3YWl0IHBhZ2UuZXZhbHVhdGUoKCkgPT4geworICAgIGNvbnN0IGVkaXRvciA9IHdpbmRvdy5fX2dhbWUuZWRpdG9yOworICAgIGNvbnN0IHsgd2lkdGgsIGhlaWdodCB9ID0gZWRpdG9yLmdldFZpZXdwb3J0U2l6ZSgpOworICAgIGNvbnN0IHsgbWluWCwgbWF4WCB9ID0gZWRpdG9yLmdldENhbWVyYUJvdW5kcygpOworICAgIC8vIEEgcmV0dXJuaW5nIGNhbWVyYSBjYW4gYmUgb24gYSBjbGFtcCBlZGdlLiBBcnJhbmdlIGEgbGVnYWwgc3RhcnQgdGhyb3VnaAorICAgIC8vIHRoZSByZWFsIGVkaXRvciBjYW1lcmEgQVBJIHNvIGEgd29ya2luZyBSaWdodCBrZXkgbXVzdCBtb3ZlIGl0LgorICAgIGVkaXRvci5jZW50ZXJDYW1lcmFPbldvcmxkKChtaW5YICsgbWF4WCArIHdpZHRoKSAvIDIsIGVkaXRvci5jYW1lcmEueSArIGhlaWdodCAvIDIpOworICAgIHdpbmRvdy5fX2VkaXRvckNhbWVyYVByb2JlLnNuYXBzaG90cygnYXJyYW5nZWQgbGVnYWwgYmFzZWxpbmUnKTsKKyAgICByZXR1cm4geyB4OiBlZGl0b3IuY2FtZXJhLngsIG1heFg6IGVkaXRvci5nZXRDYW1lcmFCb3VuZHMoKS5tYXhYIH07CisgIH0pOworICBleHBlY3QoYmVmb3JlLm1heFggLSBiZWZvcmUueCwgJ3Jvb20gdG8gcGFuIHJpZ2h0IGFmdGVyIHRoZSBlZGl0b3IgcmV0dXJucycpLnRvQmVHcmVhdGVyVGhhbigxMCk7CiAgIGF3YWl0IHBhZ2Uua2V5Ym9hcmQuZG93bignQXJyb3dSaWdodCcpOwotICBhd2FpdCBwYWdlLndhaXRGb3JUaW1lb3V0KDE1MCk7Ci0gIGF3YWl0IHBhZ2Uua2V5Ym9hcmQudXAoJ0Fycm93UmlnaHQnKTsKLSAgYXdhaXQgcGFnZS53YWl0Rm9yVGltZW91dCg1MCk7Ci0gIGNvbnN0IGFmdGVyWCA9IGF3YWl0IHBhZ2UuZXZhbHVhdGUoKCkgPT4gd2luZG93Ll9fZ2FtZS5lZGl0b3IuY2FtZXJhLngpOwotCi0gIGV4cGVjdChhZnRlclgpLnRvQmVHcmVhdGVyVGhhbk9yRXF1YWwoYmVmb3JlWCk7CisgIHRyeSB7CisgICAgYXdhaXQgZXhwZWN0LnBvbGwoKCkgPT4gcGFnZS5ldmFsdWF0ZSgoKSA9PiB3aW5kb3cuX19nYW1lLmVkaXRvci5jYW1lcmEueCksCisgICAgICB7IG1lc3NhZ2U6ICd0aGUgcmVhbCBSaWdodCBrZXkgcGFucyB0aGUgZWRpdG9yIGNhbWVyYSBhZnRlciBwbGF5dGVzdCcgfSkudG9CZUdyZWF0ZXJUaGFuKGJlZm9yZS54KTsKKyAgfSBmaW5hbGx5IHsKKyAgICBhd2FpdCBwYWdlLmtleWJvYXJkLnVwKCdBcnJvd1JpZ2h0Jyk7CisgIH0KKyAgfSBmaW5hbGx5IHsKKyAgICBjb25zdCBldmVudHMgPSBhd2FpdCBwYWdlLmV2YWx1YXRlKCgpID0+IHsKKyAgICAgIHdpbmRvdy5fX2VkaXRvckNhbWVyYVByb2JlLnNuYXBzaG90cygnYXNzZXJ0aW9uLWZpbmlzaCcpOworICAgICAgcmV0dXJuIHdpbmRvdy5fX2VkaXRvckNhbWVyYVByb2JlLmV2ZW50czsKKyAgICB9KTsKKyAgICBhd2FpdCBpbmZvLmF0dGFjaCgnYWN0dWFsLWVkaXRvci1jYW1lcmEtYm91bmRzJywgeyBib2R5OkpTT04uc3RyaW5naWZ5KGV2ZW50cyksIGNvbnRlbnRUeXBlOidhcHBsaWNhdGlvbi9qc29uJyB9KTsKKyAgfQogfSk7CiAKIHRlc3QoJ3NoYXJlZCBjb25maXJtIG92ZXJsYXlzIGtlZXAgY2FuY2VsIGJlZm9yZSBwcmltYXJ5IGFjdGlvbicsIGFzeW5jICh7IHBhZ2UgfSkgPT4gewo=' | base64 -d > "$overlay" ;;
+            *) exit 13 ;;
+          esac
+          printf '%s  %s\n' "$sha" "$overlay" | sha256sum -c -
+          git apply --check "$overlay"
+          git apply "$overlay"
+          test "$(git hash-object "$spec")" = "$blob"
+          test "$(git diff --name-only)" = "$spec"
+          git diff --exit-code -- .github src tools assets data package.json package-lock.json playwright.config.js
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+
+      - name: Install only the pinned release dependencies and Playwright Chromium
+        run: |
+          set -euo pipefail
+          npm ci --no-audit --no-fund
+          node --input-type=commonjs <<'JS'
+          const assert=require('node:assert/strict');
+          for(const name of ['@playwright/test','playwright','playwright-core']){
+            assert.equal(require(name+'/package.json').version,'1.58.2',name);
+          }
+          JS
+          ./node_modules/.bin/playwright install --with-deps chromium
+
+      - name: Verify headless Chromium is adequately sandboxed
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import {chromium} from 'playwright';
+          const browser=await chromium.launch({headless:true,channel:'chromium',chromiumSandbox:true});
+          try{
+            const page=await browser.newPage();
+            await page.goto('chrome://sandbox');
+            const status=await page.locator('body').innerText();
+            console.log(browser.version(),status);
+            assert.match(status,/You are adequately sandboxed/i);
+            await page.goto('data:text/html,<title>sandbox-ready</title>');
+            assert.equal(await page.title(),'sandbox-ready');
+          }finally{await browser.close();}
+          JS
+
+      - name: Exercise the single unchanged or test-only diagnostic case
+        run: |
+          set -euo pipefail
+          config=.pw-673-camera-roundtrip-diagnostic.config.js
+          test ! -e "$config"
+          trap 'rm -f "$config"' EXIT
+          cat > "$config" <<'CONFIG'
+          import {defineConfig} from '@playwright/test';
+          import base from './playwright.config.js';
+          export default defineConfig({
+            ...base,
+            retries:0,
+            use:{...base.use,channel:'chromium',trace:'retain-on-failure',
+              launchOptions:{...base.use?.launchOptions,chromiumSandbox:true}}
+          });
+          CONFIG
+          grep='^.*regression: editor survives playtest round trip and still handles input$'
+          PW=(./node_modules/.bin/playwright test --config="$config" tests/playwright/editor-flows.spec.js --grep "$grep")
+          "${PW[@]}" --list | tee "$RUNNER_TEMP/pw-673-list.txt"
+          test "$(grep -c '› regression: editor survives playtest round trip and still handles input$' "$RUNNER_TEMP/pw-673-list.txt")" = 1
+          grep -Fx 'Total: 1 test in 1 file' "$RUNNER_TEMP/pw-673-list.txt"
+          "${PW[@]}" --workers=1 --retries=0 --repeat-each=3 --reporter=line,json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: camera-673-${{ matrix.variant }}
+          path: test-results
+          if-no-files-found: warn
