@@ -1,0 +1,166 @@
+name: Static AI grid check 674 (diagnostic only)
+on:
+  push:
+    branches: ['dot/diagnostic-674-ai-grid-20261120']
+    paths: ['.github/workflows/diagnostic-674-ai-grid.yml']
+permissions:
+  contents: read
+jobs:
+  ai-grid:
+    name: Protected Chromium static AI grid (${{ matrix.variant }})
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {variant: staging-original, revision: '5b7cc5f288511f679a91db4e7475f80022d40870', tree: '7efdf3e871218175aee6fd8f1bea2bb0394cabec'}
+          - {variant: candidate-original, revision: '5f4548a6cf86ba6fe2697db21baa1ad138bd6948', tree: 'ce1d3b977f4167eace6bbab9a50d0f189196b76e'}
+          - {variant: candidate-cancel, revision: '5f4548a6cf86ba6fe2697db21baa1ad138bd6948', tree: 'ce1d3b977f4167eace6bbab9a50d0f189196b76e'}
+    env:
+      REVISION: ${{ matrix.revision }}
+      EXPECTED_TREE: ${{ matrix.tree }}
+      VARIANT: ${{ matrix.variant }}
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.REVISION }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify exact checkout and optional test-only overlay
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$REVISION"
+          test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          spec=tests/playwright/published-project-storage.spec.js
+          test "$(git hash-object "$spec")" = b44222b8d0c316e4492e0f26d6380bec807b3af3
+          test "$(git rev-parse HEAD:package-lock.json)" = 71d9cce5e4c06f526b49a6d80c0eae694a8f3f6f
+          test "$(git rev-parse HEAD:playwright.config.js)" = 9e93a2ca786f76d8617ee53994a21ddee5bccb67
+          if [[ "$VARIANT" == candidate-cancel ]]; then
+            overlay="$RUNNER_TEMP/674-ai-grid.patch"
+            cat > "$overlay" <<'PATCH'
+          --- a/tests/playwright/published-project-storage.spec.js
+          +++ b/tests/playwright/published-project-storage.spec.js
+          @@ -163,12 +163,16 @@
+           });
+           
+           
+          -test('Race Editor car picker downloads opponents before starting a static-host AI grid',async({page})=>{
+          +test('Race Editor car picker downloads opponents before starting a static-host AI grid',async({page},testInfo)=>{
+            test.setTimeout(120000);
+            await page.goto(origin+'/index.html');
+            await page.waitForFunction(()=>window.__gameReady,null,{timeout:60000});
+          - let release;const gate=new Promise(resolve=>{release=resolve;});
+          - await page.route('**/cars/Opponent/document.json',async route=>{await gate;await route.continue();});
+          + let release,opponentDocumentRequests=0,fullscreenCancels=0;const gate=new Promise(resolve=>{release=resolve;});
+          + await page.route('**/cars/Opponent/document.json',async route=>{
+          +  opponentDocumentRequests++;
+          +  await gate;
+          +  await route.continue();
+          + });
+            await page.evaluate(async()=>{
+             const {hydrateProjectFilePayload}=await import('./src/ui/projectFiles.js');
+             const payload=await hydrateProjectFilePayload('races','Published loop');
+          @@ -181,9 +185,27 @@
+            await page.locator('.project-browser-row[data-name="Player"]').getByRole('button',{name:'Open',exact:true}).click();
+            try{
+             await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.status)).toContain('Loading race cars');
+          +  await expect.poll(()=>opponentDocumentRequests).toBeGreaterThan(0);
+             expect(await page.evaluate(()=>Boolean(window.__game.raceEditor.playtestSession?.running))).toBe(false);
+            }finally{release();}
+          - await expect.poll(()=>page.evaluate(()=>({running:window.__game.raceEditor.playtestSession?.running,failure:window.__game.raceEditor.lastRaceFailure})),{timeout:60000}).toMatchObject({running:true});
+          + const fullscreen=page.getByRole('dialog',{name:'Full screen',exact:true});
+          + try{await expect.poll(async()=>{
+          +  // The optional prompt pauses the game loop until the player chooses.
+          +  // Cancel normally rather than bypassing startup or fullscreen behavior.
+          +  if(await fullscreen.isVisible()){
+          +   await fullscreen.getByRole('button',{name:'Cancel',exact:true}).click();
+          +   fullscreenCancels++;
+          +  }
+          +  return page.evaluate(()=>{
+          +   const game=window.__game,editor=game.raceEditor;
+          +   return {running:editor.playtestSession?.running,state:game.state,status:editor.status,
+          +    preparing:editor.playtestSession?.preparing,preparationError:editor.racePlaytestPreparation?.error,
+          +    failure:editor.lastRaceFailure};
+          +  });
+          + },{timeout:60000}).toMatchObject({running:true});}
+          + finally{
+          +  await testInfo.attach('static-host-ai-grid-startup',{body:JSON.stringify({opponentDocumentRequests,fullscreenCancels}),contentType:'application/json'});
+          + }
+            const cars=await page.evaluate(()=>window.__game.raceEditor.playtestSession.aiRuntime.map(ai=>({id:ai.carId,art:ai.runtimeCar.art.body})));
+            expect(cars).toEqual(Array.from({length:3},()=>({id:'saved-car:Opponent',art:'Sheet 50% #'})));
+           });
+          PATCH
+            printf '%s  %s\n' 979dc003c55c3f3e497c9adc532a29cb56b6ce551234bfa9bfee70162e334922 "$overlay" | sha256sum -c -
+            git apply --check "$overlay"
+            git apply "$overlay"
+            test "$(git hash-object "$spec")" = 06dc2a109c241d8a2ce522f0510a5ee50d73c513
+            test "$(git diff --name-only)" = "$spec"
+          fi
+          git diff --exit-code -- .github src tools assets data package.json package-lock.json playwright.config.js
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+
+      - name: Install only the pinned release dependencies and Playwright Chromium
+        run: |
+          set -euo pipefail
+          npm ci --no-audit --no-fund
+          node --input-type=commonjs <<'JS'
+          const assert=require('node:assert/strict');
+          for(const name of ['@playwright/test','playwright','playwright-core']){
+            assert.equal(require(name+'/package.json').version,'1.58.2',name);
+          }
+          JS
+          ./node_modules/.bin/playwright install --with-deps chromium
+
+      - name: Verify headless Chromium is adequately sandboxed
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import {chromium} from 'playwright';
+          const browser=await chromium.launch({headless:true,channel:'chromium',chromiumSandbox:true});
+          try{
+            const page=await browser.newPage();
+            await page.goto('chrome://sandbox');
+            const status=await page.locator('body').innerText();
+            console.log(browser.version(),status);
+            assert.match(status,/You are adequately sandboxed/i);
+            await page.goto('data:text/html,<title>sandbox-ready</title>');
+            assert.equal(await page.title(),'sandbox-ready');
+          }finally{await browser.close();}
+          JS
+
+      - name: Exercise the single unchanged or test-only diagnostic case
+        run: |
+          set -euo pipefail
+          config=.pw-674-ai-grid-diagnostic.config.js
+          test ! -e "$config"
+          trap 'rm -f "$config"' EXIT
+          cat > "$config" <<'CONFIG'
+          import {defineConfig} from '@playwright/test';
+          import base from './playwright.config.js';
+          export default defineConfig({
+            ...base,
+            retries:0,
+            use:{...base.use,channel:'chromium',trace:'retain-on-failure',
+              launchOptions:{...base.use?.launchOptions,chromiumSandbox:true}}
+          });
+          CONFIG
+          grep='^.*Race Editor car picker downloads opponents before starting a static-host AI grid$'
+          PW=(./node_modules/.bin/playwright test --config="$config" tests/playwright/published-project-storage.spec.js --grep "$grep")
+          "${PW[@]}" --list | tee "$RUNNER_TEMP/pw-674-list.txt"
+          test "$(grep -c '› Race Editor car picker downloads opponents before starting a static-host AI grid$' "$RUNNER_TEMP/pw-674-list.txt")" = 1
+          grep -Fx 'Total: 1 test in 1 file' "$RUNNER_TEMP/pw-674-list.txt"
+          "${PW[@]}" --workers=1 --retries=0 --reporter=line,json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ai-grid-674-${{ matrix.variant }}
+          path: test-results
+          if-no-files-found: warn
