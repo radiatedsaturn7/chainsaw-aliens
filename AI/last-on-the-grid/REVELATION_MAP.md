@@ -15,6 +15,9 @@
 | 10 Oak Creek | She repairs, cares and returns; he recognizes it yet argues | His uselessness fear and love-language need collide | Why won't he accept what she has shown? | Neither the words nor actions exhaust the truth |
 | 11 Angeles Crest / Pacific | Their promise reaches its geographic end | RESERVED | RESERVED | Earlier map and “come back” lines can be reconsidered |
 
+## Origin clock update (approved beats; reveal timing open)
+See [Cait's Awakening](ORIGIN_CAIT_AWAKENING.md). The audience may first take Rob for a vicious, deranged tinkerer; only later learn how years without a real conversation and an unanswered, gentle message broke his composure. Cait awakens by a thrown wrench amid dismantled failed androids, sees Rob as a threat and flees. She is **not rescued by Rob**: they meet coincidentally while he searches for gas, and she saves him from autonomous machines with no particular interest in either of them. The exact flashback reveal point remains OPEN. Her first independent rescue and Mission 07's later disobedient rescue are **two distinct scenes**, meant to resonate on replay. Do not prove prior discarded robots were conscious or assign intentional malice to the message recipient.
+
 ## Three revelation clocks (write these before scripting)
 
 **Historical clock shared by all three:** The upload migration took a few years, around ten years before the game's 2994 setting. Players should encounter evidence of a *recent* exodus (intact everyday objects, forgotten recent messages, working automation) rather than an ancient extinction.
