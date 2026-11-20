@@ -56,7 +56,7 @@ export function normalizeTireDefinition(value = {}) {
   }
   return tire;
 }
-export function applyTireDefinition(car, definition, ref = '') {
+export function applyTireDefinition(car, definition, ref = '', {keepArt=false} = {}) {
   const tire=normalizeTireDefinition(definition);
   car.setup ||= {};
   car.setup.tireDefinition={ref:String(ref),tire};
@@ -65,6 +65,7 @@ export function applyTireDefinition(car, definition, ref = '') {
   car.setup.tireSize=copy(tire.size);
   delete car.setup.tireSizeByAxle;
   car.setup.tirePressurePsi=Object.fromEntries(['fl','fr','rl','rr'].map(w=>[w,tire.pressurePsi]));
+  if(keepArt)return tire;
   car.art ||= {};
   for(const key of ['tireSurfaces','tireTreads','tires']) {
     if(tire.graphics[key]) car.art[key]=copy(tire.graphics[key]);

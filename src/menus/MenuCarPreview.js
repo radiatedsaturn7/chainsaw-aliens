@@ -56,12 +56,12 @@ export function menuSpriteFraming(bounds,canvas,opaque,scale,offsets,art,mirrore
 // same appearance in the selection screen. Sprite cars use their authored views.
 export class MenuCarPreview {
   constructor(editor){this.editor=editor;this.holder=null;this.renderer=null;}
-  drawSprite(ctx,bounds,car,choice){
-    const canvas=this.editor.getRaceArtSpriteCanvas(choice.artRef,{frameIndex:choice.frameIndex||0});
+  drawSprite(ctx,bounds,car,choice,{showroomArt=false}={}){
+    const canvas=this.editor.getRaceArtSpriteCanvas(choice.artRef,{frameIndex:choice.frameIndex||0,showroomArt});
     if(!canvas)return false;
     const resolved=resolveCarAngleLayers(car,choice.viewSlot);
     const framing=menuSpriteFraming(bounds,canvas,opaqueBounds(canvas),this.editor.getCarArtScale(resolved),this.editor.getCarArtOffsets(resolved),resolved.art||{},choice.mirrored);
-    return this.editor.drawRaceCarBillboardLayers(ctx,{car,session:null,...framing,artChoice:choice,drawShadowLayer:false});
+    return this.editor.drawRaceCarBillboardLayers(ctx,{car,session:null,...framing,artChoice:choice,drawShadowLayer:false,showroomArt});
   }
   draw(ctx,bounds,car,yaw,time){
     if(typeof document==='undefined')return false;

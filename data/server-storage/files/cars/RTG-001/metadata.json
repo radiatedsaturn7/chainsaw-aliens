@@ -1,6 +1,1 @@
-{
-  "name": "RTG-001",
-  "folder": "cars",
-  "savedAt": 1794188290279,
-  "version": 2
-}
+{"name":"RTG-001","folder":"cars","savedAt":1794188290279,"version":2,"stockPreviewReleaseRevision":"0bed0ad65d5c3c203f4515e877ef152f63b083e767e41cb8d8189de9ed629f96","stockPreviewSha256":"b9ab8814ad530b56a3a1440d489aadb4d1097428d41bf573e66f0bfe8e37c711","stockPreviewBytes":550057}

@@ -14,6 +14,7 @@ import os
 import shutil
 import subprocess
 import tempfile
+import re
 import threading
 import time
 from http import HTTPStatus
@@ -262,6 +263,100 @@ class DevHandler(MediaRangeMixin, SimpleHTTPRequestHandler):
     def _safe_version_dir(self, folder: str, name: str, version_id: str) -> Path:
         clean_id = quote(str(version_id or ""), safe="-_.() ")
         return self._safe_doc_dir(folder, name) / "versions" / clean_id
+
+    _preview_epoch = 0
+    _preview_epoch_lock = threading.Lock()
+
+    def _invalidate_preview_stamp(self, doc_dir: Path) -> None:
+        with self._preview_epoch_lock:
+            type(self)._preview_epoch += 1
+        path = doc_dir / "metadata.json"
+        if not path.is_file():
+            return
+        try:
+            metadata = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return
+        if not isinstance(metadata, dict) or "stockPreviewSha256" not in metadata:
+            return
+        for key in ("stockPreviewSha256", "stockPreviewReleaseRevision", "stockPreviewBytes"):
+            metadata.pop(key, None)
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=doc_dir, delete=False) as handle:
+            temporary = Path(handle.name)
+            try:
+                json.dump(metadata, handle, ensure_ascii=False, indent=2)
+                handle.flush()
+                os.replace(temporary, path)
+            finally:
+                temporary.unlink(missing_ok=True)
+
+    _preview_catalog = None
+    _preview_catalog_key = None
+
+    def _preview_sources(self, revision: str, identifier: object, name: object, car_id: object) -> list | None:
+        if not isinstance(identifier, str) or not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,127}", identifier, re.IGNORECASE):
+            return None
+        if not isinstance(name, str) or not isinstance(car_id, str):
+            return None
+        manifest = Path("assets/car-previews/manifest.json")
+        try:
+            status = manifest.stat()
+            if manifest.is_symlink() or not manifest.is_file() or status.st_size > 8 * 1024 * 1024:
+                return None
+            key = (status.st_mtime_ns, status.st_size)
+            with self._preview_epoch_lock:
+                if self._preview_catalog_key != key:
+                    type(self)._preview_catalog = json.loads(manifest.read_text(encoding="utf-8"))
+                    type(self)._preview_catalog_key = key
+                catalog = self._preview_catalog
+            if not isinstance(catalog, dict) or catalog.get("schemaVersion") != 1 or catalog.get("releaseRevision") != revision:
+                return None
+            names = catalog.get("carsByName", {})
+            if names.get(name) != identifier or list(names.values()).count(identifier) != 1:
+                return None
+            row = catalog.get("previews", {}).get(identifier, {})
+            if row.get("carId", identifier) != car_id:
+                return None
+            sources = row.get("stockSources")
+            cars = [s.get("name") for s in sources if isinstance(s, dict) and s.get("folder") == "cars"] if isinstance(sources, list) else []
+            return sources if cars == [name] else None
+        except (OSError, ValueError, TypeError, AttributeError):
+            return None
+
+    def _is_stock_preview(self, revision: object, sources: object) -> bool:
+        if not isinstance(revision, str) or not re.fullmatch(r"[0-9a-f]{64}", revision):
+            return False
+        if not isinstance(sources, list) or not 1 <= len(sources) <= 32:
+            return False
+        epoch = self._preview_epoch
+        seen = set()
+        for item in sources:
+            if not isinstance(item, dict):
+                return False
+            folder, name, digest = (item.get(key) for key in ("folder", "name", "sha256"))
+            if (folder not in ("cars", "art", "tires", "models") or not isinstance(name, str)
+                    or not 1 <= len(name) <= 128 or name in (".", "..")
+                    or any(ord(c) < 32 or c in "/\\" for c in name)
+                    or not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest)
+                    or (folder, name) in seen):
+                return False
+            seen.add((folder, name))
+            directory = self._safe_doc_dir(folder, name)
+            sidecar, document = directory / "metadata.json", directory / "document.json"
+            try:
+                if (directory.resolve().parent != (EXPORT_ROOT / folder).resolve()
+                        or directory.is_symlink() or (EXPORT_ROOT / folder).is_symlink()
+                        or sidecar.is_symlink() or document.is_symlink()
+                        or not document.is_file() or not sidecar.is_file() or sidecar.stat().st_size > 8192):
+                    return False
+                data = json.loads(sidecar.read_text(encoding="utf-8"))
+                if (not isinstance(data, dict) or data.get("stockPreviewReleaseRevision") != revision
+                        or data.get("stockPreviewSha256") != digest or data.get("stockPreviewBytes") != document.stat().st_size
+                        or data.get("folder") != folder or data.get("name") != name or data.get("deleted")):
+                    return False
+            except (OSError, ValueError):
+                return False
+        return self._preview_epoch == epoch and sum(folder == "cars" for folder, _ in seen) == 1
 
     def _read_exported_metadata(self, folder: str, name: str) -> dict | None:
         doc_dir = self._safe_doc_dir(folder, name)
@@ -543,6 +638,7 @@ class DevHandler(MediaRangeMixin, SimpleHTTPRequestHandler):
         doc_dir.mkdir(parents=True, exist_ok=True)
         if create_version:
             self._snapshot_exported_payload(folder, name, "before-save")
+        self._invalidate_preview_stamp(doc_dir)
         assets_path = doc_dir / "assets"
         if assets_path.exists():
             shutil.rmtree(assets_path)
@@ -594,6 +690,7 @@ class DevHandler(MediaRangeMixin, SimpleHTTPRequestHandler):
         self._snapshot_exported_payload(folder, name, "before-version-restore")
         doc_dir = self._safe_doc_dir(folder, name)
         doc_dir.mkdir(parents=True, exist_ok=True)
+        self._invalidate_preview_stamp(doc_dir)
         shutil.copy2(document_path, doc_dir / "document.json")
         current_assets = doc_dir / "assets"
         if current_assets.exists():
@@ -613,7 +710,9 @@ class DevHandler(MediaRangeMixin, SimpleHTTPRequestHandler):
         old_metadata = self._read_exported_metadata(folder, old_name)
         if old_metadata is None:
             return None
+        self._invalidate_preview_stamp(old_dir)
         if old_dir != new_dir:
+            self._invalidate_preview_stamp(new_dir)
             if new_dir.exists():
                 shutil.rmtree(new_dir)
             new_dir.parent.mkdir(parents=True, exist_ok=True)
@@ -790,6 +889,18 @@ class DevHandler(MediaRangeMixin, SimpleHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
+        if parsed.path == "/__storage/preview-stock":
+            try:
+                payload = self._read_json_body(max_bytes=8192)
+                revision = payload.get("revision")
+                identifier = payload.get("id")
+                name, car_id = payload.get("name"), payload.get("carId")
+                verified = self._is_stock_preview(revision, self._preview_sources(revision, identifier, name, car_id))
+                self._write_json(HTTPStatus.OK, {"ok": True, "revision": revision, "id": identifier, "name": name, "carId": car_id, "verified": verified})
+            except (ValueError, TypeError, AttributeError):
+                self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "verified": False})
+            return
+
         if parsed.path == "/__performance/captures":
             try:
                 if self.headers.get_content_type() != "application/json":
@@ -1695,6 +1806,7 @@ class DevHandler(MediaRangeMixin, SimpleHTTPRequestHandler):
             doc_dir = self._safe_doc_dir(folder, name)
             if doc_dir.exists():
                 self._snapshot_exported_payload(folder, name, "before-delete")
+                self._invalidate_preview_stamp(doc_dir)
                 for child in doc_dir.iterdir():
                     if child.name == "versions":
                         continue

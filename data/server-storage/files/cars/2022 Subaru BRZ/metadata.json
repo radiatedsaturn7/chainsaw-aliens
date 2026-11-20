@@ -2,5 +2,6 @@
   "name": "2022 Subaru BRZ",
   "folder": "cars",
   "savedAt": 1794618232735,
-  "version": 1
+  "version": 1,
+  "systemFile": true
 }
