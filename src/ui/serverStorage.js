@@ -19,8 +19,8 @@ const showroomRevisions=new Map();
 function invalidateShowroomArt(folder,name){
   if(folder==='art')showroomRevisions.set(name,(showroomRevisions.get(name)||0)+1);
 }
-export function staticShowroomArtVersion(name){
-  return isProjectStorageReadOnly()?`${showroomEpoch}:${showroomRevisions.get(name)||0}`:null;
+export function showroomArtVersion(name){
+  return `${showroomEpoch}:${showroomRevisions.get(name)||0}`;
 }
 let serverIndex = DEFAULT_FOLDERS.reduce((acc, folder) => { acc[folder] = {}; return acc; }, {});
 let storageApiAvailable = true;
@@ -388,14 +388,29 @@ async function fetchStaticFile(folder, name) {
   return load;
 }
 
-// Static showroom-only read. Never claims, replaces, or removes a shared
+// Showroom-only read in both live and static storage modes. Never claims, replaces, or removes a shared
 // payload, editable save, manifest entry, or pending shared fetch.
-export async function readStaticShowroomArt(name,{isCurrent=()=>true}={}) {
+export async function readShowroomArt(name,{isCurrent=()=>true}={}) {
   if (typeof name !== 'string' || !name || !isCurrent()) return null;
-  const version=staticShowroomArtVersion(name);if(version===null)return null;
+  const version=showroomArtVersion(name);
+  if(storageApiAvailable){
+    const url=`/__storage/file?folder=art&name=${encodeURIComponent(name)}`;
+    let payload;
+    try{payload=await requestJson(url);}
+    catch(error){
+      if(!isCurrent()||version!==showroomArtVersion(name))return null;
+      if(error.status===404&&error.message==='File not found')return null;
+      if(isHardStorageApiUnavailable(error)){setStorageApiAvailability(false);return null;}
+      throw error;
+    }
+    if(!isCurrent()||version!==showroomArtVersion(name))return null;
+    const file=payload?.file;
+    return file?.folder==='art'&&file?.name===name&&file.data&&!file.deleted
+      ? {savedAt:Number(file.savedAt||0),data:file.data,showroomVersion:version}:null;
+  }
   const folders = await loadStaticManifest();
   const path = folders.art?.[name];
-  if (typeof path !== 'string' || !isCurrent() || version!==staticShowroomArtVersion(name)) return null;
+  if (typeof path !== 'string' || !isCurrent() || version!==showroomArtVersion(name)) return null;
   const url = `${staticDocumentRoot}/${path.split('/').map(encodeURIComponent).join('/')}`;
   const [stored, metadata] = await Promise.all([
     requestStatic(url),
@@ -404,9 +419,9 @@ export async function readStaticShowroomArt(name,{isCurrent=()=>true}={}) {
       throw error;
     })
   ]);
-  if (metadata.deleted || !isCurrent() || version!==staticShowroomArtVersion(name)) return null;
+  if (metadata.deleted || !isCurrent() || version!==showroomArtVersion(name)) return null;
   const data=await decodeStoredProjectDocument(stored,url);
-  if(!isCurrent()||version!==staticShowroomArtVersion(name))return null;
+  if(!isCurrent()||version!==showroomArtVersion(name))return null;
   return {savedAt:Number(metadata.savedAt || 0), data, showroomVersion:version};
 }
 

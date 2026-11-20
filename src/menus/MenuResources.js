@@ -1,6 +1,6 @@
 import {calculateCarPerformance} from '../racing/CarPerformance.js';
 import {raceRewardQuote} from '../garage/CampaignEconomy.js';
-import {hydrateServerStorage,readStaticShowroomArt,isProjectStorageReadOnly,staticShowroomArtVersion} from '../ui/serverStorage.js';
+import {hydrateServerStorage,readShowroomArt,showroomArtVersion} from '../ui/serverStorage.js';
 import {planAutoUpgrade,garageCarPerformance} from '../garage/GarageAutoUpgrade.js';
 import {loadGarageSetupCatalog} from '../garage/GarageSetups.js';
 import {getArtDocumentFrames} from '../ui/shared/artDocumentPixels.js';
@@ -90,7 +90,7 @@ export class MenuResources {
     if(!stock||!garage?.items.ready)return stock;
     const key=`${ref}:${garage.revision}:${garage.items.revision}`;
     const cached=this.garageCars.get(key);if(cached?.stock===stock){
-      if(isProjectStorageReadOnly()&&this.showroomNames?.has(ref))for(const artRef of this.exteriorArtRefs(cached.car))this.requestExteriorArt(ref,artRef);
+      if(this.showroomNames?.has(ref))for(const artRef of this.exteriorArtRefs(cached.car))this.requestExteriorArt(ref,artRef);
       return cached.car;
     }
     this.request(`garage-car:${key}`,async()=>{const car=await garage.build(ref,stock);this.garageCars.set(key,{stock,car});});
@@ -132,29 +132,29 @@ export class MenuResources {
     }
     setShowroomArtPage(this.game.carEditor?.raceArtSpriteCache,names.length?this.showroomWanted:null);
   }
-  requestExteriorArt(ref,art,{showroom=isProjectStorageReadOnly()&&this.showroomNames?.has(ref),generation=this.showroomGeneration}={}){
+  requestExteriorArt(ref,art,{showroom=this.showroomNames?.has(ref),generation=this.showroomGeneration}={}){
     // Capture provenance at enqueue; leaving the page can never convert a
     // showroom-only request into permanently retained canonical hydration.
     if(showroom){
-      if(generation!==this.showroomGeneration||!isProjectStorageReadOnly()||!this.showroomNames?.has(ref))return;
+      if(generation!==this.showroomGeneration||!this.showroomNames?.has(ref))return;
       const cache=this.game.carEditor.raceArtSpriteCache;
       this.showroomWanted.add(art);
       if(hasShowroomArtFrames(cache,art)||getRaceArtSpriteCanvasShared(art,{cache,allowSyncFetch:false,showroomArt:false}))return;
       // A save, deletion or storage mode transition can supersede this
       // request without changing the visible page. Scope dedup/errors to
       // this exact version and treat any superseded read as cancellation.
-      const version=staticShowroomArtVersion(art);
+      const version=showroomArtVersion(art);
       return this.request(`showroom-art:${generation}:${version}:${art}`,()=>this.prepareShowroomArt(art,generation,version));
     }
     return this.request(`car-art:${art}`,()=>this.prepareCarArt(art));
   }
   stockCar(ref){
     if(!ref)return null;
-    const showroom=isProjectStorageReadOnly()&&this.showroomNames?.has(ref),generation=this.showroomGeneration;
-    const storageVersion=showroom?staticShowroomArtVersion():null;
+    const showroom=this.showroomNames?.has(ref),generation=this.showroomGeneration;
+    const storageVersion=showroom?showroomArtVersion():null;
     const loadArt=car=>{
       if(showroom){
-        if(generation!==this.showroomGeneration||!isProjectStorageReadOnly()||!this.showroomNames?.has(ref))return;
+        if(generation!==this.showroomGeneration||!this.showroomNames?.has(ref))return;
       }else{
         this.canonicalCarArt ||= new WeakSet();
         if(this.canonicalCarArt.has(car))return;
@@ -172,7 +172,7 @@ export class MenuResources {
       this.cars.set(ref,car);this.carSources.set(ref,data);loadArt(car);return car;
     };
     if(cached)return install(cached);
-    const isCurrent=()=>!showroom||generation===this.showroomGeneration&&storageVersion===staticShowroomArtVersion()&&this.showroomNames?.has(ref);
+    const isCurrent=()=>!showroom||generation===this.showroomGeneration&&storageVersion===showroomArtVersion()&&this.showroomNames?.has(ref);
     this.request(showroom?`showroom-car:${generation}:${storageVersion}:${ref}`:`car:${ref}`,async()=>{
       if(!isCurrent())return;
       let payload;
@@ -223,13 +223,13 @@ export class MenuResources {
   }
   tuning(car){if(!this.tunings.has(car))this.tunings.set(car,this.game.carEditor.getRaceCarTuning(car));return this.tunings.get(car);}
   prepareShowroomArt(ref,generation,version){
-    const isCurrent=()=>generation===this.showroomGeneration&&version===staticShowroomArtVersion(ref)&&this.showroomWanted?.has(ref);
+    const isCurrent=()=>generation===this.showroomGeneration&&version===showroomArtVersion(ref)&&this.showroomWanted?.has(ref);
     const task=(this.carArtQueue||Promise.resolve()).then(async()=>{
       if(!isCurrent())return;
       const cache=this.game.carEditor.raceArtSpriteCache ||= new Map();
       if(hasShowroomArtFrames(cache,ref)||getRaceArtSpriteCanvasShared(ref,{cache,allowSyncFetch:false,showroomArt:false}))return;
       let payload;
-      try{payload=await readStaticShowroomArt(ref,{isCurrent});}
+      try{payload=await readShowroomArt(ref,{isCurrent});}
       catch(error){if(!isCurrent())return;throw error;}
       if(!isCurrent())return;
       if(!payload){

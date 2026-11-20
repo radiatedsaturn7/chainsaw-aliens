@@ -1,4 +1,4 @@
-import { readCachedProjectFile, staticShowroomArtVersion } from '../serverStorage.js';
+import { readCachedProjectFile, showroomArtVersion } from '../serverStorage.js';
 import { hydrateProjectFilePayload, loadProjectFile } from '../projectFiles.js';
 import { getArtDocumentFrames, normalizeArtFramePixels, parseArtPixelRgba } from './artDocumentPixels.js';
 
@@ -16,7 +16,7 @@ function showroom(cache){
 function removeShowroom(s,k,e){s.entries.delete(k);s.bytes-=e.bytes;}
 function trimShowroom(s,limit,protectedRefs){
   for(const [key,e] of s.entries){
-    if(e.version!==staticShowroomArtVersion(key)||s.bytes>limit&&!protectedRefs.has(key))removeShowroom(s,key,e);
+    if(e.version!==showroomArtVersion(key)||s.bytes>limit&&!protectedRefs.has(key))removeShowroom(s,key,e);
   }
 }
 export function setShowroomArtPage(cache,protectedRefs){
@@ -28,14 +28,14 @@ export function setShowroomArtPage(cache,protectedRefs){
 function getShowroomEntry(cache,ref){
   const s=showroomFrames.get(cache),e=s?.entries.get(ref);
   if(!e)return null;
-  if(e.version!==staticShowroomArtVersion(ref)){removeShowroom(s,ref,e);return null;}
+  if(e.version!==showroomArtVersion(ref)){removeShowroom(s,ref,e);return null;}
   s.entries.delete(ref);s.entries.set(ref,e);
   return e;
 }
 export function hasShowroomArtFrames(cache,ref){return !!getShowroomEntry(cache,ref);}
 export function setShowroomArtFrames(cache,ref,payload,protectedRefs,documentRef=globalThis.document){
   const s=showroom(cache);
-  if(!s||!documentRef||!payload?.showroomVersion||payload.showroomVersion!==staticShowroomArtVersion(ref))return false;
+  if(!s||!documentRef||!payload?.showroomVersion||payload.showroomVersion!==showroomArtVersion(ref))return false;
   const {frames,source}=getArtDocumentFrames(payload.data);
   if(!frames.length)return false;
   const hintedWidth=Number(source?.width||source?.editor?.width||source?.size),hintedHeight=Number(source?.height||source?.editor?.height||source?.size);
@@ -52,7 +52,7 @@ export function setShowroomArtFrames(cache,ref,payload,protectedRefs,documentRef
   // product still displays a legitimately large visible page without eviction.
   trimShowroom(s,Math.max(0,showroomByteLimit-bytes),protectedRefs);
   const canvases=frames.map((_,frameIndex)=>getRaceArtSpriteCanvasShared(ref,{frameIndex,documentRef,showroomPayload:payload,showroomArt:false}));
-  if(canvases.some(x=>!x)||payload.showroomVersion!==staticShowroomArtVersion(ref))return false;
+  if(canvases.some(x=>!x)||payload.showroomVersion!==showroomArtVersion(ref))return false;
   s.entries.set(ref,{canvases,bytes,version:payload.showroomVersion});s.bytes+=bytes;
   return true;
 }

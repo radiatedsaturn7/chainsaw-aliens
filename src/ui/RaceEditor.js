@@ -32337,9 +32337,11 @@ export default class RaceEditor {
   }
 
   getRaceArtSpriteCanvas(artRef = '', { frameIndex = 0, showroomArt = false } = {}) {
+    const previewOnly=showroomArt&&!this.playtestSession&&!this.racePreloadingArt;
     const canvas = getRaceArtSpriteCanvasShared(artRef, {
       frameIndex,
       showroomArt,
+      allowSyncFetch: !previewOnly,
       cache: this.raceArtSpriteCache,
       playtestSession: this.playtestSession,
       racePreloadingArt: this.racePreloadingArt,
@@ -32355,7 +32357,7 @@ export default class RaceEditor {
         };
       }
     });
-    if (!canvas && this.playtestSession?.raceTravelPreparedArtOnly !== true) {
+    if (!canvas && !previewOnly && this.playtestSession?.raceTravelPreparedArtOnly !== true) {
       void this.hydrateRaceArt(artRef);
     }
     return canvas;
