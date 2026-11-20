@@ -1,0 +1,186 @@
+{
+  "reviewedAt": "2026-11-20T21:19:00.191237+00:00",
+  "scope": "Five missing GRID Autosport real-world venues; current mapped layouts only. No historical or fictional reverse variants.",
+  "limitations": [
+    "OSM centerlines and DEM heights are not laser scans or surveyed racing lines. Widths use published minimum or approximate venue-wide values, not lane-by-lane surveys.",
+    "Current mapped shortcuts are not a claim of FIA homologation or public availability for every configuration. Istanbul intermediate has no confirmed published length.",
+    "Existing regional circuit scenery is reused; bespoke grandstands and buildings have not been modeled."
+  ],
+  "venues": [
+    {
+      "key": "cota",
+      "name": "Circuit of the Americas",
+      "reference": "https://circuitoftheamericas.com/",
+      "layouts": [
+        {
+          "key": "gp",
+          "name": "Grand Prix",
+          "mappedLengthM": 5502,
+          "publishedLengthM": 5514,
+          "reference": "https://circuitoftheamericas.com/"
+        },
+        {
+          "key": "national",
+          "name": "National",
+          "mappedLengthM": 3725,
+          "publishedLengthM": 3792,
+          "reference": "https://circuitoftheamericas.com/"
+        },
+        {
+          "key": "nascar-national",
+          "name": "NASCAR National",
+          "mappedLengthM": 3871,
+          "publishedLengthM": 3862,
+          "reference": "https://www.nascaratcota.com/news/nascar-returns-circuit-americas-feb-march-2026-national-series-schedules-announced.html"
+        },
+        {
+          "key": "club",
+          "name": "Club",
+          "mappedLengthM": 1981,
+          "publishedLengthM": 1960,
+          "reference": "https://circuitoftheamericas.com/"
+        }
+      ]
+    },
+    {
+      "key": "mont-tremblant",
+      "name": "Circuit Mont-Tremblant",
+      "reference": "https://www.pistemonttremblant.com/infos/caracteristique-techniques-circuit/",
+      "layouts": [
+        {
+          "key": "gp",
+          "name": "Grand Prix",
+          "mappedLengthM": 4234,
+          "publishedLengthM": 4260,
+          "reference": "https://www.pistemonttremblant.com/infos/caracteristique-techniques-circuit/"
+        },
+        {
+          "key": "gp-chicane",
+          "name": "Grand Prix \u2014 Chicane",
+          "mappedLengthM": 4243,
+          "publishedLengthM": null,
+          "reference": "https://www.pistemonttremblant.com/infos/caracteristique-techniques-circuit/"
+        },
+        {
+          "key": "north",
+          "name": "North Loop",
+          "mappedLengthM": 2468,
+          "publishedLengthM": 2460,
+          "reference": "https://www.pistemonttremblant.com/infos/caracteristique-techniques-circuit/"
+        },
+        {
+          "key": "north-chicane",
+          "name": "North Loop \u2014 Chicane",
+          "mappedLengthM": 2477,
+          "publishedLengthM": null,
+          "reference": "https://www.pistemonttremblant.com/infos/caracteristique-techniques-circuit/"
+        },
+        {
+          "key": "south",
+          "name": "South Loop",
+          "mappedLengthM": 1902,
+          "publishedLengthM": 1910,
+          "reference": "https://www.pistemonttremblant.com/infos/caracteristique-techniques-circuit/"
+        }
+      ]
+    },
+    {
+      "key": "jarama",
+      "name": "Circuito del Jarama",
+      "reference": "https://www.jarama.org/el-circuito/trazado-del-circuito",
+      "layouts": [
+        {
+          "key": "gp",
+          "name": "Grand Prix",
+          "mappedLengthM": 3906,
+          "publishedLengthM": 3850,
+          "reference": "https://www.jarama.org/el-circuito/trazado-del-circuito"
+        }
+      ]
+    },
+    {
+      "key": "istanbul",
+      "name": "Istanbul Park",
+      "reference": "https://tosfedistanbulpark.com/",
+      "layouts": [
+        {
+          "key": "gp",
+          "name": "Grand Prix",
+          "mappedLengthM": 5345,
+          "publishedLengthM": 5338,
+          "reference": "https://tosfedistanbulpark.com/"
+        },
+        {
+          "key": "intermediate",
+          "name": "Intermediate",
+          "mappedLengthM": 3931,
+          "publishedLengthM": null,
+          "reference": "https://tosfedistanbulpark.com/"
+        }
+      ]
+    },
+    {
+      "key": "yas-marina",
+      "name": "Yas Marina Circuit",
+      "reference": "https://static.myconnect.ae/-/media/yasconnect/project/ymc/track-hire-detail-page/brochure/ymc-track-rate-card.pdf",
+      "layouts": [
+        {
+          "key": "gp",
+          "name": "Grand Prix",
+          "mappedLengthM": 5297,
+          "publishedLengthM": 5280,
+          "reference": "https://static.myconnect.ae/-/media/yasconnect/project/ymc/track-hire-detail-page/brochure/ymc-track-rate-card.pdf"
+        },
+        {
+          "key": "gp-plus",
+          "name": "Grand Prix Plus",
+          "mappedLengthM": 5331,
+          "publishedLengthM": 5310,
+          "reference": "https://static.myconnect.ae/-/media/yasconnect/project/ymc/track-hire-detail-page/brochure/ymc-track-rate-card.pdf"
+        },
+        {
+          "key": "north",
+          "name": "North Circuit",
+          "mappedLengthM": 3013,
+          "publishedLengthM": 3000,
+          "reference": "https://static.myconnect.ae/-/media/yasconnect/project/ymc/track-hire-detail-page/brochure/ymc-track-rate-card.pdf"
+        },
+        {
+          "key": "north-plus",
+          "name": "North Plus",
+          "mappedLengthM": 3047,
+          "publishedLengthM": 3040,
+          "reference": "https://static.myconnect.ae/-/media/yasconnect/project/ymc/track-hire-detail-page/brochure/ymc-track-rate-card.pdf"
+        },
+        {
+          "key": "south",
+          "name": "South Circuit",
+          "mappedLengthM": 2203,
+          "publishedLengthM": 2190,
+          "reference": "https://static.myconnect.ae/-/media/yasconnect/project/ymc/track-hire-detail-page/brochure/ymc-track-rate-card.pdf"
+        },
+        {
+          "key": "gp-corkscrew",
+          "name": "GP Corkscrew",
+          "mappedLengthM": 4584,
+          "publishedLengthM": 4570,
+          "reference": "https://static.myconnect.ae/-/media/yasconnect/project/ymc/track-hire-detail-page/brochure/ymc-track-rate-card.pdf"
+        },
+        {
+          "key": "north-corkscrew",
+          "name": "North Corkscrew",
+          "mappedLengthM": 2300,
+          "publishedLengthM": 2290,
+          "reference": "https://static.myconnect.ae/-/media/yasconnect/project/ymc/track-hire-detail-page/brochure/ymc-track-rate-card.pdf"
+        },
+        {
+          "key": "north-handling",
+          "name": "North Handling",
+          "mappedLengthM": 880,
+          "publishedLengthM": 860,
+          "reference": "https://static.myconnect.ae/-/media/yasconnect/project/ymc/track-hire-detail-page/brochure/ymc-track-rate-card.pdf"
+        }
+      ]
+    }
+  ]
+}

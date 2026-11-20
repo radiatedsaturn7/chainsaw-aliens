@@ -1,3 +1,4 @@
+import {normalizeRaceLocation} from '../../src/racing/RaceLocation.js';
 import {attachCampaignRoutePreviews} from './route_previews.mjs';
 import {addBayardLandmarks} from './bayard_landmarks.mjs';
 import {wildernessParent,addWildernessDistantScenery} from './wilderness_dressing.mjs';
@@ -59,6 +60,7 @@ for(const row of read(`${reportBase}/report.json`)){
   write(race.source.landmarkNotesPath,{raceRef,state:row.state,city:row.city,routeLengthM:editor.getRaceRouteLength(),distanceReference:'Native timed route from start line; nearest road projection. Landmark may be set back or obscured.',references:row.references,landmarks});
  }
  const documentPath=priorPath||`races/${encodeURIComponent(raceRef).replace(/%20/g,' ')}/document.json`;
+ race.location=normalizeRaceLocation(race);
  write(`${root}/${documentPath}`,encode({schemaVersion:1,kind:'race-track',savedAt,selectedRaceId:race.id,race}));
  const metaPath=`${root}/${documentPath.replace(/document.json$/,'metadata.json')}`;
  write(metaPath,{...(fs.existsSync(metaPath)?read(metaPath):{version:1}),name:raceRef,folder:'races',savedAt});

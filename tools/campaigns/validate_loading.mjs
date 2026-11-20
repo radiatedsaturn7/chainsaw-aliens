@@ -16,7 +16,9 @@ const sideRaces=process.argv.includes('--side-races');
 const expansion=process.argv.includes('--state-expansion');
 const wilderness=process.argv.includes('--wilderness');
 const raceways=process.argv.includes('--raceways')||expansion||wilderness;
-const catalog=JSON.parse(fs.readFileSync(new URL(planetary?'../../data/campaigns/planetary/catalog.json':raceways?'../../data/campaigns/america/raceways/catalog.json':sideRaces?'../../data/campaigns/america/side-races/catalog.json':'../../data/campaigns/america/catalog.json',import.meta.url)))
+const rallySections=process.argv.includes('--rally-sections');
+const sectionPaths=rallySections?JSON.parse(fs.readFileSync('data/server-storage/files/manifest.json')).folders.races:null;
+const catalog=(rallySections ? JSON.parse(fs.readFileSync('data/campaigns/america/raceways/rally-sections.json')).collections.flatMap(c=>c.sections.map(s=>({...s,name:s.ref,documentPath:sectionPaths[s.ref]}))) : JSON.parse(fs.readFileSync(new URL(planetary?'../../data/campaigns/planetary/catalog.json':raceways?'../../data/campaigns/america/raceways/catalog.json':sideRaces?'../../data/campaigns/america/side-races/catalog.json':'../../data/campaigns/america/catalog.json',import.meta.url))))
  .filter(stage=>(!included.length||included.includes(stage.id))&&(!wilderness||stage.id.startsWith('detour-'))&&(!expansion||/^(city|state)-/.test(stage.id))&&(!sideRaces||stage.status==='installed')&&!skipped.has(stage.id)).map(stage=>({...stage,name:stage.name||stage.raceRef}));
 
 const shardArg=process.argv.find(a=>a.startsWith('--shard='))?.slice(8);
@@ -112,7 +114,7 @@ if(id){
  await Promise.all(Array.from({length:jobs},async()=>{
  for(;;){
   const index=next++;if(index>=catalog.length)return;const stage=catalog[index];
-  const result=await runChild(process.execPath,['--stack_size=128',fileURLToPath(import.meta.url),`--stage=${stage.id}`,...(planetary?['--planetary']:[]),...(raceways?['--raceways']:[]),...(sideRaces?['--side-races']:[]),...(auditEdges?['--audit-edges']:[])],{encoding:'utf8',timeout:stageTimeoutMs,maxBuffer:4*1024*1024}).then(value=>({...value,status:0}),error=>({stdout:error.stdout,stderr:error.stderr,status:1,error,signal:error.signal}));
+  const result=await runChild(process.execPath,['--stack_size=128',fileURLToPath(import.meta.url),`--stage=${stage.id}`,...(rallySections?['--rally-sections']:[]),...(planetary?['--planetary']:[]),...(raceways?['--raceways']:[]),...(sideRaces?['--side-races']:[]),...(auditEdges?['--audit-edges']:[])],{encoding:'utf8',timeout:stageTimeoutMs,maxBuffer:4*1024*1024}).then(value=>({...value,status:0}),error=>({stdout:error.stdout,stderr:error.stderr,status:1,error,signal:error.signal}));
   process.stdout.write(result.stdout||'');process.stderr.write(result.stderr||'');
   if(result.status!==0){const error=result.error?.message||result.stderr||`Exit ${result.status}, signal ${result.signal}`;console.error(`${stage.name}: ${error}`);results[index]={id:stage.id,ok:false,error};}
   else results[index]=JSON.parse(result.stdout.trim().split('\n').at(-1));

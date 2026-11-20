@@ -81,7 +81,7 @@ def build(spec):
   race['source']['attribution']=json.loads(source.read_text())['provider']+' (route coordinates); Mapzen/Tilezen terrain; OSM contributors for available surface tags.'
   race['source']['license']='See original source attribution and terms; no blanket OSM license claim for organizer/tourism route coordinates.'
  race['source']['warnings']=[w.replace('USGS 3DEP','Mapzen DEM') for w in result['warnings']]+[spec['method'],'Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations.']
- race['source']['linePlacement']=place(race)
+ race['source']['linePlacement']=place(race,max_search_m=spec.get('timingSearchDistanceM'))
  if spec.get('tunnelDecks'):
   from rally_structures import apply_tunnel_decks
   # Timing-line trimming must precede the explicit network, so its endpoints

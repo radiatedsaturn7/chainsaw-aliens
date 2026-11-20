@@ -271,6 +271,7 @@ export default class MenuPlayer {
   cleanupScreen({keepMusic=false,immediateMusic=false}={}){this.resources.retainShowroomPage([]);this.resources.cancelAutoUpgradeQuotes();this.tuner?.dispose();this.tuner=null;this.tunerModal=false;this.mediaGeneration++;this.choicePopup=null;this.slider=null;if(!keepMusic)this.screenMusic.stop(immediateMusic?{fadeOut:0}:{});for(const video of this.videos.values()){video.pause();video.removeAttribute('src');video.load();}this.videos.clear();}
   cleanup(){this.screenEntryGeneration=(this.screenEntryGeneration||0)+1;this.screenEntryTask=null;this.pendingScreenSnapshot=null;this.enteredTransitionGroup=null;this.screenTransition.reset();this.lastDrawCanvas=null;this.lastDrawTransform=null;this.pendingScreenEntry=false;this.transitionBlackDrawn=false;resetMenuRepeatState(this.navigationRepeat);this.releasePauseAudio();if(this.tabListener&&typeof window!=='undefined')window.removeEventListener('keydown',this.tabListener);this.tabListener=null;this.surface.reset();this.resources.carPreview.dispose();this.cleanupScreen({immediateMusic:true});this.cancelKeyCapture();if(this.cutscene.active){this.cutscene.onDone=null;this.cutscene.stop();}if(this.movie){this.movie.pause();this.movie.removeAttribute('src');this.movie.load();this.movie=null;}this.rejectMovie?.(Error('Playback cancelled'));this.rejectMovie=null;this.resolveMovie=null;}
   enterScreen({prepared=false}={}){
+    if(this.motorsport?.guard())return;
     this.screenEntryGeneration=(this.screenEntryGeneration||0)+1;
     this.screenEntryTask=null;this.pendingScreenSnapshot=null;
     const group=this.flow.screen.transitionGroup;
@@ -395,7 +396,7 @@ export default class MenuPlayer {
     if(element.type==='button'){
       if(element.id?.startsWith('motorsport-')){this.flow.busy=true;try{await this.motorsport.activate(element.id);}catch(error){this.flow.error=error.message;}finally{this.flow.busy=false;}return;}
       if(element.id==='world-race-index'){this.openRaceIndex();return;}
-      if(element.id==='world-championships'){this.motorsport.open('championships');return;}
+      if(element.id==='world-championships'){this.motorsport.home();return;}
       if(element.id==='world-rally'){this.motorsport.open('rallies');return;}
       if(element.id==='world-space'){this.openRaceIndex('space');return;}
       if(element.id==='world-international'){this.openRaceIndex('international');return;}
@@ -527,10 +528,14 @@ export default class MenuPlayer {
       const directions={...held};for(const [direction,code] of Object.entries({up:'ArrowUp',down:'ArrowDown',left:'ArrowLeft',right:'ArrowRight'}))directions[direction]||=Boolean(input?.isDownCode?.(code)||pressed(code));
       this.tuner.update({held:directions,confirmHeld:Boolean(input?.isDownCode?.('Enter')||input?.isDownCode?.('Space')||input?.isGamepadDown?.('jump')||touchHeld.jump),confirm:pressed('Enter')||pressed('Space')||pad('jump'),cancel:pressed('Escape')||pad('cancel')},dt);return;
     }
-    if(pressed('Escape')||pad('cancel')){if(flow.busy)return;if(!this.backGarageWidget()&&!this.confirmWorldMapQuit())flow.back();return;}
+    if(pressed('Escape')||pad('cancel')){if(flow.busy)return;if(!this.motorsport?.back()&&!this.backGarageWidget()&&!this.confirmWorldMapQuit())flow.back();return;}
     if(this.movie){if(pressed('Space')||pressed('Enter')||pad('gamepadStart')||pad('jump'))void this.resumeMovie();return;}
     if(flow.busy)return;
     if((input?.wasGamepadPressed?.('gamepadSelect')||touch('nextWeapon'))&&flow.screen.elements.some(e=>e.type==='world-map')){this.openRaceIndex();return;}
+    if(flow.screen.id==='motorsport-list'){
+      const direction=pressed('ArrowDown')||navigation==='down'?1:pressed('ArrowUp')||navigation==='up'?-1:0;
+      if(direction){this.motorsport.scroll(direction);return;}
+    }
     if(flow.screen.id==='race-index'){
       const direction=pressed('ArrowDown')||navigation==='down'?1:pressed('ArrowUp')||navigation==='up'?-1:0;
       if(direction){this.scrollRaceIndex(direction);return;}
@@ -630,6 +635,10 @@ export default class MenuPlayer {
     if(this.tuner){this.tuner.pointerDown(point);return;}
     if(this.hitElement(point,true)?.disabled)return;
     const e=this.hitElement(point);if(e){
+      if(this.flow.screen.id==='motorsport-list'&&e.id.startsWith('motorsport-pick-')){
+        const index=Number(e.id.slice(16));
+        if(this.motorsport.lists[this.motorsport.kind]?.index!==index){this.motorsport.open(this.motorsport.kind,index);return;}
+      }
       if(this.flow.screen.id==='race-index'&&e.id.startsWith('index-race-')){
         const index=Number(e.id.slice('index-race-'.length));
         if(this.raceIndexState.index!==index){this.scrollRaceIndex(index-this.raceIndexState.index);return;}

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {motorsportCatalog,motorsportRaceMetadata,createMotorsportEvent,readMotorsportEvent,completeMotorsportRound,seriesStandings,serviceMotorsportEvent,availableSeriesService,applyMotorsportRace} from '../../src/menus/MotorsportEvents.js';
 import {MotorsportMenu,installMotorsportNavigation} from '../../src/menus/MotorsportMenu.js';
+import MenuPlayer from '../../src/menus/MenuPlayer.js';
 import {MenuFlow} from '../../src/menus/MenuFlow.js';
 import {normalizeMenuVariables} from '../../src/menus/MenuProgress.js';
 const circuit={type:'circuit',laps:3,source:{layoutName:'Grand Prix'},road:{width:10,nodes:[{x:0,y:0},{x:500,y:0},{x:500,y:500},{x:0,y:500},{x:0,y:0}],segments:[]}};
@@ -24,9 +25,9 @@ test('catalog uses three authored rounds and refuses to substitute missing circu
  assert.equal(motorsportCatalog(entries.slice(0,2)).championships.length,0);
 });
 test('short and full rallies use installed stages, named passes, and service intervals',()=>{
- const entries=['A','B','C'].map(ref=>({ref,stageSeconds:100,rally:{id:'local',name:'Local Rally'}}));
+ const entries=['A','B','C','D','E','F'].map((ref,i)=>({ref,stageSeconds:100,rally:{id:'local',name:'Local Rally',section:i+1}}));
  const {rallies}=motorsportCatalog(entries);assert.deepEqual(rallies.map(r=>r.rounds.length),[4,12]);
- assert.equal(rallies[1].rounds[3].pass,2);assert.equal(rallies[1].serviceEvery,3);
+ assert.equal(rallies[1].rounds[6].pass,2);assert.equal(rallies[1].serviceEvery,3);
  assert.ok(rallies[1].rounds.every(r=>entries.some(e=>e.ref===r.ref)));
 });
 test('race overlay supplies five stable AI drivers without changing saved road geometry',()=>{
@@ -93,7 +94,7 @@ function menuFixture(){
 }
 test('navigation replaces old collections without removing races; installation is idempotent',()=>{
  const doc={screens:[{id:'world-map',elements:[{id:'world-space'},{id:'world-international'},{id:'world-rallies'},{id:'map'}]}]};installMotorsportNavigation(doc);installMotorsportNavigation(doc);
- assert.deepEqual(doc.screens[0].elements.map(e=>e.id),['map','world-race-index','world-championships','world-rally']);
+ assert.deepEqual(doc.screens[0].elements.map(e=>e.id),['map','world-race-index','world-championships']);
 });
 test('series menu actions enter, save, resume, service and confirm retirement with standard controls',async()=>{
  const {controller:c,player:p}=menuFixture();c.selection=rally;await c.activate('motorsport-enter');
@@ -114,13 +115,25 @@ test('duplicate and stale result callbacks never advance another round',async()=
  const {controller:c}=menuFixture();await c.save(run());const s=session();await c.record(s);await c.record(s);assert.equal(c.state.round,1);
  await c.save({...c.state,phase:'racing'});await c.record(s);assert.equal(c.state.round,1);
 });
-test('installed catalog has all four cups and all saved rally collections; menus stay under eight controls',()=>{
+test('installed catalog has all twelve cups and all saved rally collections; menus stay under eight controls',()=>{
  const menu=JSON.parse(fs.readFileSync('data/server-storage/files/menus/Game Menu/document.json'));
- const catalog=motorsportCatalog(menu.parameters.raceIndex);assert.equal(catalog.championships.length,4);
- assert.equal(catalog.rallies.length,new Set(menu.parameters.raceIndex.filter(e=>e.rally).map(e=>e.rally.id)).size*2);
+ const catalog=motorsportCatalog(menu.parameters.raceIndex);assert.equal(catalog.championships.length,12);
+ assert.ok(catalog.rallyGroups.length>=15);
+ for(const r of catalog.rallies)assert.equal(new Set(r.rounds.map(s=>s.ref)).size,r.rounds.length===4?4:6);
  const {controller:c,player:p}=menuFixture();p.flow.document.parameters.raceIndex=menu.parameters.raceIndex;
- p.flow.parameters.motorsportEvent=JSON.stringify(run());
- for(let page=0;page<Math.ceil(catalog.rallies.length/4);page++){c.open('rallies',page);assert.ok(p.flow.screen.elements.filter(e=>e.type==='button').length<=8);}
+ for(const kind of ['championships','rallies']){
+  c.open(kind);const count=c.entries().length;
+  for(let i=0;i<count;i++){
+   assert.equal(c.lists[kind].index,i);
+   const buttons=p.flow.screen.elements.filter(e=>e.type==='button');
+   assert.ok(buttons.length<=8);assert.ok(buttons.some(e=>e.id===`motorsport-pick-${i}`));
+   assert.ok(!buttons.some(e=>['Previous','Next','Resume Event'].includes(e.label)));
+   c.scroll(1);
+  }
+  assert.equal(c.lists[kind].index,count-1);
+  for(let i=count-1;i>=0;i--){assert.equal(c.lists[kind].index,i);c.scroll(-1);}
+  assert.equal(c.lists[kind].index,0);
+ }
 });
 
 test('Back works during button dispatch and service returns without a navigation loop',async()=>{
@@ -129,4 +142,74 @@ test('Back works during button dispatch and service returns without a navigation
  c.open('rallies');await c.save({...run(rally),phase:'between',round:3,serviceBudget:30});c.showEvent();
  const history=[...p.flow.history];c.showService();await c.activate('motorsport-service-back');
  assert.equal(p.flow.screenId,'motorsport-event');assert.deepEqual(p.flow.history,history);
+});
+
+test('championship categories and rally format selection preserve Back and saved events',async()=>{
+ const {controller:c,player:p}=menuFixture();
+ p.flow.document.parameters.raceIndex=Array.from({length:6},(_,i)=>({ref:`Stage ${i+1}`,rally:{id:'test',name:'Test Rally',section:i+1},stageSeconds:240}));
+ c.home();assert.equal(p.flow.screenId,'motorsport-home');
+ await c.activate('motorsport-rallies');
+ assert.equal(p.flow.screen.elements.find(e=>e.id==='motorsport-pick-0').label,'Test Rally');
+ await c.activate('motorsport-pick-0');assert.equal(p.flow.screenId,'motorsport-formats');
+ await c.activate('motorsport-format-12');assert.equal(c.selection.rounds.length,12);
+ await c.activate('motorsport-back');assert.equal(p.flow.screenId,'motorsport-formats');
+ await c.activate('motorsport-format-4');assert.equal(c.selection.rounds.length,4);
+ for(const expected of ['motorsport-formats','motorsport-list','motorsport-home','world-map']){
+  await c.activate('motorsport-back');assert.equal(p.flow.screenId,expected);
+ }
+});
+
+test('incomplete stage collections never pad a format with repeated or parent roads',()=>{
+ const entries=Array.from({length:6},(_,i)=>({ref:`S${i}`,rally:{id:'test',name:'Test',section:i+1}}));
+ assert.equal(motorsportCatalog(entries.slice(0,3)).rallies.length,0);
+ assert.deepEqual(motorsportCatalog(entries.slice(0,4)).rallies.map(r=>r.rounds.length),[4]);
+ assert.equal(motorsportCatalog(entries.map(e=>({...e,rally:{id:'test',name:'Test'}}))).rallies.length,0);
+ const full=motorsportCatalog(entries).rallies[1];
+ assert.deepEqual(full.rounds.slice(0,6).map(r=>r.ref),full.rounds.slice(6).map(r=>r.ref));
+ assert.ok(full.rounds.slice(0,6).every(r=>r.pass===1));assert.ok(full.rounds.slice(6).every(r=>r.pass===2));
+});
+
+test('rallies awaiting road coverage explain unavailable formats without offering Enter',()=>{
+ const {controller:c,player:p}=menuFixture();
+ p.flow.document.parameters.raceIndex=[{ref:'Parent',rally:{id:'test',name:'Test Rally'}}];
+ c.open('rallies');c.formats(c.catalog.rallyGroups[0]);
+ assert.deepEqual(p.flow.screen.elements.filter(e=>e.type==='button').map(e=>e.label),['Back']);
+ assert.ok(p.flow.screen.elements.some(e=>e.label==='More mapped sections needed.'));
+});
+
+test('active event replaces browsing and Back requires confirmed quitting',async()=>{
+ const {controller:c,player:p}=menuFixture();c.preview(cup);await c.enter();
+ assert.deepEqual(p.flow.history,[]);
+ assert.deepEqual(p.flow.screen.elements.filter(e=>e.type==='button').map(e=>e.label),['Start Next','Quit Event']);
+ c.home();assert.equal(p.flow.screenId,'motorsport-event');
+ c.open('rallies');assert.equal(p.flow.screenId,'motorsport-event');
+ const id=c.state.id;assert.equal(c.back(),true);assert.equal(p.flow.screenId,'motorsport-retire');assert.equal(c.state.id,id);
+ assert.equal(c.back(),true);assert.equal(p.flow.screenId,'motorsport-event');assert.equal(c.state.id,id);
+ await c.activate('motorsport-retire');await c.activate('motorsport-retire-confirm');
+ assert.equal(c.state,null);assert.equal(p.flow.screenId,'motorsport-home');
+ c.back();assert.equal(p.flow.screenId,'world-map');
+});
+test('saved event and race return intercept world-map entry before rendering',async()=>{
+ const {controller:c,player:p}=menuFixture();await c.save(run(rally));
+ MenuPlayer.prototype.enterScreen.call(p);
+ assert.equal(p.flow.screenId,'motorsport-event');assert.deepEqual(p.flow.history,[]);
+ assert.equal(c.state.phase,'racing');
+ p.flow.goTo('world-map');assert.equal(c.guard(),true);assert.equal(p.flow.screenId,'motorsport-event');
+ assert.equal(c.guard(),false,'event screen must not recursively redirect itself');
+});
+test('completed event can be closed with Back, and service Back keeps the active event',async()=>{
+ const {controller:c,player:p}=menuFixture();await c.save({...run(rally),phase:'between',round:3,serviceBudget:30});
+ c.showEvent();c.showService();assert.equal(c.back(),true);assert.equal(p.flow.screenId,'motorsport-event');assert.ok(c.state);
+ await c.save({...c.state,phase:'complete'});c.showEvent();c.back();
+ await new Promise(resolve=>setTimeout(resolve,0));
+ assert.equal(c.state,null);assert.equal(p.flow.screenId,'motorsport-home');
+});
+test('list scrolling does not push history or reset the screen timer, and keeps independent positions',()=>{
+ const {controller:c,player:p}=menuFixture();const menu=JSON.parse(fs.readFileSync('data/server-storage/files/menus/Game Menu/document.json'));
+ p.flow.document.parameters.raceIndex=menu.parameters.raceIndex;c.home();c.open('rallies');
+ const history=[...p.flow.history];p.flow.time=20;
+ for(let i=0;i<10;i++)c.scroll(1);
+ assert.deepEqual(p.flow.history,history);assert.equal(p.flow.time,20);assert.equal(c.lists.rallies.top,6);
+ c.open('championships');assert.equal(c.lists.championships.index,0);
+ c.open('rallies');assert.equal(c.lists.rallies.index,10);
 });

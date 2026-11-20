@@ -97,6 +97,8 @@ def prepare(spec):
   if not source.exists():
    from fetch_famous_rally import mapped_roads
    origin=json.loads((ROOT/'rally-road-sources.json').read_text())[spec['key']]
+   if origin.get('snapshot'):
+    raise ValueError(f"Missing reviewed edge snapshot {origin['snapshot']}; restore it before rebuilding, rather than importing unreviewed whole ways.")
    def selected(tags):
     return (not origin.get('roadName') or tags.get('name')==origin['roadName']) and (not origin.get('highways') or tags.get('highway') in origin['highways']) and tags.get('highway') not in origin.get('excludeHighways',[])
    ways={}
@@ -135,6 +137,9 @@ def prepare(spec):
   spec['trimSourcePoints']=2
   spec['method']+=' Two leading GPS points form a 16 m out-and-back artifact and are omitted; the continuous stage trace starts at source point 3.'
  return spec
+
+# Additional documented GT/FM/WRC coverage uses the same source adapters.
+SOURCES.extend(json.loads(Path(__file__).with_name('gt_wrc_rally_sources.json').read_text()))
 
 if __name__=='__main__':
  parser=argparse.ArgumentParser();parser.add_argument('--only',nargs='*');parser.add_argument('--sources-only',action='store_true');args=parser.parse_args()

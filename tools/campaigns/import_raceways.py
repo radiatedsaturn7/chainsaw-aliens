@@ -64,6 +64,9 @@ def build(spec,selection):
  fetch_country=layout['place']['country'];layout['place']['country']='us'
  result=track.build(layout,width=selection.get('widthM',12),reverse=selection.get('reverse',False),fetch=terrain_tiles.importer_fetch,max_segment_length_m=80 if spec['key']=='nordschleife' else 50,max_control_points=1200 if layout['lengthM']>24000 else 600)
  race=result['race'];race['source']['origin']['country']=fetch_country
+ if spec.get('stateCode'):race['source']['stateCode']=spec['stateCode']
+ if selection.get('currentLayout'):race['source']['layoutEra']='current'
+ if selection.get('publishedLengthM'):race['source']['publishedLengthM']=selection['publishedLengthM']
  if selection.get('renderSurfaceStepM') or layout['lengthM']>24000:race['renderSurfaceStepM']=selection.get('renderSurfaceStepM',5)
  if 'unavailable' in ' '.join(result['warnings']) or 'flat editable' in ' '.join(result['warnings']):raise ValueError('Elevation lookup failed; do not install a flat replacement')
  key=f"raceway-{spec['key']}-{selection['key']}";race['id']=selection.get('legacyId',key)
@@ -85,7 +88,7 @@ def build(spec,selection):
  race['campaign']={'optional':True,'eventType':'Circuit race','hubStage':spec.get('hubStage'),'sideEventId':key}
  race['description']=f"{spec['name']} / {selection['label']}. Mapped road geometry with sampled terrain elevations; see source notes for survey limitations."
  OUT.mkdir(parents=True,exist_ok=True);file=OUT/f'{key}.json';file.write_text(json.dumps(race,separators=(',',':'))+'\n')
- return {'id':key,'status':'imported','name':name,'raceRef':name,'displayName':name,'venueKey':spec['key'],'venueName':spec['name'],'layoutLabel':selection['label'],'hubStage':spec.get('hubStage'),'import_kind':'circuit','event_type':'Circuit race','surface':['asphalt'],'lengthM':layout['lengthM'],'laps':race['laps'],'generatedPath':str(file),'replaceRaceRef':selection.get('raceRef'),'existingSideId':selection.get('existingSideId'),'warnings':race['source']['warnings']}
+ return {'id':key,'status':'imported','name':name,'raceRef':name,'displayName':name,'venueKey':spec['key'],'venueName':spec['name'],'layoutLabel':selection['label'],'hubStage':spec.get('hubStage'),'artHubStage':spec.get('artHubStage'),'import_kind':'circuit','event_type':'Circuit race','surface':['asphalt'],'lengthM':layout['lengthM'],'laps':race['laps'],'generatedPath':str(file),'replaceRaceRef':selection.get('raceRef'),'existingSideId':selection.get('existingSideId'),'warnings':race['source']['warnings']}
 
 if __name__=='__main__':
  parser=argparse.ArgumentParser();parser.add_argument('--only',nargs='*');args=parser.parse_args()

@@ -179,5 +179,129 @@
     "method": "Current OpenStreetMap road geometry matched to the public stage map. Selected continuous road recreation, not the complete competitive layout or exact timing controls. Widths and roughness are estimates; DEM does not resolve engineered jumps, ruts or camber. Continuous Steamboat Forest Road, identified by the organizer map and ARA 2021 stage guide. Not the complete historic stage. Sandy gravel represented by the existing gravel surface model.",
     "year": null,
     "format": "mapped-road"
+  },
+  {
+    "key": "chile-conuco-forest",
+    "collection": "chile",
+    "collectionName": "Rally Chile",
+    "stageName": "Conuco \u2014 Outer Forest Roads",
+    "year": null,
+    "country": "cl",
+    "width": 5.5,
+    "artHubStage": 5,
+    "format": "mapped-road",
+    "waypoints": [
+      [
+        -36.6965521,
+        -72.7128169
+      ],
+      [
+        -36.6414269,
+        -72.7274993
+      ]
+    ],
+    "url": "https://www.biobiochile.cl/especial/rally/rutas.shtml",
+    "bumpiness": 0.055,
+    "method": "Additional continuous mapped road in the rally region, not an official historical competitive stage. Original OSM node connections and surface tags retained; existing parent-stage edges excluded. Gameplay timing lines and estimated road widths. Public DEM provides terrain, not surveyed ruts, camber or jumps."
+  },
+  {
+    "key": "wales-hafren-forest",
+    "collection": "wales",
+    "collectionName": "Wales \u2014 Sweet Lamb/Hafren",
+    "stageName": "Hafren \u2014 Forest Traverse",
+    "country": "gb",
+    "width": 5.5,
+    "artHubStage": 3,
+    "waypoints": [
+      [
+        52.4412994,
+        -3.7667156
+      ],
+      [
+        52.464833,
+        -3.6881018
+      ]
+    ],
+    "url": "https://files.freethought.website/freethought27/file/sweetlamb-hafren_1.pdf",
+    "bumpiness": 0.05,
+    "method": "Additional continuous mapped road in the rally region, not an official historical competitive stage. Original OSM node connections and surface tags retained; existing parent-stage edges excluded. Gameplay timing lines and estimated road widths. Public DEM provides terrain, not surveyed ruts, camber or jumps. Selected Hafren forest tracks; ends before a tight forest junction rather than adding a false hairpin.",
+    "year": null,
+    "format": "mapped-road"
+  },
+  {
+    "key": "germany-baumholder-range",
+    "collection": "germany",
+    "collectionName": "Rally Germany",
+    "stageName": "Baumholder \u2014 Concrete Range Roads",
+    "country": "de",
+    "surface": "asphalt",
+    "width": 6,
+    "artHubStage": 3,
+    "waypoints": [
+      [
+        49.67813,
+        7.4105217
+      ],
+      [
+        49.694546,
+        7.4333527
+      ]
+    ],
+    "url": "https://media.adac-motorsport.de/dl.php?dID=3722%2C135%2C136%2C1768&fID=37355",
+    "bumpiness": 0.025,
+    "method": "Additional continuous mapped road in the rally region, not an official historical competitive stage. Original OSM node connections and surface tags retained; existing parent-stage edges excluded. Gameplay timing lines and estimated road widths. Public DEM provides terrain, not surveyed ruts, camber or jumps.",
+    "year": null,
+    "format": "mapped-road"
+  },
+  {
+    "key": "japan-otaga-mountain",
+    "collection": "japan-aichi",
+    "collectionName": "Rally Japan \u2014 Aichi",
+    "stageName": "Otaga \u2014 Mountain Roads",
+    "country": "jp",
+    "surface": "asphalt",
+    "width": 4.5,
+    "artHubStage": 3,
+    "waypoints": [
+      [
+        35.1711527,
+        137.4274383
+      ],
+      [
+        35.2010635,
+        137.42084
+      ]
+    ],
+    "url": "https://www.rallysupport.com/wp-content/uploads/2025/11/Rally-Japan-2025-Stage-Maps-Overview.pdf",
+    "bumpiness": 0.02,
+    "method": "Additional continuous mapped road in the rally region, not an official historical competitive stage. Original OSM node connections and surface tags retained; existing parent-stage edges excluded. Gameplay timing lines and estimated road widths. Public DEM provides terrain, not surveyed ruts, camber or jumps. Additional Otaga-area mountain roads near Isegami, not the full Isegami WRC stage. Old tunnel is retained only in its original standalone race. Timing-line search may omit up to 4.5 km at each end to find a usable straight on this winding road.",
+    "year": null,
+    "format": "mapped-road",
+    "timingSearchDistanceM": 4500
+  },
+  {
+    "key": "100aw-kp-road",
+    "collection": "100-acre-wood",
+    "collectionName": "100 Acre Wood Rally",
+    "stageName": "K P Road \u2014 Northern Section",
+    "country": "us",
+    "stateCode": "MO",
+    "width": 6,
+    "artHubStage": 5,
+    "waypoints": [
+      [
+        37.764486,
+        -91.309259
+      ],
+      [
+        37.8157616,
+        -91.324912
+      ]
+    ],
+    "url": "https://www.americanrallyassociation.org/post/from-pa-to-mo-ara-competitors-conquer-summer-regional-rally-double-header",
+    "bumpiness": 0.045,
+    "method": "Additional continuous mapped road in the rally region, not an official historical competitive stage. Original OSM node connections and surface tags retained; existing parent-stage edges excluded. Gameplay timing lines and estimated road widths. Public DEM provides terrain, not surveyed ruts, camber or jumps. K P Road in the KP-to-Ollie corridor identified by ARA and the organizer spectator location; does not claim the full KP-to-Ollie layout.",
+    "year": null,
+    "format": "mapped-road"
   }
 ]

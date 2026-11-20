@@ -69,7 +69,7 @@ test('physical SELECT and simulated SELECT both open the index only from the wor
 
 test('International includes every overseas layout, grouped by venue, without US or unknown tracks',()=>{
  const overseas=raceIndexEntries(menu.parameters.raceIndex,'international');
- assert.equal(overseas.length,87);
+ assert.equal(overseas.filter(e=>!Number.isInteger(e.rally?.section)).length,130);
  assert.equal(overseas.filter(e=>e.venue==='Silverstone').length,4);
  assert.equal(overseas.filter(e=>e.venue==='Fuji Speedway').length,5);
  assert.ok(overseas.every(e=>e.location.country&&e.location.country!=='US'));

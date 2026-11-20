@@ -12,9 +12,9 @@ const manifest=JSON.parse(fs.readFileSync(`${root}/manifest.json`));
 const collections=JSON.parse(fs.readFileSync('data/campaigns/america/raceways/rally-collections.json'));
 
 test('rally collection entries resolve to saved stages, sources and nonempty previews',()=>{
- const entries=raceIndexEntries(menu.parameters.raceIndex,'rallies');
- assert.equal(entries.length,45);assert.equal(new Set(entries.map(e=>e.rally.id)).size,21);
- assert.equal(entries.filter(e=>e.location.country==='US').length,8);
+ const entries=raceIndexEntries(menu.parameters.raceIndex,'rallies').filter(e=>!Number.isInteger(e.rally.section));
+ assert.equal(entries.length,66);assert.equal(new Set(entries.map(e=>e.rally.id)).size,30);
+ assert.equal(entries.filter(e=>e.location.country==='US').length,9);
  for(const entry of entries){
   const stored=JSON.parse(fs.readFileSync(`${root}/${manifest.folders.races[entry.ref]}`));
   const doc=stored.__chainsawStorage?JSON.parse(zlib.gunzipSync(Buffer.from(stored.data,'base64'))):stored;
@@ -44,10 +44,16 @@ test('world-map Rally opens staged events and returns to the map',async()=>{
  const player=Object.assign(Object.create(MenuPlayer.prototype),{screenFocus:new Map(),widgetStates:new Map(),campaignAccess:()=>({allowed:true})});
  player.flow=new MenuFlow({...menu,startScreen:'world-map'});player.flow.screenId='world-map';
  player.motorsport=new MotorsportMenu(player);
- await player.activate(player.flow.screen.elements.find(e=>e.id==='world-rally'));
+ await player.activate(player.flow.screen.elements.find(e=>e.id==='world-championships'));
+ await player.activate(player.flow.screen.elements.find(e=>e.id==='motorsport-rallies'));
  assert.equal(player.flow.screenId,'motorsport-list');assert.equal(player.motorsport.kind,'rallies');
- await player.activate(player.flow.screen.elements.find(e=>e.id==='motorsport-pick-0'));
+ const first=player.motorsport.catalog.rallyGroups.findIndex(g=>g.formats.length);
+ await player.activate(player.flow.screen.elements.find(e=>e.id===`motorsport-pick-${first}`));
+ assert.equal(player.flow.screenId,'motorsport-formats');
+ await player.activate(player.flow.screen.elements.find(e=>e.id==='motorsport-format-4'));
  assert.equal(player.flow.screenId,'motorsport-preview');assert.equal(player.motorsport.selection.rounds.length,4);
+ await player.activate(player.flow.screen.elements.find(e=>e.id==='motorsport-back'));
+ await player.activate(player.flow.screen.elements.find(e=>e.id==='motorsport-back'));
  await player.activate(player.flow.screen.elements.find(e=>e.id==='motorsport-back'));
  await player.activate(player.flow.screen.elements.find(e=>e.id==='motorsport-back'));
  assert.equal(player.flow.screenId,'world-map');

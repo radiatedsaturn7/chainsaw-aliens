@@ -11,6 +11,14 @@ const cups=[
  ['american-apex','American Apex',1,['WeatherTech Raceway Laguna Seca','Watkins Glen — Long Course','Road America — Full Course']],
  ['british-club','British Club',1,['Brands Hatch — Indy','Silverstone — National','Brands Hatch — Grand Prix']],
  ['continental','Continental Cup',2,['Red Bull Ring — Grand Prix','Monza — Grand Prix','Spa-Francorchamps — Grand Prix']],
+ ['southern-speed','Southern Speed',1,['Road Atlanta — Short Course','Sebring International Raceway — Short Circuit','Virginia International Raceway — South Course']],
+ ['pacific-club','Pacific Club',1,['Willow Springs — Streets of Willow','Willow Springs — Horse Thief Mile','WeatherTech Raceway Laguna Seca']],
+ ['japan-club','Japan Club',1,['Tsukuba — Course 1000','Suzuka — East','Fuji Speedway — Short — Outer']],
+ ['british-tour','British Tour',2,['Donington Park — Grand Prix','Brands Hatch — Grand Prix','Silverstone — International']],
+ ['italian-sprint','Italian Sprint',2,['Monza — Junior','Imola — Grand Prix','Monza — Grand Prix']],
+ ['rhine-cup','Rhine Cup',2,['Hockenheimring — Grand Prix','Nürburgring — Sprint','Zandvoort — Grand Prix']],
+ ['pacific-masters','Pacific Masters',3,['Fuji Speedway — Grand Prix','Phillip Island — Grand Prix','Mount Panorama — Mount Panorama Circuit']],
+ ['atlantic-masters','Atlantic Masters',3,['Circuit Gilles-Villeneuve — Grand Prix','Interlagos — Grand Prix','Portimão — Grand Prix']],
  ['world-masters','World Masters',3,['Suzuka — East','Silverstone — Grand Prix','Spa-Francorchamps — Grand Prix']]
 ];
 export function motorsportRaceMetadata(race){
@@ -24,15 +32,20 @@ export function motorsportCatalog(entries=[]){
  const groups=new Map();
  for(const e of entries)if(e.rally?.id&&!e.location?.body){if(!groups.has(e.rally.id))groups.set(e.rally.id,[]);groups.get(e.rally.id).push(e);}
  const rallies=[];
- for(const [id,stages] of groups){
-  stages.sort((a,b)=>a.ref.localeCompare(b.ref));
+ for(const [id,roads] of groups){
+  const stages=roads.filter(e=>Number.isInteger(e.rally.section));
+  stages.sort((a,b)=>a.rally.section-b.rally.section||a.ref.localeCompare(b.ref));
   for(const [format,count] of [['short',4],['full',12]]){
-   const rounds=Array.from({length:count},(_,i)=>({ref:stages[i%stages.length].ref,seconds:Math.max(15,Number(stages[i%stages.length].stageSeconds)||300),pass:Math.floor(i/stages.length)+1}));
-   rallies.push({id:`rally-${id}-${format}`,kind:'rally',name:`${stages[0].rally.name} · ${format==='short'?'Short':'Full'}`,heat:2,rounds,
-    description:`${count} stages · ${stages.length} distinct roads · repeat passes · service after every ${format==='short'?2:3} stages`,serviceEvery:format==='short'?2:3});
+   const needed=count===4?4:6;if(stages.length<needed)continue;
+   // Short visits four different sections across the itinerary; full visits all six twice.
+   const selected=count===4?Array.from({length:4},(_,i)=>stages[Math.round(i*(stages.length-1)/3)]):stages.slice(0,6);
+   const rounds=Array.from({length:count},(_,i)=>({ref:selected[i%needed].ref,seconds:Math.max(15,Number(selected[i%needed].stageSeconds)||300),pass:Math.floor(i/needed)+1}));
+   rallies.push({id:`rally-${id}-${format}`,kind:'rally',rallyId:id,rallyName:stages[0].rally.name,name:`${stages[0].rally.name} · ${format==='short'?'Short':'Full'}`,heat:2,rounds,
+    description:`${count} stages · ${needed} distinct sections · ${count===4?'one pass':'two passes'} · service after every ${format==='short'?2:3} stages`,serviceEvery:format==='short'?2:3});
   }
  }
- return {championships,rallies};
+ const rallyGroups=[...groups.keys()].map(id=>({id,name:groups.get(id)[0].rally.name,formats:rallies.filter(r=>r.rallyId===id)})).sort((a,b)=>a.name.localeCompare(b.name));
+ return {championships,rallies,rallyGroups};
 }
 export function createMotorsportEvent(definition,carRef,configuration={},id=globalThis.crypto?.randomUUID?.()||String(Date.now())){
  if(!carRef||!definition?.rounds?.length)throw Error('Choose a car and event first.');

@@ -1,0 +1,1157 @@
+{
+  "circuitVenues": 7,
+  "circuitLayouts": 10,
+  "rallyLocations": 9,
+  "rallyParentRoads": 16,
+  "rallySections": 54,
+  "circuits": [
+    {
+      "id": "raceway-barcelona-gp",
+      "name": "Circuit de Barcelona-Catalunya — Grand Prix",
+      "mappedLengthM": 4634.889236483151,
+      "sourceWarnings": [
+        "Banking is set to 0°; set banking per segment in the editor.",
+        "Start line and driving direction are provisional; verify against the real circuit.",
+        "Road width uses OSM width where available, otherwise your default.",
+        "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+      ]
+    },
+    {
+      "id": "raceway-barcelona-national",
+      "name": "Circuit de Barcelona-Catalunya — National",
+      "mappedLengthM": 2951.627136401337,
+      "sourceWarnings": [
+        "Banking is set to 0°; set banking per segment in the editor.",
+        "Start line and driving direction are provisional; verify against the real circuit.",
+        "Road width uses OSM width where available, otherwise your default.",
+        "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+      ]
+    },
+    {
+      "id": "raceway-mugello-gp",
+      "name": "Mugello Circuit — Grand Prix",
+      "mappedLengthM": 5244.728932242215,
+      "sourceWarnings": [
+        "Banking is set to 0°; set banking per segment in the editor.",
+        "Start line and driving direction are provisional; verify against the real circuit.",
+        "Road width uses OSM width where available, otherwise your default.",
+        "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+      ]
+    },
+    {
+      "id": "raceway-sonoma-full",
+      "name": "Sonoma Raceway — Full Course",
+      "mappedLengthM": 4069.1931262719786,
+      "sourceWarnings": [
+        "Banking is set to 0°; set banking per segment in the editor.",
+        "Start line and driving direction are provisional; verify against the real circuit.",
+        "Road width uses OSM width where available, otherwise your default.",
+        "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+      ]
+    },
+    {
+      "id": "raceway-sonoma-nascar",
+      "name": "Sonoma Raceway — NASCAR Course",
+      "mappedLengthM": 3201.7733814053095,
+      "sourceWarnings": [
+        "Banking is set to 0°; set banking per segment in the editor.",
+        "Start line and driving direction are provisional; verify against the real circuit.",
+        "Road width uses OSM width where available, otherwise your default.",
+        "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+      ]
+    },
+    {
+      "id": "raceway-autopolis-full",
+      "name": "Autopolis — International Course",
+      "mappedLengthM": 4632.701204486843,
+      "sourceWarnings": [
+        "Banking is set to 0°; set banking per segment in the editor.",
+        "Start line and driving direction are provisional; verify against the real circuit.",
+        "Road width uses OSM width where available, otherwise your default.",
+        "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+      ]
+    },
+    {
+      "id": "raceway-autopolis-short",
+      "name": "Autopolis — Shortcut Course",
+      "mappedLengthM": 2975.714814249202,
+      "sourceWarnings": [
+        "Banking is set to 0°; set banking per segment in the editor.",
+        "Start line and driving direction are provisional; verify against the real circuit.",
+        "Road width uses OSM width where available, otherwise your default.",
+        "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+      ]
+    },
+    {
+      "id": "raceway-goodwood-full",
+      "name": "Goodwood Motor Circuit — Motor Circuit",
+      "mappedLengthM": 3813.6734757808526,
+      "sourceWarnings": [
+        "Banking is set to 0°; set banking per segment in the editor.",
+        "Start line and driving direction are provisional; verify against the real circuit.",
+        "Road width uses OSM width where available, otherwise your default.",
+        "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+      ]
+    },
+    {
+      "id": "raceway-long-beach-full",
+      "name": "Long Beach — Grand Prix",
+      "mappedLengthM": 3258.395492542682,
+      "sourceWarnings": [
+        "Banking is set to 0°; set banking per segment in the editor.",
+        "Start line and driving direction are provisional; verify against the real circuit.",
+        "Road width uses OSM width where available, otherwise your default.",
+        "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+      ]
+    },
+    {
+      "id": "raceway-dunsfold-full",
+      "name": "Dunsfold — Top Gear Test Track — Full Course",
+      "mappedLengthM": 2846.573477112776,
+      "sourceWarnings": [
+        "Banking is set to 0°; set banking per segment in the editor.",
+        "Start line and driving direction are provisional; verify against the real circuit.",
+        "Road width uses OSM width where available, otherwise your default.",
+        "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+      ]
+    }
+  ],
+  "rallies": [
+    {
+      "id": "latvia",
+      "name": "Rally Latvia",
+      "formats": [
+        4,
+        12
+      ],
+      "sectionLengthsM": [
+        4726.71146516741,
+        9082.621774559988,
+        9098.449109762414,
+        9196.890212661288,
+        8666.509178970877,
+        8725.889795505833
+      ],
+      "parentRoads": [
+        {
+          "id": "rally-latvia-mapped-1-2024",
+          "name": "Rally Latvia — Milzkalne 2024",
+          "mappedLengthM": 4972.243726533223,
+          "sourceWarnings": [
+            "Banking is set to 0°; set banking per segment in the editor.",
+            "Start line and driving direction are provisional; verify against the real circuit.",
+            "Road width uses OSM width where available, otherwise your default.",
+            "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+            "Public 2024 spectator map coordinate trace of Milzkalne; source: Tet Rally Latvia spectator map linked by RallySupport. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+            "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+          ]
+        },
+        {
+          "id": "rally-latvia-mapped-2-2024",
+          "name": "Rally Latvia — Tukums 2024",
+          "mappedLengthM": 27516.448961612114,
+          "sourceWarnings": [
+            "Banking is set to 0°; set banking per segment in the editor.",
+            "Start line and driving direction are provisional; verify against the real circuit.",
+            "Road width uses OSM width where available, otherwise your default.",
+            "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+            "Public 2024 spectator map coordinate trace of Tukums; source: Tet Rally Latvia spectator map linked by RallySupport. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+            "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+          ]
+        },
+        {
+          "id": "rally-latvia-mapped-3-2024",
+          "name": "Rally Latvia — Andumi 2024",
+          "mappedLengthM": 17907.136320812708,
+          "sourceWarnings": [
+            "Banking is set to 0°; set banking per segment in the editor.",
+            "Start line and driving direction are provisional; verify against the real circuit.",
+            "Road width uses OSM width where available, otherwise your default.",
+            "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+            "Public 2024 spectator map coordinate trace of Andumi; source: Tet Rally Latvia spectator map linked by RallySupport. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+            "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "estonia",
+      "name": "Rally Estonia",
+      "formats": [
+        4,
+        12
+      ],
+      "sectionLengthsM": [
+        4346.183760551175,
+        4462.259495897358,
+        4832.119728982743,
+        4712.952005390898,
+        4958.685664974959,
+        6219.434719961395
+      ],
+      "parentRoads": [
+        {
+          "id": "rally-estonia-mapped-1-2020",
+          "name": "Rally Estonia — RÜA 2020",
+          "mappedLengthM": 9357.89624522887,
+          "sourceWarnings": [
+            "Banking is set to 0°; set banking per segment in the editor.",
+            "Start line and driving direction are provisional; verify against the real circuit.",
+            "Road width uses OSM width where available, otherwise your default.",
+            "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+            "Public 2020 spectator map coordinate trace of RÜA; source: Rally Estonia public 2020 restriction/stage map linked by Arula village. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+            "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+          ]
+        },
+        {
+          "id": "rally-estonia-mapped-2-2020",
+          "name": "Rally Estonia — MÄEKÜLA 2020",
+          "mappedLengthM": 14794.758428369516,
+          "sourceWarnings": [
+            "Banking is set to 0°; set banking per segment in the editor.",
+            "Start line and driving direction are provisional; verify against the real circuit.",
+            "Road width uses OSM width where available, otherwise your default.",
+            "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+            "Public 2020 spectator map coordinate trace of MÄEKÜLA; source: Rally Estonia public 2020 restriction/stage map linked by Arula village. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+            "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+          ]
+        },
+        {
+          "id": "rally-estonia-mapped-3-2020",
+          "name": "Rally Estonia — ARULA 2020",
+          "mappedLengthM": 6941.553054788962,
+          "sourceWarnings": [
+            "Banking is set to 0°; set banking per segment in the editor.",
+            "Start line and driving direction are provisional; verify against the real circuit.",
+            "Road width uses OSM width where available, otherwise your default.",
+            "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+            "Public 2020 spectator map coordinate trace of ARULA; source: Rally Estonia public 2020 restriction/stage map linked by Arula village. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+            "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sardinia",
+      "name": "Rally Italia Sardegna",
+      "formats": [
+        4,
+        12
+      ],
+      "sectionLengthsM": [
+        4159.10280978345,
+        4211.923052514649,
+        4026.290799289869,
+        4322.469642217697,
+        4194.589051398281,
+        4176.115254917855
+      ],
+      "parentRoads": [
+        {
+          "id": "rally-sardinia-mapped-1-2024",
+          "name": "Rally Italia Sardegna — Monte Lerno — Monti di Alà 2024",
+          "mappedLengthM": 25250.444217401964,
+          "sourceWarnings": [
+            "Banking is set to 0°; set banking per segment in the editor.",
+            "Start line and driving direction are provisional; verify against the real circuit.",
+            "Road width uses OSM width where available, otherwise your default.",
+            "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+            "Public 2024 spectator map coordinate trace of Monte Lerno — Monti di Alà; source: Public Reccemaps spectator preview — Monte Lerno / Monti di Alà. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+            "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "croatia",
+      "name": "Croatia Rally",
+      "formats": [
+        4,
+        12
+      ],
+      "sectionLengthsM": [
+        5739.822985408043,
+        5764.416940956157,
+        5358.535719573487,
+        5389.20007981191,
+        5392.928964899274,
+        9696.05373323827
+      ],
+      "parentRoads": [
+        {
+          "id": "rally-croatia-mapped-1-2026",
+          "name": "Croatia Rally — Ucka 2026",
+          "mappedLengthM": 11683.919863701103,
+          "sourceWarnings": [
+            "Banking is set to 0°; set banking per segment in the editor.",
+            "Start line and driving direction are provisional; verify against the real circuit.",
+            "Road width uses OSM width where available, otherwise your default.",
+            "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+            "Public 2026 spectator map coordinate trace of Ucka; source: Public Croatia 2026 spectator route map; unofficial trace. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+            "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+          ]
+        },
+        {
+          "id": "rally-croatia-mapped-2-2026",
+          "name": "Croatia Rally — Platak 2026",
+          "mappedLengthM": 16319.537952588129,
+          "sourceWarnings": [
+            "Banking is set to 0°; set banking per segment in the editor.",
+            "Start line and driving direction are provisional; verify against the real circuit.",
+            "Road width uses OSM width where available, otherwise your default.",
+            "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+            "Public 2026 spectator map coordinate trace of Platak; source: Public Croatia 2026 spectator route map; unofficial trace. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+            "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+          ]
+        },
+        {
+          "id": "rally-croatia-mapped-3-2026",
+          "name": "Croatia Rally — Ravna Gora - Skrad 2026",
+          "mappedLengthM": 10151.245038028384,
+          "sourceWarnings": [
+            "Banking is set to 0°; set banking per segment in the editor.",
+            "Start line and driving direction are provisional; verify against the real circuit.",
+            "Road width uses OSM width where available, otherwise your default.",
+            "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+            "Public 2026 spectator map coordinate trace of Ravna Gora - Skrad; source: Public Croatia 2026 spectator route map; unofficial trace. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+            "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "corsica",
+      "name": "Tour de Corse",
+      "formats": [
+        4,
+        12
+      ],
+      "sectionLengthsM": [
+        3853.226032684959,
+        4658.903615568901,
+        4015.4790135565254,
+        4199.387115369487,
+        4694.270126998137,
+        3656.9318984537204
+      ],
+      "parentRoads": [
+        {
+          "id": "rally-corsica-la-porta",
+          "name": "Tour de Corse — La Porta — Barchetta — Road Recreation",
+          "mappedLengthM": 25212.698530578153,
+          "sourceWarnings": [
+            "Banking is set to 0°; set banking per segment in the editor.",
+            "Start line and driving direction are provisional; verify against the real circuit.",
+            "Road width uses OSM width where available, otherwise your default.",
+            "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+            "D515 portion of La Porta–Barchetta, documented in the 2025 Tour de Corse Historique road closures. Omits the D205 competition approach. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate.",
+            "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ypres",
+      "name": "Ypres Rally",
+      "formats": [
+        4,
+        12
+      ],
+      "sectionLengthsM": [
+        1556.5312770239439,
+        1500.8234353924881,
+        1608.4974205060657,
+        1573.263549870766,
+        1335.1144007359674,
+        1294.6132533012592
+      ],
+      "parentRoads": [
+        {
+          "id": "rally-ypres-kemmelberg",
+          "name": "Ypres Rally — Kemmelberg — Road Recreation",
+          "mappedLengthM": 9640.940657751124,
+          "sourceWarnings": [
+            "Banking is set to 0°; set banking per segment in the editor.",
+            "Start line and driving direction are provisional; verify against the real circuit.",
+            "Road width uses OSM width where available, otherwise your default.",
+            "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+            "Mapped Kemmelberg roads reviewed against the organizer 2025 recce map. Starts on Noordstraat, omitting the initial Kemmel village/Katteput loop. This is a partial geographic recreation rather than the identical stage. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate.",
+            "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "central-europe",
+      "name": "Central European Rally",
+      "formats": [
+        4,
+        12
+      ],
+      "sectionLengthsM": [
+        2269.9476912966206,
+        2266.8808286664002,
+        2253.799094636569,
+        2167.729558565329,
+        2292.1008386442627,
+        2193.488536883402
+      ],
+      "parentRoads": [
+        {
+          "id": "rally-central-europe-strasinska",
+          "name": "Central European Rally — Strašínská — Road Recreation",
+          "mappedLengthM": 13840.40756268025,
+          "sourceWarnings": [
+            "Banking is set to 0°; set banking per segment in the editor.",
+            "Start line and driving direction are provisional; verify against the real circuit.",
+            "Road width uses OSM width where available, otherwise your default.",
+            "Abrupt 165-degree reversal at point 321; verify junction continuity",
+            "Abrupt 121-degree reversal at point 497; verify junction continuity",
+            "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+            "Southern portion of the Strašínská route published by Hoslovice municipality for Central European Rally 2024; current paved village roads through Maleč and Zálesí, ending at Nová Ves before the northern stage loop. Village-center waypoints are snapped to through roads, up to 166 m. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate. Reviewed genuine sharp junctions: OSM 69465111/30406194 at the southern 171/17019 turn, and 218840136/436846217 at 17224/17220, both visible in the published map; source node topology retained.",
+            "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "poland",
+      "name": "Rally Poland",
+      "formats": [
+        4,
+        12
+      ],
+      "sectionLengthsM": [
+        1851.3801636977632,
+        2022.0318599033285,
+        1769.3956212103635,
+        1895.6739542399773,
+        1797.527027483955,
+        1839.746939536868
+      ],
+      "parentRoads": [
+        {
+          "id": "rally-poland-swietajno",
+          "name": "Rally Poland — Świętajno — Pietrasze to Chełchy — Road Recreation",
+          "mappedLengthM": 11484.164147274749,
+          "sourceWarnings": [
+            "Banking is set to 0°; set banking per segment in the editor.",
+            "Start line and driving direction are provisional; verify against the real circuit.",
+            "Road width uses OSM width where available, otherwise your default.",
+            "Abrupt 128-degree reversal at point 118; verify junction continuity",
+            "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+            "Southern part of the published 2024 Świętajno spectator map: Pietrasze, Jelonek, Zalesie and Chełchy. Ends before the northern Gryzy/Mazury competition loop. Current drivable roads, not an exact historical timing-control reconstruction. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate. The mapped southern approach uses a short 655 section before joining the gravel corridor; this differs from the competition forest approach. Jelonek waypoint is on the through-road junction, not the village spur. Sharp current-road junction 749553159/178760572 is topologically connected; the alternate southern approach makes this turn sharper than the published competition approach.",
+            "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "australia",
+      "name": "Rally Australia",
+      "formats": [
+        4,
+        12
+      ],
+      "sectionLengthsM": [
+        3659.546563376647,
+        3628.5650825776747,
+        3696.3235438109596,
+        3634.643987311061,
+        4058.2709113419955,
+        3992.2541739112253
+      ],
+      "parentRoads": [
+        {
+          "id": "rally-australia-sherwood",
+          "name": "Rally Australia — Sherwood Road — Road Recreation",
+          "mappedLengthM": 14926.249667765353,
+          "sourceWarnings": [
+            "Banking is set to 0°; set banking per segment in the editor.",
+            "Start line and driving direction are provisional; verify against the real circuit.",
+            "Road width uses OSM width where available, otherwise your default.",
+            "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+            "Continuous mapped Sherwood Road in the Coffs Coast rally area documented by the organizer 2018 Rally Guide 2. A named-road recreation, not the full same-named WRC stage; competition loops, connecting forest roads and exact controls omitted. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate.",
+            "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+          ]
+        },
+        {
+          "id": "rally-australia-coldwater",
+          "name": "Rally Australia — Coldwater Creek Road — Road Recreation",
+          "mappedLengthM": 8648.452668895541,
+          "sourceWarnings": [
+            "Banking is set to 0°; set banking per segment in the editor.",
+            "Start line and driving direction are provisional; verify against the real circuit.",
+            "Road width uses OSM width where available, otherwise your default.",
+            "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+            "Continuous mapped Coldwater Creek Road in the Coffs Coast rally area documented by the organizer 2018 Rally Guide 2. A named-road recreation, not the full same-named WRC stage; competition loops, connecting forest roads and exact controls omitted. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate.",
+            "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+          ]
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Current circuits only. Historical Sonoma IndyCar and Barcelona old chicane layouts are excluded. Mugello has no verified connected current short-course trace in the selected snapshot.",
+    "Dunsfold retains its real at-grade crossover; reviewed connected way order allows a repeated junction but never a repeated road edge.",
+    "Each 12-stage event uses six nonoverlapping forward game sections twice. Four-stage format uses four distinct sections. These are game itineraries, not complete official WRC schedules.",
+    "Latvia 2024, Estonia 2020 and Sardinia 2024 use public spectator coordinate traces. Croatia 2026 uses an unofficial public trace because the official download required login.",
+    "Croatia source segments reach 549 m (Ucka), 570 m (Platak) and 445 m (Ravna Gora). Densification makes rendering smoother but does not recover missing surveyed road detail.",
+    "Corsica is the D515 La Porta–Barchetta corridor, omitting the competition D205 approach. Ypres is a partial Kemmelberg road recreation, omitting its initial village loop.",
+    "Central Europe is the southern Strasinska portion through Malec and Zalesi to Nova Ves. Poland uses current southern approach roads including a short 655 section before the Swietajno gravel corridor, not the exact forest approach or northern stage loop.",
+    "Australia uses continuous Sherwood Road and Coldwater Creek Road in the Coffs Coast rally area; neither is presented as the complete same-named WRC competition stage.",
+    "Public DEM cannot reproduce surveyed banking, ruts, jumps or engineered bridge decks. Widths, conditions and reused regional scenery are approximate.",
+    "Loading tests validate real worker preparation and finite transferred render/physics geometry. Terrain tolerance warnings are diagnostics; a visual driving pass remains useful."
+  ],
+  "validation": [
+    {
+      "id": "raceway-barcelona-gp",
+      "passed": true,
+      "seconds": 15.261,
+      "peakRssKB": 576348,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "raceway-barcelona-national",
+      "passed": true,
+      "seconds": 9.6,
+      "peakRssKB": 393616,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "raceway-mugello-gp",
+      "passed": true,
+      "seconds": 22.447,
+      "peakRssKB": 682536,
+      "terrainToleranceWarnings": 24,
+      "error": null
+    },
+    {
+      "id": "raceway-sonoma-full",
+      "passed": true,
+      "seconds": 17.42,
+      "peakRssKB": 572832,
+      "terrainToleranceWarnings": 6,
+      "error": null
+    },
+    {
+      "id": "raceway-sonoma-nascar",
+      "passed": true,
+      "seconds": 13.066,
+      "peakRssKB": 526168,
+      "terrainToleranceWarnings": 4,
+      "error": null
+    },
+    {
+      "id": "raceway-autopolis-full",
+      "passed": true,
+      "seconds": 16.87,
+      "peakRssKB": 588436,
+      "terrainToleranceWarnings": 2,
+      "error": null
+    },
+    {
+      "id": "raceway-autopolis-short",
+      "passed": true,
+      "seconds": 13.185,
+      "peakRssKB": 388540,
+      "terrainToleranceWarnings": 2,
+      "error": null
+    },
+    {
+      "id": "raceway-goodwood-full",
+      "passed": true,
+      "seconds": 12.694,
+      "peakRssKB": 527828,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "raceway-long-beach-full",
+      "passed": true,
+      "seconds": 10.858,
+      "peakRssKB": 356644,
+      "terrainToleranceWarnings": 1,
+      "error": null
+    },
+    {
+      "id": "raceway-dunsfold-full",
+      "passed": true,
+      "seconds": 10.437,
+      "peakRssKB": 360940,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-latvia-mapped-1-2024",
+      "passed": true,
+      "seconds": 13.347,
+      "peakRssKB": 513656,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-latvia-mapped-2-2024",
+      "passed": true,
+      "seconds": 62.753,
+      "peakRssKB": 1128304,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-latvia-mapped-3-2024",
+      "passed": true,
+      "seconds": 34.651,
+      "peakRssKB": 915816,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-estonia-mapped-1-2020",
+      "passed": true,
+      "seconds": 11.442,
+      "peakRssKB": 659600,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-estonia-mapped-2-2020",
+      "passed": true,
+      "seconds": 27.349,
+      "peakRssKB": 888320,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-estonia-mapped-3-2020",
+      "passed": true,
+      "seconds": 13.689,
+      "peakRssKB": 564748,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-sardinia-mapped-1-2024",
+      "passed": true,
+      "seconds": 57.38,
+      "peakRssKB": 1115360,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-croatia-mapped-1-2026",
+      "passed": true,
+      "seconds": 33.448,
+      "peakRssKB": 868740,
+      "terrainToleranceWarnings": 10,
+      "error": null
+    },
+    {
+      "id": "rally-croatia-mapped-2-2026",
+      "passed": true,
+      "seconds": 31.049,
+      "peakRssKB": 1013936,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-croatia-mapped-3-2026",
+      "passed": true,
+      "seconds": 21.96,
+      "peakRssKB": 790956,
+      "terrainToleranceWarnings": 14,
+      "error": null
+    },
+    {
+      "id": "rally-corsica-la-porta",
+      "passed": true,
+      "seconds": 80.434,
+      "peakRssKB": 1259164,
+      "terrainToleranceWarnings": 250,
+      "error": null
+    },
+    {
+      "id": "rally-ypres-kemmelberg",
+      "passed": true,
+      "seconds": 18.48,
+      "peakRssKB": 661588,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-central-europe-strasinska",
+      "passed": true,
+      "seconds": 34.797,
+      "peakRssKB": 843368,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-poland-swietajno",
+      "passed": true,
+      "seconds": 25.409,
+      "peakRssKB": 701200,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-australia-sherwood",
+      "passed": true,
+      "seconds": 54.077,
+      "peakRssKB": 969876,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-australia-coldwater",
+      "passed": true,
+      "seconds": 27.347,
+      "peakRssKB": 746620,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-latvia-1",
+      "passed": true,
+      "seconds": 12.099,
+      "peakRssKB": 478844,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-latvia-2",
+      "passed": true,
+      "seconds": 21.132,
+      "peakRssKB": 639732,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-latvia-3",
+      "passed": true,
+      "seconds": 25.364,
+      "peakRssKB": 702180,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-latvia-4",
+      "passed": true,
+      "seconds": 19.734,
+      "peakRssKB": 602232,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-latvia-5",
+      "passed": true,
+      "seconds": 17.654,
+      "peakRssKB": 599512,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-latvia-6",
+      "passed": true,
+      "seconds": 17.894,
+      "peakRssKB": 639264,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-estonia-1",
+      "passed": true,
+      "seconds": 10.983,
+      "peakRssKB": 421996,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-estonia-2",
+      "passed": true,
+      "seconds": 11.856,
+      "peakRssKB": 454052,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-estonia-3",
+      "passed": true,
+      "seconds": 12.639,
+      "peakRssKB": 578552,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-estonia-4",
+      "passed": true,
+      "seconds": 14.235,
+      "peakRssKB": 528276,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-estonia-5",
+      "passed": true,
+      "seconds": 14.859,
+      "peakRssKB": 488464,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-estonia-6",
+      "passed": true,
+      "seconds": 16.328,
+      "peakRssKB": 615468,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-sardinia-1",
+      "passed": true,
+      "seconds": 11.577,
+      "peakRssKB": 479760,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-sardinia-2",
+      "passed": true,
+      "seconds": 20.689,
+      "peakRssKB": 540192,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-sardinia-3",
+      "passed": true,
+      "seconds": 56.713,
+      "peakRssKB": 497344,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-sardinia-4",
+      "passed": true,
+      "seconds": 68.505,
+      "peakRssKB": 499452,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-sardinia-5",
+      "passed": true,
+      "seconds": 39.578,
+      "peakRssKB": 477332,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-sardinia-6",
+      "passed": true,
+      "seconds": 121.524,
+      "peakRssKB": 450492,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-croatia-1",
+      "passed": true,
+      "seconds": 331.737,
+      "peakRssKB": 554840,
+      "terrainToleranceWarnings": 8,
+      "error": null
+    },
+    {
+      "id": "rally-section-croatia-2",
+      "passed": true,
+      "seconds": 319.893,
+      "peakRssKB": 583268,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-croatia-3",
+      "passed": true,
+      "seconds": 109.191,
+      "peakRssKB": 516244,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-croatia-4",
+      "passed": true,
+      "seconds": 90.88,
+      "peakRssKB": 536820,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-croatia-5",
+      "passed": true,
+      "seconds": 91.01,
+      "peakRssKB": 563136,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-croatia-6",
+      "passed": true,
+      "seconds": 100.839,
+      "peakRssKB": 795004,
+      "terrainToleranceWarnings": 14,
+      "error": null
+    },
+    {
+      "id": "rally-section-corsica-1",
+      "passed": true,
+      "seconds": 15.059,
+      "peakRssKB": 559080,
+      "terrainToleranceWarnings": 64,
+      "error": null
+    },
+    {
+      "id": "rally-section-corsica-2",
+      "passed": true,
+      "seconds": 7.993,
+      "peakRssKB": 534468,
+      "terrainToleranceWarnings": 32,
+      "error": null
+    },
+    {
+      "id": "rally-section-corsica-3",
+      "passed": true,
+      "seconds": 7.131,
+      "peakRssKB": 544816,
+      "terrainToleranceWarnings": 68,
+      "error": null
+    },
+    {
+      "id": "rally-section-corsica-4",
+      "passed": true,
+      "seconds": 105.29,
+      "peakRssKB": 635500,
+      "terrainToleranceWarnings": 74,
+      "error": null
+    },
+    {
+      "id": "rally-section-corsica-5",
+      "passed": true,
+      "seconds": 103.994,
+      "peakRssKB": 541060,
+      "terrainToleranceWarnings": 2,
+      "error": null
+    },
+    {
+      "id": "rally-section-corsica-6",
+      "passed": true,
+      "seconds": 10.342,
+      "peakRssKB": 586644,
+      "terrainToleranceWarnings": 45,
+      "error": null
+    },
+    {
+      "id": "rally-section-ypres-1",
+      "passed": true,
+      "seconds": 4.045,
+      "peakRssKB": 302496,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-ypres-2",
+      "passed": true,
+      "seconds": 3.544,
+      "peakRssKB": 305916,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-ypres-3",
+      "passed": true,
+      "seconds": 3.12,
+      "peakRssKB": 302060,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-ypres-4",
+      "passed": true,
+      "seconds": 3.242,
+      "peakRssKB": 312760,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-ypres-5",
+      "passed": true,
+      "seconds": 2.298,
+      "peakRssKB": 270964,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-ypres-6",
+      "passed": true,
+      "seconds": 2.725,
+      "peakRssKB": 331876,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-central-europe-1",
+      "passed": true,
+      "seconds": 3.819,
+      "peakRssKB": 362732,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-central-europe-2",
+      "passed": true,
+      "seconds": 4.974,
+      "peakRssKB": 408752,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-central-europe-3",
+      "passed": true,
+      "seconds": 4.342,
+      "peakRssKB": 420404,
+      "terrainToleranceWarnings": 2,
+      "error": null
+    },
+    {
+      "id": "rally-section-central-europe-4",
+      "passed": true,
+      "seconds": 4.165,
+      "peakRssKB": 398824,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-central-europe-5",
+      "passed": true,
+      "seconds": 5.559,
+      "peakRssKB": 364528,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-central-europe-6",
+      "passed": true,
+      "seconds": 5.097,
+      "peakRssKB": 346604,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-poland-1",
+      "passed": true,
+      "seconds": 4.199,
+      "peakRssKB": 319252,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-poland-2",
+      "passed": true,
+      "seconds": 5.082,
+      "peakRssKB": 341300,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-poland-3",
+      "passed": true,
+      "seconds": 4.228,
+      "peakRssKB": 305280,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-poland-4",
+      "passed": true,
+      "seconds": 4.128,
+      "peakRssKB": 293624,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-poland-5",
+      "passed": true,
+      "seconds": 4.274,
+      "peakRssKB": 328312,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-poland-6",
+      "passed": true,
+      "seconds": 4.606,
+      "peakRssKB": 311560,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-australia-1",
+      "passed": true,
+      "seconds": 10.754,
+      "peakRssKB": 584756,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-australia-2",
+      "passed": true,
+      "seconds": 11.355,
+      "peakRssKB": 606636,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-australia-3",
+      "passed": true,
+      "seconds": 10.709,
+      "peakRssKB": 588760,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-australia-4",
+      "passed": true,
+      "seconds": 7.808,
+      "peakRssKB": 455152,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-australia-5",
+      "passed": true,
+      "seconds": 10.314,
+      "peakRssKB": 577692,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    },
+    {
+      "id": "rally-section-australia-6",
+      "passed": true,
+      "seconds": 10.351,
+      "peakRssKB": 525848,
+      "terrainToleranceWarnings": 0,
+      "error": null
+    }
+  ],
+  "rebuild": [
+    "python tools/campaigns/import_raceways.py --only barcelona mugello sonoma long-beach autopolis goodwood dunsfold",
+    "python tools/campaigns/import_rally_collections.py --only latvia-mapped-1-2024 latvia-mapped-2-2024 latvia-mapped-3-2024 estonia-mapped-1-2020 estonia-mapped-2-2020 estonia-mapped-3-2020 sardinia-mapped-1-2024 croatia-mapped-1-2026 croatia-mapped-2-2026 croatia-mapped-3-2026 corsica-la-porta ypres-kemmelberg central-europe-strasinska poland-swietajno australia-sherwood australia-coldwater",
+    "node tools/campaigns/install_raceways.mjs --only=australia,autopolis,barcelona,central-europe,corsica,croatia,dunsfold,estonia,goodwood,latvia,long-beach,mugello,poland,sardinia,sonoma,ypres",
+    "node tools/campaigns/finalize_rally_collections.mjs",
+    "python tools/campaigns/install_rally_sections.py --only australia central-europe corsica croatia estonia latvia poland sardinia ypres",
+    "Regenerate saved menu previews using attachCampaignRoutePreviews from tools/campaigns/route_previews.mjs.",
+    "python tools/campaigns/report_gt_wrc_expansion.py"
+  ]
+}

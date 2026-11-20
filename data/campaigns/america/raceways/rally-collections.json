@@ -4,7 +4,7 @@
       "id": "monte-carlo",
       "name": "Monte Carlo Rally",
       "country": "FR",
-      "coverage": "Selected standalone stages; no cumulative rally timing/service itinerary yet.",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
       "stages": [
         {
           "raceRef": "Col de Turini",
@@ -57,7 +57,7 @@
       "id": "finland",
       "name": "Rally Finland",
       "country": "FI",
-      "coverage": "Selected standalone stages; no cumulative rally timing/service itinerary yet.",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
       "stages": [
         {
           "raceRef": "Ouninpohja",
@@ -95,7 +95,7 @@
       "id": "portugal",
       "name": "Rally Portugal",
       "country": "PT",
-      "coverage": "Selected standalone stages; no cumulative rally timing/service itinerary yet.",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
       "stages": [
         {
           "raceRef": "Fafe — Rally Portugal",
@@ -163,7 +163,7 @@
       "id": "argentina",
       "name": "Rally Argentina",
       "country": "AR",
-      "coverage": "Selected standalone stages; no cumulative rally timing/service itinerary yet.",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
       "stages": [
         {
           "raceRef": "El Cóndor — Copina",
@@ -186,7 +186,7 @@
       "id": "acropolis",
       "name": "Acropolis Rally",
       "country": "GR",
-      "coverage": "Selected standalone stages; no cumulative rally timing/service itinerary yet.",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
       "stages": [
         {
           "raceRef": "Acropolis Rally — Ano Pavliani 2024",
@@ -269,7 +269,7 @@
       "id": "new-england",
       "name": "New England Forest Rally",
       "country": "US",
-      "coverage": "Selected standalone stages; no cumulative rally timing/service itinerary yet.",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
       "stages": [
         {
           "raceRef": "NEFR — Concord Pond — Road Section",
@@ -322,7 +322,7 @@
       "id": "sweden",
       "name": "Rally Sweden",
       "country": "SE",
-      "coverage": "Selected standalone stages; no cumulative rally timing/service itinerary yet.",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
       "stages": [
         {
           "raceRef": "Rally Sweden — Vargåsen — Road Recreation",
@@ -375,7 +375,7 @@
       "id": "sno-drift",
       "name": "Sno*Drift Rally",
       "country": "US",
-      "coverage": "Selected standalone stages; no cumulative rally timing/service itinerary yet.",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
       "stages": [
         {
           "raceRef": "SnoDrift Rally — Agren — Road Section",
@@ -428,7 +428,7 @@
       "id": "new-zealand",
       "name": "Rally New Zealand",
       "country": "NZ",
-      "coverage": "Selected standalone stages; no cumulative rally timing/service itinerary yet.",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
       "stages": [
         {
           "raceRef": "Rally New Zealand — Whaanga Coast — Road Section",
@@ -481,7 +481,7 @@
       "id": "mexico",
       "name": "Rally Mexico — Rally of Nations",
       "country": "MX",
-      "coverage": "Selected standalone stages; no cumulative rally timing/service itinerary yet.",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
       "stages": [
         {
           "raceRef": "Rally Mexico — Rally of Nations — Valenciana 2025",
@@ -534,7 +534,7 @@
       "id": "norway",
       "name": "Norway — Finnskog Rally Roads",
       "country": "NO",
-      "coverage": "Selected standalone stages; no cumulative rally timing/service itinerary yet.",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
       "stages": [
         {
           "raceRef": "Norway — Finnskog Rally Roads — Hof-Finnskog — Road Recreation",
@@ -572,7 +572,7 @@
       "id": "chile",
       "name": "Rally Chile",
       "country": "CL",
-      "coverage": "Selected standalone stages; no cumulative rally timing/service itinerary yet.",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
       "stages": [
         {
           "raceRef": "Rally Chile — Conuco — Forest Road Recreation",
@@ -588,6 +588,21 @@
           "source": "https://www.biobiochile.cl/especial/rally/rutas.shtml",
           "geometryMethod": "Current OSM forest-road loop visually matched to the public 2024 Conuco shakedown map and organizer start-area coordinates. Geographic road recreation, not the exact 6.79 km competitive stage: mapped southern forest-road alignments and game timing boundaries differ. No invented connections or repeated road edges. Widths and surface roughness estimated; DEM does not survey ruts or jumps.",
           "sourceSnapshot": "data/campaigns/america/raceways/sources/chile-conuco.json"
+        },
+        {
+          "raceRef": "Rally Chile — Conuco — Outer Forest Roads",
+          "stage": "Conuco — Outer Forest Roads",
+          "year": null,
+          "distanceM": 12803,
+          "surfaces": {
+            "dirt": 100,
+            "snow": 0,
+            "gravel": 0,
+            "asphalt": 0
+          },
+          "source": "https://www.biobiochile.cl/especial/rally/rutas.shtml",
+          "geometryMethod": "Additional continuous mapped road in the rally region, not an official historical competitive stage. Original OSM node connections and surface tags retained; existing parent-stage edges excluded. Gameplay timing lines and estimated road widths. Public DEM provides terrain, not surveyed ruts, camber or jumps.",
+          "sourceSnapshot": "data/campaigns/america/raceways/sources/chile-conuco-forest.json"
         }
       ]
     },
@@ -595,7 +610,7 @@
       "id": "safari-kenya",
       "name": "Safari Rally Kenya",
       "country": "KE",
-      "coverage": "Selected standalone stages; no cumulative rally timing/service itinerary yet.",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
       "stages": [
         {
           "raceRef": "Safari Rally Kenya — Hell’s Gate — Road Recreation",
@@ -618,7 +633,7 @@
       "id": "japan-hokkaido",
       "name": "Rally Japan — Hokkaido",
       "country": "JP",
-      "coverage": "Selected standalone stages; no cumulative rally timing/service itinerary yet.",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
       "stages": [
         {
           "raceRef": "Rally Japan — Hokkaido — Bisan — Road Recreation",
@@ -656,7 +671,7 @@
       "id": "turkey",
       "name": "Rally Turkey",
       "country": "TR",
-      "coverage": "Selected standalone stages; no cumulative rally timing/service itinerary yet.",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
       "stages": [
         {
           "raceRef": "Rally Turkey — Ula 2019",
@@ -709,7 +724,7 @@
       "id": "spain",
       "name": "Rally Spain",
       "country": "ES",
-      "coverage": "Selected standalone stages; no cumulative rally timing/service itinerary yet.",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
       "stages": [
         {
           "raceRef": "Rally Spain — La Fatarella–Vilalba — Sant Francesc Road",
@@ -732,7 +747,7 @@
       "id": "wales",
       "name": "Wales — Sweet Lamb/Hafren",
       "country": "GB",
-      "coverage": "Selected standalone stages; no cumulative rally timing/service itinerary yet.",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
       "stages": [
         {
           "raceRef": "Wales — Sweet LambHafren — Sweet Lamb–Hafren — Western Section",
@@ -748,6 +763,21 @@
           "source": "https://files.freethought.website/freethought27/file/sweetlamb-hafren_1.pdf",
           "geometryMethod": "Current OpenStreetMap road geometry matched to the public stage map. Selected continuous road recreation, not the complete competitive layout or exact timing controls. Widths and roughness are estimates; DEM does not resolve engineered jumps, ruts or camber. Sweet Lamb/Hafren corridor from the public RAC 2023 map; arena loops and artificial jumps omitted. Ends on the western Hafren forest climb; eastern forest loop omitted because current mapped connections need further verification. The two sharp bends are connected OSM track junctions (242278120/666309992 and 233409038/666309990), not retraced edges.",
           "sourceSnapshot": "data/campaigns/america/raceways/sources/wales-sweet-lamb.json"
+        },
+        {
+          "raceRef": "Wales — Sweet LambHafren — Hafren — Forest Traverse",
+          "stage": "Hafren — Forest Traverse",
+          "year": null,
+          "distanceM": 10444,
+          "surfaces": {
+            "dirt": 0,
+            "snow": 0,
+            "gravel": 100,
+            "asphalt": 0
+          },
+          "source": "https://files.freethought.website/freethought27/file/sweetlamb-hafren_1.pdf",
+          "geometryMethod": "Additional continuous mapped road in the rally region, not an official historical competitive stage. Original OSM node connections and surface tags retained; existing parent-stage edges excluded. Gameplay timing lines and estimated road widths. Public DEM provides terrain, not surveyed ruts, camber or jumps. Selected Hafren forest tracks; ends before a tight forest junction rather than adding a false hairpin.",
+          "sourceSnapshot": "data/campaigns/america/raceways/sources/wales-hafren-forest.json"
         }
       ]
     },
@@ -755,7 +785,7 @@
       "id": "germany",
       "name": "Rally Germany",
       "country": "DE",
-      "coverage": "Selected standalone stages; no cumulative rally timing/service itinerary yet.",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
       "stages": [
         {
           "raceRef": "Rally Germany — Panzerplatte — Range Road Section",
@@ -771,6 +801,21 @@
           "source": "https://media.adac-motorsport.de/dl.php?dID=3722%2C135%2C136%2C1768&fID=37355",
           "geometryMethod": "Current OpenStreetMap road geometry matched to the public stage map. Selected continuous road recreation, not the complete competitive layout or exact timing controls. Widths and roughness are estimates; DEM does not resolve engineered jumps, ruts or camber. Selected Baumholder range roads in the ADAC 2018 stage area, not the full Panzerplatte competition itinerary. Concrete retains its mapped material in provenance and uses the game asphalt physics; no separate concrete grip model. No surveyed Gina jump.",
           "sourceSnapshot": "data/campaigns/america/raceways/sources/germany-panzerplatte.json"
+        },
+        {
+          "raceRef": "Rally Germany — Baumholder — Concrete Range Roads",
+          "stage": "Baumholder — Concrete Range Roads",
+          "year": null,
+          "distanceM": 5700,
+          "surfaces": {
+            "dirt": 0,
+            "snow": 0,
+            "gravel": 0,
+            "asphalt": 100
+          },
+          "source": "https://media.adac-motorsport.de/dl.php?dID=3722%2C135%2C136%2C1768&fID=37355",
+          "geometryMethod": "Additional continuous mapped road in the rally region, not an official historical competitive stage. Original OSM node connections and surface tags retained; existing parent-stage edges excluded. Gameplay timing lines and estimated road widths. Public DEM provides terrain, not surveyed ruts, camber or jumps.",
+          "sourceSnapshot": "data/campaigns/america/raceways/sources/germany-baumholder-range.json"
         }
       ]
     },
@@ -778,7 +823,7 @@
       "id": "japan-aichi",
       "name": "Rally Japan — Aichi",
       "country": "JP",
-      "coverage": "Selected standalone stages; no cumulative rally timing/service itinerary yet.",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
       "stages": [
         {
           "raceRef": "Rally Japan — Aichi — Isegami’s Tunnel — Road Section",
@@ -794,6 +839,21 @@
           "source": "https://www.rallysupport.com/wp-content/uploads/2025/11/Rally-Japan-2025-Stage-Maps-Overview.pdf",
           "geometryMethod": "Current OpenStreetMap road geometry matched to the public stage map. Selected continuous road recreation, not the complete competitive layout or exact timing controls. Widths and roughness are estimates; DEM does not resolve engineered jumps, ruts or camber. Isegami old-road/tunnel portion of the 2025 corridor; excludes the full approach and northern finish. Tunnel deck interpolated between portal terrain estimates, not surveyed heights.",
           "sourceSnapshot": "data/campaigns/america/raceways/sources/japan-isegami.json"
+        },
+        {
+          "raceRef": "Rally Japan — Aichi — Otaga — Mountain Roads",
+          "stage": "Otaga — Mountain Roads",
+          "year": null,
+          "distanceM": 10149,
+          "surfaces": {
+            "dirt": 0,
+            "snow": 0,
+            "gravel": 0,
+            "asphalt": 100
+          },
+          "source": "https://www.rallysupport.com/wp-content/uploads/2025/11/Rally-Japan-2025-Stage-Maps-Overview.pdf",
+          "geometryMethod": "Additional continuous mapped road in the rally region, not an official historical competitive stage. Original OSM node connections and surface tags retained; existing parent-stage edges excluded. Gameplay timing lines and estimated road widths. Public DEM provides terrain, not surveyed ruts, camber or jumps. Additional Otaga-area mountain roads near Isegami, not the full Isegami WRC stage. Old tunnel is retained only in its original standalone race. Timing-line search may omit up to 4.5 km at each end to find a usable straight on this winding road.",
+          "sourceSnapshot": "data/campaigns/america/raceways/sources/japan-otaga-mountain.json"
         }
       ]
     },
@@ -801,7 +861,7 @@
       "id": "100-acre-wood",
       "name": "100 Acre Wood Rally",
       "country": "US",
-      "coverage": "Selected standalone stages; no cumulative rally timing/service itinerary yet.",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
       "stages": [
         {
           "raceRef": "100 Acre Wood Rally — Cattle Guard — Ollie Coleman Road",
@@ -817,6 +877,21 @@
           "source": "https://www.americanrallyassociation.org/post/stpr-and-missouri-ozark-rally-set-for-ara-regional-doubleheader",
           "geometryMethod": "Current OpenStreetMap road geometry matched to the public stage map. Selected continuous road recreation, not the complete competitive layout or exact timing controls. Widths and roughness are estimates; DEM does not resolve engineered jumps, ruts or camber. Ollie Coleman Road section of the KP-to-Ollie/Cattle Guard corridor only. Exact cattle-guard jump location and profile are not surveyed; no artificial jump added.",
           "sourceSnapshot": "data/campaigns/america/raceways/sources/100aw-cattle-guard.json"
+        },
+        {
+          "raceRef": "100 Acre Wood Rally — K P Road — Northern Section",
+          "stage": "K P Road — Northern Section",
+          "year": null,
+          "distanceM": 8493,
+          "surfaces": {
+            "dirt": 100,
+            "snow": 0,
+            "gravel": 0,
+            "asphalt": 0
+          },
+          "source": "https://www.americanrallyassociation.org/post/from-pa-to-mo-ara-competitors-conquer-summer-regional-rally-double-header",
+          "geometryMethod": "Additional continuous mapped road in the rally region, not an official historical competitive stage. Original OSM node connections and surface tags retained; existing parent-stage edges excluded. Gameplay timing lines and estimated road widths. Public DEM provides terrain, not surveyed ruts, camber or jumps. K P Road in the KP-to-Ollie corridor identified by ARA and the organizer spectator location; does not claim the full KP-to-Ollie layout.",
+          "sourceSnapshot": "data/campaigns/america/raceways/sources/100aw-kp-road.json"
         }
       ]
     },
@@ -824,7 +899,7 @@
       "id": "ojibwe",
       "name": "Ojibwe Forests Rally",
       "country": "US",
-      "coverage": "Selected standalone stages; no cumulative rally timing/service itinerary yet.",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
       "stages": [
         {
           "raceRef": "Ojibwe Forests Rally — Steamboat — Forest Road Section",
@@ -842,6 +917,318 @@
           "sourceSnapshot": "data/campaigns/america/raceways/sources/ojibwe-steamboat.json"
         }
       ]
+    },
+    {
+      "id": "latvia",
+      "name": "Rally Latvia",
+      "country": "LV",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
+      "stages": [
+        {
+          "raceRef": "Rally Latvia — Milzkalne 2024",
+          "stage": "Milzkalne",
+          "year": 2024,
+          "distanceM": 4727,
+          "surfaces": {
+            "dirt": 0,
+            "snow": 0,
+            "gravel": 100,
+            "asphalt": 0
+          },
+          "source": "https://www.google.com/maps/d/kml?mid=1ZrZ-oGPSN606HHz7AZfQ4E15X65Jzrc&forcekml=1",
+          "geometryMethod": "Public 2024 spectator map coordinate trace of Milzkalne; source: Tet Rally Latvia spectator map linked by RallySupport. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+          "sourceSnapshot": "data/campaigns/america/raceways/sources/latvia-mapped-1-2024.json"
+        },
+        {
+          "raceRef": "Rally Latvia — Tukums 2024",
+          "stage": "Tukums",
+          "year": 2024,
+          "distanceM": 27378,
+          "surfaces": {
+            "dirt": 0,
+            "snow": 0,
+            "gravel": 100,
+            "asphalt": 0
+          },
+          "source": "https://www.google.com/maps/d/kml?mid=1ZrZ-oGPSN606HHz7AZfQ4E15X65Jzrc&forcekml=1",
+          "geometryMethod": "Public 2024 spectator map coordinate trace of Tukums; source: Tet Rally Latvia spectator map linked by RallySupport. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+          "sourceSnapshot": "data/campaigns/america/raceways/sources/latvia-mapped-2-2024.json"
+        },
+        {
+          "raceRef": "Rally Latvia — Andumi 2024",
+          "stage": "Andumi",
+          "year": 2024,
+          "distanceM": 17392,
+          "surfaces": {
+            "dirt": 0,
+            "snow": 0,
+            "gravel": 100,
+            "asphalt": 0
+          },
+          "source": "https://www.google.com/maps/d/kml?mid=1ZrZ-oGPSN606HHz7AZfQ4E15X65Jzrc&forcekml=1",
+          "geometryMethod": "Public 2024 spectator map coordinate trace of Andumi; source: Tet Rally Latvia spectator map linked by RallySupport. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+          "sourceSnapshot": "data/campaigns/america/raceways/sources/latvia-mapped-3-2024.json"
+        }
+      ]
+    },
+    {
+      "id": "estonia",
+      "name": "Rally Estonia",
+      "country": "EE",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
+      "stages": [
+        {
+          "raceRef": "Rally Estonia — RÜA 2020",
+          "stage": "RÜA",
+          "year": 2020,
+          "distanceM": 8808,
+          "surfaces": {
+            "dirt": 0,
+            "snow": 0,
+            "gravel": 100,
+            "asphalt": 0
+          },
+          "source": "https://www.google.com/maps/d/kml?mid=1JCSqr-AfkYL02CA2VNQFGu1Dn4yNrp_W&forcekml=1",
+          "geometryMethod": "Public 2020 spectator map coordinate trace of RÜA; source: Rally Estonia public 2020 restriction/stage map linked by Arula village. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+          "sourceSnapshot": "data/campaigns/america/raceways/sources/estonia-mapped-1-2020.json"
+        },
+        {
+          "raceRef": "Rally Estonia — MÄEKÜLA 2020",
+          "stage": "MÄEKÜLA",
+          "year": 2020,
+          "distanceM": 14504,
+          "surfaces": {
+            "dirt": 0,
+            "snow": 0,
+            "gravel": 100,
+            "asphalt": 0
+          },
+          "source": "https://www.google.com/maps/d/kml?mid=1JCSqr-AfkYL02CA2VNQFGu1Dn4yNrp_W&forcekml=1",
+          "geometryMethod": "Public 2020 spectator map coordinate trace of MÄEKÜLA; source: Rally Estonia public 2020 restriction/stage map linked by Arula village. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+          "sourceSnapshot": "data/campaigns/america/raceways/sources/estonia-mapped-2-2020.json"
+        },
+        {
+          "raceRef": "Rally Estonia — ARULA 2020",
+          "stage": "ARULA",
+          "year": 2020,
+          "distanceM": 6219,
+          "surfaces": {
+            "dirt": 0,
+            "snow": 0,
+            "gravel": 100,
+            "asphalt": 0
+          },
+          "source": "https://www.google.com/maps/d/kml?mid=1JCSqr-AfkYL02CA2VNQFGu1Dn4yNrp_W&forcekml=1",
+          "geometryMethod": "Public 2020 spectator map coordinate trace of ARULA; source: Rally Estonia public 2020 restriction/stage map linked by Arula village. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+          "sourceSnapshot": "data/campaigns/america/raceways/sources/estonia-mapped-3-2020.json"
+        }
+      ]
+    },
+    {
+      "id": "sardinia",
+      "name": "Rally Italia Sardegna",
+      "country": "IT",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
+      "stages": [
+        {
+          "raceRef": "Rally Italia Sardegna — Monte Lerno — Monti di Alà 2024",
+          "stage": "Monte Lerno — Monti di Alà",
+          "year": 2024,
+          "distanceM": 25090,
+          "surfaces": {
+            "dirt": 0,
+            "snow": 0,
+            "gravel": 100,
+            "asphalt": 0
+          },
+          "source": "https://www.google.com/maps/d/kml?mid=1R5lLGax9AiQMlezXSNZdc8PdHYK0_MQ&forcekml=1",
+          "geometryMethod": "Public 2024 spectator map coordinate trace of Monte Lerno — Monti di Alà; source: Public Reccemaps spectator preview — Monte Lerno / Monti di Alà. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+          "sourceSnapshot": "data/campaigns/america/raceways/sources/sardinia-mapped-1-2024.json"
+        }
+      ]
+    },
+    {
+      "id": "croatia",
+      "name": "Croatia Rally",
+      "country": "HR",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
+      "stages": [
+        {
+          "raceRef": "Croatia Rally — Ucka 2026",
+          "stage": "Ucka",
+          "year": 2026,
+          "distanceM": 11504,
+          "surfaces": {
+            "dirt": 0,
+            "snow": 0,
+            "gravel": 0,
+            "asphalt": 100
+          },
+          "source": "https://www.google.com/maps/d/kml?mid=13R08CrtH5H1Q4aeZToSrmczho1oHkA8&forcekml=1",
+          "geometryMethod": "Public 2026 spectator map coordinate trace of Ucka; source: Public Croatia 2026 spectator route map; unofficial trace. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+          "sourceSnapshot": "data/campaigns/america/raceways/sources/croatia-mapped-1-2026.json"
+        },
+        {
+          "raceRef": "Croatia Rally — Platak 2026",
+          "stage": "Platak",
+          "year": 2026,
+          "distanceM": 16141,
+          "surfaces": {
+            "dirt": 0,
+            "snow": 0,
+            "gravel": 0,
+            "asphalt": 100
+          },
+          "source": "https://www.google.com/maps/d/kml?mid=13R08CrtH5H1Q4aeZToSrmczho1oHkA8&forcekml=1",
+          "geometryMethod": "Public 2026 spectator map coordinate trace of Platak; source: Public Croatia 2026 spectator route map; unofficial trace. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+          "sourceSnapshot": "data/campaigns/america/raceways/sources/croatia-mapped-2-2026.json"
+        },
+        {
+          "raceRef": "Croatia Rally — Ravna Gora - Skrad 2026",
+          "stage": "Ravna Gora - Skrad",
+          "year": 2026,
+          "distanceM": 9696,
+          "surfaces": {
+            "dirt": 0,
+            "snow": 0,
+            "gravel": 0,
+            "asphalt": 100
+          },
+          "source": "https://www.google.com/maps/d/kml?mid=13R08CrtH5H1Q4aeZToSrmczho1oHkA8&forcekml=1",
+          "geometryMethod": "Public 2026 spectator map coordinate trace of Ravna Gora - Skrad; source: Public Croatia 2026 spectator route map; unofficial trace. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+          "sourceSnapshot": "data/campaigns/america/raceways/sources/croatia-mapped-3-2026.json"
+        }
+      ]
+    },
+    {
+      "id": "corsica",
+      "name": "Tour de Corse",
+      "country": "FR",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
+      "stages": [
+        {
+          "raceRef": "Tour de Corse — La Porta — Barchetta — Road Recreation",
+          "stage": "La Porta — Barchetta — Road Recreation",
+          "year": null,
+          "distanceM": 25190,
+          "surfaces": {
+            "dirt": 0,
+            "snow": 0,
+            "gravel": 0,
+            "asphalt": 100
+          },
+          "source": "https://www.haute-corse.gouv.fr/contenu/telechargement/13154/106558/file/RAA%20N%C2%B06%20du%202%20octobre%202025.pdf",
+          "geometryMethod": "D515 portion of La Porta–Barchetta, documented in the 2025 Tour de Corse Historique road closures. Omits the D205 competition approach. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate.",
+          "sourceSnapshot": "data/campaigns/america/raceways/sources/corsica-la-porta.json"
+        }
+      ]
+    },
+    {
+      "id": "ypres",
+      "name": "Ypres Rally",
+      "country": "BE",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
+      "stages": [
+        {
+          "raceRef": "Ypres Rally — Kemmelberg — Road Recreation",
+          "stage": "Kemmelberg — Road Recreation",
+          "year": null,
+          "distanceM": 9328,
+          "surfaces": {
+            "dirt": 0,
+            "snow": 0,
+            "gravel": 0,
+            "asphalt": 100
+          },
+          "source": "https://app-cdn.sportity.com/a5ae5f4a-da53-4da5-a1a9-9d4cb4ac0ad9/f99fc26c-1591-4258-b09f-637b9f7e3a1e_Recce%20Maps.pdf",
+          "geometryMethod": "Mapped Kemmelberg roads reviewed against the organizer 2025 recce map. Starts on Noordstraat, omitting the initial Kemmel village/Katteput loop. This is a partial geographic recreation rather than the identical stage. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate.",
+          "sourceSnapshot": "data/campaigns/america/raceways/sources/ypres-kemmelberg.json"
+        }
+      ]
+    },
+    {
+      "id": "central-europe",
+      "name": "Central European Rally",
+      "country": "CZ",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
+      "stages": [
+        {
+          "raceRef": "Central European Rally — Strašínská — Road Recreation",
+          "stage": "Strašínská — Road Recreation",
+          "year": null,
+          "distanceM": 13444,
+          "surfaces": {
+            "dirt": 0,
+            "snow": 0,
+            "gravel": 0,
+            "asphalt": 100
+          },
+          "source": "https://www.hoslovice.cz/evt_file.php?file=1274",
+          "geometryMethod": "Southern portion of the Strašínská route published by Hoslovice municipality for Central European Rally 2024; current paved village roads through Maleč and Zálesí, ending at Nová Ves before the northern stage loop. Village-center waypoints are snapped to through roads, up to 166 m. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate. Reviewed genuine sharp junctions: OSM 69465111/30406194 at the southern 171/17019 turn, and 218840136/436846217 at 17224/17220, both visible in the published map; source node topology retained.",
+          "sourceSnapshot": "data/campaigns/america/raceways/sources/central-europe-strasinska.json"
+        }
+      ]
+    },
+    {
+      "id": "poland",
+      "name": "Rally Poland",
+      "country": "PL",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
+      "stages": [
+        {
+          "raceRef": "Rally Poland — Świętajno — Pietrasze to Chełchy — Road Recreatio",
+          "stage": "Świętajno — Pietrasze to Chełchy — Road Recreation",
+          "year": null,
+          "distanceM": 11176,
+          "surfaces": {
+            "dirt": 23,
+            "snow": 0,
+            "gravel": 45,
+            "asphalt": 32
+          },
+          "source": "https://rally-poland-maps.topracing.pl/wp-content/uploads/2024/05/Swietajno-v6.jpg",
+          "geometryMethod": "Southern part of the published 2024 Świętajno spectator map: Pietrasze, Jelonek, Zalesie and Chełchy. Ends before the northern Gryzy/Mazury competition loop. Current drivable roads, not an exact historical timing-control reconstruction. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate. The mapped southern approach uses a short 655 section before joining the gravel corridor; this differs from the competition forest approach. Jelonek waypoint is on the through-road junction, not the village spur. Sharp current-road junction 749553159/178760572 is topologically connected; the alternate southern approach makes this turn sharper than the published competition approach.",
+          "sourceSnapshot": "data/campaigns/america/raceways/sources/poland-swietajno.json"
+        }
+      ]
+    },
+    {
+      "id": "australia",
+      "name": "Rally Australia",
+      "country": "AU",
+      "coverage": "Selected parent roads; separate game sections supply championship itineraries.",
+      "stages": [
+        {
+          "raceRef": "Rally Australia — Sherwood Road — Road Recreation",
+          "stage": "Sherwood Road — Road Recreation",
+          "year": null,
+          "distanceM": 14619,
+          "surfaces": {
+            "dirt": 0,
+            "snow": 0,
+            "gravel": 100,
+            "asphalt": 0
+          },
+          "source": "https://www.rallypedia.com.au/wp-content/uploads/2026/02/2018-Rally-Australia-RG2.pdf",
+          "geometryMethod": "Continuous mapped Sherwood Road in the Coffs Coast rally area documented by the organizer 2018 Rally Guide 2. A named-road recreation, not the full same-named WRC stage; competition loops, connecting forest roads and exact controls omitted. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate.",
+          "sourceSnapshot": "data/campaigns/america/raceways/sources/australia-sherwood.json"
+        },
+        {
+          "raceRef": "Rally Australia — Coldwater Creek Road — Road Recreation",
+          "stage": "Coldwater Creek Road — Road Recreation",
+          "year": null,
+          "distanceM": 8051,
+          "surfaces": {
+            "dirt": 87,
+            "snow": 0,
+            "gravel": 0,
+            "asphalt": 13
+          },
+          "source": "https://www.rallypedia.com.au/wp-content/uploads/2026/02/2018-Rally-Australia-RG2.pdf",
+          "geometryMethod": "Continuous mapped Coldwater Creek Road in the Coffs Coast rally area documented by the organizer 2018 Rally Guide 2. A named-road recreation, not the full same-named WRC stage; competition loops, connecting forest roads and exact controls omitted. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate.",
+          "sourceSnapshot": "data/campaigns/america/raceways/sources/australia-coldwater.json"
+        }
+      ]
     }
   ],
   "sourcePolicy": "Import coordinates from public organizers or mapped roads. Preserve source/year attribution, distinguish partial roads from exact event traces, deduplicate repeated passes, and retain only distinct historical layouts.",
@@ -849,7 +1236,7 @@
     "Terrain uses public DEM data, not surveyed jump/rut profiles.",
     "Road widths and scenery are approximate.",
     "Historical labels identify the route source year, not a recreation of every period road detail.",
-    "No championship schedule or cumulative rally scoring is claimed."
+    "Game championships use distinct sections and repeated passes; no official historical schedule is claimed."
   ],
   "pending": [
     {

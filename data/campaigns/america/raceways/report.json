@@ -3504,5 +3504,1418 @@
       "Current OpenStreetMap road geometry matched to the public stage map. Selected continuous road recreation, not the complete competitive layout or exact timing controls. Widths and roughness are estimates; DEM does not resolve engineered jumps, ruts or camber. Isegami old-road/tunnel portion of the 2025 corridor; excludes the full approach and northern finish. Tunnel deck interpolated between portal terrain estimates, not surveyed heights.",
       "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
     ]
+  },
+  {
+    "id": "rally-chile-conuco-forest",
+    "status": "imported",
+    "name": "Rally Chile \u2014 Conuco \u2014 Outer Forest Roads",
+    "raceRef": "Rally Chile \u2014 Conuco \u2014 Outer Forest Roads",
+    "venueKey": "chile",
+    "venueName": "Rally Chile",
+    "layoutLabel": "Conuco \u2014 Outer Forest Roads",
+    "hubStage": null,
+    "artHubStage": 5,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "surface": [
+      "dirt"
+    ],
+    "lengthM": 12966.09980157719,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/rally-chile-conuco-forest.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+      "Additional continuous mapped road in the rally region, not an official historical competitive stage. Original OSM node connections and surface tags retained; existing parent-stage edges excluded. Gameplay timing lines and estimated road widths. Public DEM provides terrain, not surveyed ruts, camber or jumps.",
+      "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+    ]
+  },
+  {
+    "id": "rally-wales-hafren-forest",
+    "status": "imported",
+    "name": "Wales \u2014 Sweet Lamb/Hafren \u2014 Hafren \u2014 Forest Traverse",
+    "raceRef": "Wales \u2014 Sweet Lamb/Hafren \u2014 Hafren \u2014 Forest Traverse",
+    "venueKey": "wales",
+    "venueName": "Wales \u2014 Sweet Lamb/Hafren",
+    "layoutLabel": "Hafren \u2014 Forest Traverse",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "surface": [
+      "gravel"
+    ],
+    "lengthM": 10939.193085271958,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/rally-wales-hafren-forest.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+      "Additional continuous mapped road in the rally region, not an official historical competitive stage. Original OSM node connections and surface tags retained; existing parent-stage edges excluded. Gameplay timing lines and estimated road widths. Public DEM provides terrain, not surveyed ruts, camber or jumps. Selected Hafren forest tracks; ends before a tight forest junction rather than adding a false hairpin.",
+      "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+    ]
+  },
+  {
+    "id": "rally-germany-baumholder-range",
+    "status": "imported",
+    "name": "Rally Germany \u2014 Baumholder \u2014 Concrete Range Roads",
+    "raceRef": "Rally Germany \u2014 Baumholder \u2014 Concrete Range Roads",
+    "venueKey": "germany",
+    "venueName": "Rally Germany",
+    "layoutLabel": "Baumholder \u2014 Concrete Range Roads",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 6258.476309526291,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/rally-germany-baumholder-range.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+      "Additional continuous mapped road in the rally region, not an official historical competitive stage. Original OSM node connections and surface tags retained; existing parent-stage edges excluded. Gameplay timing lines and estimated road widths. Public DEM provides terrain, not surveyed ruts, camber or jumps.",
+      "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+    ]
+  },
+  {
+    "id": "rally-100aw-kp-road",
+    "status": "imported",
+    "name": "100 Acre Wood Rally \u2014 K P Road \u2014 Northern Section",
+    "raceRef": "100 Acre Wood Rally \u2014 K P Road \u2014 Northern Section",
+    "venueKey": "100-acre-wood",
+    "venueName": "100 Acre Wood Rally",
+    "layoutLabel": "K P Road \u2014 Northern Section",
+    "hubStage": null,
+    "artHubStage": 5,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "surface": [
+      "dirt"
+    ],
+    "lengthM": 8609.583206717838,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/rally-100aw-kp-road.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+      "Additional continuous mapped road in the rally region, not an official historical competitive stage. Original OSM node connections and surface tags retained; existing parent-stage edges excluded. Gameplay timing lines and estimated road widths. Public DEM provides terrain, not surveyed ruts, camber or jumps. K P Road in the KP-to-Ollie corridor identified by ARA and the organizer spectator location; does not claim the full KP-to-Ollie layout.",
+      "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+    ]
+  },
+  {
+    "id": "rally-japan-otaga-mountain",
+    "status": "imported",
+    "name": "Rally Japan \u2014 Aichi \u2014 Otaga \u2014 Mountain Roads",
+    "raceRef": "Rally Japan \u2014 Aichi \u2014 Otaga \u2014 Mountain Roads",
+    "venueKey": "japan-aichi",
+    "venueName": "Rally Japan \u2014 Aichi",
+    "layoutLabel": "Otaga \u2014 Mountain Roads",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 15506.782416884247,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/rally-japan-otaga-mountain.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+      "Additional continuous mapped road in the rally region, not an official historical competitive stage. Original OSM node connections and surface tags retained; existing parent-stage edges excluded. Gameplay timing lines and estimated road widths. Public DEM provides terrain, not surveyed ruts, camber or jumps. Additional Otaga-area mountain roads near Isegami, not the full Isegami WRC stage. Old tunnel is retained only in its original standalone race. Timing-line search may omit up to 4.5 km at each end to find a usable straight on this winding road.",
+      "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+    ]
+  },
+  {
+    "id": "raceway-cota-gp",
+    "status": "imported",
+    "name": "Circuit of the Americas \u2014 Grand Prix",
+    "raceRef": "Circuit of the Americas \u2014 Grand Prix",
+    "displayName": "Circuit of the Americas \u2014 Grand Prix",
+    "venueKey": "cota",
+    "venueName": "Circuit of the Americas",
+    "layoutLabel": "Grand Prix",
+    "hubStage": null,
+    "artHubStage": 7,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 5501.984991404547,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-cota-gp.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-cota-national",
+    "status": "imported",
+    "name": "Circuit of the Americas \u2014 National",
+    "raceRef": "Circuit of the Americas \u2014 National",
+    "displayName": "Circuit of the Americas \u2014 National",
+    "venueKey": "cota",
+    "venueName": "Circuit of the Americas",
+    "layoutLabel": "National",
+    "hubStage": null,
+    "artHubStage": 7,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 3725.0936892989007,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-cota-national.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-cota-nascar-national",
+    "status": "imported",
+    "name": "Circuit of the Americas \u2014 NASCAR National",
+    "raceRef": "Circuit of the Americas \u2014 NASCAR National",
+    "displayName": "Circuit of the Americas \u2014 NASCAR National",
+    "venueKey": "cota",
+    "venueName": "Circuit of the Americas",
+    "layoutLabel": "NASCAR National",
+    "hubStage": null,
+    "artHubStage": 7,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 3871.26311959485,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-cota-nascar-national.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-cota-club",
+    "status": "imported",
+    "name": "Circuit of the Americas \u2014 Club",
+    "raceRef": "Circuit of the Americas \u2014 Club",
+    "displayName": "Circuit of the Americas \u2014 Club",
+    "venueKey": "cota",
+    "venueName": "Circuit of the Americas",
+    "layoutLabel": "Club",
+    "hubStage": null,
+    "artHubStage": 7,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 1980.8550954066777,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-cota-club.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-mont-tremblant-gp",
+    "status": "imported",
+    "name": "Circuit Mont-Tremblant \u2014 Grand Prix",
+    "raceRef": "Circuit Mont-Tremblant \u2014 Grand Prix",
+    "displayName": "Circuit Mont-Tremblant \u2014 Grand Prix",
+    "venueKey": "mont-tremblant",
+    "venueName": "Circuit Mont-Tremblant",
+    "layoutLabel": "Grand Prix",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 4234.2772286065165,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-mont-tremblant-gp.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-mont-tremblant-gp-chicane",
+    "status": "imported",
+    "name": "Circuit Mont-Tremblant \u2014 Grand Prix \u2014 Chicane",
+    "raceRef": "Circuit Mont-Tremblant \u2014 Grand Prix \u2014 Chicane",
+    "displayName": "Circuit Mont-Tremblant \u2014 Grand Prix \u2014 Chicane",
+    "venueKey": "mont-tremblant",
+    "venueName": "Circuit Mont-Tremblant",
+    "layoutLabel": "Grand Prix \u2014 Chicane",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 4243.480783502388,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-mont-tremblant-gp-chicane.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-mont-tremblant-north",
+    "status": "imported",
+    "name": "Circuit Mont-Tremblant \u2014 North Loop",
+    "raceRef": "Circuit Mont-Tremblant \u2014 North Loop",
+    "displayName": "Circuit Mont-Tremblant \u2014 North Loop",
+    "venueKey": "mont-tremblant",
+    "venueName": "Circuit Mont-Tremblant",
+    "layoutLabel": "North Loop",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 2467.5316397733013,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-mont-tremblant-north.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-mont-tremblant-north-chicane",
+    "status": "imported",
+    "name": "Circuit Mont-Tremblant \u2014 North Loop \u2014 Chicane",
+    "raceRef": "Circuit Mont-Tremblant \u2014 North Loop \u2014 Chicane",
+    "displayName": "Circuit Mont-Tremblant \u2014 North Loop \u2014 Chicane",
+    "venueKey": "mont-tremblant",
+    "venueName": "Circuit Mont-Tremblant",
+    "layoutLabel": "North Loop \u2014 Chicane",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 2476.7351946691724,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-mont-tremblant-north-chicane.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-mont-tremblant-south",
+    "status": "imported",
+    "name": "Circuit Mont-Tremblant \u2014 South Loop",
+    "raceRef": "Circuit Mont-Tremblant \u2014 South Loop",
+    "displayName": "Circuit Mont-Tremblant \u2014 South Loop",
+    "venueKey": "mont-tremblant",
+    "venueName": "Circuit Mont-Tremblant",
+    "layoutLabel": "South Loop",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 1902.2154342554315,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-mont-tremblant-south.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-jarama-gp",
+    "status": "imported",
+    "name": "Circuito del Jarama \u2014 Grand Prix",
+    "raceRef": "Circuito del Jarama \u2014 Grand Prix",
+    "displayName": "Circuito del Jarama \u2014 Grand Prix",
+    "venueKey": "jarama",
+    "venueName": "Circuito del Jarama",
+    "layoutLabel": "Grand Prix",
+    "hubStage": null,
+    "artHubStage": 10,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 3905.7875463524674,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-jarama-gp.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-istanbul-gp",
+    "status": "imported",
+    "name": "Istanbul Park \u2014 Grand Prix",
+    "raceRef": "Istanbul Park \u2014 Grand Prix",
+    "displayName": "Istanbul Park \u2014 Grand Prix",
+    "venueKey": "istanbul",
+    "venueName": "Istanbul Park",
+    "layoutLabel": "Grand Prix",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 5345.317930730636,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-istanbul-gp.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-istanbul-intermediate",
+    "status": "imported",
+    "name": "Istanbul Park \u2014 Intermediate",
+    "raceRef": "Istanbul Park \u2014 Intermediate",
+    "displayName": "Istanbul Park \u2014 Intermediate",
+    "venueKey": "istanbul",
+    "venueName": "Istanbul Park",
+    "layoutLabel": "Intermediate",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 3931.172126733726,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-istanbul-intermediate.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-yas-marina-gp",
+    "status": "imported",
+    "name": "Yas Marina Circuit \u2014 Grand Prix",
+    "raceRef": "Yas Marina Circuit \u2014 Grand Prix",
+    "displayName": "Yas Marina Circuit \u2014 Grand Prix",
+    "venueKey": "yas-marina",
+    "venueName": "Yas Marina Circuit",
+    "layoutLabel": "Grand Prix",
+    "hubStage": null,
+    "artHubStage": 9,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 5296.967705733157,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-yas-marina-gp.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-yas-marina-gp-plus",
+    "status": "imported",
+    "name": "Yas Marina Circuit \u2014 Grand Prix Plus",
+    "raceRef": "Yas Marina Circuit \u2014 Grand Prix Plus",
+    "displayName": "Yas Marina Circuit \u2014 Grand Prix Plus",
+    "venueKey": "yas-marina",
+    "venueName": "Yas Marina Circuit",
+    "layoutLabel": "Grand Prix Plus",
+    "hubStage": null,
+    "artHubStage": 9,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 5331.1503543894705,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-yas-marina-gp-plus.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-yas-marina-north",
+    "status": "imported",
+    "name": "Yas Marina Circuit \u2014 North Circuit",
+    "raceRef": "Yas Marina Circuit \u2014 North Circuit",
+    "displayName": "Yas Marina Circuit \u2014 North Circuit",
+    "venueKey": "yas-marina",
+    "venueName": "Yas Marina Circuit",
+    "layoutLabel": "North Circuit",
+    "hubStage": null,
+    "artHubStage": 9,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 3012.9687850455393,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-yas-marina-north.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-yas-marina-north-plus",
+    "status": "imported",
+    "name": "Yas Marina Circuit \u2014 North Plus",
+    "raceRef": "Yas Marina Circuit \u2014 North Plus",
+    "displayName": "Yas Marina Circuit \u2014 North Plus",
+    "venueKey": "yas-marina",
+    "venueName": "Yas Marina Circuit",
+    "layoutLabel": "North Plus",
+    "hubStage": null,
+    "artHubStage": 9,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 3047.1514337018516,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-yas-marina-north-plus.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-yas-marina-south",
+    "status": "imported",
+    "name": "Yas Marina Circuit \u2014 South Circuit",
+    "raceRef": "Yas Marina Circuit \u2014 South Circuit",
+    "displayName": "Yas Marina Circuit \u2014 South Circuit",
+    "venueKey": "yas-marina",
+    "venueName": "Yas Marina Circuit",
+    "layoutLabel": "South Circuit",
+    "hubStage": null,
+    "artHubStage": 9,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 2203.002706142796,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-yas-marina-south.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-yas-marina-gp-corkscrew",
+    "status": "imported",
+    "name": "Yas Marina Circuit \u2014 GP Corkscrew",
+    "raceRef": "Yas Marina Circuit \u2014 GP Corkscrew",
+    "displayName": "Yas Marina Circuit \u2014 GP Corkscrew",
+    "venueKey": "yas-marina",
+    "venueName": "Yas Marina Circuit",
+    "layoutLabel": "GP Corkscrew",
+    "hubStage": null,
+    "artHubStage": 9,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 4584.023175724527,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-yas-marina-gp-corkscrew.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-yas-marina-north-corkscrew",
+    "status": "imported",
+    "name": "Yas Marina Circuit \u2014 North Corkscrew",
+    "raceRef": "Yas Marina Circuit \u2014 North Corkscrew",
+    "displayName": "Yas Marina Circuit \u2014 North Corkscrew",
+    "venueKey": "yas-marina",
+    "venueName": "Yas Marina Circuit",
+    "layoutLabel": "North Corkscrew",
+    "hubStage": null,
+    "artHubStage": 9,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 2300.0242550369085,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-yas-marina-north-corkscrew.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-yas-marina-north-handling",
+    "status": "imported",
+    "name": "Yas Marina Circuit \u2014 North Handling",
+    "raceRef": "Yas Marina Circuit \u2014 North Handling",
+    "displayName": "Yas Marina Circuit \u2014 North Handling",
+    "venueKey": "yas-marina",
+    "venueName": "Yas Marina Circuit",
+    "layoutLabel": "North Handling",
+    "hubStage": null,
+    "artHubStage": 9,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 880.1670462000037,
+    "laps": 5,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-yas-marina-north-handling.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-barcelona-gp",
+    "status": "imported",
+    "name": "Circuit de Barcelona-Catalunya \u2014 Grand Prix",
+    "raceRef": "Circuit de Barcelona-Catalunya \u2014 Grand Prix",
+    "displayName": "Circuit de Barcelona-Catalunya \u2014 Grand Prix",
+    "venueKey": "barcelona",
+    "venueName": "Circuit de Barcelona-Catalunya",
+    "layoutLabel": "Grand Prix",
+    "hubStage": null,
+    "artHubStage": 9,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 4634.889236483151,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-barcelona-gp.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-barcelona-national",
+    "status": "imported",
+    "name": "Circuit de Barcelona-Catalunya \u2014 National",
+    "raceRef": "Circuit de Barcelona-Catalunya \u2014 National",
+    "displayName": "Circuit de Barcelona-Catalunya \u2014 National",
+    "venueKey": "barcelona",
+    "venueName": "Circuit de Barcelona-Catalunya",
+    "layoutLabel": "National",
+    "hubStage": null,
+    "artHubStage": 9,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 2951.627136401337,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-barcelona-national.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-mugello-gp",
+    "status": "imported",
+    "name": "Mugello Circuit \u2014 Grand Prix",
+    "raceRef": "Mugello Circuit \u2014 Grand Prix",
+    "displayName": "Mugello Circuit \u2014 Grand Prix",
+    "venueKey": "mugello",
+    "venueName": "Mugello Circuit",
+    "layoutLabel": "Grand Prix",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 5244.728932242215,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-mugello-gp.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-sonoma-full",
+    "status": "imported",
+    "name": "Sonoma Raceway \u2014 Full Course",
+    "raceRef": "Sonoma Raceway \u2014 Full Course",
+    "displayName": "Sonoma Raceway \u2014 Full Course",
+    "venueKey": "sonoma",
+    "venueName": "Sonoma Raceway",
+    "layoutLabel": "Full Course",
+    "hubStage": null,
+    "artHubStage": 9,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 4069.1931262719786,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-sonoma-full.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-sonoma-nascar",
+    "status": "imported",
+    "name": "Sonoma Raceway \u2014 NASCAR Course",
+    "raceRef": "Sonoma Raceway \u2014 NASCAR Course",
+    "displayName": "Sonoma Raceway \u2014 NASCAR Course",
+    "venueKey": "sonoma",
+    "venueName": "Sonoma Raceway",
+    "layoutLabel": "NASCAR Course",
+    "hubStage": null,
+    "artHubStage": 9,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 3201.7733814053095,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-sonoma-nascar.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-autopolis-full",
+    "status": "imported",
+    "name": "Autopolis \u2014 International Course",
+    "raceRef": "Autopolis \u2014 International Course",
+    "displayName": "Autopolis \u2014 International Course",
+    "venueKey": "autopolis",
+    "venueName": "Autopolis",
+    "layoutLabel": "International Course",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 4632.701204486843,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-autopolis-full.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-autopolis-short",
+    "status": "imported",
+    "name": "Autopolis \u2014 Shortcut Course",
+    "raceRef": "Autopolis \u2014 Shortcut Course",
+    "displayName": "Autopolis \u2014 Shortcut Course",
+    "venueKey": "autopolis",
+    "venueName": "Autopolis",
+    "layoutLabel": "Shortcut Course",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 2975.714814249202,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-autopolis-short.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-goodwood-full",
+    "status": "imported",
+    "name": "Goodwood Motor Circuit \u2014 Motor Circuit",
+    "raceRef": "Goodwood Motor Circuit \u2014 Motor Circuit",
+    "displayName": "Goodwood Motor Circuit \u2014 Motor Circuit",
+    "venueKey": "goodwood",
+    "venueName": "Goodwood Motor Circuit",
+    "layoutLabel": "Motor Circuit",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 3813.6734757808526,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-goodwood-full.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-long-beach-full",
+    "status": "imported",
+    "name": "Long Beach \u2014 Grand Prix",
+    "raceRef": "Long Beach \u2014 Grand Prix",
+    "displayName": "Long Beach \u2014 Grand Prix",
+    "venueKey": "long-beach",
+    "venueName": "Long Beach",
+    "layoutLabel": "Grand Prix",
+    "hubStage": null,
+    "artHubStage": 6,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 3258.395492542682,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-long-beach-full.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-dunsfold-full",
+    "status": "imported",
+    "name": "Dunsfold \u2014 Top Gear Test Track \u2014 Full Course",
+    "raceRef": "Dunsfold \u2014 Top Gear Test Track \u2014 Full Course",
+    "displayName": "Dunsfold \u2014 Top Gear Test Track \u2014 Full Course",
+    "venueKey": "dunsfold",
+    "venueName": "Dunsfold \u2014 Top Gear Test Track",
+    "layoutLabel": "Full Course",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 2846.573477112776,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-dunsfold-full.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "rally-latvia-mapped-1-2024",
+    "status": "imported",
+    "name": "Rally Latvia \u2014 Milzkalne 2024",
+    "raceRef": "Rally Latvia \u2014 Milzkalne 2024",
+    "venueKey": "latvia",
+    "venueName": "Rally Latvia",
+    "layoutLabel": "Milzkalne (2024)",
+    "hubStage": null,
+    "artHubStage": 5,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "surface": [
+      "gravel"
+    ],
+    "lengthM": 4972.243726533223,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/rally-latvia-mapped-1-2024.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+      "Public 2024 spectator map coordinate trace of Milzkalne; source: Tet Rally Latvia spectator map linked by RallySupport. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+      "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+    ]
+  },
+  {
+    "id": "rally-latvia-mapped-2-2024",
+    "status": "imported",
+    "name": "Rally Latvia \u2014 Tukums 2024",
+    "raceRef": "Rally Latvia \u2014 Tukums 2024",
+    "venueKey": "latvia",
+    "venueName": "Rally Latvia",
+    "layoutLabel": "Tukums (2024)",
+    "hubStage": null,
+    "artHubStage": 5,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "surface": [
+      "gravel"
+    ],
+    "lengthM": 27516.448961612114,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/rally-latvia-mapped-2-2024.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+      "Public 2024 spectator map coordinate trace of Tukums; source: Tet Rally Latvia spectator map linked by RallySupport. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+      "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+    ]
+  },
+  {
+    "id": "rally-latvia-mapped-3-2024",
+    "status": "imported",
+    "name": "Rally Latvia \u2014 Andumi 2024",
+    "raceRef": "Rally Latvia \u2014 Andumi 2024",
+    "venueKey": "latvia",
+    "venueName": "Rally Latvia",
+    "layoutLabel": "Andumi (2024)",
+    "hubStage": null,
+    "artHubStage": 5,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "surface": [
+      "gravel"
+    ],
+    "lengthM": 17907.136320812708,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/rally-latvia-mapped-3-2024.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+      "Public 2024 spectator map coordinate trace of Andumi; source: Tet Rally Latvia spectator map linked by RallySupport. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+      "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+    ]
+  },
+  {
+    "id": "rally-estonia-mapped-1-2020",
+    "status": "imported",
+    "name": "Rally Estonia \u2014 R\u00dcA 2020",
+    "raceRef": "Rally Estonia \u2014 R\u00dcA 2020",
+    "venueKey": "estonia",
+    "venueName": "Rally Estonia",
+    "layoutLabel": "R\u00dcA (2020)",
+    "hubStage": null,
+    "artHubStage": 5,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "surface": [
+      "gravel"
+    ],
+    "lengthM": 9357.89624522887,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/rally-estonia-mapped-1-2020.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+      "Public 2020 spectator map coordinate trace of R\u00dcA; source: Rally Estonia public 2020 restriction/stage map linked by Arula village. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+      "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+    ]
+  },
+  {
+    "id": "rally-estonia-mapped-2-2020",
+    "status": "imported",
+    "name": "Rally Estonia \u2014 M\u00c4EK\u00dcLA 2020",
+    "raceRef": "Rally Estonia \u2014 M\u00c4EK\u00dcLA 2020",
+    "venueKey": "estonia",
+    "venueName": "Rally Estonia",
+    "layoutLabel": "M\u00c4EK\u00dcLA (2020)",
+    "hubStage": null,
+    "artHubStage": 5,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "surface": [
+      "gravel"
+    ],
+    "lengthM": 14794.758428369516,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/rally-estonia-mapped-2-2020.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+      "Public 2020 spectator map coordinate trace of M\u00c4EK\u00dcLA; source: Rally Estonia public 2020 restriction/stage map linked by Arula village. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+      "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+    ]
+  },
+  {
+    "id": "rally-estonia-mapped-3-2020",
+    "status": "imported",
+    "name": "Rally Estonia \u2014 ARULA 2020",
+    "raceRef": "Rally Estonia \u2014 ARULA 2020",
+    "venueKey": "estonia",
+    "venueName": "Rally Estonia",
+    "layoutLabel": "ARULA (2020)",
+    "hubStage": null,
+    "artHubStage": 5,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "surface": [
+      "gravel"
+    ],
+    "lengthM": 6941.553054788962,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/rally-estonia-mapped-3-2020.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+      "Public 2020 spectator map coordinate trace of ARULA; source: Rally Estonia public 2020 restriction/stage map linked by Arula village. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+      "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+    ]
+  },
+  {
+    "id": "rally-sardinia-mapped-1-2024",
+    "status": "imported",
+    "name": "Rally Italia Sardegna \u2014 Monte Lerno \u2014 Monti di Al\u00e0 2024",
+    "raceRef": "Rally Italia Sardegna \u2014 Monte Lerno \u2014 Monti di Al\u00e0 2024",
+    "venueKey": "sardinia",
+    "venueName": "Rally Italia Sardegna",
+    "layoutLabel": "Monte Lerno \u2014 Monti di Al\u00e0 (2024)",
+    "hubStage": null,
+    "artHubStage": 9,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "surface": [
+      "gravel"
+    ],
+    "lengthM": 25250.444217401964,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/rally-sardinia-mapped-1-2024.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+      "Public 2024 spectator map coordinate trace of Monte Lerno \u2014 Monti di Al\u00e0; source: Public Reccemaps spectator preview \u2014 Monte Lerno / Monti di Al\u00e0. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+      "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+    ]
+  },
+  {
+    "id": "rally-croatia-mapped-1-2026",
+    "status": "imported",
+    "name": "Croatia Rally \u2014 Ucka 2026",
+    "raceRef": "Croatia Rally \u2014 Ucka 2026",
+    "venueKey": "croatia",
+    "venueName": "Croatia Rally",
+    "layoutLabel": "Ucka (2026)",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 11683.919863701103,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/rally-croatia-mapped-1-2026.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+      "Public 2026 spectator map coordinate trace of Ucka; source: Public Croatia 2026 spectator route map; unofficial trace. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+      "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+    ]
+  },
+  {
+    "id": "rally-croatia-mapped-2-2026",
+    "status": "imported",
+    "name": "Croatia Rally \u2014 Platak 2026",
+    "raceRef": "Croatia Rally \u2014 Platak 2026",
+    "venueKey": "croatia",
+    "venueName": "Croatia Rally",
+    "layoutLabel": "Platak (2026)",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 16319.537952588129,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/rally-croatia-mapped-2-2026.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+      "Public 2026 spectator map coordinate trace of Platak; source: Public Croatia 2026 spectator route map; unofficial trace. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+      "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+    ]
+  },
+  {
+    "id": "rally-croatia-mapped-3-2026",
+    "status": "imported",
+    "name": "Croatia Rally \u2014 Ravna Gora - Skrad 2026",
+    "raceRef": "Croatia Rally \u2014 Ravna Gora - Skrad 2026",
+    "venueKey": "croatia",
+    "venueName": "Croatia Rally",
+    "layoutLabel": "Ravna Gora - Skrad (2026)",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 10151.245038028384,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/rally-croatia-mapped-3-2026.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+      "Public 2026 spectator map coordinate trace of Ravna Gora - Skrad; source: Public Croatia 2026 spectator route map; unofficial trace. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved.",
+      "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+    ]
+  },
+  {
+    "id": "rally-corsica-la-porta",
+    "status": "imported",
+    "name": "Tour de Corse \u2014 La Porta \u2014 Barchetta \u2014 Road Recreation",
+    "raceRef": "Tour de Corse \u2014 La Porta \u2014 Barchetta \u2014 Road Recreation",
+    "venueKey": "corsica",
+    "venueName": "Tour de Corse",
+    "layoutLabel": "La Porta \u2014 Barchetta \u2014 Road Recreation",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 25212.698530578153,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/rally-corsica-la-porta.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+      "D515 portion of La Porta\u2013Barchetta, documented in the 2025 Tour de Corse Historique road closures. Omits the D205 competition approach. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate.",
+      "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+    ]
+  },
+  {
+    "id": "rally-ypres-kemmelberg",
+    "status": "imported",
+    "name": "Ypres Rally \u2014 Kemmelberg \u2014 Road Recreation",
+    "raceRef": "Ypres Rally \u2014 Kemmelberg \u2014 Road Recreation",
+    "venueKey": "ypres",
+    "venueName": "Ypres Rally",
+    "layoutLabel": "Kemmelberg \u2014 Road Recreation",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 9640.940657751124,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/rally-ypres-kemmelberg.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+      "Mapped Kemmelberg roads reviewed against the organizer 2025 recce map. Starts on Noordstraat, omitting the initial Kemmel village/Katteput loop. This is a partial geographic recreation rather than the identical stage. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate.",
+      "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+    ]
+  },
+  {
+    "id": "rally-central-europe-strasinska",
+    "status": "imported",
+    "name": "Central European Rally \u2014 Stra\u0161\u00ednsk\u00e1 \u2014 Road Recreation",
+    "raceRef": "Central European Rally \u2014 Stra\u0161\u00ednsk\u00e1 \u2014 Road Recreation",
+    "venueKey": "central-europe",
+    "venueName": "Central European Rally",
+    "layoutLabel": "Stra\u0161\u00ednsk\u00e1 \u2014 Road Recreation",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 13840.40756268025,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/rally-central-europe-strasinska.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Abrupt 165-degree reversal at point 321; verify junction continuity",
+      "Abrupt 121-degree reversal at point 497; verify junction continuity",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+      "Southern portion of the Stra\u0161\u00ednsk\u00e1 route published by Hoslovice municipality for Central European Rally 2024; current paved village roads through Male\u010d and Z\u00e1les\u00ed, ending at Nov\u00e1 Ves before the northern stage loop. Village-center waypoints are snapped to through roads, up to 166 m. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate. Reviewed genuine sharp junctions: OSM 69465111/30406194 at the southern 171/17019 turn, and 218840136/436846217 at 17224/17220, both visible in the published map; source node topology retained.",
+      "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+    ]
+  },
+  {
+    "id": "rally-poland-swietajno",
+    "status": "imported",
+    "name": "Rally Poland \u2014 \u015awi\u0119tajno \u2014 Pietrasze to Che\u0142chy \u2014 Road Recreation",
+    "raceRef": "Rally Poland \u2014 \u015awi\u0119tajno \u2014 Pietrasze to Che\u0142chy \u2014 Road Recreation",
+    "venueKey": "poland",
+    "venueName": "Rally Poland",
+    "layoutLabel": "\u015awi\u0119tajno \u2014 Pietrasze to Che\u0142chy \u2014 Road Recreation",
+    "hubStage": null,
+    "artHubStage": 5,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "surface": [
+      "asphalt",
+      "dirt",
+      "gravel"
+    ],
+    "lengthM": 11484.164147274749,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/rally-poland-swietajno.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Abrupt 128-degree reversal at point 118; verify junction continuity",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+      "Southern part of the published 2024 \u015awi\u0119tajno spectator map: Pietrasze, Jelonek, Zalesie and Che\u0142chy. Ends before the northern Gryzy/Mazury competition loop. Current drivable roads, not an exact historical timing-control reconstruction. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate. The mapped southern approach uses a short 655 section before joining the gravel corridor; this differs from the competition forest approach. Jelonek waypoint is on the through-road junction, not the village spur. Sharp current-road junction 749553159/178760572 is topologically connected; the alternate southern approach makes this turn sharper than the published competition approach.",
+      "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+    ]
+  },
+  {
+    "id": "rally-australia-sherwood",
+    "status": "imported",
+    "name": "Rally Australia \u2014 Sherwood Road \u2014 Road Recreation",
+    "raceRef": "Rally Australia \u2014 Sherwood Road \u2014 Road Recreation",
+    "venueKey": "australia",
+    "venueName": "Rally Australia",
+    "layoutLabel": "Sherwood Road \u2014 Road Recreation",
+    "hubStage": null,
+    "artHubStage": 5,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "surface": [
+      "gravel"
+    ],
+    "lengthM": 14926.249667765353,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/rally-australia-sherwood.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+      "Continuous mapped Sherwood Road in the Coffs Coast rally area documented by the organizer 2018 Rally Guide 2. A named-road recreation, not the full same-named WRC stage; competition loops, connecting forest roads and exact controls omitted. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate.",
+      "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+    ]
+  },
+  {
+    "id": "rally-australia-coldwater",
+    "status": "imported",
+    "name": "Rally Australia \u2014 Coldwater Creek Road \u2014 Road Recreation",
+    "raceRef": "Rally Australia \u2014 Coldwater Creek Road \u2014 Road Recreation",
+    "venueKey": "australia",
+    "venueName": "Rally Australia",
+    "layoutLabel": "Coldwater Creek Road \u2014 Road Recreation",
+    "hubStage": null,
+    "artHubStage": 5,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "surface": [
+      "asphalt",
+      "dirt"
+    ],
+    "lengthM": 8648.452668895541,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/rally-australia-coldwater.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights.",
+      "Continuous mapped Coldwater Creek Road in the Coffs Coast rally area documented by the organizer 2018 Rally Guide 2. A named-road recreation, not the full same-named WRC stage; competition loops, connecting forest roads and exact controls omitted. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate.",
+      "Road widths are estimates, not a surveyed stage. Scenery and conditions are fictional post-apocalyptic adaptations."
+    ]
   }
 ]

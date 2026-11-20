@@ -8,7 +8,7 @@ import race_track_import as track
 class RallyCollectionTests(unittest.TestCase):
  def test_new_sections_keep_real_material_transitions_and_tunnel(self):
   additions=json.loads(Path('data/campaigns/america/raceways/rally-additions.json').read_text())
-  self.assertEqual(len(additions),6)
+  self.assertEqual(len(additions),11)
   for s in additions:
    prepared=prepare(s);self.assertIsNone(prepared['year'])
    points,_=source_points(prepared)
@@ -62,8 +62,12 @@ class RallyCollectionTests(unittest.TestCase):
     self.assertEqual(track.layout_review_issues({'points':p,'open':True}),spec.get('reviewedLayoutIssues',[]))
     edges=[tuple(sorted(((round(a['lat'],7),round(a['lon'],7)),(round(b['lat'],7),round(b['lon'],7))))) for a,b in zip(p,p[1:])]
     self.assertEqual(len(edges),len(set(edges)))
-    # Organizer Mineral de Pozos trace has one 441 m sparse segment; retain source resolution.
-    self.assertLess(max(math.hypot(a['x']-b['x'],a['y']-b['y']) for a,b in zip(p,p[1:])),600 if spec['format']=='mapped-snow' else (450 if spec['key']=='mexico-mineral-pozos-2025' else 400))
+    # Source resolution is retained, not improved by inventing intervening bends.
+    # Reviewed sparse organizer/spectator traces and straight mapped road edges.
+    limits={'mexico-mineral-pozos-2025':450,'100aw-kp-road':500,
+            'croatia-mapped-1-2026':550,'croatia-mapped-2-2026':575,
+            'croatia-mapped-3-2026':450,'poland-swietajno':550}
+    self.assertLess(max(math.hypot(a['x']-b['x'],a['y']-b['y']) for a,b in zip(p,p[1:])),limits.get(spec['key'],600 if spec['format']=='mapped-snow' else 400))
     dense=track.densify(p,60)
     self.assertLessEqual(max(math.hypot(a['x']-b['x'],a['y']-b['y']) for a,b in zip(dense,dense[1:])),60.01)
 
