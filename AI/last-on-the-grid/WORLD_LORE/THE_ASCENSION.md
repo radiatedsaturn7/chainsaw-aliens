@@ -50,6 +50,9 @@ Possible imagery: lights ascending in old advertisements, the glow of server tow
 
 The trip west might resemble a pilgrimage without anyone calling it one.
 
+## Why Rob rejected the perfected voices
+In addition to preferring physical imperfection, Rob found that Heaven's emotionally optimized residents often spoke in similarly gentle, scripted-sounding phrases. People he knew no longer felt quite like the people he remembered. **This is Rob's perception, not a settled fact that the uploads are soulless or unreal.** It should remain possible that their changes are authentic, positive, and freely chosen. See [The Reverse Turing Test](REVERSE_TURING_TEST.md).
+
 ## What this does *not* determine
 - The precise date mind uploading was invented or first accomplished.
 - Whether upload requires destroying the original body, whether it is reversible, or whether a mind inside is continuous with its biological predecessor.
