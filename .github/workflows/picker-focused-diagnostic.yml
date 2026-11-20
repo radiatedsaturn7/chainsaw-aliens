@@ -1,0 +1,91 @@
+name: Picker throughput diagnostic (not a release gate)
+on:
+  push:
+    branches: ['dot/diagnostic-picker-671']
+permissions:
+  contents: read
+jobs:
+  picker:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        include:
+          - case: tutsan-desktop
+            grep: Tutsan desktop keyboard static picker initial page, later page, cockpit and real input drive$
+          - case: tutsan-handheld
+            grep: Tutsan handheld touch static picker initial page, later page, cockpit and real input drive$
+          - case: traversal-desktop
+            grep: catalog complete first-to-last picker traversal and wrap desktop keyboard$
+          - case: traversal-handheld
+            grep: catalog complete first-to-last picker traversal and wrap handheld touch$
+    env:
+      CANDIDATE: b5320908840714138391a52055fb62568d0d9608
+      CANDIDATE_TREE: 63e8061261f1d938004028a82b1a3229e6386b3a
+      BASELINE: 82fcd12634b84a5f772162549480c626b1d51163
+      BASELINE_TREE: 221dcba3f1b503708acb7c71fb6ca29a1535ca6e
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.CANDIDATE }}
+          # Candidate must directly descend from the audited baseline.
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Verify exact combined tree and unchanged tests and gate
+        run: |
+          set -eu
+          test "$(git rev-parse HEAD)" = "$CANDIDATE"
+          test "$(git rev-parse HEAD^{tree})" = "$CANDIDATE_TREE"
+          test "$(git rev-parse HEAD^)" = "$BASELINE"
+          test "$(git rev-parse "$BASELINE^{tree}")" = "$BASELINE_TREE"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          git diff --exit-code "$BASELINE" HEAD -- tests tools/playwright playwright.config.js .github/workflows package.json package-lock.json data/server-storage
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Verify protected headless Chromium launch
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import {chromium} from 'playwright';
+          const browser=await chromium.launch({headless:true,channel:'chromium',chromiumSandbox:true});
+          try{
+            const page=await browser.newPage();
+            await page.goto('chrome://sandbox');
+            const status=await page.locator('body').innerText();
+            assert.match(status,/You are adequately sandboxed/i);
+            await page.goto('data:text/html,<title>sandbox-ready</title>');
+            assert.equal(await page.title(),'sandbox-ready');
+          } finally { await browser.close(); }
+          JS
+      - name: Run one unchanged browser case
+        env:
+          CI: 'true'
+          CASE_GREP: ${{ matrix.grep }}
+        run: |
+          set -euo pipefail
+          cat > playwright.picker-diagnostic.config.js <<'CONFIG'
+          import {defineConfig} from '@playwright/test';
+          import base from './playwright.config.js';
+          export default defineConfig({
+            ...base,
+            retries: 0,
+            use: {...base.use, channel:'chromium', trace:'retain-on-failure',
+              launchOptions:{...base.use?.launchOptions, chromiumSandbox:true}}
+          });
+          CONFIG
+          npx playwright test --config=playwright.picker-diagnostic.config.js tests/playwright/car-catalog.spec.js --grep "$CASE_GREP" --list | tee picker-selected.txt
+          grep -Fx 'Total: 1 test in 1 file' picker-selected.txt
+          npx playwright test --config=playwright.picker-diagnostic.config.js tests/playwright/car-catalog.spec.js --grep "$CASE_GREP" --workers=1 --retries=0 --reporter=line
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: picker-diagnostic-${{ matrix.case }}
+          path: |
+            picker-selected.txt
+            test-results
+          retention-days: 7
