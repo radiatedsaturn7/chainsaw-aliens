@@ -24,6 +24,9 @@ The mass upload into Heaven is now a **rapid Ascension**, over a few years, with
 
 **Reserved:** Rob's ultimate fate, any reconstruction/epilogue, the definitive truth about Cait's subjective love, and the complete missing Mount Washington script.
 
+## Geography correction — November 20, 2026
+Mission 05 is located in the eastern Ozark foothills / St. Francois Mountains near Farmington, Missouri, reached via a practical supply detour from the Ohio River. Mission 06 then goes northwest to St. Louis. **Story route corrected; game map/track remains to be updated.**
+
 ## Highest-priority design choices
 | Decision | Why it matters | Proposed handling |
 |---|---|---|
