@@ -16,7 +16,7 @@
     "tree": "63e8061261f1d938004028a82b1a3229e6386b3a"
   },
   "B": {
-    "commit": "b5a9248c777d881b3e1851c75e0c3c38f2c1d29f",
+    "commit": "f0550f025827bea3cfb8602fee5eedf62c648cb7",
     "expectedShowroomNames": [
       "2005 Flint Coupe",
       "2018 Kestrel 660",
@@ -671,7 +671,7 @@
     },
     "previewManifestSha256": "0ef62032414c4f59d8c9d8c365b899565d1ac5d4f86f66eca3a965307289d7f3",
     "servedStockRevision": "0bed0ad65d5c3c203f4515e877ef152f63b083e767e41cb8d8189de9ed629f96",
-    "tree": "61d5b73edf7ec3cde2a84d13894c8b93a933b9ae"
+    "tree": "cd5b1732bb42d8f4df0f00a9e64f131d55d4dc1a"
   },
   "coldSpecSha256": "44fb2d8dd598728a49af28b7c76e3e0098f4aafad8a964e16d5a6501d051a4ac",
   "minimumCarPreviews": 635,
