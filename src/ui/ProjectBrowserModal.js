@@ -1,3 +1,4 @@
+import {paintCarThumbnail,drawCarThumbnailPlaceholder} from './shared/carPreviewThumbnails.js';
 import {importMusicAsset,isAudioMusic} from '../audio/MusicAsset.js';
 import {
   PROJECT_FOLDERS,
@@ -95,7 +96,7 @@ function readAvailableFolders(fixedFolder) {
 
 function listEntries(folder) {
   if (!PROJECT_FOLDERS.includes(folder)) return [];
-  const entries = listProjectFiles(folder).filter((entry) => isAllowedFile(folder, entry.name));
+  const entries = listProjectFiles(folder,{allowSyncFetch:folder!=='cars'}).filter((entry) => isAllowedFile(folder, entry.name));
   if (folder !== 'actors') return entries;
   const builtIns = listBuiltInActorBrowserEntries();
   const seen = new Set(builtIns.map((entry) => entry.name.toLowerCase()));
@@ -295,6 +296,42 @@ export function openProjectBrowser({
     fileList.className = 'project-browser-file-list-scroll';
     content.appendChild(fileList);
 
+    const previewVisibility=new WeakMap(),visibleCarPreviews=new Set();
+    const carPreviewRefresh=setInterval(()=>{for(const paint of visibleCarPreviews)paint();},1000);
+    const carPreviewObserver=typeof IntersectionObserver==='function'?new IntersectionObserver(events=>{
+      for(const event of events){
+        const draw=previewVisibility.get(event.target);
+        if(draw)draw(event.isIntersecting);
+      }
+    },{root:fileList,rootMargin:'32px'}):null;
+    function carRowPreview(entry){
+      const shell=document.createElement('div');
+      shell.className='project-browser-art-preview';
+      shell.setAttribute('aria-hidden','true');
+      shell.style.cssText='width:72px;height:40px;min-width:72px;display:grid;place-items:center';
+      shell.textContent='—';
+      let visible=false,canvas;
+      const usable=()=>visible&&!closed&&shell.isConnected;
+      const paint=()=>{
+        if(!usable())return;
+        const ctx=canvas.getContext('2d');
+        if(!ctx)return;
+        ctx.clearRect(0,0,144,80);
+        const box={x:0,y:0,w:144,h:80};
+        if(!paintCarThumbnail(ctx,box,entry.name,135,paint,usable))drawCarThumbnailPlaceholder(ctx,box);
+      };
+      previewVisibility.set(shell,show=>{
+        if(show===visible)return;
+        visible=show;
+        if(!visible){visibleCarPreviews.delete(paint);shell.textContent='—';canvas=null;return;}
+        canvas=document.createElement('canvas');
+        canvas.width=144;canvas.height=80;canvas.style.cssText='width:72px;height:40px';
+        shell.replaceChildren(canvas);visibleCarPreviews.add(paint);paint();
+      });
+      if(carPreviewObserver&&!entry.deleted)carPreviewObserver.observe(shell);
+      return shell;
+    }
+
     const footer = document.createElement('div');
     footer.className = 'project-browser-footer';
     panel.appendChild(footer);
@@ -321,6 +358,7 @@ export function openProjectBrowser({
 
     function cleanup(result) {
       closed=true;musicPreviewGeneration++;
+      carPreviewObserver?.disconnect();visibleCarPreviews.clear();clearInterval(carPreviewRefresh);
       window.__game?.stopProjectBrowserMusicPreview?.();activePreviewTrackId=null;
       try {
         previewTimers.forEach((timer) => clearInterval(timer));
@@ -460,6 +498,7 @@ export function openProjectBrowser({
     }
 
     function renderHome() {
+      carPreviewObserver?.disconnect();visibleCarPreviews.clear();
       fileList.innerHTML = '';
       const grid = document.createElement('div');
       grid.className = 'project-browser-folder-grid';
@@ -492,6 +531,7 @@ export function openProjectBrowser({
           : openError
           ? openError
           : `${entries.length} file${entries.length === 1 ? '' : 's'} in ${FOLDER_LABELS[folder] || folder}${state.syncing ? ' · syncing...' : ''}`;
+      carPreviewObserver?.disconnect();visibleCarPreviews.clear();
       fileList.innerHTML = '';
       if (state.loadError && !entries.length) {
         const row = document.createElement('div');
@@ -506,6 +546,7 @@ export function openProjectBrowser({
         row.className = 'project-browser-row';
         row.dataset.name = entry.name;
 
+        if(folder==='cars')row.appendChild(carRowPreview(entry));
         if (folder === 'art' || folder === 'actors') {
           const preview = document.createElement('div');
           preview.className = 'project-browser-art-preview';

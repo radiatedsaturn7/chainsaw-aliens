@@ -67,14 +67,55 @@ test('buy and install is atomic on dependency or save failure and stock restores
  await run('');assert.equal(items.garage.configuration('car').installed.turbo,undefined);assert.equal(items.progress.bags.items.turbo,1);
  await run('turbo');assert.equal(game.player.credits,400);
 });
-test('showroom renderer draws at most four cars with parked front-left angles and selected animation',()=>{
- const doc=createMenuDocument(),screen=doc.screens.find(s=>s.id==='cars');screen.elements=screen.elements.filter(e=>e.type==='car-showroom');
- const sprites=[],ctx=new Proxy({globalAlpha:1,stack:[],save(){this.stack??=[];this.stack.push(this.globalAlpha)},restore(){this.globalAlpha=this.stack.pop()}},{get:(o,k)=>k in o?o[k]:(()=>{})});
- const resources={choices:()=>cars,art:()=>null,car:ref=>({name:ref,art:{}}),tuning:()=>({}),game:{carEditor:{getRaceCarProjectedArtRef:(_car,_yaw,angle)=>({artRef:'test',angle})}},carPreview:{drawSprite:(_ctx,b,car,choice)=>sprites.push({car,b,angle:choice.angle,opacity:ctx.globalAlpha})}};
- drawMenuScreen(ctx,{x:0,y:0,w:960,h:540},doc,screen,{carRef:'car-1'},{time:1,resources,widgetStates:new Map([['car',{selectedAt:0}]])});
- assert.equal(sprites.length,4);assert.ok(sprites[1].b.w>sprites[0].b.w);
- assert.ok(sprites[1].opacity>sprites[0].opacity);assert.equal(sprites[0].angle,135*Math.PI/180);
- assert.ok(sprites[1].angle>sprites[0].angle);
+async function captureThumbnailFrames(times,{selected='car-1',count=4}={}){
+ const {clearCachedProjectFilesForTests}=await import('../../src/ui/serverStorage.js');
+ clearCachedProjectFilesForTests();
+ const previous={document:globalThis.document,fetch:globalThis.fetch,Image:globalThis.Image};
+ const doc=createMenuDocument(),screen=doc.screens.find(s=>s.id==='cars');
+ screen.elements=screen.elements.filter(e=>e.type==='car-showroom');
+ const digest='a'.repeat(64),angle=[0,45,90,135,180,225,270,315];
+ const path=id=>`assets/car-previews/${id}.webp`;
+ const active=cars.slice(0,count),assetFor=(id,poster)=>path(poster?id+'-poster':id);
+ const manifest={schemaVersion:1,rendererVersion:'menu-native-v1',releaseRevision:digest,anglesDeg:angle,
+  carsByName:Object.fromEntries(cars.map(({value})=>[value,value])),
+  previews:Object.fromEntries(cars.map(({value})=>[value,{
+   url:assetFor(value,false),frameWidth:256,frameHeight:144,frameCount:8,sourceSha256:digest,
+   stockSources:[{folder:'cars',name:value,sha256:digest}],poster:{url:assetFor(value,true),frameWidth:256,frameHeight:144,angleDeg:135,frameIndex:3,sha256:digest}
+  }]))};
+ globalThis.document={baseURI:'https://fixture.invalid/game/'};
+ globalThis.fetch=async (url,{body}={})=>{
+  if(String(url).endsWith('/__storage/preview-stock')){const {id,revision,name,carId}=JSON.parse(body);return Response.json({ok:true,id,revision,name,carId,verified:true});}
+  assert.match(String(url),/assets\/car-previews\/manifest\.json$/);
+  return Response.json(manifest);
+ };
+ globalThis.Image=class {set src(url){this.url=url;this.naturalWidth=url.endsWith('-poster.webp')?256:2048;this.naturalHeight=144;queueMicrotask(()=>this.onload());}};
+ let draws=[];
+ const ctx=new Proxy({globalAlpha:1,stack:[],save(){this.stack.push(this.globalAlpha)},restore(){this.globalAlpha=this.stack.pop()},
+  drawImage(image,sourceX,_y,_w,_h,_x,_dy,destWidth){draws.push({url:image.url,sourceX,destWidth,opacity:this.globalAlpha});}
+ },{get:(o,k)=>k in o?o[k]:(()=>{})});
+ const resources={choices:()=>active,art:()=>null,car(){throw Error('Browsing must not hydrate a full car');}};
+ const frames=[];
+ try{
+  for(const time of times){
+   for(let attempt=0;attempt<25;attempt++){
+    draws=[];
+    drawMenuScreen(ctx,{x:0,y:0,w:960,h:540},doc,screen,{carRef:selected},{time,resources,widgetStates:new Map([['car',{selectedAt:0}]])});
+    if(draws.length===Math.min(4,count))break;
+    await new Promise(r=>setTimeout(r,0));
+   }
+   assert.equal(draws.length,Math.min(4,count));
+   frames.push(draws);
+  }
+  return frames;
+ }finally{Object.assign(globalThis,previous);clearCachedProjectFilesForTests();}
+}
+
+test('showroom renderer draws at most four cars with parked front-left angles and selected animation',async()=>{
+ const [sprites]=await captureThumbnailFrames([1],{selected:'car-1',count:6});
+ assert.equal(sprites.length,4);assert.ok(sprites[1].destWidth>sprites[0].destWidth);
+ assert.ok(sprites[1].opacity>sprites[0].opacity);
+ assert.match(sprites[0].url,/car-0-poster\.webp$/);assert.equal(sprites[0].sourceX,0);
+ assert.match(sprites[1].url,/car-1\.webp$/);assert.equal(sprites[1].sourceX,5*256);
 });
 
 test('car restrictions persist through editor normalization and prevent garage purchase',async()=>{
@@ -215,14 +256,14 @@ test('selection borders can be hidden on arbitrary widgets without hiding author
  assert.equal(normalizeMenuElement({type:'car-showroom'}).selectionBorder,false);
 });
 
-test('highlighted car zooms to nearly 125 percent within 180ms and rotates once per four seconds',()=>{
- const doc=createMenuDocument(),screen=doc.screens.find(s=>s.id==='cars');screen.elements=screen.elements.filter(e=>e.type==='car-showroom');
- const sprites=[],ctx=new Proxy({globalAlpha:1},{get:(o,k)=>k in o?o[k]:(()=>{})});
- const resources={choices:()=>cars.slice(0,2),art:()=>null,car:ref=>({name:ref}),tuning:()=>({}),game:{carEditor:{getRaceCarProjectedArtRef:(_car,_yaw,angle)=>({artRef:'test',angle})}},carPreview:{drawSprite:(_ctx,b,car,choice)=>sprites.push({b,angle:choice.angle})}};
- drawMenuScreen(ctx,{x:0,y:0,w:960,h:540},doc,screen,{carRef:'car-0'},{time:.18,resources,widgetStates:new Map([['car',{selectedAt:0}]])});
- const ratio=sprites[0].b.w/sprites[1].b.w;
+test('highlighted car zooms to nearly 125 percent within 180ms and rotates once per four seconds',async()=>{
+ const [quick,quarter,wrapped]=await captureThumbnailFrames([.18,1,4],{selected:'car-0',count:2});
+ const ratio=quick[0].destWidth/quick[1].destWidth;
  assert.ok(ratio>1.23&&ratio<=1.25);
- assert.ok(Math.abs((sprites[0].angle-sprites[1].angle)-(.18/4*Math.PI*2))<1e-8);
+ assert.equal(quick[0].sourceX,3*256);
+ assert.equal(quarter[0].sourceX,5*256);
+ assert.equal(wrapped[0].sourceX,3*256);
+ assert.ok([quick,quarter,wrapped].every(p=>p[1].url.endsWith('-poster.webp')&&p[1].sourceX===0));
 });
 
 test('cursor, border and disabled indicators survive saving and preserve editor selection handles',()=>{

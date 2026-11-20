@@ -17,6 +17,8 @@ import {menuElementPose,resolveMenuBackground} from './MenuDocument.js';
 import {drawCarComponent} from './MenuCarStats.js';
 
 export const menuElementBounds=(element,bounds,pose=element)=>({x:bounds.x+pose.x*bounds.w,y:bounds.y+pose.y*bounds.h,w:element.w*bounds.w,h:element.h*bounds.h});
+import {paintCarThumbnail,drawCarThumbnailPlaceholder} from '../ui/shared/carPreviewThumbnails.js';
+
 export const menuElementInteractive=e=>['garage-tuner','code-entry','world-map','car-showroom','garage-browser','button','choice','slider','toggle','keybind'].includes(e.type);
 export const menuHit=(point,b)=>point.x>=b.x&&point.x<=b.x+b.w&&point.y>=b.y&&point.y<=b.y+b.h;
 export function drawMenuImage(ctx,image,b,fit='contain'){
@@ -70,7 +72,7 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
     if(choices.length&&!choices.some(choice=>choice.value===parameters[element.binding]))parameters={...parameters,[element.binding]:choices[0].value};
     showroomPages.set(element,{choices,page:showroomPage(choices,parameters[element.binding],element.maxVisible)});
   }
-  if(!buttonOnly)resources?.retainShowroomPage?.([...showroomPages.values()].flatMap(x=>x.page.entries));
+  if(!buttonOnly)resources?.retainShowroomPage?.(editing?[...showroomPages.values()].flatMap(x=>x.page.entries):[]);
   ctx.save();ctx.beginPath();ctx.rect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.clip();
   if(!buttonOnly){ctx.fillStyle=screen.background;ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);
   const background=resources?.art(screen.backgroundArt,Math.floor(time*8));if(background)ctx.drawImage(background,bounds.x,bounds.y,bounds.w,bounds.h);
@@ -131,9 +133,11 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
         ctx.save();ctx.globalAlpha*=selected?1:element.inactiveOpacity;
         ctx.fillStyle='#34434a';ctx.beginPath();ctx.ellipse(card.x+card.w/2,card.y+card.h*.8,card.w*.43,card.h*.09,0,0,Math.PI*2);ctx.fill();
         const preview={x:card.x+card.w*(1-scale)/2,y:card.y+card.h*(1-scale)/2,w:card.w*scale,h:card.h*.85*scale};
-        const car=resources?.car(entry.value),view={...element,type:'car-preview',showroomPreview:true,animation:'none',angleBinding:'',angle:element.angle+(selected&&!editing?elapsed/element.duration*360:0)};
-        const draw=(context,area)=>drawCarComponent(context,area,view,car,resources,time,parameters,fontFamily);
-        if(!selected&&resources?.drawParkedCar)resources.drawParkedCar(ctx,preview,car,element.angle,draw);else draw(ctx,preview);
+        const angle=element.angle+(selected&&!editing?elapsed/element.duration*360:0);
+        if(editing){
+          const car=resources?.car(entry.value),view={...element,type:'car-preview',showroomPreview:true,animation:'none',angleBinding:'',angle};
+          drawCarComponent(ctx,preview,view,car,resources,time,parameters,fontFamily);
+        }else if(!paintCarThumbnail(ctx,preview,entry.value,angle,undefined,undefined,selected))drawCarThumbnailPlaceholder(ctx,preview);
         ctx.fillStyle=element.color;drawText(entry.label,card.x+card.w/2,card.y+card.h-4,card.w-8);ctx.restore();
       }
 
@@ -160,10 +164,16 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
       drawCarDescription(ctx,b,element.property==='rewards'?`${quote.distanceKm.toFixed(1)} km · ${quote.surfaces||'Road'} · ${quote.weather}. ${rewards}${quote.featured?' '+(quote.featuredEarned?'Featured reward earned.':quote.featured):''}${targets}${quote.objective?' '+quote.objective.brief+' Optional: '+quote.objective.label+(quote.objective.earned?' (earned).':` (+${quote.objective.bonus} scrap, once).`):''}`:`${rewards} ${race?.description||''}`,fontFamily,element,{time,editing});
     }
     else if(element.type==='car-description'){
-      const car=resources?.car(element.assetRef||value);
+      const car=resources?.car(element.assetRef||value,{prepareExterior:false});
       drawCarDescription(ctx,b,car?.description?.trim()||'No description yet.',fontFamily,element);
     }
-    else if(['car-preview','car-stats','power-curve'].includes(element.type))drawCarComponent(ctx,b,element,(element.property==='stock'?resources?.stockCar(element.assetRef||value):resources?.car(element.assetRef||value)),resources,time,parameters,fontFamily);
+    else if(element.type==='car-preview'&&element.catalogThumbnail&&!editing){
+      if(!paintCarThumbnail(ctx,b,element.assetRef||value,element.angle))drawCarThumbnailPlaceholder(ctx,b);
+    }
+    else if(['car-preview','car-stats','power-curve'].includes(element.type)){
+      const options={prepareExterior:element.type==='car-preview'};
+      drawCarComponent(ctx,b,element,(element.property==='stock'?resources?.stockCar(element.assetRef||value,options):resources?.car(element.assetRef||value,options)),resources,time,parameters,fontFamily);
+    }
     else{
       if(element.type==='choice'){const options=element.source?resources?.choices(element.source,document,parameters)||[]:element.options;label+=`: ${options.find(o=>JSON.stringify(o.value)===JSON.stringify(value))?.label||'Choose…'}`;}
       if(element.type==='toggle')label+=value?' ✓':' —';

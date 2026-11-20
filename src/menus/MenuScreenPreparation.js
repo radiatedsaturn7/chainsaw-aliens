@@ -1,7 +1,6 @@
 import {resolveMenuBackground} from './MenuDocument.js';
 import {menuElementVisible} from './MenuLayout.js';
 import {drawMenuScreen} from './MenuRenderer.js';
-import {showroomPage} from './MenuGarageWidgets.js';
 
 const yieldFrame=()=>new Promise(resolve=>setTimeout(resolve,0));
 // Returns null without a drawing surface (headless callers); otherwise resolves
@@ -21,20 +20,20 @@ export function prepareMenuScreen(resources,document,screen,parameters,{bounds={
     }
     const art=ref=>resources.request(`art:${ref}`,()=>resources.prepareArt(ref));
     const visualLoads=[...refs].filter(Boolean).map(art);
-    const carRefs=new Set(),liveCarRefs=new Set(),showroomEntries=[];
-    const screenCar=ref=>liveCarRefs.has(ref)?resources.car(ref):resources.stockCar(ref);
-    if(elements.some(e=>e.type==='car-showroom')){
-      // The manifest supplies names; hydrate only this page, not the catalog.
-      const choices=resources.choices('cars',document,parameters);
-      for(const element of elements.filter(e=>e.type==='car-showroom')){
-        for(const choice of showroomPage(choices,parameters[element.binding],element.maxVisible).entries){
-          carRefs.add(choice.value);liveCarRefs.add(choice.value);showroomEntries.push(choice);
-        }
+    const carRefs=new Set(),liveCarRefs=new Set(),fullArtRefs=new Set();
+    const screenCar=ref=>liveCarRefs.has(ref)
+      ?resources.car(ref,{prepareExterior:fullArtRefs.has(ref)})
+      :resources.stockCar(ref,{prepareExterior:fullArtRefs.has(ref)});
+    resources.retainShowroomPage?.([]);
+    for(const e of elements){
+      if(e.type==='car-showroom'||(e.type==='car-preview'&&e.catalogThumbnail))continue;
+      if(!e.type.startsWith('car-')&&!(['property-display','asset-preview'].includes(e.type)&&e.dataSource==='cars'))continue;
+      const ref=e.assetRef||parameters[e.binding];
+      if(typeof ref==='string'&&ref){
+        carRefs.add(ref);
+        if(e.property!=='stock')liveCarRefs.add(ref);
+        if(e.type==='car-preview'||e.type==='asset-preview')fullArtRefs.add(ref);
       }
-    }
-    resources.retainShowroomPage?.(showroomEntries);
-    for(const e of elements)if(e.type.startsWith('car-')||(['property-display','asset-preview'].includes(e.type)&&e.dataSource==='cars')){
-      const ref=e.assetRef||parameters[e.binding];if(typeof ref==='string'&&ref){carRefs.add(ref);if(e.property!=='stock')liveCarRefs.add(ref);}
     }
     await Promise.all(visualLoads);
     const missing=[...refs].filter(ref=>ref&&resources.errors.has(`art:${ref}`));
@@ -45,7 +44,7 @@ export function prepareMenuScreen(resources,document,screen,parameters,{bounds={
     for(const ref of carRefs)screenCar(ref);
     await Promise.all([...resources.pending.values()]);
     const preparedRefs=new Set();
-    for(const ref of carRefs){
+    for(const ref of fullArtRefs){
       if(!isCurrent())return;
       const readyCar=screenCar(ref);if(!readyCar)continue;
       for(const artRef of resources.exteriorArtRefs(readyCar)){

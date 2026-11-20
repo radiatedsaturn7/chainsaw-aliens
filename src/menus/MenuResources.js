@@ -85,12 +85,12 @@ export class MenuResources {
     return entries.map(f=>({label:f.name,value:f.name}));
   }
   request(key,fn){if(this.pending.has(key))return this.pending.get(key);if(this.errors.has(key))return Promise.resolve();const task=Promise.resolve().then(fn).catch(e=>this.errors.set(key,String(e?.message||e))).finally(()=>{this.pending.delete(key);this.showroomFrames=new WeakMap();});this.pending.set(key,task);return task;}
-  car(ref){
-    const stock=this.stockCar(ref),garage=this.garage;
+  car(ref,{prepareExterior=true}={}){
+    const stock=this.stockCar(ref,{prepareExterior}),garage=this.garage;
     if(!stock||!garage?.items.ready)return stock;
     const key=`${ref}:${garage.revision}:${garage.items.revision}`;
     const cached=this.garageCars.get(key);if(cached?.stock===stock){
-      if(this.showroomNames?.has(ref))for(const artRef of this.exteriorArtRefs(cached.car))this.requestExteriorArt(ref,artRef);
+      if(prepareExterior&&this.showroomNames?.has(ref))for(const artRef of this.exteriorArtRefs(cached.car))this.requestExteriorArt(ref,artRef);
       return cached.car;
     }
     this.request(`garage-car:${key}`,async()=>{const car=await garage.build(ref,stock);this.garageCars.set(key,{stock,car});});
@@ -148,11 +148,12 @@ export class MenuResources {
     }
     return this.request(`car-art:${art}`,()=>this.prepareCarArt(art));
   }
-  stockCar(ref){
+  stockCar(ref,{prepareExterior=true}={}){
     if(!ref)return null;
     const showroom=this.showroomNames?.has(ref),generation=this.showroomGeneration;
     const storageVersion=showroom?showroomArtVersion():null;
     const loadArt=car=>{
+      if(!prepareExterior)return;
       if(showroom){
         if(generation!==this.showroomGeneration||!this.showroomNames?.has(ref))return;
       }else{

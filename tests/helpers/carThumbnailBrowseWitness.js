@@ -1,0 +1,127 @@
+import fs from 'node:fs';
+import {gunzipSync} from 'node:zlib';
+import {expect} from '@playwright/test';
+
+const root=new URL('../../data/server-storage/files/',import.meta.url);
+const previewFile=new URL('../../assets/car-previews/manifest.json',import.meta.url);
+const runtimeManifest=JSON.parse(fs.readFileSync(new URL('manifest.json',root)));
+const unpack=d=>d.__chainsawStorage?JSON.parse(gunzipSync(Buffer.from(d.data,'base64'))):d;
+const carDocs=new Map(Object.entries(runtimeManifest.folders.cars).map(([name,path])=>[name,unpack(JSON.parse(fs.readFileSync(new URL(path,root))))]));
+const mainArtPaths=new Set();
+const refsByName=new Map();
+function artRefs(value,set=new Set()){
+ if(!value||typeof value!=='object')return set;
+ if(typeof value.artRef==='string')set.add(value.artRef);
+ for(const x of Object.values(value))artRefs(x,set);
+ return set;
+}
+for(const [name,{car}] of carDocs){
+ const exterior=new Set();
+ for(const kind of ['body','tires','wheels','wheel','tread'])artRefs(car.art?.exterior?.[kind],exterior);
+ for(const layer of Object.values(car.art?.angleLayers||{}))for(const kind of ['body','tires','wheels','wheel','tread'])artRefs(layer[kind],exterior);
+ for(const key of ['shell','body','artRef','tires'])if(typeof car.art?.[key]==='string')exterior.add(car.art[key]);
+ for(const key of ['tread','wheel'])artRefs(car.art?.tireSurfaces?.[key],exterior);
+ const all=artRefs(car.art);
+ refsByName.set(name,{id:car.id,exterior:[...exterior],all:[...all]});
+ for(const ref of exterior)if(runtimeManifest.folders.art[ref])mainArtPaths.add(runtimeManifest.folders.art[ref]);
+}
+const resourceKey=url=>{
+ try{
+  const parsed=new URL(url),path=decodeURIComponent(parsed.pathname);
+  if(path==='/.netlify/functions/storage-file'||path==='/__storage/file'){
+   const folder=parsed.searchParams.get('folder'),name=parsed.searchParams.get('name');
+   return runtimeManifest.folders[folder]?.[name]||'';
+  }
+  const prefix='/server-storage/files/';return path.includes(prefix)?path.split(prefix).at(-1):'';
+ }catch{return '';}
+};
+export function catalogCar(name){return refsByName.get(name);}
+export function catalogArtPath(ref){return runtimeManifest.folders.art[ref];}
+export const isCatalogArtRequest=(url,ref)=>resourceKey(url)===catalogArtPath(ref);
+
+export async function installThumbnailBrowseWitness(context){
+ const thumb=JSON.parse(fs.readFileSync(previewFile));
+ expect(thumb.schemaVersion).toBe(1);
+ expect(thumb.anglesDeg).toEqual([0,45,90,135,180,225,270,315]);
+ const requested=[],thumbRequests=[],loaded=[];
+ let choosing=false;
+ context.on('request',request=>{
+  const url=request.url(),path=resourceKey(url);
+  if(mainArtPaths.has(path))requested.push({path,choosing});
+  if(new URL(url).pathname.includes('/assets/car-previews/'))thumbRequests.push(url);
+ });
+ context.on('response',response=>{
+  const path=resourceKey(response.url());if(path.startsWith('art/')&&response.ok())loaded.push(path);
+ });
+ await context.addInitScript(()=>{
+  const original=CanvasRenderingContext2D.prototype.drawImage;
+  const draws=new Map(),sampled=new WeakMap(),scratch=document.createElement('canvas').getContext('2d',{willReadFrequently:true});
+  const data={draws,mark:()=>draws.clear()};
+  Object.defineProperty(window,'__thumbnailBrowseWitness',{value:data});
+  CanvasRenderingContext2D.prototype.drawImage=function(image,...args){
+   const result=original.call(this,image,...args);
+   if(this.canvas!==window.__game?.canvas||!(image instanceof HTMLImageElement)||args.length!==8)return result;
+   const path=new URL(image.currentSrc||image.src).pathname;
+   if(!path.includes('/assets/car-previews/'))return result;
+   const [sx,sy,sw,sh,dx,dy,dw,dh]=args,m=this.getTransform();
+   if(![sx,sy,sw,sh,dx,dy,dw,dh].every(Number.isFinite)||sw<=0||sh<=0||dw<=0||dh<=0)return result;
+   let frames=sampled.get(image);if(!frames){frames=new Map();sampled.set(image,frames);}
+   let sample=frames.get(sx);
+   if(!sample){
+    scratch.canvas.width=sw;scratch.canvas.height=sh;
+    original.call(scratch,image,sx,sy,sw,sh,0,0,sw,sh);
+    const rgba=scratch.getImageData(0,0,sw,sh).data;
+    let opaque=0,clear=0;const probes=[];
+    for(let i=3;i<rgba.length;i+=4){opaque+=rgba[i]>245;clear+=rgba[i]<8;}
+    for(let yy=Math.floor(sh*.2);yy<sh*.86;yy+=Math.max(1,Math.floor(sh/10))){
+     for(let xx=Math.floor(sw*.14);xx<sw*.9;xx+=Math.max(1,Math.floor(sw/11))){
+      const i=4*(yy*sw+xx);if(rgba[i+3]>245)probes.push([xx,yy,rgba[i],rgba[i+1],rgba[i+2]]);
+     }
+    }
+    sample={opaque,clear,probes};frames.set(sx,sample);
+   }
+   const p0=m.transformPoint({x:dx,y:dy}),p1=m.transformPoint({x:dx+dw,y:dy+dh});
+   draws.set(path,{path,sx,sy,sw,sh,nw:image.naturalWidth,nh:image.naturalHeight,box:[p0.x,p0.y,p1.x,p1.y],opacity:this.globalAlpha,sample,at:performance.now()});
+  };
+ });
+ return {thumb,requested,thumbRequests,loaded,choose(){choosing=true;}, assertBrowseCold(){
+  expect(requested.filter(x=>!x.choosing),'full car body/tire requests before choose').toEqual([]);
+ }};
+}
+export async function thumbnailOnCanvas(page,qa,name,{selected=true}={}){
+ const key=qa.thumb.carsByName?.[name],asset=qa.thumb.previews?.[key];
+ expect(asset,`thumbnail entry for ${name}`).toBeTruthy();
+ expect(asset.carId??key, `raw runtime identity for ${name}`).toBe(catalogCar(name)?.id);
+ expect(asset.stockSources?.filter(x=>x.folder==='cars').map(x=>x.name),`exact storage entry for ${name}`).toEqual([name]);
+ const poster=selected?null:asset.poster;
+ if(poster){
+  expect(poster.frameIndex).toBe(3);expect(poster.angleDeg).toBe(135);
+  expect(poster.frameWidth).toBe(asset.frameWidth);expect(poster.frameHeight).toBe(asset.frameHeight);
+ }
+ return page.evaluate(({url,w,h,count,requestedFrame,selected})=>{
+  const canvas=window.__game.canvas,ctx=canvas.getContext('2d');
+  const path=new URL(url,document.baseURI).pathname;
+  const d=window.__thumbnailBrowseWitness.draws.get(path);
+  if(!d||performance.now()-d.at>2500||d.sw!==w||d.sh!==h||d.sy!==0||d.sx%w!==0||d.sx<0||d.sx>=count*w||d.nw!==count*w||d.nh!==h)return null;
+  if(requestedFrame!==null&&d.sx/w!==requestedFrame)return null;
+  if(selected ? d.opacity<.95 : !(d.opacity>0&&d.opacity<.95))return null;
+  const [x1,y1,x2,y2]=d.box;
+  if(!(x1>=0&&y1>=0&&x2<=canvas.width&&y2<=canvas.height&&x2>x1&&y2>y1))return null;
+  if(!d.sample.opaque||!d.sample.clear||d.sample.probes.length<5)return null;
+  let matched=0,probed=0;
+  const px=ctx.getImageData(Math.floor(x1),Math.floor(y1),Math.ceil(x2)-Math.floor(x1),Math.ceil(y2)-Math.floor(y1));
+  for(const [sx,sy,r,g,b] of d.sample.probes){
+   if(Math.max(r,g,b)*d.opacity<34)continue; // black canvas alone cannot satisfy this witness
+   probed++;
+   const x=Math.floor(x1+(sx+.5)*(x2-x1)/w)-Math.floor(x1),y=Math.floor(y1+(sy+.5)*(y2-y1)/h)-Math.floor(y1);
+   const j=4*(y*px.width+x);
+   const error=Math.max(Math.abs(px.data[j]-r*d.opacity),Math.abs(px.data[j+1]-g*d.opacity),Math.abs(px.data[j+2]-b*d.opacity));
+   if(px.data[j+3]>200&&Math.max(...px.data.slice(j,j+3))>=20&&error<=Math.max(19,40*d.opacity))matched++;
+  }
+  return probed>=3&&matched>=Math.max(3,Math.floor(probed*.10))?{path,frame:count===1?3:d.sx/w,kind:count===1?'poster':'atlas',box:d.box,matched}:null;
+ },{url:poster?.url||asset.url,w:asset.frameWidth,h:asset.frameHeight,count:poster?1:8,requestedFrame:poster?0:selected?null:3,selected});
+}
+export async function expectThumbnailOnCanvas(page,qa,name,opts){
+ let witness;await expect.poll(async()=>{witness=await thumbnailOnCanvas(page,qa,name,opts);return witness;},{timeout:90000}).not.toBeNull();
+ return witness;
+}

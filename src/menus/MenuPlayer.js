@@ -163,7 +163,7 @@ export default class MenuPlayer {
       return [
         {label:`CAR ${'ABC'[index]}`,x:.06,w:.16,y,h,fontSize:26},
         ...(summary?[
-          ...(summary.car?[{type:'car-preview',assetRef:summary.car,property:'stock',animation:'none',angle:135,x:.23,y,w:.16,h}]:[{label:'—',x:.23,y,w:.16,h}]),
+          ...(summary.car?[{type:'car-preview',catalogThumbnail:true,assetRef:summary.car,property:'stock',animation:'none',angle:135,x:.23,y,w:.16,h}]:[{label:'—',x:.23,y,w:.16,h}]),
           {label:`${summary.condition}%`,x:.40,w:.13,y,h,fontSize:26},
           {label:summary.time,x:.54,w:.24,y,h,fontSize:26}
         ]:[{label:'Empty',x:.23,w:.55,y,h,fontSize:26}])

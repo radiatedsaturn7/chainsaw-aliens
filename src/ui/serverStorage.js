@@ -3,6 +3,7 @@ const PROJECT_FILE_PREFIX = 'server-project-file:';
 const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'tires', 'models', 'menus', 'doodads', 'items', 'fonts', 'settings'];
 const STATIC_STORAGE_ROOT = projectStorageUrl('data/server-storage/files');
 let staticManifestPromise = null;
+let previewReleaseTask = null;
 let staticDocumentRoot = STATIC_STORAGE_ROOT;
 const staticLoads = new Map();
 const STORAGE_REQUEST_TIMEOUT_MS = 12000;
@@ -355,6 +356,46 @@ async function loadStaticManifest() {
   return staticManifestPromise;
 }
 
+// The stock binding is a release-generated sibling, never a field added to
+// or copied through the normal persisted project manifest.
+function readPublishedPreviewRevision(){
+  return previewReleaseTask??=(async()=>{
+    try {
+      const base=STATIC_STORAGE_ROOT;
+      const [record,manifestResponse]=await Promise.all([
+        requestStatic(base+'/stock-preview-release.json'),
+        fetch(base+'/manifest.json',{signal:AbortSignal.timeout(4000)})
+      ]);
+      if(record?.schemaVersion!==1||!manifestResponse.ok||!globalThis.crypto?.subtle)return null;
+      const bytes=await manifestResponse.arrayBuffer();
+      const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),x=>x.toString(16).padStart(2,'0')).join('');
+      return hash===record.projectManifestSha256?record.stockPreviewReleaseRevision:null;
+    }catch{return null;}
+  })();
+}
+
+// Preview validation is metadata-only and never calls the project file reader.
+export async function verifyProjectCarPreviewStock(revision,id,name,carId,sources) {
+  if(!/^[0-9a-f]{64}$/.test(revision||'')||!Array.isArray(sources)||sources.length<1||sources.length>32)return false;
+  if(typeof name!=='string'||typeof carId!=='string'||!sources.some(x=>x.folder==='cars'&&x.name===name))return false;
+  const ownsLocal=()=>sources.some(({folder,name})=>{
+    const source=volatileFileSources.get(fileKey(folder,name));
+    return !!source&&source!=='static'&&(isProjectStorageReadOnly()||source==='cache');
+  });
+  if(ownsLocal())return false;
+  if(isProjectStorageReadOnly()){
+    const published=await readPublishedPreviewRevision();
+    return isProjectStorageReadOnly()&&published===revision&&!ownsLocal();
+  }
+  try {
+    const response=await requestJson('/__storage/preview-stock',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({revision,id,name,carId}),timeoutMs:4000
+    });
+    return response?.revision===revision&&response?.id===id&&response?.name===name&&response?.carId===carId&&response.verified===true&&!ownsLocal()&&!isProjectStorageReadOnly();
+  }catch{return false;}
+}
+
 async function fetchStaticFile(folder, name) {
   const key = fileKey(folder, name);
   if (staticLoads.has(key)) return staticLoads.get(key);
@@ -640,6 +681,7 @@ export function clearCachedProjectFilesForTests() {
   volatileFileSources.clear();
   staticManifestPromise = null;
   staticDocumentRoot = STATIC_STORAGE_ROOT;
+  previewReleaseTask = null;
   staticLoads.clear();
   serverIndex = DEFAULT_FOLDERS.reduce((acc, folder) => { acc[folder] = {}; return acc; }, {});
   setStorageApiAvailability(true);

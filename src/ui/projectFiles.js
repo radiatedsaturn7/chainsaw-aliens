@@ -1,3 +1,4 @@
+import {invalidateProjectCarThumbnail} from './shared/carPreviewThumbnails.js';
 import { isSystemCarDocument } from '../racing/CarPresets.js';
 /**
  * Project file facade backed by per-file server storage.
@@ -200,6 +201,7 @@ export function saveProjectFile(folder, name, dataObj, options = {}) {
   assertFolder(folder);
   const clean = sanitizeProjectFileName(name);
   if (!clean) return null;
+  if (folder === 'cars') invalidateProjectCarThumbnail(clean);
   const savedAt = Date.now();
   const payload = {
     version: 1,
@@ -239,6 +241,7 @@ export function deleteProjectFile(folder, name) {
   assertFolder(folder);
   const clean = sanitizeProjectFileName(name);
   if (!clean) return;
+  if (folder === 'cars') invalidateProjectCarThumbnail(clean);
   deleteCachedProjectFile(folder, clean);
   parsedPayloadCache.delete(`${folder}:${clean}`);
   const index = ensureProjectFileIndex();
@@ -262,6 +265,7 @@ export function renameProjectFile(folder, oldName, newName) {
   if (!oldClean || !nextClean) return null;
   const payload = loadProjectFile(folder, oldClean);
   if (!payload) return null;
+  if (folder === 'cars') { invalidateProjectCarThumbnail(oldClean); invalidateProjectCarThumbnail(nextClean); }
   const savedAt = Date.now();
   const saved = {
     version: 1,
@@ -308,6 +312,7 @@ export async function restoreProjectFileVersion(folder, name, versionId) {
   if (!clean || !versionId) return null;
   const restored = await restoreServerFileVersion(folder, clean, versionId);
   if (restored?.data !== undefined) {
+    if (folder === 'cars') invalidateProjectCarThumbnail(clean);
     const raw = JSON.stringify(restored);
     cacheParsedPayload(`${folder}:${clean}`, raw, restored);
     upsertCachedProjectFile(folder, clean, raw);
