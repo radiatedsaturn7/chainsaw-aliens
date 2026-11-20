@@ -23,6 +23,11 @@ In 2994, about ten years after most humans rapidly migrated into a digital “He
 - **Purgatory is a reading, not a cosmological fact.** Heaven and an abandoned outside world invite biblical parallels without proving literal damnation or salvation. A decade of neglect does not make every building ancient rubble.
 - **Do not declare whether Cait's experience equals human love.** Make room for defensible, competing readings.
 
+## Heaven's missing imperfection
+**Rob's concrete reason for refusing Heaven:** the experience was so optimized that people he knew seemed no longer to speak as themselves—too agreeable, too polished, almost scripted. He likes real arguments, friction and unpredictability. **This is not definitive evidence their consciousness vanished.** They may have grown; his discomfort may reveal his own need for conflict. The [Reverse Turing Test](WORLD_LORE/REVERSE_TURING_TEST.md) is a literary question, not a verdict on humanity.
+
+**Core irony:** Rob rejected effortless reassurance, yet needs Cait to say something she cannot honestly say. Cait's refusal may represent the integrity he valued outside Heaven, even as it wounds him. Don't resolve that paradox with a speech or by declaring one side correct.
+
 ## Dramatic craft requirements
 1. **Before each scene:** identify what each participant wants *right now*, what they will not say, and what changes.
 2. **For each chapter:** opening circumstance → driving challenge → consequences/aftermath → concrete handoff to the next chapter.
