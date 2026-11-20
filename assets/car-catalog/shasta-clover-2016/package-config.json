@@ -1,0 +1,80 @@
+{
+  "id": "shasta-clover-2016",
+  "name": "Shasta Clover 2016",
+  "stableCarId": "saved-car:Shasta Clover 2016",
+  "runtimeId": "saved-car:Shasta Clover 2016",
+  "candidateId": "honda-hr-v-lx-2016-us-6mt-fwd-supplemental",
+  "referenceVehicle": "2016 United States Honda HR-V, LX2WD six-speedmanual 1.799Lgasoline,standard17-inchalloys; notAWD/CVT,EXsunroof orhybrid",
+  "identity": {
+    "year": 2016,
+    "make": "Honda",
+    "model": "HR-V",
+    "trim": "LX2WD six-speedmanual 1.799Lgasoline,standard17-inchalloys; notAWD/CVT,EXsunroof orhybrid",
+    "market": "United States"
+  },
+  "bodyClass": "five-door five-seat compact crossover; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://hondanews.com/en-US/releases/release-fad4d519ffce4a6fb3e4e9a225b4aa11-2016-honda-hr-v-specifications-features",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "gearCount",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "redlineRpm",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "frontWeightDistribution",
+        "fuelTankUSgal",
+        "steeringRatio"
+      ]
+    }
+  ]
+}

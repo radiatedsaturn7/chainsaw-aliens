@@ -1,0 +1,60 @@
+{
+  "id": "slender-birdsfoot-1953",
+  "name": "Slender Birdsfoot 1953",
+  "stableCarId": "saved-car:Slender Birdsfoot 1953",
+  "runtimeId": "saved-car:Slender Birdsfoot 1953",
+  "candidateId": "jaguar-c-type-1953-roster-candidate",
+  "referenceVehicle": "1953 Jaguar C-type, 1953 works Le Mans specification 3.4 triple-Weber disc-brake competition roadster; not SU/drum customer XKC045 or modern continuation",
+  "identity": {
+    "year": 1953,
+    "make": "Jaguar",
+    "model": "C-type",
+    "trim": "1953 works Le Mans specification 3.4 triple-Weber disc-brake competition roadster; not SU/drum customer XKC045 or modern continuation",
+    "market": "UK/Europe"
+  },
+  "bodyClass": "roadster",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1249,
+      579,
+      476,
+      103
+    ],
+    "wheel": [
+      1487,
+      769,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.jaguar.com/en-us/jdx/about-jaguar/heritage/c-type-continuation.html",
+      "fields": [
+        "engineDisplacementL",
+        "publishedPowerBhp"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "id": "wood-speedwell-1990",
+  "name": "Wood Speedwell 1990",
+  "stableCarId": "saved-car:Wood Speedwell 1990",
+  "candidateId": "mercedes-benz-190e-2-5-16-evolution-ii-1990-roster-candidate",
+  "referenceVehicle": "1990 Germany Mercedes-Benz 190 E 2.5-16 Evolution II W201 type201.036 catalyst road sedan, standard five-speed manual; not DTM or EvoI",
+  "identity": {
+    "year": 1990,
+    "make": "Mercedes-Benz",
+    "model": "190 E 2.5-16 Evolution II",
+    "trim": "W201 type201.036 catalyst road homologation sedan, standard5MT",
+    "market": "Germany"
+  },
+  "bodyClass": "sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      255,
+      470,
+      515,
+      175
+    ],
+    "wheel": [
+      490,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/190-E-25-16-Evolution-II.xhtml",
+      "fields": [
+        "powerKw",
+        "torqueNm",
+        "engineDisplacementL",
+        "powerRpm",
+        "torqueRpm",
+        "curbKg",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "fuelTankUSgal",
+        "absEnabled"
+      ]
+    },
+    {
+      "url": "https://media.mercedes-benz.com/en/article/4e61dcd8-fd75-47ca-830c-056734a165c2",
+      "fields": [
+        "identity",
+        "revLimitRpm"
+      ]
+    }
+  ]
+}

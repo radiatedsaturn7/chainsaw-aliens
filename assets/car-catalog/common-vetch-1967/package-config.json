@@ -1,0 +1,66 @@
+{
+  "id": "common-vetch-1967",
+  "name": "Common Vetch 1967",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1140,
+      370,
+      620,
+      230
+    ],
+    "wheel": [
+      1450.0,
+      753,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/Nissan_R380-2.html",
+      "fields": [
+        "publishedMinimumPowerKw",
+        "publishedMinimumPowerPS",
+        "powerRpm",
+        "publishedMinimumTorqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "publishedFrontTire",
+        "publishedRearTire"
+      ]
+    },
+    {
+      "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/short_story/en_p59-01.html",
+      "fields": [
+        "1967 R380II five-speed ZF family",
+        "configuration distinction"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "id": "broadleaf-trefoil-2004",
+  "name": "Broadleaf Trefoil 2004",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      198,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      475,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://acuranews.com/en-US/releases/release-6a2f3de869ef0af45df662004c34c653-2004-acura-tsx-specifications",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "gearCount",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "redlineRpm",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "frontWeightDistribution",
+        "groundClearanceM",
+        "fuelTankUSgal",
+        "steeringRatio",
+        "absEnabled",
+        "tractionControlEnabled"
+      ]
+    }
+  ]
+}

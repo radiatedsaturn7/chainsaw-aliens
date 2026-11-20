@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "foothill-clover-2018",
+  "name": "Foothill Clover 2018",
+  "stableCarId": "saved-car:Foothill Clover 2018",
+  "referenceVehicle": "2018 McLaren 720S Coupe, originalEuropeanM840T3994cctwin-turboV8seven-speedSSG MonocageIIcoupe;notSpider,765LTor750S",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "81ed261586981c3043eb432b0cf29e71a07f98cb025a1d4827e486d337704172",
+    "dashboard": "c867ee9a7d00fec457509e8a5bc7caf77cc94b8d2502444c87654e6e4fef47a6",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,65 @@
+{
+  "id": "great-willowherb-2006",
+  "name": "Great Willowherb 2006",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      426,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://doczz.net/doc/5481142/audi-facts-and-figures-2005",
+      "fields": [
+        "powerKw",
+        "torqueNm",
+        "engineDisplacementL",
+        "gearCount",
+        "curbKg",
+        "fuelTankUSgal",
+        "topSpeedMph"
+      ]
+    },
+    {
+      "url": "https://www.netcarshow.com/audi/2006-rs4/",
+      "fields": [
+        "torqueRpm",
+        "highrevNAFSIarchitecture",
+        "sedanidentity"
+      ]
+    },
+    {
+      "url": "https://www.netcarshow.com/audi/2006-rs_4_avant/",
+      "fields": [
+        "nominal40front60rear",
+        "sameB7saloonfirstapplication"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "id": "cranberry-clover-2004",
+  "name": "Cranberry Clover 2004",
+  "stableCarId": "saved-car:Cranberry Clover 2004",
+  "runtimeId": "saved-car:Cranberry Clover 2004",
+  "candidateId": "infiniti-q45-luxury-2004-us-5at-supplemental",
+  "referenceVehicle": "2004 US Infiniti Q45 Luxury model4.5V8 RWD5AT standard17-inchalloywheels; notPremium18-inch active-damping package,JourneyPackage or2002preliminarylaunchspec.",
+  "identity": {
+    "year": 2004,
+    "make": "Infiniti",
+    "model": "Q45",
+    "trim": "Luxury model F50 standard5AT RWD with17-inchwheels,withoutJourneyPackage,PremiumModeloroptionalrun-flat tires",
+    "market": "United States (49 continental states)"
+  },
+  "bodyClass": "sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://xr793.com/wp-content/uploads/2021/11/2004-Infiniti-Q45-Spec-Sheet.pdf",
+      "fields": [
+        "powerHp",
+        "engineDisplacementL",
+        "aspiration",
+        "transmission",
+        "gearCount",
+        "absEnabled",
+        "tractionControlEnabled",
+        "publishedStandardWheelDiameterIn",
+        "identity",
+        "drivetrain"
+      ]
+    }
+  ]
+}

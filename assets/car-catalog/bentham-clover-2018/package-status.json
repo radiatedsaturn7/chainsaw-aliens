@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bentham-clover-2018",
+  "name": "Bentham Clover 2018",
+  "stableCarId": "saved-car:Bentham Clover 2018",
+  "referenceVehicle": "2018 Bugatti Chiron, original1500metricPS standardcoupe8.0W16quad-turboAWD7DCT;notSport,PurSport,SuperSport300+,DivoorhybridTourbillon",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "bentham-clover-2018",
+  "sourceHashes": {
+    "body": "ec6e6fb6f66496f819eafdae5142edbba95fd02f786e06c5fb23f295cbc660a4",
+    "dashboard": "3f3c0cff56557c0581b5d1432e3089d05f7410d828092e7f4d3c637c341209ea",
+    "tires": "4b56b5ed9f6f454ac22e98bb5dee180ba0f4669b3243894fcd08b07bae6a02cc"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

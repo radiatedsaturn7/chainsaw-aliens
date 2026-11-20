@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "coast-clover-2008",
+  "name": "Coast Clover 2008",
+  "stableCarId": "saved-car:Coast Clover 2008",
+  "referenceVehicle": "2008 United States Nissan Altima Coupe, Federal2.5S QR25DE six-speedmanual,standard16-inchcoveredsteelwheels; notCalifornia170hp,CVT,3.5SE orsedan",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "18ac940f4b061f669f71670079c4a860d4c36cfa4a892e0adf12ae6d0dc126c9",
+    "dashboard": "d262bc021160c16723a7011b83ddfee6c9d04062ff9c3912ef6e24ec27a4d60d",
+    "tires": "e0d7dc8f439ac729d62b16181833f636265f01fcfcf5ead0a2b5280aa8d70881"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

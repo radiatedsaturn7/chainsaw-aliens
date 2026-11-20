@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "meadow-vetchling-1986",
+  "name": "Meadow Vetchling 1986",
+  "stableCarId": "saved-car:Meadow Vetchling 1986",
+  "referenceVehicle": "1986 Italian Lancia Delta S4 Stradale road homologation coupe,1759cc twincharged DOHC16V four250metricCV,AWD5MT; notToivonen1985RACGroupB,front-enginedDeltaHFIntegrale or ordinaryDelta.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "c967593565436a89d56ddcb5e787d5dd11f7223618da10bcb54eb4a958334147",
+    "dashboard": "9d6011a8e4db8b96b9fbef28c2161f60ca05e1eb8c13fcef83ae85c013d1dbc4",
+    "tires": "212e0f1db043ef3ea9179b7cc212852ce84ddbe66fc236444cfe5dcdfc3afd41"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

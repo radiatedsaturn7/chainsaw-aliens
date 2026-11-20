@@ -1,0 +1,1329 @@
+{
+  "schemaVersion": 1,
+  "base": "68a8fa4a3a19d87d9b91de638cb086d488be7edf",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "saturn-ion-2-sedan-2007-us-5mt-supplemental",
+      "identity": {
+        "year": 2007,
+        "make": "Saturn",
+        "model": "Ion",
+        "trim": "2 sedan2.2 naturallyaspirated five-speedmanual, standardcoveredwheels; notquad-coupe,RedLine,2.4 orautomatic",
+        "market": "United States"
+      },
+      "referenceVehicle": "2007 United States Saturn Ion, 2 sedan2.2 naturallyaspirated five-speedmanual, standardcoveredwheels; notquad-coupe,RedLine,2.4 orautomatic",
+      "bodyClass": "four-door-sedan",
+      "artIdentity": "Compact Delta sedan with tall roundedroof, conventional fourdoors, polymerbodysidepanels, center-mounted instrument binnacle and plain cloth seats; no RedLine wing.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "engineDisplacementL": 2.2,
+        "powerHp": 145,
+        "powerRpm": 5600,
+        "torqueLbFt": 150,
+        "torqueRpm": 4200,
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 1248.28620224,
+        "lengthM": 4.6863,
+        "widthM": 1.70688,
+        "heightM": 1.48336,
+        "wheelbaseM": 2.62128,
+        "fuelTankUSgal": 13
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Saturn/Ion/Saturn_US%20Ion_2007.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "engineDisplacementL",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "fuelTankUSgal"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Manufacturer curb table distinguishesIon2sedan manual2752lb fromautomatic2805lb, Ion3sedan andquad-coupe; selectedexactfirstcolumn. Tireprofile,gear ratios anddynamics areestimates. NooptionalABS/TC selected.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Copperhead SC 2006",
+            "documentId": "copperhead-sc-2006",
+            "runtimeId": "saved-car:Copperhead SC 2006",
+            "reference": "2006 US Chevrolet Cobalt SS Supercharged coupe, F35 5MT, LHD, standard configuration without optional Performance Package",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Pennycress 2001",
+            "documentId": "pennycress-2001",
+            "runtimeId": "saved-car:Pennycress 2001",
+            "reference": "2001 United States Saturn SL1 four-door sedan, standard five-speed manual, 1.9L SOHC8v, FWD, light silver with grey cloth. Not SL2 DOHC, coupe, wagon or automatic. Representative ordinary trim, no personal-owner claim.",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Ion Delta sedan has2.2DOHC145hp vsSL1S-series1.9SOHC100hp, and ordinaryNA sedan/gearbox unlike relatedDelta CobaltSS supercharged2.0coupe; notbadge-onlyduplicate.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Saturn/Ion/Saturn_US%20Ion_2007.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Thimbleberry Clover 2007",
+      "id": "thimbleberry-clover-2007",
+      "simulationEstimates": {
+        "reverseRatio": 3.31,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.33,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.95,
+        "rearDifferentialAccel": 0.15,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 9.1,
+        "steeringRatio": 20,
+        "gearRatios": [
+          3.58,
+          2.02,
+          1.35,
+          0.98,
+          0.69
+        ],
+        "finalDrive": 3.84,
+        "trackFrontIn": 58.4,
+        "trackRearIn": 58.8,
+        "tireSize": [
+          195,
+          60,
+          15
+        ]
+      }
+    },
+    {
+      "candidateId": "buick-enclave-cx-2008-us-fwd-supplemental",
+      "identity": {
+        "year": 2008,
+        "make": "Buick",
+        "model": "Enclave",
+        "trim": "CX3.6VVT port-injectedV6 FWD six-speedautomatic, standard18-inchwheels, seven-seatcloth; notAWD,CXL orlaterdirectinjection",
+        "market": "United States"
+      },
+      "referenceVehicle": "2008 United States Buick Enclave, CX3.6VVT port-injectedV6 FWD six-speedautomatic, standard18-inchwheels, seven-seatcloth; notAWD,CXL orlaterdirectinjection",
+      "bodyClass": "five-door-crossover",
+      "artIdentity": "Large rounded Lambda three-row crossover, arched sideglass, roofrails and18-inchdouble-spoke wheels; seven-seatcloth cabin.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "engineDisplacementL": 3.6,
+        "powerHp": 275,
+        "powerRpm": 6600,
+        "torqueLbFt": 251,
+        "torqueRpm": 3200,
+        "drivetrain": "fwd",
+        "transmission": "automatic",
+        "gearCount": 6,
+        "lengthM": 5.12572,
+        "widthM": 2.0065999999999997,
+        "heightM": 1.83388,
+        "wheelbaseM": 3.02006,
+        "trackFrontIn": 67.3,
+        "trackRearIn": 67.3,
+        "tireSize": [
+          255,
+          65,
+          18
+        ],
+        "fuelTankUSgal": 22
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Buick/Enclave/Buick_US%20Enclave_2008.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "engineDisplacementL",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "fuelTankUSgal"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Brochure lists baseCX4780lb andCXL4985lb without explicitFWD/AWDmasssplit.2170kg is estimatedselectedFWDcurb, not assertedexacttrim/drivetrainmass. Gear ratios andperformanceestimated; noactiveAWD.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Woad 2010",
+            "documentId": "woad-2010",
+            "runtimeId": "saved-car:Woad 2010",
+            "reference": "2010 United States Ford Flex SE Rapid Spec101A, naturally aspirated3.5L DuratecV6, FWD six-speed automatic, seven-seat cloth interior,LHD,standardP235/60R17,solid body-color roof without optional roof rails,tow package or accessories. NotSEL/Limited,EcoBoost,AWD or laterfacelift.",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoLambdaEnclave/Acadia/Outlook/Traverse native reference; largeGM3.6VVT port-injected three-row crossover with118.9inWB distinct fromFordFlex3.5platform.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Buick/Enclave/Buick_US%20Enclave_2008.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Huckleberry Clover 2008",
+      "id": "huckleberry-clover-2008",
+      "simulationEstimates": {
+        "reverseRatio": 2.882,
+        "cgHeightM": 0.72,
+        "groundClearanceM": 0.2,
+        "dragCoefficient": 0.38,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.2,
+        "frontOverhangM": 1.0,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.57,
+        "redlineRpm": 6700,
+        "revLimitRpm": 6900,
+        "topSpeedMph": 108,
+        "zeroToSixtySec": 9.2,
+        "steeringRatio": 20,
+        "curbKg": 2170,
+        "gearRatios": [
+          4.484,
+          2.872,
+          1.842,
+          1.414,
+          1,
+          0.742
+        ],
+        "finalDrive": 3.16,
+        "transmissionLabel": "6-speed automatic (estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "cadillac-srx-standard-2014-us-fwd-supplemental",
+      "identity": {
+        "year": 2014,
+        "make": "Cadillac",
+        "model": "SRX",
+        "trim": "Standard Collection3.6DI V6 FWD six-speedautomatic,18-inchpaintedalloys andfixedroof; notAWD,Luxury,Performance,Premium orfirstgenerationV8",
+        "market": "United States"
+      },
+      "referenceVehicle": "2014 United States Cadillac SRX, Standard Collection3.6DI V6 FWD six-speedautomatic,18-inchpaintedalloys andfixedroof; notAWD,Luxury,Performance,Premium orfirstgenerationV8",
+      "bodyClass": "five-door-crossover",
+      "artIdentity": "Angular second-generation midsize five-seat crossover, verticalrear lamps, highbeltline and18-inchwheels; fixedroof andoriginal logo-free cabin.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "engineDisplacementL": 3.6,
+        "powerHp": 308,
+        "powerRpm": 6800,
+        "torqueLbFt": 265,
+        "torqueRpm": 2400,
+        "drivetrain": "fwd",
+        "transmission": "automatic",
+        "gearCount": 6,
+        "tireSize": [
+          235,
+          65,
+          18
+        ],
+        "fuelTankUSgal": 21
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Cadillac/SRX/Cadillac_US%20SRX_2014.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "engineDisplacementL",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "tireSize",
+            "fuelTankUSgal"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Allgeometry,curbmass andratios explicitly estimated pendingfullfactorytechsheet.2014originalbrochure confirmspower,torque,6AT,18-inchtires andcapacity. NoAWD,realtime dampers oractive safetycontrol claims.",
+        "Earlier archive URL labeled2004 resolved to2014content; canonical2014URL independentlyopened andsame2014cover verified.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Pellitory 2006",
+            "documentId": "pellitory-2006",
+            "runtimeId": "saved-car:Pellitory 2006",
+            "reference": "2006 Canada Cadillac DTS Luxury I standard sedan,4.6L Northstar275hp naturally aspirated V8,FWD4-speed automatic,LHD,standard five-seat buckets and floor console,17inch machined wheels,solid roof,no optional packages. Not LuxuryII/III,Performance291hp,limousine or US-market mass specification.",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Field Sage 2016",
+            "documentId": "field-sage-2016",
+            "runtimeId": "saved-car:Field Sage 2016",
+            "reference": "2016 US Cadillac ATS-V sedan 1SV 3.6 LF4 twin-turbo V6 RWD MG9 six-speed manual, no Track Performance Package",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoSRX native entry. ThetaPremium five-seatFWD crossover with naturallyaspiratedDI3.6 differs fromDTSNorthstarFWDsedan andATS-Vtwin-turboRWDsedan; also unlikeLambdaEnclave three-row/portinjection.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Cadillac/SRX/Cadillac_US%20SRX_2014.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Serviceberry Clover 2014",
+      "id": "serviceberry-clover-2014",
+      "simulationEstimates": {
+        "reverseRatio": 3.394,
+        "cgHeightM": 0.65,
+        "groundClearanceM": 0.178,
+        "dragCoefficient": 0.35,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.18,
+        "frontOverhangM": 0.99,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6900,
+        "revLimitRpm": 7100,
+        "topSpeedMph": 124,
+        "zeroToSixtySec": 7.5,
+        "steeringRatio": 20,
+        "curbKg": 1940,
+        "lengthM": 4.83362,
+        "widthM": 1.91008,
+        "heightM": 1.66878,
+        "wheelbaseM": 2.8066999999999998,
+        "trackFrontIn": 63.8,
+        "trackRearIn": 63.4,
+        "gearRatios": [
+          4.148,
+          2.37,
+          1.556,
+          1.155,
+          0.859,
+          0.686
+        ],
+        "finalDrive": 3.39,
+        "transmissionLabel": "6-speed automatic (estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "lincoln-ls-v8-sport-2005-us-supplemental",
+      "identity": {
+        "year": 2005,
+        "make": "Lincoln",
+        "model": "LS",
+        "trim": "V8 Sport3.9DOHCVCT rear-drive five-speedSelectShift automatic,standard17-inchwheels; notV6,Ultimate orLSE",
+        "market": "United States"
+      },
+      "referenceVehicle": "2005 United States Lincoln LS, V8 Sport3.9DOHCVCT rear-drive five-speedSelectShift automatic,standard17-inchwheels; notV6,Ultimate orLSE",
+      "bodyClass": "four-door-sedan",
+      "artIdentity": "DEW98 rear-drive sports sedan, squared traditional trunk, lowhood,17-inchmachinedalloys andfive-seat leathercabin; no brandmarks.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "engineDisplacementL": 3.9,
+        "powerHp": 280,
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "gearCount": 5,
+        "tireSize": [
+          235,
+          50,
+          17
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Lincoln/LS/Lincoln_US%20LS_2005.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "engineDisplacementL",
+            "powerHp",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "tireSize"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Original2005Fordfeaturesheet confirmsV8Sport,280hp,3.9VCT,5AT andP235/50R17; torque,peakRPM,curb,geometry/gears remainexplicitestimatedsimulationtargets. NoactiveSelectShift mode beyondnormalautomatic.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Hawthorn V 2005",
+            "documentId": "hawthorn-v-2005",
+            "runtimeId": "saved-car:Hawthorn V 2005",
+            "reference": "US2005 Cadillac CTS-V sedan 5.7LS6 conventional6MT RWD LHD standard wheels, no optional sunroof; not2006LS2 or2009supercharged",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Ironwood V8 2004",
+            "documentId": "ironwood-v8-2004",
+            "runtimeId": "saved-car:Ironwood V8 2004",
+            "reference": "Stock US 2004 Mercury Marauder 4.6 DOHC V8 RWD four-speed automatic LHD full-size sedan",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoLS/JaguarS-Type nativeentry. DEW98independent-rear3.9VCT V8/5AT distinctlydifferent fromPantherMarauder4.6/4ATsolidaxle andCTS-V5.7/6MT. Notbodybadgepadding.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Lincoln/LS/Lincoln_US%20LS_2005.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Snowberry Clover 2005",
+      "id": "snowberry-clover-2005",
+      "simulationEstimates": {
+        "reverseRatio": 3.07,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.32,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.51,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "fuelTankUSgal": 18,
+        "topSpeedMph": 140,
+        "zeroToSixtySec": 6.5,
+        "steeringRatio": 20,
+        "powerRpm": 6000,
+        "torqueLbFt": 286,
+        "torqueRpm": 4000,
+        "curbKg": 1710,
+        "lengthM": 4.93522,
+        "widthM": 1.85928,
+        "heightM": 1.4249399999999999,
+        "wheelbaseM": 2.9082999999999997,
+        "trackFrontIn": 60.5,
+        "trackRearIn": 60.8,
+        "gearRatios": [
+          3.22,
+          2.29,
+          1.55,
+          1,
+          0.75
+        ],
+        "finalDrive": 3.58,
+        "transmissionLabel": "5-speed automatic (estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "chevrolet-colorado-z85-base-2004-ca-2wd-supplemental",
+      "identity": {
+        "year": 2004,
+        "make": "Chevrolet",
+        "model": "Colorado",
+        "trim": "Z85 Base regularcab2WD Vortec2800 inlinefour five-speedmanual, standard15-inchsteelwheels, empty6-footbox; notLS,Z71,ZQ8,crew,4WD or3.5five",
+        "market": "Canada"
+      },
+      "referenceVehicle": "2004 Canada Chevrolet Colorado, Z85 Base regularcab2WD Vortec2800 inlinefour five-speedmanual, standard15-inchsteelwheels, empty6-footbox; notLS,Z71,ZQ8,crew,4WD or3.5five",
+      "bodyClass": "two-door-pickup",
+      "artIdentity": "First-generation narrow regularcab pickup withsplit-levelheadlamps, plainsteel15-inchwheels, full-height6-footbed and60/40clothbench; nooffroadlift.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "engineDisplacementL": 2.8,
+        "powerHp": 175,
+        "powerRpm": 5600,
+        "torqueLbFt": 185,
+        "torqueRpm": 2800,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "lengthM": 4.887,
+        "widthM": 1.717,
+        "heightM": 1.648,
+        "wheelbaseM": 2.824,
+        "tireSize": [
+          205,
+          75,
+          15
+        ],
+        "fuelTankUSgal": 19.020387769786687
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Chevrolet/Colorado/Chevrolet_US%20Colorado_2004.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "engineDisplacementL",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "tireSize",
+            "fuelTankUSgal"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Archivedfilename saysUS butprintedbrochure usesCanadian equipment,metric-first tables andimperialgallons; referenceexplicitlyCanada. Factoryprinted72LconvertedtoUSgal, not15.8imperial mistakenasUS.",
+        "Brochurep20engine/table andp21geometry visuallyread withoutOCR. PublishedGVWR/payload notmisusedascurb;1490kgoperatingcurb,gears/axle/tracks andperformanceestimated. Base2WD205/75R15selected, nooptionalLSD ortractionassist.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Teasel 2006",
+            "documentId": "teasel-2006",
+            "runtimeId": "saved-car:Teasel 2006",
+            "reference": "2006 Canada HUMMER H3 base5-door,3.5L Vortec3500 inline5,optional Hydra-Matic4L60-E4AT,standardP265/75R16,cloth,LHD,4HighOpen40:60. June2005GMCanada brochure122-06-B-002E. Not Adventure/Lux,33inch,AlphaV8,3.7L,H3T,manual orliftedtruck.",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Brooklime 2003",
+            "documentId": "brooklime-2003",
+            "runtimeId": "saved-car:Brooklime 2003",
+            "reference": "2003 US Ford Ranger XL Regular Cab, six-foot Styleside bed, 2WD, 2.3 DOHC inline-four / Mazda M5OD-R1 five-speed manual, RWD, LHD. Not SuperCab, Edge, FX4, Flareside, 4x4 or V6.",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "GMT355regularcab2.8four/manualRWDpickup is notH3GMT345five-cylinder4WDSUV norFordRanger2.3pickup. NoCanyon/Colorado nativeentry; noGMCbadgevariant duplicated.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Chevrolet/Colorado/Chevrolet_US%20Colorado_2004.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Coralberry Clover 2004",
+      "id": "coralberry-clover-2004",
+      "simulationEstimates": {
+        "reverseRatio": 3.67,
+        "cgHeightM": 0.64,
+        "groundClearanceM": 0.19,
+        "dragCoefficient": 0.44,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.2,
+        "frontOverhangM": 0.91,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.56,
+        "redlineRpm": 6100,
+        "revLimitRpm": 6400,
+        "topSpeedMph": 101,
+        "zeroToSixtySec": 9.8,
+        "steeringRatio": 20,
+        "curbKg": 1490,
+        "trackFrontIn": 57.5,
+        "trackRearIn": 57.5,
+        "gearRatios": [
+          3.75,
+          2.26,
+          1.37,
+          1,
+          0.73
+        ],
+        "finalDrive": 3.73
+      }
+    },
+    {
+      "candidateId": "skoda-fabia-combi-active-1-0-2015-supplemental-candidate",
+      "bodyClass": "wagon",
+      "identity": {
+        "year": 2015,
+        "make": "Skoda",
+        "model": "Fabia Combi Active1.0MPI75",
+        "trim": "continentalEurope January2015 third-generation basic estate55kWfive-speed manual14inch wheels, standard suspension; nothatchback,TSI,GreenLine orDSG",
+        "market": "continentalEurope"
+      },
+      "referenceVehicle": "2015 Skoda Fabia Combi Active1.0MPI75, continentalEurope January2015 third-generation basic estate55kWfive-speed manual14inch wheels, standard suspension; nothatchback,TSI,GreenLine orDSG",
+      "facts": {
+        "powerHp": 73.75621495,
+        "powerRpm": 6200,
+        "torqueNm": 95,
+        "torqueRpm": 3000,
+        "engineDisplacementL": 0.999,
+        "transmission": "manual",
+        "gearCount": 5,
+        "drivetrain": "fwd",
+        "curbKg": 1004,
+        "lengthM": 4.257,
+        "widthM": 1.732,
+        "heightM": 1.467,
+        "wheelbaseM": 2.47,
+        "trackFrontIn": 57.5984251968504,
+        "trackRearIn": 57.36220472440945,
+        "groundClearanceM": 0.135,
+        "tireSize": [
+          175,
+          70,
+          14
+        ],
+        "gearRatios": [
+          3.64,
+          1.95,
+          1.27,
+          0.96,
+          0.8
+        ],
+        "reverseRatio": 3.62,
+        "finalDrive": 4.812,
+        "dragCoefficient": 0.304,
+        "fuelTankUSgal": 11.887742356116679,
+        "topSpeedMph": 108.73995864153343
+      },
+      "sources": [
+        {
+          "url": "https://cdn.skoda-storyboard.com/2016/05/150112-%C5%A0KODA-Fabia-Combi-Dynamic-Launch-Nice-Press-Kit.pdf",
+          "publisher": "Skoda January2015 factorylaunchkit PDFpp37\u201339 petrolCombitables; pp10trim",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "drivetrain",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "groundClearanceM",
+            "tireSize",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "dragCoefficient",
+            "fuelTankUSgal",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "Factory1079kg basicversion includes75kgdriver; runtime1004kg derived subtraction, NOTfamily-wide mass.55kW converted73.7562hp,75PS roundedmarketing. Torqueplateau3000\u20134300rpm represented with firstanchor.0\u201360estimated14.4vsfactory0\u201310014.9s. Springs,loadsplit,redline andtransients estimated. Brake-basedXDS/stop-start notindependentlymodeled.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Rock Clover 2002",
+            "documentId": "rock-clover-2002",
+            "runtimeId": "saved-car:Rock Clover 2002",
+            "reference": "VolkswagenPolo9N1.9SDI hatch",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "River Clover 2013",
+            "documentId": "river-clover-2013",
+            "runtimeId": "saved-car:River Clover 2013",
+            "reference": "DaciaLoganMCV1.2estate",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Small lightweight three-cylinder petrol estate, newerPQ26 body and2.47m wheelbase versus existingPolo9Ndieselhatch andDaciaB0wagon; notVWbadgeclone.",
+        "evidence": [
+          "https://cdn.skoda-storyboard.com/2016/05/150112-%C5%A0KODA-Fabia-Combi-Dynamic-Launch-Nice-Press-Kit.pdf"
+        ],
+        "audit": "Fresh587nativecatalog auditedallprovenance/inspiration/referenceVehicle includingpriorpackets; noexactfiveidentity. Skoda spellingwith/withoutdiacritic checked. Supplementalcanonicalreservation required."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Winterberry Clover 2015",
+      "id": "winterberry-clover-2015",
+      "simulationEstimates": {
+        "cgHeightM": 0.55,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "aspiration": "Naturally aspirated",
+        "zeroToSixtySec": 14.4,
+        "bodyClass": "wagon",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "transmissionLabel": "5-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "skoda-superb-combi-active-1-4-2015-supplemental-candidate",
+      "bodyClass": "wagon",
+      "identity": {
+        "year": 2015,
+        "make": "Skoda",
+        "model": "Superb Combi Active1.4TSI125",
+        "trim": "continentalEurope June2015 third-generation basic estate92kW FWD six-speedmanual16inch wheels, standard passive suspension; notACT150,4x4,DSG,LK orDCC",
+        "market": "continentalEurope"
+      },
+      "referenceVehicle": "2015 Skoda Superb Combi Active1.4TSI125, continentalEurope June2015 third-generation basic estate92kW FWD six-speedmanual16inch wheels, standard passive suspension; notACT150,4x4,DSG,LK orDCC",
+      "facts": {
+        "powerHp": 123.37403228000001,
+        "powerRpm": 5000,
+        "torqueNm": 200,
+        "torqueRpm": 1400,
+        "engineDisplacementL": 1.395,
+        "transmission": "manual",
+        "gearCount": 6,
+        "drivetrain": "fwd",
+        "curbKg": 1320,
+        "lengthM": 4.856,
+        "widthM": 1.864,
+        "heightM": 1.477,
+        "wheelbaseM": 2.841,
+        "trackFrontIn": 62.36220472440945,
+        "trackRearIn": 61.88976377952756,
+        "groundClearanceM": 0.149,
+        "tireSize": [
+          215,
+          60,
+          16
+        ],
+        "gearRatios": [
+          3.62,
+          1.95,
+          1.28,
+          0.97,
+          0.78,
+          0.65
+        ],
+        "reverseRatio": 3.18,
+        "finalDrive": 4.353,
+        "dragCoefficient": 0.289,
+        "fuelTankUSgal": 17.435355455637797,
+        "topSpeedMph": 128.0024656008908
+      },
+      "sources": [
+        {
+          "url": "https://cdn.skoda-storyboard.com/2016/05/150629-The-new-%C5%A0KODA-Superb-Combi-Press-Kit.pdf",
+          "publisher": "Skoda June2015 factorylaunchkit PDFpp46\u201348 petrolCombitables; p19Activeequipment",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "drivetrain",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "groundClearanceM",
+            "tireSize",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "dragCoefficient",
+            "fuelTankUSgal",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "Factory1395kg basic92kWmanual includes75kgdriver, derived1320kg runtime. Not1415kgACT150or optionaltrimweight.92kW converted123.374hp;125PS rounded. Powerplateau5000\u20136000 andtorque1400\u20134000 represented by firstanchors.0\u201360estimated9.6, factory0\u201310010.0. Fixedsuspension notoptionalDCC; brakeXDSnotreproduced.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Pine Clover 2012",
+            "documentId": "pine-clover-2012",
+            "runtimeId": "saved-car:Pine Clover 2012",
+            "reference": "VolkswagenPassatNMS2.5Ssedan",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Scabious 2015",
+            "documentId": "scabious-2015",
+            "runtimeId": "saved-car:Scabious 2015",
+            "reference": "VolkswagenGolfGTIS2.0manualhatch",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "MQB large estate with2.841m wheelbase, multilinkrear andsmall1.4turbo versus NMSfive-cylinderPassatsedan andshorterGTIhatch. SharedVWengineering acknowledged, noexistingEuropeanPassatB8/Superb body.",
+        "evidence": [
+          "https://cdn.skoda-storyboard.com/2016/05/150629-The-new-%C5%A0KODA-Superb-Combi-Press-Kit.pdf"
+        ],
+        "audit": "Fresh587nativecatalog auditedallprovenance/inspiration/referenceVehicle includingpriorpackets; noexactfiveidentity. Skoda spellingwith/withoutdiacritic checked. Supplementalcanonicalreservation required."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Elderberry Clover 2015",
+      "id": "elderberry-clover-2015",
+      "simulationEstimates": {
+        "cgHeightM": 0.51,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Turbocharged",
+        "zeroToSixtySec": 9.6,
+        "bodyClass": "wagon",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "transmissionLabel": "6-speed manual (factory ratios; estimated shift calibration)",
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 59.00497194218125
+          },
+          {
+            "rpm": 1400,
+            "torqueLbFt": 147.51242985545312
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 147.51242985545312
+          },
+          {
+            "rpm": 5000,
+            "torqueLbFt": 129.59208350691202
+          },
+          {
+            "rpm": 6500,
+            "torqueLbFt": 88.50745791327186
+          }
+        ]
+      }
+    },
+    {
+      "candidateId": "skoda-rapid-spaceback-active-1-0-2017-supplemental-candidate",
+      "bodyClass": "hatchback",
+      "identity": {
+        "year": 2017,
+        "make": "Skoda",
+        "model": "Rapid Spaceback Active1.0TSI95",
+        "trim": "continentalEurope May2017 facelift basicfive-door hatch70kWfive-speedmanual14inch wheels solidroof; notliftback,MonteCarlo,DSG orpanoramicStyle",
+        "market": "continentalEurope"
+      },
+      "referenceVehicle": "2017 Skoda Rapid Spaceback Active1.0TSI95, continentalEurope May2017 facelift basicfive-door hatch70kWfive-speedmanual14inch wheels solidroof; notliftback,MonteCarlo,DSG orpanoramicStyle",
+      "facts": {
+        "powerHp": 93.8715463,
+        "powerRpm": 5000,
+        "torqueNm": 160,
+        "torqueRpm": 1500,
+        "engineDisplacementL": 0.999,
+        "transmission": "manual",
+        "gearCount": 5,
+        "drivetrain": "fwd",
+        "curbKg": 1090,
+        "lengthM": 4.304,
+        "widthM": 1.706,
+        "heightM": 1.459,
+        "wheelbaseM": 2.602,
+        "trackFrontIn": 57.5984251968504,
+        "trackRearIn": 59.05511811023622,
+        "groundClearanceM": 0.134,
+        "tireSize": [
+          175,
+          70,
+          14
+        ],
+        "gearRatios": [
+          3.77,
+          1.96,
+          1.28,
+          0.93,
+          0.74
+        ],
+        "reverseRatio": 3.18,
+        "finalDrive": 3.625,
+        "dragCoefficient": 0.307,
+        "fuelTankUSgal": 14.529462879698164,
+        "topSpeedMph": 114.33229937166945
+      },
+      "sources": [
+        {
+          "url": "https://cdn.skoda-storyboard.com/2017/05/SKODA_RAPID_SPACEBACK_Press_Kit_EN_with_TD.pdf",
+          "publisher": "SkodaMay2017 factorypresskit equipmentp21 andpetroltablespp25\u201327",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "drivetrain",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "groundClearanceM",
+            "tireSize",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "dragCoefficient",
+            "fuelTankUSgal",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "Factory1165kg basic70kWmanual includes75kgdriver; derived1090kg runtime.70kW converted93.8715hp. Plateau5000\u20135500power and1500\u20133500torque representedbyfirstanchors. Factory0\u201310011.0, modeled0\u20136010.6. Dynamics/loadsplit/redline estimated. FactoryActiveequipment confirmed, nooptionalglassroofmass.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Rock Clover 2002",
+            "documentId": "rock-clover-2002",
+            "runtimeId": "saved-car:Rock Clover 2002",
+            "reference": "VolkswagenPolo9N1.9SDI",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Redwood Clover 2012",
+            "documentId": "redwood-clover-2012",
+            "runtimeId": "saved-car:Redwood Clover 2012",
+            "reference": "VolkswagenGolfMk6TDI2.0",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Long-wheelbase narrowPQ25-derived compact hatch with turbo three-cylinder, distinct fromPolo9Ndiesel andPQ35Golfdiesel; notduplicatingunbuiltSEATToledo/Rapidplatformbadge.",
+        "evidence": [
+          "https://cdn.skoda-storyboard.com/2017/05/SKODA_RAPID_SPACEBACK_Press_Kit_EN_with_TD.pdf"
+        ],
+        "audit": "Fresh587nativecatalog auditedallprovenance/inspiration/referenceVehicle includingpriorpackets; noexactfiveidentity. Skoda spellingwith/withoutdiacritic checked. Supplementalcanonicalreservation required."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Bayberry Clover 2017",
+      "id": "bayberry-clover-2017",
+      "simulationEstimates": {
+        "cgHeightM": 0.55,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Turbocharged",
+        "zeroToSixtySec": 10.6,
+        "bodyClass": "hatchback",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "transmissionLabel": "5-speed manual (factory ratios; estimated shift calibration)",
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 47.203977553745005
+          },
+          {
+            "rpm": 1500,
+            "torqueLbFt": 118.0099438843625
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 118.0099438843625
+          },
+          {
+            "rpm": 5000,
+            "torqueLbFt": 98.60267223352001
+          },
+          {
+            "rpm": 6500,
+            "torqueLbFt": 70.8059663306175
+          }
+        ]
+      }
+    },
+    {
+      "candidateId": "vauxhall-corsa-se-1-2-2020-supplemental-candidate",
+      "bodyClass": "hatchback",
+      "identity": {
+        "year": 2020,
+        "make": "Vauxhall",
+        "model": "Corsa SE1.2i75",
+        "trim": "UK January2020 delivery launch five-door CorsaF CMP naturallyaspiratedpetrolfive-speed manual16inchalloys; notCorsaE VXR,Corsa-e orTurbo",
+        "market": "UK"
+      },
+      "referenceVehicle": "2020 Vauxhall Corsa SE1.2i75, UK January2020 delivery launch five-door CorsaF CMP naturallyaspiratedpetrolfive-speed manual16inchalloys; notCorsaE VXR,Corsa-e orTurbo",
+      "facts": {
+        "powerHp": 73.974005295,
+        "engineDisplacementL": 1.2,
+        "transmission": "manual",
+        "gearCount": 5
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/uk-en/vauxhall/press/vauxhall-announces-pricing-for-all-new-corsa",
+          "publisher": "VauxhallUK August2019price/trimannouncement explicitlyJanuary2020deliveries",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        },
+        {
+          "url": "https://www.media.stellantis.com/uk-en/vauxhall/press/vauxhall-corsa-press-kit",
+          "publisher": "VauxhallUK launchpresskit",
+          "fields": [
+            "performanceReference"
+          ],
+          "access": "Readweb2026-11-18;75PSmanual0\u20136012.4s,108mph; retainedperformanceestimate pendingexactSEtestconditions."
+        }
+      ],
+      "limits": [
+        "2020identity follows explicitJanuary2020firstUKdeliveries, notannouncementyear2019. Source75PS converted73.974hp.980kg mass provisional driver-excluded basiccar estimate, nottrimverified.1199cc,RPM,torque,geometry,tires,ratios andtankestimated.16inchwheel diameter verified.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Meadow Vetchling 2016",
+            "documentId": "meadow-vetchling-2016",
+            "runtimeId": "saved-car:Meadow Vetchling 2016",
+            "reference": "VauxhallCorsaE VXR1.6turbo6MT",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Completeplatformandenginechange toPSACMP naturallyaspirated3-cylinder5doorbasecar; materiallyloweroutput/mass anddifferentbody fromGMplatformCorsaE VXRperformance3door, notyearpadding.",
+        "evidence": [
+          "https://www.media.stellantis.com/uk-en/vauxhall/press/vauxhall-announces-pricing-for-all-new-corsa"
+        ],
+        "audit": "Fresh587nativecatalog auditedallprovenance/inspiration/referenceVehicle includingpriorpackets; noexactfiveidentity. Skoda spellingwith/withoutdiacritic checked. Supplementalcanonicalreservation required."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Spiceberry Clover 2020",
+      "id": "spiceberry-clover-2020",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.55,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 10.566882094325937,
+        "topSpeedMph": 108,
+        "zeroToSixtySec": 12.4,
+        "bodyClass": "hatchback",
+        "drivetrain": "fwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 5750,
+        "torqueNm": 118,
+        "torqueRpm": 2750,
+        "curbKg": 980,
+        "lengthM": 4.06,
+        "widthM": 1.765,
+        "heightM": 1.433,
+        "wheelbaseM": 2.538,
+        "trackFrontIn": 59,
+        "trackRearIn": 58.5,
+        "tireSize": [
+          195,
+          55,
+          16
+        ],
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.32,
+          0.97,
+          0.76
+        ],
+        "finalDrive": 4.1,
+        "transmissionLabel": "five-speed manual; estimated ratios",
+        "torqueLbFt": 87.03233361471734
+      }
+    },
+    {
+      "candidateId": "vauxhall-grandland-x-griffin-1-2-2021-supplemental-candidate",
+      "bodyClass": "suv",
+      "identity": {
+        "year": 2021,
+        "make": "Vauxhall",
+        "model": "Grandland X GriffinEdition1.2Turbo130",
+        "trim": "UK April2021 five-seat FWD petrolsix-speedmanual18inchalloys, conventionalnonhybrid; notautomatic,Hybrid4 orfaceliftGrandland",
+        "market": "UK"
+      },
+      "referenceVehicle": "2021 Vauxhall Grandland X GriffinEdition1.2Turbo130, UK April2021 five-seat FWD petrolsix-speedmanual18inchalloys, conventionalnonhybrid; notautomatic,Hybrid4 orfaceliftGrandland",
+      "facts": {
+        "powerHp": 128.221609178,
+        "engineDisplacementL": 1.2,
+        "transmission": "manual",
+        "gearCount": 6
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/uk-en/vauxhall/press/corsa-astra-and-grandland-x-griffin-editions-added-to-vauxhall-range",
+          "publisher": "VauxhallUK April2021factorytrim/transmission price table",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "130PS converted128.222hp. Sourceanchors exactGriffintrim/petrolmanual and18inchdiameter;1199cc,torque/RPM,1350kgdriver-excludedrunningmass,geometry,tiresection,gears,tank andperformance estimates. No hybrid/AWDlogic orautomateddriverassistance added.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Trailglass 2024",
+            "documentId": "trailglass-2024",
+            "runtimeId": "saved-car:Trailglass 2024",
+            "reference": "VolkswagenTiguanS FWDUSsevenseat",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Guelder Clover 2013",
+            "documentId": "guelder-clover-2013",
+            "runtimeId": "saved-car:Guelder Clover 2013",
+            "reference": "Fiat500LPopStarTwinAirMPV",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "PSAEMP2 compactfive-seatcrossover turbo3cylinder6MT versus largerMQBTiguansevenseater andcab-forwardFiatMPV; no3008/Opelbadgeclonealreadyrepresented.",
+        "evidence": [
+          "https://www.media.stellantis.com/uk-en/vauxhall/press/corsa-astra-and-grandland-x-griffin-editions-added-to-vauxhall-range"
+        ],
+        "audit": "Fresh587nativecatalog auditedallprovenance/inspiration/referenceVehicle includingpriorpackets; noexactfiveidentity. Skoda spellingwith/withoutdiacritic checked. Supplementalcanonicalreservation required."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Checkerberry Clover 2021",
+      "id": "checkerberry-clover-2021",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.59,
+        "groundClearanceM": 0.18,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Turbocharged",
+        "fuelTankUSgal": 14.001118774981867,
+        "topSpeedMph": 117,
+        "zeroToSixtySec": 10.1,
+        "bodyClass": "suv",
+        "drivetrain": "fwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 5500,
+        "torqueNm": 230,
+        "torqueRpm": 1750,
+        "curbKg": 1350,
+        "lengthM": 4.477,
+        "widthM": 1.856,
+        "heightM": 1.609,
+        "wheelbaseM": 2.675,
+        "trackFrontIn": 59,
+        "trackRearIn": 58.5,
+        "tireSize": [
+          225,
+          55,
+          18
+        ],
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.32,
+          0.97,
+          0.76,
+          0.62
+        ],
+        "finalDrive": 4.1,
+        "transmissionLabel": "six-speed manual; estimated ratios",
+        "torqueLbFt": 169.6392943337711,
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 67.85571773350844
+          },
+          {
+            "rpm": 1750,
+            "torqueLbFt": 169.6392943337711
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 169.6392943337711
+          },
+          {
+            "rpm": 5500,
+            "torqueLbFt": 122.43998025506473
+          },
+          {
+            "rpm": 6500,
+            "torqueLbFt": 101.78357660026265
+          }
+        ]
+      }
+    }
+  ],
+  "deferred": []
+}

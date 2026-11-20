@@ -1,0 +1,85 @@
+{
+  "id": "great-dock-2014",
+  "name": "Great Dock 2014",
+  "stableCarId": "saved-car:Great Dock 2014",
+  "candidateId": "cadillac-cts-v-sport-wagon-2014-roster-candidate",
+  "referenceVehicle": "2014 United States Cadillac CTS-V Wagon6.2LSA superchargedV8 rear-drive six-speed manual;not CTS-VSedan or2005LS6",
+  "identity": {
+    "year": 2014,
+    "make": "Cadillac",
+    "model": "CTS-V Wagon",
+    "trim": "USLSA6.2superchargedV8,RWDTR6060six-speedmanual,standardpainted19inch wheels,nooptions",
+    "market": "United States"
+  },
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      220,
+      490,
+      550,
+      185
+    ],
+    "wheel": [
+      490,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://www.cadillacvnet.com/tech-center/cts-v/2014/2014-ctsv-brochure.pdf",
+      "fields": [
+        "powerHp",
+        "torqueLbFt",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "lengthIn",
+        "widthIn",
+        "heightIn",
+        "wheelbaseIn",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "frontTire",
+        "rearTire",
+        "fuelTankUSgal",
+        "frontWeightDistribution"
+      ]
+    },
+    {
+      "url": "https://cadillacvnet.com/tech-center/cts-v/2013/2013-cadillac-cts-v-wagon-specifications.html",
+      "fields": [
+        "carryovermassandRPMestimatesonly"
+      ]
+    }
+  ]
+}

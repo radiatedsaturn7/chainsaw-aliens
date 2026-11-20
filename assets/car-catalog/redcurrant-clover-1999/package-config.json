@@ -1,0 +1,74 @@
+{
+  "id": "redcurrant-clover-1999",
+  "name": "Redcurrant Clover 1999",
+  "stableCarId": "saved-car:Redcurrant Clover 1999",
+  "runtimeId": "saved-car:Redcurrant Clover 1999",
+  "candidateId": "lancia-lybra-base-2-0-20v-1999-supplemental-candidate",
+  "referenceVehicle": "1999 Lancia Lybra base2.0 20V, Italy June1999 four-door sedan standardLybra trim naturally aspirated2.0 inline-five five-speedmanual; notLX,StationWagon orComfortronic",
+  "identity": {
+    "year": 1999,
+    "make": "Lancia",
+    "model": "Lybra base2.0 20V",
+    "trim": "Italy June1999 four-door sedan standardLybra trim naturally aspirated2.0 inline-five five-speedmanual; notLX,StationWagon orComfortronic",
+    "market": "Italy"
+  },
+  "bodyClass": "sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.media.stellantis.com/it-it/lancia/press/lancia-lybra",
+      "fields": [
+        "powerHp",
+        "engineDisplacementL",
+        "gearCount",
+        "transmission",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "absEnabled"
+      ]
+    },
+    {
+      "url": "https://www.media.stellantis.com/it-it/lancia/press/motor-show-di-bologna-1999-lancia-lybra",
+      "fields": [
+        "identity",
+        "gearCount",
+        "transmission"
+      ]
+    }
+  ]
+}

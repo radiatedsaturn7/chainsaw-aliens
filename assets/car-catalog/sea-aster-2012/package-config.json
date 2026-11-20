@@ -1,0 +1,55 @@
+{
+  "id": "sea-aster-2012",
+  "name": "Sea Aster 2012",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      220,
+      430,
+      480,
+      175
+    ],
+    "wheel": [
+      460,
+      753,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://media.mercedes-benz.jp/C-63-AMG-%E3%82%AF%E3%83%BC%E3%83%9A-%E3%83%96%E3%83%A9%E3%83%83%E3%82%AF%E3%82%B7%E3%83%AA%E3%83%BC%E3%82%BA%E3%82%92%E9%99%90%E5%AE%9A%E7%99%BA%E5%A3%B2/",
+      "fields": [
+        "powerKw",
+        "torqueNm",
+        "transmission",
+        "gearCount",
+        "tireSize",
+        "frontTire",
+        "rearTire",
+        "2012JapanLHDdelivery",
+        "M156 naturally aspirated",
+        "two-seat standard",
+        "rear LSD",
+        "100ms fastest shift claim"
+      ]
+    }
+  ]
+}

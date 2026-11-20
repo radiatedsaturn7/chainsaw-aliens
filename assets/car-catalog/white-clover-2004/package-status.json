@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "white-clover-2004",
+  "name": "White Clover 2004",
+  "stableCarId": "saved-car:White Clover 2004",
+  "referenceVehicle": "Early2004 German Mercedes-Benz C32AMG W203 type203.065 M112.961 supercharged3.2V6 sedan standard5AT;not wagon,USrating,C55or500E",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "ba6f7ec9488459332c26d57db299d1c083f9a7a0b524d3c6b14e8538c2d4e162",
+    "dashboard": "60724a6ebe25a20cfec8f336856e5a6ae9a85e5e37aa1148fbf1fac393decd16",
+    "tires": "2d947def34233dd59f20064e3ea9a43096f44e13a01f1dd077809a9e7c59d8fd"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

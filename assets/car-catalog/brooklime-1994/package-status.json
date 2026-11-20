@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "brooklime-1994",
+  "name": "Brooklime 1994",
+  "stableCarId": "saved-car:Brooklime 1994",
+  "referenceVehicle": "1994 Nissan Silvia K's Type S Japan S14 turbo road coupe; modeled 5MT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "5d75c776a42cad868f21a1051bd220c1888c63bd38379abe8b309dadd4bad965",
+    "dashboard": "3b9802dfc814f5fbbc0c1df045950ad6a99ab80043e4228a71d6b403e3d88caf",
+    "tires": "3c624f543fcc1f8ec1b7a84865e28dc9d74b45902e8d130895147fe440686be2"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

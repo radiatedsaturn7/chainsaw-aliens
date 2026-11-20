@@ -1,0 +1,27 @@
+{
+  "base": "5b71d6e829c7dbde4b2fb8dcbad41eaf8667a41f",
+  "vehicles": [
+    {
+      "id": "alkanet-2015",
+      "name": "Alkanet 2015",
+      "inputDocumentSha256": "32d1ffac2d87d3bc73f66f62794f3ef710d8884a3ef31123c4b9ad8ba49d5241",
+      "status": "integrated-local-pilot-not-gameplay-accepted",
+      "artSha256": "82af5189b335efd987a8fd860115c8113707957e72015878ae7ba1ea0305afb2"
+    },
+    {
+      "id": "glasswort-181-1973",
+      "name": "Glasswort 181 1973",
+      "inputDocumentSha256": "25a349149f2bcbf5455ac531594cccab89a7fb54257c4a5986e5e067dbf9398b",
+      "status": "integrated-local-pilot-not-gameplay-accepted",
+      "artSha256": "b84f2761efa52bc9afc7929075bb09127bb4b9bce0f94dc9a09459faaf17b29f"
+    },
+    {
+      "id": "moonwort-2010",
+      "name": "Moonwort 2010",
+      "inputDocumentSha256": "d79e1acfb1afdd255242b17c2b3adb8c3bc844a760dcbf91147c655c304a96c9",
+      "status": "integrated-local-pilot-not-gameplay-accepted",
+      "artSha256": "ece7c07acd5a045d278e3e30c631f123ea9f0f5d26f016800965104ba9d79b92"
+    }
+  ],
+  "gameplayAccepted": false
+}

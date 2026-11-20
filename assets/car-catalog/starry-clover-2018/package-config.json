@@ -1,0 +1,113 @@
+{
+  "id": "starry-clover-2018",
+  "name": "Starry Clover 2018",
+  "stableCarId": "saved-car:Starry Clover 2018",
+  "runtimeId": "saved-car:Starry Clover 2018",
+  "candidateId": "dodge-challenger-srt-demon-2018-roster-candidate",
+  "referenceVehicle": "2018 Canada Dodge Challenger SRT Demon, stock 91-octane 808 hp, 8HP90 automatic, standard one-seat specification; no 100-octane controller or Demon Crate front runners",
+  "identity": {
+    "year": 2018,
+    "make": "Dodge",
+    "model": "Challenger SRT Demon",
+    "trim": "stock 91-octane 808 hp, 8HP90 automatic, standard one-seat specification; no 100-octane controller or Demon Crate front runners",
+    "market": "Canada"
+  },
+  "bodyClass": "two-door-coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      297,
+      500,
+      476,
+      135
+    ],
+    "wheel": [
+      496,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.fcapresskit.ca/2018/Contents/Text/PDFs/Dodge/Challenger_ChallengerSRT/CN_2018_DG_Challenger_ChallengerSRT_SP.pdf",
+      "fields": [
+        "engineDisplacementL",
+        "aspiration",
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "fuelTankUSgal",
+        "frontWeightDistribution",
+        "dragCoefficient",
+        "groundClearanceM",
+        "revLimitRpm"
+      ]
+    },
+    {
+      "url": "https://blog.stellantisnorthamerica.com/2017/06/08/creating-the-dodge-challenger-srt-demon-v-8/",
+      "fields": [
+        "engineDisplacementL",
+        "aspiration",
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "fuelTankUSgal",
+        "frontWeightDistribution",
+        "dragCoefficient",
+        "groundClearanceM",
+        "revLimitRpm"
+      ]
+    }
+  ]
+}

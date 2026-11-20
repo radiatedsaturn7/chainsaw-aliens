@@ -1,0 +1,163 @@
+{
+  "id": "wild-clary-2015",
+  "name": "Wild Clary 2015",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "07ecc748c861007fe2725fdd13a3c0479e39256e65b738c40cb385ffcf8aeedd",
+  "sourceDirectory": "assets/car-catalog/wild-clary-2015",
+  "sourceHashes": {
+    "body": "2616476da9efa8a719361a02b95d0a7c665c5749e6664e0fc03ddb354dbb62e1",
+    "dashboard": "28d4e3437dfecdfcc792db1a590d0a051613352f9c0de7862479215343907e78",
+    "tires": "b695743b2e0a1e160c24f6c850d0fd09cef76073751a46b4adfd738f498e99bf"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 67.41,
+        "y": 328.19,
+        "radius": 49.67
+      },
+      {
+        "wheel": "fr",
+        "x": 345.93,
+        "y": 328.19,
+        "radius": 49.67
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 663.476,
+        "y": 308.676,
+        "radius": 49.672
+      },
+      {
+        "wheel": "rr",
+        "x": 808.944,
+        "y": 276.744,
+        "radius": 40.802
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 957.96,
+        "y": 299.81,
+        "radius": 47.9
+      },
+      {
+        "wheel": "rr",
+        "x": 1243.57,
+        "y": 299.81,
+        "radius": 47.9
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1378.398,
+        "y": 285.614,
+        "radius": 39.028
+      },
+      {
+        "wheel": "rr",
+        "x": 1530.962,
+        "y": 305.128,
+        "radius": 47.898
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 67.41,
+        "y": 769.92,
+        "radius": 49.67
+      },
+      {
+        "wheel": "rl",
+        "x": 351.25,
+        "y": 769.92,
+        "radius": 49.67
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 661.702,
+        "y": 743.306,
+        "radius": 47.898
+      },
+      {
+        "wheel": "fl",
+        "x": 812.492,
+        "y": 718.47,
+        "radius": 40.802
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 957.96,
+        "y": 737.98,
+        "radius": 47.9
+      },
+      {
+        "wheel": "fl",
+        "x": 1243.57,
+        "y": 737.98,
+        "radius": 47.9
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1373.076,
+        "y": 720.244,
+        "radius": 39.028
+      },
+      {
+        "wheel": "fl",
+        "x": 1513.222,
+        "y": 746.854,
+        "radius": 47.898
+      }
+    ]
+  },
+  "wheelFit": "average",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      277.62,
+      495.75,
+      386.69,
+      134.84
+    ],
+    "wheel": [
+      486.0,
+      725.59,
+      406.52
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#ffe1ab",
+    "viewportWheelScale": 2.06,
+    "gaugeBackground": "#101010"
+  },
+  "steeringWheelSource": {
+    "artRef": "steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementNotes": "Measured from original PNG via 1000px gridded preview. Direct front/rear wheel centers estimated from silhouette edge and side-view radius where no explicit arch cutout exists. Engine static review required; road/motion deferred."
+}

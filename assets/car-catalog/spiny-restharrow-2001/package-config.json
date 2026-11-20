@@ -1,0 +1,70 @@
+{
+  "id": "spiny-restharrow-2001",
+  "name": "Spiny Restharrow 2001",
+  "stableCarId": "saved-car:Spiny Restharrow 2001",
+  "candidateId": "aston-martin-v12-vanquish-2001-roster-candidate",
+  "referenceVehicle": "2001 UK Aston Martin V12 Vanquish standard 5.935L naturally aspirated V12 ASM/SSM six-speed coupe; not Vanquish S",
+  "identity": {
+    "year": 2001,
+    "make": "Aston Martin",
+    "model": "V12 Vanquish",
+    "trim": "standard 5.935L naturally aspirated V12 ASM/SSM six-speed coupe; not Vanquish S",
+    "market": "United Kingdom"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1309,
+      515,
+      436,
+      119
+    ],
+    "wheel": [
+      1507,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.astonmartin.com/en-us/models/past-models/vanquish-vanquish-s",
+      "fields": [
+        "powerKw",
+        "publishedPowerBhp",
+        "powerRpm",
+        "torqueNm",
+        "publishedTorqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "publishedWeightKg",
+        "lengthM",
+        "widthM",
+        "heightM"
+      ]
+    }
+  ]
+}

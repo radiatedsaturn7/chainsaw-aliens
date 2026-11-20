@@ -1,0 +1,73 @@
+{
+  "id": "bur-parsley-2008",
+  "name": "Bur Parsley 2008",
+  "stableCarId": "saved-car:Bur Parsley 2008",
+  "candidateId": "renault-m-gane-r26-r-2008-roster-candidate",
+  "referenceVehicle": "2008 France Renault Megane R26.R 2.0turbo two-seat road car six-speed manual with mechanicalfrontLSD; notF1TeamR26 orlaterMeganeIII",
+  "identity": {
+    "year": 2008,
+    "make": "Renault",
+    "model": "Megane R26.R",
+    "trim": "French-market two-seat launch road car,6MT,standardMichelinPS2tires,nooptionalrollcage/titaniumexhaust",
+    "market": "France"
+  },
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      258,
+      484,
+      397,
+      135
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://media.alpinecars.com/megane-r26r-the-new-flagship-of-the-renault-sport-technologies-range/",
+      "fields": [
+        "identity",
+        "123kgweightreduction",
+        "specificsuspension",
+        "limitedslipdifferential"
+      ]
+    },
+    {
+      "url": "https://www.ultimatecarpage.com/car/3794/Renault-Megane-Sport-R26.R.html",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "torqueNm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "drivetrain"
+      ]
+    }
+  ]
+}

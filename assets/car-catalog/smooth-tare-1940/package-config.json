@@ -1,0 +1,93 @@
+{
+  "id": "smooth-tare-1940",
+  "name": "Smooth Tare 1940",
+  "stableCarId": "saved-car:Smooth Tare 1940",
+  "runtimeId": "saved-car:Smooth Tare 1940",
+  "candidateId": "ford-de-luxe-coupe-1940-roster-candidate",
+  "referenceVehicle": "1940 United States Ford De Luxe Coupe, 85-horsepower-reference flathead V8, ordinary Coupe (not Business Coupe or convertible), column-shift manual",
+  "identity": {
+    "year": 1940,
+    "make": "Ford",
+    "model": "De Luxe Coupe",
+    "trim": "85-horsepower-reference flathead V8, ordinary Coupe (not Business Coupe or convertible), column-shift manual",
+    "market": "United States"
+  },
+  "bodyClass": "two-door-coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    3,
+    4,
+    5,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1981,
+      793
+    ],
+    "cluster": [
+      277,
+      531,
+      436,
+      119
+    ],
+    "wheel": [
+      475,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.lov2xlr8.no/brochures/ford/fr40/bilder/2.jpg",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "steeringRatio",
+        "periodPublishedRatings"
+      ]
+    },
+    {
+      "url": "https://www.lov2xlr8.no/brochures/ford/fr40/bilder/3.jpg",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "steeringRatio",
+        "periodPublishedRatings"
+      ]
+    },
+    {
+      "url": "https://www.lov2xlr8.no/brochures/ford/fr40/bilder/5.jpg",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "steeringRatio",
+        "periodPublishedRatings"
+      ]
+    },
+    {
+      "url": "https://www.lov2xlr8.no/brochures/ford/fr40/bilder/7.jpg",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "steeringRatio",
+        "periodPublishedRatings"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "source-citron-clover-2012",
+  "name": "Citron Clover 2012",
+  "stableCarId": "saved-car:Citron Clover 2012",
+  "referenceVehicle": "US2012 Hyundai Tucson GL2.0petrol,FWD,5MT. Five-door SUV,standard16-inch wheels,basicGL notGLS2.4.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "citron-clover-2012",
+  "sourceHashes": {
+    "body": "24054b18f6fbc7dee6c609430c5ad6e9ebdcbfc43a4236e6f20018e2d1ec7edb",
+    "dashboard": "2f24a6b85d43e09c77eb4fccd7ed0d3723a8d9eee448b8cfc096669824454f50",
+    "tires": "3da6c5772a949a8c53ea6d54c045ea5793c0a76f47bacf126e06fe71f060bffa"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
+}

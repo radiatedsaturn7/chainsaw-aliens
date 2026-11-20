@@ -1,0 +1,69 @@
+{
+  "id": "field-madder-2013",
+  "name": "Field Madder 2013",
+  "stableCarId": "saved-car:Field Madder 2013",
+  "candidateId": "audi-rs-7-sportback-2013-roster-candidate",
+  "referenceVehicle": "2013 Netherlands Audi RS7Sportback C74.0TFSI560PSquattro8AT four-seatfive-door;notlater605PSperformance orC8",
+  "identity": {
+    "year": 2013,
+    "make": "Audi",
+    "model": "RS 7 Sportback",
+    "trim": "Netherlandslaunch4.0TFSIquattro8-speedtiptronic, standard20-inch/air suspension,250kmh limiter",
+    "market": "Netherlands"
+  },
+  "bodyClass": "hatchback",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      258,
+      515,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://nieuws.audi.nl/de-nieuwe-audi-rs-7-sportback/",
+      "fields": [
+        "identity",
+        "powerKw",
+        "publishedPowerPS",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "drivetrain",
+        "dragCoefficient",
+        "aspiration"
+      ]
+    }
+  ]
+}

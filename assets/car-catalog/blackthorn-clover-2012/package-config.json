@@ -1,0 +1,76 @@
+{
+  "id": "blackthorn-clover-2012",
+  "name": "Blackthorn Clover 2012",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      426,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Chrysler/200/Chrysler_US%20200_2012.pdf",
+      "fields": [
+        "identity",
+        "powerHp",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "tireSize"
+      ]
+    },
+    {
+      "url": "https://sc-journal.com/view/13821/chrysler-200-sedan-2012-specifications-6/",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "engineDisplacementL",
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "transmission",
+        "gearCount",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "fuelTankUSgal",
+        "dragCoefficient",
+        "steeringRatio"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "redwood-clover-2012",
+  "name": "Redwood Clover 2012",
+  "stableCarId": "saved-car:Redwood Clover 2012",
+  "referenceVehicle": "2012 US Volkswagen Golf Mk6TDI CleanDiesel four-door2.0commonrail6MT standard17inchalloy,notGTD/GTI/R",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "redwood-clover-2012",
+  "sourceHashes": {
+    "body": "addfa04fdaad6d05777c6164cb821dbeb2b647e6ac7e46dedab7574b1c1d4868",
+    "dashboard": "c1c20e7ffd83a31fbc54af04c465515a654b47fc4b0b884acdb33102e2b66830",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

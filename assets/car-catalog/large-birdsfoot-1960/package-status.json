@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "large-birdsfoot-1960",
+  "name": "Large Birdsfoot 1960",
+  "stableCarId": "saved-car:Large Birdsfoot 1960",
+  "referenceVehicle": "1960 Porsche 718 RS60 open mid-engine flat-four sports racer, Revs Institute 718-041 currently documented 1697cc specification; not road Boxster, 1959 RSK, 1961 RS61 or 2.0 flat-eight development configuration",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "24e8b0d86b52a023786a59b591e2fd29cdf9eb3931a9c1e01b91b8337545e4d0",
+    "dashboard": "2c435b7053a6173348ecb0024e8b647d6c4f6d1c75cd82fc51fb0e13f65cc435",
+    "tires": "75cdc5d51fe100430aaa4ca3150910fa9cf57b66a18f7952caaece98a9efd77e"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

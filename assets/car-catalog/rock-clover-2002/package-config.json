@@ -1,0 +1,77 @@
+{
+  "id": "rock-clover-2002",
+  "name": "Rock Clover 2002",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      198,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      475,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/motor-versions-polo-4-profile-19151",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration"
+      ]
+    },
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/vehicle-data-polo-4-profile-19152",
+      "fields": [
+        "identity",
+        "lengthM",
+        "widthM",
+        "wheelbaseM",
+        "drivetrain"
+      ]
+    },
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/polo-iv-20012009-19150",
+      "fields": [
+        "identity"
+      ]
+    },
+    {
+      "url": "https://tutoriale-auto.ro/download/6581/",
+      "fields": [
+        "identity",
+        "transmission",
+        "gearCount",
+        "heightM",
+        "trackFrontIn",
+        "trackRearIn",
+        "fuelTankUSgal"
+      ]
+    }
+  ]
+}

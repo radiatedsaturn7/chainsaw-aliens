@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "scarlet-pimpernel-1995",
+  "name": "Scarlet Pimpernel 1995",
+  "stableCarId": "saved-car:Scarlet Pimpernel 1995",
+  "referenceVehicle": "1995 UK Toyota MR2 GT SW20 2.0 naturally aspirated 173bhp five-speed manual, standard glass sunroof; not Japanese turbo GT, GT T-Bar or AW11/Spyder",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "eee71f632b0b264dc25a890d1483a8dc277a3cbcaa650a9d02cb31d28b88e797",
+    "dashboard": "18bf816a65a5b9bd05af453e14d27ebfd03c09b4ffac86d4814d39444a359e88",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

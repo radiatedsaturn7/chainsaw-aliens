@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "ivy-speedwell-1992",
+  "name": "Ivy Speedwell 1992",
+  "stableCarId": "saved-car:Ivy Speedwell 1992",
+  "referenceVehicle": "1992 Japan Mitsubishi Galant VR-4 May1992 seventh-generation E-E84A 6A12 1998cc twin-turbo V6 AWD4AT, not sixth-generation E39A4G63 or manual240PS",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "0925f95de46f9ba7c50fc0560c40a0c172d54875cbdb40c937b39c86c923e443",
+    "dashboard": "34156ce108fc607bd96dc0bc755a4f7a656bc31f00e32f55d6d389054ff1ef04",
+    "tires": "67cbdc023472e147e65be06a0a237e61b5bccfb6a4f2ccaaf4627cbb83f420fe"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

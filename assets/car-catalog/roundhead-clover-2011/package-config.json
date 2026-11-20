@@ -1,0 +1,91 @@
+{
+  "id": "roundhead-clover-2011",
+  "name": "Roundhead Clover 2011",
+  "stableCarId": "saved-car:Roundhead Clover 2011",
+  "runtimeId": "saved-car:Roundhead Clover 2011",
+  "candidateId": "volkswagen-take-up-2011-1-0-44kw-5mt",
+  "referenceVehicle": "2011 Germany Volkswagen up! take up! two-side-door/three-door hatch 1.0 MPI44kW five-speed manual, non-BlueMotion, standard14-inch steel wheels; not75PS, ASG, CNG or electric",
+  "identity": {
+    "year": 2011,
+    "make": "Volkswagen",
+    "model": "up!",
+    "trim": "take up! two-side-door/three-door hatch 1.0 MPI44kW five-speed manual, non-BlueMotion, standard14-inch steel wheels; not75PS, ASG, CNG or electric",
+    "market": "Germany"
+  },
+  "bodyClass": "hatchback",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/up-driving-presentation-3071/up-technologies-3086",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "fuelTankUSgal",
+        "topSpeedMph"
+      ]
+    },
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/up-driving-presentation-3071/up-exterior-3093",
+      "fields": [
+        "identity",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "publishedEuKerbWeightKg"
+      ]
+    },
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/up-four-door-driving-presentation-3073/up-four-door-overview-3116",
+      "fields": [
+        "identity",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "publishedEuKerbWeightKg"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "zigzag-clover-2008",
+  "name": "Zigzag Clover 2008",
+  "stableCarId": "saved-car:Zigzag Clover 2008",
+  "referenceVehicle": "2008 Japan / US concept debut Mazda Furai, functional Courage C65-based three-rotor E100 concept, Detroit2008 debut; not787B or production RX-8",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "zigzag-clover-2008",
+  "sourceHashes": {
+    "body": "48b1c0afc6f925162872908df5b27691d535c77236407c9a3d30bea7dedde3d1",
+    "dashboard": "52e834416a471d20458bac4c85bd47d945154164765d04f65c2c74573593cdef",
+    "tires": "fb5e50b73f8fb14a367abc2ebd52342e668152a4aace932c74c7b6695de7224e"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

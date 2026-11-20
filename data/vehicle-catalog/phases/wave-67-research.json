@@ -1,0 +1,767 @@
+{
+  "schemaVersion": 1,
+  "base": "06628ad250628e423bbec68015e0de4d3a3660f5",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "oldsmobile-alero-gls-coupe-2004-us-supplemental",
+      "identity": {
+        "year": 2004,
+        "make": "Oldsmobile",
+        "model": "Alero",
+        "trim": "GLS two-doorcoupe3.4SFI V6 four-speedautomatic, standard16-inchpolishedwheels; notGXfour-cylinder,sedan orFinal500",
+        "market": "United States"
+      },
+      "referenceVehicle": "2004 United States Oldsmobile Alero, GLS two-doorcoupe3.4SFI V6 four-speedautomatic, standard16-inchpolishedwheels; notGXfour-cylinder,sedan orFinal500",
+      "bodyClass": "two-door-coupe",
+      "artIdentity": "Rounded N-body front-drive coupe, twin-openinggrille, longdoors and16-inchpolishedwheels, leatherfive-seatcabin; no specialeditionbadges.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "transmission": "automatic",
+        "gearCount": 4,
+        "engineDisplacementL": 3.4,
+        "powerHp": 170,
+        "powerRpm": 4800,
+        "torqueLbFt": 200,
+        "torqueRpm": 4000,
+        "lengthM": 4.742179999999999,
+        "widthM": 1.7805399999999998,
+        "heightM": 1.3842999999999999,
+        "wheelbaseM": 2.7178,
+        "trackFrontIn": 59.1,
+        "trackRearIn": 59.3,
+        "fuelTankUSgal": 14
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/oldsmobile/alero/Oldsmobile_US%20Alero_2004.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "engineDisplacementL",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "fuelTankUSgal"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Brochure2950lb is labeledGLcoupe, notGLSV6; selected1410kgcurb explicitlyestimated, not reusedastrimfact. Numericgears/finaldrive/tireprofileestimated;16-inchGLSwheel confirmed. NoFinal500trimclaim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Copperhead SC 2006",
+            "documentId": "copperhead-sc-2006",
+            "runtimeId": "saved-car:Copperhead SC 2006",
+            "reference": "2006 US Chevrolet Cobalt SS Supercharged coupe, F35 5MT, LHD, standard configuration without optional Performance Package",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Henbit 2005",
+            "documentId": "henbit-2005",
+            "runtimeId": "saved-car:Henbit 2005",
+            "reference": "2005 mainland-US Chevrolet Malibu base Sedan,2.2L Ecotec DOHC inline4,4T45-E four-speed automatic,FWD,LHD. NotMaxx,Classic,LS/LT,V6,SS,sport or appearance package.",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoAlero/GrandAm exactnative counterpart. Nbodytwo-door3.4pushrodV6/4AT differs fromEpsilonMalibu2.2sedan andDeltaCobaltSSsupercharged2.0/5MTcoupe. No rebadgedGrandAm duplication.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/oldsmobile/alero/Oldsmobile_US%20Alero_2004.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Marionberry Clover 2004",
+      "id": "marionberry-clover-2004",
+      "simulationEstimates": {
+        "reverseRatio": 2.14,
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.32,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.94,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 5800,
+        "revLimitRpm": 6100,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 8.4,
+        "steeringRatio": 20,
+        "curbKg": 1410,
+        "gearRatios": [
+          2.95,
+          1.62,
+          1,
+          0.68
+        ],
+        "finalDrive": 3.05,
+        "tireSize": [
+          225,
+          50,
+          16
+        ],
+        "transmissionLabel": "4-speed automatic (estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "oldsmobile-aurora-3-5-2001-us-supplemental",
+      "identity": {
+        "year": 2001,
+        "make": "Oldsmobile",
+        "model": "Aurora",
+        "trim": "3.5TwinCamV6 front-drive four-speedautomatic, standard16-inchwheels; not4.0V8 orfirstgeneration",
+        "market": "United States"
+      },
+      "referenceVehicle": "2001 United States Oldsmobile Aurora, 3.5TwinCamV6 front-drive four-speedautomatic, standard16-inchwheels; not4.0V8 orfirstgeneration",
+      "bodyClass": "four-door-sedan",
+      "artIdentity": "Second-generation curved luxury sedan, smoothroundednose, shortrear-deckspoilerlip and16-inchwheels; five-seat leather cabin.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "transmission": "automatic",
+        "gearCount": 4,
+        "engineDisplacementL": 3.5,
+        "powerHp": 215,
+        "powerRpm": 5600,
+        "torqueLbFt": 230,
+        "torqueRpm": 4400,
+        "finalDrive": 3.29,
+        "curbKg": 1671.94147582,
+        "lengthM": 5.06222,
+        "widthM": 1.85166,
+        "heightM": 1.44018,
+        "wheelbaseM": 2.8498799999999997,
+        "trackFrontIn": 62.3,
+        "trackRearIn": 62.3,
+        "tireSize": [
+          225,
+          60,
+          16
+        ],
+        "fuelTankUSgal": 18.5
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/oldsmobile/aurora/Oldsmobile_US%20Aurora_2001.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "engineDisplacementL",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "finalDrive",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "fuelTankUSgal"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Manufacturer3.5column3686lb/3.29axle/18.5gal selected, not4.0column3803lb/3.71/17.5gal. Basecurb is factory3.5model basis; optionalcontentnotclaimed. Internalgear ratios andperformanceestimated.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Pellitory 2006",
+            "documentId": "pellitory-2006",
+            "runtimeId": "saved-car:Pellitory 2006",
+            "reference": "2006 Canada Cadillac DTS Luxury I standard sedan,4.6L Northstar275hp naturally aspirated V8,FWD4-speed automatic,LHD,standard five-seat buckets and floor console,17inch machined wheels,solid roof,no optional packages. Not LuxuryII/III,Performance291hp,limousine or US-market mass specification.",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Running Clover 2002",
+            "documentId": "running-clover-2002",
+            "runtimeId": "saved-car:Running Clover 2002",
+            "reference": "2002 United States Buick LeSabre, US Custom3800SeriesII naturallyaspiratedV6 four-speedautomatic,standard15-inchcoveredsteelwheels,noGranTouringpackage",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Aurora3.5ShortstarDOHCV6 body/reference absent; unlikeDTS4.6NorthstarV8 andLeSabre3800OHVV6 despite relatedGMlargeFWDarchitecture. Distinct3.5DOHCengine,body/geometry andgearing; no4.0V8badgeclone.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/oldsmobile/aurora/Oldsmobile_US%20Aurora_2001.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Youngberry Clover 2001",
+      "id": "youngberry-clover-2001",
+      "simulationEstimates": {
+        "reverseRatio": 2.385,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.32,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 1.0,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6400,
+        "revLimitRpm": 6700,
+        "topSpeedMph": 128,
+        "zeroToSixtySec": 8.3,
+        "steeringRatio": 20,
+        "gearRatios": [
+          2.921,
+          1.568,
+          1,
+          0.705
+        ],
+        "transmissionLabel": "4-speed automatic (estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "pontiac-g6-gt-coupe-2006-us-supplemental",
+      "identity": {
+        "year": 2006,
+        "make": "Pontiac",
+        "model": "G6",
+        "trim": "GT two-doorfixed-roofcoupe3.5LX9 V6 MN5four-speedautomatic, standard17-inchalloys; notconvertible,sedan,GTP3.9 or6MT",
+        "market": "United States"
+      },
+      "referenceVehicle": "2006 United States Pontiac G6, GT two-doorfixed-roofcoupe3.5LX9 V6 MN5four-speedautomatic, standard17-inchalloys; notconvertible,sedan,GTP3.9 or6MT",
+      "bodyClass": "two-door-coupe",
+      "artIdentity": "Long-wheelbase Epsilon two-doorcoupe withlowroof, steeprearwindow and17-inchfive-spokealloys; fixedsteelroof andfive-seatcabin.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "transmission": "automatic",
+        "gearCount": 4,
+        "engineDisplacementL": 3.5,
+        "powerHp": 201,
+        "powerRpm": 5600,
+        "torqueLbFt": 222,
+        "torqueRpm": 3200,
+        "curbKg": 1549.0179435500002,
+        "lengthM": 4.80314,
+        "widthM": 1.78816,
+        "heightM": 1.4325599999999998,
+        "wheelbaseM": 2.85242,
+        "trackFrontIn": 59.8,
+        "trackRearIn": 60.4,
+        "tireSize": [
+          225,
+          50,
+          17
+        ],
+        "fuelTankUSgal": 16
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Pontiac/G6/Pontiac_US%20G6_2006.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "engineDisplacementL",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "fuelTankUSgal"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "SelectedfixedroofGTcoupe becausefactorydimensions/3415lbcurb explicitlylabelGTcoupe; donotapplythesevalues toheavierretractablehardtopconvertible previewedelsewhereinbrochure. Numericgears/axle andperformanceestimated.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Henbit 2005",
+            "documentId": "henbit-2005",
+            "runtimeId": "saved-car:Henbit 2005",
+            "reference": "2005 mainland-US Chevrolet Malibu base Sedan,2.2L Ecotec DOHC inline4,4T45-E four-speed automatic,FWD,LHD. NotMaxx,Classic,LS/LT,V6,SS,sport or appearance package.",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "G6GTlong-wheelbasecoupe withLX93.5V6 distinctlydifferent fromrelatedEpsilonMalibu2.2four-cylinderfour-door sedan;112.3inwheelbase,lowtwo-doorbody and201hp. NoG6native entry orbadgeclone.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Pontiac/G6/Pontiac_US%20G6_2006.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Jostaberry Clover 2006",
+      "id": "jostaberry-clover-2006",
+      "simulationEstimates": {
+        "reverseRatio": 2.14,
+        "cgHeightM": 0.51,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.33,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.91,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6000,
+        "revLimitRpm": 6300,
+        "topSpeedMph": 120,
+        "zeroToSixtySec": 8.1,
+        "steeringRatio": 20,
+        "gearRatios": [
+          2.95,
+          1.62,
+          1,
+          0.68
+        ],
+        "finalDrive": 3.05,
+        "transmissionLabel": "4-speed automatic (estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "fiat-barchetta-limited-edition-1998-supplemental-candidate",
+      "bodyClass": "roadster",
+      "identity": {
+        "year": 1998,
+        "make": "Fiat",
+        "model": "Barchetta LimitedEdition1.8 16V",
+        "trim": "Italy January1998 numbered LimitedEdition two-seat FWD roadster five-speedmanual, clothroof and15inch alloys; not1999LE or2003facelift",
+        "market": "Italy"
+      },
+      "referenceVehicle": "1998 Fiat Barchetta LimitedEdition1.8 16V, Italy January1998 numbered LimitedEdition two-seat FWD roadster five-speedmanual, clothroof and15inch alloys; not1999LE or2003facelift",
+      "facts": {
+        "powerHp": 128.221609178,
+        "powerRpm": 6300,
+        "torqueNm": 164,
+        "torqueRpm": 4300,
+        "engineDisplacementL": 1.747,
+        "gearCount": 5,
+        "transmission": "manual",
+        "drivetrain": "fwd",
+        "curbKg": 1060,
+        "tireSize": [
+          195,
+          55,
+          15
+        ],
+        "fuelTankUSgal": 13.20860261790742,
+        "topSpeedMph": 124.27423844746679,
+        "absEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/it-it/fiat/press/barchetta-limited-edition",
+          "publisher": "FiatItaly January1998 factory technical/equipmenttable",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "gearCount",
+            "transmission",
+            "drivetrain",
+            "curbKg",
+            "tireSize",
+            "fuelTankUSgal",
+            "topSpeedMph",
+            "absEnabled"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "Factory130CEE-CV/96kW roundedpair;130metricCV converted128.2216hp.1060kg explicitlyDIN runningorder mass retained withoutsubtracting75kg. Geometry,tracks,ratios,finaldrive andtransients estimated;0\u201360estimated8.5vsfactory0\u20131008.9s. ABSstandardLE; nooptionalhardtop orACmass.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Nettle Turbo 2017",
+            "documentId": "nettle-turbo-2017",
+            "runtimeId": "saved-car:Nettle Turbo 2017",
+            "reference": "Fiat124SpiderAbarth turboRWD6MT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Hairy Tare 1969",
+            "documentId": "hairy-tare-1969",
+            "runtimeId": "saved-car:Hairy Tare 1969",
+            "reference": "FiatDino2400coupeV6RWD",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Distinct small transverse-engine front-drive two-seat roadster versus Mazda-platformRWD124 andV6DinoGT; nottrimvariant ofeither.",
+        "evidence": [
+          "https://www.media.stellantis.com/it-it/fiat/press/barchetta-limited-edition"
+        ],
+        "audit": "Audited fullnativewave64catalog plus currentrepository phasepackets andfivewave64rows; noBarchetta/FiatCoupe/Alhambra/Sharan identity. Supplementalcanonicalreservation required; unrelatedresearchonlymentions excluded."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Aronia Clover 1998",
+      "id": "aronia-clover-1998",
+      "simulationEstimates": {
+        "reverseRatio": 3.818,
+        "cgHeightM": 0.45,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.62,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Naturally aspirated",
+        "zeroToSixtySec": 8.5,
+        "bodyClass": "roadster",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "lengthM": 3.916,
+        "widthM": 1.64,
+        "heightM": 1.265,
+        "wheelbaseM": 2.275,
+        "trackFrontIn": 59,
+        "trackRearIn": 58.5,
+        "gearRatios": [
+          3.909,
+          2.158,
+          1.48,
+          1.121,
+          0.897
+        ],
+        "finalDrive": 3.563,
+        "transmissionLabel": "five-speed manual; estimated ratios"
+      }
+    },
+    {
+      "candidateId": "fiat-coupe-20v-turbo-plus-1999-supplemental-candidate",
+      "bodyClass": "coupe",
+      "identity": {
+        "year": 1999,
+        "make": "Fiat",
+        "model": "Coupe20V TurboPlus",
+        "trim": "Italy November1999 two-door four-seat front-drive2.0turbo inline-five six-speedmanual225/45R16, standardPlusbrace/Recaroseats; not16VTurbo,NAorLimitedEdition",
+        "market": "Italy"
+      },
+      "referenceVehicle": "1999 Fiat Coupe20V TurboPlus, Italy November1999 two-door four-seat front-drive2.0turbo inline-five six-speedmanual225/45R16, standardPlusbrace/Recaroseats; not16VTurbo,NAorLimitedEdition",
+      "facts": {
+        "powerHp": 216.99041553200001,
+        "engineDisplacementL": 2.0,
+        "gearCount": 6,
+        "transmission": "manual",
+        "tireSize": [
+          225,
+          45,
+          16
+        ],
+        "topSpeedMph": 155.3427980593335
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/it-it/fiat/press/motor-show-di-bologna-1999-coup-eacute-fiat",
+          "publisher": "FiatItaly November1999 factorytrim/power/gearingrelease",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL",
+            "gearCount",
+            "transmission",
+            "tireSize",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "Factory220metricCV/162kW roundedpair;CVconversion216.9904hp retained. Exact1998cc,5750powerRPM/310Nm2500torque,1310kgdriver-excludedrunningmass,dimensions,tracks,ratios/FD allestimates.0\u201360estimated6.0vsfactory0\u20131006.3. FrontViscodrivecoupling notindependentlyreproduced bygenericfrontdrivemodel.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Saffron 135 2010",
+            "documentId": "saffron-135-2010",
+            "runtimeId": "saved-car:Saffron 135 2010",
+            "reference": "FiatPuntoEvoSporting1.4MultiAir1353door5MT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Reed Clover 2003",
+            "documentId": "reed-clover-2003",
+            "runtimeId": "saved-car:Reed Clover 2003",
+            "reference": "FiatStiloMultiWagon1.8estate",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "DedicatedTipo-platform low four-seat coupe withturbo inline-five and6MT, notfour-cylinderPuntohatch orlaterStiloestate; noexistingFiatCoupefound.",
+        "evidence": [
+          "https://www.media.stellantis.com/it-it/fiat/press/motor-show-di-bologna-1999-coup-eacute-fiat"
+        ],
+        "audit": "Audited fullnativewave64catalog plus currentrepository phasepackets andfivewave64rows; noBarchetta/FiatCoupe/Alhambra/Sharan identity. Supplementalcanonicalreservation required; unrelatedresearchonlymentions excluded."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Chokeberry Clover 1999",
+      "id": "chokeberry-clover-1999",
+      "simulationEstimates": {
+        "reverseRatio": 3.909,
+        "cgHeightM": 0.46,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.65,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Turbocharged",
+        "fuelTankUSgal": 16.642839298563352,
+        "zeroToSixtySec": 6,
+        "bodyClass": "coupe",
+        "drivetrain": "fwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 5750,
+        "torqueNm": 310,
+        "torqueRpm": 2500,
+        "curbKg": 1310,
+        "lengthM": 4.25,
+        "widthM": 1.768,
+        "heightM": 1.34,
+        "wheelbaseM": 2.54,
+        "trackFrontIn": 59,
+        "trackRearIn": 58.5,
+        "gearRatios": [
+          3.545,
+          2.238,
+          1.52,
+          1.156,
+          0.916,
+          0.816
+        ],
+        "finalDrive": 3.111,
+        "transmissionLabel": "six-speed manual; estimated ratios",
+        "torqueLbFt": 228.64426627595233
+      }
+    },
+    {
+      "candidateId": "seat-alhambra-style-1-4-tsi-dsg-2010-supplemental-candidate",
+      "bodyClass": "minivan",
+      "identity": {
+        "year": 2010,
+        "make": "SEAT",
+        "model": "Alhambra Style1.4TSI150",
+        "trim": "Sweden November2010 second-generation standardfive-seat passengerMPV optional6DSG frontdrive, nooptionalthirdrow; notReference,TDI,Sharanorfirstgeneration",
+        "market": "Sweden"
+      },
+      "referenceVehicle": "2010 SEAT Alhambra Style1.4TSI150, Sweden November2010 second-generation standardfive-seat passengerMPV optional6DSG frontdrive, nooptionalthirdrow; notReference,TDI,Sharanorfirstgeneration",
+      "facts": {
+        "powerHp": 147.94801059,
+        "engineDisplacementL": 1.4,
+        "gearCount": 6,
+        "transmission": "automatic"
+      },
+      "sources": [
+        {
+          "url": "https://www.vwgroup.se/nyheter--media/pressmeddelanden/2010/11/nya-seat-alhambra-ar-prissatt-och-bestallningsbar/?search=true",
+          "publisher": "VolkswagenGroupSweden November2010 factorySEAT launchtrim/transmissiontable",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL",
+            "gearCount",
+            "transmission"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "Swedish150hk interpretedmetricPS ->147.948mechanicalhp; noSAEclaim. Exact1390cc,torque/RPM,1710kgrunningmasswithoutdriver,geometry,tires,gearratios andperformance explicitestimates. Source205/60R16 belongsReference, NOTourStyle;17inchrepresentationestimated. Source5seatsstandard/7optional; standardfivechosen. DSGapproximatedgenericautomatic, notclaimofdualclutchbehavior orfactoryratios.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Moss Clover 2003",
+            "documentId": "moss-clover-2003",
+            "runtimeId": "saved-car:Moss Clover 2003",
+            "reference": "FiatUlysseDynamic2.0sevenseat5MT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Elder Clover 2010",
+            "documentId": "elder-clover-2010",
+            "runtimeId": "saved-car:Elder Clover 2010",
+            "reference": "FiatDobloActive1.4five-seat5MT",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "LargeVWgroupPQ46-family slidingdoorMPV withtwinchargedpetrol and6DSG, distinct fromPSAEurovanUlysse andsmallerFiatDoblo; noSharanbadgeclonealreadyrepresented.",
+        "evidence": [
+          "https://www.vwgroup.se/nyheter--media/pressmeddelanden/2010/11/nya-seat-alhambra-ar-prissatt-och-bestallningsbar/?search=true"
+        ],
+        "audit": "Audited fullnativewave64catalog plus currentrepository phasepackets andfivewave64rows; noBarchetta/FiatCoupe/Alhambra/Sharan identity. Supplementalcanonicalreservation required; unrelatedresearchonlymentions excluded."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Chokecherry Clover 2010",
+      "id": "chokecherry-clover-2010",
+      "simulationEstimates": {
+        "reverseRatio": 3.989,
+        "cgHeightM": 0.62,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 200,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Turbocharged and supercharged",
+        "fuelTankUSgal": 18.49204366507039,
+        "topSpeedMph": 122,
+        "zeroToSixtySec": 9.6,
+        "bodyClass": "minivan",
+        "drivetrain": "fwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 5800,
+        "torqueNm": 240,
+        "torqueRpm": 1500,
+        "curbKg": 1710,
+        "lengthM": 4.854,
+        "widthM": 1.904,
+        "heightM": 1.72,
+        "wheelbaseM": 2.919,
+        "trackFrontIn": 59,
+        "trackRearIn": 58.5,
+        "tireSize": [
+          225,
+          50,
+          17
+        ],
+        "gearRatios": [
+          3.462,
+          2.15,
+          1.464,
+          1.079,
+          0.86,
+          0.727
+        ],
+        "finalDrive": 4.118,
+        "transmissionLabel": "six-speed automatic",
+        "torqueLbFt": 177.01491582654376,
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 70.80596633061751
+          },
+          {
+            "rpm": 1500,
+            "torqueLbFt": 177.01491582654376
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 177.01491582654376
+          },
+          {
+            "rpm": 5800,
+            "torqueLbFt": 133.9694744170138
+          },
+          {
+            "rpm": 6500,
+            "torqueLbFt": 106.20894949592625
+          }
+        ]
+      }
+    }
+  ],
+  "deferred": []
+}

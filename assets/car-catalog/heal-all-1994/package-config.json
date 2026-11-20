@@ -1,0 +1,94 @@
+{
+  "id": "heal-all-1994",
+  "name": "Heal-all 1994",
+  "stableCarId": "saved-car:Heal-all 1994",
+  "candidateId": "honda-prelude-si-1994-roster-candidate",
+  "referenceVehicle": "1994 Japan Honda Prelude Si E-BA8 2WS F22B 2156cc non-VTEC naturally aspirated DOHC16 inline-four FWD5MT; not US 2.3 Si, VTEC Si-VTEC, BA9 4WS or fifth-generation H22A4",
+  "identity": {
+    "year": 1994,
+    "make": "Honda",
+    "model": "Prelude Si",
+    "trim": "Japan E-BA8 F22B 2.156L non-VTEC 2WS five-speed manual; September 1994 specification",
+    "market": "Japan"
+  },
+  "bodyClass": "two-door four-seat coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1289,
+      492,
+      416,
+      87
+    ],
+    "wheel": [
+      1507,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.honda.co.jp/auto-archive/prelude/1996/si_sy.html",
+      "fields": [
+        "engineDisplacementL",
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "generation gearbox reference"
+      ]
+    },
+    {
+      "url": "https://gazoo.com/catalog/maker/HONDA/PRELUDE/199109/2003149/",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "reverseRatio",
+        "finalDrive",
+        "fuelTankUSgal",
+        "tireSize"
+      ]
+    }
+  ]
+}

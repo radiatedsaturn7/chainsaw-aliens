@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "woollyhead-clover-2011",
+  "name": "Woollyhead Clover 2011",
+  "stableCarId": "saved-car:Woollyhead Clover 2011",
+  "referenceVehicle": "2011 Bugatti Veyron16.4SuperSport, standardproductionclosedcoupe8.0quad-turboW16 seven-speedDSG permanentAWD,415km/hlimiter;notWorldRecordunlimited431km/h,Vitesseorbase1001PS",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "5f998af35386fc44458bce80a6174a774b9084509e4c24e92f0b7bd63bcf3257",
+    "dashboard": "efdf459e5009b80aedb085c5da3206604579736868d9af2c0dab792b39481350",
+    "tires": "c7ad4c330707981bde1cda5dd4335fa4e08d03436335d69810a3a053302badb2"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

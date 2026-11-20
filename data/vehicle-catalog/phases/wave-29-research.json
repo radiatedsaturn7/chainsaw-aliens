@@ -1,0 +1,1271 @@
+{
+  "schemaVersion": 1,
+  "base": "67864afa2cdc2afc99f2d84d7d2f58c6abdc8d21",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime or race edits.",
+  "vehicles": [
+    {
+      "candidateId": "jaguar-xe-s-2015-roster-candidate",
+      "identity": {
+        "year": 2015,
+        "make": "Jaguar",
+        "model": "XE S",
+        "trim": "UK launch supercharged3.0V6 RWD8AT,standard19inch wheels",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "2015 UK Jaguar XE S launch3.0superchargedV6 rear-wheel-drive eight-speed automatic; not2017US or later380PS/AWD",
+      "facts": {
+        "powerKw": 250.069575,
+        "torqueNm": 450,
+        "engineDisplacementL": 3.0,
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "gearCount": 8,
+        "aspiration": "Supercharged"
+      },
+      "sources": [
+        {
+          "url": "https://media.jlr.com/archive-jaguar/en-gb/news/2015/04/press-kit-new-jaguar-xe",
+          "publisher": "Jaguar Land Rover UK factory launch press kit27April2015",
+          "fields": [
+            "identity",
+            "powerKw",
+            "torqueNm",
+            "engineDisplacementL",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "aspiration"
+          ],
+          "access": "Full primarypresskit read2026-11-17. UKdeliveryJune2015;XE S340PS450Nm3.0superchargedV6/ZF8HP rear drive.340metricPS converted to250.069575kW,not340SAEhp. Standard19inchS wheels; dimensions,mass,tirewidths andRPM remain estimates. RangebestCd0.26 not treated as S-specific."
+        }
+      ],
+      "limits": [
+        "Allmass,dimensions,individualratios,tires,CG,torque-curve andchassisnumbers are explicit estimates. BrochurePDFdownloadunavailable; no exacttechnicaltablevalues claimedfromit.",
+        "Torque vectoring by braking, adaptive dampers, All Surface Progress Control and drive-mode logic are not reproduced. Genericopenrear differential andfixedsuspension; noactivecontrollerclaim. Factoryperformance targets do not certify simulatedresults.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Curled Dock 2015",
+      "id": "curled-dock-2015",
+      "simulationEstimates": {
+        "reverseRatio": 3.317,
+        "cgHeightM": 0.51,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.3,
+        "tireGrip": 1.04,
+        "spring": 0.54,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.86,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 170,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.52,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "fuelTankUSgal": 16.6,
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 4.9,
+        "curbKg": 1665,
+        "lengthM": 4.672,
+        "widthM": 1.85,
+        "heightM": 1.416,
+        "wheelbaseM": 2.835,
+        "trackFrontIn": 62.1,
+        "trackRearIn": 62.8,
+        "tireSize": [
+          225,
+          40,
+          19
+        ],
+        "frontTire": [
+          225,
+          40,
+          19
+        ],
+        "rearTire": [
+          255,
+          35,
+          19
+        ],
+        "powerRpm": 6500,
+        "torqueRpm": 3500,
+        "gearRatios": [
+          4.714,
+          3.143,
+          2.106,
+          1.667,
+          1.285,
+          1,
+          0.839,
+          0.667
+        ],
+        "finalDrive": 3.23,
+        "transmissionLabel": "8-speed torque-converter automatic (estimated calibration)",
+        "torqueConverterSlip": 0.05,
+        "torqueConverterMultiplication": 1.6
+      }
+    },
+    {
+      "candidateId": "alfa-romeo-giulietta-quadrifoglio-verde-2011-roster-candidate",
+      "identity": {
+        "year": 2011,
+        "make": "Alfa Romeo",
+        "model": "Giulietta Quadrifoglio Verde",
+        "trim": "France1750TBi235ch five-door6MT,standard225/45R17,Dynamic torque calibration",
+        "market": "France"
+      },
+      "referenceVehicle": "2011 France Alfa Romeo Giulietta Quadrifoglio Verde1750TBi five-door six-speed manual,standard17inch tires; Dynamic340Nm reference,notlaterTCT240CV",
+      "facts": {
+        "powerKw": 172.5,
+        "torqueNm": 340,
+        "engineDisplacementL": 1.742,
+        "powerRpm": 5500,
+        "torqueRpm": 1900,
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "tireSize": [
+          225,
+          45,
+          17
+        ],
+        "aspiration": "Turbocharged"
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/fr-fr/alfa-romeo/press/alfa-giulietta-quadrifoglio-verde",
+          "publisher": "Alfa Romeo France factory release2January2011",
+          "fields": [
+            "identity",
+            "transmission",
+            "gearCount",
+            "tireSize",
+            "aspiration"
+          ],
+          "access": "ExactFrenchQV235ch/C6356MT;standard225/45R17,18inchoptional. No TCThardwareborrowed. French235ch is metricrating."
+        },
+        {
+          "url": "https://www.media.stellantis.com/em-en/alfa-romeo/press/alfa-romeo-at-the-2011-bologna-motor-show",
+          "publisher": "Alfa Romeo factory2011Bologna pressrelease",
+          "fields": [
+            "torqueNm",
+            "torqueRpm"
+          ],
+          "access": "Same235HP1750TBiQV maximum340Nm@1900. Dynamic calibration; notNormal300Nm."
+        },
+        {
+          "url": "https://www.carmanualsonline.info/alfa-romeo-giulietta-2010-owner-handbook-in-english/?srch=compression+ratio",
+          "publisher": "OriginalAlfaGiulietta2010Englishfactoryhandbook3rdedition13April2010,mirrored scanp228",
+          "fields": [
+            "powerKw",
+            "engineDisplacementL",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm"
+          ],
+          "access": "Engine940A1000 table1742cc,172.5kW/235HP EEC@5500,Normal300Nm@4500/Dynamic340Nm@1900.2011factoryreleasecorroboratessame1750TBi235manualvariant; no later240TCTengine."
+        }
+      ],
+      "limits": [
+        "Runtime uses Dynamic torque reference only, no switchableDNA modes. ElectronicQ2 is brake-based, not mechanicalLSD: retainopenfrontdiff. No proprietaryDST/VDC/ASRmodelclaim.",
+        "Individualratios,mass,dimensions,CG,suspension,grip and performance remainestimates; body/drivetrain distinctfromalreadyrepresentedAlfa4C. NoSAE/PSconflation.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Broadleaf Dock 2011",
+      "id": "broadleaf-dock-2011",
+      "simulationEstimates": {
+        "reverseRatio": 4,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.32,
+        "tireGrip": 1.03,
+        "spring": 0.56,
+        "antiRollRear": 0.29,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.955,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.62,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "fuelTankUSgal": 15.85,
+        "topSpeedMph": 150,
+        "zeroToSixtySec": 6.6,
+        "curbKg": 1320,
+        "lengthM": 4.351,
+        "widthM": 1.798,
+        "heightM": 1.455,
+        "wheelbaseM": 2.634,
+        "trackFrontIn": 61.1,
+        "trackRearIn": 61.0,
+        "gearRatios": [
+          3.9,
+          2.118,
+          1.484,
+          1.116,
+          0.897,
+          0.767
+        ],
+        "finalDrive": 3.562
+      }
+    },
+    {
+      "candidateId": "mercedes-benz-slk-55-amg-2012-roster-candidate",
+      "identity": {
+        "year": 2012,
+        "make": "Mercedes-Benz",
+        "model": "SLK 55 AMG",
+        "trim": "R172 type172.475 standard7G-TRONIC, no Performance or Drivers Package",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2012 German Mercedes-Benz SLK55AMG R172 type172.475 M152.980 naturally aspirated5.5V8,standard seven-speed torque-converter automatic; not R171 or SL55",
+      "facts": {
+        "powerKw": 310,
+        "torqueNm": 540,
+        "powerRpm": 6800,
+        "torqueRpm": 4500,
+        "engineDisplacementL": 5.461,
+        "curbKg": 1610,
+        "transmission": "automatic",
+        "gearCount": 7,
+        "gearRatios": [
+          4.38,
+          2.86,
+          1.92,
+          1.37,
+          1,
+          0.82,
+          0.73
+        ],
+        "reverseRatio": 3.42,
+        "finalDrive": 2.82,
+        "lengthIn": 163.22834645669292,
+        "widthIn": 71.53543307086615,
+        "heightIn": 51.181102362204726,
+        "wheelbaseIn": 95.66929133858268,
+        "trackFrontIn": 60.98425196850394,
+        "trackRearIn": 61.69291338582678,
+        "dragCoefficient": 0.34,
+        "tireSize": [
+          235,
+          40,
+          18
+        ],
+        "frontTire": [
+          235,
+          40,
+          18
+        ],
+        "rearTire": [
+          255,
+          35,
+          18
+        ],
+        "fuelTankUSgal": 18.49204366507039,
+        "topSpeedMph": 155.3427980593335
+      },
+      "sources": [
+        {
+          "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/SLK-55-AMG-2011---2015.xhtml?oid=192007455",
+          "publisher": "Mercedes-Benz official public archive model technical record",
+          "fields": [
+            "identity",
+            "powerKw",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "curbKg",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "dragCoefficient",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "fuelTankUSgal",
+            "topSpeedMph"
+          ],
+          "access": "Read2026-11-17. Production09/2011\u201305/2015 and price10/2012 support selected year.310kW anchor avoids421/422 metricPS discrepancy. Archive mass exactly1610kg unladen under respectively valid calculation methods; do not call this DIN driver-excluded mass or subtract75kg as verified factory fact. OEM0\u20131004.6s is not0\u201360."
+        }
+      ],
+      "limits": [
+        "Source mass basis is generically qualified,1610kg retained directly; not treated as dry mass.",
+        "Cylinder shutoff, stop/start, ESP and AMG transmission modes simplified by existing runtime; no claim of reproducing cylinder-deactivation behavior.",
+        "Torque curve,CG/load split,suspension,brakebias,shift timing,limiter,grip,differential calibration and0\u201360 are estimates.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Wood Dock 2012",
+      "id": "wood-dock-2012",
+      "simulationEstimates": {
+        "cgHeightM": 0.45,
+        "groundClearanceM": 0.13,
+        "tireGrip": 1.06,
+        "spring": 0.56,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 200,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "aspiration": "Naturally aspirated",
+        "zeroToSixtySec": 4.4,
+        "drivetrain": "rwd",
+        "transmissionLabel": "7G-TRONIC AMG automatic (factory ratios; estimated converter)",
+        "torqueConverterSlip": 0.05,
+        "torqueConverterMultiplication": 1.5
+      }
+    },
+    {
+      "candidateId": "bmw-m635csi-1986-roster-candidate",
+      "identity": {
+        "year": 1986,
+        "make": "BMW",
+        "model": "M635CSi",
+        "trim": "European M88/3 non-catalyst5MT coupe",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "1986 UK BMW M635CSi E24 M88/3 non-catalyst3.453L naturally aspirated inline-six five-speed manual;not US S38 catalyst M6",
+      "facts": {
+        "powerKw": 210,
+        "torqueNm": 340,
+        "powerRpm": 6500,
+        "torqueRpm": 4500,
+        "engineDisplacementL": 3.453,
+        "curbKg": 1500,
+        "transmission": "manual",
+        "gearCount": 5,
+        "gearRatios": [
+          3.51,
+          2.08,
+          1.35,
+          1,
+          0.81
+        ],
+        "reverseRatio": 3.71,
+        "finalDrive": 3.73,
+        "lengthIn": 187.20472440944883,
+        "widthIn": 67.91338582677166,
+        "heightIn": 53.267716535433074,
+        "wheelbaseIn": 103.34645669291339,
+        "trackFrontIn": 56.2992125984252,
+        "trackRearIn": 57.637795275590555,
+        "topSpeedMph": 158.44965402052014
+      },
+      "sources": [
+        {
+          "url": "https://newsroom.bmwgroup.com/emea/download/72b7762c-6827-44cb-b899-b4e257f9abeb/20260824090620620-395.pdf",
+          "publisher": "BMW Group UK historic fleet1986M635CSi factory specification sheet",
+          "fields": [
+            "identity",
+            "engineDisplacementL",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm"
+          ],
+          "access": "Retrieved and text reviewed2026-11-17. Exact1986UK car validates M88/3453cc/340Nm and286hp wording."
+        },
+        {
+          "url": "https://newsroom.bmwgroup.com/emea/download/aa9d239a-59c1-4b89-9b87-85d76bd6cec6/20260902081242491-984.pdf",
+          "publisher": "BMW Corporate Communications Technical Data BMW M Cars1978\u20132005 (2012 collection of unmodified original factory documents)",
+          "fields": [
+            "powerKw",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "curbKg",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "topSpeedMph"
+          ],
+          "access": "Original May1984M635CSi spec sheet PDFpp6\u20137 visually reviewed; technical basis for1986same European M88 car, not a claim of newly measured1986 specification. Empty mass1500kg source wording; driver/fuel detailed basis unspecified.210kW preferred over ambiguous286bhp printed pairing. Tire220/55VR390 metric rim,not390inch nor standard16inch."
+        }
+      ],
+      "limits": [
+        "1986UK factory heritage record establishes year/engine; detailed chassis/gearing and1500kg empty mass from May1984European original technical sheet in same factory collection. No claim of exact1986options mass.",
+        "Original220/55VR390 metric tire requires nominal390mm rim (=15.3543307in) if schema supports fractionaldiameter; otherwise explicitly modeled substitute, never label standard16inch OEM.",
+        "Idle/redline/limiter,CG/loadsplit,drag,suspension,grip,brakebias,fuelcapacity,shift/differential calibration and0\u201360 are estimates. Factory0\u20131006.4sec not0\u201360.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Water Dock 1986",
+      "id": "water-dock-1986",
+      "simulationEstimates": {
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.39,
+        "tireGrip": 0.95,
+        "spring": 0.5,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 1.0,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 6900,
+        "revLimitRpm": 7000,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 18.5,
+        "zeroToSixtySec": 6.2,
+        "drivetrain": "rwd",
+        "tireSize": [
+          220,
+          55,
+          15.354330708661418
+        ],
+        "frontTire": [
+          220,
+          55,
+          15.354330708661418
+        ],
+        "rearTire": [
+          220,
+          55,
+          15.354330708661418
+        ],
+        "transmissionLabel": "5-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "dodge-durango-srt-2018-roster-candidate",
+      "identity": {
+        "year": 2018,
+        "make": "Dodge",
+        "model": "Durango SRT",
+        "trim": "standard6.4HEMI AWD8AT,six seats,standard all-season tires,no options",
+        "market": "United States"
+      },
+      "referenceVehicle": "2018 United States Dodge Durango SRT6.4HEMI AWD eight-speed TorqueFlite,standard295/45ZR20all-season tires;noHellcat orR/T",
+      "facts": {
+        "powerHp": 475,
+        "torqueLbFt": 470,
+        "powerRpm": 6000,
+        "torqueRpm": 4300,
+        "engineDisplacementL": 6.417,
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "gearCount": 8,
+        "gearRatios": [
+          4.71,
+          3.14,
+          2.11,
+          1.67,
+          1.29,
+          1,
+          0.84,
+          0.67
+        ],
+        "reverseRatio": 3.3,
+        "finalDrive": 3.7,
+        "revLimitRpm": 6400,
+        "lengthIn": 201.2,
+        "widthIn": 77.1,
+        "heightIn": 71.9,
+        "wheelbaseIn": 119.8,
+        "trackFrontIn": 64.4,
+        "trackRearIn": 64.7,
+        "groundClearanceM": 0.203,
+        "tireSize": [
+          295,
+          45,
+          20
+        ],
+        "fuelTankUSgal": 24.6,
+        "dragCoefficient": 0.375,
+        "frontWeightDistribution": 0.52,
+        "steeringRatio": 16.7,
+        "publishedEstimatedCurbLb": 5510,
+        "publishedEstimatedCurbKg": 2505,
+        "frontDifferentialAccel": 0,
+        "rearDifferentialAccel": 0
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/uploads/me/ME/2018/Dodge/Technical-sheet/1806_Dodge-Durango-SRT.pdf",
+          "publisher": "FCA North America2018DurangoSRT specification sheet;officialStellantisMiddleEastmirror",
+          "fields": [
+            "powerHp",
+            "torqueLbFt",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "revLimitRpm",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "groundClearanceM",
+            "tireSize",
+            "fuelTankUSgal",
+            "dragCoefficient",
+            "frontWeightDistribution",
+            "steeringRatio",
+            "publishedEstimatedCurbLb",
+            "publishedEstimatedCurbKg",
+            "frontDifferentialAccel",
+            "rearDifferentialAccel"
+          ],
+          "access": "Read2026-11-17. NorthAmerica document withEPA,SAEJ2723andUSemissions explicitly; publishedestimatedmass table p6 visuallychecked.5510lb vs2505kg rounded inconsistent:select5510lb,notconvert2505kgback. Reartrack64.7invs1634mm alsoinconsistent:selectinches. Standardopenaxles,MP3010single-speed40:60AutoAWD."
+        },
+        {
+          "url": "https://www.prnewswire.com/news-releases/dodge-announces-pricing-for-2018-dodge-durango-srt-americas-fastest-most-powerful-and-most-capable-three-row-suv-300483955.html",
+          "publisher": "FCA US LLC factory release6July2017",
+          "fields": [
+            "USmarketMY2018identity",
+            "standardAWD8AT",
+            "standardall-seasontires"
+          ],
+          "access": "ConfirmsUSMY2018production andoptions; not laterHellcat. Read2026-11-17."
+        }
+      ],
+      "limits": [
+        "Manufacturer labels5510lb curb weight an estimate, includingstandard equipment/fullfluids; kept asmodeled estimate,not measuredmass. No passengers/cargo/towload.",
+        "Use fixed60percentrearshare asAuto-mode approximation; do notclaimlivevariable transfercase modes,torquevectoring,adaptiveBilsteindamping,launchcontrol orFuelSaver cylinderdeactivation. Conventionalfront/rear differentials modeledopen.",
+        "Gearratios/finaldrive arefactory; convertercalibration,CG,overhangsplit,suspension,grip,shiftlogic,redlinebefore6400limiter andperformance remainestimates.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Bitter Dock 2018",
+      "id": "bitter-dock-2018",
+      "simulationEstimates": {
+        "cgHeightM": 0.76,
+        "tireGrip": 1.0,
+        "spring": 0.63,
+        "antiRollRear": 0.36,
+        "suspensionTravelM": 0.23,
+        "frontOverhangM": 0.97,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 190,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "redlineRpm": 6200,
+        "aspiration": "Naturally aspirated",
+        "topSpeedMph": 160,
+        "zeroToSixtySec": 4.5,
+        "curbLb": 5510,
+        "centerDifferentialBalance": 0.6,
+        "transmissionLabel": "TorqueFlite8-speed torque-converter automatic",
+        "torqueConverterSlip": 0.07,
+        "torqueConverterMultiplication": 1.8
+      }
+    },
+    {
+      "candidateId": "cadillac-cts-v-sport-wagon-2014-roster-candidate",
+      "identity": {
+        "year": 2014,
+        "make": "Cadillac",
+        "model": "CTS-V Wagon",
+        "trim": "USLSA6.2superchargedV8,RWDTR6060six-speedmanual,standardpainted19inch wheels,nooptions",
+        "market": "United States"
+      },
+      "referenceVehicle": "2014 United States Cadillac CTS-V Wagon6.2LSA superchargedV8 rear-drive six-speed manual;not CTS-VSedan or2005LS6",
+      "facts": {
+        "powerHp": 556,
+        "torqueLbFt": 551,
+        "powerRpm": 6100,
+        "torqueRpm": 3800,
+        "engineDisplacementL": 6.2,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "gearRatios": [
+          2.66,
+          1.78,
+          1.3,
+          1,
+          0.8,
+          0.63
+        ],
+        "reverseRatio": 2.9,
+        "finalDrive": 3.73,
+        "lengthIn": 192,
+        "widthIn": 72.5,
+        "heightIn": 58,
+        "wheelbaseIn": 113.4,
+        "trackFrontIn": 62,
+        "trackRearIn": 62.1,
+        "tireSize": [
+          255,
+          40,
+          19
+        ],
+        "frontTire": [
+          255,
+          40,
+          19
+        ],
+        "rearTire": [
+          285,
+          35,
+          19
+        ],
+        "fuelTankUSgal": 18,
+        "frontWeightDistribution": 0.51
+      },
+      "sources": [
+        {
+          "url": "https://www.cadillacvnet.com/tech-center/cts-v/2014/2014-ctsv-brochure.pdf",
+          "publisher": "Cadillac original2014USCTS-VSeries brochure05/13,mirroredCadillacVNet",
+          "fields": [
+            "powerHp",
+            "torqueLbFt",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "fuelTankUSgal",
+            "frontWeightDistribution"
+          ],
+          "access": "Originalfactorybrochure printedp40tiresandp48wagondata(PDF26)read/visuallychecked2026-11-17. Manualratios anddimensions arewagoncolumn,notcoupe/sedan. StandardPS2tires255/40R19front285/35R19rear.51/49distribution."
+        },
+        {
+          "url": "https://cadillacvnet.com/tech-center/cts-v/2013/2013-cadillac-cts-v-wagon-specifications.html",
+          "publisher": "GM Media2013CTS-VWagonfactoryspecification transcription",
+          "fields": [
+            "carryovermassandRPMestimatesonly"
+          ],
+          "access": "Prior-yearfactory1994kgmanual/2007kgautomatic,6200maxrpm. Usedonlyas2014carryoverestimate,notverified2014mass. Read2026-11-17."
+        }
+      ],
+      "limits": [
+        "1994kgcurb isexplicit2013factorymanual carryoverestimate; exact2014brochuredoesnotpublishmass. Do notclaim2013spec as2014verifiedfact.",
+        "Genericreardifflocking approximatesfactoryLSD; fixedspring/damping cannotreproduceactiveMagneticRideControl modes. No2016LT4or2005LS6specs mixed.",
+        "Gearratiosanddimensions areverified2014wagonbrochure; CG,clearance,grip,suspension,redline/revlimit andperformance remainestimates.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Great Dock 2014",
+      "id": "great-dock-2014",
+      "simulationEstimates": {
+        "cgHeightM": 0.55,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.36,
+        "tireGrip": 1.09,
+        "spring": 0.61,
+        "antiRollRear": 0.32,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.97,
+        "rearDifferentialAccel": 0.35,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6400,
+        "aspiration": "Supercharged",
+        "topSpeedMph": 186,
+        "zeroToSixtySec": 4.1,
+        "curbKg": 1994,
+        "transmissionLabel": "6-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "vauxhall-lotus-carlton-1990-roster-candidate",
+      "identity": {
+        "year": 1990,
+        "make": "Vauxhall",
+        "model": "Lotus Carlton",
+        "trim": "UK production 3.6 twin-turbo saloon, six-speed manual, catalyst",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "1990 United Kingdom Vauxhall Lotus Carlton production 3.6 twin-turbo RWD6MT; not1989prototype or ordinary CarltonGSi",
+      "facts": {
+        "powerKw": 281,
+        "publishedPowerHp": 377,
+        "powerRpm": 5200,
+        "torqueNm": 568,
+        "torqueRpm": 4200,
+        "engineDisplacementL": 3.615,
+        "transmission": "manual",
+        "gearCount": 6,
+        "lengthM": 4.768,
+        "widthM": 1.812,
+        "heightM": 1.435,
+        "wheelbaseM": 2.73,
+        "tireSize": [
+          235,
+          45,
+          17
+        ],
+        "frontTire": [
+          235,
+          45,
+          17
+        ],
+        "rearTire": [
+          265,
+          40,
+          17
+        ],
+        "fuelTankUSgal": 19.812903926861132,
+        "absEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://lotusomega.info/wp-content/uploads/199009_LotusCarlton.pdf",
+          "publisher": "Original Vauxhall UK Lotus Carlton production brochure, July1990 printing, archivedSeptember1990",
+          "fields": [
+            "powerKw",
+            "publishedPowerHp",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "fuelTankUSgal",
+            "absEnabled"
+          ],
+          "access": "Read original PDFtechnicalpages2-3 2026-11-17. Printed377hp(281kW)DIN and568Nm;choose281kWanchor. Six-speedZFmanual,closed-loopcatalysts,standardLSD,75Lfuel,staggered17inchtires. Not1989prototypebrochure."
+        },
+        {
+          "url": "https://www.media.stellantis.com/uk-en/vauxhall/press/vauxhall-lotus-carlton",
+          "publisher": "Vauxhall factory heritage release10April2020",
+          "fields": [
+            "identity",
+            "engineDisplacementL"
+          ],
+          "access": "Confirms30thanniversary1990production,UKCarlton,3615cc twin-turboinline6; no curb mass provided."
+        }
+      ],
+      "limits": [
+        "Curb mass1663kg is a provisional unladen simulation estimate, not verified by the selected factory brochures. Do not imply driver/fuel basis precisely known. Gearratios/finaldrive,tracks,CG,aero,grip,suspensionandperformancecalibrationareestimates.",
+        "Production closed-loop catalytic converter configuration; sourceprinted377hp/281kW rounding retained, not confused with377metricPS. GenericrearLSD modelslockingapproximately;automaticrearselflevellingnotimplemented.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Wild Carrot 1990",
+      "id": "wild-carrot-1990",
+      "simulationEstimates": {
+        "reverseRatio": 2.9,
+        "cgHeightM": 0.51,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.31,
+        "tireGrip": 1.02,
+        "spring": 0.55,
+        "antiRollRear": 0.29,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.99,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.55,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6400,
+        "aspiration": "Twin turbocharged",
+        "topSpeedMph": 176,
+        "zeroToSixtySec": 5.2,
+        "curbKg": 1663,
+        "drivetrain": "rwd",
+        "trackFrontIn": 58.7,
+        "trackRearIn": 60.0,
+        "gearRatios": [
+          2.68,
+          1.8,
+          1.29,
+          1,
+          0.75,
+          0.5
+        ],
+        "finalDrive": 3.45
+      }
+    },
+    {
+      "candidateId": "vauxhall-astra-vxr-2012-roster-candidate",
+      "identity": {
+        "year": 2012,
+        "make": "Vauxhall",
+        "model": "Astra VXR",
+        "trim": "UK GTC-bodied2.0turbo six-speed manual, standard19inch wheels, noAeroPack",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "2012 UK Vauxhall Astra VXR 2.0turbo front-drive six-speed manual, standard245/40R19 wheels, nooptionalAeroPack",
+      "facts": {
+        "powerKw": 205.93965,
+        "publishedPowerPS": 280,
+        "torqueNm": 400,
+        "engineDisplacementL": 2.0,
+        "transmission": "manual",
+        "gearCount": 6,
+        "tireSize": [
+          245,
+          40,
+          19
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://automobilisto.de/uk/archive/vauxhall/astra/vxr-2012-uk.pdf",
+          "publisher": "Original Vauxhall UK Astra VXR brochure, February2012 printing, mirroredarchive",
+          "fields": [
+            "identity",
+            "powerKw",
+            "publishedPowerPS",
+            "torqueNm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "tireSize"
+          ],
+          "access": "FactoryPDF8pages; technicalpage7 prints280PS,400Nm,2.0i16Vturbo,6MT,standard245/40R19. PowerconvertedPS*kWfactor0.73549875;not280SAEhp. OptionalAeroPack20inch245/35R20excluded. ImprintFebruary2012."
+        }
+      ],
+      "limits": [
+        "Factorybrochuredoesnotstatecurbmass,power/torqueRPM,ratiosorfulldimensions;allretainedassimulationsestimates.Mass1475kgprovisionalunladenestimatewithunverifieddriver/fuelbasis.",
+        "MechanicalmultiplatefrontLSD/HiPerStrut/Wattslinkarefactorydocumented;genericfrontlockingandfixedsuspensionapproximatehardware.FlexRideadaptivecontrolnotimplemented.NooptionalAeroPackor20inchwheels.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Sea Carrot 2012",
+      "id": "sea-carrot-2012",
+      "simulationEstimates": {
+        "reverseRatio": 3.54,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.08,
+        "spring": 0.62,
+        "antiRollRear": 0.32,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.96,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.32,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.62,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "aspiration": "Turbocharged",
+        "fuelTankUSgal": 14.8,
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 5.9,
+        "curbKg": 1475,
+        "drivetrain": "fwd",
+        "powerRpm": 5500,
+        "torqueRpm": 2400,
+        "lengthM": 4.466,
+        "widthM": 1.84,
+        "heightM": 1.482,
+        "wheelbaseM": 2.695,
+        "trackFrontIn": 62.5,
+        "trackRearIn": 62.4,
+        "gearRatios": [
+          3.77,
+          2.04,
+          1.32,
+          0.95,
+          0.76,
+          0.62
+        ],
+        "finalDrive": 3.55
+      }
+    },
+    {
+      "candidateId": "renault-m-gane-r26-r-2008-roster-candidate",
+      "identity": {
+        "year": 2008,
+        "make": "Renault",
+        "model": "Megane R26.R",
+        "trim": "French-market two-seat launch road car,6MT,standardMichelinPS2tires,nooptionalrollcage/titaniumexhaust",
+        "market": "France"
+      },
+      "referenceVehicle": "2008 France Renault Megane R26.R 2.0turbo two-seat road car six-speed manual with mechanicalfrontLSD; notF1TeamR26 orlaterMeganeIII",
+      "facts": {
+        "powerKw": 169,
+        "publishedPowerPS": 230,
+        "torqueNm": 310,
+        "engineDisplacementL": 2.0,
+        "transmission": "manual",
+        "gearCount": 6,
+        "drivetrain": "fwd"
+      },
+      "sources": [
+        {
+          "url": "https://media.alpinecars.com/megane-r26r-the-new-flagship-of-the-renault-sport-technologies-range/?lang=eng",
+          "publisher": "Renault Sport factory press release22July2008, retainedAlpinemediaarchive",
+          "fields": [
+            "identity",
+            "123kgweightreduction",
+            "specificsuspension",
+            "limitedslipdifferential"
+          ],
+          "access": "OfficialpageconfirmsOctober2008sale/Franceprice34900EUR,123kglighterthanF1TeamR26,sameenginegearboxandLSD. Attachmentnotretrieved;numericengineanchorsfromclearlyattributedfullpressreprint."
+        },
+        {
+          "url": "https://www.ultimatecarpage.com/car/3794/Renault-Megane-Sport-R26.R.html",
+          "publisher": "Renault factory press release reprinted28July2008, explicitlyCompanypressrelease",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "torqueNm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "drivetrain"
+          ],
+          "access": "Fullmanufacturerpresscopycorrespondstofficialopeninganddetails.169kW230metricHP,310Nm,2.0turbo,manualND0*020sixspeed. FrontLSD33percenttransfernotdirectlyequatedtoagenericlockinginput. Nooptionalrollcage/titaniumexhaustincluded."
+        }
+      ],
+      "limits": [
+        "1230kg is provisional unladen simulation mass; primaryselectedtextconfirms123kgweightreductionbutdoesnotestablishexactmassbasis. Dimensions,RPManchors,gear/finalratios,tires,CG,aeroandgripremainestimates.",
+        "Standardroadtwo-seatconfiguration;optionalToyoR888/rollcage/titaniumexhaustexcluded. Provisional235/40R18Michelintiresnotpromotedtosourcedfact. GenericfrontLSDandfixedspring/damping approximatefactoryhardware,notmeasuredcurve.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Bur Parsley 2008",
+      "id": "bur-parsley-2008",
+      "simulationEstimates": {
+        "reverseRatio": 3.18,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.07,
+        "spring": 0.64,
+        "antiRollRear": 0.33,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.88,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.3,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.64,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "aspiration": "Turbocharged",
+        "fuelTankUSgal": 15.9,
+        "topSpeedMph": 147,
+        "zeroToSixtySec": 5.8,
+        "curbKg": 1230,
+        "powerRpm": 5500,
+        "torqueRpm": 3000,
+        "lengthM": 4.228,
+        "widthM": 1.777,
+        "heightM": 1.437,
+        "wheelbaseM": 2.625,
+        "trackFrontIn": 59.8,
+        "trackRearIn": 59.6,
+        "tireSize": [
+          235,
+          40,
+          18
+        ],
+        "gearRatios": [
+          3.36,
+          1.95,
+          1.39,
+          1.03,
+          0.82,
+          0.68
+        ],
+        "finalDrive": 4.067
+      }
+    },
+    {
+      "candidateId": "mitsubishi-lancer-evolution-x-gsr-2008-roster-candidate",
+      "identity": {
+        "year": 2008,
+        "make": "Mitsubishi",
+        "model": "Lancer Evolution X",
+        "trim": "GSR 5MT, standard equipment",
+        "market": "United States"
+      },
+      "referenceVehicle": "2008 US Mitsubishi Lancer Evolution X GSR 4B11T five-speed manual; no Sight, Sound and Spoiler Package; not MR TC-SST",
+      "facts": {
+        "powerHp": 291,
+        "torqueLbFt": 300,
+        "powerRpm": 6500,
+        "torqueRpm": 4400,
+        "engineDisplacementL": 1.998,
+        "drivetrain": "awd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbLb": 3517,
+        "tireSize": [
+          245,
+          40,
+          18
+        ],
+        "lengthIn": 177,
+        "widthIn": 71.3,
+        "heightIn": 58.3,
+        "wheelbaseIn": 104.3,
+        "trackFrontIn": 60.8,
+        "trackRearIn": 60.8,
+        "fuelTankUSgal": 14.5,
+        "absEnabled": true
+      },
+      "limits": [
+        "Distinct 4B11T Evolution X generation, not old-branch Aconite Evolution IX 4G63 or Hawkbit Group A Evolution VI. Exact-reference/alias audit of current catalog found no X GSR.",
+        "Existing generic AWD can approximate mechanical drive only: no reproduction of ACD active center control, AYC yaw torque vectoring, ASC or Tarmac/Gravel/Snow modes. Fixed center share, differential lock coefficients and generic traction intervention below are estimates, not factory S-AWC logic.",
+        "GSR uses standard Enkei wheels, small rear spoiler and ordinary sport suspension; do not borrow MR BBS, Bilstein/Eibach or optional large wing. Gear ratios, final drive, redline and performance below remain unverified modeling estimates.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Mitsubishi/Lancer/Mitsubishi_US%20LancerEvolution_2008.pdf",
+          "publisher": "Mitsubishi Motors North America original 2008 US brochure NATLBRO-08-005, mirrored by Auto-Brochures",
+          "fields": [
+            "identity",
+            "powerHp",
+            "torqueLbFt",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbLb",
+            "tireSize",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "fuelTankUSgal",
+            "absEnabled"
+          ],
+          "access": "Read 2026-11-17. PDF page 12 (zero-based 11) factory specifications separate GSR 3517 lb/5MT/Enkei from MR 3594 lb/TC-SST/BBS. Page 6 explains S-AWC; equipment table distinguishes optional large spoiler."
+        }
+      ],
+      "name": "Cow Parsley 2008",
+      "id": "cow-parsley-2008",
+      "simulationEstimates": {
+        "reverseRatio": 3.416,
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.35,
+        "tireGrip": 1.08,
+        "spring": 0.61,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.93,
+        "rearDifferentialAccel": 0.4,
+        "frontDifferentialAccel": 0.25,
+        "aeroFront": 0.02,
+        "aeroRear": 0.04,
+        "shiftTimeMs": 240,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "aspiration": "Turbocharged",
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 4.9,
+        "gearRatios": [
+          2.857,
+          1.95,
+          1.444,
+          1.096,
+          0.761
+        ],
+        "finalDrive": 4.687,
+        "centerDifferentialBalance": 0.5
+      }
+    },
+    {
+      "candidateId": "toyota-celica-gt-four-st205-1994-roster-candidate",
+      "identity": {
+        "year": 1994,
+        "make": "Toyota",
+        "model": "Celica GT-Four ST205",
+        "trim": "UK production road GT-Four 5MT",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "1994 UK Toyota Celica GT-Four ST205 3S-GTE E154 five-speed manual production road car, May 1994 UK launch specification",
+      "facts": {
+        "powerHp": 239,
+        "torqueLbFt": 223,
+        "powerRpm": 6000,
+        "torqueRpm": 4000,
+        "engineDisplacementL": 1.998,
+        "drivetrain": "awd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 1400,
+        "lengthM": 4.42,
+        "widthM": 1.75,
+        "heightM": 1.305,
+        "wheelbaseM": 2.54,
+        "trackFrontIn": 59.4488188976378,
+        "trackRearIn": 58.66141732283465,
+        "groundClearanceM": 0.135,
+        "dragCoefficient": 0.34,
+        "frontWeightDistribution": 0.61,
+        "fuelTankUSgal": 17.963699560354094,
+        "gearRatios": [
+          3.384,
+          1.913,
+          1.258,
+          0.918,
+          0.731
+        ],
+        "reverseRatio": 3.545,
+        "finalDrive": 4.285,
+        "tireSize": [
+          215,
+          50,
+          16
+        ],
+        "absEnabled": true
+      },
+      "limits": [
+        "Distinct production ST205: current Moonpetal GT is FWD 2000 GT-S, Melilot is Kankkunen ST185 Group A and Rockrose is Millen Unlimited prototype. None represents this road car.",
+        "Factory UK specification gives 239 bhp, not Japanese 255 PS. Factory technical page explicitly prints 2540 mm wheelbase and 61/39 curb weight distribution; do not silently replace with commonly repeated 2535 mm.",
+        "Viscous center coupling and Torsen rear differential represented by generic fixed-share AWD and estimated locking behavior; no WRC anti-lag, water injection or rally configuration implied.",
+        "Factory technical performance table says 5.9 sec 0-60 while archive summary says 6.1 sec; performance is a simulation estimate, not guaranteed historical reproduction. Redline, limiter, CG, native spring/roll parameters and tire grip remain estimates.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "sources": [
+        {
+          "url": "https://media.toyota.co.uk/wp-content/uploads/sites/5/pdf/Celica-Gen6-GT-Four-UK-launch-pack.pdf",
+          "publisher": "Toyota (GB) original UK Celica GT-Four launch pack, technical specifications dated 31 May 1994",
+          "fields": [
+            "identity",
+            "powerHp",
+            "torqueLbFt",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "groundClearanceM",
+            "dragCoefficient",
+            "frontWeightDistribution",
+            "fuelTankUSgal",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "tireSize",
+            "absEnabled"
+          ],
+          "access": "Read 2026-11-17. Original scanned PDF pages 31-34: dimensions/mass/distribution, engine/E154 ratios/final, suspension/brakes/215-50R16 tires and performance. Pages 31 and 32 visually checked against OCR; front/rear springs 32/27 N/mm are factory facts but native game coefficients remain estimates."
+        },
+        {
+          "url": "https://media.toyota.co.uk/vehicles/celica-gt-four-archive-1994/",
+          "publisher": "Toyota UK official model archive",
+          "fields": [
+            "identity"
+          ],
+          "access": "Official 1994 archive associates original launch pack with UK ST205 road car; summary performance differs slightly from attached dated technical table."
+        }
+      ],
+      "name": "Stone Parsley 1994",
+      "id": "stone-parsley-1994",
+      "simulationEstimates": {
+        "cgHeightM": 0.5,
+        "tireGrip": 1.03,
+        "spring": 0.57,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.94,
+        "rearDifferentialAccel": 0.35,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0.02,
+        "aeroRear": 0.04,
+        "shiftTimeMs": 260,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "aspiration": "Turbocharged",
+        "topSpeedMph": 153,
+        "zeroToSixtySec": 5.9,
+        "centerDifferentialBalance": 0.5,
+        "transmissionLabel": "5-speed manual (factory ratios; estimated shift calibration)"
+      }
+    }
+  ],
+  "deferred": []
+}

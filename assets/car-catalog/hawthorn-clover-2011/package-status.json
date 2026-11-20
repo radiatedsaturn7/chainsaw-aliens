@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "hawthorn-clover-2011",
+  "name": "Hawthorn Clover 2011",
+  "stableCarId": "saved-car:Hawthorn Clover 2011",
+  "referenceVehicle": "2011 United States BMW X5 E70 xDrive35d twin-turbo diesel inline-six six-speed automatic, standard255/55R18 wheels; not gasoline35i/50i eight-speed or MY2012 carryover",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "486782c24de9b1ee1f139df06abec502cbbfbc5cbb9e7c119eb845d282303c59",
+    "dashboard": "1907f34bbfb448579ce9479328b342d7be631019dcd066e0ac13b303235209f4",
+    "tires": "86ddc4c5a975bd3cdc1f73984bf4823cc2fb4bd7d0703a4d2c3c1e7e55106a5e"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

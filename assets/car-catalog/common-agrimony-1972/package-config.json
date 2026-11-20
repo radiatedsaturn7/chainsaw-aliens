@@ -1,0 +1,77 @@
+{
+  "id": "common-agrimony-1972",
+  "name": "Common Agrimony 1972",
+  "stableCarId": "saved-car:Common Agrimony 1972",
+  "runtimeId": "saved-car:Common Agrimony 1972",
+  "candidateId": "mazda-cosmo-110s-series-ii-1972-roster-candidate",
+  "referenceVehicle": "1972 Japan Mazda Cosmo Sport 110S Series II L10B JapanRHD two-seat fixedroof 10A982cc naturallyaspirated twinrotor RWD modeled5MT, finalproductionyear; not1967L10A orlaterCosmoRX5",
+  "identity": {
+    "year": 1972,
+    "make": "Mazda",
+    "model": "Cosmo Sport 110S Series II",
+    "trim": "L10B JapanRHD two-seat fixedroof 10A982cc naturallyaspirated twinrotor RWD modeled5MT, finalproductionyear; not1967L10A orlaterCosmoRX5",
+    "market": "Japan"
+  },
+  "bodyClass": "two-door two-seat sports coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1309,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      1507,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.mazda.com/en/about/history/1920-1979/",
+      "fields": [
+        "engineDisplacementL",
+        "period128PS second-series reference",
+        "two-seat body"
+      ]
+    },
+    {
+      "url": "https://toyota-automobile-museum.jp/en/archives/car-database/detail.html",
+      "fields": [
+        "same-series reference dimensions",
+        "same-series reference vehicle mass",
+        "publishedPeriodPowerPS",
+        "publishedPeriodPowerRpm"
+      ]
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1688804/000168880419000005/253g2.htm",
+      "fields": [
+        "1972SeriesII existence",
+        "5MT corroboration"
+      ]
+    }
+  ]
+}

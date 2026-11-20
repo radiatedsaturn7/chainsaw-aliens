@@ -1,0 +1,163 @@
+{
+  "id": "goldentuft-1993",
+  "name": "Goldentuft 1993",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "81e5d93b9e882c96c1d421e80aab11bfc9d467aee57b31ea40ec3190c66c354f",
+  "sourceDirectory": "assets/car-catalog/goldentuft-1993",
+  "sourceHashes": {
+    "body": "b8d552373b2b30d30694372233971ee7a374dff89ae7a1fe5c81c243b2d194e1",
+    "dashboard": "3f9df6d7d7d840892ac8eb15ddfd80a9e08f1001af370e71cd7a13e8cfc78dcf",
+    "tires": "0ce9a4cbb716154e932faf032dba5795dccedad6f41eb7d3de7f513520627813"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 88.7,
+        "y": 333.51,
+        "radius": 46.12
+      },
+      {
+        "wheel": "fr",
+        "x": 331.74,
+        "y": 333.51,
+        "radius": 46.12
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 647.51,
+        "y": 321.09,
+        "radius": 46.12
+      },
+      {
+        "wheel": "rr",
+        "x": 821.36,
+        "y": 274.97,
+        "radius": 35.48
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 938.45,
+        "y": 730.89,
+        "radius": 46.12
+      },
+      {
+        "wheel": "rr",
+        "x": 1232.93,
+        "y": 727.34,
+        "radius": 46.12
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 436.4,
+        "y": 727.34,
+        "radius": 35.48
+      },
+      {
+        "wheel": "rr",
+        "x": 601.39,
+        "y": 739.76,
+        "radius": 46.12
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 90.47,
+        "y": 752.18,
+        "radius": 42.58
+      },
+      {
+        "wheel": "rl",
+        "x": 331.74,
+        "y": 752.18,
+        "radius": 42.58
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1564.67,
+        "y": 312.22,
+        "radius": 46.12
+      },
+      {
+        "wheel": "fl",
+        "x": 1729.65,
+        "y": 289.16,
+        "radius": 35.48
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 957.96,
+        "y": 294.48,
+        "radius": 46.12
+      },
+      {
+        "wheel": "fl",
+        "x": 1259.54,
+        "y": 296.26,
+        "radius": 44.35
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1365.98,
+        "y": 718.47,
+        "radius": 37.25
+      },
+      {
+        "wheel": "fl",
+        "x": 1532.74,
+        "y": 757.5,
+        "radius": 46.12
+      }
+    ]
+  },
+  "wheelFit": "cover",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      188.39,
+      495.75,
+      515.58,
+      142.78
+    ],
+    "wheel": [
+      474.12,
+      760.25,
+      406.52
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#ffe1ab",
+    "viewportWheelScale": 2.05,
+    "gaugeBackground": "#101010"
+  },
+  "steeringWheelSource": {
+    "artRef": "steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementNotes": "Measured from original PNG via 1000px gridded preview. Direct front/rear wheel centers estimated from silhouette edge and side-view radius where no explicit arch cutout exists. Engine static review required; road/motion deferred."
+}

@@ -1,0 +1,208 @@
+{
+  "schemaVersion": 1,
+  "base": "2d0f6bf59de5564c330aa4ac886f657250ffeb5f",
+  "scope": "Two separate Infiniti coupe generations occupying existing slots; no existing Infiniti runtime provenance found.",
+  "vehicles": [
+    {
+      "candidateId": "infiniti-g35-coupe-2003-roster-candidate",
+      "id": "corn-gromwell-2003",
+      "name": "Corn Gromwell 2003",
+      "identity": {
+        "year": 2003,
+        "make": "Infiniti",
+        "model": "G35 Sport Coupe",
+        "trim": "US rear-drive coupe 6MT, not sedan or later Rev-Up",
+        "market": "United States"
+      },
+      "referenceVehicle": "2003 US Infiniti G35 Sport Coupe, US rear-drive coupe 6MT, not sedan or later Rev-Up",
+      "facts": {
+        "powerHp": 280,
+        "torqueLbFt": 270,
+        "engineDisplacementL": 3.5,
+        "gearCount": 6,
+        "transmission": "manual"
+      },
+      "simulationEstimates": {
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "reverseRatio": 3.4,
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.135,
+        "dragCoefficient": 0.3,
+        "tireGrip": 0.98,
+        "spring": 0.52,
+        "antiRollRear": 0.26,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.86,
+        "rearDifferentialAccel": 0.16,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 220,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "aspiration": "Naturally aspirated",
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 6600,
+        "revLimitRpm": 6800,
+        "fuelTankUSgal": 20,
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 6,
+        "curbKg": 1555,
+        "lengthM": 4.629,
+        "widthM": 1.816,
+        "heightM": 1.392,
+        "wheelbaseM": 2.85,
+        "trackFrontIn": 60.6,
+        "trackRearIn": 61,
+        "tireSize": [
+          225,
+          45,
+          18
+        ],
+        "frontTire": [
+          225,
+          45,
+          18
+        ],
+        "rearTire": [
+          245,
+          45,
+          18
+        ],
+        "gearRatios": [
+          3.79,
+          2.32,
+          1.62,
+          1.27,
+          1,
+          0.79
+        ],
+        "finalDrive": 3.54,
+        "powerRpm": 6200,
+        "torqueRpm": 4800
+      },
+      "sources": [
+        {
+          "url": "https://usa.infinitinews.com/en-US/releases/release-e164b8ab1ef34b4d96170c9a773106c5-2003-infiniti-g-coupe-press-kit-3",
+          "publisher": "Infiniti USA Newsroom",
+          "fields": [
+            "powerHp",
+            "torqueLbFt",
+            "engineDisplacementL",
+            "gearCount",
+            "transmission"
+          ],
+          "access": "Official factory indexed excerpts read2026-11-17 confirm280hp270lb-ft3.5L and6MT option. Full page HTTP403; do not claim full specification-table access. Factory global launch release020329-01 corroborates coupe identity and6MT, but its preliminary275-plus horsepower is not used as final output."
+        }
+      ],
+      "limits": [
+        "Mass, dimensions, ratios, axle ratio, tires and all parameters outside verifiedFacts are explicit estimates, not factory-table values. No as-tested or option-specific weight claim.",
+        "Generic limited-slip parameter approximates traction only, not the production viscous differential. Torque interpolation, suspension, steering/brake calibration and performance are estimates. No proprietary stability-control emulation.",
+        "Shared RTG-001 graphics only, not a replica cockpit. No new original art or independently verified desktop/touch drive."
+      ]
+    },
+    {
+      "candidateId": "infiniti-ipl-g-coupe-2012-roster-candidate",
+      "id": "water-avens-2012",
+      "name": "Water Avens 2012",
+      "identity": {
+        "year": 2012,
+        "make": "Infiniti",
+        "model": "IPL G Coupe",
+        "trim": "US rear-drive 6MT, not standard G37, convertible or seven-speed automatic",
+        "market": "United States"
+      },
+      "referenceVehicle": "2012 US Infiniti IPL G Coupe, US rear-drive 6MT, not standard G37, convertible or seven-speed automatic",
+      "facts": {
+        "powerHp": 348,
+        "powerRpm": 7400,
+        "torqueLbFt": 276,
+        "torqueRpm": 5200,
+        "engineDisplacementL": 3.7,
+        "gearCount": 6,
+        "transmission": "manual"
+      },
+      "simulationEstimates": {
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "reverseRatio": 3.4,
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.135,
+        "dragCoefficient": 0.3,
+        "tireGrip": 1.02,
+        "spring": 0.59,
+        "antiRollRear": 0.26,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.86,
+        "rearDifferentialAccel": 0.16,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 220,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "aspiration": "Naturally aspirated",
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 7500,
+        "revLimitRpm": 7700,
+        "fuelTankUSgal": 20,
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 5.5,
+        "curbKg": 1715,
+        "lengthM": 4.665,
+        "widthM": 1.824,
+        "heightM": 1.395,
+        "wheelbaseM": 2.85,
+        "trackFrontIn": 60.8,
+        "trackRearIn": 61.4,
+        "tireSize": [
+          225,
+          45,
+          19
+        ],
+        "frontTire": [
+          225,
+          45,
+          19
+        ],
+        "rearTire": [
+          245,
+          40,
+          19
+        ],
+        "gearRatios": [
+          3.79,
+          2.32,
+          1.62,
+          1.27,
+          1,
+          0.79
+        ],
+        "finalDrive": 3.69
+      },
+      "sources": [
+        {
+          "url": "https://usa.infinitinews.com/en-US/releases/release-161fd67ea0a24761af8fe0a835af4295-2012-ipl-g-coupe-press-kit",
+          "publisher": "Infiniti USA Newsroom",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "gearCount",
+            "transmission"
+          ],
+          "access": "Official indexed factory press-kit excerpts read2026-11-17 confirm3.7L348hp@7400 and276lb-ft@5200 and separate6MT model. Full page HTTP403; no complete mass/gearing table claimed."
+        }
+      ],
+      "limits": [
+        "Mass, dimensions, ratios, axle ratio, tires and all parameters outside verifiedFacts are explicit estimates, not factory-table values. No as-tested or option-specific weight claim.",
+        "Generic limited-slip parameter approximates traction only, not the production viscous differential. Torque interpolation, suspension, steering/brake calibration and performance are estimates. No proprietary stability-control emulation.",
+        "Shared RTG-001 graphics only, not a replica cockpit. No new original art or independently verified desktop/touch drive."
+      ]
+    }
+  ],
+  "deferred": []
+}

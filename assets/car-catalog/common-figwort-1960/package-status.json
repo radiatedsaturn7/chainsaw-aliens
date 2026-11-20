@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "common-figwort-1960",
+  "name": "Common Figwort 1960",
+  "stableCarId": "saved-car:Common Figwort 1960",
+  "referenceVehicle": "1960 Aston Martin DB4 GT Zagato, original1960introduction standardtwo-seat3.7twin-plugstraight-six4MT; notDP207/209lightweight,SanctionII/IIIorcontinuation",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "0123b2a37eccbeafc0fac4f0df67eac5f2195c25cacca3064c435c1b4ed2ef34",
+    "dashboard": "a465686641a8e561d0ff4f05d66b14a7ddffeb5ca0895013d3e54d9ae143fb10",
+    "tires": "2cb09c866860bfa6345d84a85e82040000db5f6593b1ea51071a51729ef9c59a"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

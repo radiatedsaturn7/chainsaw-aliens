@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "starflower-20-2024",
+  "name": "Starflower 20 2024",
+  "stableCarId": "saved-car:Starflower 20 2024",
+  "referenceVehicle": "2024 US Subaru Impreza Base, standard equipment, five-door hatchback, AWD Lineartronic CVT, no optional moonroof package",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "7b608b41a30bc631d2d4dfe62ef114cad4855c970b0c9de893fdc41eb718e1dd",
+    "dashboard": "725bdf61d5881a3e8dfc603260ca96b491bde3ed6ccfd09d19d84f56a88f7409",
+    "tires": "67db37c7b7b383c9ebcfe9a5312246d2379ee056d32e167811873e3319ac8403"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

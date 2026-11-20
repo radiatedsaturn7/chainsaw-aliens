@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "rock-trefoil-2013",
+  "name": "Rock Trefoil 2013",
+  "stableCarId": "saved-car:Rock Trefoil 2013",
+  "referenceVehicle": "2013 Renault Sc\u00e9nic Authentique1.6 16V110, Germany May2013 short-body five-seat faceliftScenicIII naturallyaspiratedpetrol six-speedmanual; notGrand,Xmod,ENERGYturbo,CVT orEDC",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "rock-trefoil-2013",
+  "sourceHashes": {
+    "body": "09616bfee6f83d2f36801d7794fe9c19146d6e441fcf52ef1b5e8b41a0618e3c",
+    "dashboard": "0aff8538687214ef44be94d855991239f25b2c310e6c1f92643d1f24b2cb4fe5",
+    "tires": "d36935ad7cb5650fa3f54f6f71e07d530077f5217c289797b157da2fbcb973af"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

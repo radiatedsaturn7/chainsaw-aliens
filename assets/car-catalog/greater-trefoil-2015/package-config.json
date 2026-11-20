@@ -1,0 +1,70 @@
+{
+  "id": "greater-trefoil-2015",
+  "name": "Greater Trefoil 2015",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      426,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://media.jlr.com/range-rover/en-us/news/2014/08/2015-range-rover-sport-svr",
+      "fields": [
+        "identity",
+        "powerKw",
+        "publishedPowerHp",
+        "torqueNm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "drivetrain",
+        "publishedWeightKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "tireSize",
+        "frontTire",
+        "rearTire",
+        "dragCoefficient",
+        "fuelTankUSgal",
+        "aspiration",
+        "zeroToSixtySec",
+        "topSpeedMph"
+      ]
+    },
+    {
+      "url": "https://media.jlr.com/range-rover/en-us/news/2014/08/2015-range-rover-sport-svr",
+      "fields": [
+        "source-art-repair-reference"
+      ]
+    }
+  ]
+}

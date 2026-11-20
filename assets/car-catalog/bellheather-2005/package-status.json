@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bellheather-2005",
+  "name": "Bellheather 2005",
+  "stableCarId": "saved-car:Bellheather 2005",
+  "referenceVehicle": "2005 European BMW M3 E46 standard coupe, S54 six-speed manual; not CSL or SMG",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "1ce0fafead8a729be3998ac307054c04fa7d3b224457ecd65dbb09e31e3c4569",
+    "dashboard": "264f6a0c82a3ff87a722b546c1045369a2b18c015707c074d293319d6838443e",
+    "tires": "0c87e99d5c839b802e2dffae09c2d4259a91c39eb2225e6f7661a177f16800a7"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

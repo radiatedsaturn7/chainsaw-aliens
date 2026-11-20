@@ -14,6 +14,8 @@ export function normalizePlaceholderRecord(r){
  if(!Array.isArray(f.gearRatios)||f.gearRatios.length!==f.gearCount||f.gearRatios.some((g,i,a)=>!Number.isFinite(g)||g<=0||i>0&&g>=a[i-1]))throw Error('Ratios must match count and descend');
  if(!Array.isArray(f.tireSize)||f.tireSize.length!==3||f.tireSize.some(x=>!Number.isFinite(x)||x<=0))throw Error('Tire size required');
  if(!(f.frontWeightDistribution>0&&f.frontWeightDistribution<1)||f.revLimitRpm<f.redlineRpm)throw Error('Invalid load/RPM limits');
+ if(f.centerDifferentialBalance!=null&&(!Number.isFinite(f.centerDifferentialBalance)||f.centerDifferentialBalance<=0||f.centerDifferentialBalance>=1))throw Error('Invalid rear torque share');
+ if(f.engineCurveTorquePoints!=null){const p=f.engineCurveTorquePoints;if(!Array.isArray(p)||p.length<2||p.some((x,i)=>!Number.isFinite(x.rpm)||x.rpm<750||x.rpm>f.revLimitRpm||!Number.isFinite(x.torqueLbFt)||x.torqueLbFt<=0||i>0&&x.rpm<=p[i-1].rpm))throw Error('Invalid estimated torque curve');}
  return f;
 }
 export function validatePlaceholderBatch(records,backlog,existing=[]){const ids=new Set,names=new Set,candidates=new Set;for(const r of records){normalizePlaceholderRecord(r);if(ids.has(r.id)||names.has(r.name)||candidates.has(r.candidateId))throw Error('Duplicate identity in batch');ids.add(r.id);names.add(r.name);candidates.add(r.candidateId);if(!backlog.some(c=>c.id===r.candidateId))throw Error('Candidate must occupy an existing slot');if(existing.some(c=>c.id===r.id||c.name===r.name||c.candidateId===r.candidateId))throw Error('Refusing existing entry overwrite/duplicate');}return records.map(normalizePlaceholderRecord);}

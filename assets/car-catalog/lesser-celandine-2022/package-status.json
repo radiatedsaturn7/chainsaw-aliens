@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "lesser-celandine-2022",
+  "name": "Lesser Celandine 2022",
+  "stableCarId": "saved-car:Lesser Celandine 2022",
+  "referenceVehicle": "2022 US Cadillac CT4-V Blackwing, standard US six-speed manual sedan; no optional carbon-fiber aero or carbon-ceramic brake package",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "lesser-celandine-2022",
+  "sourceHashes": {
+    "body": "71f71704bc009ac69721e33cd1cbf92d16237fe44395e0faed7502f9f3cb29f4",
+    "dashboard": "e22ec87262db0c9799eddd207b8cca03747788f7f89f494c0e96dc2ef8c6a0bb",
+    "tires": "fea09b7e61f8ecba20bfc69fb328850db38da5bf6a6d720993e62e6fd834d27f"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

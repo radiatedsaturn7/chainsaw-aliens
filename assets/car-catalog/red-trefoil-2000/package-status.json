@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "red-trefoil-2000",
+  "name": "Red Trefoil 2000",
+  "stableCarId": "saved-car:Red Trefoil 2000",
+  "referenceVehicle": "2000 Lotus 340R, standard road177bhp RoverK-series1.8 five-speed,openbody;not190bhptrackupgradeorExpose",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "fd27f49a98f4944d8cc8477ca739fe068d481b70694017065304527040e1ed04",
+    "dashboard": "92442143cd2d656a2343756b6713eca1c75ebe6a064cbe4fec79bd40b00065a0",
+    "tires": "a67d389c2d04ffb790fbd01cf8777f32a82c683acd416ad42b9d0465126ff012"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

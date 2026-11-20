@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "chickweed-1200-1963",
+  "name": "Chickweed 1200 1963",
+  "stableCarId": "saved-car:Chickweed 1200 1963",
+  "referenceVehicle": "1963 European Volkswagen Beetle 1200 Type 11 Export saloon 4MT, solid roof",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "a2b28b6c31d8fd64aea0d7d1a3d9ed21c7ebda4cff8aea9c78c664f5b4220b1a",
+    "dashboard": "d31dfe56a6aa0c5bbf5903ff364498711b56b0c34d2f7022e109bcf12599c796",
+    "tires": "35b24ecea6f409f2f717d7827549503decc96ff8e033b3223b70875df176c8ed"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "longstalk-clover-2012",
+  "name": "Longstalk Clover 2012",
+  "stableCarId": "saved-car:Longstalk Clover 2012",
+  "referenceVehicle": "2012 European Lamborghini Aventador LP700-4 launch-spec coupe 7-speed ISR standard19/20inch; not roadster, modified car or later special edition",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "c985bd99c08203bef0cf96199fac6a0dc85fd6490670c4949316da37303cfd58",
+    "dashboard": "3602f3482b4adf10c1fbe1bb7580364add386931a800bcad933b54c7f6c9baeb",
+    "tires": "a4feee31973af2eb984bcbb2bcc04b1b7a5b51a5a0e258bd8bbb8b0e219e0254"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

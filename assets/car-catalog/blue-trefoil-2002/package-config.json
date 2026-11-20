@@ -1,0 +1,83 @@
+{
+  "id": "blue-trefoil-2002",
+  "name": "Blue Trefoil 2002",
+  "stableCarId": "saved-car:Blue Trefoil 2002",
+  "runtimeId": "saved-car:Blue Trefoil 2002",
+  "candidateId": "volkswagen-lupo-2002-gti-6mt-de",
+  "referenceVehicle": "2002 Germany Volkswagen Lupo GTI1.6 16V six-speed manual three-door,standard15-inch wheels; not earlier5MT,FSI or3L",
+  "identity": {
+    "year": 2002,
+    "make": "Volkswagen",
+    "model": "Lupo",
+    "trim": "GTI1.6 16V six-speed manual three-door,standard15-inch wheels; not earlier5MT,FSI or3L",
+    "market": "Germany"
+  },
+  "bodyClass": "hatchback",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/engine-versions-lupo-profile-19706",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL"
+      ]
+    },
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/lupo-19982005-19704",
+      "fields": [
+        "identity",
+        "transmission",
+        "gearCount",
+        "topSpeedMph"
+      ]
+    },
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/vehicle-data-lupo-profile-19705",
+      "fields": [
+        "identity",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "drivetrain"
+      ]
+    }
+  ]
+}

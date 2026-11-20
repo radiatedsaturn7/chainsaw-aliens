@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "spiny-restharrow-2001",
+  "name": "Spiny Restharrow 2001",
+  "stableCarId": "saved-car:Spiny Restharrow 2001",
+  "referenceVehicle": "2001 UK Aston Martin V12 Vanquish standard 5.935L naturally aspirated V12 ASM/SSM six-speed coupe; not Vanquish S",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "1a3d44225b51552a8e84d26ea4e3ddfc2b3c5bba34364fea99bd1062a875d24d",
+    "dashboard": "e5551f753bb1ba435caa96cf58a449d1a91a95a2f4077ad6a37c844659127bdf",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

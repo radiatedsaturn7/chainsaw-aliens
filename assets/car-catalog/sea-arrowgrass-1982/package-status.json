@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "sea-arrowgrass-1982",
+  "name": "Sea Arrowgrass 1982",
+  "stableCarId": "saved-car:Sea Arrowgrass 1982",
+  "referenceVehicle": "1982 Italian Lancia Rally 037 Stradale road homologation coupe,1995cc supercharged16V inline-four205metricCV; not1983 MonteCarlo GroupB race specification or laterEvo2.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "de463eac664b0760464aedc43c9e74bd219bac5a033f9e3f2d5a899126535ddc",
+    "dashboard": "aa4a304e242b88f562e6e1cf2ad3d6262c4622ee1f73c902a067ce9944cf514d",
+    "tires": "72edf0e96b8ec09ea6510c8a7da9f6d986cbeae6e0b64dccf4e3ab28011d7a76"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

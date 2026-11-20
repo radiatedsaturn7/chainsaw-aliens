@@ -1,0 +1,85 @@
+{
+  "id": "water-dock-1986",
+  "name": "Water Dock 1986",
+  "stableCarId": "saved-car:Water Dock 1986",
+  "candidateId": "bmw-m635csi-1986-roster-candidate",
+  "referenceVehicle": "1986 UK BMW M635CSi E24 M88/3 non-catalyst3.453L naturally aspirated inline-six five-speed manual;not US S38 catalyst M6",
+  "identity": {
+    "year": 1986,
+    "make": "BMW",
+    "model": "M635CSi",
+    "trim": "European M88/3 non-catalyst5MT coupe",
+    "market": "United Kingdom"
+  },
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1250,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      1500,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://newsroom.bmwgroup.com/emea/download/72b7762c-6827-44cb-b899-b4e257f9abeb/20260824090620620-395.pdf",
+      "fields": [
+        "identity",
+        "engineDisplacementL",
+        "torqueNm",
+        "powerRpm",
+        "torqueRpm"
+      ]
+    },
+    {
+      "url": "https://newsroom.bmwgroup.com/emea/download/aa9d239a-59c1-4b89-9b87-85d76bd6cec6/20260902081242491-984.pdf",
+      "fields": [
+        "powerKw",
+        "torqueNm",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "curbKg",
+        "transmission",
+        "gearCount",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "lengthIn",
+        "widthIn",
+        "heightIn",
+        "wheelbaseIn",
+        "trackFrontIn",
+        "trackRearIn",
+        "topSpeedMph"
+      ]
+    }
+  ]
+}

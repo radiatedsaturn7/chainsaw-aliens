@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "common-comfrey-1965",
+  "name": "Common Comfrey 1965",
+  "stableCarId": "saved-car:Common Comfrey 1965",
+  "referenceVehicle": "1965 Alfa Romeo Giulia Sprint GTA Stradale, original1570cc twin-plug115CV road coupe5MT; not170CV competition tune ormodernGiuliaGTA",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "0a24fae5eaeba0583677e3962dd41eccb91701df8b51fb9680d6d6a44c08ba2f",
+    "dashboard": "2b2e56f447c355c2568fb3312642e33e1073e8d8cd82b58c830cc84e47682c46",
+    "tires": "205d0629876630fc75e0e479ebd4458029a9731cc8ccd37e31e969ca50ef7014"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "meadow-saffron-2014",
+  "name": "Meadow Saffron 2014",
+  "stableCarId": "saved-car:Meadow Saffron 2014",
+  "referenceVehicle": "2014 US Lexus IS 350 F SPORT, RWD 3.5 V6 eight-speed automatic, standard F SPORT package",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "meadow-saffron-2014",
+  "sourceHashes": {
+    "body": "7209fe72cbcc6da15d8cbb6e619acfff4ccb9864f6d6041628c12d1b034d0175",
+    "dashboard": "cd34039e4c1702f5bdc37addf88a01108f3ab0d1d12c92b87d936b6f41f08a3d",
+    "tires": "e79c855592dd93fbf457b8cb866a1a6712949058fbd7117933c5eaebf680c9ec"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

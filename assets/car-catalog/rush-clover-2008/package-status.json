@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "rush-clover-2008",
+  "name": "Rush Clover 2008",
+  "stableCarId": "saved-car:Rush Clover 2008",
+  "referenceVehicle": "2008 United States Mazda CX-9, Sport3.7V6 front-wheel-drive six-speed automatic, sevenseats,standard18-inchalloys,noaccessoryroofrails ormoonroof; notAWD,GrandTouring20inch orlater2.5turbo",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "410a2058117f4689720572b6f2a47d6620548a44a8f61b3cb27fdd1f0821c397",
+    "dashboard": "a430894c23321a2fbd09ddf3481a8df091807924edf13624b379bcd5c9e28c6b",
+    "tires": "cc4c2b4e3c133a1cab68f4064d5b5e24352ff2def3af8e463663e23dafdd086b"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

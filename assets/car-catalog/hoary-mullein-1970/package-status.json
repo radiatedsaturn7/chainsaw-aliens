@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "hoary-mullein-1970",
+  "name": "Hoary Mullein 1970",
+  "stableCarId": "saved-car:Hoary Mullein 1970",
+  "referenceVehicle": "1970 US Buick GSX, standard455cuin four-barrel350hp reference,4MT,3.42PositiveTraction;notStage1,noautomatic",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "47e6109a2fd29e8e51c13f4bb2ca4148a51174eeb4a698d47d5f04aa085fc9f7",
+    "dashboard": "b71e1e04e2798b1f918608e6f10e63306c7e3bb32163ac19fc0d98f5345193c5",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

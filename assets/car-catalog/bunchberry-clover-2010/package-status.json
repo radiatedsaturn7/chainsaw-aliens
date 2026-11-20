@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bunchberry-clover-2010",
+  "name": "Bunchberry Clover 2010",
+  "stableCarId": "saved-car:Bunchberry Clover 2010",
+  "referenceVehicle": "2010 United States Honda Accord Crosstour, EX3.5V6 front-wheel-drive5AT,17-inchalloys; notEX-L,4WD orAccordsedan/coupe",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "ed77a3d10ee549221f345e3d6018da01f3536ccd313cd4373d0dfb45a5ef62c1",
+    "dashboard": "e9d3e950548fc521e390519ade29de7cce5d6d69651728ebdc8a28392d83e3d6",
+    "tires": "ae9e6bbcfa7bf4d6f9e6d8947a22ef5223ffe893b3ab169b263b894bc445e7ad"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

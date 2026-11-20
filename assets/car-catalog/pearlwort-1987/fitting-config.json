@@ -1,0 +1,162 @@
+{
+  "id": "pearlwort-1987",
+  "name": "Pearlwort 1987",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "72c4689eb39efb9e0dcd7cf91e273e9d48adc0da2271d2c1ae836f7f4f481894",
+  "sourceDirectory": "assets/car-catalog/pearlwort-1987",
+  "sourceHashes": {
+    "body": "9c085d6e31d2a822f539dc2bd48761d9459fc93a7f13d6b9e21d058e1f376f27",
+    "dashboard": "bacb581b10c96d26fdc7f35f75fa35a9b179e43eb190a19915404be97d47b932",
+    "tires": "e83bd1edb64126b917173381460f5661c8a4dd6ae0a500d787a705cd3a512375"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 110,
+        "y": 350,
+        "radius": 40
+      },
+      {
+        "wheel": "fr",
+        "x": 325,
+        "y": 350,
+        "radius": 40
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 657,
+        "y": 335,
+        "radius": 44
+      },
+      {
+        "wheel": "rr",
+        "x": 810,
+        "y": 307,
+        "radius": 34
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 955,
+        "y": 766,
+        "radius": 45
+      },
+      {
+        "wheel": "rr",
+        "x": 1235,
+        "y": 766,
+        "radius": 45
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 465,
+        "y": 748,
+        "radius": 34
+      },
+      {
+        "wheel": "rr",
+        "x": 625,
+        "y": 767,
+        "radius": 44
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 109,
+        "y": 780,
+        "radius": 40
+      },
+      {
+        "wheel": "rl",
+        "x": 329,
+        "y": 780,
+        "radius": 40
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1575,
+        "y": 329,
+        "radius": 44
+      },
+      {
+        "wheel": "fl",
+        "x": 1715,
+        "y": 303,
+        "radius": 34
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 960,
+        "y": 328,
+        "radius": 45
+      },
+      {
+        "wheel": "fl",
+        "x": 1245,
+        "y": 328,
+        "radius": 45
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1373,
+        "y": 740,
+        "radius": 34
+      },
+      {
+        "wheel": "fl",
+        "x": 1515,
+        "y": 767,
+        "radius": 44
+      }
+    ]
+  },
+  "wheelFit": "cover",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1210,
+      490,
+      520,
+      185
+    ],
+    "wheel": [
+      1460,
+      650,
+      400
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#ffe1ab",
+    "viewportWheelScale": 2.05
+  },
+  "steeringWheelSource": {
+    "artRef": "steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementNotes": "Per-car original pixel-grid measurements. Source document byte-compared to recorded staging commit. Static native review only; full game, browser, road rear, motion and smoke deferred."
+}

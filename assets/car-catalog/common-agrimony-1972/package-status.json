@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "common-agrimony-1972",
+  "name": "Common Agrimony 1972",
+  "stableCarId": "saved-car:Common Agrimony 1972",
+  "referenceVehicle": "1972 Japan Mazda Cosmo Sport 110S Series II L10B JapanRHD two-seat fixedroof 10A982cc naturallyaspirated twinrotor RWD modeled5MT, finalproductionyear; not1967L10A orlaterCosmoRX5",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "d85af049b5bdec22f461607e9d4e1b732f64b3906928a54c2607c97d5663161a",
+    "dashboard": "0507058c912d722525facc23e8724b0dd8c005b5728adc306bcd669ee499623c",
+    "tires": "23255b508f2b26dcf03bc491697ed59183684572693c5ad912bf976660405235"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

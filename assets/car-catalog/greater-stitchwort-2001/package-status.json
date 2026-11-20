@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "greater-stitchwort-2001",
+  "name": "Greater Stitchwort 2001",
+  "stableCarId": "saved-car:Greater Stitchwort 2001",
+  "referenceVehicle": "2001 US Acura Integra Type R three-door B18C5 five-speed manual",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "d7976c60926e12afab72f2da1b705dba6a8d42c0195c1245a774bdde0838a648",
+    "dashboard": "1fbbdf9c062ccc5f403e814043351e1348b0892cd5c053d084987e73d6135486",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

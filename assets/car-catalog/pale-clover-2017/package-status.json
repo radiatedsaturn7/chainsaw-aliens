@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "pale-clover-2017",
+  "name": "Pale Clover 2017",
+  "stableCarId": "saved-car:Pale Clover 2017",
+  "referenceVehicle": "2017 Bentley Continental Supersports, second-generation W12 coupe permanentAWD ZF8AT,standardsteelroof;notConvertible,2009modelor2027V8",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "17ab75ff9d039ab72528192a2a9a14c2c8a889ac4ce0c88a77c77fa964a623b6",
+    "dashboard": "b69e40508cd66c4b0a877001613532daa6a3eaa75c3071b7b2588afb4b55546d",
+    "tires": "9899ab42c8bbe6ce03b5f5b2699ffb618fec8c0da9382c0bc42faa8709624e0e"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

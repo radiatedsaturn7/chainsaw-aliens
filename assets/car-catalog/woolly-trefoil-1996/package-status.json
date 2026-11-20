@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "woolly-trefoil-1996",
+  "name": "Woolly Trefoil 1996",
+  "stableCarId": "saved-car:Woolly Trefoil 1996",
+  "referenceVehicle": "1996 United States Acura 2.5 TL, base non-Premium 2451cc SOHC20-valve inline-five four-speed automatic FWD; not3.2TL V6",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "b609f30b270ec46797b47810bb7c47fc523ff3d119135634847b36e793c01a93",
+    "dashboard": "2880b96bdf8ca5b1e07ec98d57e90005b0253bc46affbceef87aa861b39577e9",
+    "tires": "548a09bf0361f1a6264b2260247cc8f15aa1dc9c09f6420f08e0107290e66675"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

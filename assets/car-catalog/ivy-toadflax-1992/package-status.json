@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "ivy-toadflax-1992",
+  "name": "Ivy Toadflax 1992",
+  "stableCarId": "saved-car:Ivy Toadflax 1992",
+  "referenceVehicle": "1992 Japan Mazda Familia GT-R (323 GT-R) January1992 E-BG8Z BP1.8turbo road homologation three-door hatchback, modeled5MT; notGT-X,GT-Ae orrallycar",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "ff17a65b20f89723ba29d8d40f5608959ef3304708c4075eb24614cac5bb59a2",
+    "dashboard": "62f793bd85236b693f4fd277abb8655b9d94dc611db455b8aae71f36bb267134",
+    "tires": "78dfb37aa2aea19d4045203f08027d203e34815258121bae6958cb8ef97ed14b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

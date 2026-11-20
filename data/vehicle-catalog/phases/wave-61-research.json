@@ -1,0 +1,869 @@
+{
+  "schemaVersion": 1,
+  "base": "525440c719f4c1a160565053b853cf6df3a4aa70",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "acura-legend-coupe-ls-1994-us-6mt-supplemental",
+      "identity": {
+        "year": 1994,
+        "make": "Acura",
+        "model": "Legend Coupe",
+        "trim": "LS TypeII3.2V6 six-speed manual,standard16-inchalloys; notL15inch,sedan200hp orautomatic",
+        "market": "United States"
+      },
+      "referenceVehicle": "1994 United States Acura Legend Coupe, LS TypeII3.2V6 six-speed manual,standard16-inchalloys; notL15inch,sedan200hp orautomatic",
+      "bodyClass": "two-door five-seat luxury coupe; production",
+      "facts": {
+        "powerHp": 230,
+        "powerRpm": 6200,
+        "torqueLbFt": 206,
+        "torqueRpm": 5000,
+        "engineDisplacementL": 3.206,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 4.8895,
+        "widthM": 1.8110199999999999,
+        "heightM": 1.36398,
+        "wheelbaseM": 2.82956,
+        "trackFrontIn": 61,
+        "trackRearIn": 60.6,
+        "gearCount": 6,
+        "gearRatios": [
+          2.937,
+          1.692,
+          1.151,
+          0.868,
+          0.682,
+          0.521
+        ],
+        "reverseRatio": 3.186,
+        "finalDrive": 4.491,
+        "tireSize": [
+          215,
+          55,
+          16
+        ],
+        "redlineRpm": 6700,
+        "revLimitRpm": 6900,
+        "frontWeightDistribution": 0.6,
+        "groundClearanceM": 0.115,
+        "dragCoefficient": 0.32,
+        "fuelTankUSgal": 18,
+        "steeringRatio": 16.7,
+        "absEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://hondanews.com/en-US/releases/release-e46df9ca68e3cc556866f8004c34ca27-1994-acura-legend-coupe-specifications",
+          "publisher": "Acura original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "tireSize",
+            "redlineRpm",
+            "revLimitRpm",
+            "frontWeightDistribution",
+            "groundClearanceM",
+            "dragCoefficient",
+            "fuelTankUSgal",
+            "steeringRatio",
+            "absEnabled"
+          ],
+          "access": "Factory1994Coupe table read2026-11-18 exactTypeII230hp206lbft,6MTandLS16inchtire. Published1625kgcurb isLSAUTOMATIC only; manual1585kg explicitlyestimated. Engineorientationtextcontradicts itself; no detailedorientationclaim."
+        }
+      ],
+      "limits": [
+        "Manualcurb estimate subtracts40kg from publishedLSautomatic1625kg as provisionalgearboxbasis, notfactorymanualmeasurement. FactoryEnglish206lbft preferred over inconsistentparenthetic29kgm.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "scarlet-trefoil-1997",
+            "alias": "Scarlet Trefoil 1997",
+            "reference": "1997 Acura3.5RLbaseFWD4AT",
+            "documentId": "scarlet-trefoil-1997",
+            "runtimeId": "saved-car:Scarlet Trefoil 1997",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "redbud-v6-2007",
+            "alias": "Redbud V6 2007",
+            "reference": "2007 HondaAccordEXLV6coupe6MT",
+            "documentId": "redbud-v6-2007",
+            "runtimeId": "saved-car:Redbud V6 2007",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoLegendcoupe exactidentity found. KA8TypeII3.2six-speedtwo-door differs from KA9RL3.5automaticsedan andlaterAccordJ-seriescoupe; notsamebodyyearpadding.",
+        "evidence": [
+          "https://hondanews.com/en-US/releases/release-e46df9ca68e3cc556866f8004c34ca27-1994-acura-legend-coupe-specifications"
+        ]
+      },
+      "name": "Juniper Clover 1994",
+      "id": "juniper-clover-1994",
+      "simulationEstimates": {
+        "cgHeightM": 0.49,
+        "tireGrip": 0.86,
+        "spring": 0.49,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "topSpeedMph": 145,
+        "zeroToSixtySec": 6.9,
+        "transmission": "manual",
+        "drivetrain": "fwd",
+        "curbKg": 1585,
+        "transmissionLabel": "6-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "mazda-cx-7-s-touring-2010-us-fwd-6at-supplemental",
+      "identity": {
+        "year": 2010,
+        "make": "Mazda",
+        "model": "CX-7",
+        "trim": "sTouringDISI2.3turbo front-wheel-drive six-speed torque-converterautomatic,standard18-inchalloys; not2.5i5AT,AWD orGrandTouring19inch",
+        "market": "United States"
+      },
+      "referenceVehicle": "2010 United States Mazda CX-7, sTouringDISI2.3turbo front-wheel-drive six-speed torque-converterautomatic,standard18-inchalloys; not2.5i5AT,AWD orGrandTouring19inch",
+      "bodyClass": "five-door five-seat midsize crossover; production",
+      "facts": {
+        "powerHp": 244,
+        "powerRpm": 5000,
+        "torqueLbFt": 258,
+        "torqueRpm": 2500,
+        "engineDisplacementL": 2.26,
+        "aspiration": "Turbocharged",
+        "lengthM": 4.68122,
+        "widthM": 1.87198,
+        "heightM": 1.6459199999999998,
+        "wheelbaseM": 2.7508199999999996,
+        "trackFrontIn": 63.7,
+        "trackRearIn": 63.5,
+        "transmission": "automatic",
+        "transmissionLabel": "6-speed automatic",
+        "gearCount": 6,
+        "gearRatios": [
+          4.148,
+          2.37,
+          1.555,
+          1.154,
+          0.859,
+          0.685
+        ],
+        "reverseRatio": 3.393,
+        "finalDrive": 3.749,
+        "curbKg": 1718,
+        "tireSize": [
+          235,
+          60,
+          18
+        ],
+        "redlineRpm": 6700,
+        "groundClearanceM": 0.208,
+        "fuelTankUSgal": 18.2,
+        "steeringRatio": 15.8,
+        "topSpeedMph": 116.8,
+        "absEnabled": true,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://news.mazdausa.com/download/2010-CX-7-specs.pdf",
+          "publisher": "Mazda original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "transmission",
+            "transmissionLabel",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "curbKg",
+            "tireSize",
+            "redlineRpm",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "steeringRatio",
+            "topSpeedMph",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "Factory2010specdeckpp9-10 read2026-11-18. FWDturbo1718kg versusAWD1815/i1586. Exact244hp5000/258lbft2500,6ATconverter/gears3.749final,18inchtire,unladen208mmclearance. Cd.34printedunderi column only;turboCdestimated."
+        }
+      ],
+      "limits": [
+        "FactoryEPAcurb ispowertrainbasefamily figure usedforsTouringbasewithoutoptions; nooptionalmoonroofmassclaim. GenericDSC/TCSnotexactcontrolsoftware.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "fern-clover-2007",
+            "alias": "Fern Clover 2007",
+            "reference": "2007 AcuraRDX2.3turboAWD5AT",
+            "documentId": "fern-clover-2007",
+            "runtimeId": "saved-car:Fern Clover 2007",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "tamarisk-2024",
+            "alias": "Tamarisk 2024",
+            "reference": "2024 MazdaCX90 3.3turboAWD8AT",
+            "documentId": "tamarisk-2024",
+            "runtimeId": "saved-car:Tamarisk 2024",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoCX7identity found. MazdaERfive-seatDISIturboFWD crossover distinct from AcuraK23AWD andMazdaCX9naturallyaspiratedV6three-row; notMazdaspeed6sedanbadgeclone.",
+        "evidence": [
+          "https://news.mazdausa.com/download/2010-CX-7-specs.pdf"
+        ]
+      },
+      "name": "Holly Clover 2010",
+      "id": "holly-clover-2010",
+      "simulationEstimates": {
+        "cgHeightM": 0.63,
+        "dragCoefficient": 0.35,
+        "tireGrip": 0.85,
+        "spring": 0.51,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "revLimitRpm": 7000,
+        "zeroToSixtySec": 7.6,
+        "drivetrain": "fwd"
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "mazda-mpv-lx-sv-2006-us-5at-supplemental",
+      "identity": {
+        "year": 2006,
+        "make": "Mazda",
+        "model": "MPV",
+        "trim": "LX-SV3.0V6 front-wheel-drive five-speed torque-converterautomatic,sevenseats,15-inchcoveredsteelwheels,noGFX/towingpackage; notLX/ES orMazda5",
+        "market": "United States"
+      },
+      "referenceVehicle": "2006 United States Mazda MPV, LX-SV3.0V6 front-wheel-drive five-speed torque-converterautomatic,sevenseats,15-inchcoveredsteelwheels,noGFX/towingpackage; notLX/ES orMazda5",
+      "bodyClass": "five-door seven-seat minivan with sliding rear doors; production",
+      "facts": {
+        "powerHp": 200,
+        "powerRpm": 6200,
+        "torqueLbFt": 200,
+        "torqueRpm": 3000,
+        "engineDisplacementL": 2.968,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 4.80822,
+        "widthM": 1.8313399999999997,
+        "heightM": 1.74498,
+        "wheelbaseM": 2.83972,
+        "trackFrontIn": 60.6,
+        "trackRearIn": 61,
+        "transmission": "automatic",
+        "transmissionLabel": "5-speed automatic",
+        "gearCount": 5,
+        "gearRatios": [
+          3.8,
+          2.13,
+          1.36,
+          0.94,
+          0.69
+        ],
+        "reverseRatio": 2.97,
+        "finalDrive": 3.49,
+        "tireSize": [
+          205,
+          65,
+          15
+        ],
+        "redlineRpm": 6500,
+        "groundClearanceM": 0.135,
+        "fuelTankUSgal": 19.8,
+        "steeringRatio": 19,
+        "absEnabled": true,
+        "publishedFamilyBaseCurbKg": 1710.95041964
+      },
+      "sources": [
+        {
+          "url": "https://news.mazdausa.com/download/SPECS-MPV-06.pdf",
+          "publisher": "Mazda original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "transmission",
+            "transmissionLabel",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "publishedFamilyBaseCurbKg",
+            "tireSize",
+            "redlineRpm",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "steeringRatio",
+            "absEnabled"
+          ],
+          "access": "Official2006one-pagefactorytechnicalPDF read2026-11-18. LX-SV189.3length68.7height15inchwheels,all5ATratios;3772lbcurb isunsplitfamilybasefigure,nottrim-weighedmeasurement. Factorydisplacement2968ccused; someownermanualrounded2967."
+        }
+      ],
+      "limits": [
+        "Publishedfamilybase3772lb usedasLX-SVcurbapproximation, notproofalltrimsidentical. Groundclearance135mm isladen; handlinginputsestimated.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data.",
+        "3772lb is the factory family-level base curb anchor. Using that same numerical mass for this selected LX-SV trim is an explicit simulation estimate, not a separately verified trim-specific measurement."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "bellflower-2006",
+            "alias": "Bellflower 2006",
+            "reference": "2006 Mazda5Sport2.3manualcompactMPV",
+            "documentId": "bellflower-2006",
+            "runtimeId": "saved-car:Bellflower 2006",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "lungwort-2005",
+            "alias": "Lungwort 2005",
+            "reference": "2005 HondaOdysseyEX3.5V6FWD5AT",
+            "documentId": "lungwort-2005",
+            "runtimeId": "saved-car:Lungwort 2005",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoMazdaMPVidentity found. LWplatform3.0V6seven-seatvan differs fromCR/CWMazda5four-cylindercompactMPVs andHondaOdysseyJ35; noMazda5trimclone.",
+        "evidence": [
+          "https://news.mazdausa.com/download/SPECS-MPV-06.pdf"
+        ]
+      },
+      "name": "Laurel Clover 2006",
+      "id": "laurel-clover-2006",
+      "simulationEstimates": {
+        "cgHeightM": 0.64,
+        "dragCoefficient": 0.36,
+        "tireGrip": 0.8,
+        "spring": 0.46,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "revLimitRpm": 6800,
+        "topSpeedMph": 115,
+        "zeroToSixtySec": 9,
+        "drivetrain": "fwd",
+        "curbKg": 1710.95041964
+      }
+    },
+    {
+      "candidateId": "mercedes-benz-slk350-2005-us-r171-6mt",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2005,
+        "make": "Mercedes-Benz",
+        "model": "SLK350",
+        "trim": "R171 3498cc naturally aspirated V6 standard six-speed manual, standard17-inch staggered wheels, roof up; not SLK55 AMG or R172",
+        "market": "United States"
+      },
+      "referenceVehicle": "2005 United States Mercedes-Benz SLK350 R171 3498cc naturally aspirated V6 standard six-speed manual, standard17-inch staggered wheels, roof up; not SLK55 AMG or R172",
+      "bodyClass": "convertible",
+      "facts": {
+        "powerKw": 199.847565696,
+        "powerRpm": 6000,
+        "torqueNm": 349.80103058400005,
+        "torqueRpm": 2400,
+        "engineDisplacementL": 3.498,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "curbKg": 1465,
+        "lengthM": 4.082,
+        "widthM": 1.778,
+        "heightM": 1.298,
+        "wheelbaseM": 2.43,
+        "trackFrontIn": 60.1,
+        "trackRearIn": 61,
+        "finalDrive": 3.27,
+        "fuelTankUSgal": 18.5,
+        "tireSize": [
+          225,
+          45,
+          17
+        ],
+        "frontTire": [
+          225,
+          45,
+          17
+        ],
+        "rearTire": [
+          245,
+          40,
+          17
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Mercedes_Benz/SLK-Class/Mercedes%20Benz_US%20SLK-Class_2005.pdf",
+          "publisher": "Mercedes-Benz original US factory brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "finalDrive",
+            "fuelTankUSgal",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "identity"
+          ],
+          "access": "2005 original brochure PDF3\u20134 technical columns. Standard6MT explicit, manual-specific1465kg/3231lb curb. Net268hp6000 and258lb-ft2400\u20135000. Metric dimensions retained; width pair in source70.4in/1778mm is inconsistent."
+        }
+      ],
+      "limits": [
+        "Supplemental identity consumes an open canonical660 slot; historical backlog is unchanged.",
+        "All suggestedEstimates are modeling estimates. Source-only packet: no implementation or driving claim.",
+        "Use published1465kg manual curb directly, no driver deduction.",
+        "Source width inches/mm disagree; use explicit1778mm metric anchor.",
+        "Gear ratios, weight distribution, redline, performance and handling estimates. Roof mechanism not simulated; fixed roof-up geometry.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "wood-dock-2012",
+            "alias": "Wood Dock 2012",
+            "referenceVehicle": "2012 German Mercedes-Benz SLK55AMG R172 type172.475 M152.980 naturally aspirated5.5V8,standard seven-speed torque-converter automatic; not R171 or SL55",
+            "documentId": "wood-dock-2012",
+            "runtimeId": "saved-car:Wood Dock 2012",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Earlier R171 naturally aspirated3.5V6 manual versus existing R1725.5V8 seven-speed automatic: different generation, engine, transmission and mass, not a year-only change.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Mercedes_Benz/SLK-Class/Mercedes%20Benz_US%20SLK-Class_2005.pdf"
+        ]
+      },
+      "name": "Myrtle Clover 2005",
+      "id": "myrtle-clover-2005",
+      "simulationEstimates": {
+        "reverseRatio": 4.06,
+        "cgHeightM": 0.46,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.52,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 5.5,
+        "gearRatios": [
+          4.46,
+          2.61,
+          1.72,
+          1.25,
+          1,
+          0.84
+        ]
+      }
+    },
+    {
+      "candidateId": "mercedes-benz-r350-2008-us-2wd-7at",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2008,
+        "make": "Mercedes-Benz",
+        "model": "R350",
+        "trim": "W251 long-wheelbase 2WD rear-drive 3498cc naturally aspirated V6 seven-speed automatic, standard18-inch wheels, non-Airmatic; not R320CDI or4MATIC",
+        "market": "United States"
+      },
+      "referenceVehicle": "2008 United States Mercedes-Benz R350 W251 long-wheelbase 2WD rear-drive 3498cc naturally aspirated V6 seven-speed automatic, standard18-inch wheels, non-Airmatic; not R320CDI or4MATIC",
+      "bodyClass": "minivan",
+      "facts": {
+        "powerKw": 199.847565696,
+        "powerRpm": 6000,
+        "torqueNm": 349.80103058400005,
+        "torqueRpm": 2400,
+        "engineDisplacementL": 3.498,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "gearCount": 7,
+        "lengthM": 5.1562,
+        "heightM": 1.65608,
+        "wheelbaseM": 3.2156399999999996,
+        "trackFrontIn": 65.5,
+        "trackRearIn": 65.3,
+        "finalDrive": 3.9,
+        "fuelTankUSgal": 21.13,
+        "tireSize": [
+          255,
+          55,
+          18
+        ],
+        "frontTire": [
+          255,
+          55,
+          18
+        ],
+        "rearTire": [
+          255,
+          55,
+          18
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Mercedes_Benz/Mercedes%20Benz_US%20G_GL_ML_R-Class_2008.pdf",
+          "publisher": "Mercedes-Benz original US factory brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "finalDrive",
+            "fuelTankUSgal",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "identity"
+          ],
+          "access": "Original2008US PDF33 printed62\u201363 middle R3502WD column explicitly seven-speed automatic and rear-wheel drive. Curb/performance unavailable at printing; do not borrow4MATIC4938lb."
+        }
+      ],
+      "limits": [
+        "Supplemental identity consumes an open canonical660 slot; historical backlog is unchanged.",
+        "All suggestedEstimates are modeling estimates. Source-only packet: no implementation or driving claim.",
+        "Curb2150kg is unladen simulation estimate: factory says unavailable for2WD. Adjacent4938/5037lb belongs to4MATIC, not selected car.",
+        "Brochure width range75.7\u201377.5in unresolved, modeled1.97m explicitly estimated.",
+        "Fixed conventional suspension; optional Airmatic/ADS not simulated. Performance, ratios beyond supported3.90axle, weight distribution and dynamics estimated.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "cedar-clover-2010",
+            "alias": "Cedar Clover 2010",
+            "referenceVehicle": "2010 United States Mercedes-Benz GLK350 X204 baseRWD3.5gasolineV6 seven-speedautomatic,standard19-inchwheels,noPremiumorAppearancePackage;not4MATIC,diesel orAMG",
+            "documentId": "cedar-clover-2010",
+            "runtimeId": "saved-car:Cedar Clover 2010",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Long-wheelbase W251 three-row people carrier is materially different in wheelbase, body, mass and axle ratio from compact X204 GLK350 SUV despite same engine family; not a rebadge.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Mercedes_Benz/Mercedes%20Benz_US%20G_GL_ML_R-Class_2008.pdf"
+        ]
+      },
+      "name": "Dogwood Clover 2008",
+      "id": "dogwood-clover-2008",
+      "simulationEstimates": {
+        "reverseRatio": 3.42,
+        "cgHeightM": 0.62,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.52,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 8.5,
+        "curbKg": 2150,
+        "widthM": 1.97,
+        "gearRatios": [
+          4.38,
+          2.86,
+          1.92,
+          1.37,
+          1,
+          0.82,
+          0.73
+        ],
+        "transmissionLabel": "7-speed torque-converter automatic approximation"
+      }
+    },
+    {
+      "candidateId": "bmw-x5-2011-us-xdrive35d-6at",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2011,
+        "make": "BMW",
+        "model": "X5",
+        "trim": "E70 xDrive35d twin-turbo diesel inline-six six-speed automatic, standard255/55R18 wheels; not gasoline35i/50i eight-speed or MY2012 carryover",
+        "market": "United States"
+      },
+      "referenceVehicle": "2011 United States BMW X5 E70 xDrive35d twin-turbo diesel inline-six six-speed automatic, standard255/55R18 wheels; not gasoline35i/50i eight-speed or MY2012 carryover",
+      "bodyClass": "suv",
+      "facts": {
+        "powerKw": 197.61046608,
+        "powerRpm": 4200,
+        "torqueNm": 576.2226279,
+        "torqueRpm": 1750,
+        "engineDisplacementL": 3.0,
+        "aspiration": "Twin-turbocharged diesel",
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "gearCount": 6,
+        "curbKg": 2355.05158504,
+        "frontWeightDistribution": 0.49,
+        "gearRatios": [
+          4.17,
+          2.34,
+          1.52,
+          1.14,
+          0.87,
+          0.69
+        ],
+        "reverseRatio": 3.4,
+        "finalDrive": 3.64,
+        "fuelTankUSgal": 22.5,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 6.9,
+        "lengthM": 4.85394,
+        "widthM": 1.9329399999999999,
+        "heightM": 1.77546,
+        "wheelbaseM": 2.9337,
+        "trackFrontIn": 64.7,
+        "trackRearIn": 65,
+        "tireSize": [
+          255,
+          55,
+          18
+        ],
+        "frontTire": [
+          255,
+          55,
+          18
+        ],
+        "rearTire": [
+          255,
+          55,
+          18
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/BMW/X5/BMW_US%20X5_2012.pdf",
+          "publisher": "BMW original US factory brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "frontWeightDistribution",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "fuelTankUSgal",
+            "topSpeedMph",
+            "zeroToSixtySec",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "identity"
+          ],
+          "access": "PDF33 printed64\u201365 visually inspected x5spec.png. Table explicitly states MODEL YEAR2011 xDrive35d content shown; MY2012 available October2011. Thus exact2011 diesel selected. Diesel column265hp4200,425lb-ft1750\u20132250,5192lb,49/51,6AT ratios3.64final, standard18-inch tires."
+        }
+      ],
+      "limits": [
+        "Supplemental identity consumes an open canonical660 slot; historical backlog is unchanged.",
+        "All suggestedEstimates are modeling estimates. Source-only packet: no implementation or driving claim.",
+        "2012 cover is NOT evidence for2012 diesel technical setup; explicit table qualification controls identity2011.",
+        "Factory3.0L rounded displacement used; no unverified2993cc specificity. US unladen5192lb used as curb without EU-driver subtraction.",
+        "Fixed40:60 torque split approximates adaptive xDrive; no adaptive clutch, suspension or emissions-system feature claim. Diesel torque envelope, redline, CG and clearance estimates.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "pineneedle-clover-2012",
+            "alias": "Pineneedle Clover 2012",
+            "referenceVehicle": "2012 United States BMW X3 F25 xDrive28i naturallyaspirated2996ccinline-six eight-speedSteptronic,standard17-inchwheels;not2013turbo2.0,xDrive35i orMsport",
+            "documentId": "pineneedle-clover-2012",
+            "runtimeId": "saved-car:Pineneedle Clover 2012",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "E70 large diesel twin-turbo six/6AT has substantially higher torque, mass and wheelbase than F25 X3 naturally aspirated gasoline six/8AT; distinct model and powertrain.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/BMW/X5/BMW_US%20X5_2012.pdf"
+        ]
+      },
+      "name": "Hawthorn Clover 2011",
+      "id": "hawthorn-clover-2011",
+      "simulationEstimates": {
+        "cgHeightM": 0.68,
+        "groundClearanceM": 0.21,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "redlineRpm": 4700,
+        "revLimitRpm": 4900,
+        "centerDifferentialBalance": 0.6,
+        "transmissionLabel": "6-speed torque-converter Steptronic approximation",
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 169.99999995844723
+          },
+          {
+            "rpm": 1750,
+            "torqueLbFt": 424.9999998961181
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 424.9999998961181
+          },
+          {
+            "rpm": 4200,
+            "torqueLbFt": 331.3761906618224
+          },
+          {
+            "rpm": 4900,
+            "torqueLbFt": 254.99999993767085
+          }
+        ]
+      }
+    }
+  ],
+  "deferred": []
+}

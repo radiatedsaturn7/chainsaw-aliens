@@ -1,0 +1,163 @@
+{
+  "id": "goldilocks-1995",
+  "name": "Goldilocks 1995",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "da089b1db3e49b3213bc7f6a13ef262ef59a23c8a57befb19372cfd2d4e55a0b",
+  "sourceDirectory": "assets/car-catalog/goldilocks-1995",
+  "sourceHashes": {
+    "body": "9e8fcaf952676e814e5aae188dfc29894455ff8c343e120c5094d7a3115cea71",
+    "dashboard": "31c204a8b5ddd7214cb948004964268a8199e967975dd34a97cc2989be19d32d",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 134.82,
+        "y": 294.48,
+        "radius": 28.38
+      },
+      {
+        "wheel": "fr",
+        "x": 306.9,
+        "y": 294.48,
+        "radius": 28.38
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 672.35,
+        "y": 285.61,
+        "radius": 28.38
+      },
+      {
+        "wheel": "rr",
+        "x": 792.98,
+        "y": 264.33,
+        "radius": 21.29
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 995.21,
+        "y": 714.92,
+        "radius": 30.16
+      },
+      {
+        "wheel": "rr",
+        "x": 1209.87,
+        "y": 714.92,
+        "radius": 30.16
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 518.01,
+        "y": 702.5,
+        "radius": 21.29
+      },
+      {
+        "wheel": "rr",
+        "x": 642.19,
+        "y": 720.24,
+        "radius": 28.38
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 134.82,
+        "y": 729.11,
+        "radius": 28.38
+      },
+      {
+        "wheel": "rl",
+        "x": 306.9,
+        "y": 729.11,
+        "radius": 28.38
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1573.54,
+        "y": 283.84,
+        "radius": 28.38
+      },
+      {
+        "wheel": "fl",
+        "x": 1697.72,
+        "y": 262.55,
+        "radius": 21.29
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 1012.95,
+        "y": 274.97,
+        "radius": 30.16
+      },
+      {
+        "wheel": "fl",
+        "x": 1231.16,
+        "y": 274.97,
+        "radius": 30.16
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1410.33,
+        "y": 695.41,
+        "radius": 21.29
+      },
+      {
+        "wheel": "fl",
+        "x": 1541.61,
+        "y": 725.57,
+        "radius": 28.38
+      }
+    ]
+  },
+  "wheelFit": "average",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      129,
+      496,
+      565,
+      178
+    ],
+    "wheel": [
+      549,
+      773,
+      347
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e2e9e8",
+    "viewportWheelScale": 2.06,
+    "gaugeBackground": "#111111"
+  },
+  "steeringWheelSource": {
+    "artRef": "steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementNotes": "Corrected sedan atlas individually remeasured at original1774x887 pixels via1000x500 grid preview."
+}

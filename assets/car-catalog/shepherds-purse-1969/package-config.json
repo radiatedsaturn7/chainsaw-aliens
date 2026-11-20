@@ -1,0 +1,65 @@
+{
+  "id": "shepherds-purse-1969",
+  "name": "Shepherds Purse 1969",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1220,
+      490,
+      590,
+      200
+    ],
+    "wheel": [
+      1515,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#ffe0a0"
+  },
+  "sources": [
+    {
+      "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/fairlady_z_432.html",
+      "fields": [
+        "publishedReferencePowerKw",
+        "publishedPowerPS",
+        "publishedReferenceTorqueNm",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "publishedTire"
+      ]
+    },
+    {
+      "url": "https://usa.nissannews.com/en-US/releases/datsun-and-nissan-fairlady-z-heritage",
+      "fields": [
+        "transmission",
+        "gearCount",
+        "publishedTire"
+      ]
+    }
+  ]
+}

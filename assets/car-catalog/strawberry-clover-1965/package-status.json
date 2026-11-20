@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "strawberry-clover-1965",
+  "name": "Strawberry Clover 1965",
+  "stableCarId": "saved-car:Strawberry Clover 1965",
+  "referenceVehicle": "1965 Alfa Romeo Giulia TZ2, 1570cc twin-spark competition coupe5MT, family museumreference; notGTAroad orTZ1",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "ce70857046e4d39ffa7935bbe5d002da6c63f43c0085460c90ef55b44bcaa133",
+    "dashboard": "4383fc8cae6f3176aaf3c8649982e2fcfb81533458a9d38aa21e3c3bf3d63cc1",
+    "tires": "b8e01808db0eb36603928a1b896ee4dbe2186f4a20fe99079564f7694172d641"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,66 @@
+{
+  "id": "black-medick-1993",
+  "name": "Black Medick 1993",
+  "stableCarId": "saved-car:Black Medick 1993",
+  "runtimeId": "saved-car:Black Medick 1993",
+  "candidateId": "jaguar-xj220-1993-roster-candidate",
+  "referenceVehicle": "1993 Jaguar XJ220, standard production road coupe3.5 twin-turboV6 five-speed manual; not1988V12AWDconcept,S,TWRrace orde-catalysed record run",
+  "identity": {
+    "year": 1993,
+    "make": "Jaguar",
+    "model": "XJ220",
+    "trim": "standard production road coupe3.5 twin-turboV6 five-speed manual; not1988V12AWDconcept,S,TWRrace orde-catalysed record run",
+    "market": "UK/Europe"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1289,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      1507,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://media.jlr.com/archive-jaguar/en-gb/news/2012/01/marking-20-years-launch-jaguar-xj220",
+      "fields": [
+        "powerHp",
+        "publishedPowerPS",
+        "torqueNm",
+        "engineDisplacementL",
+        "gearCount",
+        "transmission",
+        "publishedMassKg",
+        "topSpeedMph"
+      ]
+    }
+  ]
+}

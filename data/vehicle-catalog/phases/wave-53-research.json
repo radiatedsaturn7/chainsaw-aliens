@@ -1,0 +1,907 @@
+{
+  "schemaVersion": 1,
+  "base": "ba543f141e7ad39705d299485b3e94c95ce98c1c",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "bmw-x1-2010-sdrive18i-6mt-de",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2010,
+        "make": "BMW",
+        "model": "X1",
+        "trim": "E84 sDrive18i 2.0 naturally aspirated gasoline RWD6MT, standard17-inch steel wheels; not xDrive or later turbo/F48",
+        "market": "Germany"
+      },
+      "bodyClass": "suv",
+      "referenceVehicle": "2010 Germany BMW X1 E84 sDrive18i 2.0 naturally aspirated gasoline RWD6MT, standard17-inch steel wheels; not xDrive or later turbo/F48",
+      "facts": {
+        "powerKw": 110,
+        "powerRpm": 6400,
+        "torqueNm": 200,
+        "torqueRpm": 3600,
+        "engineDisplacementL": 1.995,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "curbKg": 1430,
+        "lengthM": 4.454,
+        "widthM": 1.798,
+        "heightM": 1.545,
+        "wheelbaseM": 2.76,
+        "trackFrontIn": 59.05511811023622,
+        "trackRearIn": 60.19685039370079,
+        "gearRatios": [
+          4.323,
+          2.456,
+          1.659,
+          1.23,
+          1,
+          0.848
+        ],
+        "finalDrive": 3.727,
+        "reverseRatio": 3.938,
+        "groundClearanceM": 0.194,
+        "fuelTankUSgal": 16.642839298563352,
+        "topSpeedMph": 125.51698083194145,
+        "tireSize": [
+          225,
+          50,
+          17
+        ],
+        "frontTire": [
+          225,
+          50,
+          17
+        ],
+        "rearTire": [
+          225,
+          50,
+          17
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://newsroom.bmwgroup.com/global/download/bfbeee2f-5521-4020-ba05-81ec4370d026/20260721135239292-334.doc",
+          "publisher": "BMW original specifications X1 sDrive18i, valid03/2010",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "gearRatios",
+            "finalDrive",
+            "reverseRatio",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "topSpeedMph",
+            "tireSize",
+            "frontTire",
+            "rearTire"
+          ],
+          "access": "Original Word document downloaded as x1.doc, readable table extracted from document. Manual values outside parentheses; DIN1430/EU1505kg, standard225/50R17 steel,6MT ratios and194mm clearance. Applicable ACEA markets, German weight homologation."
+        },
+        {
+          "url": "https://www.press.bmwgroup.com/deutschland/article/detail/T0076759DE/allroundtalent-bmw-x1-%E2%80%93-jetzt-mit-noch-mehr-vielfalt-im-motorenprogramm?language=de",
+          "publisher": "BMW Germany January14,2010",
+          "fields": [
+            "identity",
+            "powerKw",
+            "torqueNm",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "Factory confirms March2010 introduction,110kW6400rpm,200Nm3600rpm, standard6MT and optional6AT."
+        }
+      ],
+      "limits": [
+        "Supplementary identity consumes an existing open canonical660 reservation; no historical backlog growth.",
+        "All suggestedEstimates are explicitly unsupported modeling inputs, not verified factory measurements. No browser, test, or original-art claim.",
+        "DIN mass excludes75kg EU driver allowance; retain1430 rather than1505 or automatic1455kg. Standard single rear-driven axle; no invented AWD.",
+        "Factory0\u20131009.7s;0\u201360 estimate. Torque curve, front share, CG and chassis transients are modeled estimates.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "trailglass-2024",
+            "alias": "Trailglass 2024",
+            "referenceVehicle": "2024 Volkswagen Tiguan S FWD US, seven seats, 17-inch standard wheels",
+            "documentId": "trailglass-2024",
+            "runtimeId": "saved-car:Trailglass 2024",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "sierra-clover-2004",
+            "alias": "Sierra Clover 2004",
+            "referenceVehicle": "2004 Italy BMW 116i E87 five-door Eletta 1.6 gasoline five-speed manual, standard steel 16-inch runflat wheels; not Attiva, diesel, 120i or facelift",
+            "documentId": "sierra-clover-2004",
+            "runtimeId": "saved-car:Sierra Clover 2004",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "First X1 E84 platform: raised RWD longitudinal2.0NA crossover, distinct from low BMW116i hatch and transverse FWD Tiguan. No exact X1 reference found in current catalog.",
+        "evidence": [
+          "https://newsroom.bmwgroup.com/global/download/bfbeee2f-5521-4020-ba05-81ec4370d026/20260721135239292-334.doc",
+          "https://www.press.bmwgroup.com/deutschland/article/detail/T0076759DE/allroundtalent-bmw-x1-%E2%80%93-jetzt-mit-noch-mehr-vielfalt-im-motorenprogramm?language=de"
+        ]
+      },
+      "name": "Alpine Trefoil 2010",
+      "id": "alpine-trefoil-2010",
+      "simulationEstimates": {
+        "cgHeightM": 0.59,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.51,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "zeroToSixtySec": 9.3,
+        "transmissionLabel": "6-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "bmw-520d-touring-2010-f11-6mt-uk",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2010,
+        "make": "BMW",
+        "model": "520d Touring",
+        "trim": "F11 launch four-cylinder turbo-diesel estate six-speed manual RWD, standard chassis; no M Sport, xDrive or eight-speed automatic",
+        "market": "United Kingdom"
+      },
+      "bodyClass": "wagon",
+      "referenceVehicle": "2010 United Kingdom BMW 520d Touring F11 launch four-cylinder turbo-diesel estate six-speed manual RWD, standard chassis; no M Sport, xDrive or eight-speed automatic",
+      "facts": {
+        "powerKw": 135,
+        "torqueNm": 380,
+        "engineDisplacementL": 2,
+        "aspiration": "Turbocharged",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "topSpeedMph": 138
+      },
+      "sources": [
+        {
+          "url": "https://www.press.bmwgroup.com/united-kingdom/article/detail/T0078475EN_GB/the-new-bmw-5-series-touring?language=en_GB",
+          "publisher": "BMW UK March13,2010 launch release",
+          "fields": [
+            "identity",
+            "torqueNm",
+            "transmission",
+            "gearCount",
+            "topSpeedMph",
+            "drivetrain"
+          ],
+          "access": "Factory launch September18,2010;520d380Nm,8.3s0\u201362,138mph,standard6MT across launch Touring range;8AT optional. Base standard equipment, no optional Dynamic package."
+        },
+        {
+          "url": "https://www.press.bmwgroup.com/netherlands/article/detail/T0079064NL/de-nieuwe-bmw-5-serie-touring%3A-vanaf-52-950-euro",
+          "publisher": "BMW Netherlands April1,2010",
+          "fields": [
+            "powerKw",
+            "torqueNm",
+            "identity"
+          ],
+          "access": "Contemporary same European launch520d Touring explicitly135kW184PS380Nm; distinguishes520d from520dA. kW used without recasting rounded184PS asSAEhp."
+        }
+      ],
+      "limits": [
+        "Supplementary identity consumes an existing open canonical660 reservation; no historical backlog growth.",
+        "All suggestedEstimates are explicitly unsupported modeling inputs, not verified factory measurements. No browser, test, or original-art claim.",
+        "Exact factory mass/ratio sheet not retrieved;1710kg driver-excluded curb and all detailed geometry/ratios remain estimates. Not a claim of DIN mass verification.",
+        "Primary release anchors torque and power; engine RPM locations and exact1995cc displacement are not promoted to facts. Runtime uses rounded2.0L. Diesel torque interpolation, idle, losses and fuel behavior are approximations.",
+        "Standard rear self-leveling suspension and optional active systems are approximated by fixed native suspension; no new runtime features.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "meadowrue-2003",
+            "alias": "Meadowrue 2003",
+            "referenceVehicle": "2003 European BMW M5 E39 sedan, S62 V8 six-speed manual",
+            "documentId": "meadowrue-2003",
+            "runtimeId": "saved-car:Meadowrue 2003",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "heath-speedwell-2009",
+            "alias": "Heath Speedwell 2009",
+            "referenceVehicle": "2009 US BMW M5 Sedan E60 5.0 naturally aspirated V10 six-speed manual; not E39/E34 or SMG",
+            "documentId": "heath-speedwell-2009",
+            "runtimeId": "saved-car:Heath Speedwell 2009",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Ordinary F11 diesel estate with2.0four-cylinder/RWD manual, not existing E60V10 or E39V8 M5 sedans; different generation/body, output, mass and intended use.",
+        "evidence": [
+          "https://www.press.bmwgroup.com/united-kingdom/article/detail/T0078475EN_GB/the-new-bmw-5-series-touring?language=en_GB",
+          "https://www.press.bmwgroup.com/netherlands/article/detail/T0079064NL/de-nieuwe-bmw-5-serie-touring%3A-vanaf-52-950-euro"
+        ]
+      },
+      "name": "Dune Clover 2010",
+      "id": "dune-clover-2010",
+      "simulationEstimates": {
+        "reverseRatio": 3.727,
+        "cgHeightM": 0.55,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.51,
+        "redlineRpm": 4500,
+        "revLimitRpm": 4800,
+        "fuelTankUSgal": 18.49204366507039,
+        "zeroToSixtySec": 8,
+        "powerRpm": 4000,
+        "torqueRpm": 1750,
+        "curbKg": 1710,
+        "lengthM": 4.907,
+        "widthM": 1.86,
+        "heightM": 1.462,
+        "wheelbaseM": 2.968,
+        "trackFrontIn": 62.99212598425197,
+        "trackRearIn": 64.01574803149607,
+        "gearRatios": [
+          4.11,
+          2.248,
+          1.403,
+          1,
+          0.802,
+          0.659
+        ],
+        "finalDrive": 3.231,
+        "tireSize": [
+          225,
+          55,
+          17
+        ],
+        "frontTire": [
+          225,
+          55,
+          17
+        ],
+        "rearTire": [
+          225,
+          55,
+          17
+        ],
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 112.1094466901444
+          },
+          {
+            "rpm": 1750,
+            "torqueLbFt": 280.27361672536097
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 280.27361672536097
+          },
+          {
+            "rpm": 4000,
+            "torqueLbFt": 237.7028704911667
+          },
+          {
+            "rpm": 4800,
+            "torqueLbFt": 168.16417003521659
+          }
+        ]
+      }
+    },
+    {
+      "candidateId": "volkswagen-polo-2002-9n1-sdi-5mt",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2002,
+        "make": "Volkswagen",
+        "model": "Polo",
+        "trim": "9N1 Basis five-door1.9SDI ASY naturally aspirated diesel, 02T five-speed manual standard chassis; notTDI,9N3 orGTI",
+        "market": "Germany"
+      },
+      "bodyClass": "hatchback",
+      "referenceVehicle": "2002 Germany Volkswagen Polo 9N1 Basis five-door1.9SDI ASY naturally aspirated diesel, 02T five-speed manual standard chassis; notTDI,9N3 orGTI",
+      "facts": {
+        "powerKw": 47,
+        "powerRpm": 4000,
+        "torqueNm": 125,
+        "torqueRpm": 1600,
+        "engineDisplacementL": 1.896,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "lengthM": 3.897,
+        "widthM": 1.65,
+        "wheelbaseM": 2.46,
+        "transmission": "manual",
+        "gearCount": 5,
+        "heightM": 1.465,
+        "trackFrontIn": 56.496062992125985,
+        "trackRearIn": 56.102362204724415,
+        "fuelTankUSgal": 11.887742356116679
+      },
+      "sources": [
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/motor-versions-polo-4-profile-19151",
+          "publisher": "Volkswagen Classic factory engine archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration"
+          ],
+          "access": "PoloIV1.9SDI1896cc47kW4000rpm125Nm1600\u20132800. SDI denotes naturally aspirated direct-injection diesel, unlike adjacent TDI."
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/vehicle-data-polo-4-profile-19152",
+          "publisher": "Volkswagen Classic factory model archive",
+          "fields": [
+            "identity",
+            "lengthM",
+            "widthM",
+            "wheelbaseM",
+            "drivetrain"
+          ],
+          "access": "9N1 2001\u20132005;1.9SDI2001\u20132005.9N1 dimensions3897\u00d71650,2460wheelbase; factory height range1465\u20131520 not exact trim height."
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/polo-iv-20012009-19150",
+          "publisher": "Volkswagen Classic factory history",
+          "fields": [
+            "identity"
+          ],
+          "access": "End2001 introduction; Basis/Trendline/Comfortline/Highline and three/five-door bodies; front-transverse front-drive architecture. Chosen2002 calendar reference lies within explicit production range, no claim of special2002revision."
+        },
+        {
+          "url": "https://tutoriale-auto.ro/download/6581/?tmstv=1794316799",
+          "publisher": "Volkswagen original Self-study Programme263, public mirror",
+          "fields": [
+            "identity",
+            "transmission",
+            "gearCount",
+            "heightM",
+            "trackFrontIn",
+            "trackRearIn",
+            "fuelTankUSgal"
+          ],
+          "access": "Original60-page factoryPDF downloaded as polo-ssp263.pdf; printed29 engine/gearbox table visually reviewed in polo-gears.png: ASY1.9SDI47kW uses02T5MT, not02R. Printed5 body geometry and45Ltank."
+        }
+      ],
+      "limits": [
+        "Supplementary identity consumes an existing open canonical660 reservation; no historical backlog growth.",
+        "All suggestedEstimates are explicitly unsupported modeling inputs, not verified factory measurements. No browser, test, or original-art claim.",
+        "TorqueRpm1600 is beginning of factory125Nm1600\u20132800 plateau; retain broad torque rather than narrow peak. Tire size/gears/performance/dynamics estimated; launch-body height and tracks are factory SSP263 values.",
+        "Original SSP263 printed29 visually verifies ASY47kWSDI paired exclusively with02Tfive-speed manual. Gear ratios remain estimates; do not substitute adjacent diesel02R. Printed5 geometry and45L apply to launch body; its1025kg mass footnote specifically refers to1.4gasoline two-door and was NOT used.1065kgSDIcurb remains estimated.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "tormentil-2000",
+            "alias": "Tormentil 2000",
+            "referenceVehicle": "2000 continental European Audi A2 1.4 TDI AMF 55kW launch specification, five-door four-seater, LHD FWD EWO5MT,175/60R15,solid roof. Not1.2TDI3L,90PS ATL,laterBHC Euro4,FSI,color.storm,OpenSky or later42litre tank.",
+            "documentId": "tormentil-2000",
+            "runtimeId": "saved-car:Tormentil 2000",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "redwood-clover-2012",
+            "alias": "Redwood Clover 2012",
+            "referenceVehicle": "2012 US Volkswagen Golf Mk6TDI CleanDiesel four-door2.0commonrail6MT standard17inchalloy,notGTD/GTI/R",
+            "documentId": "redwood-clover-2012",
+            "runtimeId": "saved-car:Redwood Clover 2012",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "roundhead-clover-2011",
+            "alias": "Roundhead Clover 2011",
+            "referenceVehicle": "2011 Germany Volkswagen up! take up! two-side-door/three-door hatch 1.0 MPI44kW five-speed manual, non-BlueMotion, standard14-inch steel wheels; not75PS, ASG, CNG or electric",
+            "documentId": "roundhead-clover-2011",
+            "runtimeId": "saved-car:Roundhead Clover 2011",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No Polo runtime identity found. Small9N naturally aspirated1.9diesel differs from gasoline up, turbo common-rail Golf and aluminum turbo3-cylinder A2; no rebadge or year-only variant.",
+        "evidence": [
+          "https://www.volkswagen-newsroom.com/en/motor-versions-polo-4-profile-19151",
+          "https://www.volkswagen-newsroom.com/en/vehicle-data-polo-4-profile-19152",
+          "https://www.volkswagen-newsroom.com/en/polo-iv-20012009-19150",
+          "https://tutoriale-auto.ro/download/6581/?tmstv=1794316799"
+        ]
+      },
+      "name": "Rock Clover 2002",
+      "id": "rock-clover-2002",
+      "simulationEstimates": {
+        "reverseRatio": 3.6,
+        "cgHeightM": 0.53,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.63,
+        "redlineRpm": 4500,
+        "revLimitRpm": 4800,
+        "topSpeedMph": 99.41939075797343,
+        "zeroToSixtySec": 16.4,
+        "curbKg": 1065,
+        "gearRatios": [
+          3.778,
+          2.118,
+          1.36,
+          0.971,
+          0.756
+        ],
+        "finalDrive": 3.389,
+        "tireSize": [
+          165,
+          70,
+          14
+        ],
+        "frontTire": [
+          165,
+          70,
+          14
+        ],
+        "rearTire": [
+          165,
+          70,
+          14
+        ],
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 36.87810746386329
+          },
+          {
+            "rpm": 1600,
+            "torqueLbFt": 92.19526865965821
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 92.19526865965821
+          },
+          {
+            "rpm": 4000,
+            "torqueLbFt": 82.75581417099878
+          },
+          {
+            "rpm": 4800,
+            "torqueLbFt": 55.317161195794924
+          }
+        ]
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "honda-cr-v-ex-2002-us-5mt-4wd-supplemental",
+      "identity": {
+        "year": 2002,
+        "make": "Honda",
+        "model": "CR-V",
+        "trim": "EX Real Time 4WD 2.4 gasoline five-speed manual, standard 15-inch alloy wheels; not LX, automatic or later generation",
+        "market": "United States"
+      },
+      "referenceVehicle": "2002 United States Honda CR-V, EX Real Time 4WD 2.4 gasoline five-speed manual, standard 15-inch alloy wheels; not LX, automatic or later generation",
+      "bodyClass": "five-door five-seat compact crossover; production",
+      "facts": {
+        "powerHp": 160,
+        "powerRpm": 6000,
+        "torqueLbFt": 162,
+        "torqueRpm": 3600,
+        "engineDisplacementL": 2.4,
+        "aspiration": "Naturally Aspirated",
+        "gearCount": 5,
+        "gearRatios": [
+          3.533,
+          1.88,
+          1.212,
+          0.921,
+          0.738
+        ],
+        "reverseRatio": 3.583,
+        "finalDrive": 4.765,
+        "curbKg": 1490.95812019,
+        "lengthM": 4.537,
+        "widthM": 1.782,
+        "heightM": 1.682,
+        "wheelbaseM": 2.62,
+        "trackFrontIn": 60.4,
+        "trackRearIn": 60.6,
+        "tireSize": [
+          205,
+          70,
+          15
+        ],
+        "frontWeightDistribution": 0.5412229996957713,
+        "groundClearanceM": 0.20573999999999998,
+        "fuelTankUSgal": 15.3,
+        "steeringRatio": 16.3,
+        "absEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://hondanews.com/en-US/releases/release-64ea815d6e8d0126225ce8004c34c80f-2002-honda-cr-v-specifications",
+          "publisher": "Honda original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "frontWeightDistribution",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "steeringRatio",
+            "absEnabled"
+          ],
+          "access": "Read 2026-11-18 exact 4WD EX manual column: EPA curb 3287lb, front/rear 1779/1508lb. All output, gearing, geometry and tires from factory table. Real Time 4WD is represented only by generic AWD."
+        }
+      ],
+      "limits": [
+        "Generic estimated 25-percent rear allocation does not reproduce Honda dual-pump engagement logic or its variable front/rear split; no active control or exact transfer behavior claim. Redline and limiter are estimates.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "stonepod-2006",
+            "alias": "Stonepod 2006",
+            "reference": "2006 US Honda Element EX 2WD 2.4 manual",
+            "documentId": "stonepod-2006",
+            "runtimeId": "saved-car:Stonepod 2006",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "shasta-clover-2016",
+            "alias": "Shasta Clover 2016",
+            "reference": "2016 US Honda HR-V LX FWD 1.8 six-speed manual",
+            "documentId": "shasta-clover-2016",
+            "runtimeId": "saved-car:Shasta Clover 2016",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No CR-V identity in current 512-car native inventory. RD-generation 2.4 five-speed AWD crossover differs from Element box-body FWD and later smaller HR-V 1.8 FWD.",
+        "evidence": [
+          "https://hondanews.com/en-US/releases/release-64ea815d6e8d0126225ce8004c34c80f-2002-honda-cr-v-specifications"
+        ]
+      },
+      "name": "Meadow Trefoil 2002",
+      "id": "meadow-trefoil-2002",
+      "simulationEstimates": {
+        "cgHeightM": 0.64,
+        "dragCoefficient": 0.38,
+        "tireGrip": 0.83,
+        "spring": 0.43,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.03,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "topSpeedMph": 110,
+        "zeroToSixtySec": 9.3,
+        "transmission": "manual",
+        "drivetrain": "awd",
+        "centerDifferentialBalance": 0.25,
+        "transmissionLabel": "5-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "acura-tsx-2004-us-6mt-no-navigation-supplemental",
+      "identity": {
+        "year": 2004,
+        "make": "Acura",
+        "model": "TSX",
+        "trim": "2.4 i-VTEC six-speed manual without optional navigation, standard 17-inch wheels; not automatic, later 205hp revision or US Accord DX",
+        "market": "United States"
+      },
+      "referenceVehicle": "2004 United States Acura TSX, 2.4 i-VTEC six-speed manual without optional navigation, standard 17-inch wheels; not automatic, later 205hp revision or US Accord DX",
+      "bodyClass": "four-door five-seat compact executive sedan; production",
+      "facts": {
+        "powerHp": 200,
+        "powerRpm": 6800,
+        "torqueLbFt": 166,
+        "torqueRpm": 4500,
+        "engineDisplacementL": 2.354,
+        "aspiration": "Naturally Aspirated",
+        "gearCount": 6,
+        "gearRatios": [
+          3.267,
+          1.88,
+          1.355,
+          1.028,
+          0.825,
+          0.659
+        ],
+        "reverseRatio": 3.583,
+        "finalDrive": 4.7,
+        "redlineRpm": 7100,
+        "curbKg": 1465.1033551,
+        "lengthM": 4.657,
+        "widthM": 1.762,
+        "heightM": 1.456,
+        "wheelbaseM": 2.67,
+        "trackFrontIn": 59.6,
+        "trackRearIn": 59.6,
+        "tireSize": [
+          215,
+          50,
+          17
+        ],
+        "frontWeightDistribution": 0.6,
+        "groundClearanceM": 0.15748,
+        "fuelTankUSgal": 17.1,
+        "steeringRatio": 14.8,
+        "absEnabled": true,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://acuranews.com/en-US/releases/release-6a2f3de869ef0af45df662004c34c653-2004-acura-tsx-specifications",
+          "publisher": "Acura original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "redlineRpm",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "frontWeightDistribution",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "steeringRatio",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "Read 2026-11-18 factory 2004 specification table: SAE net 200hp, manual without navigation 3230lb versus 3241lb with navigation and 3318lb automatic. Ground clearance selected factory non-load 6.2in; full-load is 4.7in."
+        }
+      ],
+      "limits": [
+        "VSA/TCS hardware is documented; game generic traction control is not an exact yaw-control or Honda VSA simulation.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "marestail-2003",
+            "alias": "Marestail 2003",
+            "reference": "2003 US Honda Accord DX 2.4 five-speed manual sedan",
+            "documentId": "marestail-2003",
+            "runtimeId": "saved-car:Marestail 2003",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No TSX or Euro/Japan Accord identity found in native catalog. Smaller CL9 European/Japanese-Accord-derived body, higher-output K24A2 and six-speed transmission differ from Marestail US-market Accord DX 160hp five-speed; not badge-only duplicate.",
+        "evidence": [
+          "https://acuranews.com/en-US/releases/release-6a2f3de869ef0af45df662004c34c653-2004-acura-tsx-specifications"
+        ]
+      },
+      "name": "Broadleaf Trefoil 2004",
+      "id": "broadleaf-trefoil-2004",
+      "simulationEstimates": {
+        "cgHeightM": 0.51,
+        "dragCoefficient": 0.28,
+        "tireGrip": 0.88,
+        "spring": 0.5,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "wheelWellAware": true,
+        "revLimitRpm": 7300,
+        "topSpeedMph": 133,
+        "zeroToSixtySec": 7.3,
+        "transmission": "manual",
+        "drivetrain": "fwd",
+        "transmissionLabel": "6-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "nissan-xterra-xe-2003-us-2-4-5mt-4x2-supplemental",
+      "identity": {
+        "year": 2003,
+        "make": "Nissan",
+        "model": "Xterra",
+        "trim": "XE four-cylinder 2.4 KA24DE rear-wheel-drive five-speed manual, basic equipment; not XE-V6, SE, supercharged or 4WD",
+        "market": "United States"
+      },
+      "referenceVehicle": "2003 United States Nissan Xterra, XE four-cylinder 2.4 KA24DE rear-wheel-drive five-speed manual, basic equipment; not XE-V6, SE, supercharged or 4WD",
+      "bodyClass": "five-door five-seat body-on-frame compact SUV; production",
+      "facts": {
+        "powerHp": 143,
+        "torqueLbFt": 154,
+        "torqueRpm": 4000,
+        "engineDisplacementL": 2.4,
+        "aspiration": "Naturally Aspirated",
+        "gearCount": 5,
+        "lengthM": 4.521199999999999,
+        "wheelbaseM": 2.6492199999999997,
+        "absEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://usa.nissannews.com/en-US/releases/release-bb2a07dc953a419885e3e8cd6ccd68e5-2003-nissan-xterra",
+          "publisher": "Nissan original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "gearCount",
+            "lengthM",
+            "wheelbaseM",
+            "absEnabled"
+          ],
+          "access": "Read 2026-11-18 archived 2003 press kit Overview and At A Glance. Confirms XE four-cylinder 2WD manual, 143hp/154lbft at 4000rpm, 104.3in wheelbase/178.0in length, ABS. CMS dates show later migration dates; model-year text is explicitly 2003. Remaining numerical fields are estimates, not factory-table readings."
+        }
+      ],
+      "limits": [
+        "1596kg estimated base manual unladen curb basis. Estimated 235/70R15 fitment must not be confused with optional 265/70R16 or supercharged SE 17-inch wheels. No 4WD modes or optional VDC package modeled.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "sumac-40-2012",
+            "alias": "Sumac 40 2012",
+            "reference": "2012 US Nissan Xterra X 4x2 4.0 V6 five-speed automatic",
+            "documentId": "sumac-40-2012",
+            "runtimeId": "saved-car:Sumac 40 2012",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "First-generation WD22 four-cylinder manual Xterra is mechanically distinct from Sumac40 second-generation N50 4.0V6 automatic: different chassis, engine, transmission and dimensions. Not another model year of the same powertrain.",
+        "evidence": [
+          "https://usa.nissannews.com/en-US/releases/release-bb2a07dc953a419885e3e8cd6ccd68e5-2003-nissan-xterra"
+        ]
+      },
+      "name": "Silver Trefoil 2003",
+      "id": "silver-trefoil-2003",
+      "simulationEstimates": {
+        "reverseRatio": 3.382,
+        "cgHeightM": 0.72,
+        "groundClearanceM": 0.23,
+        "dragCoefficient": 0.45,
+        "tireGrip": 0.78,
+        "spring": 0.56,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.21,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.03,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 6000,
+        "revLimitRpm": 6300,
+        "fuelTankUSgal": 19.4,
+        "topSpeedMph": 100,
+        "zeroToSixtySec": 12.2,
+        "transmission": "manual",
+        "drivetrain": "rwd",
+        "finalDrive": 4.363,
+        "gearRatios": [
+          3.321,
+          1.902,
+          1.308,
+          1,
+          0.759
+        ],
+        "powerRpm": 5200,
+        "curbKg": 1596,
+        "widthM": 1.78816,
+        "heightM": 1.8796,
+        "trackFrontIn": 60,
+        "trackRearIn": 59.3,
+        "tireSize": [
+          235,
+          70,
+          15
+        ]
+      }
+    }
+  ],
+  "deferred": []
+}

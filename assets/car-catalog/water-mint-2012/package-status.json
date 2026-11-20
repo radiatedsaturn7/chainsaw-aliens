@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "water-mint-2012",
+  "name": "Water Mint 2012",
+  "stableCarId": "saved-car:Water Mint 2012",
+  "referenceVehicle": "2012 continental Europe MINI John Cooper Works GP, R56 GP two-seat launch road car, six-speed manual, standard215/40R17 sports tires; not2006GP or2020GP",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "274157077ba61b655767d2e3fa83c64f589e917b7c157a4ad71c02d2342225b1",
+    "dashboard": "4557f4e9114357ad9a523be0f9a0add02cef4a6ca19562485f520f595855acad",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

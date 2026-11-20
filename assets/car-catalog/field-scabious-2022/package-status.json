@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "field-scabious-2022",
+  "name": "Field Scabious 2022",
+  "stableCarId": "saved-car:Field Scabious 2022",
+  "referenceVehicle": "2022 US Hyundai Elantra N, standard US 6-speed manual, not N Line or TCR",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "f751adcbaff8d8d00ecb644cd3998163efa06ffc9d36ebcdcbbdf8542bb26a37",
+    "dashboard": "a794cc1e0d999a3717f5c6e742b2f01b314740cdcdf687683655af7f3410472c",
+    "tires": "993c20e8fd7f9be8f5c0a4078b6e2fdaaab9f549e4390c81d359623f6a65850f"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

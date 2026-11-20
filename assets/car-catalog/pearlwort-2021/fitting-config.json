@@ -1,0 +1,162 @@
+{
+  "id": "pearlwort-2021",
+  "name": "Pearlwort 2021",
+  "rosterCommit": "757337b575627e7d327da108e2a00951f1e8dbe1",
+  "expectedDocumentSha256": "21ea86d6bb8e7211e45abd2556e1e395f63feb73834bbc79e4db6f9f08d23fbe",
+  "sourceDirectory": "assets/car-catalog/pearlwort-2021",
+  "sourceHashes": {
+    "body": "08c0f4e86d32b839ac35d9350675d1e0146fc11c85b24086bdbb9a8a7699bcf1",
+    "dashboard": "efb2129115c3b602641356888daa306313d5d42b12fbc550abf57190364f7995",
+    "tires": "9d4dee5746e27f220b9269d7fb35ba60ba82b3d1ee4de3722758dfcb4972581d"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 56,
+        "y": 343,
+        "radius": 25
+      },
+      {
+        "wheel": "fr",
+        "x": 320,
+        "y": 343,
+        "radius": 25
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 644,
+        "y": 305,
+        "radius": 37
+      },
+      {
+        "wheel": "rr",
+        "x": 813,
+        "y": 290,
+        "radius": 30
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 965,
+        "y": 300,
+        "radius": 45
+      },
+      {
+        "wheel": "rr",
+        "x": 1275,
+        "y": 300,
+        "radius": 44
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1380,
+        "y": 288,
+        "radius": 26
+      },
+      {
+        "wheel": "rr",
+        "x": 1517,
+        "y": 299,
+        "radius": 35
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 55,
+        "y": 769,
+        "radius": 25
+      },
+      {
+        "wheel": "rl",
+        "x": 320,
+        "y": 769,
+        "radius": 25
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 628,
+        "y": 742,
+        "radius": 36
+      },
+      {
+        "wheel": "fl",
+        "x": 780,
+        "y": 727,
+        "radius": 25
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 911,
+        "y": 738,
+        "radius": 45
+      },
+      {
+        "wheel": "fl",
+        "x": 1234,
+        "y": 742,
+        "radius": 45
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1375,
+        "y": 721,
+        "radius": 26
+      },
+      {
+        "wheel": "fl",
+        "x": 1507,
+        "y": 750,
+        "radius": 37
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      240,
+      395,
+      420,
+      145
+    ],
+    "wheel": [
+      450,
+      620,
+      560
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e4efff",
+    "viewportWheelScale": 1.92,
+    "gaugeBackground": "#10151b"
+  },
+  "steeringWheelSource": {
+    "artRef": "ct-steeringwheel",
+    "frameIndex": 0
+  }
+}

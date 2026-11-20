@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "birch-clover-2004",
+  "name": "Birch Clover 2004",
+  "stableCarId": "saved-car:Birch Clover 2004",
+  "referenceVehicle": "2004 United States Toyota Highlander, base2.4four-cylinder front-wheel-drive four-speed automatic,five seats,nooptionalroofrack or3rdrow; not3.3V6,Limited,4WD orhybrid",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "birch-clover-2004",
+  "sourceHashes": {
+    "body": "aa82e1a0e16a64f5874f7e49dd5c8a3344c678ba8705ac7203c2c43615fb8fba",
+    "dashboard": "e7ecfbd6808e457e71f16d2000abcd52a270a228f2bb3b585125ea2006ed1829",
+    "tires": "4cee36a1d814618145d47065cb5a2e2c276373b48fbb2f395a644bbe7ff38b53"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

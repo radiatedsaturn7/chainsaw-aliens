@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "white-tip-clover-2012",
+  "name": "White-tip Clover 2012",
+  "stableCarId": "saved-car:White-tip Clover 2012",
+  "referenceVehicle": "2012 United States Ford Focus, US S four-door sedan2.0Ti-VCTGDI five-speedmanual,base15-inchcoveredsteelwheels",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "ce602dc9d03f7648a9166fd4b85ec1aedbff6816c9a3f06b04a94a5083ea59b1",
+    "dashboard": "6e88690f80a6d487c27cef7613f3fc67d2c3b027b6ec073921ab64b2f750f8d4",
+    "tires": "53c3f27c0747969c8149d2e3c8a26de21a6bbad438a7e50587473fc0d0fae04a"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

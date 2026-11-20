@@ -1,0 +1,79 @@
+{
+  "id": "crimson-clover-1988",
+  "name": "Crimson Clover 1988",
+  "stableCarId": "saved-car:Crimson Clover 1988",
+  "runtimeId": "saved-car:Crimson Clover 1988",
+  "candidateId": "mitsubishi-starion-esi-r-1988-roster-candidate",
+  "referenceVehicle": "1988 UnitedStates MitsubishiStarion ESI-R widebody2.555LG54B intercooledturbo RWDfive-speedmanual",
+  "identity": {
+    "year": 1988,
+    "make": "Mitsubishi",
+    "model": "Starion ESI-R",
+    "trim": "US widebody G54B2555cc intercooledturbo RWD5MT;notESIautomatic orJapanese2.0GSR",
+    "market": "United States"
+  },
+  "bodyClass": "two-door four-seat widebody hatchback coupe; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1981,
+      793
+    ],
+    "cluster": [
+      277,
+      531,
+      436,
+      119
+    ],
+    "wheel": [
+      475,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://importarchive.com/brochure/mitsubishistarion1988_01",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "transmission",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "tireSize",
+        "rearTireSize",
+        "fuelTankUSgal"
+      ]
+    },
+    {
+      "url": "https://importarchive.com/brochures/mitsubishi/mitsubishistarion1988_01/mitsubishistarion1988_01_015.jpg",
+      "fields": [
+        "visualtechnicaltable"
+      ]
+    }
+  ]
+}

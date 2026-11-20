@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "myrtle-clover-2005",
+  "name": "Myrtle Clover 2005",
+  "stableCarId": "saved-car:Myrtle Clover 2005",
+  "referenceVehicle": "2005 United States Mercedes-Benz SLK350 R171 3498cc naturally aspirated V6 standard six-speed manual, standard17-inch staggered wheels, roof up; not SLK55 AMG or R172",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "61a5e335785e154ee32fa675970aa6b109fa623be38bdaeed29b8e84fb865dfb",
+    "dashboard": "fd027c38c58fad21dcb5b7e5aa5363219275bc96ab1d6a515aa4a3ba24ffab4a",
+    "tires": "3f208bc84eb17aebba61cbc91a8ad8593a4464f879282bc1a595eb7c2827e49b"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

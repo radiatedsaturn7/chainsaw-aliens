@@ -1,0 +1,925 @@
+{
+  "schemaVersion": 1,
+  "base": "0c466f94b8faee2efb02f70d6062c9cff667727f",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "volkswagen-golf-gti-16v-mk2-1992-roster-candidate",
+      "identity": {
+        "year": 1992,
+        "make": "Volkswagen",
+        "model": "Golf GTI 16V Mk2",
+        "trim": "US 2.0-liter DOHC16V three-door catalyst five-speed manual",
+        "market": "United States"
+      },
+      "referenceVehicle": "1992 United States Volkswagen GTI16V Mk2, 2.0-liter naturally aspirated DOHC16-valve fuel-injected inline-four, FWD close-ratio5MT and three-way catalyst; not European1.8, base8V, G60 or Mk3.",
+      "facts": {
+        "powerHp": 134,
+        "powerRpm": 5800,
+        "torqueLbFt": 133,
+        "torqueRpm": 4400,
+        "engineDisplacementL": 2.0,
+        "transmission": "manual",
+        "gearCount": 5,
+        "fuelTankUSgal": 14.5
+      },
+      "sources": [
+        {
+          "url": "https://xr793.com/wp-content/uploads/2019/10/1992-VW-GTI.pdf",
+          "publisher": "Volkswagen of America factory 1992 GTI brochure, Dezo's Garage archive",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "fuelTankUSgal"
+          ],
+          "access": "Read2026-11-18, PDFpage8 right-hand GTI16V engine column:134SAEnethp5800,133lbft4400,121cuin nominal2.0L,KE-Motronic injection and three-way catalyst. Manual5speed and14.5USgal tank. Low-resolution scan; geometry and gear ratios intentionally not treated as verified."
+        },
+        {
+          "url": "https://www.volkswagen-newsroom.com/en/golf-2-19831991-19470",
+          "publisher": "Volkswagen AG heritage archive",
+          "fields": [
+            "generation relationship only"
+          ],
+          "access": "Factory European-generation timeline, not evidence for1992US power or model-year. US exactyear comes from1992US brochure."
+        }
+      ],
+      "limits": [
+        "1110kg curb mass is estimated, not gross mass; factory curb-weight/fuel/driver convention unavailable in inspected brochure. Geometry, tracks, tires, individual ratios/final drive and exact displacement1984cc are provisional, while source nominal2.0L is retained.",
+        "Estimated7.8sec0\u201360 and125mph targets align with a third-party transcription said to reproduce Volkswagen literature, but not claimed independently factory-verified here. No reliance on source0\u201350 as0\u201360.",
+        "Power is134SAEnethp, not European139metricPS or prior US123hp1.8. Naturally aspirated16V with catalyst; no turbo or G-lader.",
+        "All other dynamics, load distribution, CG, drag/grip, suspension, RPMlimits, shift response and curve interpolation are explicit simulation estimates. Standard open differential and passive suspension approximation; no racing upgrades.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Fumitory 1983",
+            "documentId": "fumitory-1983",
+            "runtimeId": "saved-car:Fumitory 1983",
+            "reference": "German GolfI GTI1.8 SOHC82kW",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Sandwort 1988",
+            "documentId": "sandwort-1988",
+            "runtimeId": "saved-car:Sandwort 1988",
+            "reference": "German SciroccoII GTX16V1.8 102kW coupe",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Spotted Medick 1981",
+            "documentId": "spotted-medick-1981",
+            "runtimeId": "saved-car:Spotted Medick 1981",
+            "reference": "US SciroccoS Mk1 1.7SOHC74SAEnethp",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Quaking Grass 2003",
+            "documentId": "quaking-grass-2003",
+            "runtimeId": "saved-car:Quaking Grass 2003",
+            "reference": "GolfIVR32 VR6 AWD",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Scabious 2015",
+            "documentId": "scabious-2015",
+            "runtimeId": "saved-car:Scabious 2015",
+            "reference": "GolfVII GTIS2.0TSI210SAEhp",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Second-generation Golf hatchback with US two-liter naturally aspirated DOHC16V and close-ratio manual. Different generation/chassis and engine head/displacement from GolfI; distinct hatch body and US2.0 catalyst powertrain from German SciroccoII1.8 coupe. No existing Mk2 GTI variant found; not padding multiple Mk2 years.",
+        "evidence": [
+          "https://xr793.com/wp-content/uploads/2019/10/1992-VW-GTI.pdf",
+          "https://www.volkswagen-newsroom.com/en/golf-2-19831991-19470",
+          "https://www.volkswagen-newsroom.com/en/engine-versions-scirocco-2-profile-19653"
+        ],
+        "audit": "Read wave36 catalog343 entries including authoredwave35. Searched complete native provenance/inspiration plus tests/docs for1992Golf/GTI16V. Backlog exactslot confirmed separately; absence not inferred from unlinkedID."
+      },
+      "name": "Smooth Sowthistle 1992",
+      "id": "smooth-sowthistle-1992",
+      "simulationEstimates": {
+        "reverseRatio": 3.17,
+        "cgHeightM": 0.47,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.35,
+        "tireGrip": 0.84,
+        "spring": 0.47,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.62,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "aspiration": "Naturally aspirated",
+        "topSpeedMph": 125,
+        "zeroToSixtySec": 7.8,
+        "drivetrain": "fwd",
+        "curbKg": 1110,
+        "lengthM": 4.04,
+        "widthM": 1.68,
+        "heightM": 1.415,
+        "wheelbaseM": 2.475,
+        "trackFrontIn": 56.5,
+        "trackRearIn": 56.0,
+        "tireSize": [
+          195,
+          50,
+          15
+        ],
+        "frontTire": [
+          195,
+          50,
+          15
+        ],
+        "rearTire": [
+          195,
+          50,
+          15
+        ],
+        "gearRatios": [
+          3.45,
+          2.12,
+          1.44,
+          1.13,
+          0.91
+        ],
+        "finalDrive": 3.67,
+        "transmissionLabel": "five-speed close-ratio manual"
+      }
+    },
+    {
+      "candidateId": "toyota-mark-ii-tourer-v-jzx100-1997-roster-candidate",
+      "identity": {
+        "year": 1997,
+        "make": "Toyota",
+        "model": "Mark II Tourer V",
+        "trim": "Japan JZX100 hardtop 1JZ-GTE VVT-i five-speed manual, September1996\u2013August1997 specification, standard equipment",
+        "market": "Japan"
+      },
+      "referenceVehicle": "Early1997 Japan Toyota MarkII TourerV JZX100 1JZ-GTE VVT-i single-turbo2.491L RWD5MT hardtop, standard1470kg version; not Grande, Chaser, automatic or modified drift car",
+      "facts": {
+        "powerKw": 206,
+        "powerRpm": 6200,
+        "torqueNm": 377.6,
+        "torqueRpm": 2400,
+        "engineDisplacementL": 2.491,
+        "aspiration": "Turbocharged",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "reverseRatio": 3.18,
+        "absEnabled": true,
+        "curbKg": 1470,
+        "lengthM": 4.76,
+        "widthM": 1.755,
+        "heightM": 1.4,
+        "wheelbaseM": 2.73,
+        "trackFrontIn": 58.46456692913386,
+        "trackRearIn": 58.66141732283465,
+        "finalDrive": 3.727,
+        "fuelTankUSgal": 18.49204366507039,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://toyota.jp/ucar/catalog/brand-TOYOTA/car-MARK_II/199609/1001095/",
+          "publisher": "Toyota Motor Corporation certified-used-car historical model catalog, exact TourerV5MT entry; not a period brochure",
+          "fields": [
+            "identity",
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "reverseRatio",
+            "absEnabled",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "finalDrive",
+            "fuelTankUSgal",
+            "tractionControlEnabled"
+          ],
+          "access": "Read2026-11-18. Entry coversSeptember1996\u2013August1997;1470kg is manual vehicleweight versus1480kg automatic sibling. Source explicitly5MT,LSDstandard,3.180reverse,3.727final; tires omitted."
+        },
+        {
+          "url": "https://www.toyota-global.com/company/history_of_toyota/75years/vehicle_lineage/car/id60013052/index.html",
+          "publisher": "Toyota Motor Corporation official75-year vehicle lineage, eighth-generationMarkII",
+          "fields": [
+            "generation",
+            "single-turbo VVT-i identity",
+            "net power basis",
+            "dimensions",
+            "ABS"
+          ],
+          "access": "Official HTML table and description read2026-11-18. Grande weights deliberately not used; description independently confirms280PS single-turbo replacement and standardABS. Modelrange catalog overview incorrectly says twin-turbo; dedicated history controls that detail."
+        }
+      ],
+      "limits": [
+        "Historical Toyota-hosted model catalog supplies exact variant parameters; it is not represented as a contemporaneous factory engineering sheet. Published206kW is converted by builder, not silently treated as280SAEhp.",
+        "1997 identity specifically means beforeAugust1997 running change. No Grande curbweight, automatic1480kg or laterJZX110 data mixed.",
+        "Forwardgear ratios, staggered tire sizes, limiter/redline, chassis parameters, acceleration and112mph modeled limiter target are explicit estimates. Source supplies five-speed count, reverse andfinal only.",
+        "GenericLSD/tractioncontrol parameters approximate the roadcar; no dynamicVVT-i or detailed boostcontroller fidelity claimed. SharedRTG-001 artwork remainsplaceholder.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "sunstriker-gt-1994",
+            "alias": "Sunstriker GT 1994",
+            "reference": "1994USSupraTurbo2JZ-GTE3.0L6MT",
+            "documentId": "sunstriker-gt-1994",
+            "runtimeId": "saved-car:Sunstriker GT 1994",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "toyota-soarer-2-5-gt-t-1997-roster-candidate",
+            "alias": "Marsh Sowthistle 1997",
+            "reference": "1997JapanJZZ30two-door1JZ-GTE5MT",
+            "documentId": "marsh-sowthistle-1997",
+            "runtimeId": "saved-car:Marsh Sowthistle 1997",
+            "scope": "same-wave"
+          }
+        ],
+        "distinction": "Complete native/provenance and authored-test audit found noMarkII,JZX100orChaser. Four-doorX100 hardtop is distinct fromexistingSupra3.0sports coupe. Same-waveSoarer sharesengine but uses a different longtwo-doorbody, shorter2690mmwheelbase,90kgmoremass, widertracks, differentfinaldrive andopenstandarddiff; not badge engineering.",
+        "evidence": [
+          "https://toyota.jp/ucar/catalog/brand-TOYOTA/car-MARK_II/199609/1001095/",
+          "https://www.toyota-global.com/company/history_of_toyota/75years/vehicle_lineage/car/id60013052/index.html",
+          "https://toyota.jp/ucar/catalog/brand-TOYOTA/car-SOARER/199708/1000853/"
+        ]
+      },
+      "name": "Prickly Sowthistle 1997",
+      "id": "prickly-sowthistle-1997",
+      "simulationEstimates": {
+        "cgHeightM": 0.53,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.32,
+        "tireGrip": 0.95,
+        "spring": 0.5,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.18,
+        "frontOverhangM": 0.95,
+        "rearDifferentialAccel": 0.32,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 6800,
+        "revLimitRpm": 7000,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 6.0,
+        "gearRatios": [
+          3.251,
+          1.955,
+          1.31,
+          1,
+          0.753
+        ],
+        "tireSize": [
+          205,
+          55,
+          16
+        ],
+        "rearTireSize": [
+          225,
+          50,
+          16
+        ],
+        "frontTire": [
+          205,
+          55,
+          16
+        ],
+        "rearTire": [
+          225,
+          50,
+          16
+        ]
+      }
+    },
+    {
+      "candidateId": "toyota-soarer-2-5-gt-t-1997-roster-candidate",
+      "identity": {
+        "year": 1997,
+        "make": "Toyota",
+        "model": "Soarer 2.5 GT-T",
+        "trim": "Japan JZZ30 August1997 standard coupe five-speed manual, no L package or optional LSD",
+        "market": "Japan"
+      },
+      "referenceVehicle": "Late1997 Japan Toyota Soarer2.5GT-T JZZ30 VVT-i1JZ-GTE2.491L turbo RWD5MT standard coupe1560kg, withoutLpackage oroptionalLSD; not LexusSC400,4.0active-suspension model or earlier twin-turbo",
+      "facts": {
+        "powerKw": 206,
+        "powerRpm": 6200,
+        "torqueNm": 377.6,
+        "torqueRpm": 2400,
+        "engineDisplacementL": 2.491,
+        "aspiration": "Turbocharged",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "reverseRatio": 3.18,
+        "absEnabled": true,
+        "curbKg": 1560,
+        "lengthM": 4.9,
+        "widthM": 1.805,
+        "heightM": 1.35,
+        "wheelbaseM": 2.69,
+        "trackFrontIn": 59.84251968503937,
+        "trackRearIn": 59.84251968503937,
+        "finalDrive": 4.083,
+        "fuelTankUSgal": 20.605420083935577,
+        "tireSize": [
+          225,
+          55,
+          16
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://toyota.jp/ucar/catalog/brand-TOYOTA/car-SOARER/199708/1000853/",
+          "publisher": "Toyota Motor Corporation certified-used-car historical model catalog, exact August1997Soarer2.5GT-T5MT entry; not a period brochure",
+          "fields": [
+            "identity",
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "reverseRatio",
+            "absEnabled",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "finalDrive",
+            "fuelTankUSgal",
+            "tireSize"
+          ],
+          "access": "Read2026-11-18.1560kg manual vehicleweight;1570kg4AT explicitlyexcluded. Exactentry5MT,3.180reverse,4.083final,225/55R16 front/rear;LSDoptional, notstandard. Doublewishbonecoil suspension, notV8active suspension."
+        },
+        {
+          "url": "https://toyota.jp/ucar/catalog/brand-TOYOTA/car-SOARER/",
+          "publisher": "Toyota Motor Corporation historical Soarer model overview",
+          "fields": [
+            "1997market identity",
+            "1JZ-GTE VVT-i turbo"
+          ],
+          "access": "August1997section confirms VVT-i1JZ-GTE andmanual availability. Overview contains loose twin-turbo wording; detailedrow only states turbo. No unsupported turbo-count calibration encoded."
+        }
+      ],
+      "limits": [
+        "Toyota-hosted historical model catalog is the exact variant source, not a period brochure.206kW is factorycatalogmetric output; do not call280PS280SAEhp.",
+        "Model isAugust1997standard5MT1560kg withoutLpackage oroptionalLSD. The1UZV8activehydraulic suspension and4WS belongtoothergrades and are notmodeled.",
+        "Shared1JZ engine does not makeMarkIIandSoareridentical: body, wheelbase, tracks,curbmass,finaldrive,differential andestimatedridecalibration differ.",
+        "Forwardgear ratios, CG/load distribution, suspension, redline/limiter, tractioncontrolselection and performance targets are explicit estimates. Reverse/final suppliedbycatalog. Noactiveenginecontrollerfidelityclaimed.",
+        "SharedRTG-001 assets remainplaceholder; no finishedart or verifieddriving claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "sunstriker-gt-1994",
+            "alias": "Sunstriker GT 1994",
+            "reference": "1994USSupraTwinTurbo3.0L6MT",
+            "documentId": "sunstriker-gt-1994",
+            "runtimeId": "saved-car:Sunstriker GT 1994",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "toyota-mark-ii-tourer-v-jzx100-1997-roster-candidate",
+            "alias": "Prickly Sowthistle 1997",
+            "reference": "Early1997JZX100four-door1JZ-GTE5MT",
+            "documentId": "prickly-sowthistle-1997",
+            "runtimeId": "saved-car:Prickly Sowthistle 1997",
+            "scope": "same-wave"
+          }
+        ],
+        "distinction": "Catalog/provenance plus authoredtests/docs audit found noSoarer,JZZ30orLexusSC. Z30two-doorGT differs fromexistingSupra3.0six-speed and same-waveMarkIIhardtop:1560vs1470kg,2690vs2730mmWB,1520mmtracks,4.083vs3.727final andopenvsLSDrear. No year-only or badge-onlypadding.",
+        "evidence": [
+          "https://toyota.jp/ucar/catalog/brand-TOYOTA/car-SOARER/199708/1000853/",
+          "https://toyota.jp/ucar/catalog/brand-TOYOTA/car-MARK_II/199609/1001095/"
+        ]
+      },
+      "name": "Marsh Sowthistle 1997",
+      "id": "marsh-sowthistle-1997",
+      "simulationEstimates": {
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.31,
+        "tireGrip": 0.95,
+        "spring": 0.47,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.18,
+        "frontOverhangM": 0.95,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.55,
+        "redlineRpm": 6800,
+        "revLimitRpm": 7000,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 6.4,
+        "gearRatios": [
+          3.251,
+          1.955,
+          1.31,
+          1,
+          0.753
+        ]
+      }
+    },
+    {
+      "candidateId": "ford-f-100-1956-roster-candidate",
+      "identity": {
+        "year": 1956,
+        "make": "Ford",
+        "model": "F-100",
+        "trim": "US standard cab6.5-foot pickup,223CostCutterSix,standard3MT,nooverdrive,unladen",
+        "market": "United States"
+      },
+      "referenceVehicle": "1956 US Ford F-100 standardcab110in-wheelbase6.5-foot pickup,223cuin CostCutter OHV inline-six,standard column-shift3MT/nooverdrive,3.92axle,RWD; noCustomCab,Fordomatic,V8orlongbox",
+      "facts": {
+        "engineDisplacementL": 3.654315272,
+        "aspiration": "Naturally aspirated",
+        "powerRpm": 4000,
+        "torqueRpm": 2000,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "transmissionLabel": "Standard column-shift three-speed Synchro-Silent without overdrive",
+        "gearCount": 3,
+        "finalDrive": 3.92,
+        "wheelbaseM": 2.794,
+        "fuelTankUSgal": 18,
+        "steeringRatio": 18.2,
+        "periodPublishedRatings": {
+          "powerHp": 133,
+          "powerRpm": 4000,
+          "torqueLbFt": 202,
+          "torquePlateauStartRpm": 1600,
+          "torquePlateauEndRpm": 2600,
+          "ratingBasis": "OriginalFord brochure explicitly maximum GROSS horsepower and torque, not installed net or modernSAEJ1349."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://cdn.shopify.com/s/files/1/0628/3352/4921/files/FordImages-1956-Ford-Light-Duty-Trucks.pdf?v=1793542025",
+          "publisher": "Ford MotorCompany original1956 LightDutyTrucks brochure,FormFD7581,printed8-55; FordImages archive scan",
+          "fields": [
+            "223I6 grossoutput",
+            "110in shortwheelbase",
+            "3MT",
+            "3.92sixmanual axle",
+            "18gal tank",
+            "18.2steering",
+            "6.70-15standardtire",
+            "solidfrontaxleleafsprings"
+          ],
+          "access": "2026-11-18 PDFpages2,3,6,7 visually inspected. Printedpages2-5,10-12; page6 explicitlylabels grossratings and3/4-speedSix axle3.92. SevenpagePDF3.7MB, noOCR."
+        },
+        {
+          "url": "https://fordimages.com/products/0401-6685-jpg",
+          "publisher": "FordImages Ford archive",
+          "fields": [
+            "original brochure linkage",
+            "USmodelrange",
+            "shortversuslongbox",
+            "periodgrossbasis"
+          ],
+          "access": "2026-11-18 read; downloadable originalfactoryPDF preferred over photograph equipment inference."
+        }
+      ],
+      "limits": [
+        "133hp4000 and202lbft1600\u20132600 are explicitly GROSS factorybench ratings; installed110hp/180lbft are conservative gameplay estimates, not a certified conversion.2000rpm torqueanchor is estimated center of publishedgrossplateau.",
+        "1450kg is estimated unladenoperatingcurb, NOT factory5000lb maximumGVW and not a measuredtruck. Length,width,height,tracks andoverhang also estimates; only110in wheelbase is factory geometryfact here.",
+        "3.92axle is factorySixmanual3/4speed; three-speed ratios3.09/1.77/1 and reverse3.74 are estimated pendingfactorygearchart. NoFordomatic,overdriveor4speed.",
+        "Standard6.70-15fourply bias-ply tubeless tire represented185/85R15 dimensional approximation only; no radialconstructionclaim.",
+        "Nohelper derivescurbfromGVW. Suspension/bodydrag/brakes/steeringdynamics and torqueawayfromanchors,0-60andtopspeed are estimates;0-60target19s notroadtest. SharedRTG001 art.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Common Toadflax 1972",
+            "documentId": "common-toadflax-1972",
+            "runtimeId": "saved-car:Common Toadflax 1972",
+            "reference": "1972 Chevrolet K10 KS10734 250I6/3MT,4WDchassis in2H",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Brooklime 2003",
+            "documentId": "brooklime-2003",
+            "runtimeId": "saved-car:Brooklime 2003",
+            "reference": "2003 FordRangerXL2.3DOHCI4 5MT2WD",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Toadflax 1999",
+            "documentId": "toadflax-1999",
+            "runtimeId": "saved-car:Toadflax 1999",
+            "reference": "1999 SVTF150Lightning supercharged5.4V8/4AT",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Actual343-entry nativeprovenance audit contains no1956F100 or223CostCutter pickup. Earliercompact110in-wheelbase2WD beam-front leafsprung frame with3.65LcarburetedI6 and3MT differs from1972K10parttime4WDchassis,modernEFIcompactRanger andsuperchargedLightning. Not a shared-generation badge variant.",
+        "evidence": [
+          "https://cdn.shopify.com/s/files/1/0628/3352/4921/files/FordImages-1956-Ford-Light-Duty-Trucks.pdf?v=1793542025"
+        ]
+      },
+      "name": "Tufted Vetch 1956",
+      "id": "tufted-vetch-1956",
+      "simulationEstimates": {
+        "reverseRatio": 3.74,
+        "cgHeightM": 0.73,
+        "groundClearanceM": 0.21,
+        "dragCoefficient": 0.59,
+        "tireGrip": 0.72,
+        "spring": 0.43,
+        "antiRollRear": 0.14,
+        "suspensionTravelM": 0.19,
+        "frontOverhangM": 0.75,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 500,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.57,
+        "redlineRpm": 4300,
+        "revLimitRpm": 4600,
+        "topSpeedMph": 82,
+        "zeroToSixtySec": 19,
+        "powerHp": 110,
+        "torqueLbFt": 180,
+        "curbKg": 1450,
+        "lengthM": 4.6,
+        "widthM": 1.93,
+        "heightM": 1.91,
+        "trackFrontIn": 60.5,
+        "trackRearIn": 60,
+        "gearRatios": [
+          3.09,
+          1.77,
+          1
+        ],
+        "tireSize": [
+          185,
+          85,
+          15
+        ]
+      }
+    },
+    {
+      "candidateId": "ford-anglia-1959-105e-candidate",
+      "identity": {
+        "year": 1959,
+        "make": "Ford",
+        "model": "Anglia105E",
+        "trim": "US-export launch997cc8.9compression two-door saloon,standard4MT/4.125axle",
+        "market": "United States export"
+      },
+      "referenceVehicle": "1959 Ford Anglia105E US-export two-door saloon,997ccOHV pre-crossflow inline-four,standard8.9:1compression,4MT/4.125axle,RWD,LHD; July1959USbrochure L9373/759/USA,not1198Super,100Esidevalve,vanorlowcompressionoption",
+      "facts": {
+        "powerHp": 39,
+        "powerRpm": 5000,
+        "torqueLbFt": 53,
+        "torqueRpm": 2700,
+        "engineDisplacementL": 0.997,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "transmissionLabel": "Four-speed floor manual, synchromesh on second/third/fourth",
+        "gearCount": 4,
+        "finalDrive": 4.125,
+        "lengthM": 3.8989,
+        "widthM": 1.456436,
+        "heightM": 1.395222,
+        "wheelbaseM": 2.2986999999999997,
+        "trackFrontIn": 46,
+        "trackRearIn": 45.8,
+        "groundClearanceM": 0.16256,
+        "steeringRatio": 14,
+        "fuelTankUSgal": 8.40067126498912,
+        "periodPublishedRatings": {
+          "grossPowerHp": 41,
+          "netPowerHp": 39,
+          "powerRpm": 5000,
+          "grossTorqueLbFt": 55,
+          "netTorqueLbFt": 53,
+          "torqueRpm": 2700,
+          "ratingBasis": "OriginalJuly1959FordUSexport brochure explicitly MaximumGross/NettBHP41/39 andGross/NettTorque55/53. Testaccessorydefinition not supplied; periodnet, not claimed modernSAEJ1349."
+        },
+        "publishedOverallRatios": [
+          16.987,
+          9.884,
+          5.826,
+          4.125
+        ],
+        "publishedOverallReverseRatio": 22.29
+      },
+      "sources": [
+        {
+          "url": "https://www.lov2xlr8.no/brochures/1950/ang/bilder/8.jpg",
+          "publisher": "OriginalFordMotorCompany Ltd USexport brochureRefL9373/759/USA,July1959,archive scan",
+          "fields": [
+            "grossandnetengineoutputs",
+            "USmarket",
+            "997cc8.9compression",
+            "geometry",
+            "overallgearing",
+            "4.125standardaxle",
+            "5.20x13tires",
+            "fuel31.8L",
+            "steering14",
+            "suspension/brakes"
+          ],
+          "access": "2026-11-18 fullspecificationpanel image8 visually inspected; physical imprintSoldinUSAbyFordDearborn,RefL9373/759/USA. Originalsource publishedbyCarandTruckExportDivision,Dagenham; hostlov2xlr8 archive."
+        },
+        {
+          "url": "https://www.lov2xlr8.no/brochures/1950/ang/ang.html",
+          "publisher": "Archive oforiginalFord1959Anglia brochure",
+          "fields": [
+            "completebrochurecontext"
+          ],
+          "access": "2026-11-18 imageindex andFordpublisherbackcoverimage9 viewed."
+        }
+      ],
+      "limits": [
+        "39bhp/53lbft use printed PERIOD NET column, not41grosshp/55grosslbft. Teststandard unspecified, no moderncertificationclaim.",
+        "755kg curb is explicit operating-mass estimate; sourcepaneldoesnotpublishweight. Do not callitfactorycurb.",
+        "Gearboxratios computed by dividing published overallratiosby4.125standardaxle; both factoryinput and inferreddecomposition preserved. Optional4.429axle excluded.",
+        "31.8L resolves7IMPERIALgallons, not7USgallons. Factory5.20x13fourplybias tires approximated135/80R13; loadedradius andconstructionnotreproduced.",
+        "Height54.93in andclearance6.4in are explicitly LADEN factoryvalues; used as documentedgeometry approximation, notunladenmeasurement. Metricwidthprinted145.9cm differsfrom57.34in; useprinted inch dimension57.34 consistently, flagrounding/typographicdiscrepancy.",
+        "Target73mph and29s0\u201360 are estimates, notbrochureperformance. This997cccar canplausiblyreach60; do notapplymanufactured0\u201360toaslowernoncapablemicrocar. AllCG,grip,suspension/braking/steeringdynamics,redline,curveawayfrompeaks estimated. No1200Super or100E equipment. SharedRTG001 art.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Foxmint 1.7 2000",
+            "documentId": "foxmint-2000",
+            "runtimeId": "saved-car:Foxmint 1.7 2000",
+            "reference": "FordPuma1.7VCT FWD5MT coupe",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Milkwort 1999",
+            "documentId": "milkwort-1999",
+            "runtimeId": "saved-car:Milkwort 1999",
+            "reference": "USFordEscortLX2.0SPI FWD5MTsedan",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Purple Toadflax 1955",
+            "documentId": "purple-toadflax-1955",
+            "runtimeId": "saved-car:Purple Toadflax 1955",
+            "reference": "Chevrolet150Utility235.5I6RWD3MT",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Actual343-entry nativeprovenance audit foundnoAnglia105E/997pre-crossflow variant. Small90.5in-wheelbase rear-drive four-speedOHV997 saloon differs from latertransverseFFFordcars andlargeAmericanI6utilitysedan; neither a badge/yearvariant norroadcloneofexistingracecar.",
+        "evidence": [
+          "https://www.lov2xlr8.no/brochures/1950/ang/bilder/8.jpg"
+        ]
+      },
+      "name": "Kidney Vetch 1959",
+      "id": "kidney-vetch-1959",
+      "simulationEstimates": {
+        "reverseRatio": 5.403636363636363,
+        "cgHeightM": 0.51,
+        "dragCoefficient": 0.46,
+        "tireGrip": 0.72,
+        "spring": 0.43,
+        "antiRollRear": 0.14,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.62,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 500,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 5500,
+        "revLimitRpm": 5800,
+        "topSpeedMph": 73,
+        "zeroToSixtySec": 29,
+        "curbKg": 755,
+        "gearRatios": [
+          4.118060606060606,
+          2.396121212121212,
+          1.4123636363636363,
+          1
+        ],
+        "tireSize": [
+          135,
+          80,
+          13
+        ]
+      }
+    },
+    {
+      "candidateId": "alfa-romeo-155-q4-1992-roster-candidate",
+      "identity": {
+        "year": 1992,
+        "make": "Alfa Romeo",
+        "model": "155 Q4",
+        "trim": "1995cc catalytic turbo16V four-door permanent4WD five-speed manual; June1992GB brochure",
+        "market": "United Kingdom English-market brochure; LHD production reference"
+      },
+      "referenceVehicle": "1992 Alfa Romeo155Q4 production four-door 1995cc catalytic turbo16V permanent4WD5MT, EnglishGB June1992brochure specification; notDTM/GTA orlaterwidebody",
+      "facts": {
+        "powerKw": 137,
+        "powerRpm": 6000,
+        "torqueNm": 291,
+        "torqueRpm": 2500,
+        "engineDisplacementL": 1.995,
+        "transmission": "manual",
+        "gearCount": 5,
+        "drivetrain": "awd",
+        "curbKg": 1445,
+        "gearRatios": [
+          3.5,
+          2.176,
+          1.524,
+          1.156,
+          0.917
+        ],
+        "finalDrive": 3.35,
+        "reverseRatio": 3.545,
+        "lengthM": 4.443,
+        "widthM": 1.7,
+        "heightM": 1.44,
+        "wheelbaseM": 2.54,
+        "trackFrontIn": 58.1496062992126,
+        "trackRearIn": 55.19685039370079,
+        "frontOverhangM": 0.96,
+        "tireSize": [
+          205,
+          50,
+          15
+        ],
+        "frontTire": [
+          205,
+          50,
+          15
+        ],
+        "rearTire": [
+          205,
+          50,
+          15
+        ],
+        "fuelTankUSgal": 15.850323141488905,
+        "topSpeedMph": 140,
+        "aspiration": "Turbocharged"
+      },
+      "sources": [
+        {
+          "url": "https://berlinasportivo.com/magazine/alfa/brochure2.pdf",
+          "publisher": "Alfa Romeo original EnglishGB brochure9206-2313, mirroredBerlinaSportivo",
+          "fields": [
+            "identity",
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "drivetrain",
+            "curbKg",
+            "gearRatios",
+            "finalDrive",
+            "reverseRatio",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "frontOverhangM",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "fuelTankUSgal",
+            "topSpeedMph",
+            "aspiration"
+          ],
+          "access": "Downloaded7.57MBandvisuallyreadPDFpages16,17,18(one-based)2026-11-18; noOCR. P16EEC137kW6000rpm/291Nm2500rpm, separateDIN190bhp/30.3mkg. P18 imprintEnglishGB9206-2313. DINkerb1445kg; permanent4WDcenter epicyclic/Fergusonviscous andTorsenrear."
+        }
+      ],
+      "limits": [
+        "EEC137kW and291Nm selected as consistent factoryratingpair. SeparateDIN190bhp and30.3mkg printedon samepage mustnotbe treated as equivalentmetricPS or mixedwithEECtorque.",
+        "1445kg is explicitlyDINkerb, retained directly without driverdeduction. No claims ofexactloadedweight. BrochureGBEnglishpublication doesnotproveRHD; Q4modeledasLHD ratherthanborrowRHDordinary155.",
+        "GenericfixedAWDrearshare.53 andLSD approximations omitviscous coupling transient behavior andcontrolleddamping. RPMlimits,0\u201360,drag,loadsplit/CG,clearance,grip/suspension/brakes remainestimates. Factory7sec is0\u201362mph.",
+        "SharedRTG-001 only; noindependentdrive/originalart completion.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "meadowsweet-1992",
+            "alias": "Meadowsweet 1992",
+            "referenceVehicle": "Early-1992 France/European LHD Delta HF Integrale Evoluzione I 1995cc turbo 16V, five-speed manual; non-catalyst selection assumption, not Swiss 8V Kat or 1993 Evo II",
+            "documentId": "meadowsweet-1992",
+            "runtimeId": "saved-car:Meadowsweet 1992",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "field-gentian-2017",
+            "alias": "Field Gentian 2017",
+            "referenceVehicle": "2017 US Alfa Romeo Giulia Quadrifoglio 2.9 V6 RWD eight-speed automatic",
+            "documentId": "field-gentian-2017",
+            "runtimeId": "saved-car:Field Gentian 2017",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "broadleaf-dock-2011",
+            "alias": "Broadleaf Dock 2011",
+            "referenceVehicle": "2011 France Alfa Romeo Giulietta Quadrifoglio Verde1750TBi five-door six-speed manual,standard17inch tires; Dynamic340Nm reference,notlaterTCT240CV",
+            "documentId": "broadleaf-dock-2011",
+            "runtimeId": "saved-car:Broadleaf Dock 2011",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "155Q4 isfront-transverseTipo-derivedfourdoorsedan withcatalyticEEC137kWturbo1995ccAWD5MT. MeadowsweetDeltasharesrelatedengine/drivelinefamily butisshorterhatchwithdifferentmass/output/body; Giuliais2.9V6RWD8ATlaterplatform; Giulietta1.75FWD6MThatch. No155Q4foundin nativecatalog or originalimportprovenance.",
+        "evidence": [
+          "https://berlinasportivo.com/magazine/alfa/brochure2.pdf"
+        ]
+      },
+      "name": "Horseshoe Vetch 1992",
+      "id": "horseshoe-vetch-1992",
+      "simulationEstimates": {
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.29,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "rearDifferentialAccel": 0.35,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.58,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "zeroToSixtySec": 6.8,
+        "centerDifferentialBalance": 0.53,
+        "transmissionLabel": "5-speed manual (factory ratios; estimated shift calibration)"
+      }
+    }
+  ],
+  "deferred": [
+    {
+      "candidateId": "nissan-maxima-film-pending",
+      "reason": "Existing Mullein1999 is sameA32VQ30DE5MT generation; no1995yearpadding."
+    },
+    {
+      "candidateId": "suzuki-jimny-sierra-2018-jc-candidate",
+      "reason": "Mossling2019UKSZ5alreadycoverssame1.5Lmanualgeneration; no marketbadge-onlyentry."
+    }
+  ]
+}

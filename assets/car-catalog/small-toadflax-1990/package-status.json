@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "small-toadflax-1990",
+  "name": "Small Toadflax 1990",
+  "stableCarId": "saved-car:Small Toadflax 1990",
+  "referenceVehicle": "1990 Japan Mazda Savanna RX-7 GT-X June1990 E-FC3S 13B1308cc single twin-scroll-turbo two-rotor RWD5MT four-seat coupe, standardfixedroof; notInfini215PS,AT orCabriolet",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "66be71498e9954d090ffb64e73363a2aab57deaeb1d0202eb5a0e772275e41b2",
+    "dashboard": "d2dbf3d5a9ac4881c6461c4c84354164d3b4b35f101d3e04bbdf57abcf5f0a37",
+    "tires": "338a690af7d7049efbc2b50aa202dfc8a7d0e65fa98c67040bb8a1a46c163209"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

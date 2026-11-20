@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "source-tangerine-clover-2011",
+  "name": "Tangerine Clover 2011",
+  "stableCarId": "saved-car:Tangerine Clover 2011",
+  "referenceVehicle": "Europe2011 Kia Picanto TA1.25Kappa,five-door,5MT,non-ISG.14-inch wheels,noinventednationaltrim. Mirror2012page contains2011launchdossier.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "tangerine-clover-2011",
+  "sourceHashes": {
+    "body": "7792cb17bb3a6e2759794347c8b67a6052cfc1457f9e757241cd43e9428226bf",
+    "dashboard": "69cea9beaf5ede8b9c8c8b6a8d0f4d37afab0cf279fb649180ce1a9550ad897f",
+    "tires": "00af6e34242ffa5cd9903e2c0a3d45dbf1ac203aaee5877a83684950b66954d1"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
+}

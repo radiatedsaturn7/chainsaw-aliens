@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "running-clover-2002",
+  "name": "Running Clover 2002",
+  "stableCarId": "saved-car:Running Clover 2002",
+  "referenceVehicle": "2002 United States Buick LeSabre, US Custom3800SeriesII naturallyaspiratedV6 four-speedautomatic,standard15-inchcoveredsteelwheels,noGranTouringpackage",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "46be1b4aa405bb166036146da5ef2c1966766cf720678165814169e5c3481dff",
+    "dashboard": "22719745eb9864de46df166a932c1920f7898eb858809919d76c3c65a2303d97",
+    "tires": "602cba76df3ff434d9c4640ffc5e5d255ee5fda133bec9e3f835398042c0b1ba"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,86 @@
+{
+  "id": "hairy-clover-1970",
+  "name": "Hairy Clover 1970",
+  "stableCarId": "saved-car:Hairy Clover 1970",
+  "runtimeId": "saved-car:Hairy Clover 1970",
+  "candidateId": "dodge-coronet-super-bee-1970-roster-candidate",
+  "referenceVehicle": "1970 United States Dodge Coronet Super Bee, two-doorhardtop,optional440SixPack three-two-barrelV8,optional4MT",
+  "identity": {
+    "year": 1970,
+    "make": "Dodge",
+    "model": "Coronet Super Bee",
+    "trim": "two-doorhardtop,optional440SixPack three-two-barrelV8,optional4MT",
+    "market": "United States"
+  },
+  "bodyClass": "two-door-hardtop",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.lov2xlr8.no/brochures/mopar/70coro/bilder/5.jpg",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "engineDisplacementL",
+        "gearCount",
+        "periodPublishedRatings"
+      ]
+    },
+    {
+      "url": "https://www.lov2xlr8.no/brochures/mopar/70coro/bilder/6.jpg",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "engineDisplacementL",
+        "gearCount",
+        "periodPublishedRatings"
+      ]
+    },
+    {
+      "url": "https://www.lov2xlr8.no/brochures/mopar/70coro/bilder/7.jpg",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "engineDisplacementL",
+        "gearCount",
+        "periodPublishedRatings"
+      ]
+    }
+  ]
+}

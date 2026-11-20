@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "maple-clover-2011",
+  "name": "Maple Clover 2011",
+  "stableCarId": "saved-car:Maple Clover 2011",
+  "referenceVehicle": "2011 United States Audi A6 C6 facelift3.0TFSI superchargedV6 Premiumquattro sedan6-speedTiptronic,standardnonSportchassis;not3.2CVT,4.2,S6orRS6",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "maple-clover-2011",
+  "sourceHashes": {
+    "body": "7bf6acfe004976ee2599ab7c36afcecc94c45bc1af37ab40cfa4dff8108a0e8d",
+    "dashboard": "b67a25bcb86b303e618f0bd2d74d6be57e0b93f73c703dbbd1cc7d3a9087697b",
+    "tires": "4a708012d97b514090f0d7849d5b5d138c6c0c070c40d783343a1b8e93670e54"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

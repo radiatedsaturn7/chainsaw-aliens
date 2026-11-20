@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "wood-vetch-1970",
+  "name": "Wood Vetch 1970",
+  "stableCarId": "saved-car:Wood Vetch 1970",
+  "referenceVehicle": "1970 Canada Chevrolet Camaro Z28, SportCoupewithZ28package,350solid-lifterfour-barrelV8,4MT,standard3.73axle,nonRS",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "bd612a7d58350c69a5ff8c8d1d5766beb57f85bf12a6c991f2ef2a9c3d321e74",
+    "dashboard": "81edb4e9d8c9f8ddb6a7bbc194e2d5376711f48de10c39dd93e747c1b6663987",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

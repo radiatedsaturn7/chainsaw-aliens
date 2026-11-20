@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "flathead-clover-2012",
+  "name": "Flathead Clover 2012",
+  "stableCarId": "saved-car:Flathead Clover 2012",
+  "referenceVehicle": "2012 United States Hyundai Elantra, GLS1.8DOHC sedan6MT,base15-inchcoveredsteelwheels,nonPZEV148hp specification",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "772cbc4d14e7ad009a05be68445ebcb110263bd16c39024c1c238759a3ce75a3",
+    "dashboard": "299d342d56df19561285013df3fb37709fcb7438a64ef3d1219b5589f9c10f73",
+    "tires": "13892f58fe9910bcf998f661bad58b89a2a424342a09537098bc0be911ea6322"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

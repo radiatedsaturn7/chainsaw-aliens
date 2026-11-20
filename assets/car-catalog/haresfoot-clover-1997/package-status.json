@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "haresfoot-clover-1997",
+  "name": "Haresfoot Clover 1997",
+  "stableCarId": "saved-car:Haresfoot Clover 1997",
+  "referenceVehicle": "1997 Canada Volvo850R sedan five-speed manual,184kW350Nm2.3turbo FWD; not USautomatic,T-5R orwagon",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "9f0770f9544bbaccee6a7baca2282bd9b5c68219edadab1a27670eaa05c7df62",
+    "dashboard": "48ff5614488a14f0f8c67a79215b7f2cdec539decd16006fe85d24d6dbbee948",
+    "tires": "f68d3529a383c70a1a6c2e01e813901ed677bc8311fec492812d064cfa1f3c0e"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,2135 @@
+{
+  "schemaVersion": 1,
+  "base": "6be8cea8756338cf2f595422ff02e116816cbcd6",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "toyota-fj40-1979-roster-candidate",
+      "identity": {
+        "year": 1979,
+        "make": "Toyota",
+        "model": "Land Cruiser FJ40",
+        "trim": "US short-wheelbase hardtop 4230cc 2F six-cylinder 4MT, high-range rear-wheel-drive road configuration; not FJ55 wagon or later diesel",
+        "market": "United States"
+      },
+      "referenceVehicle": "1979 United States Toyota Land Cruiser FJ40, US short-wheelbase hardtop 4230cc 2F six-cylinder 4MT, high-range rear-wheel-drive road configuration; not FJ55 wagon or later diesel",
+      "bodyClass": "two-door short-wheelbase hardtop utility SUV; production",
+      "facts": {
+        "powerHp": 125,
+        "powerRpm": 3600,
+        "torqueLbFt": 200,
+        "torqueRpm": 1800,
+        "engineDisplacementL": 4.23,
+        "aspiration": "Naturally Aspirated",
+        "gearCount": 4,
+        "gearRatios": [
+          3.555,
+          2.292,
+          1.41,
+          1
+        ],
+        "reverseRatio": 4.272,
+        "finalDrive": 3.7,
+        "curbKg": 1730.4548915500002,
+        "lengthM": 3.87096,
+        "widthM": 1.6662399999999997,
+        "heightM": 1.9304,
+        "wheelbaseM": 2.286,
+        "publishedTire": "H78x15 semi-lug 4-ply rating",
+        "publishedTransferHigh": 1.0,
+        "publishedTransferLow": 1.959
+      },
+      "sources": [
+        {
+          "url": "https://importarchive.com/brochures/toyota/toyotalandcruiser1979_01/toyotalandcruiser1979_01_009.jpg",
+          "publisher": "Toyota original US 1979 Land Cruiser brochure specification page, preserved by ImportArchive",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "publishedTire",
+            "publishedTransferHigh",
+            "publishedTransferLow"
+          ],
+          "access": "Read visually 2026-11-18. Clear table distinguishes HARDTOP 3815lb/90in wheelbase from WAGON4310lb/106.3in. SAE NET125hp3600 and200lb-ft1800. Unit conversions arithmetic. Ratios4MT3.555/2.292/1.410/1, reverse4.272,3.70axle."
+        },
+        {
+          "url": "https://importarchive.com/brochure/toyotalandcruiser1979_01",
+          "publisher": "Toyota US original brochure P206 (9/78) 00600-01136 archived by ImportArchive",
+          "fields": [
+            "year",
+            "market",
+            "hardtop body"
+          ],
+          "access": "Factory brochure cover/identifier independently visible; public low-resolution table legible, no gated original required."
+        },
+        {
+          "url": "https://pressroom.toyota.com/after-seven-decades-toyotas-legendary-land-cruiser-keeps-rolling-along/",
+          "publisher": "Toyota USA official historical account",
+          "fields": [
+            "FJ40 lineage",
+            "2F introduction",
+            "1979 US model",
+            "4-speed"
+          ],
+          "access": "Opened2026-11-18. Confirms4.2L/four-speed introduced1975 and1979USFJ40 remains basic utility, withoutpowersteering orAC."
+        }
+      ],
+      "limits": [
+        "Uses factory hardtop curb weight, not longer FJ55 wagon; no occupants/cargo added.",
+        "Road behavior fixed in high-range rear drive. Actual selectable part-time4WD and1.959low are documented but not simulated; no new transfer controls, fixedAWD or center differential claim.",
+        "235/75R15 is an explicitly estimated geometric analogue for H78x15 cross-ply; tracks,groundclearance,CG,fuelcapacity,redline and handling/performance estimates. Leaf-spring live-axle compliance and steering kickback are not mechanically reproduced.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "gorse-2015",
+            "alias": "Gorse 2015",
+            "reference": "2015UKLandRoverDefender90 2.2diesel6MT",
+            "documentId": "gorse-2015",
+            "runtimeId": "saved-car:Gorse 2015",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "biting-stonecrop-2012",
+            "alias": "Biting Stonecrop 2012",
+            "reference": "2012USJeepWranglerRubicon3.6V6 6MT",
+            "documentId": "biting-stonecrop-2012",
+            "runtimeId": "saved-car:Biting Stonecrop 2012",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No FJ40/FJ55/LandCruiser identity found in current native provenance. Distinct Toyota2F carbureted petrol six, leaf-sprung short-wheelbase hardtop and four-speed versus newer Defender diesel and JeepV6; not a badge oryear variant.",
+        "evidence": [
+          "https://importarchive.com/brochures/toyota/toyotalandcruiser1979_01/toyotalandcruiser1979_01_009.jpg",
+          "https://importarchive.com/brochure/toyotalandcruiser1979_01",
+          "https://pressroom.toyota.com/after-seven-decades-toyotas-legendary-land-cruiser-keeps-rolling-along/"
+        ]
+      },
+      "name": "Least Clover 1979",
+      "id": "least-clover-1979",
+      "simulationEstimates": {
+        "cgHeightM": 0.76,
+        "groundClearanceM": 0.235,
+        "dragCoefficient": 0.62,
+        "tireGrip": 0.72,
+        "spring": 0.58,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.21,
+        "frontOverhangM": 0.75,
+        "rearDifferentialAccel": 0.06,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 500,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 4200,
+        "revLimitRpm": 4500,
+        "fuelTankUSgal": 18.5,
+        "topSpeedMph": 80,
+        "zeroToSixtySec": 18.5,
+        "transmission": "manual",
+        "drivetrain": "rwd",
+        "trackFrontIn": 55.5,
+        "trackRearIn": 55.1,
+        "tireSize": [
+          235,
+          75,
+          15
+        ],
+        "transmissionLabel": "4-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "ford-mustang-gt-coupe-1965-roster-candidate",
+      "identity": {
+        "year": 1965,
+        "make": "Ford",
+        "model": "Mustang GT Coupe",
+        "trim": "GT equipment group hardtop,225-hp-reference289four-barrel,standard synchronized3MT;not271HiPo",
+        "market": "United States"
+      },
+      "referenceVehicle": "1965 United States Ford Mustang GT Coupe, GT equipment group hardtop,225-hp-reference289four-barrel,standard synchronized3MT;not271HiPo",
+      "bodyClass": "two-door-coupe",
+      "artIdentity": "1965 notchback hardtop Mustang,shortrear deck,roundheadlamps plusgrillefoglamps,14-inch wheels,frontdiscs,five-dialGTdash;no fastback body or racing graphics.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "engineDisplacementL": 4.735861496,
+        "gearCount": 3,
+        "lengthM": 4.61264,
+        "widthM": 1.73228,
+        "heightM": 1.29794,
+        "wheelbaseM": 2.7432,
+        "trackFrontIn": 56,
+        "trackRearIn": 56,
+        "fuelTankUSgal": 16,
+        "steeringRatio": 22,
+        "periodPublishedRatings": {
+          "advertisedPowerHp": 225,
+          "ratingBasis": "Period manufacturer advertised/brake horsepower, not modern SAE net; installed simulation output separately estimated."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://www.lov2xlr8.no/brochures/ford/65mu/bilder/8.jpg",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "engineDisplacementL",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "fuelTankUSgal",
+            "steeringRatio",
+            "periodPublishedRatings"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        },
+        {
+          "url": "https://www.lov2xlr8.no/brochures/ford/65mu/bilder/9.jpg",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "engineDisplacementL",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "fuelTankUSgal",
+            "steeringRatio",
+            "periodPublishedRatings"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Generic brochure hardtop2621lb is not GT-specific curb and is not copied;1260kg is estimated operating curb. Ratios/final/torque/RPM/output are assumptions, not factory data. Original6.95x14 represented approximately by195/75R14.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data.",
+        "Historical published ratings are not certified modern net output; installed simulation output is an explicit estimate."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Ironbloom GT 2005",
+            "documentId": "ironbloom-gt-2005",
+            "runtimeId": "saved-car:Ironbloom GT 2005",
+            "reference": "US2005 Ford Mustang GT Coupe Deluxe T82/130A, conventional TR3650 5MT, standard17in wheels; no optional equipment",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Hop Clover 1969",
+            "documentId": "hop-clover-1969",
+            "runtimeId": "saved-car:Hop Clover 1969",
+            "reference": "1969 United States Ford Mustang Boss 302, SportsRoof, standard four-speed ratios, standard 3.50 conventional axle, manual steering",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Distinct early notchback289 four-barrel three-speed versus1969Boss302 high-rev SportsRoof4MT and2005modularV8. GTfactorypage explicitly allows hardtop and identifies standard225hp3MT/frontdiscs/22:1steering.",
+        "evidence": [
+          "https://www.lov2xlr8.no/brochures/ford/65mu/bilder/8.jpg",
+          "https://www.lov2xlr8.no/brochures/ford/65mu/bilder/9.jpg"
+        ]
+      },
+      "name": "Pygmy Clover 1965",
+      "id": "pygmy-clover-1965",
+      "simulationEstimates": {
+        "reverseRatio": 3.17,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.45,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 5200,
+        "revLimitRpm": 5500,
+        "topSpeedMph": 110,
+        "zeroToSixtySec": 9.2,
+        "powerHp": 180,
+        "powerRpm": 4800,
+        "torqueLbFt": 245,
+        "torqueRpm": 3200,
+        "curbKg": 1260,
+        "gearRatios": [
+          2.99,
+          1.75,
+          1
+        ],
+        "finalDrive": 3,
+        "tireSize": [
+          195,
+          75,
+          14
+        ]
+      }
+    },
+    {
+      "candidateId": "ford-mustang-mach-1-1971-roster-candidate",
+      "identity": {
+        "year": 1971,
+        "make": "Ford",
+        "model": "Mustang Mach 1",
+        "trim": "429CJ-R DualRamInduction,wide-ratio4MT,noDragPack",
+        "market": "United States"
+      },
+      "referenceVehicle": "1971 United States Ford Mustang Mach 1, 429CJ-R DualRamInduction,wide-ratio4MT,noDragPack",
+      "bodyClass": "two-door-fastback",
+      "artIdentity": "Large1971SportsRoofMach1,flat broadnose,twinNACA hoodducts,long slopingbacklight,14-inch wheels,lowwidebody;not1969Boss302.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "engineDisplacementL": 7.030050456,
+        "gearCount": 4,
+        "lengthM": 4.8133,
+        "widthM": 1.8821399999999997,
+        "heightM": 1.27254,
+        "wheelbaseM": 2.7685999999999997,
+        "trackFrontIn": 61.5,
+        "trackRearIn": 61.6,
+        "fuelTankUSgal": 20,
+        "steeringRatio": 27.7,
+        "periodPublishedRatings": {
+          "advertisedPowerHp": 370,
+          "ratingBasis": "Factory footnote explicitly gross horsepower derived from dynamometer; not modern SAE net."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://www.lov2xlr8.no/brochures/ford/must7/bilder/8.jpg",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "engineDisplacementL",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "fuelTankUSgal",
+            "steeringRatio",
+            "periodPublishedRatings"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        },
+        {
+          "url": "https://www.lov2xlr8.no/brochures/ford/must7/bilder/9.jpg",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "engineDisplacementL",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "fuelTankUSgal",
+            "steeringRatio",
+            "periodPublishedRatings"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        },
+        {
+          "url": "https://www.lov2xlr8.no/brochures/ford/must7/bilder/10.jpg",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "engineDisplacementL",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "fuelTankUSgal",
+            "steeringRatio",
+            "periodPublishedRatings"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Factory370hp is gross dynamometer rating perfootnote, notinstallednet. No375hpDragPack,mechanicalcam or3.91/4.11axle claim.1710kgestimatedselectedbigblockcurb; genericSportsRoof3057lb notused. E70-14 approximated215/70R14. Torque/RPM/gears/axle/installedoutput estimates.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Ironbloom GT 2005",
+            "documentId": "ironbloom-gt-2005",
+            "runtimeId": "saved-car:Ironbloom GT 2005",
+            "reference": "US2005 Ford Mustang GT Coupe Deluxe T82/130A, conventional TR3650 5MT, standard17in wheels; no optional equipment",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Hop Clover 1969",
+            "documentId": "hop-clover-1969",
+            "runtimeId": "saved-car:Hop Clover 1969",
+            "reference": "1969 United States Ford Mustang Boss 302, SportsRoof, standard four-speed ratios, standard 3.50 conventional axle, manual steering",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Big-block429CJ-R,larger109-inch wheelbase1971body and highmass materially different fromsmall-blockBoss3021969 andnewerGT. Factory explicitly lists429CJ-R optionalMach1 andwide-ratio4MT.",
+        "evidence": [
+          "https://www.lov2xlr8.no/brochures/ford/must7/bilder/8.jpg",
+          "https://www.lov2xlr8.no/brochures/ford/must7/bilder/9.jpg",
+          "https://www.lov2xlr8.no/brochures/ford/must7/bilder/10.jpg"
+        ]
+      },
+      "name": "Broadleaf Clover 1971",
+      "id": "broadleaf-clover-1971",
+      "simulationEstimates": {
+        "reverseRatio": 2.78,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.45,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.57,
+        "redlineRpm": 5500,
+        "revLimitRpm": 5800,
+        "topSpeedMph": 125,
+        "zeroToSixtySec": 6.7,
+        "powerHp": 305,
+        "powerRpm": 5200,
+        "torqueLbFt": 385,
+        "torqueRpm": 3400,
+        "curbKg": 1710,
+        "gearRatios": [
+          2.78,
+          1.93,
+          1.36,
+          1
+        ],
+        "finalDrive": 3.25,
+        "tireSize": [
+          215,
+          70,
+          14
+        ]
+      }
+    },
+    {
+      "candidateId": "pontiac-gto-judge-1969-roster-candidate",
+      "identity": {
+        "year": 1969,
+        "make": "Pontiac",
+        "model": "GTO Judge",
+        "trim": "standard400RamAirV8 andstandardfullysynchronized3MT,hardtop",
+        "market": "United States"
+      },
+      "referenceVehicle": "1969 United States Pontiac GTO Judge, standard400RamAirV8 andstandardfullysynchronized3MT,hardtop",
+      "bodyClass": "two-door-coupe",
+      "artIdentity": "1969GTOroundedtwo-doorhardtop,Endura-style nose,twinhoodscoops,pedestalrearwing,14-inchRallywheels;originalplainpaint,nosponsororbrandmarks.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "engineDisplacementL": 6.5548256,
+        "gearCount": 3,
+        "periodPublishedRatings": {
+          "advertisedPowerHp": 366,
+          "ratingBasis": "Period manufacturer advertised/brake horsepower, not modern SAE net; installed simulation output separately estimated."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://www.lov2xlr8.no/brochures/pontiac/bilder/69ju.jpg",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "engineDisplacementL",
+            "gearCount",
+            "periodPublishedRatings"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Singlefactoryadvert anchors identity/engine/advertisedoutput/3MT. Geometry,mass,tires,ratios,torque,peakRPM andinstalledoutput remain explicitengineeringestimates, not inferred factoryclaims. StandardHurstT-handleshifter,rearairfoil,andwidefiberglass-beltedtires documented; noexacttire size printed.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data.",
+        "Historical published ratings are not certified modern net output; installed simulation output is an explicit estimate."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Common Mullein 1965",
+            "documentId": "common-mullein-1965",
+            "runtimeId": "saved-car:Common Mullein 1965",
+            "reference": "1965 US Pontiac GTO, two-door hardtop,standard389cuin four-barrel335hp reference,optionalwide-ratio4MT,standard3.23axle",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Different1969body/chassis and400RamAir366hp-reference engine with3MT versus1965GTO389standardfour-barrel335referenceand4MT. FactoryJudgeadvert confirms400RamAir366andstandard3MT;notRamAirIV orlaterJudge.",
+        "evidence": [
+          "https://www.lov2xlr8.no/brochures/pontiac/bilder/69ju.jpg"
+        ]
+      },
+      "name": "Desert Clover 1969",
+      "id": "desert-clover-1969",
+      "simulationEstimates": {
+        "reverseRatio": 2.33,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.45,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.2,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.56,
+        "redlineRpm": 5500,
+        "revLimitRpm": 5800,
+        "fuelTankUSgal": 20,
+        "topSpeedMph": 120,
+        "zeroToSixtySec": 7,
+        "steeringRatio": 20,
+        "powerHp": 290,
+        "powerRpm": 5100,
+        "torqueLbFt": 365,
+        "torqueRpm": 3600,
+        "curbKg": 1660,
+        "lengthM": 5.11048,
+        "widthM": 1.92532,
+        "heightM": 1.32842,
+        "wheelbaseM": 2.8447999999999998,
+        "trackFrontIn": 60,
+        "trackRearIn": 60,
+        "gearRatios": [
+          2.42,
+          1.61,
+          1
+        ],
+        "finalDrive": 3.55,
+        "tireSize": [
+          225,
+          70,
+          14
+        ]
+      }
+    },
+    {
+      "candidateId": "dodge-coronet-super-bee-1970-roster-candidate",
+      "identity": {
+        "year": 1970,
+        "make": "Dodge",
+        "model": "Coronet Super Bee",
+        "trim": "two-doorhardtop,optional440SixPack three-two-barrelV8,optional4MT",
+        "market": "United States"
+      },
+      "referenceVehicle": "1970 United States Dodge Coronet Super Bee, two-doorhardtop,optional440SixPack three-two-barrelV8,optional4MT",
+      "bodyClass": "two-door-hardtop",
+      "artIdentity": "1970CoronetSuperBeehardtop,twinloopfrontgrille,quadlamps,hoodscoops,longB-body,14-inchwheels;notChallengerE-body,noinsectlogos.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "engineDisplacementL": 7.21030816,
+        "gearCount": 4,
+        "periodPublishedRatings": {
+          "advertisedPowerHp": 390,
+          "ratingBasis": "Period manufacturer advertised/brake horsepower, not modern SAE net; installed simulation output separately estimated.",
+          "powerRpm": 4700,
+          "advertisedTorqueLbFt": 490,
+          "torqueRpm": 3200
+        }
+      },
+      "sources": [
+        {
+          "url": "https://www.lov2xlr8.no/brochures/mopar/70coro/bilder/5.jpg",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "engineDisplacementL",
+            "gearCount",
+            "periodPublishedRatings"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        },
+        {
+          "url": "https://www.lov2xlr8.no/brochures/mopar/70coro/bilder/6.jpg",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "engineDisplacementL",
+            "gearCount",
+            "periodPublishedRatings"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        },
+        {
+          "url": "https://www.lov2xlr8.no/brochures/mopar/70coro/bilder/7.jpg",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "engineDisplacementL",
+            "gearCount",
+            "periodPublishedRatings"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Period390hp4700/490lbft3200 notmodernnet; installed320/410 estimated,notgross-to-netformula. F70x14 approximated215/70R14. Geometry,curb,ratios,final,performance explicitestimates. Factory4MTconfirmed; actualratio/axlepackage notverified.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Ragwort 1970",
+            "documentId": "ragwort-1970",
+            "runtimeId": "saved-car:Ragwort 1970",
+            "reference": "1970 United States Dodge Charger R/T two-door hardtop, standard 440 Magnum four-barrel V8 and standard TorqueFlite three-speed automatic, LHD, optional console. Not SE, Hemi, Six Pack, Daytona, four-speed manual or modified film car.",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "White Mullein 1970",
+            "documentId": "white-mullein-1970",
+            "runtimeId": "saved-car:White Mullein 1970",
+            "reference": "1970 US Dodge Challenger R/T, two-doorhardtop,standard383Magnum four-barrel335hp reference,standardall-synchro3MT,nonSE,nonsixpack",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Factoryconfirms440SixPackoptionSuperBee. Distinctthree-two-barrel440/4MT versusRagwort440four-barrel3ATandWhiteMullein3833MT;CoronetB-bodylong117-inch wheelbase versusChallengerE-body. Notbadge/year-only clone.",
+        "evidence": [
+          "https://www.lov2xlr8.no/brochures/mopar/70coro/bilder/5.jpg",
+          "https://www.lov2xlr8.no/brochures/mopar/70coro/bilder/6.jpg",
+          "https://www.lov2xlr8.no/brochures/mopar/70coro/bilder/7.jpg"
+        ]
+      },
+      "name": "Hairy Clover 1970",
+      "id": "hairy-clover-1970",
+      "simulationEstimates": {
+        "reverseRatio": 2.57,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.45,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.56,
+        "redlineRpm": 5200,
+        "revLimitRpm": 5500,
+        "fuelTankUSgal": 19,
+        "topSpeedMph": 120,
+        "zeroToSixtySec": 6.7,
+        "steeringRatio": 20,
+        "powerHp": 320,
+        "powerRpm": 4700,
+        "torqueLbFt": 410,
+        "torqueRpm": 3200,
+        "curbKg": 1750,
+        "lengthM": 5.3263799999999994,
+        "widthM": 1.94818,
+        "heightM": 1.3461999999999998,
+        "wheelbaseM": 2.9718,
+        "trackFrontIn": 59.5,
+        "trackRearIn": 59.2,
+        "gearRatios": [
+          2.65,
+          1.93,
+          1.39,
+          1
+        ],
+        "finalDrive": 3.54,
+        "tireSize": [
+          215,
+          70,
+          14
+        ]
+      }
+    },
+    {
+      "candidateId": "mercedes-amg-gt-r-2017-roster-candidate",
+      "identity": {
+        "year": 2017,
+        "make": "Mercedes-AMG",
+        "model": "GT R",
+        "trim": "C1904.0V8 coupe standard7DCT,not GT S/BlackSeries",
+        "market": "Germany / continental Europe"
+      },
+      "bodyClass": "coupe",
+      "referenceVehicle": "2017 European Mercedes-AMG GT R C1904.0V8 coupe standard7DCT,not GT S/BlackSeries",
+      "facts": {
+        "powerKw": 430,
+        "powerRpm": 6250,
+        "torqueNm": 700,
+        "torqueRpm": 1900,
+        "engineDisplacementL": 3.982,
+        "aspiration": "Twin turbocharged",
+        "curbKg": 1555,
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "gearCount": 7,
+        "tireSize": [
+          275,
+          35,
+          19
+        ],
+        "frontTire": [
+          275,
+          35,
+          19
+        ],
+        "rearTire": [
+          325,
+          30,
+          20
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://media.mercedes-benz.com/en/article/eb8672e7-c690-4615-84fc-37b82474fb32",
+          "publisher": "Mercedes-AMG factory archive / press office",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "curbKg",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "identity"
+          ],
+          "access": "Factory2017 anniversary fulltable; GT R430kW6250rpm,700Nm1900\u20135500rpm,1555kgDIN withoutdriver1630kgECwith75kg; standard275/35R19 and325/30R20."
+        }
+      ],
+      "limits": [
+        "Every suggestedEstimates value is an explicit modeling estimate. Shared RTG001 placeholder graphics; no original art or actual-driving claim.",
+        "No new active aero, adaptive dampers, rear-wheel-steering or bespoke electronic drivetrain controller implemented; ordinary supported ICE simulation only.",
+        "TorqueRpm chooses lower edge of factory1900\u20135500plateau; curve shape beyond anchors remains estimated. Rear steering/activeaero approximated by conventional chassis tuning.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "ribwort-plantain-2011",
+            "alias": "Ribwort Plantain 2011",
+            "referenceVehicle": "2011 German Mercedes-Benz SLS AMG C197197.377 M159.9806.208L naturallyaspiratedV8 coupe7DCT,notGT/BlackSeries/Roadster",
+            "documentId": "ribwort-plantain-2011",
+            "runtimeId": "saved-car:Ribwort Plantain 2011",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "sea-aster-2012",
+            "alias": "Sea Aster 2012",
+            "referenceVehicle": "2012 Japan Mercedes-Benz C 63 AMG Coupe Black Series, C204 M156 naturally aspirated V8 LHD two-seat 7-speed MCT, standard body aero; not optional rearwing package",
+            "documentId": "sea-aster-2012",
+            "runtimeId": "saved-car:Sea Aster 2012",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Fresh49catalog contains SLS6.2NA and C2046.2BlackSeries, not GT R4.0hot-V biturbo/7DCT aluminum sports chassis. No GT S year-only duplicate added.",
+        "evidence": [
+          "https://media.mercedes-benz.com/en/article/eb8672e7-c690-4615-84fc-37b82474fb32"
+        ]
+      },
+      "name": "Bee Clover 2017",
+      "id": "bee-clover-2017",
+      "simulationEstimates": {
+        "reverseRatio": 3.2,
+        "cgHeightM": 0.46,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.47,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "fuelTankUSgal": 19.8,
+        "topSpeedMph": 197.6,
+        "zeroToSixtySec": 3.5,
+        "lengthM": 4.551,
+        "widthM": 2.007,
+        "heightM": 1.284,
+        "wheelbaseM": 2.63,
+        "trackFrontIn": 66.14173228346458,
+        "trackRearIn": 66.53543307086615,
+        "gearRatios": [
+          3.077,
+          2.186,
+          1.626,
+          1.285,
+          1.029,
+          0.839,
+          0.634
+        ],
+        "finalDrive": 3.88,
+        "transmissionLabel": "7-speed AMG dual-clutch approximation"
+      }
+    },
+    {
+      "candidateId": "mercedes-amg-c-63-s-coupe-2016-roster-candidate",
+      "identity": {
+        "year": 2016,
+        "make": "Mercedes-AMG",
+        "model": "C63 S Coupe",
+        "trim": "C2054.0V8 biturbo7MCT standard speedlimiter,not Edition1",
+        "market": "Germany / continental Europe"
+      },
+      "bodyClass": "coupe",
+      "referenceVehicle": "2016 European Mercedes-AMG C63 S Coupe C2054.0V8 biturbo7MCT standard speedlimiter,not Edition1",
+      "facts": {
+        "powerKw": 375,
+        "powerRpm": 5500,
+        "torqueNm": 700,
+        "torqueRpm": 1750,
+        "engineDisplacementL": 3.982,
+        "aspiration": "Twin turbocharged",
+        "curbKg": 1725,
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "gearCount": 7
+      },
+      "sources": [
+        {
+          "url": "https://media.mercedes-benz.fr/la-nouvelle-mercedes-amg-c-63-coupe-plus-sportive-que-jamais/",
+          "publisher": "Mercedes-AMG factory archive / press office",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "curbKg",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "identity"
+          ],
+          "access": "Factory launch explicitly March2016;375kW5500\u20136250rpm700Nm1750\u20134500rpm,1725kgDIN1800kgEC; no later9MCT update."
+        }
+      ],
+      "limits": [
+        "Every suggestedEstimates value is an explicit modeling estimate. Shared RTG001 placeholder graphics; no original art or actual-driving claim.",
+        "No new active aero, adaptive dampers, rear-wheel-steering or bespoke electronic drivetrain controller implemented; ordinary supported ICE simulation only.",
+        "Plateau RPM fields choose factorylowerbounds. Standard250km/h limiterselected, not optional290DriverPackage. MCT is not dual-clutchDCT or torqueconverter; ordinary automaticruntime approximation.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "sea-aster-2012",
+            "alias": "Sea Aster 2012",
+            "referenceVehicle": "2012 Japan Mercedes-Benz C 63 AMG Coupe Black Series, C204 M156 naturally aspirated V8 LHD two-seat 7-speed MCT, standard body aero; not optional rearwing package",
+            "documentId": "sea-aster-2012",
+            "runtimeId": "saved-car:Sea Aster 2012",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "ExistingSeaAster2012 is C204naturallyaspirated6.2BlackSeries. NewC205 uses4.0biturbo, different body/chassis and calibration; not a repaint of oldC63.",
+        "evidence": [
+          "https://media.mercedes-benz.fr/la-nouvelle-mercedes-amg-c-63-coupe-plus-sportive-que-jamais/"
+        ]
+      },
+      "name": "Springbank Clover 2016",
+      "id": "springbank-clover-2016",
+      "simulationEstimates": {
+        "reverseRatio": 3.2,
+        "cgHeightM": 0.51,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "fuelTankUSgal": 17.4,
+        "topSpeedMph": 155.3,
+        "zeroToSixtySec": 3.8,
+        "lengthM": 4.75,
+        "widthM": 1.877,
+        "heightM": 1.402,
+        "wheelbaseM": 2.84,
+        "trackFrontIn": 64.40944881889764,
+        "trackRearIn": 62.952755905511815,
+        "tireSize": [
+          255,
+          35,
+          19
+        ],
+        "frontTire": [
+          255,
+          35,
+          19
+        ],
+        "rearTire": [
+          285,
+          30,
+          19
+        ],
+        "gearRatios": [
+          4.38,
+          2.86,
+          1.92,
+          1.37,
+          1,
+          0.82,
+          0.73
+        ],
+        "finalDrive": 2.85,
+        "transmissionLabel": "7-speed AMG MCT wet-start-clutch automatic approximation",
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 206.5174017976344
+          },
+          {
+            "rpm": 1750,
+            "torqueLbFt": 516.2935044940859
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 516.2935044940859
+          },
+          {
+            "rpm": 5500,
+            "torqueLbFt": 480.2078191740741
+          },
+          {
+            "rpm": 7200,
+            "torqueLbFt": 309.7761026964516
+          }
+        ]
+      }
+    },
+    {
+      "candidateId": "porsche-911-turbo-s-leichtbau-1993-roster-candidate",
+      "identity": {
+        "year": 1993,
+        "make": "Porsche",
+        "model": "911 Turbo S Leichtbau",
+        "trim": "9643.3 turbo lightweight roadcoupe5MT,not3.6Flachbau",
+        "market": "Germany / continental Europe"
+      },
+      "bodyClass": "coupe",
+      "referenceVehicle": "1993 European Porsche 911 Turbo S Leichtbau 9643.3 turbo lightweight roadcoupe5MT,not3.6Flachbau",
+      "facts": {
+        "publishedPowerPS": 381,
+        "aspiration": "Turbocharged",
+        "engineDisplacementL": 3.3,
+        "periodPublishedRatings": {
+          "publishedPowerPS": 381,
+          "ratingBasis": "Historical factory or custodian rating; exact test standard unresolved. Installed output is estimated, not a certified modern net conversion."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://newsroom.porsche.com/de/produkte/porsche-exclusive-begehrte-exemplare-10396.html",
+          "publisher": "Porsche factory archive / press office",
+          "fields": [
+            "publishedPowerPS",
+            "aspiration",
+            "engineDisplacementL",
+            "identity"
+          ],
+          "access": "Factory2014historic account explicitly86cars built1992/93,381PS3.3L,180kg lighterthanseries. No3.6Turbo or993TurboS mixedin."
+        }
+      ],
+      "limits": [
+        "Every suggestedEstimates value is an explicit modeling estimate. Shared RTG001 placeholder graphics; no original art or actual-driving claim.",
+        "No new active aero, adaptive dampers, rear-wheel-steering or bespoke electronic drivetrain controller implemented; ordinary supported ICE simulation only.",
+        "1290kgready mass is estimated; factoryonlyprovides180kgrelative reduction, not absolute massbasis. Torque,RPM,gears,geometry,tires andperformance unverified estimates.",
+        "381metricPS converts280.225kW asmodeling anchor; noSAEhp substitution.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data.",
+        "Historical output is not certified modern net; estimated installed output remains separate."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "linaria-2021",
+            "alias": "Linaria 2021",
+            "referenceVehicle": "2021 continental-European launch Porsche911GT3 992.1 standard fixed swan-neck-wing coupe,3996cc naturally aspirated rear flat-six,RWD six-speed conventional manual,LHD,standard20/21inch wheels and iron brakes,solid metal roof. Not Touring,GT3RS,GT3R/Cup,GT2,Turbo,PDK or992.2.",
+            "documentId": "linaria-2021",
+            "runtimeId": "saved-car:Linaria 2021",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "harebell-rs-1973",
+            "alias": "Harebell RS 1973",
+            "referenceVehicle": "1973 European Porsche 911 Carrera RS 2.7 M471 Sport 5MT",
+            "documentId": "harebell-rs-1973",
+            "runtimeId": "saved-car:Harebell RS 1973",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "CurrentPorsche911 references are1973NA2.7RS and2021NA4.0GT3; 9643.3singleturbo lightweight road coupe is mechanically distinct. No930/year-only duplicate added.",
+        "evidence": [
+          "https://newsroom.porsche.com/de/produkte/porsche-exclusive-begehrte-exemplare-10396.html"
+        ]
+      },
+      "name": "Showy Clover 1993",
+      "id": "showy-clover-1993",
+      "simulationEstimates": {
+        "reverseRatio": 3.2,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.39,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "fuelTankUSgal": 20.3,
+        "topSpeedMph": 180,
+        "zeroToSixtySec": 4.5,
+        "curbKg": 1290,
+        "lengthM": 4.275,
+        "widthM": 1.775,
+        "heightM": 1.31,
+        "wheelbaseM": 2.272,
+        "trackFrontIn": 56.2992125984252,
+        "trackRearIn": 58.66141732283465,
+        "tireSize": [
+          235,
+          40,
+          18
+        ],
+        "frontTire": [
+          235,
+          40,
+          18
+        ],
+        "rearTire": [
+          265,
+          35,
+          18
+        ],
+        "gearRatios": [
+          3.154,
+          1.895,
+          1.296,
+          0.965,
+          0.756
+        ],
+        "finalDrive": 3.333,
+        "powerKw": 280.22502375,
+        "powerRpm": 6000,
+        "torqueNm": 490,
+        "torqueRpm": 4800,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "torqueLbFt": 361.4054531458602,
+        "powerHp": 375.7879469060413
+      }
+    },
+    {
+      "candidateId": "porsche-356a-speedster-1957-roster-candidate",
+      "identity": {
+        "year": 1957,
+        "make": "Porsche",
+        "model": "356A1600 Speedster",
+        "trim": "standard60PS pushrod4MT openbody,not1600Super/Carrera",
+        "market": "Germany / continental Europe"
+      },
+      "bodyClass": "roadster",
+      "referenceVehicle": "1957 European Porsche 356A1600 Speedster standard60PS pushrod4MT openbody,not1600Super/Carrera",
+      "facts": {
+        "publishedPowerPS": 60,
+        "aspiration": "Naturally aspirated",
+        "periodPublishedRatings": {
+          "publishedPowerPS": 60,
+          "ratingBasis": "Historical factory or custodian rating; exact test standard unresolved. Installed output is estimated, not a certified modern net conversion."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://www.porsche.com/usa/accessoriesandservice/classic/models/356/356-a/",
+          "publisher": "Porsche factory archive / press office",
+          "fields": [
+            "publishedPowerPS",
+            "aspiration",
+            "identity"
+          ],
+          "access": "FactoryClassic identifies356A1600Speedster1956\u201358,60PS1600engine; March1957teardroplights andSeptember1957T2 transition. Select mid1957T1 withteardroplights."
+        }
+      ],
+      "limits": [
+        "Every suggestedEstimates value is an explicit modeling estimate. Shared RTG001 placeholder graphics; no original art or actual-driving claim.",
+        "No new active aero, adaptive dampers, rear-wheel-steering or bespoke electronic drivetrain controller implemented; ordinary supported ICE simulation only.",
+        "Only60PS and production family/year are factoryanchors here; exact1582cc,RPM,torque,curbmass,gearing anddimensionalfit all explicitestimates pendingperiodtable.",
+        "Selected790kgrunningweight estimate has no verifieddry/curb basis. Tiremetricgeometryapproximatesperiodenvelope,notauthenticcrossplyhandling.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data.",
+        "Historical output is not certified modern net; estimated installed output remains separate."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "sandspurry-six-1970",
+            "alias": "Sandspurry Six 1970",
+            "referenceVehicle": "1970 European Porsche 914/6 901/36 road targa 5MT (not GT)",
+            "documentId": "sandspurry-six-1970",
+            "runtimeId": "saved-car:Sandspurry Six 1970",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "large-birdsfoot-1960",
+            "alias": "Large Birdsfoot 1960",
+            "referenceVehicle": "1960 Porsche 718 RS60 open mid-engine flat-four sports racer, Revs Institute 718-041 currently documented 1697cc specification; not road Boxster, 1959 RSK, 1961 RS61 or 2.0 flat-eight development configuration",
+            "documentId": "large-birdsfoot-1960",
+            "runtimeId": "saved-car:Large Birdsfoot 1960",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No356identity in fresh49references/inspiration. Rear-engine pushrod1.6roadSpeedster fundamentally differs from mid-engine racing4cam718 and6cylinder914. Not Super75PS orCarrera100PS trim padding.",
+        "evidence": [
+          "https://www.porsche.com/usa/accessoriesandservice/classic/models/356/356-a/"
+        ]
+      },
+      "name": "Cow Clover 1957",
+      "id": "cow-clover-1957",
+      "simulationEstimates": {
+        "reverseRatio": 3.2,
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.42,
+        "redlineRpm": 5000,
+        "revLimitRpm": 5300,
+        "fuelTankUSgal": 13.7,
+        "topSpeedMph": 99,
+        "zeroToSixtySec": 14.5,
+        "curbKg": 790,
+        "lengthM": 3.95,
+        "widthM": 1.66,
+        "heightM": 1.22,
+        "wheelbaseM": 2.1,
+        "trackFrontIn": 50.787401574803155,
+        "trackRearIn": 49.21259842519685,
+        "tireSize": [
+          165,
+          80,
+          15
+        ],
+        "frontTire": [
+          165,
+          80,
+          15
+        ],
+        "rearTire": [
+          165,
+          80,
+          15
+        ],
+        "gearRatios": [
+          3.09,
+          1.77,
+          1.23,
+          0.82
+        ],
+        "finalDrive": 4.43,
+        "powerKw": 44.129925,
+        "powerRpm": 4500,
+        "torqueNm": 110,
+        "torqueRpm": 2800,
+        "engineDisplacementL": 1.582,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 4,
+        "torqueLbFt": 81.13183642049923,
+        "powerHp": 59.17920423717186
+      }
+    },
+    {
+      "candidateId": "lamborghini-countach-lp5000-qv-1988-roster-candidate",
+      "bodyClass": "coupe",
+      "identity": {
+        "year": 1988,
+        "make": "Lamborghini",
+        "model": "Countach LP5000 Quattrovalvole",
+        "trim": "European downdraftcarbureted5.2V12five-speed;notUS420CVinjection,25thAnniversaryorLP500prototype",
+        "market": "UK/Europe"
+      },
+      "referenceVehicle": "1988 Lamborghini Countach LP5000 Quattrovalvole, European downdraftcarbureted5.2V12five-speed;notUS420CVinjection,25thAnniversaryorLP500prototype",
+      "facts": {
+        "powerHp": 448.77563212300004,
+        "publishedPowerPS": 455,
+        "engineDisplacementL": 5.2
+      },
+      "sources": [
+        {
+          "url": "https://www.lamborghini.com/en-en/history/milestones",
+          "publisher": "Lamborghini factorychronology",
+          "fields": [
+            "powerHp",
+            "publishedPowerPS",
+            "engineDisplacementL"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        },
+        {
+          "url": "https://www.lamborghini.com/en-en/history/countach",
+          "publisher": "Lamborghini factoryheritage",
+          "fields": [
+            "relationshipAudit",
+            "engineLayout",
+            "publishedPowerPS"
+          ],
+          "access": "Readweb2026-11-18."
+        }
+      ],
+      "limits": [
+        "Factory455metricCV converted448.78hp;notUS420CVinjectedpower. Chronologyexplicit1988side-skirts and1985QVengine.5.167exactdisplacementnotassertedbecauseprimaryuses5.2. Torque,RPM,mass,geometry,tires,gearing/performance provisional. Wingstate/dragestimated,notwindtunnelverified.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Berseem Clover 1967",
+            "documentId": "berseem-clover-1967",
+            "runtimeId": "saved-car:Berseem Clover 1967",
+            "reference": "MiuraP400transverse4LV12",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Egyptian Clover 1986",
+            "documentId": "egyptian-clover-1986",
+            "runtimeId": "saved-car:Egyptian Clover 1986",
+            "reference": "LM002carb5.167V12utility",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "LongitudinalrearV12four-valveper-cylinder spaceframewedge withgearboxaheadofengine; nottransverseMiuraorLM002four-wheel-driveutility.",
+        "evidence": [
+          "https://www.lamborghini.com/en-en/history/milestones"
+        ],
+        "audit": "Fresh49catalog464cars allnativefields includinginspiration/provenance audited, plusactualtestsrg. ExistingAventador/Huracan rejected. Exact660slotconfirmed."
+      },
+      "name": "Spearleaf Clover 1988",
+      "id": "spearleaf-clover-1988",
+      "simulationEstimates": {
+        "reverseRatio": 2.4,
+        "cgHeightM": 0.4,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.42,
+        "tireGrip": 0.94,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 450,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.43,
+        "redlineRpm": 7500,
+        "revLimitRpm": 7700,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 31.7,
+        "topSpeedMph": 183,
+        "zeroToSixtySec": 4.8,
+        "bodyClass": "coupe",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 7000,
+        "torqueNm": 500,
+        "torqueRpm": 5200,
+        "curbKg": 1490,
+        "lengthM": 4.14,
+        "widthM": 2.0,
+        "heightM": 1.07,
+        "wheelbaseM": 2.45,
+        "trackFrontIn": 59.1,
+        "trackRearIn": 63.2,
+        "tireSize": [
+          225,
+          50,
+          15
+        ],
+        "frontTire": [
+          225,
+          50,
+          15
+        ],
+        "rearTire": [
+          345,
+          35,
+          15
+        ],
+        "gearRatios": [
+          2.31,
+          1.52,
+          1.12,
+          0.88,
+          0.71
+        ],
+        "finalDrive": 4.09,
+        "transmissionLabel": "five-speedmanual estimatedratios",
+        "torqueLbFt": 368.78107463863284
+      }
+    },
+    {
+      "candidateId": "lamborghini-diablo-sv-1997-roster-candidate",
+      "bodyClass": "coupe",
+      "identity": {
+        "year": 1997,
+        "make": "Lamborghini",
+        "model": "Diablo SV",
+        "trim": "pre-faceliftpop-up-headlamp5.7V12RWDfive-speed withadjustablerearwing;notVT,1999SV529HP,GTorGTR",
+        "market": "UK/Europe"
+      },
+      "referenceVehicle": "1997 Lamborghini Diablo SV, pre-faceliftpop-up-headlamp5.7V12RWDfive-speed withadjustablerearwing;notVT,1999SV529HP,GTorGTR",
+      "facts": {
+        "publishedPowerHp": 510,
+        "engineDisplacementL": 5.7,
+        "periodPublishedRatings": {
+          "value": 510,
+          "unit": "HP as written",
+          "basis": "FactoryEnglishretrospective doesnotstate metric/mechanical standard; not silently converted",
+          "installedPowerHpEstimate": 510
+        }
+      },
+      "sources": [
+        {
+          "url": "https://www.lamborghini.com/en-en/news/lamborghini-diablos-30th-anniversary-with-cesare-cremonini",
+          "publisher": "Lamborghini2020factoryretrospective",
+          "fields": [
+            "publishedPowerHp",
+            "engineDisplacementL"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "FactoryEnglishtext explicitly510HPfor1995SV,529HPfor1999restyling; noCV/kWpairprovided so510installedhp keptestimate,notassertedSAE/DINmeasurement.1997slotusesdocumented1995\u201398SVspec. EngineRPM,torque,mass,tires,dimensions,gears,performanceestimated; noABS/TC claims (factoryABSintroduced1999).",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data.",
+        "Historical published ratings are not certified modern net output; installed simulation output is an explicit estimate."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Spearleaf Clover 1988",
+            "id": "lamborghini-countach-lp5000-qv-1988-roster-candidate",
+            "documentId": "spearleaf-clover-1988",
+            "runtimeId": "saved-car:Spearleaf Clover 1988",
+            "scope": "same-wave"
+          },
+          {
+            "alias": "Dwarf Clover 2008",
+            "documentId": "dwarf-clover-2008",
+            "runtimeId": "saved-car:Dwarf Clover 2008",
+            "reference": "Reventon6.5V12AWDegear",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "New1990sDiablowiderplatform with5.7injectedV12 andRWDmanual, distinctfromcarbCountachandsubsequentAWDReventon.",
+        "evidence": [
+          "https://www.lamborghini.com/en-en/news/lamborghini-diablos-30th-anniversary-with-cesare-cremonini"
+        ],
+        "audit": "Fresh49catalog464cars allnativefields includinginspiration/provenance audited, plusactualtestsrg. ExistingAventador/Huracan rejected. Exact660slotconfirmed."
+      },
+      "name": "Cup Clover 1997",
+      "id": "cup-clover-1997",
+      "simulationEstimates": {
+        "reverseRatio": 2.4,
+        "cgHeightM": 0.41,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.98,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 430,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.41,
+        "redlineRpm": 7500,
+        "revLimitRpm": 7700,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 26.4,
+        "topSpeedMph": 202,
+        "zeroToSixtySec": 4,
+        "bodyClass": "coupe",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerHp": 510,
+        "powerRpm": 7100,
+        "torqueNm": 580,
+        "torqueRpm": 5900,
+        "curbKg": 1570,
+        "lengthM": 4.46,
+        "widthM": 2.04,
+        "heightM": 1.105,
+        "wheelbaseM": 2.65,
+        "trackFrontIn": 60.6,
+        "trackRearIn": 64.6,
+        "tireSize": [
+          245,
+          40,
+          17
+        ],
+        "frontTire": [
+          245,
+          40,
+          17
+        ],
+        "rearTire": [
+          335,
+          35,
+          17
+        ],
+        "gearRatios": [
+          2.31,
+          1.52,
+          1.12,
+          0.88,
+          0.71
+        ],
+        "finalDrive": 4.09,
+        "transmissionLabel": "five-speedmanual estimatedratios",
+        "torqueLbFt": 427.78604658081406
+      }
+    },
+    {
+      "candidateId": "morgan-aero-gt-2018-roster-candidate",
+      "bodyClass": "roadster",
+      "identity": {
+        "year": 2018,
+        "make": "Morgan",
+        "model": "Aero GT",
+        "trim": "BMWN62 4.8NA V8six-speedmanual,optionalcarbonhardtopfitted representativefinaleightroadcars;notGT3racerorPlus8",
+        "market": "UK/Europe"
+      },
+      "referenceVehicle": "2018 Morgan Aero GT, BMWN62 4.8NA V8six-speedmanual,optionalcarbonhardtopfitted representativefinaleightroadcars;notGT3racerorPlus8",
+      "facts": {
+        "powerHp": 367,
+        "engineDisplacementL": 4.8,
+        "transmission": "manual",
+        "gearCount": 6,
+        "topSpeedMph": 170
+      },
+      "sources": [
+        {
+          "url": "https://www.britishbuiltcars.co.uk/News/article/835/March%202018/Morgan%20marks%20end%20of%20Aero%208%20production%20with%20limited%20edition%20GT",
+          "publisher": "MorganMotorCompany6March2018factoryannouncement mirroredbyBritishBuiltCars",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        },
+        {
+          "url": "https://www.britishbuiltcars.co.uk/News/article/822/December%202017/Morgan%20announces%20a%20limited%20production%20run%20of%20their%20most%20extreme%20road%20car",
+          "publisher": "Morgan4December2017factoryannouncementmirror",
+          "fields": [
+            "engineDisplacementL",
+            "gearCount"
+          ],
+          "access": "Readweb2026-11-18."
+        }
+      ],
+      "limits": [
+        "Factoryrelease literally367bhp; retainedpublishedbasis ratherthanunverifiedBMWdonorPSconversion. Noclaimreproduceanyoneoftheeightbespokecars. Optionalhardtop fitted, stillroadsterbodyclass.1250kgrunningmass,dimensions,gearing,tires,torque/RPM/performanceestimates;4.5s0\u201362factorynot4.4s0\u201360.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Wood Forgetmenot 2023",
+            "documentId": "wood-forgetmenot-2023",
+            "runtimeId": "saved-car:Wood Forgetmenot 2023",
+            "reference": "LotusEmiramid-engineV6GT",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Bondedaluminiumfront-engineBMWV8manualMorganroadster withhandformedbody/underbodyaero, distinctfrommidengineLotusandallcurrentMorgan-freecatalog.",
+        "evidence": [
+          "https://www.britishbuiltcars.co.uk/News/article/835/March%202018/Morgan%20marks%20end%20of%20Aero%208%20production%20with%20limited%20edition%20GT"
+        ],
+        "audit": "Fresh49catalog464cars allnativefields includinginspiration/provenance audited, plusactualtestsrg. ExistingAventador/Huracan rejected. Exact660slotconfirmed."
+      },
+      "name": "Chilean Clover 2018",
+      "id": "chilean-clover-2018",
+      "simulationEstimates": {
+        "reverseRatio": 3.677,
+        "cgHeightM": 0.44,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.38,
+        "tireGrip": 0.99,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0.015,
+        "aeroRear": 0.025,
+        "shiftTimeMs": 400,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.5,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 14.5,
+        "zeroToSixtySec": 4.4,
+        "bodyClass": "roadster",
+        "drivetrain": "rwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 6300,
+        "torqueNm": 490,
+        "torqueRpm": 3400,
+        "curbKg": 1250,
+        "lengthM": 4.147,
+        "widthM": 1.751,
+        "heightM": 1.248,
+        "wheelbaseM": 2.53,
+        "trackFrontIn": 59.0,
+        "trackRearIn": 60.0,
+        "tireSize": [
+          225,
+          35,
+          19
+        ],
+        "frontTire": [
+          225,
+          35,
+          19
+        ],
+        "rearTire": [
+          245,
+          35,
+          19
+        ],
+        "gearRatios": [
+          4.055,
+          2.396,
+          1.582,
+          1.192,
+          1,
+          0.872
+        ],
+        "finalDrive": 3.08,
+        "transmissionLabel": "six-speedmanual estimatedratios",
+        "torqueLbFt": 361.4054531458602
+      }
+    },
+    {
+      "candidateId": "mclaren-720s-coupe-2018-roster-candidate",
+      "bodyClass": "coupe",
+      "identity": {
+        "year": 2018,
+        "make": "McLaren",
+        "model": "720S Coupe",
+        "trim": "originalEuropeanM840T3994cctwin-turboV8seven-speedSSG MonocageIIcoupe;notSpider,765LTor750S",
+        "market": "UK/Europe"
+      },
+      "referenceVehicle": "2018 McLaren 720S Coupe, originalEuropeanM840T3994cctwin-turboV8seven-speedSSG MonocageIIcoupe;notSpider,765LTor750S",
+      "facts": {
+        "powerHp": 710.150450832,
+        "publishedPowerPS": 720,
+        "powerRpm": 7500,
+        "torqueNm": 770,
+        "torqueRpm": 5500,
+        "engineDisplacementL": 3.994,
+        "transmission": "automatic",
+        "gearCount": 7,
+        "curbKg": 1418.9,
+        "lengthM": 4.543,
+        "heightM": 1.196,
+        "wheelbaseM": 2.67
+      },
+      "sources": [
+        {
+          "url": "https://www.onlymanuals.com/mclaren/720s/mclaren_720s_owners_manual_2017_2017_3",
+          "publisher": "McLarenfactoryownersmanualOctober2017mirror,section7pages4\u20136",
+          "fields": [
+            "powerHp",
+            "publishedPowerPS",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "heightM",
+            "wheelbaseM"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "Manual1418.9kg unladenallfluids90percentfuel excludes75kgdriver, choseninstead1493.9EUdriverinclusiveor1321.6dry.720metricPS conversion710.15hp; manual537kWappearsinconsistentwith720PS so notused. Manualgearings/geometry/clearance known; bodywidthwithoutmirrors,tracks,tires,reverse,weightdistribution,aero/handlingestimates. Activehydraulicsandairbrakenotemulated.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Little Burclover 2011",
+            "documentId": "little-burclover-2011",
+            "runtimeId": "saved-car:Little Burclover 2011",
+            "reference": "MP4-12C3.8MonoCell",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Knotted Clover 2015",
+            "documentId": "knotted-clover-2015",
+            "runtimeId": "saved-car:Knotted Clover 2015",
+            "reference": "570SSportsSeries3.8",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Subterranean Clover 2020",
+            "documentId": "subterranean-clover-2020",
+            "runtimeId": "saved-car:Subterranean Clover 2020",
+            "reference": "McLarenGTtourer4.0",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NewMonocageIIcarbonupperstructureandM840T4Ltwin-turboengine plusnewPCCIIchassis; differentSuperSeriesgenerationversus12C anddistinctfromSportsSeries570S/GTtouringbody.",
+        "evidence": [
+          "https://www.onlymanuals.com/mclaren/720s/mclaren_720s_owners_manual_2017_2017_3"
+        ],
+        "audit": "Fresh49catalog464cars allnativefields includinginspiration/provenance audited, plusactualtestsrg. ExistingAventador/Huracan rejected. Exact660slotconfirmed."
+      },
+      "name": "Foothill Clover 2018",
+      "id": "foothill-clover-2018",
+      "simulationEstimates": {
+        "reverseRatio": 3.8,
+        "cgHeightM": 0.39,
+        "groundClearanceM": 0.107,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.04,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 1.058,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0.025,
+        "aeroRear": 0.045,
+        "shiftTimeMs": 100,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.415,
+        "redlineRpm": 8500,
+        "revLimitRpm": 8700,
+        "aspiration": "Turbocharged",
+        "fuelTankUSgal": 19,
+        "topSpeedMph": 212,
+        "zeroToSixtySec": 2.8,
+        "bodyClass": "coupe",
+        "drivetrain": "rwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "widthM": 1.93,
+        "trackFrontIn": 65.6,
+        "trackRearIn": 63.7,
+        "tireSize": [
+          245,
+          35,
+          19
+        ],
+        "frontTire": [
+          245,
+          35,
+          19
+        ],
+        "rearTire": [
+          305,
+          30,
+          20
+        ],
+        "gearRatios": [
+          3.982,
+          2.612,
+          1.905,
+          1.479,
+          1.16,
+          0.906,
+          0.686
+        ],
+        "finalDrive": 3.308,
+        "transmissionLabel": "seven-speedSSG approximatedautomatic"
+      }
+    },
+    {
+      "candidateId": "mclaren-senna-2018-roster-candidate",
+      "bodyClass": "coupe",
+      "identity": {
+        "year": 2018,
+        "make": "McLaren",
+        "model": "Senna",
+        "trim": "standardroad-legalM840TR4.0twin-turboV8seven-speedSSGMonocageIII;notGTR,LMorMSOCarbonThemewheeloption",
+        "market": "UK/Europe"
+      },
+      "referenceVehicle": "2018 McLaren Senna, standardroad-legalM840TR4.0twin-turboV8seven-speedSSGMonocageIII;notGTR,LMorMSOCarbonThemewheeloption",
+      "facts": {
+        "powerHp": 789,
+        "publishedPowerPS": 800,
+        "powerRpm": 7250,
+        "torqueNm": 800,
+        "torqueRpm": 5500,
+        "torquePlateauEndRpm": 6700,
+        "engineDisplacementL": 3.994,
+        "transmission": "automatic",
+        "gearCount": 7,
+        "publishedDryKg": 1198,
+        "topSpeedMph": 211
+      },
+      "sources": [
+        {
+          "url": "https://a3.myautoworld.com/46593/",
+          "publisher": "McLaren2018factorypressreleases/technicaltable mirroredbyMyAutoWorld",
+          "fields": [
+            "powerHp",
+            "publishedPowerPS",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "torquePlateauEndRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "publishedDryKg",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "UseordinarySennafacts/performanceportionofthecombinedpresspacket,notMSOcarbonwheeloptions.1198kg lightestdrynotcurb;1300kgrunningestimate. SourcekW597typo conflicts800PS789bhp, chooseexplicit789bhp. Geometry,mass,ratios,tracks,RPMlimits,aerocoefficientsestimated; notreproductionof800kgdownforcecurve/activewingorRCCII.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Foothill Clover 2018",
+            "id": "mclaren-720s-coupe-2018-roster-candidate",
+            "documentId": "foothill-clover-2018",
+            "runtimeId": "saved-car:Foothill Clover 2018",
+            "scope": "same-wave"
+          },
+          {
+            "alias": "Little Burclover 2011",
+            "documentId": "little-burclover-2011",
+            "runtimeId": "saved-car:Little Burclover 2011",
+            "reference": "MP4-12C",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "UltimateSeriesMonocageIII,lowmasscarbonbody,road-legaltrackaero800kgfactorydownforceandRaceActiveChassisControlII; notjust720SpowertuneorGTRracecar.",
+        "evidence": [
+          "https://a3.myautoworld.com/46593/"
+        ],
+        "audit": "Fresh49catalog464cars allnativefields includinginspiration/provenance audited, plusactualtestsrg. ExistingAventador/Huracan rejected. Exact660slotconfirmed."
+      },
+      "name": "Bolander Clover 2018",
+      "id": "bolander-clover-2018",
+      "simulationEstimates": {
+        "reverseRatio": 3.8,
+        "cgHeightM": 0.38,
+        "groundClearanceM": 0.1,
+        "dragCoefficient": 0.5,
+        "tireGrip": 1.15,
+        "spring": 0.65,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0.08,
+        "aeroRear": 0.12,
+        "shiftTimeMs": 90,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.42,
+        "redlineRpm": 8200,
+        "revLimitRpm": 8400,
+        "aspiration": "Turbocharged",
+        "fuelTankUSgal": 19,
+        "zeroToSixtySec": 2.7,
+        "bodyClass": "coupe",
+        "drivetrain": "rwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "curbKg": 1300,
+        "lengthM": 4.744,
+        "widthM": 1.958,
+        "heightM": 1.229,
+        "wheelbaseM": 2.67,
+        "trackFrontIn": 65.3,
+        "trackRearIn": 63.7,
+        "tireSize": [
+          245,
+          35,
+          19
+        ],
+        "frontTire": [
+          245,
+          35,
+          19
+        ],
+        "rearTire": [
+          315,
+          30,
+          20
+        ],
+        "gearRatios": [
+          3.982,
+          2.612,
+          1.905,
+          1.479,
+          1.16,
+          0.906,
+          0.686
+        ],
+        "finalDrive": 3.308,
+        "transmissionLabel": "seven-speedSSG approximatedautomatic"
+      }
+    },
+    {
+      "candidateId": "renault-clio-ii-renaultsport-2000-de-supplementary",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2000,
+        "make": "Renault",
+        "model": "Clio II Renault Sport2.0 16V",
+        "trim": "earlyPhaseI GermanLHD three-door naturallyaspirated five-speedmanual,15inchOZwheels; notPhaseII,Cup or182",
+        "market": "Germany"
+      },
+      "bodyClass": "hatchback",
+      "referenceVehicle": "2000 Germany ClioII RenaultSport2.0 16V PhaseI F4R1998cc FWD5MT early124kW factoryrating, colloquially172; notlater182/Cup",
+      "facts": {
+        "powerRpm": 6250,
+        "torqueNm": 200,
+        "torqueRpm": 5400,
+        "engineDisplacementL": 1.998,
+        "tireSize": [
+          195,
+          50,
+          15
+        ],
+        "frontTire": [
+          195,
+          50,
+          15
+        ],
+        "rearTire": [
+          195,
+          50,
+          15
+        ],
+        "publishedPowerKw": 124,
+        "publishedPowerPS": 172,
+        "periodPublishedRatings": {
+          "powerKw": 124,
+          "powerPS": 172,
+          "basis": "Original German September1999 leaflet prints both incompatible values. Runtime124kW is an explicitly estimated anchor choice, not a claimed conversion of172PS."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://www.brochure-catalogue-voiture-neuve.fr/en/brochures/renault/clio/renault-clio-1998/2-1-ALL-09-1999-20-16V-DE/",
+          "publisher": "Renault Germany originalSeptember1999 two-page salesleaflet,archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "earlyPhaseIidentity"
+          ],
+          "access": "Downloaded originalPDF and visuallyreadp2. ImprintSept99;1998cc,124kW(172PS)6250rpm,200Nm5400rpm,195/50R15,aluminiumbonnet,15inchOZwheels,standardABS. Internal124kW/172PSconversionconflict retained:anchor124kWnot172PS. Performancevalues markedpreliminary,notusedasverifiedanchors."
+        },
+        {
+          "url": "https://presse.renault.de/erster-renault-mit-neuem-markengesicht/?lang=deu",
+          "publisher": "Renault Germany factoryDecember2001 release",
+          "fields": [
+            "powerKw",
+            "relationshipAudit"
+          ],
+          "access": "LaterPhaseII retains124kW but prints169PS,corroboratingkWanchor and distinguishing16inchwheels,newcabin/laterbody. Do notcarrylater200Nm5700rpmbasisintooriginalPhaseI."
+        },
+        {
+          "url": "https://www.km77.com/coches/renault/clio/1998/3-puertas/renault-sport/clio-20-16v-renault-sport/informacion/renault-clio-sport-2-0-explosion-controlada-informacion-general",
+          "publisher": "KM77 contemporaryMarch2000 roadtest,secondary chronologycorroboration",
+          "fields": [
+            "identity"
+          ],
+          "access": "ConfirmsPhaseIproductionavailableMarch2000;1999factorylaunchleaflet usedforthesameearlymodel. DoesnotreplaceprimaryGermanpoweranchor."
+        }
+      ],
+      "limits": [
+        "Supplementaryidentity NOTin historical660backlog; parentmust explicitlyreservecanonicalcapacity instead of silentlygrowinglist.",
+        "OriginalGermanleaflet prints124kW(172PS),which isnotarithmeticallyconsistent. Useexplicit124kWvalue; laterGermanfactorytext124kW169PSsupports it. Do notclaim172SAEhp or126.5kW verified.",
+        "Calendar2000selectedfirstfullproductionperiod,corroboratedcontemporarily;factorysourceimprintSeptember1999notyear2000specificrevision. Noassumptionthat1999previewperformanceisverified.",
+        "AllsuggestedEstimates includingmass/ratios/geometry/aspiration/drivetrain andtiming are modeling estimates pendingcompletefactorytable; engine layout/5MT stronglycorroboratedperiodreportsbutnottechnicalleafletnumbers.",
+        "No182orSpindle found in completecurrentcatalog/provenance orrepoCatalogtests. ExistingClioV6,III200,IVE DCandWilliamsaredifferentplatform/drivetrains. Sharedartplaceholderonly.",
+        "Runtime124kW is an explicitly estimated resolution of the conflicting published124kW/172PS pair, chosen using laterGerman124kW169PS corroboration; not a correction to the original leaflet.",
+        "Factory124kW and172PS conflict; simulation uses124kW as an explicit estimate and does not assert a certified net conversion of172PS.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "vesper-v6-2003",
+            "alias": "Vesper V6 2003",
+            "referenceVehicle": "2003 German Clio V6 Phase II LHD six-speed RWD",
+            "documentId": "vesper-v6-2003",
+            "runtimeId": "saved-car:Vesper V6 2003",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "vervain-200-2011",
+            "alias": "Vervain 200 2011",
+            "referenceVehicle": "UK February 2011 Clio Renaultsport 200, standard Sport chassis, RHD three-door, naturally aspirated front-engine FWD 6MT; not optional Cup, lighter Cup model, V6 or later turbo EDC",
+            "documentId": "vervain-200-2011",
+            "runtimeId": "saved-car:Vervain 200 2011",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "goldentuft-1993",
+            "alias": "Goldentuft 1993",
+            "referenceVehicle": "1993 France Renault Clio Williams, first-series European 2.0 naturally aspirated three-door road car, five-speed manual; not rally Group A/N",
+            "documentId": "goldentuft-1993",
+            "runtimeId": "saved-car:Goldentuft 1993",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "lesser-stitchwort-2013",
+            "alias": "Lesser Stitchwort 2013",
+            "referenceVehicle": "2013 Renault Clio R.S. 200 EDC, French-market Sport chassis five-door, standard six-speed EDC, not Cup or Trophy",
+            "documentId": "lesser-stitchwort-2013",
+            "runtimeId": "saved-car:Lesser Stitchwort 2013",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "EarlyClioIIfrontengineFWD4-cylinder172family differsfundamentallyfromexistingClioIIFV6rear-midengineRWD,VervainClioIII6MT,andlaterClioIV1.6turboEDC. WilliamsispreviousgenerationF7R. No182samegenerationfound; iflaterfoundholduntilmechanicalaudit.",
+        "evidence": [
+          "https://www.brochure-catalogue-voiture-neuve.fr/en/brochures/renault/clio/renault-clio-1998/2-1-ALL-09-1999-20-16V-DE/",
+          "https://presse.renault.de/erster-renault-mit-neuem-markengesicht/?lang=deu"
+        ]
+      },
+      "name": "Graceful Clover 2000",
+      "id": "graceful-clover-2000",
+      "simulationEstimates": {
+        "reverseRatio": 3.545,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.63,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 13.21,
+        "topSpeedMph": 134.2,
+        "zeroToSixtySec": 7,
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 1035,
+        "lengthM": 3.773,
+        "widthM": 1.639,
+        "heightM": 1.417,
+        "wheelbaseM": 2.472,
+        "trackFrontIn": 56.93,
+        "trackRearIn": 56.77,
+        "gearRatios": [
+          3.091,
+          1.864,
+          1.321,
+          1.029,
+          0.795
+        ],
+        "finalDrive": 3.895,
+        "powerKw": 124,
+        "powerHp": 166.28673910978347
+      }
+    }
+  ],
+  "deferred": []
+}

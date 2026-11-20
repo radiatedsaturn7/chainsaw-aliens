@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "field-trefoil-2010",
+  "name": "Field Trefoil 2010",
+  "stableCarId": "saved-car:Field Trefoil 2010",
+  "referenceVehicle": "2010 United States Mazda Mazda6, i Sport Federal2.5L six-speed manual sedan, standard16-inch steel wheels; not3.7V6,5AT,PZEVautomatic orMazdaspeed6",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "field-trefoil-2010",
+  "sourceHashes": {
+    "body": "70e43a3323dc08e66b2358b4f1e68e466f7ed60b439f5a78230c87df642434b8",
+    "dashboard": "6b81ce51ecb29d6d3051605e7525bbb157968f89d6c02c7de39865b9a80d6601",
+    "tires": "7d42273d063b13a2a55ad83950004ea01dd6b4fba2a3178895705023db033726"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

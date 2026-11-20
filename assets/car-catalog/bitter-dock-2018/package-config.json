@@ -1,0 +1,79 @@
+{
+  "id": "bitter-dock-2018",
+  "name": "Bitter Dock 2018",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      426,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://www.media.stellantis.com/uploads/me/ME/2018/Dodge/Technical-sheet/1806_Dodge-Durango-SRT.pdf",
+      "fields": [
+        "powerHp",
+        "torqueLbFt",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "revLimitRpm",
+        "lengthIn",
+        "widthIn",
+        "heightIn",
+        "wheelbaseIn",
+        "trackFrontIn",
+        "trackRearIn",
+        "groundClearanceM",
+        "tireSize",
+        "fuelTankUSgal",
+        "dragCoefficient",
+        "frontWeightDistribution",
+        "steeringRatio",
+        "publishedEstimatedCurbLb",
+        "publishedEstimatedCurbKg",
+        "frontDifferentialAccel",
+        "rearDifferentialAccel"
+      ]
+    },
+    {
+      "url": "https://www.prnewswire.com/news-releases/dodge-announces-pricing-for-2018-dodge-durango-srt-americas-fastest-most-powerful-and-most-capable-three-row-suv-300483955.html",
+      "fields": [
+        "USmarketMY2018identity",
+        "standardAWD8AT",
+        "standardall-seasontires"
+      ]
+    }
+  ]
+}

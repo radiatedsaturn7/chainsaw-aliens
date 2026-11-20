@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "basil-thyme-2020",
+  "name": "Basil Thyme 2020",
+  "stableCarId": "saved-car:Basil Thyme 2020",
+  "referenceVehicle": "2020 Germany Hyundai i30 N Performance five-door hatch,2.0T-GDI202kW six-speed manual,pre-facelift; not Fastback or2021DCT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "2dfcc9b073b07ac07d6fb564fb01233bc24d8f47d9f221e70794b65f7fd65cf0",
+    "dashboard": "854f972412ee18aa2ccdc352ef934c14de4c49e4c01eaa2ed3aa2dd31831f2d3",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

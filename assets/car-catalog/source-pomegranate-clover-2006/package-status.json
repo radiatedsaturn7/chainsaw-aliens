@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "source-pomegranate-clover-2006",
+  "name": "Pomegranate Clover 2006",
+  "stableCarId": "saved-car:Pomegranate Clover 2006",
+  "referenceVehicle": "Germany June2006 Renault Vel Satis base2.0dCi150FAP,6MT. Tall five-door executive hatchback,base trim,notInitiale173 orV6.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "pomegranate-clover-2006",
+  "sourceHashes": {
+    "body": "6e38b12db63bc7a8fc6c94896ba24dadd5262756d526206d13f4cec8c0c05178",
+    "dashboard": "497876e4939cdaf8f8d1bb651f07b653042b518991e8d01b84c9a060a202e814",
+    "tires": "b4c9c1ffe49fc931d809df5fafeb39d8f51c108a0317501176ca6d2ca804540f"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    3,
+    4,
+    5,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
+}

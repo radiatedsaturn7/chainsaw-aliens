@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "dewberry-clover-2010",
+  "name": "Dewberry Clover 2010",
+  "stableCarId": "saved-car:Dewberry Clover 2010",
+  "referenceVehicle": "2010 United States Audi Q7 3.0TDI Premium turbo-diesel V6 quattro six-speed Tiptronic, standard steel-spring chassis; not gasoline3.6/4.2 or later eight-speed",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "1bb10ef85a2f6c6b2d071eba151fe08e2e3fcbb9bfe6cdf329d59828e12082d5",
+    "dashboard": "6e49a52114d9eb5ed6c16c88a367c311692c2b7a2e32467f7fcacd7dc00bb941",
+    "tires": "8999cbe0ab118b52325134516c54057633cf945d3f6ff728bc15f207f0a74f26"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

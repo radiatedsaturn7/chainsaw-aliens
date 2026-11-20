@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "coastal-trefoil-2012",
+  "name": "Coastal Trefoil 2012",
+  "stableCarId": "saved-car:Coastal Trefoil 2012",
+  "referenceVehicle": "2012 United States Kia Optima, LX2.4GDI SULEV192hp6MT,16-inchwheels,nohybrid",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "d3e8d45fc654ca17044454032f04672ab2d2759bc67d58ccef3190c9079ce5b8",
+    "dashboard": "04bc0044ebbdf079051cfb308a5bf907cf79aafda1a1d256c97cfb414149dd71",
+    "tires": "d39ac725d97e84f651de904808da0c13523f7790cb4c741e9877bbf68d34c79b"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,59 @@
+{
+  "id": "golden-trefoil-2012",
+  "name": "Golden Trefoil 2012",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      426,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Chevrolet/Cruze/Chevrolet_US%20Cruze_2012.pdf",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "absEnabled",
+        "tractionControlEnabled",
+        "engineDisplacementL",
+        "powerHp",
+        "torqueLbFt",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "fuelTankUSgal"
+      ]
+    }
+  ]
+}

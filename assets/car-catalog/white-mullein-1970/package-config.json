@@ -1,0 +1,69 @@
+{
+  "id": "white-mullein-1970",
+  "name": "White Mullein 1970",
+  "stableCarId": "saved-car:White Mullein 1970",
+  "runtimeId": "saved-car:White Mullein 1970",
+  "candidateId": "dodge-challenger-r-t-1970-roster-candidate",
+  "referenceVehicle": "1970 US Dodge Challenger R/T, two-doorhardtop,standard383Magnum four-barrel335hp reference,standardall-synchro3MT,nonSE,nonsixpack",
+  "identity": {
+    "year": 1970,
+    "make": "Dodge",
+    "model": "Challenger R/T",
+    "trim": "two-doorhardtop,standard383Magnum four-barrel335hp reference,standardall-synchro3MT,nonSE,nonsixpack",
+    "market": "United States"
+  },
+  "bodyClass": "two-door-hardtop-coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      220,
+      490,
+      550,
+      185
+    ],
+    "wheel": [
+      490,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://www.lov2xlr8.no/brochures/dodge/70cha/bilder/5.jpg",
+      "fields": [
+        "exactengine/transmissionselection",
+        "publishedperiodpowerandtorque",
+        "chassis/body"
+      ]
+    },
+    {
+      "url": "https://www.lov2xlr8.no/brochures/dodge/70cha/bilder/4.jpg",
+      "fields": [
+        "R/Tstandard383Magnum",
+        "standardall-synchrothree-speed",
+        "standardhood/body"
+      ]
+    }
+  ]
+}

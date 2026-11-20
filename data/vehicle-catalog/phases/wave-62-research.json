@@ -1,0 +1,801 @@
+{
+  "schemaVersion": 1,
+  "base": "aafb7a93c784a1e03ddcb1280a727d0f97c213fc",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "chrysler-200-lx-2012-us-4at-supplemental",
+      "identity": {
+        "year": 2012,
+        "make": "Chrysler",
+        "model": "200",
+        "trim": "LX2.4 gasoline non-PZEV sedan, package24H, four-speed automatic, standard17-inch wheelcovers; not convertible,200S,V6 orsecond-generation9AT",
+        "market": "United States"
+      },
+      "referenceVehicle": "2012 United States Chrysler 200, LX2.4 gasoline non-PZEV sedan, package24H, four-speed automatic, standard17-inch wheelcovers; not convertible,200S,V6 orsecond-generation9AT",
+      "bodyClass": "four-door-sedan",
+      "artIdentity": "First-generation rounded midsize three-box sedan, narrow horizontal grille, projector lamps, tall cabin and17-inch covered wheels; plain cloth interior.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "engineDisplacementL": 2.36,
+        "powerHp": 173,
+        "powerRpm": 6000,
+        "torqueLbFt": 166,
+        "torqueRpm": 4400,
+        "transmission": "automatic",
+        "gearCount": 4,
+        "gearRatios": [
+          2.842,
+          1.57,
+          1,
+          0.69
+        ],
+        "reverseRatio": 2.21,
+        "finalDrive": 3.91,
+        "lengthM": 4.869179999999999,
+        "widthM": 1.8415,
+        "heightM": 1.48336,
+        "wheelbaseM": 2.76606,
+        "trackFrontIn": 61.7,
+        "trackRearIn": 62.7,
+        "tireSize": [
+          225,
+          55,
+          17
+        ],
+        "fuelTankUSgal": 16.9,
+        "dragCoefficient": 0.34,
+        "steeringRatio": 16.65
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Chrysler/200/Chrysler_US%20200_2012.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "identity",
+            "powerHp",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "tireSize"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        },
+        {
+          "url": "https://sc-journal.com/view/13821/chrysler-200-sedan-2012-specifications-6/",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "engineDisplacementL",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "fuelTankUSgal",
+            "dragCoefficient",
+            "steeringRatio"
+          ],
+          "access": "2026-11-18 readable mirrored original media.chrysler.com2012 specifications; explicitly preliminary, production brochure cross-check for variant and173hp."
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Original2012 factory specification sheet is explicitly preliminary; output173hp production-brochure corroborated, torque/peakRPM and geometry/ratio table retain publication caveat. Manufacturer preliminary3402.8lb/1543.5kg baseLX4AT mass is used only as modeling estimate, not certified finalcurb.",
+        "LX24H 4AT is explicitly in production brochure ordering matrix despite narrative broadly describing6AT. ExcludesPZEV25H larger18.5gal tank. No simulated AutoStick mode.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Ribwort 2001",
+            "documentId": "ribwort-2001",
+            "runtimeId": "saved-car:Ribwort 2001",
+            "reference": "2001 US Chrysler PT Cruiser base 27D, 2.4 naturally aspirated FWD5MT; standard15inch steel covers, solidroof, noTouring/Limited/ABS/options",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Cornsalad 2005",
+            "documentId": "cornsalad-2005",
+            "runtimeId": "saved-car:Cornsalad 2005",
+            "reference": "2005 US Dodge Neon SE four-door sedan, standard five-speed manual, naturally aspirated 1995cc SOHC16v, front-wheel drive. No SXT, SRT4, SRT Design, sport package or optional ABS. Original fictional Cornsalad 2005.",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Arrowleaf GT 2013",
+            "documentId": "arrowleaf-gt-2013",
+            "runtimeId": "saved-car:Arrowleaf GT 2013",
+            "reference": "2013 US Dodge Dart GT, 2.4L Tigershark MultiAir2, six-speed manual sedan; not SE/SXT, proposed R/T or optional automatic",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No200/Sebring/Avenger native reference. Larger JS midsize sedan with2.4 WorldEngine and4AT differs from Neon2.0/5MT, Dart2.4MultiAir/6MT andPTCruiser2.4/5MT.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Chrysler/200/Chrysler_US%20200_2012.pdf",
+          "https://sc-journal.com/view/13821/chrysler-200-sedan-2012-specifications-6/"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Blackthorn Clover 2012",
+      "id": "blackthorn-clover-2012",
+      "simulationEstimates": {
+        "cgHeightM": 0.54,
+        "groundClearanceM": 0.14,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.99,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6300,
+        "revLimitRpm": 6500,
+        "topSpeedMph": 118,
+        "zeroToSixtySec": 10.3,
+        "curbKg": 1543.5,
+        "transmissionLabel": "4-speed automatic (estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "dodge-caliber-express-2010-us-5mt-supplemental",
+      "identity": {
+        "year": 2010,
+        "make": "Dodge",
+        "model": "Caliber",
+        "trim": "Express2.0 dualVVT naturallyaspirated FWD five-speedmanual, standard15-inch wheelcovers, cloth; not CVT,Heat,Rush orSRT4",
+        "market": "United States"
+      },
+      "referenceVehicle": "2010 United States Dodge Caliber, Express2.0 dualVVT naturallyaspirated FWD five-speedmanual, standard15-inch wheelcovers, cloth; not CVT,Heat,Rush orSRT4",
+      "bodyClass": "five-door-hatchback",
+      "artIdentity": "Tall angular five-door hatchback with broad shoulders, high roof, rear quarter glass and15-inch wheelcovers; original badge-free treatment, ordinaryclothcabin.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "engineDisplacementL": 2,
+        "powerHp": 158,
+        "powerRpm": 6400,
+        "torqueLbFt": 141,
+        "torqueRpm": 5000,
+        "transmission": "manual",
+        "gearCount": 5,
+        "tireSize": [
+          205,
+          70,
+          15
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Dodge/Caliber/Dodge_US%20Caliber_2010.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "engineDisplacementL",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "transmission",
+            "gearCount",
+            "tireSize"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Factorybrochure explicitly confirmsExpress2.0/5MT andstandard15-inch205/70R15; no invented CVT gears. Curb,dimensions,trackwidths,gear ratios and performance remain explicit estimates, not factoryverified.",
+        "OptionalESC omitted, ABS retained from standard equipment. No tractioncontrol or electronic AWD simulation.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Firethorn Turbo 2005",
+            "documentId": "firethorn-turbo-2005",
+            "runtimeId": "saved-car:Firethorn Turbo 2005",
+            "reference": "US 2005 Dodge SRT-4 standard four-door sedan, T850 5MT FWD LHD, not ACR or Commemorative Edition",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Ribwort 2001",
+            "documentId": "ribwort-2001",
+            "runtimeId": "saved-car:Ribwort 2001",
+            "reference": "2001 US Chrysler PT Cruiser base 27D, 2.4 naturally aspirated FWD5MT; standard15inch steel covers, solidroof, noTouring/Limited/ABS/options",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Cornsalad 2005",
+            "documentId": "cornsalad-2005",
+            "runtimeId": "saved-car:Cornsalad 2005",
+            "reference": "2005 US Dodge Neon SE four-door sedan, standard five-speed manual, naturally aspirated 1995cc SOHC16v, front-wheel drive. No SXT, SRT4, SRT Design, sport package or optional ABS. Original fictional Cornsalad 2005.",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No Caliber/Compass/Patriot native reference. PM tallhatch2.0DOHCdualVVT replaces but is not a trimofPLNeon2.0SOHC sedan; distinctbody/chassis andengine, versus turboSRT4 and2.4PTretroMPV.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Dodge/Caliber/Dodge_US%20Caliber_2010.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Buckthorn Clover 2010",
+      "id": "buckthorn-clover-2010",
+      "simulationEstimates": {
+        "reverseRatio": 3.42,
+        "cgHeightM": 0.57,
+        "groundClearanceM": 0.19,
+        "dragCoefficient": 0.38,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6600,
+        "revLimitRpm": 6800,
+        "fuelTankUSgal": 13.6,
+        "topSpeedMph": 115,
+        "zeroToSixtySec": 9.5,
+        "steeringRatio": 20,
+        "curbKg": 1335,
+        "lengthM": 4.415,
+        "widthM": 1.748,
+        "heightM": 1.534,
+        "wheelbaseM": 2.635,
+        "trackFrontIn": 59.8,
+        "trackRearIn": 59.8,
+        "gearRatios": [
+          3.77,
+          2.16,
+          1.41,
+          1.03,
+          0.81
+        ],
+        "finalDrive": 4.12
+      }
+    },
+    {
+      "candidateId": "buick-regal-cxl-2011-us-2-4-6at-supplemental",
+      "identity": {
+        "year": 2011,
+        "make": "Buick",
+        "model": "Regal",
+        "trim": "CXL2.4 naturallyaspirated direct-injection FWD six-speedautomatic, standard18-inchalloys; notTurbo,GS,eAssist orInsignia-badgedduplicate",
+        "market": "United States"
+      },
+      "referenceVehicle": "2011 United States Buick Regal, CXL2.4 naturallyaspirated direct-injection FWD six-speedautomatic, standard18-inchalloys; notTurbo,GS,eAssist orInsignia-badgedduplicate",
+      "bodyClass": "four-door-sedan",
+      "artIdentity": "Fifth-generation European-derived midsize sedan with arched roof, blade-like side crease, short rear deck and18-inch13-spoke wheels; conventional five-seat leathercabin.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "engineDisplacementL": 2.4,
+        "powerHp": 182,
+        "powerRpm": 6700,
+        "torqueLbFt": 172,
+        "torqueRpm": 4900,
+        "transmission": "automatic",
+        "gearCount": 6,
+        "lengthM": 4.831079999999999,
+        "widthM": 1.8567399999999998,
+        "heightM": 1.48336,
+        "wheelbaseM": 2.73812,
+        "tireSize": [
+          235,
+          50,
+          18
+        ],
+        "fuelTankUSgal": 18.4
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Buick/Regal/Buick_US%20Regal_2011.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "engineDisplacementL",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "tireSize",
+            "fuelTankUSgal"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Productionbrochure2.4column182hp/172lbft is distinct from turbo220hp preliminary-footnotedcolumn; no turbo or hybridfeatures.",
+        "Factory brochurefuel capacity18.4USgal retained despiteotherpreliminarytables18.5. Curb1633kg andgear ratios/tracks are explicit estimates; not claimed finalfactorytable. No adaptive damping modes.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Henbit 2005",
+            "documentId": "henbit-2005",
+            "runtimeId": "saved-car:Henbit 2005",
+            "reference": "2005 mainland-US Chevrolet Malibu base Sedan,2.2L Ecotec DOHC inline4,4T45-E four-speed automatic,FWD,LHD. NotMaxx,Classic,LS/LT,V6,SS,sport or appearance package.",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Running Clover 2002",
+            "documentId": "running-clover-2002",
+            "runtimeId": "saved-car:Running Clover 2002",
+            "reference": "2002 United States Buick LeSabre, US Custom3800SeriesII naturallyaspiratedV6 four-speedautomatic,standard15-inchcoveredsteelwheels,noGranTouringpackage",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoRegal/Insignia currentnative model. EpsilonII midsize body,2.4DI/6AT distinct from olderEpsilonMalibu2.2/4AT andLeSabreHbody3800V6/4AT; notpendingCentury. GermanInsignia mechanicalrelationship acknowledged but none represented.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Buick/Regal/Buick_US%20Regal_2011.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Spindle Clover 2011",
+      "id": "spindle-clover-2011",
+      "simulationEstimates": {
+        "reverseRatio": 2.94,
+        "cgHeightM": 0.54,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.3,
+        "tireGrip": 0.8,
+        "spring": 0.54,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.99,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6800,
+        "revLimitRpm": 7000,
+        "topSpeedMph": 125,
+        "zeroToSixtySec": 8.8,
+        "steeringRatio": 20,
+        "curbKg": 1633,
+        "trackFrontIn": 62.4,
+        "trackRearIn": 62.5,
+        "gearRatios": [
+          4.584,
+          2.964,
+          1.912,
+          1.446,
+          1,
+          0.746
+        ],
+        "finalDrive": 3.23,
+        "transmissionLabel": "6-speed automatic (estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "fiat-doblo-active-1-4-2010-supplemental-candidate",
+      "bodyClass": "minivan",
+      "identity": {
+        "year": 2010,
+        "make": "Fiat",
+        "model": "Doblo Active1.4 16V95",
+        "trim": "UK March2010 second-generation standard-length five-seat passenger MPV five-speed manual, noFamilyPack; notCargo,Maxi,seven-seat,diesel orMTA",
+        "market": "UK"
+      },
+      "referenceVehicle": "2010 Fiat Doblo Active1.4 16V95, UK March2010 second-generation standard-length five-seat passenger MPV five-speed manual, noFamilyPack; notCargo,Maxi,seven-seat,diesel orMTA",
+      "facts": {
+        "powerHp": 95,
+        "engineDisplacementL": 1.4,
+        "gearCount": 5,
+        "transmission": "manual",
+        "lengthM": 4.39,
+        "wheelbaseM": 2.75,
+        "absEnabled": true,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/uk-en/fiat/press/new-doblo-press-pack",
+          "publisher": "FiatUK March2010 factory launch press pack",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL",
+            "gearCount",
+            "transmission",
+            "lengthM",
+            "wheelbaseM",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        },
+        {
+          "url": "https://www.media.stellantis.com/uk-en/fiat/press/prices-announced-for-all-new-fiat-doblo",
+          "publisher": "FiatUK February2010trimprice table",
+          "fields": [
+            "identity",
+            "trim",
+            "engine"
+          ],
+          "access": "Readweb2026-11-18; explicit1.4 16v95Active."
+        }
+      ],
+      "limits": [
+        "Factory literally95bhp, retained as published mechanical-horsepower label; no silentPS conversion. Exact1368cc, torque/RPM,1370kg runningmass excludingdriver,width/height,track,tiresection,ratios andperformance estimates. Standardstart-stop is not independently simulated. Factoryseating5; optional7-seat pack excluded.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Yates Clover 2009",
+            "documentId": "yates-clover-2009",
+            "runtimeId": "saved-car:Yates Clover 2009",
+            "reference": "FiatQuboActive1.4 compactpassengerMPV",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Water Trefoil 2012",
+            "documentId": "water-trefoil-2012",
+            "runtimeId": "saved-car:Water Trefoil 2012",
+            "reference": "RenaultKangoo1.6passengerMPV",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Larger2.75m-wheelbase Fiat passenger van with independent bi-link rear suspension and790L boot, not smaller Qubo/Fiorino body or Kangoo badge clone.",
+        "evidence": [
+          "https://www.media.stellantis.com/uk-en/fiat/press/new-doblo-press-pack"
+        ],
+        "audit": "Audited wave59fullnativecatalog, all currentrepo phase intake andwave59 newpackets: no Doblo,500L orThesis exactmodel identity. Relatedmodels explicit. Supplementalcanonicalreservationrequired, historical660fileuntouched."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Elder Clover 2010",
+      "id": "elder-clover-2010",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.63,
+        "groundClearanceM": 0.18,
+        "dragCoefficient": 0.38,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 15.850323141488905,
+        "topSpeedMph": 100,
+        "zeroToSixtySec": 14.8,
+        "bodyClass": "minivan",
+        "drivetrain": "fwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 6000,
+        "torqueNm": 127,
+        "torqueRpm": 4500,
+        "curbKg": 1370,
+        "widthM": 1.832,
+        "heightM": 1.845,
+        "trackFrontIn": 59,
+        "trackRearIn": 58.5,
+        "tireSize": [
+          195,
+          60,
+          16
+        ],
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.32,
+          0.97,
+          0.76
+        ],
+        "finalDrive": 4.1,
+        "transmissionLabel": "five-speed manual; estimated ratios",
+        "torqueLbFt": 93.67039295821273
+      }
+    },
+    {
+      "candidateId": "fiat-500l-pop-star-twinair105-2013-supplemental-candidate",
+      "bodyClass": "minivan",
+      "identity": {
+        "year": 2013,
+        "make": "Fiat",
+        "model": "500L Pop StarTwinAir105",
+        "trim": "UK February2013 short-body five-seat compactMPV0.9TwinAir six-speedmanual normalpower mode, standard16inchalloys; notMPW,Living,Trekking,ECO or500citycar",
+        "market": "UK"
+      },
+      "referenceVehicle": "2013 Fiat 500L Pop StarTwinAir105, UK February2013 short-body five-seat compactMPV0.9TwinAir six-speedmanual normalpower mode, standard16inchalloys; notMPW,Living,Trekking,ECO or500citycar",
+      "facts": {
+        "engineDisplacementL": 0.875,
+        "publishedPowerHp": 105,
+        "powerRpm": 5500,
+        "torqueNm": 145,
+        "torqueRpm": 2000,
+        "gearCount": 6,
+        "transmission": "manual",
+        "lengthM": 4.147,
+        "topSpeedMph": 112,
+        "periodPublishedRatings": {
+          "value": 105,
+          "unit": "hp as printed",
+          "basis": "UKfactorylaunch unit convention unstated",
+          "installedPowerHpEstimate": 103.563607413
+        }
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/uk-en/fiat/press/fiat-500l-500-goes-large-press-pack",
+          "publisher": "FiatUK February2013 full launch press pack",
+          "fields": [
+            "engineDisplacementL",
+            "publishedPowerHp",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "gearCount",
+            "transmission",
+            "lengthM",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "Factory105hp unit basis notexplicit; installed103.5636mechanicalhp is an estimate interpretingmetric105PS, separatefrom publishedmetadata. Normal145Nm mode used, ECO120Nm/98hp omitted. Source prints1784cm width obvious unittypo; modeled1.784m width held asestimate, notverbatimfact.1260kg runningmass excludingdriver,height,wheelbase,track,tiresection,ratios,FD and0\u201360 estimated; factory0\u201362=12.3s.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data.",
+        "Historical published ratings are not certified modern net output; installed simulation output is an explicit estimate."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Lace Clover 2012",
+            "documentId": "lace-clover-2012",
+            "runtimeId": "saved-car:Lace Clover 2012",
+            "reference": "FiatPanda4x4 TwinAir85six-speed",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Heather Clover 2004",
+            "documentId": "heather-clover-2004",
+            "runtimeId": "saved-car:Heather Clover 2004",
+            "reference": "FiatIdeaActive1.4 miniMPV",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "SharedTwinAir engine family acknowledged, but enlargedSmallWideB-platform front-drive cab-forward5seatMPV versus smaller4x4Panda and earlierIdea. Different wheelbase, cabin/body, mass and driveline; not500badge-onlytrim.",
+        "evidence": [
+          "https://www.media.stellantis.com/uk-en/fiat/press/fiat-500l-500-goes-large-press-pack"
+        ],
+        "audit": "Audited wave59fullnativecatalog, all currentrepo phase intake andwave59 newpackets: no Doblo,500L orThesis exactmodel identity. Relatedmodels explicit. Supplementalcanonicalreservationrequired, historical660fileuntouched."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Guelder Clover 2013",
+      "id": "guelder-clover-2013",
+      "simulationEstimates": {
+        "reverseRatio": 3.55,
+        "cgHeightM": 0.59,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Turbocharged",
+        "fuelTankUSgal": 13.20860261790742,
+        "zeroToSixtySec": 11.9,
+        "bodyClass": "minivan",
+        "drivetrain": "fwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "curbKg": 1260,
+        "widthM": 1.784,
+        "heightM": 1.665,
+        "wheelbaseM": 2.612,
+        "trackFrontIn": 59,
+        "trackRearIn": 58.5,
+        "tireSize": [
+          205,
+          55,
+          16
+        ],
+        "gearRatios": [
+          3.73,
+          2.05,
+          1.32,
+          0.97,
+          0.76,
+          0.62
+        ],
+        "finalDrive": 4.4,
+        "transmissionLabel": "six-speed manual; estimated ratios",
+        "powerHp": 103.563607413
+      }
+    },
+    {
+      "candidateId": "lancia-thesis-executive-3-2-2003-supplemental-candidate",
+      "bodyClass": "sedan",
+      "identity": {
+        "year": 2003,
+        "make": "Lancia",
+        "model": "Thesis Executive3.2 V6 24V",
+        "trim": "Italy June2003 unarmored luxury sedan five-speed Comfortronic automatic standardExecutive, notEmblema,Protecta,3.0 orJTD",
+        "market": "Italy"
+      },
+      "referenceVehicle": "2003 Lancia Thesis Executive3.2 V6 24V, Italy June2003 unarmored luxury sedan five-speed Comfortronic automatic standardExecutive, notEmblema,Protecta,3.0 orJTD",
+      "facts": {
+        "powerHp": 226.853616238,
+        "engineDisplacementL": 3.2,
+        "gearCount": 5,
+        "transmission": "automatic"
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/it-it/lancia/press/nuovi-motori-per-lancia-thesis",
+          "publisher": "LanciaItaly June2003 factoryengine andtrim launch",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL",
+            "gearCount",
+            "transmission"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        },
+        {
+          "url": "https://www.media.stellantis.com/it-it/lancia/press/lancia-al-61-deg-salone-internazionale-di-francoforte",
+          "publisher": "LanciaItaly September2005 factoryreference",
+          "fields": [
+            "laterSameEngineCorroborationOnly"
+          ],
+          "access": "Readweb2026-11-18; 3.2V6 169kW6200rpm/289Nm4800; latermodel data supports estimates only, not asserted2003facts."
+        }
+      ],
+      "limits": [
+        "230ItalianCV converted226.8536mechanicalhp; Englishtranslation230bhp is not used. Rounded3.2L source, exact3179cc estimated.1855kg runningmass excludingdriver,allgeometry,tires,ratios,FD,RPM/torque andperformance remain estimates. Later2005factoryreference corroborates6200rpm/289Nm4800 but is notproof exact2003setup. Skyhookadaptive damping approximatedbyfixed suspension; no newruntime feature.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Lush Clover 2005",
+            "documentId": "lush-clover-2005",
+            "runtimeId": "saved-car:Lush Clover 2005",
+            "reference": "FiatCromaDynamic2.2estate",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Balm 2006",
+            "documentId": "balm-2006",
+            "runtimeId": "saved-car:Balm 2006",
+            "reference": "CitroenC6base2.7HDi luxury sedan",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Distinct Lancia flagship front-drive BussoV6 petrol sedan with multilink chassis andfive-speedautomatic, versus Fiatfourcylinderestate and CitroenV6dieselhydropneumatic flagship; notrelatedLanciaDelta race/roadbody.",
+        "evidence": [
+          "https://www.media.stellantis.com/it-it/lancia/press/nuovi-motori-per-lancia-thesis"
+        ],
+        "audit": "Audited wave59fullnativecatalog, all currentrepo phase intake andwave59 newpackets: no Doblo,500L orThesis exactmodel identity. Relatedmodels explicit. Supplementalcanonicalreservationrequired, historical660fileuntouched."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Privet Clover 2003",
+      "id": "privet-clover-2003",
+      "simulationEstimates": {
+        "reverseRatio": 3.431,
+        "cgHeightM": 0.53,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.31,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 350,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.62,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 19.812903926861132,
+        "topSpeedMph": 149,
+        "zeroToSixtySec": 8.5,
+        "bodyClass": "sedan",
+        "drivetrain": "fwd",
+        "torqueConverterSlip": 0.06,
+        "torqueConverterMultiplication": 1.8,
+        "powerRpm": 6200,
+        "torqueNm": 289,
+        "torqueRpm": 4800,
+        "curbKg": 1855,
+        "lengthM": 4.888,
+        "widthM": 1.83,
+        "heightM": 1.47,
+        "wheelbaseM": 2.803,
+        "trackFrontIn": 59,
+        "trackRearIn": 58.5,
+        "tireSize": [
+          215,
+          60,
+          16
+        ],
+        "gearRatios": [
+          3.357,
+          2.18,
+          1.424,
+          1,
+          0.753
+        ],
+        "finalDrive": 3.08,
+        "transmissionLabel": "five-speed Comfortronic automatic; estimated ratios",
+        "torqueLbFt": 213.15546114112976
+      }
+    }
+  ],
+  "deferred": []
+}

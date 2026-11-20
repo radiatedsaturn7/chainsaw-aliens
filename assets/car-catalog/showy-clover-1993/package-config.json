@@ -1,0 +1,74 @@
+{
+  "id": "showy-clover-1993",
+  "name": "Showy Clover 1993",
+  "stableCarId": "saved-car:Showy Clover 1993",
+  "runtimeId": "saved-car:Showy Clover 1993",
+  "candidateId": "porsche-911-turbo-s-leichtbau-1993-roster-candidate",
+  "referenceVehicle": "1993 European Porsche 911 Turbo S Leichtbau 9643.3 turbo lightweight roadcoupe5MT,not3.6Flachbau",
+  "identity": {
+    "year": 1993,
+    "make": "Porsche",
+    "model": "911 Turbo S Leichtbau",
+    "trim": "9643.3 turbo lightweight roadcoupe5MT,not3.6Flachbau",
+    "market": "Germany / continental Europe"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://newsroom.porsche.com/de/produkte/porsche-exclusive-begehrte-exemplare-10396.html",
+      "fields": [
+        "publishedPowerPS",
+        "aspiration",
+        "engineDisplacementL",
+        "identity"
+      ]
+    },
+    {
+      "url": "https://type7.com/blogs/stories/leichtbau",
+      "fields": [
+        "source-art-repair-reference"
+      ]
+    },
+    {
+      "url": "https://rmsothebys.com/auctions/am18/lots/r0017-1993-porsche-911-turbo-s-lightweight/",
+      "fields": [
+        "source-wing-geometry"
+      ]
+    }
+  ]
+}

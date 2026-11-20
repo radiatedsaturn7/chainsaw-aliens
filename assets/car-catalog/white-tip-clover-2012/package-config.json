@@ -1,0 +1,67 @@
+{
+  "id": "white-tip-clover-2012",
+  "name": "White-tip Clover 2012",
+  "stableCarId": "saved-car:White-tip Clover 2012",
+  "runtimeId": "saved-car:White-tip Clover 2012",
+  "candidateId": "ford-focus-s-sedan-2012-us-5mt-canonical-candidate",
+  "referenceVehicle": "2012 United States Ford Focus, US S four-door sedan2.0Ti-VCTGDI five-speedmanual,base15-inchcoveredsteelwheels",
+  "identity": {
+    "year": 2012,
+    "make": "Ford",
+    "model": "Focus",
+    "trim": "US S four-door sedan2.0Ti-VCTGDI five-speedmanual,base15-inchcoveredsteelwheels",
+    "market": "United States"
+  },
+  "bodyClass": "four-door-sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1981,
+      793
+    ],
+    "cluster": [
+      277,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      475,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Ford/Focus/Ford_US%20Focus_2012.pdf",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "rearDifferentialAccel",
+        "frontDifferentialAccel",
+        "absEnabled",
+        "engineDisplacementL",
+        "powerHp",
+        "transmission",
+        "gearCount"
+      ]
+    }
+  ]
+}

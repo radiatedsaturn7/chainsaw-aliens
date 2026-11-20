@@ -1,0 +1,82 @@
+{
+  "id": "white-campion-2016",
+  "name": "White Campion 2016",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      300,
+      500,
+      400,
+      130
+    ],
+    "wheel": [
+      500,
+      740,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://news.mazdausa.com/download/2016_Mazda_MX-5_Press_Kit.pdf",
+      "fields": [
+        "powerHp",
+        "torqueLbFt",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbLb",
+        "redlineRpm",
+        "tireSize",
+        "lengthIn",
+        "widthIn",
+        "heightIn",
+        "wheelbaseIn",
+        "trackFrontIn",
+        "trackRearIn",
+        "fuelTankUSgal",
+        "frontWeightDistribution",
+        "absEnabled",
+        "tractionControlEnabled",
+        "rearDifferentialAccel",
+        "steeringRatio",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive"
+      ]
+    },
+    {
+      "url": "https://news.mazdausa.com/2015-08-06-2016-mazda-lineup/",
+      "fields": [
+        "identity",
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "gearCount",
+        "transmission",
+        "rearDifferentialAccel"
+      ]
+    }
+  ]
+}

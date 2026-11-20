@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "yellow-archangel-1992",
+  "name": "Yellow Archangel 1992",
+  "stableCarId": "saved-car:Yellow Archangel 1992",
+  "referenceVehicle": "1992 Japan Nissan Silvia K's Club Selection January1992 E-PS13 SR20DET1998cc turbo5MT standard2WS coupe; noSuperHICAS oroptionalABS,notS14 orUS240SX",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "9ca24c7af92d306e2381f2f2251990d6afd65fa53a8c06fc0e47b3ff11ef585a",
+    "dashboard": "6249ca83dd84b4f44bf3bd924997127141f3fe4f9457295a5342396f9fef9823",
+    "tires": "e0165c007c69bb3e5eff150be1ea6095fbcb66132783e440f2bb5533ee9fcb3a"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

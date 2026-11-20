@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "huckleberry-clover-2008",
+  "name": "Huckleberry Clover 2008",
+  "stableCarId": "saved-car:Huckleberry Clover 2008",
+  "referenceVehicle": "2008 United States Buick Enclave, CX3.6VVT port-injectedV6 FWD six-speedautomatic, standard18-inchwheels, seven-seatcloth; notAWD,CXL orlaterdirectinjection",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "c9a1a10c2aeaee95465b761a03bae399b1296ee4053fcd395525034eb2854e65",
+    "dashboard": "5f428b73168b0408c69a22d51fce4025c9228e89af377bc4b9b9623c47aec31f",
+    "tires": "569526b82ff58694e48b49191269b13940c5c636a61673c28a09d2ae13141855"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,48 @@
+{
+  "id": "strawberry-clover-1965",
+  "name": "Strawberry Clover 1965",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      255,
+      450,
+      470,
+      195
+    ],
+    "wheel": [
+      490.0,
+      753,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://www.museoalfaromeo.com/it-it/collezione/Pages/Giulia-TZ-2.aspx",
+      "fields": [
+        "170metricCV7500",
+        "1570cc",
+        "5MT",
+        "dimensions",
+        "620kgunspecifiedbasis"
+      ]
+    }
+  ]
+}

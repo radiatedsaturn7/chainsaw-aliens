@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "red-clover-1997",
+  "name": "Red Clover 1997",
+  "stableCarId": "saved-car:Red Clover 1997",
+  "referenceVehicle": "1997 German BMW M3 E36 S50B32 3.201L naturally aspiratedinline6 coupe six-speedmanual;notUS240hpS52,3.0S50B30,E46orSMG",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "e2be35fbdc1bebd4c22ecc2df0f08d3d6a38ea39e1fc8410d1b91ad1ec6ab955",
+    "dashboard": "92d788a7fc27ee5a9fa870b2a53a3bd69f75b4cd2659573daec26c6f296f2c67",
+    "tires": "97d0a7ad3b53336f9d0831f282d28a723541a8e035f1841f3baedac41607e9c7"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

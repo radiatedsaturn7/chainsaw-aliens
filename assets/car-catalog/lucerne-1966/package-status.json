@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "lucerne-1966",
+  "name": "Lucerne 1966",
+  "stableCarId": "saved-car:Lucerne 1966",
+  "referenceVehicle": "1966 Porsche906Carrera6 short-body2.0 aircooledflat-six midengineRWD racingcoupe, custodian906125 specificationreference;not906/8hillclimb,longtail,injected906E orlater2.4conversion",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "2fa349d5792d388960625933d5d6e1271c22c8ee12374746f6521794589dd573",
+    "dashboard": "117ece5fde4da94583d431e74a67bd3098e447b5eef9bcf7ca01ccef4827b93f",
+    "tires": "1442b5fd43e52f4c1779158cf664eb124451fba41b02bcc6ef8b07674f8b229c"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

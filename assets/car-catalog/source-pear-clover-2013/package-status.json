@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "source-pear-clover-2013",
+  "name": "Pear Clover 2013",
+  "stableCarId": "saved-car:Pear Clover 2013",
+  "referenceVehicle": "US 2013 Acura ILX 2.4 Premium, 6MT. Four-door compact sedan, standard17-inch alloys, nonhybrid original-generation appearance.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "pear-clover-2013",
+  "sourceHashes": {
+    "body": "c7a8e12c97466ab8fbdb3a7ff8faec09f2b0da4b04be0a24c2f23996da6ad6cc",
+    "dashboard": "6a4ca3e5e493b647eb325ca7abd6d61cc9aead9e53bd695089225a85f9e5681c",
+    "tires": "cca38ab31fff87daa3e56203e76c6647c300cf94e8f0a0c2230a82835b457d38"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
+}

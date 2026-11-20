@@ -1,0 +1,51 @@
+{
+  "id": "sea-carrot-2012",
+  "name": "Sea Carrot 2012",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1280,
+      400,
+      470,
+      170
+    ],
+    "wheel": [
+      1515,
+      753,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://automobilisto.de/uk/archive/vauxhall/astra/vxr-2012-uk.pdf",
+      "fields": [
+        "identity",
+        "powerKw",
+        "publishedPowerPS",
+        "torqueNm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "tireSize"
+      ]
+    }
+  ]
+}

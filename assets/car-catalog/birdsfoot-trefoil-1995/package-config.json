@@ -1,0 +1,72 @@
+{
+  "id": "birdsfoot-trefoil-1995",
+  "name": "Birdsfoot Trefoil 1995",
+  "stableCarId": "saved-car:Birdsfoot Trefoil 1995",
+  "candidateId": "nissan-240sx-film-pending",
+  "referenceVehicle": "1995 United States Nissan 240SX base S14 KA24DE naturally aspirated five-speed manual coupe, standard15-inch steel wheels, no optional ABS/LSD package; stock representative production car, not film-car replica",
+  "identity": {
+    "year": 1995,
+    "make": "Nissan",
+    "model": "240SX",
+    "trim": "base S14 KA24DE naturally aspirated five-speed manual coupe, standard15-inch steel wheels, no optional ABS/LSD package",
+    "market": "United States"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      258,
+      515,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://importarchive.com/brochure/nissan240sx1995_01",
+      "fields": [
+        "identity",
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "lengthIn",
+        "widthIn",
+        "wheelbaseIn",
+        "tireSize",
+        "fuelTankUSgal"
+      ]
+    }
+  ]
+}

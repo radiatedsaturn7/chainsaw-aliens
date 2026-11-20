@@ -1,0 +1,72 @@
+{
+  "id": "canyon-clover-2018",
+  "name": "Canyon Clover 2018",
+  "stableCarId": "saved-car:Canyon Clover 2018",
+  "runtimeId": "saved-car:Canyon Clover 2018",
+  "candidateId": "hyundai-accent-se-sedan-2018-us-6mt-supplemental",
+  "referenceVehicle": "2018 United States Hyundai Accent, SE fifth-generation sedan1.6GDI6MT standard15-inch coveredsteel wheels; not SEL/Limited,automatic,olderMPI orKiaRio",
+  "identity": {
+    "year": 2018,
+    "make": "Hyundai",
+    "model": "Accent",
+    "trim": "SE fifth-generation sedan1.6GDI6MT standard15-inch coveredsteel wheels; not SEL/Limited,automatic,olderMPI orKiaRio",
+    "market": "United States"
+  },
+  "bodyClass": "four-door five-seat subcompact sedan; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Hyundai/Accent/Hyundai_US%20Accent_2018.pdf",
+      "fields": [
+        "powerHp",
+        "torqueLbFt",
+        "engineDisplacementL",
+        "aspiration",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "wheelbaseM",
+        "tireSize",
+        "dragCoefficient",
+        "fuelTankUSgal",
+        "absEnabled",
+        "tractionControlEnabled"
+      ]
+    }
+  ]
+}

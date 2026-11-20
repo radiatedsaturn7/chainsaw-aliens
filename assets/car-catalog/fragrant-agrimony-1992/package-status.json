@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "fragrant-agrimony-1992",
+  "name": "Fragrant Agrimony 1992",
+  "stableCarId": "saved-car:Fragrant Agrimony 1992",
+  "referenceVehicle": "1992 US GMC Typhoon three-door enclosed sport-utility wagon,4.3 turbo/intercooled V6,4-speed automatic,35:65 full-time AWD,3.42 rear LSD,stock245/50VR16; originalGMC/PAS launch brochure basis",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "991d477a1b7384b3b3b77cc95b38b9c7ee5e72fa0a3283621b31de7583868871",
+    "dashboard": "2a66798f79708aaa1c6fdc1055841e1107fd81235643643cece4c9e0e728454a",
+    "tires": "032f5c8fac4e62ee8fc3c3d4bb7f8eeb2d57a0d4894de2308003819a87723096"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,77 @@
+{
+  "id": "bush-vetch-2017",
+  "name": "Bush Vetch 2017",
+  "stableCarId": "saved-car:Bush Vetch 2017",
+  "runtimeId": "saved-car:Bush Vetch 2017",
+  "candidateId": "mazda-mx-5-cup-2017-roster-candidate",
+  "referenceVehicle": "2017 United States / GlobalMX5Cup Mazda MX-5 Cup, LongRoadRacingND1 sealed155hp2.0 competitionroadster,2017manualgearboxupdate; not2019ND2181hp or2020SADEV",
+  "identity": {
+    "year": 2017,
+    "make": "Mazda",
+    "model": "MX-5 Cup",
+    "trim": "LongRoadRacingND1 sealed155hp2.0 competitionroadster,2017manualgearboxupdate; not2019ND2181hp or2020SADEV",
+    "market": "United States / GlobalMX5Cup"
+  },
+  "bodyClass": "open two-door caged spec-racing roadster; non-road competitionconversion",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      531,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.mazdamotorsports.com/global-mx-5-cup-nd-1-documentation/",
+      "fields": [
+        "2016\u20132018identity",
+        "2017userguide",
+        "2017gearbox/clutch/ECU updates"
+      ]
+    },
+    {
+      "url": "https://www.mazdamotorsports.com/2018/12/11/live-pre-owned-global-mx-5-cup-marketplace/",
+      "fields": [
+        "powerHp",
+        "publishedEngine",
+        "publishedBuild",
+        "publishedChassis"
+      ]
+    },
+    {
+      "url": "https://www.roadandtrack.com/motorsports/a10017074/mazda-mx-5-cup-more-fun-than-road-car/",
+      "fields": [
+        "stock155hp corroboration",
+        "modifiedthird/fourthgear family"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "id": "silver-trefoil-2003",
+  "name": "Silver Trefoil 2003",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      198,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      475,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://usa.nissannews.com/en-US/releases/release-bb2a07dc953a419885e3e8cd6ccd68e5-2003-nissan-xterra",
+      "fields": [
+        "powerHp",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "gearCount",
+        "lengthM",
+        "wheelbaseM",
+        "absEnabled"
+      ]
+    }
+  ]
+}

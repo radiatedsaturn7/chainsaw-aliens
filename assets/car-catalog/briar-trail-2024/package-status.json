@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "briar-trail-2024",
+  "name": "Briar Trail 2024",
+  "stableCarId": "saved-car:Briar Trail 2024",
+  "referenceVehicle": "2024 US Subaru Forester Wilderness, standard equipment, 2.5L AWD Lineartronic CVT; not 2025 Forester or existing Base",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "69f32274f5b5aff29dff9b463241c32c25933090fc090e3f9e5d9afebb670fb6",
+    "dashboard": "941574f67d31f045efc7611c08f71a791bf32f7da788d98b70aca2478644c262",
+    "tires": "dc6e15c41ae934c295f72cd6dd760806671d31ffcd02469869bf5042d0f2a16c"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

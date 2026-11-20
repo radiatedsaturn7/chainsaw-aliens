@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "base": "d891d1837a2c0b63e38368acbe7aef356d286e89",
+  "scope": "One precise US Type R slot, rejecting RSX year-padding before next separate source wave.",
+  "vehicles": [
+    {
+      "candidateId": "acura-integra-type-r-2001-roster-candidate",
+      "id": "greater-stitchwort-2001",
+      "name": "Greater Stitchwort 2001",
+      "identity": {
+        "year": 2001,
+        "make": "Acura",
+        "model": "Integra Type R",
+        "trim": "US three-door B18C5 five-speed manual, not LS sedan or JDM specification",
+        "market": "United States"
+      },
+      "referenceVehicle": "2001 US Acura Integra Type R three-door B18C5 five-speed manual",
+      "facts": {
+        "powerHp": 195,
+        "powerRpm": 8000,
+        "torqueLbFt": 130,
+        "torqueRpm": 7500,
+        "engineDisplacementL": 1.797,
+        "transmission": "manual",
+        "gearCount": 5,
+        "drivetrain": "fwd",
+        "gearRatios": [
+          3.23,
+          2.105,
+          1.458,
+          1.107,
+          0.848
+        ],
+        "reverseRatio": 3,
+        "finalDrive": 4.4,
+        "redlineRpm": 8400,
+        "revLimitRpm": 8500,
+        "curbKg": 1197,
+        "lengthM": 4.38,
+        "widthM": 1.695,
+        "heightM": 1.32,
+        "wheelbaseM": 2.57,
+        "trackFrontIn": 58.3,
+        "trackRearIn": 58.1,
+        "tireSize": [
+          195,
+          55,
+          15
+        ],
+        "frontWeightDistribution": 0.62,
+        "groundClearanceM": 0.135,
+        "fuelTankUSgal": 13.2,
+        "steeringRatio": 15.7,
+        "absEnabled": true
+      },
+      "simulationEstimates": {
+        "cgHeightM": 0.45,
+        "dragCoefficient": 0.33,
+        "tireGrip": 0.98,
+        "spring": 0.54,
+        "antiRollRear": 0.32,
+        "suspensionTravelM": 0.15,
+        "frontOverhangM": 0.94,
+        "frontDifferentialAccel": 0.22,
+        "rearDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 230,
+        "tractionControlEnabled": false,
+        "aspiration": "Naturally aspirated",
+        "wheelWellAware": true,
+        "topSpeedMph": 145,
+        "zeroToSixtySec": 6.7,
+        "transmissionLabel": "5-speed manual (factory US Type R ratios)"
+      },
+      "sources": [
+        {
+          "url": "https://acuranews.com/en-US/releases/2001-acura-integra-type-r-specifications",
+          "publisher": "Acura USA",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "drivetrain",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "redlineRpm",
+            "revLimitRpm",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "frontWeightDistribution",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "steeringRatio",
+            "absEnabled"
+          ],
+          "access": "January3,2001 factory specification table read2026-11-17 through indexed text and full directly retrieved HTML. Metric dimensional/mass column retained. Table gives torque peak7500rpm; separate powertrain prose says7300rpm. Use specification table, corroborated by factory pricing table, and disclose conflict."
+        }
+      ],
+      "limits": [
+        "Factory specification and pricing tables give130lb-ft at7500rpm; narrative powertrain release says7300rpm. Table value selected, not silently harmonized. US195SAE-net hp is not JDM200PS.",
+        "Generic front locking coefficient approximates factory limited slip, not a helical gear simulation. Torque interpolation does not implement VTEC switching. All non-fact values, including grip, suspension, aero, CG, acceleration and control transients, are estimates.",
+        "Shared RTG-001 graphics only; independent browser drives and original artwork pending. Not the existing Celandine LS1995 non-VTEC sedan."
+      ]
+    }
+  ],
+  "deferred": [
+    {
+      "candidateId": "acura-rsx-type-s-2002-roster-candidate",
+      "reason": "Existing Mallow S2006 Type-S covers this model family; no new build for early-year calibration alone."
+    }
+  ]
+}

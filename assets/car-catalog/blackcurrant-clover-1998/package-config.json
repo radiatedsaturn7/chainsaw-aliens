@@ -1,0 +1,64 @@
+{
+  "id": "blackcurrant-clover-1998",
+  "name": "Blackcurrant Clover 1998",
+  "stableCarId": "saved-car:Blackcurrant Clover 1998",
+  "runtimeId": "saved-car:Blackcurrant Clover 1998",
+  "candidateId": "lancia-y-ls-1-2-16v-1998-supplemental-candidate",
+  "referenceVehicle": "1998 Lancia Y LS1.2 16V, Italy March1998 three-door compact hatchback five-speed manual productionLS without Geneva accessorypack, not8vECVT,LX orlaterYpsilon",
+  "identity": {
+    "year": 1998,
+    "make": "Lancia",
+    "model": "Y LS1.2 16V",
+    "trim": "Italy March1998 three-door compact hatchback five-speed manual productionLS without Geneva accessorypack, not8vECVT,LX orlaterYpsilon",
+    "market": "Italy"
+  },
+  "bodyClass": "hatchback",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      730,
+      390,
+      550,
+      180
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5",
+    "layoutNote": "Center-mounted instruments, left steering. Provisional coordinates pending runtime fitting."
+  },
+  "sources": [
+    {
+      "url": "https://www.media.stellantis.com/it-it/lancia/press/lancia-y-e-lancia-delta-al-68-deg-salone-di-ginevra",
+      "fields": [
+        "powerHp",
+        "engineDisplacementL",
+        "gearCount",
+        "transmission",
+        "topSpeedMph"
+      ]
+    }
+  ]
+}

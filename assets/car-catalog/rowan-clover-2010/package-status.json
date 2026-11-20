@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "rowan-clover-2010",
+  "name": "Rowan Clover 2010",
+  "stableCarId": "saved-car:Rowan Clover 2010",
+  "referenceVehicle": "2010 United States Audi A3 8P five-door TDI Premium2.0commonrail diesel six-speedS-tronic FWD,standard17-inchwheels,noOpenSky;notgasoline,quattro orRS3",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "6ba6d3974a7e8eeb6cf3e5d57ee2a6d3d18b59456c375d67510046103fe12fd8",
+    "dashboard": "5fd6624290f38c72b9b268129c4d6d1e06059ff179745e3f318dc4c52a32d352",
+    "tires": "0b67976e858f5b9c23744164627329d59af3e989bbbe332dc28da148b9b3042b"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

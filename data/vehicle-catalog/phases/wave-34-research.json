@@ -1,0 +1,1178 @@
+{
+  "schemaVersion": 1,
+  "base": "35ca467477da7dfbab636154625d0716ca10b5cc",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "bmw-m5-1988-roster-candidate",
+      "identity": {
+        "year": 1988,
+        "make": "BMW",
+        "model": "M5",
+        "trim": "E28 M88/3 non-catalyst European six-cylinder sedan5MT, final-production reference; not US S38 or E34",
+        "market": "Europe"
+      },
+      "referenceVehicle": "1988 Europe BMW M5, E28 M88/3 non-catalyst European six-cylinder sedan5MT, final-production reference; not US S38 or E34",
+      "facts": {
+        "powerKw": 210,
+        "torqueNm": 340,
+        "engineDisplacementL": 3.453,
+        "powerRpm": 6500,
+        "torqueRpm": 4500,
+        "transmission": "manual",
+        "gearCount": 5,
+        "topSpeedMph": 152.2359420981468
+      },
+      "sources": [
+        {
+          "url": "https://www.bmwgroup-classic.com/en/models/bmw-classics/product-description-page.ad-241-1.bmw-m5-e28.html",
+          "publisher": "BMW Group Classic archive",
+          "fields": [
+            "1988E28production",
+            "engineDisplacementL",
+            "powerKw",
+            "powerRpm",
+            "gearCount",
+            "topSpeedMph"
+          ],
+          "access": "Production10/1984\u201306/1988; M88/3 European286metricPS210kW, notUS catalyst rating. Page flags AI-assisted description; factoryperiod sheet corroborates engine."
+        },
+        {
+          "url": "https://www.bmw-m.com/en/topics/magazine-article-pool/the-generations-of-the-bmw-m5-an-overview.html",
+          "publisher": "BMW M factory retrospective",
+          "fields": [
+            "torqueNm",
+            "powerKw",
+            "engineDisplacementL"
+          ],
+          "access": "E28 section:210kW340Nm3453cc, distinct from laterE34."
+        },
+        {
+          "url": "https://newsroom.bmwgroup.com/emea/download/aa9d239a-59c1-4b89-9b87-85d76bd6cec6/20260902081242491-984.pdf",
+          "publisher": "BMW Corporate Communications16May2012 originalperioddatasheet compilation",
+          "fields": [
+            "torqueRpm",
+            "earlierE28geometry/ratio contextualbasis"
+          ],
+          "access": "VisuallyreadPDFp9 rightmostM5column; originallySeptember1985 BMWProgramme1986. Ratios3.51/2.08/1.35/1/.81,3.73final. Earlier1430kgunladen andmetricTRXtires are NOT exact1988mass/fitment proof."
+        }
+      ],
+      "limits": [
+        "Exact1988 build-sheet not available: earlier1986 geometry/gearing used as estimates; modeled1500kg curb and225/50R16 fitment explicitly provisional, not verified1988DIN. Earlierperiodtable1430kgunladen is not silently relabeled1988mass.",
+        "Non-catalystM88/3 European210kW selection excludesNorthAmerican S38 and E34 launched1988. Archive productionthroughJune1988 supports slot; exactcountry equipment unconfirmed.",
+        "All nonfacts,including tires,mass,ratios,CG,transients,torquecurve,LSDfraction and0\u201360 remain estimates. Source6.5s0\u2013100 differs from0\u201360.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Water Dock 1986",
+            "documentId": "water-dock-1986",
+            "runtimeId": "saved-car:Water Dock 1986",
+            "reference": "UK E24 M635CSi M88/3 coupe5MT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Goldilocks 1995",
+            "documentId": "goldilocks-1995",
+            "runtimeId": "saved-car:Goldilocks 1995",
+            "reference": "European E34 M5 3.8 S38B38 sedan6MT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Meadowrue 2003",
+            "documentId": "meadowrue-2003",
+            "runtimeId": "saved-car:Meadowrue 2003",
+            "reference": "E39 M5 S62V8 sedan6MT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Heath Speedwell 2009",
+            "documentId": "heath-speedwell-2009",
+            "runtimeId": "saved-car:Heath Speedwell 2009",
+            "reference": "US E60 M5 V10 sedan6MT",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "E28 short-wheelbase1980s sedan with3.453L M88/3 and5MT differs structurally from E24coupe and later E34 3.8/6MT, E39V8, E60V10. SharedM88engine withE24 is documented, not claimed newengine; distinct body/chassis/use.",
+        "evidence": [
+          "https://www.bmwgroup-classic.com/en/models/bmw-classics/product-description-page.ad-241-1.bmw-m5-e28.html",
+          "https://www.bmw-m.com/en/topics/magazine-article-pool/the-generations-of-the-bmw-m5-an-overview.html",
+          "https://newsroom.bmwgroup.com/emea/download/aa9d239a-59c1-4b89-9b87-85d76bd6cec6/20260902081242491-984.pdf"
+        ],
+        "audit": "Wave34 native catalogProvenance/inspiration plus authoredtests/docs checked; exact backlog slot confirmed, no exact implemented identity found."
+      },
+      "name": "Rosebay Willowherb 1988",
+      "id": "rosebay-willowherb-1988",
+      "simulationEstimates": {
+        "reverseRatio": 3.71,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.98,
+        "spring": 0.54,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.15,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 170,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.52,
+        "redlineRpm": 6900,
+        "revLimitRpm": 7100,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 18.49204366507039,
+        "zeroToSixtySec": 6.2,
+        "drivetrain": "rwd",
+        "curbKg": 1500,
+        "lengthM": 4.62,
+        "widthM": 1.7,
+        "heightM": 1.397,
+        "wheelbaseM": 2.625,
+        "trackFrontIn": 56.2992125984252,
+        "trackRearIn": 57.67716535433071,
+        "tireSize": [
+          225,
+          50,
+          16
+        ],
+        "frontTire": [
+          225,
+          50,
+          16
+        ],
+        "rearTire": [
+          225,
+          50,
+          16
+        ],
+        "gearRatios": [
+          3.51,
+          2.08,
+          1.35,
+          1,
+          0.81
+        ],
+        "finalDrive": 3.73,
+        "transmissionLabel": "five-speed manual"
+      }
+    },
+    {
+      "candidateId": "audi-rs-4-avant-2001-roster-candidate",
+      "identity": {
+        "year": 2001,
+        "make": "Audi",
+        "model": "RS 4 Avant",
+        "trim": "B5 standard2.7biturboV6 quattro six-speed manual wagon, RHD; notSportconversion orB7",
+        "market": "UK"
+      },
+      "referenceVehicle": "2001 UK Audi RS 4 Avant, B5 standard2.7biturboV6 quattro six-speed manual wagon, RHD; notSportconversion orB7",
+      "facts": {
+        "powerKw": 280,
+        "torqueNm": 440,
+        "engineDisplacementL": 2.671,
+        "powerRpm": 6100,
+        "torqueRpm": 2500,
+        "transmission": "manual",
+        "gearCount": 6,
+        "topSpeedMph": 155,
+        "publishedWeightKg": 1620
+      },
+      "sources": [
+        {
+          "url": "https://www.caricos.com/cars/a/audi/2001_audi_rs_4/",
+          "publisher": "Audi UK heritage press release mirrored byCaricos",
+          "fields": [
+            "identity",
+            "torqueNm",
+            "engineDisplacementL",
+            "powerRpm",
+            "torqueRpm",
+            "gearCount",
+            "curbKg",
+            "topSpeedMph"
+          ],
+          "access": "Read2026-11-18.2001UKspecification attachedfactorytext:380PS6100\u20137000,440Nm2500\u20136000,1620kg weight (driverbasisnotstated),6MT."
+        },
+        {
+          "url": "https://www.audi.com/en/highlights-from-40-years-of-audi-sport-gmbh-15337/from-bestseller-to-legend-15342",
+          "publisher": "Audi AG15May2023 factoryhistory",
+          "fields": [
+            "powerKw",
+            "B5Avantidentity",
+            "gearCount"
+          ],
+          "access": "Factoryexpressly280kW380PS andonlyAvant. Retainroundedpublished280kW rather than treating380PS asmechanicalhp."
+        }
+      ],
+      "limits": [
+        "1620kg factoryheritage weight has unspecifieddriver/fuel convention; retain publishedbasis, not assertDIN orEC.",
+        "280kW factoryroundedanchor versus380PS mathematical279.49kW; no380mechanicalhp claim. Other geometry, gearing, tires, fuel and simulation parameters are estimates.",
+        "centerDifferentialBalance=.50 meansREARshare; estimated nominal symmetricalTorsen setup, not variable torque-bias/EDL emulation. 0\u201360 estimate distinct from4.9s0\u201362.",
+        "Runtime curbKg is provisional, anchored numerically to publishedWeightKg pending confirmation of its mass basis; not a verified curb or dry weight conversion.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Alder RS 1994",
+            "documentId": "alder-rs-1994",
+            "runtimeId": "saved-car:Alder RS 1994",
+            "reference": "European Audi AvantRS2 2.2turboinline5 AWD6MT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Golden Saxifrage 2003",
+            "documentId": "golden-saxifrage-2003",
+            "runtimeId": "saved-car:Golden Saxifrage 2003",
+            "reference": "C5RS6 biturbo4.2V8sedan5AT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Field Pansy 2009",
+            "documentId": "field-pansy-2009",
+            "runtimeId": "saved-car:Field Pansy 2009",
+            "reference": "C6RS6 biturbo5.0V10sedan6AT",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "B5A4 wagon with2.671L twin-turboV6 and6MT versus predecessorB4RS2 turboinline5 and largerRS6V8/V10automatics. No existingB5RS4; distinct cylinderarchitecture and platform, not yearpadding.",
+        "evidence": [
+          "https://www.caricos.com/cars/a/audi/2001_audi_rs_4/",
+          "https://www.audi.com/en/highlights-from-40-years-of-audi-sport-gmbh-15337/from-bestseller-to-legend-15342"
+        ],
+        "audit": "Wave34 native catalogProvenance/inspiration plus authoredtests/docs checked; exact backlog slot confirmed, no exact implemented identity found."
+      },
+      "name": "Hoary Willowherb 2001",
+      "id": "hoary-willowherb-2001",
+      "simulationEstimates": {
+        "reverseRatio": 3.455,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.98,
+        "spring": 0.54,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.15,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 170,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "aspiration": "Twin turbocharged",
+        "fuelTankUSgal": 16.378667246205204,
+        "zeroToSixtySec": 4.7,
+        "drivetrain": "awd",
+        "lengthM": 4.525,
+        "widthM": 1.799,
+        "heightM": 1.386,
+        "wheelbaseM": 2.607,
+        "trackFrontIn": 60.59055118110236,
+        "trackRearIn": 60.59055118110236,
+        "tireSize": [
+          255,
+          35,
+          18
+        ],
+        "frontTire": [
+          255,
+          35,
+          18
+        ],
+        "rearTire": [
+          255,
+          35,
+          18
+        ],
+        "gearRatios": [
+          3.5,
+          1.889,
+          1.32,
+          1.034,
+          0.806,
+          0.684
+        ],
+        "finalDrive": 4.111,
+        "centerDifferentialBalance": 0.5,
+        "transmissionLabel": "six-speed manual",
+        "curbKg": 1620
+      }
+    },
+    {
+      "candidateId": "audi-rs-4-2006-roster-candidate",
+      "identity": {
+        "year": 2006,
+        "make": "Audi",
+        "model": "RS 4",
+        "trim": "B7 standard naturallyaspirated4.2FSIV8 quattro sedan6MT; notAvant/Cabriolet orUSMY2007",
+        "market": "Germany"
+      },
+      "referenceVehicle": "2006 Germany Audi RS 4, B7 standard naturallyaspirated4.2FSIV8 quattro sedan6MT; notAvant/Cabriolet orUSMY2007",
+      "facts": {
+        "powerKw": 309,
+        "torqueNm": 430,
+        "engineDisplacementL": 4.163,
+        "torqueRpm": 5500,
+        "transmission": "manual",
+        "gearCount": 6,
+        "curbKg": 1650,
+        "fuelTankUSgal": 16.642839298563352,
+        "topSpeedMph": 155.3427980593335
+      },
+      "sources": [
+        {
+          "url": "https://doczz.net/doc/5481142/audi-facts-and-figures-2005",
+          "publisher": "Audi AG FactsandFigures2005 printed10February2006, mirroredfactorydocument",
+          "fields": [
+            "powerKw",
+            "torqueNm",
+            "engineDisplacementL",
+            "gearCount",
+            "curbKg",
+            "fuelTankUSgal",
+            "topSpeedMph"
+          ],
+          "access": "Germanmarketprice/table p22;1650kg explicitlykerbweightWITHOUTDRIVER; manual6,63L,309kW,430Nm. Production544sedans2005 establishes early2006baseline."
+        },
+        {
+          "url": "https://www.netcarshow.com/audi/2006-rs4/",
+          "publisher": "Audi RS4 factorylaunch text mirroredNetCarShow",
+          "fields": [
+            "torqueRpm",
+            "highrevNAFSIarchitecture",
+            "sedanidentity"
+          ],
+          "access": "Read2026-11-18.430Nm5500rpm and8250rpm ceiling. TextmixesUSlaunchcontext so Germanweight/output remain separatefactorytable."
+        },
+        {
+          "url": "https://www.netcarshow.com/audi/2006-rs_4_avant/",
+          "publisher": "Audi B7RS4 Avant factorypressrelease mirroredNetCarShow",
+          "fields": [
+            "nominal40front60rear",
+            "sameB7saloonfirstapplication"
+          ],
+          "access": "Expresslystates40front/60rear asymmetricquattro firstfeaturedRS4saloon; usedonlyforsharedgenerationdrivetrain, notAvantmass."
+        }
+      ],
+      "limits": [
+        "Geometry,gear ratios/axle,tires,peakpowerrpm and simulationcalibration are estimates; no unsupportedUS2006MYclaim.1650kg factorywithoutdriver differsfromUKAvant1785kg and is notmixed.",
+        "centerDifferentialBalance=.60 meansREARshare approximating nominal40front60rear; no exact variableTorsen or hydraulicDRC emulation. 0\u201360 estimate distinctfactory4.8s0\u2013100.",
+        "B7NA4.2V8 differsmarkedlyfromB5turboV6; RS5samecapacitylater450PS7DCT coupe not an exactduplicate.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Meadow Sage 2011",
+            "documentId": "meadow-sage-2011",
+            "runtimeId": "saved-car:Meadow Sage 2011",
+            "reference": "UK RS5 Coupe4.2FSIV8 7DCT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Alder RS 1994",
+            "documentId": "alder-rs-1994",
+            "runtimeId": "saved-car:Alder RS 1994",
+            "reference": "RS2turboinline5wagon6MT",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "B7 sedan uses309kW high-revNA4.2V8 with6MT; B5wagon280kWturbo2.7V6 and olderplatform, while RS5 is later331kWcoupe7DCT. Separatebody, induction, chassis andtransmission combinations support distinct identities.",
+        "evidence": [
+          "https://doczz.net/doc/5481142/audi-facts-and-figures-2005",
+          "https://www.netcarshow.com/audi/2006-rs4/",
+          "https://www.netcarshow.com/audi/2006-rs_4_avant/"
+        ],
+        "audit": "Wave34 native catalogProvenance/inspiration plus authoredtests/docs checked; exact backlog slot confirmed, no exact implemented identity found.",
+        "sameWaveRelated": [
+          "audi-rs-4-avant-2001-roster-candidate / proposed B5V6wagon; notexistingruntime"
+        ]
+      },
+      "name": "Great Willowherb 2006",
+      "id": "great-willowherb-2006",
+      "simulationEstimates": {
+        "reverseRatio": 3.333,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.98,
+        "spring": 0.6,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.15,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 170,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.58,
+        "redlineRpm": 8250,
+        "revLimitRpm": 8300,
+        "aspiration": "Naturally aspirated",
+        "zeroToSixtySec": 4.6,
+        "drivetrain": "awd",
+        "lengthM": 4.586,
+        "widthM": 1.816,
+        "heightM": 1.415,
+        "wheelbaseM": 2.648,
+        "trackFrontIn": 61.37795275590552,
+        "trackRearIn": 61.77165354330709,
+        "tireSize": [
+          255,
+          40,
+          18
+        ],
+        "frontTire": [
+          255,
+          40,
+          18
+        ],
+        "rearTire": [
+          255,
+          40,
+          18
+        ],
+        "gearRatios": [
+          3.667,
+          2.211,
+          1.52,
+          1.133,
+          0.919,
+          0.778
+        ],
+        "finalDrive": 4.111,
+        "centerDifferentialBalance": 0.6,
+        "powerRpm": 7800,
+        "transmissionLabel": "six-speed manual"
+      }
+    },
+    {
+      "candidateId": "subaru-impreza-wrx-sti-2004-roster-candidate",
+      "identity": {
+        "year": 2004,
+        "make": "Subaru",
+        "model": "Impreza WRX STi",
+        "trim": "US GD sedan, standard 2.5L turbo AWD six-speed manual",
+        "market": "United States"
+      },
+      "referenceVehicle": "2004 United States Subaru Impreza WRX STi GD sedan, 2.5L turbo flat-four, 300hp, factory six-speed manual AWD; not Japanese 2.0L STi, later S209 or competition Airslayer",
+      "facts": {
+        "powerHp": 300,
+        "powerRpm": 6000,
+        "torqueLbFt": 300,
+        "torqueRpm": 4000,
+        "engineDisplacementL": 2.5,
+        "aspiration": "Turbocharged",
+        "drivetrain": "awd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "curbLb": 3263,
+        "lengthIn": 173.8,
+        "widthIn": 68.5,
+        "heightIn": 56.3,
+        "wheelbaseIn": 100,
+        "trackFrontIn": 58.7,
+        "trackRearIn": 58.5,
+        "fuelTankUSgal": 15.9,
+        "tireSize": [
+          225,
+          45,
+          17
+        ],
+        "absEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Subaru/Impreza/Subaru_US%20Impreza_2004.pdf",
+          "publisher": "Subaru of America original 2004 Impreza brochure MSA 8M0403, copyright2003; public archive mirror",
+          "fields": [
+            "identity",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbLb",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "fuelTankUSgal",
+            "tireSize",
+            "absEnabled"
+          ],
+          "access": "Retrieved2026-11-18. PDF page14 / printed specification pages24-26, STi column; text extracted, exact column structure checked against layout. 3263lb is expressly STi manual curb weight, not general Impreza. Factory brochure explains DCCD, Suretrac front and mechanical rear limited-slip differentials."
+        }
+      ],
+      "limits": [
+        "Factory brochure rounds displacement to2.5L; no unsupported exactcc precision asserted. Curb3263lb is US STi manual column, excluding added accessories and driver.",
+        "Brochure supplies six-speed count, but not numerical ratios, final drive, redline, rev limiter or measured performance; all such runtime values below are modeling estimates.",
+        "Generic AWD and fixed differential settings approximate traction only; no claim to reproduce active DCCD automatic mode, driver-adjustable center clutch, exact Suretrac behavior, intercooler water spray or variable valve timing control. No shared runtime change required.",
+        "2004 GD four-door is a different generation, shell and transmission from 1998 two-door 22B; it is not a year-only repeat of2019 VA S209 or a road counterpart counted as the McRae/Airslayer competition variant.",
+        "Runtime tire grip, suspension, mass distribution, drag, steering/transients and performance targets remain estimates. Shared RTG-001 is temporary placeholder art, not original STi exterior.",
+        "centerDifferentialBalance is the REAR torque fraction:0.5 explicitly models generic fixed50:50 AWD, not a verified factory nominal split. Retrieved brochure documents DCCD planetary center and electronic transfer clutch but gives no numerical split; active or driver-selected DCCD behavior is not simulated.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "copperleaf-22-1998",
+            "alias": "Copperleaf 22 1998",
+            "reference": "1998 Japan GC two-door 22B STI,2.212L turbo AWD5MT",
+            "documentId": "copperleaf-22-1998",
+            "runtimeId": "saved-car:Copperleaf 22 1998",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "heath-bedstraw-2019",
+            "alias": "Heath Bedstraw 2019",
+            "reference": "2019 US VA STI S209,341hp6MT",
+            "documentId": "heath-bedstraw-2019",
+            "runtimeId": "saved-car:Heath Bedstraw 2019",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "knapweed-1995",
+            "alias": "Knapweed 1995",
+            "reference": "1995 McRae GroupA Impreza555 competition",
+            "documentId": "knapweed-1995",
+            "runtimeId": "saved-car:Knapweed 1995",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "sti-airslayer",
+            "alias": "STI Airslayer",
+            "reference": "2020 VSC WRX STI Airslayer hill-climb862bhp2.3L competition",
+            "documentId": "sti-airslayer",
+            "runtimeId": "saved-car:STI Airslayer",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "briar-xt-2004",
+            "alias": "Briar XT 2004",
+            "reference": "2004 US Forester2.5XT wagon210hp5MT",
+            "documentId": "briar-xt-2004",
+            "runtimeId": "saved-car:Briar XT 2004",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "rtg-s",
+            "alias": "RTG-S",
+            "reference": "2024 US Impreza RS naturally aspirated AWD CVT",
+            "documentId": "rtg-s",
+            "runtimeId": "saved-car:RTG-S",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "starter-rwd",
+            "alias": "2022 Subaru WRX",
+            "reference": "Excluded system template; different generation2.4L",
+            "documentId": "starter-rwd",
+            "runtimeId": "saved-car:2022 Subaru WRX",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "starter-rwd",
+            "alias": "CT-86",
+            "reference": "Legacy story car; documentation identifies MR2 Roadster, native configuration inconsistent and no STi provenance",
+            "documentId": "starter-rwd",
+            "runtimeId": "saved-car:CT-86",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Audited complete native catalog, provenance and authored docs/tests. No2004 GD STi reference found. Different generation/body from22B andS209, stronger300hp six-speed sedan versus same-year210hp Forester wagon. Existingcompetition and2024NAhatch variants are mechanically distinct, not exactmatches. CT86 naming alone is not treated as identity evidence.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Subaru/Impreza/Subaru_US%20Impreza_2004.pdf",
+          "https://www.sti.jp/brand/heritage/1998/impreza-22b/",
+          "https://www.sti.jp/brand/heritage/2019/s209/",
+          "https://xr793.com/wp-content/uploads/2020/02/2004-Subaru-Forester.pdf"
+        ]
+      },
+      "name": "Field Forgetmenot 2004",
+      "id": "field-forgetmenot-2004",
+      "simulationEstimates": {
+        "reverseRatio": 3.545,
+        "cgHeightM": 0.51,
+        "groundClearanceM": 0.145,
+        "dragCoefficient": 0.36,
+        "tireGrip": 1.02,
+        "spring": 0.58,
+        "antiRollRear": 0.39,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.94,
+        "rearDifferentialAccel": 0.45,
+        "frontDifferentialAccel": 0.24,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 4.8,
+        "gearRatios": [
+          3.636,
+          2.375,
+          1.761,
+          1.346,
+          0.971,
+          0.756
+        ],
+        "finalDrive": 3.9,
+        "centerDifferentialBalance": 0.5
+      }
+    },
+    {
+      "candidateId": "dodge-challenger-srt8-2012-roster-candidate",
+      "identity": {
+        "year": 2012,
+        "make": "Dodge",
+        "model": "Challenger SRT8 392",
+        "trim": "Canadian optional TR6060 six-speed manual coupe, standard245/45ZR20 all-season tires",
+        "market": "Canada"
+      },
+      "referenceVehicle": "2012 Canadian Dodge Challenger SRT8 392 6.4 naturally aspirated HEMI RWD TR6060 six-speed manual, standard245/45ZR20 all-season tires",
+      "facts": {
+        "powerHp": 470,
+        "powerRpm": 6000,
+        "torqueLbFt": 470,
+        "torqueRpm": 4200,
+        "engineDisplacementL": 6.424,
+        "aspiration": "Naturally aspirated",
+        "curbKg": 1891,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "transmissionLabel": "Tremec TR6060 six-speed manual",
+        "gearCount": 6,
+        "gearRatios": [
+          2.97,
+          2.1,
+          1.46,
+          1,
+          0.74,
+          0.5
+        ],
+        "reverseRatio": 2.9,
+        "finalDrive": 3.91,
+        "lengthM": 5.023,
+        "widthM": 1.923,
+        "heightM": 1.449,
+        "wheelbaseM": 2.946,
+        "trackFrontIn": 63,
+        "trackRearIn": 63.1,
+        "groundClearanceM": 0.1222,
+        "dragCoefficient": 0.356,
+        "frontWeightDistribution": 0.546,
+        "tireSize": [
+          245,
+          45,
+          20
+        ],
+        "fuelTankUSgal": 18.993970564550875,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "revLimitRpm": 6400
+      },
+      "sources": [
+        {
+          "url": "https://www.fcapresskit.ca/2012/data/contents/Press-Releases/SRT/Challenger-SRT8/CN_2012_ChallengerSRT8-392_SP.pdf",
+          "publisher": "Chrysler Canada official2012 product specification",
+          "fields": [
+            "Canadian variant",
+            "engine",
+            "manual gearing",
+            "estimated curb",
+            "dimensions",
+            "tires",
+            "controls"
+          ],
+          "access": "2026-11-18 five-page OEM PDF read in full; manual column selected throughout"
+        }
+      ],
+      "limits": [
+        "Source1891kg is explicitly manufacturer estimated manual curb, not weighed vehicle; optional manual selected, not standard Canadian5AT.",
+        "71.9L converted toUSgallons; printed15.8 is IMPERIAL gallons. Metricgeometry retained despite rounded inch pairs.",
+        "Top speed,0-60,redline and all suggestedEstimates are modeling targets; source6400rpm max used as limiter. No actual performance claim.",
+        "Generic rear LSD and suspension approximate Getrag/Bilstein hardware; skip-shift, three-modeESC and hill-start software not reproduced. All unspecified torque-curve, grip, losses, steering/braking and suspension parameters estimated. SharedRTG001 only.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Wood Sage 2015",
+            "documentId": "wood-sage-2015",
+            "runtimeId": "saved-car:Wood Sage 2015",
+            "reference": "Charger SRT Hellcat6.2supercharged8AT sedan",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Bitter Dock 2018",
+            "documentId": "bitter-dock-2018",
+            "runtimeId": "saved-car:Bitter Dock 2018",
+            "reference": "Durango SRT6.4 AWD8AT SUV",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Yellow Loosestrife 2008",
+            "documentId": "yellow-loosestrife-2008",
+            "runtimeId": "saved-car:Yellow Loosestrife 2008",
+            "reference": "Magnum SRT8 6.1RWD5AT wagon",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Current324native catalog has no Challenger identity. Naturally aspirated392 RWD six-speedmanual two-door coupe differs in engine/transmission/body/chassis from related sedans,wagon andSUV; not a Hellcat badge/year clone.",
+        "evidence": [
+          "https://www.fcapresskit.ca/2012/data/contents/Press-Releases/SRT/Challenger-SRT8/CN_2012_ChallengerSRT8-392_SP.pdf"
+        ]
+      },
+      "name": "Meadow Buttercup 2012",
+      "id": "meadow-buttercup-2012",
+      "simulationEstimates": {
+        "cgHeightM": 0.53,
+        "tireGrip": 0.92,
+        "spring": 0.55,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0.35,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 280,
+        "wheelWellAware": true,
+        "redlineRpm": 6200,
+        "topSpeedMph": 180,
+        "zeroToSixtySec": 4.8
+      }
+    },
+    {
+      "candidateId": "chevrolet-corvette-1953-roster-candidate",
+      "identity": {
+        "year": 1953,
+        "make": "Chevrolet",
+        "model": "Corvette",
+        "trim": "US production Blue Flame235.5cuin triple-carburetor inline-six Powerglide roadster, top down, no radio/heater",
+        "market": "United States"
+      },
+      "referenceVehicle": "1953 US Chevrolet Corvette model2934, Blue Flame235.5cuin naturally aspirated inline-six, Powerglide2AT RWD roadster, top down",
+      "facts": {
+        "engineDisplacementL": 3.859153572,
+        "aspiration": "Naturally aspirated",
+        "powerRpm": 4200,
+        "torqueRpm": 2400,
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "transmissionLabel": "Two-speed Powerglide torque-converter automatic approximation",
+        "gearCount": 2,
+        "finalDrive": 3.55,
+        "lengthIn": 167,
+        "widthIn": 72.24,
+        "heightIn": 48.5,
+        "wheelbaseIn": 102,
+        "trackFrontIn": 57,
+        "trackRearIn": 59,
+        "fuelTankUSgal": 17.25,
+        "periodPublishedRatings": {
+          "powerHp": 150,
+          "powerRpm": 4200,
+          "torqueLbFt": 223,
+          "torqueRpm": 2400,
+          "ratingBasis": "Advertised maximum brake horsepower, corrected SAE Engine Test Code: dynamometer exhaust, no engine fan, generator not charging. Period bench rating, not modern installed net."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://www.gm.com/content/dam/company/no_search/heritage-archive-docs/vehicle-information-kits/chevrolet/1953-Chevrolet-Corvette.pdf",
+          "publisher": "Chevrolet original AMA specification questionnaire datedNovember15,1953, GM Heritage Archive",
+          "fields": [
+            "period engine ratings and test basis",
+            "shipping mass basis",
+            "dimensions",
+            "Powerglide",
+            "axle",
+            "period tires",
+            "tank"
+          ],
+          "access": "2026-11-18 original scan downloaded; physicalpages2,3,7,14,16 visually read. Sourcepage1/2/6/13/15 respectively. OCR corroborated visually; not trusted alone."
+        }
+      ],
+      "limits": [
+        "Printed2705lb is SHIPPING weight excluding gasoline and water, and without radio/heater; not curb. Suggested1295kg operating curb is explicit estimate, no measured mass claim.",
+        "Printed150brakehp/223lbft retained only as periodPublishedRatings; installed125hp/195lbft are conservative simulation estimates, not certified conversions.",
+        "Powerglide table lists combined converter/gearing range3.82:1 to1:1 and low/reverse3.82 to1.82. Modeling1.82/1 gearsets and2.1converter multiplication is inferred/estimated decomposition; do not multiply3.82 by converter again.",
+        "6.70-15 four-ply tires approximated185/85R15 for runtime dimensions only; bias-ply construction and exact loaded rolling radius are not reproduced.",
+        "Height48.5in is over windshield TOP DOWN; do not claim raisedroofgeometry. NoABS/TC; generic2AT,drum-brake andhandling estimates; art remains sharedRTG001.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data.",
+        "Period bench/gross-style brake ratings are not modern installed net ratings; no certified gross-to-net conversion is claimed."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Lobelia 2005",
+            "documentId": "lobelia-2005",
+            "runtimeId": "saved-car:Lobelia 2005",
+            "reference": "CorvetteC6LS2 6.0V8 T56 six-speedmanual coupe",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Current324native catalog has no1953C1 six-cylinder Corvette. Separate first-generation fiberglass roadster with235.5I6,two-speedautomatic,drum brakes and short102in wheelbase; mechanically unlike existingC6V8manual coupe.",
+        "evidence": [
+          "https://www.gm.com/content/dam/company/no_search/heritage-archive-docs/vehicle-information-kits/chevrolet/1953-Chevrolet-Corvette.pdf"
+        ]
+      },
+      "name": "Creeping Buttercup 1953",
+      "id": "creeping-buttercup-1953",
+      "simulationEstimates": {
+        "reverseRatio": 1.82,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.5,
+        "tireGrip": 0.73,
+        "spring": 0.42,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 4500,
+        "revLimitRpm": 4800,
+        "topSpeedMph": 100,
+        "zeroToSixtySec": 12,
+        "powerHp": 125,
+        "torqueLbFt": 195,
+        "curbKg": 1295,
+        "lengthM": 4.2418,
+        "widthM": 1.8348959999999999,
+        "heightM": 1.2319,
+        "wheelbaseM": 2.5907999999999998,
+        "gearRatios": [
+          1.82,
+          1
+        ],
+        "torqueConverterSlip": 0.12,
+        "torqueConverterMultiplication": 2.1,
+        "tireSize": [
+          185,
+          85,
+          15
+        ]
+      }
+    },
+    {
+      "candidateId": "lotus-emira-2023-roster-candidate",
+      "identity": {
+        "year": 2023,
+        "make": "Lotus",
+        "model": "Emira",
+        "trim": "V6 First Edition six-speed manual, Tour suspension and Goodyear road tires",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "2023 UK Lotus Emira V6 First Edition 3.456 supercharged six-speed manual; initial First Edition specification, not AMG four-cylinder or later Turbo SE",
+      "facts": {
+        "powerKw": 298,
+        "publishedPowerHp": 400,
+        "torqueNm": 420,
+        "engineDisplacementL": 3.456,
+        "transmission": "manual",
+        "gearCount": 6,
+        "revLimitRpm": 6800,
+        "dragCoefficient": 0.349,
+        "topSpeedMph": 180,
+        "zeroToSixtySec": 4.2,
+        "aspiration": "Supercharged"
+      },
+      "sources": [
+        {
+          "url": "https://media.lotuscars.com/en/news-articles/lotus-confirms-full-specification-and-price-of-all-new-emira-v6-first-edition.html",
+          "publisher": "Lotus Cars factory launch release,20 September2021",
+          "fields": [
+            "identity",
+            "powerKw",
+            "publishedPowerHp",
+            "torqueNm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "revLimitRpm",
+            "dragCoefficient",
+            "topSpeedMph",
+            "zeroToSixtySec",
+            "aspiration"
+          ],
+          "access": "Read full factory technical table 2026-11-18; manual420Nm distinguished from auto430Nm. First customer deliveries2022; model-period selection2023 follows initial First Edition rather than claiming a separately verified2023 calibration."
+        },
+        {
+          "url": "https://media.lotuscars.com/en/models/emira.html",
+          "publisher": "Lotus Cars factory model archive",
+          "fields": [
+            "platform distinction",
+            "geometry and mass corroboration only"
+          ],
+          "access": "Read archive2026-11-18. Contains mixed launch and2025 replacement material; later V6 table1446kgDIN,245/35R20 and295/30R20 corroborate estimates only, not proof of exact2023 manual weight."
+        }
+      ],
+      "limits": [
+        "2023 is selected within the initial First Edition production period using factory2022 deliveries and2025 replacement chronology; no claim of separately verified2023 model-year technical revision. UK manual launch package is the modeled specification.",
+        "1446kg is a provisional running-mass estimate informed by mixed-date factory DIN table; exact2023manual mass/fuel/driver basis is not independently established. Launch1405kg target referred to lightest form and is not used as exactV6curb.",
+        "Power/torque peak RPM, individual gearing/final drive, tires/dimensions and all load split/CG/grip/suspension/braking calibration remain estimates. Factory maximum6800rpm is retained separately from estimated6600rpm shift redline. No modernTurboSE orAMGengine data borrowed.",
+        "New bonded-aluminium sports-car architecture and larger more comfortable road chassis distinguish this from Exige despite sharedToyota2GR engine family. Shared placeholder graphics do not claim finished art or actual browser verification.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "marsh-gentian-2012",
+            "alias": "Marsh Gentian 2012",
+            "referenceVehicle": "2012 UK Lotus Exige S 3.5 supercharged V6 coupe six-speed manual, standard non-Race-Pack specification",
+            "documentId": "marsh-gentian-2012",
+            "runtimeId": "saved-car:Marsh Gentian 2012",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Emira has an all-new chassis with every dimension different, new larger two-seat road package and298kW versus Exige258kW; same superchargedV6 family is disclosed, not treated as sufficient identity distinction alone. Neither catalog provenance nor tests/docs contain another Emira.",
+        "evidence": [
+          "https://media.lotuscars.com/en/news-articles/lotus-confirms-full-specification-and-price-of-all-new-emira-v6-first-edition.html",
+          "https://media.lotuscars.com/en/models/emira.html"
+        ]
+      },
+      "name": "Wood Forgetmenot 2023",
+      "id": "wood-forgetmenot-2023",
+      "simulationEstimates": {
+        "reverseRatio": 3.831,
+        "cgHeightM": 0.44,
+        "groundClearanceM": 0.12,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.39,
+        "redlineRpm": 6600,
+        "fuelTankUSgal": 13.87,
+        "powerRpm": 6800,
+        "torqueRpm": 3500,
+        "curbKg": 1446,
+        "drivetrain": "rwd",
+        "lengthM": 4.412,
+        "widthM": 1.895,
+        "heightM": 1.225,
+        "wheelbaseM": 2.575,
+        "trackFrontIn": 64.02,
+        "trackRearIn": 63.31,
+        "tireSize": [
+          245,
+          35,
+          20
+        ],
+        "frontTire": [
+          245,
+          35,
+          20
+        ],
+        "rearTire": [
+          295,
+          30,
+          20
+        ],
+        "gearRatios": [
+          3.538,
+          1.913,
+          1.407,
+          1.091,
+          0.969,
+          0.861
+        ],
+        "finalDrive": 3.777
+      }
+    },
+    {
+      "candidateId": "aston-martin-dbs-2008-roster-candidate",
+      "identity": {
+        "year": 2008,
+        "make": "Aston Martin",
+        "model": "DBS Coupe",
+        "trim": "2+0 coupe 5.935 naturally aspirated V12 six-speed manual",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "2008 UK Aston Martin DBS coupe 2+0 5.935L naturally aspirated V12 six-speed manual; not DBS Volante, later DBS Superleggera or DB11",
+      "facts": {
+        "powerKw": 380,
+        "publishedPowerHp": 510,
+        "publishedPowerPS": 517,
+        "powerRpm": 6500,
+        "torqueNm": 570,
+        "torqueRpm": 5750,
+        "engineDisplacementL": 5.935,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "finalDrive": 3.71,
+        "lengthM": 4.721,
+        "widthM": 1.905,
+        "heightM": 1.28,
+        "wheelbaseM": 2.74,
+        "tireSize": [
+          245,
+          35,
+          20
+        ],
+        "frontTire": [
+          245,
+          35,
+          20
+        ],
+        "rearTire": [
+          295,
+          30,
+          20
+        ],
+        "fuelTankUSgal": 20.605420083935577,
+        "topSpeedMph": 191,
+        "publishedWeightKg": 1695
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Aston_Martin/dbs/Aston%20Martin_int%20DBS_2.pdf",
+          "publisher": "Aston Martin Lagonda original international/UK brochure, mirrored Auto-Brochures",
+          "fields": [
+            "identity",
+            "powerKw",
+            "publishedPowerHp",
+            "publishedPowerPS",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "finalDrive",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "fuelTankUSgal",
+            "topSpeedMph"
+          ],
+          "access": "Read original factory PDF technical page35(zero-based)2026-11-18. Brochure references2008LeMans and includes manual and optionalTouchtronic; manual column explicitly selected. Publisher archive dates PDFOctober2008; date is not asserted as printedmodel-year designation."
+        },
+        {
+          "url": "https://www.astonmartin.com/en/models/past-models/dbs-dbs-volante",
+          "publisher": "Aston Martin official historic model archive",
+          "fields": [
+            "identity",
+            "production period",
+            "engineDisplacementL",
+            "transmission"
+          ],
+          "access": "Read2026-11-18: DBSproduction2007\u20132012; Volantebegins2009;5935ccV12 andsix-speedmanualstandard."
+        }
+      ],
+      "limits": [
+        "1695kg is the factory brochure published Weight figure; no driver/fuel basis footnote is provided. Retain as published nominalmass rather than claimingDIN/EU kerb or subtracting a driver.",
+        "2008 calendar-production manual coupe chosen; original brochure includes late2008 options and is not proof of a distinctMY2008 allocation. No automatic/Volante mass or output used.",
+        "Individual ratios, redline/limiter,track,load distribution,CG,drag,0\u201360 and all handling calibration remain explicitly estimated. Published4.3seconds is0\u2013100km/h, not claimed0\u201360. Generic fixed damping/LSD approximates proprietaryADS/DSC.",
+        "Shared RTG-001 references provide placeholder art only; research does not assert implemented or independently driven status.",
+        "Runtime curbKg is provisional, anchored numerically to publishedWeightKg pending confirmation of its mass basis; not a verified curb or dry weight conversion.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "marsh-bedstraw-2017",
+            "alias": "Marsh Bedstraw 2017",
+            "referenceVehicle": "2017 UK Aston Martin DB11 V12 Coupe5.2 twin-turbo8AT original608PS;notlaterAMR orV8",
+            "documentId": "marsh-bedstraw-2017",
+            "runtimeId": "saved-car:Marsh Bedstraw 2017",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "DBS is the earlier VH-platform5.935naturally aspiratedV12 with rear6MT transaxle,380kW/570Nm. ExistingDB11 uses later5.2twin-turbo608PS/700Nm8AT and a different body/chassis; not a same-generation year/badge variant. No exactDBS found in native provenance or tests/docs.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Aston_Martin/dbs/Aston%20Martin_int%20DBS_2.pdf",
+          "https://www.astonmartin.com/en/models/past-models/dbs-dbs-volante"
+        ]
+      },
+      "name": "Water Forgetmenot 2008",
+      "id": "water-forgetmenot-2008",
+      "simulationEstimates": {
+        "reverseRatio": 2.9,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.36,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.5,
+        "redlineRpm": 6800,
+        "revLimitRpm": 7000,
+        "aspiration": "Naturally aspirated",
+        "zeroToSixtySec": 4.2,
+        "gearRatios": [
+          2.66,
+          1.78,
+          1.3,
+          1,
+          0.74,
+          0.5
+        ],
+        "trackFrontIn": 62.6,
+        "trackRearIn": 62.2,
+        "curbKg": 1695
+      }
+    }
+  ],
+  "deferred": []
+}

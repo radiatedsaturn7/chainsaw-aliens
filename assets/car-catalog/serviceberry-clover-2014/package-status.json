@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "serviceberry-clover-2014",
+  "name": "Serviceberry Clover 2014",
+  "stableCarId": "saved-car:Serviceberry Clover 2014",
+  "referenceVehicle": "2014 United States Cadillac SRX, Standard Collection3.6DI V6 FWD six-speedautomatic,18-inchpaintedalloys andfixedroof; notAWD,Luxury,Performance,Premium orfirstgenerationV8",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "serviceberry-clover-2014",
+  "sourceHashes": {
+    "body": "d88e0377193d366b7ba99f605ce239759956ff524c707b9fb28ac36e8c659568",
+    "dashboard": "acb809dbbab904a82df4e1af4414c6fe65f3b7dcbb8ebb951010ab55dc419e7f",
+    "tires": "bf7e29e38617f8cc5c5048bbf9ef787dee8d8ab809b17bc7ff7e5e794cab4c89"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

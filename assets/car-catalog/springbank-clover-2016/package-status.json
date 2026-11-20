@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "springbank-clover-2016",
+  "name": "Springbank Clover 2016",
+  "stableCarId": "saved-car:Springbank Clover 2016",
+  "referenceVehicle": "2016 European Mercedes-AMG C63 S Coupe C2054.0V8 biturbo7MCT standard speedlimiter,not Edition1",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "f130f0eb62996d43a09bef80cfacfb7227de80d914a18c87c52c648df27917b1",
+    "dashboard": "3fb128c576bc5d25e0f0009802c6644bd70e29f32922ca7995dd9cc5a388d7b3",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

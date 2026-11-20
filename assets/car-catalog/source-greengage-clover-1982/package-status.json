@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "source-greengage-clover-1982",
+  "name": "Greengage Clover 1982",
+  "stableCarId": "saved-car:Greengage Clover 1982",
+  "referenceVehicle": "Japan1982 Nissan Cedric Turbo Brougham K430,L20E-T,3AT. Four-door five-seat luxury hardtop,retainK430 generation,notY30taxi orY34.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "greengage-clover-1982",
+  "sourceHashes": {
+    "body": "7109f04958daf73db08b0f8034a522f00ee57433c55c7b0330ecff51543028b0",
+    "dashboard": "90460b922a686ae0586f7954248308d89b230b68ecaa934783b5f241d79fb419",
+    "tires": "d2d4fb929e28f9ecd4a9f15fe7fd81361fada713b3169861cbbbafe7491c84e9"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
+}

@@ -1,0 +1,69 @@
+{
+  "id": "springbank-clover-2016",
+  "name": "Springbank Clover 2016",
+  "stableCarId": "saved-car:Springbank Clover 2016",
+  "runtimeId": "saved-car:Springbank Clover 2016",
+  "candidateId": "mercedes-amg-c-63-s-coupe-2016-roster-candidate",
+  "referenceVehicle": "2016 European Mercedes-AMG C63 S Coupe C2054.0V8 biturbo7MCT standard speedlimiter,not Edition1",
+  "identity": {
+    "year": 2016,
+    "make": "Mercedes-AMG",
+    "model": "C63 S Coupe",
+    "trim": "C2054.0V8 biturbo7MCT standard speedlimiter,not Edition1",
+    "market": "Germany / continental Europe"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://media.mercedes-benz.fr/la-nouvelle-mercedes-amg-c-63-coupe-plus-sportive-que-jamais/",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "curbKg",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "identity"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+{
+  "id": "saxifrage-1995",
+  "name": "Saxifrage 1995",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "27c482c8c09b65ae9e4e6622904336cdc922c1c783388a46e26819a6fe4b6815",
+  "sourceDirectory": "assets/car-catalog/saxifrage-1995",
+  "sourceHashes": {
+    "body": "013f2cce646bfa071490ed63c0b7f1c2621c794173f3b13d803d900637d3ec08",
+    "dashboard": "e964beef472bf2e510406fb19d62279591eabc8313beddd7b5c6d4bd14806404",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 101.12,
+        "y": 314.0,
+        "radius": 35.48
+      },
+      {
+        "wheel": "fr",
+        "x": 329.96,
+        "y": 314.0,
+        "radius": 35.48
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 642.19,
+        "y": 292.71,
+        "radius": 37.25
+      },
+      {
+        "wheel": "rr",
+        "x": 830.23,
+        "y": 266.1,
+        "radius": 31.93
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 965.06,
+        "y": 722.02,
+        "radius": 40.8
+      },
+      {
+        "wheel": "rr",
+        "x": 1248.9,
+        "y": 720.24,
+        "radius": 40.8
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 447.05,
+        "y": 707.83,
+        "radius": 30.16
+      },
+      {
+        "wheel": "rr",
+        "x": 603.16,
+        "y": 732.66,
+        "radius": 39.03
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 92.25,
+        "y": 743.31,
+        "radius": 35.48
+      },
+      {
+        "wheel": "rl",
+        "x": 329.96,
+        "y": 743.31,
+        "radius": 35.48
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1587.73,
+        "y": 289.16,
+        "radius": 40.8
+      },
+      {
+        "wheel": "fl",
+        "x": 1740.29,
+        "y": 259.0,
+        "radius": 31.93
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 970.38,
+        "y": 280.29,
+        "radius": 40.8
+      },
+      {
+        "wheel": "fl",
+        "x": 1252.44,
+        "y": 280.29,
+        "radius": 40.8
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1376.62,
+        "y": 700.73,
+        "radius": 31.93
+      },
+      {
+        "wheel": "fl",
+        "x": 1550.48,
+        "y": 745.08,
+        "radius": 39.03
+      }
+    ]
+  },
+  "wheelFit": "average",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      129,
+      490,
+      605,
+      188
+    ],
+    "wheel": [
+      555,
+      773,
+      357
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e2e9e8",
+    "viewportWheelScale": 2.08,
+    "gaugeBackground": "#111111"
+  },
+  "steeringWheelSource": {
+    "artRef": "steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementNotes": "Individual source atlas and dashboard inspected on 1000x500 body / 1000x400 dash preview. Original-pixel coordinates; wheel hubs estimated at arch circle centers. Runtime render review still required."
+}

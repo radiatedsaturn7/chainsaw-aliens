@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "coralberry-clover-2004",
+  "name": "Coralberry Clover 2004",
+  "stableCarId": "saved-car:Coralberry Clover 2004",
+  "referenceVehicle": "2004 Canada Chevrolet Colorado, Z85 Base regularcab2WD Vortec2800 inlinefour five-speedmanual, standard15-inchsteelwheels, empty6-footbox; notLS,Z71,ZQ8,crew,4WD or3.5five",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "coralberry-clover-2004",
+  "sourceHashes": {
+    "body": "a5e01f8375797f43527bdc0cee93fa77755856f63e3ee969684368af1619df9b",
+    "dashboard": "4ad2c97cdaa78b3facf9fbf0f73757c74900cf721736ede08aede50bfc8eb44f",
+    "tires": "041d893a1cb9c8928551b49a02cd69310c0a173a42f175ed299ae990afe6ccee"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

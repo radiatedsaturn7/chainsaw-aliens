@@ -1,0 +1,64 @@
+{
+  "id": "little-clover-2010",
+  "name": "Little Clover 2010",
+  "stableCarId": "saved-car:Little Clover 2010",
+  "runtimeId": "saved-car:Little Clover 2010",
+  "candidateId": "nissan-frontier-xe-king-cab-2010-us-5mt-4x2-supplemental",
+  "referenceVehicle": "2010 United States Nissan Frontier, XEKingCab2.5QR25DE five-speedmanual4x2 standardbed,baseequipment;notV6,PRO4X,4WD,automatic orCrewCab",
+  "identity": {
+    "year": 2010,
+    "make": "Nissan",
+    "model": "Frontier",
+    "trim": "XEKingCab2.5QR25DE five-speedmanual4x2 standardbed,baseequipment;notV6,PRO4X,4WD,automatic orCrewCab",
+    "market": "United States"
+  },
+  "bodyClass": "extended-cab four-seat compact pickup; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://usa.nissannews.com/en-US/releases/2010-nissan-frontier-press-kit",
+      "fields": [
+        "powerHp",
+        "torqueLbFt",
+        "engineDisplacementL",
+        "aspiration",
+        "gearCount",
+        "absEnabled"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "poplar-clover-2009",
+  "name": "Poplar Clover 2009",
+  "stableCarId": "saved-car:Poplar Clover 2009",
+  "referenceVehicle": "2009 Citroen C3 Picasso VT1.4 VTi95, UK April2009 entry VT five-door miniMPV five-speed manual15inch wheels, nooptionalESP assumed; notVTR+,Exclusive or1.6",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "cfb4f9f48cef449a11e28a8df97a69017780302bfd4fd08d7a0e84663763d32a",
+    "dashboard": "d9000821ba4b5b32410f8b89ad48d3824d37ed3337a79c42f7dccfd0ad14e950",
+    "tires": "300b640b35257c62957bed7f52a65437d7d0131a028e4ca1497e64030ab95ac6"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

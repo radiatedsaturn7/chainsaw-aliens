@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "forest-trefoil-2000",
+  "name": "Forest Trefoil 2000",
+  "stableCarId": "saved-car:Forest Trefoil 2000",
+  "referenceVehicle": "2000 continental Europe Audi A2 1.4 AUA gasoline four-cylinder 55kW EYX five-speed manual, solid roof, four seats, 175/60R15; not TDI, FSI or 3L",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "forest-trefoil-2000",
+  "sourceHashes": {
+    "body": "cae3c61215da124c9889016fdb29a1285dc53c5bd8a5e70ecaa0cb654fc884f4",
+    "dashboard": "979cc0e60c707580a2cac5e6c096ac4b606d72cb5e6dc79d4bedf0c7200db31b",
+    "tires": "f85f0458e74a25f34741d744cfc10109dfe1afe1fdedeb1cbff6823ac0f4b0e8"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

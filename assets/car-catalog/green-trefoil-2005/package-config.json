@@ -1,0 +1,72 @@
+{
+  "id": "green-trefoil-2005",
+  "name": "Green Trefoil 2005",
+  "stableCarId": "saved-car:Green Trefoil 2005",
+  "runtimeId": "saved-car:Green Trefoil 2005",
+  "candidateId": "volkswagen-phaeton-2005-us-w12-5at",
+  "referenceVehicle": "2005 United States Volkswagen Phaeton W12 US long-wheelbase five-seat sedan,6.0NA five-speed Tiptronic4MOTION,standardconfiguration; notV8,EuropeanSWB orlater450PS",
+  "identity": {
+    "year": 2005,
+    "make": "Volkswagen",
+    "model": "Phaeton",
+    "trim": "W12 US long-wheelbase five-seat sedan,6.0NA five-speed Tiptronic4MOTION,standardconfiguration; notV8,EuropeanSWB orlater450PS",
+    "market": "United States"
+  },
+  "bodyClass": "sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Volkswagen/Phaeton/VW_US%20Phaeton_2005.pdf",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn"
+      ]
+    }
+  ]
+}

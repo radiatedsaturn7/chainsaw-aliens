@@ -1,0 +1,62 @@
+{
+  "id": "lesser-celandine-2022",
+  "name": "Lesser Celandine 2022",
+  "stableCarId": "saved-car:Lesser Celandine 2022",
+  "candidateId": "cadillac-ct4-v-blackwing-2022-roster-candidate",
+  "referenceVehicle": "2022 US Cadillac CT4-V Blackwing, standard US six-speed manual sedan; no optional carbon-fiber aero or carbon-ceramic brake package",
+  "identity": {
+    "year": 2022,
+    "make": "Cadillac",
+    "model": "CT4-V Blackwing",
+    "trim": "standard US six-speed manual sedan; no optional carbon-fiber aero or carbon-ceramic brake package",
+    "market": "United States"
+  },
+  "bodyClass": "sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://news.cadillac.com/newsroom.detail.html/Pages/news/us/en/2021/aug/0810-blackwing.html",
+      "fields": [
+        "powerHp",
+        "torqueLbFt",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount"
+      ]
+    }
+  ]
+}

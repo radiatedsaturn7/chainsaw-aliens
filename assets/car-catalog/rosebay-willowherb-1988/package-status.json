@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "rosebay-willowherb-1988",
+  "name": "Rosebay Willowherb 1988",
+  "stableCarId": "saved-car:Rosebay Willowherb 1988",
+  "referenceVehicle": "1988 Europe BMW M5, E28 M88/3 non-catalyst European six-cylinder sedan5MT, final-production reference; not US S38 or E34",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "12013d08342b36cfb7cee80ad7762add4f5ca2ed772c329f953d835dc8c2b466",
+    "dashboard": "aac2a4686b4f8d9d5698a27cfb56bb446058962a2de85632e5ef056d63e919c9",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

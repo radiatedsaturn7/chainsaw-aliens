@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "purple-vetch-1999",
+  "name": "Purple Vetch 1999",
+  "stableCarId": "saved-car:Purple Vetch 1999",
+  "referenceVehicle": "1999 Japan Mitsubishi Lancer Evolution VI GSR GF-CP9A 1997cc4G63turbo AWD5MT road sedan1360kg; standardJanuary1999version, not2000TME,RS orMonteCarloGroupA",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "0a18e29609e8d229ebca13c04c0de7746e2e65b93cdcc9fb1ec213d87b683ffe",
+    "dashboard": "d2aa70dd45c2ac5aeac4f6527fc120d8a67fc444819b5f0fe5bba4e9c9ab8e29",
+    "tires": "51e3fdfef04741001ce631ef1bf00cac5139f1f49e3d51e9f1a7d88b9b364dd3"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

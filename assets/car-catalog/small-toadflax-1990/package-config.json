@@ -1,0 +1,71 @@
+{
+  "id": "small-toadflax-1990",
+  "name": "Small Toadflax 1990",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      1064,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      1277,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://gazoo.com/catalog/maker/MAZDA/SAVANNA_RX7/198904/2501795/",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "reverseRatio",
+        "finalDrive",
+        "fuelTankUSgal",
+        "tireSize"
+      ]
+    },
+    {
+      "url": "https://www.mazda.com/en/about/history/1980-1989/",
+      "fields": [
+        "second-generationFC architecture",
+        "13B rotary",
+        "1985 introduction"
+      ]
+    }
+  ]
+}

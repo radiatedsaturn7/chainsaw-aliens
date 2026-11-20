@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "elm-clover-2003",
+  "name": "Elm Clover 2003",
+  "stableCarId": "saved-car:Elm Clover 2003",
+  "referenceVehicle": "2003 United States Infiniti M45, Y34standard4.5V8 rear-wheel-drive five-speed automatic,basewithoutComfortConvenience/Premium/TechnologyPackages; not2006Y50 orJapaneseV6Gloria",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "elm-clover-2003",
+  "sourceHashes": {
+    "body": "f6c827c7107a402052d612b254d91b5c1c2c91ed197f1e4b7b9d2ff40f0188e9",
+    "dashboard": "3f7cccdd75fdee21fc3ee8456798dc1a07ce5150b94fd287bf4c3b40d39f2faf",
+    "tires": "cc3aba8a459abca4ea77433a30ec973ab9756c8eea33dd7d517214a06c8d5cd7"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

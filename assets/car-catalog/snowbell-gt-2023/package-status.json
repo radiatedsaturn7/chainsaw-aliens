@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "snowbell-gt-2023",
+  "name": "Snowbell GT 2023",
+  "stableCarId": "saved-car:Snowbell GT 2023",
+  "referenceVehicle": "2023 United States Kia EV6 GT AWD, 77.4 kWh nominal pack, single-speed reduction; not GT-Line, European 585 PS or later 641 hp model",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "57f9e6fe555e5d247b477a3f0747abbac9dc2352463879be7ad5846c2ef12172",
+    "dashboard": "b59d09c63b22178ebbf98329e2006bae8df126a9cb9c3848f141f95f784db7e6",
+    "tires": "3de56c3a84c22d94164177aab4d2035ca7e8b92716371db43fe4b964b1c20742"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

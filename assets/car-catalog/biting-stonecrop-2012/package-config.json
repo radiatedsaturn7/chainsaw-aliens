@@ -1,0 +1,79 @@
+{
+  "id": "biting-stonecrop-2012",
+  "name": "Biting Stonecrop 2012",
+  "stableCarId": "saved-car:Biting Stonecrop 2012",
+  "candidateId": "jeep-wrangler-rubicon-2012-roster-candidate",
+  "referenceVehicle": "2012 US Jeep Wrangler Rubicon JK two-door3.6V6 six-speedmanual,standardLT255/75R17,2H road mode and unlocked axles",
+  "identity": {
+    "year": 2012,
+    "make": "Jeep",
+    "model": "Wrangler Rubicon",
+    "trim": "JK two-door3.6V6 six-speedmanual,standardLT255/75R17,2H road mode and unlocked axles",
+    "market": "United States"
+  },
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://manualzz.com/doc/57464552/jeep-2012-wrangler-specifications",
+      "fields": [
+        "3.6V6SAEnet285hp260lbft",
+        "NSG370ratios",
+        "Rubiconmanual4.10axle",
+        "2H/4H/4L transfercase",
+        "LT255/75R17",
+        "curb4104lb",
+        "18.6USgal"
+      ]
+    },
+    {
+      "url": "https://www.auto-brochures.com/makes/Jeep/Wrangler/Jeep_US%20Wrangler_2012.pdf",
+      "fields": [
+        "US2012Rubicon identity",
+        "285hp260lbft",
+        "manual73.1crawl ratio",
+        "RockTrac/TruLok/BFGoodrich17-inch equipment"
+      ]
+    },
+    {
+      "url": "https://pt.slideshare.net/slideshow/2012-jeep-wrangler-buyers-guide/10972230",
+      "fields": [
+        "two-door exterior geometry corroboration164.2length/95.4wheelbase"
+      ]
+    }
+  ]
+}

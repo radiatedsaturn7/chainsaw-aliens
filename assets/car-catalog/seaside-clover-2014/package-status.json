@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "seaside-clover-2014",
+  "name": "Seaside Clover 2014",
+  "stableCarId": "saved-car:Seaside Clover 2014",
+  "referenceVehicle": "2014 European Lamborghini Huracan LP610-4 launch coupe5.2V10 7LDF standard20inch; not roadster, modified car or later special edition",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "bb82dd2ef07be0f9ee994e9e252c8280752a9d957da9c0133b32f0e315d7fe98",
+    "dashboard": "a93a541fc7d396e68da187a674a8608242c7f503695aea32e104945e56d6d460",
+    "tires": "f833350b0a4644dc1ed2c33f78cb39361a69c43c831c1a976040da4c7e489c57"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

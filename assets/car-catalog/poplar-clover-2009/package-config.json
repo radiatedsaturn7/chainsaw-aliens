@@ -1,0 +1,64 @@
+{
+  "id": "poplar-clover-2009",
+  "name": "Poplar Clover 2009",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      621,
+      346,
+      497,
+      115
+    ],
+    "wheel": [
+      1277,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://www.citroenet.org.uk/passenger-cars/psa/c3/c3-picasso/c3-picasso22.html",
+      "fields": [
+        "engineDisplacementL",
+        "publishedPowerDINhp",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "gearCount",
+        "transmission",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "topSpeedMph"
+      ]
+    },
+    {
+      "url": "https://www.citroenet.org.uk/passenger-cars/psa/c3/c3-picasso/c3-picasso21.html",
+      "fields": [
+        "identity",
+        "trim",
+        "wheelDiameter"
+      ]
+    }
+  ]
+}

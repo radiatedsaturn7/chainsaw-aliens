@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "sierra-clover-2004",
+  "name": "Sierra Clover 2004",
+  "stableCarId": "saved-car:Sierra Clover 2004",
+  "referenceVehicle": "2004 Italy BMW 116i E87 five-door Eletta 1.6 gasoline five-speed manual, standard steel 16-inch runflat wheels; not Attiva, diesel, 120i or facelift",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "sierra-clover-2004",
+  "sourceHashes": {
+    "body": "e3bad696a4a1e46ffa306d05837d1f60b71052256ad0b27e6dc8a7c5070db6bf",
+    "dashboard": "ce76b075cfa3deb0a7f4a787f5a1e9917a4d919a7c26b8868b83199228a26b84",
+    "tires": "84c7489a3c6a215eb95df706625826ee69646a8a8ed7a8baf2e94a1eb3f73de2"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

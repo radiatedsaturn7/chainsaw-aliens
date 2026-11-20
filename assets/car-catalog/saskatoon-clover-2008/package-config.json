@@ -1,0 +1,79 @@
+{
+  "id": "saskatoon-clover-2008",
+  "name": "Saskatoon Clover 2008",
+  "stableCarId": "saved-car:Saskatoon Clover 2008",
+  "runtimeId": "saved-car:Saskatoon Clover 2008",
+  "candidateId": "bmw-650i-2008-us-e63-coupe-6mt",
+  "referenceVehicle": "2008 United States BMW 650i E63 Coupe4.8 naturally aspirated V8 standard six-speed manual, standard18inch all-season wheels, nonSport; not Convertible,M6 orSportAutomatic",
+  "identity": {
+    "year": 2008,
+    "make": "BMW",
+    "model": "650i",
+    "trim": "E63 Coupe4.8 naturally aspirated V8 standard six-speed manual, standard18inch all-season wheels, nonSport; not Convertible,M6 orSportAutomatic",
+    "market": "United States"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/BMW/6%20Series/BMW_US%206Series_2008.pdf",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "publishedWeightKg",
+        "frontWeightDistribution",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "fuelTankUSgal",
+        "topSpeedMph",
+        "tireSize",
+        "frontTire",
+        "rearTire",
+        "identity"
+      ]
+    }
+  ]
+}

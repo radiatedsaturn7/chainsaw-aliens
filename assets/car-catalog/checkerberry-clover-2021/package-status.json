@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "checkerberry-clover-2021",
+  "name": "Checkerberry Clover 2021",
+  "stableCarId": "saved-car:Checkerberry Clover 2021",
+  "referenceVehicle": "2021 Vauxhall Grandland X GriffinEdition1.2Turbo130, UK April2021 five-seat FWD petrolsix-speedmanual18inchalloys, conventionalnonhybrid; notautomatic,Hybrid4 orfaceliftGrandland",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "a196b96576f5f08c8a19d17c09ede766a1bb5c9df6aa7e74153d9e088354d58c",
+    "dashboard": "e62c82ca997879273d19af2e9dfc7c779e15be04b0bbd5a5cea3bf324b2ab8f1",
+    "tires": "48ad7496f99f0a77b24e533b4cfd7ac8877a70e2bc6164bea6079d3de40448a3"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,63 @@
+{
+  "id": "marsh-woundwort-1968",
+  "name": "Marsh Woundwort 1968",
+  "stableCarId": "saved-car:Marsh Woundwort 1968",
+  "runtimeId": "saved-car:Marsh Woundwort 1968",
+  "candidateId": "alfa-romeo-33-stradale-1968-roster-candidate",
+  "referenceVehicle": "1968 Alfa Romeo 33 Stradale, original1967\u20131969 productionseries2.0NA V8 road coupe6MT; notTipo33race,prototype-specific body or2023V6/BEV",
+  "identity": {
+    "year": 1968,
+    "make": "Alfa Romeo",
+    "model": "33 Stradale",
+    "trim": "original1967\u20131969 productionseries2.0NA V8 road coupe6MT; notTipo33race,prototype-specific body or2023V6/BEV",
+    "market": "Italy/Europe"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      258,
+      555,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      761,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.media.stellantis.com/it-it/alfa-romeo/press/alfa-romeo-33-stradale-il-coraggio-di-sognare",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "powerRpm",
+        "torqueNm",
+        "engineDisplacementL"
+      ]
+    }
+  ]
+}

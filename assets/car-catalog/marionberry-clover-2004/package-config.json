@@ -1,0 +1,74 @@
+{
+  "id": "marionberry-clover-2004",
+  "name": "Marionberry Clover 2004",
+  "stableCarId": "saved-car:Marionberry Clover 2004",
+  "runtimeId": "saved-car:Marionberry Clover 2004",
+  "candidateId": "oldsmobile-alero-gls-coupe-2004-us-supplemental",
+  "referenceVehicle": "2004 United States Oldsmobile Alero, GLS two-doorcoupe3.4SFI V6 four-speedautomatic, standard16-inchpolishedwheels; notGXfour-cylinder,sedan orFinal500",
+  "identity": {
+    "year": 2004,
+    "make": "Oldsmobile",
+    "model": "Alero",
+    "trim": "GLS two-doorcoupe3.4SFI V6 four-speedautomatic, standard16-inchpolishedwheels; notGXfour-cylinder,sedan orFinal500",
+    "market": "United States"
+  },
+  "bodyClass": "two-door-coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/oldsmobile/alero/Oldsmobile_US%20Alero_2004.pdf",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "engineDisplacementL",
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "fuelTankUSgal"
+      ]
+    }
+  ]
+}

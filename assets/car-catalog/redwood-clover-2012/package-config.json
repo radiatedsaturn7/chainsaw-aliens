@@ -1,0 +1,71 @@
+{
+  "id": "redwood-clover-2012",
+  "name": "Redwood Clover 2012",
+  "stableCarId": "saved-car:Redwood Clover 2012",
+  "runtimeId": "saved-car:Redwood Clover 2012",
+  "candidateId": "volkswagen-golf-2012-us-tdi-4door-6mt",
+  "referenceVehicle": "2012 US Volkswagen Golf Mk6TDI CleanDiesel four-door2.0commonrail6MT standard17inchalloy,notGTD/GTI/R",
+  "identity": {
+    "year": 2012,
+    "make": "Volkswagen",
+    "model": "Golf",
+    "trim": "Mk6TDI CleanDiesel four-door2.0commonrail6MT standard17inchalloy,notGTD/GTI/R",
+    "market": "United States"
+  },
+  "bodyClass": "hatchback",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Volkswagen/Golf/VW_US%20Golf_2012.pdf",
+      "fields": [
+        "powerKw",
+        "publishedPowerHp",
+        "torqueNm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "identity"
+      ]
+    }
+  ]
+}

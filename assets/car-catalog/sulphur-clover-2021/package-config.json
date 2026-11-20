@@ -1,0 +1,74 @@
+{
+  "id": "sulphur-clover-2021",
+  "name": "Sulphur Clover 2021",
+  "stableCarId": "saved-car:Sulphur Clover 2021",
+  "runtimeId": "saved-car:Sulphur Clover 2021",
+  "candidateId": "bentley-flying-spur-2021-roster-candidate",
+  "referenceVehicle": "2021 Bentley Flying Spur, third-generation V8 standard five-seat AWD eight-speed DCT luxury sedan,4.0 twin turbo;notW12,hybrid,MullinerorSpeed",
+  "identity": {
+    "year": 2021,
+    "make": "Bentley",
+    "model": "Flying Spur",
+    "trim": "third-generation V8 standard five-seat AWD eight-speed DCT luxury sedan,4.0 twin turbo;notW12,hybrid,MullinerorSpeed",
+    "market": "UK/Europe"
+  },
+  "bodyClass": "sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.porscheholding-newsroom.at/pressemeldungen/detail/2020-10-14-flying-spur-mit-v8-dynamik-auf-der-ueberholspur",
+      "fields": [
+        "powerHp",
+        "publishedPowerPS",
+        "torqueNm",
+        "torqueRpm",
+        "torquePlateauEndRpm",
+        "engineDisplacementL",
+        "topSpeedMph"
+      ]
+    },
+    {
+      "url": "https://www.clasicosalvolante.com/en/flying-spur-v8-production-and-deliveries-underway/",
+      "fields": [
+        "powerHp",
+        "torquePlateauEndRpm",
+        "zeroToSixtySec",
+        "topSpeedMph"
+      ]
+    }
+  ]
+}

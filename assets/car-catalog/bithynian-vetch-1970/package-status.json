@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bithynian-vetch-1970",
+  "name": "Bithynian Vetch 1970",
+  "stableCarId": "saved-car:Bithynian Vetch 1970",
+  "referenceVehicle": "1970 United States AMC Rebel The Machine, 390 four-barrel V8, standard four-speed floor shift and3.54 axle; non-California",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "206de004d59d5c44fec135446b6b1e95bc9bf55ee27f98412aaa37d6c27eace5",
+    "dashboard": "5ec69349d865c05560ec603a785c944f1e073b326e2f301cecbc2673e69af618",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

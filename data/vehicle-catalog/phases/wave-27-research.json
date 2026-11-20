@@ -1,0 +1,252 @@
+{
+  "schemaVersion": 1,
+  "base": "3371316c523a729f101db3ca5066c6e48ea531f7",
+  "scope": "Distinct US sports sedan automatic and UK mid-engine manual coupe; original660candidate identities, shared art only.",
+  "vehicles": [
+    {
+      "candidateId": "alfa-romeo-giulia-quadrifoglio-2017-roster-candidate",
+      "id": "field-gentian-2017",
+      "name": "Field Gentian 2017",
+      "identity": {
+        "year": 2017,
+        "make": "Alfa Romeo",
+        "model": "Giulia Quadrifoglio",
+        "trim": "US 2.9 V6 sedan, eight-speed automatic",
+        "market": "United States"
+      },
+      "referenceVehicle": "2017 US Alfa Romeo Giulia Quadrifoglio 2.9 V6 RWD eight-speed automatic",
+      "facts": {
+        "powerHp": 505,
+        "torqueNm": 600,
+        "engineDisplacementL": 2.891,
+        "transmission": "automatic",
+        "gearCount": 8,
+        "curbLb": 3806,
+        "powerRpm": 6500,
+        "torqueRpm": 2500,
+        "lengthIn": 182.64,
+        "widthIn": 73.74,
+        "heightIn": 56.14,
+        "wheelbaseIn": 111.02,
+        "trackFrontIn": 61.22,
+        "trackRearIn": 63.27,
+        "tireSize": [
+          245,
+          35,
+          19
+        ],
+        "frontTire": [
+          245,
+          35,
+          19
+        ],
+        "rearTire": [
+          285,
+          30,
+          19
+        ],
+        "fuelTankUSgal": 15.321979036772609
+      },
+      "simulationEstimates": {
+        "drivetrain": "rwd",
+        "reverseRatio": 3.2,
+        "cgHeightM": 0.45,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.08,
+        "spring": 0.6,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.15,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0.3,
+        "aeroFront": 0.02,
+        "aeroRear": 0.04,
+        "shiftTimeMs": 180,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.5,
+        "redlineRpm": 6800,
+        "revLimitRpm": 7000,
+        "gearRatios": [
+          4.714,
+          3.143,
+          2.106,
+          1.667,
+          1.285,
+          1,
+          0.839,
+          0.667
+        ],
+        "finalDrive": 3.09,
+        "aspiration": "Twin turbocharged",
+        "topSpeedMph": 191,
+        "zeroToSixtySec": 3.8,
+        "transmissionLabel": "8-speed torque-converter automatic (estimated calibration)",
+        "torqueConverterSlip": 0.05,
+        "torqueConverterMultiplication": 1.6
+      },
+      "sources": [
+        {
+          "url": "https://manualsfile.com/product/hwl8dd0ux.html",
+          "publisher": "FCA 2017 Giulia Quadrifoglio US Owners Manual 17GA-126-AC, Third Edition Rev1; mirrored original",
+          "fields": [
+            "identity",
+            "powerHp",
+            "torqueNm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "curbLb",
+            "powerRpm",
+            "torqueRpm",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "fuelTankUSgal"
+          ],
+          "access": "Factory manual pp235-246 reviewed2026-11-17. 3806lb unladen includes fluids/90%fuel, excludes optional equipment. Select505SAEhp anchor; rounded375kW in manual is not converted to replace it. 58L converted toUSgal."
+        },
+        {
+          "url": "https://www.manualslib.com/manual/1226308/Alfa-Romeo-Giulia-Quadrifoglio-2017.html",
+          "publisher": "Same FCA factory manual, tire table p222",
+          "fields": [
+            "tireSize",
+            "frontTire",
+            "rearTire"
+          ],
+          "access": "245/35ZR19 93Y XLfront,285/30ZR19 98Y XLrear; not standard Giulia tires."
+        }
+      ],
+      "limits": [
+        "US505SAEhp, not UK510CV. Generic locking rear differential and fixed aero are approximations, not active torque vectoring/active aero. Eight-speed torque-converter calibration and individual ratios are estimates.",
+        "All simulationEstimates parameters, torque curve, steering, brake bias, suspension, CG and performance are simulation assumptions, not measured factory curves. Shared RTG-001 placeholder art; independent driving and original art pending."
+      ]
+    },
+    {
+      "candidateId": "lotus-exige-s-2012-roster-candidate",
+      "id": "marsh-gentian-2012",
+      "name": "Marsh Gentian 2012",
+      "identity": {
+        "year": 2012,
+        "make": "Lotus",
+        "model": "Exige S",
+        "trim": "V6 coupe six-speed manual; standard Corsa tires, no optional Race Pack",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "2012 UK Lotus Exige S 3.5 supercharged V6 coupe six-speed manual, standard non-Race-Pack specification",
+      "facts": {
+        "powerKw": 258,
+        "torqueNm": 400,
+        "engineDisplacementL": 3.5,
+        "transmission": "manual",
+        "gearCount": 6,
+        "curbKg": 1176,
+        "powerRpm": 7000,
+        "torqueRpm": 4500,
+        "tireSize": [
+          205,
+          45,
+          17
+        ],
+        "frontTire": [
+          205,
+          45,
+          17
+        ],
+        "rearDifferentialAccel": 0
+      },
+      "simulationEstimates": {
+        "drivetrain": "rwd",
+        "reverseRatio": 3.831,
+        "cgHeightM": 0.4,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.43,
+        "tireGrip": 1.12,
+        "spring": 0.64,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.13,
+        "frontOverhangM": 0.88,
+        "aeroFront": 0.04,
+        "aeroRear": 0.08,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.38,
+        "redlineRpm": 7200,
+        "revLimitRpm": 7400,
+        "gearRatios": [
+          3.538,
+          1.913,
+          1.407,
+          1.091,
+          0.969,
+          0.861
+        ],
+        "finalDrive": 3.777,
+        "aspiration": "Supercharged",
+        "topSpeedMph": 170,
+        "zeroToSixtySec": 3.8,
+        "transmissionLabel": "6-speed manual (estimated individual ratios)",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "lengthM": 4.084,
+        "widthM": 1.802,
+        "heightM": 1.129,
+        "wheelbaseM": 2.37,
+        "trackFrontIn": 57.2,
+        "trackRearIn": 59.0,
+        "rearTire": [
+          265,
+          35,
+          18
+        ],
+        "fuelTankUSgal": 10.6
+      },
+      "sources": [
+        {
+          "url": "https://www.lotusdriversguide.com/Downloads/Brochures/Exige-S-Mini-Brochure-ENG%202012.pdf",
+          "publisher": "Group Lotus plc original UK2012 brochure, mirrored LotusDriversGuide",
+          "fields": [
+            "identity",
+            "powerKw",
+            "torqueNm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "powerRpm",
+            "torqueRpm",
+            "tireSize",
+            "frontTire",
+            "rearDifferentialAccel"
+          ],
+          "access": "Technical page6 visually reviewed2026-11-17; copyright2012. 1176kg unladen;345hp/350PS/258kW rounded jointly, choose258kW anchor. Open differential. Front205/45R17. Printed rear265/45R18 conflicts with fitment evidence; not silently accepted or corrected as factory fact."
+        },
+        {
+          "url": "https://www.michelin.co.uk/auto/manufacturers/lotus/exige/exige-s",
+          "publisher": "Michelin tire manufacturer fitment guide",
+          "fields": [
+            "rearTire provisional estimate only"
+          ],
+          "access": "Lists205/45R17 and265/35R18 among ExigeS combinations; not exact2012UK original-equipment proof. Used only as corroboration for provisional modeled rear size."
+        }
+      ],
+      "limits": [
+        "Rear265/35R18 is explicitly provisional:2012brochure visually prints265/45R18; no assertion of verified exact-year rear tire correction. All body dimensions/gearing and simulation parameters remain estimates.",
+        "Factory standard open differential retained; proprietary DPM/brake-based intervention and optional Race Pack/launch control not reproduced. No2011preproduction1080kg claim or later350Sport/automatic hardware.",
+        "Mid-engine weight distribution/CG, fixed aero, grip and suspension are estimates. Shared RTG-001 visuals cannot depict this body yet; no independent desktop/touch or original art completion claim."
+      ]
+    }
+  ],
+  "deferred": [
+    {
+      "candidateId": "lotus-emira-2023-roster-candidate",
+      "reason": "2021launch factory source does not alone establish exact2023market trim; deferred rather than guess year."
+    }
+  ]
+}

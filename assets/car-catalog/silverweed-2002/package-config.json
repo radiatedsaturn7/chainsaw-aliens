@@ -1,0 +1,67 @@
+{
+  "id": "silverweed-2002",
+  "name": "Silverweed 2002",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      198,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      475,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://www.manualslib.com/manual/368714/Bmw-M-Coupe-2002.html",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "lengthIn",
+        "widthIn",
+        "heightIn",
+        "wheelbaseIn",
+        "trackFrontIn",
+        "trackRearIn",
+        "curbKg",
+        "fuelTankUSgal",
+        "transmission",
+        "frontTire",
+        "rearTire",
+        "tireSize"
+      ]
+    },
+    {
+      "url": "https://www.bmwgroup-classic.com/en/models/bmw-classics/product-description-page.ad-2745-1.bmw-m-coupe-e36-us-model.html",
+      "fields": [
+        "2002identity",
+        "S54USengine"
+      ]
+    }
+  ]
+}

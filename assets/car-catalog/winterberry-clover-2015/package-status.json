@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "winterberry-clover-2015",
+  "name": "Winterberry Clover 2015",
+  "stableCarId": "saved-car:Winterberry Clover 2015",
+  "referenceVehicle": "2015 Skoda Fabia Combi Active1.0MPI75, continentalEurope January2015 third-generation basic estate55kWfive-speed manual14inch wheels, standard suspension; nothatchback,TSI,GreenLine orDSG",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "winterberry-clover-2015",
+  "sourceHashes": {
+    "body": "9d81072038a456a54340cb7d08dae1d365941451d92968913c809f4578a509f9",
+    "dashboard": "b4b0d4a447f49d48040f142570b783322735ae376abbaf06dc06f60cf3f3bf5d",
+    "tires": "b79becbcdfc95a0f0385b08212766af9e9a42d3ac6918547353c604d2ad7d86c"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

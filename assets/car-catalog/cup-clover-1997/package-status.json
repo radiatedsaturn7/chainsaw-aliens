@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "cup-clover-1997",
+  "name": "Cup Clover 1997",
+  "stableCarId": "saved-car:Cup Clover 1997",
+  "referenceVehicle": "1997 Lamborghini Diablo SV, pre-faceliftpop-up-headlamp5.7V12RWDfive-speed withadjustablerearwing;notVT,1999SV529HP,GTorGTR",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "3be7c96d5e2b72cb9b8587f1788bdceac98f496ae96a0f8c0fe39b007615e4b0",
+    "dashboard": "7c54931a895f17a7ab1a87519a0dba8b6b2103c7167dd84bc51d34470387d12b",
+    "tires": "e63bf31a0d06da060572c02882b9bc1609c649193a6673d3e84260611f35e78d"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

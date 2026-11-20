@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "curled-dock-2015",
+  "name": "Curled Dock 2015",
+  "stableCarId": "saved-car:Curled Dock 2015",
+  "referenceVehicle": "2015 UK Jaguar XE S launch3.0superchargedV6 rear-wheel-drive eight-speed automatic; not2017US or later380PS/AWD",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "542a2eeaefcce5137109b133418a52242bea99db18bb98493c88a08beca5d4bf",
+    "dashboard": "a023bd4b2f5dcba7c928918f57babcb40460c9144ffe83b498819172fff59669",
+    "tires": "e4eccd8588db84c1a3307bb1649a88f977980a5677afd7ffc5a574d8f3fb8cd2"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,80 @@
+{
+  "id": "graceful-clover-2000",
+  "name": "Graceful Clover 2000",
+  "stableCarId": "saved-car:Graceful Clover 2000",
+  "runtimeId": "saved-car:Graceful Clover 2000",
+  "candidateId": "renault-clio-ii-renaultsport-2000-de-supplementary",
+  "referenceVehicle": "2000 Germany ClioII RenaultSport2.0 16V PhaseI F4R1998cc FWD5MT early124kW factoryrating, colloquially172; notlater182/Cup",
+  "identity": {
+    "year": 2000,
+    "make": "Renault",
+    "model": "Clio II Renault Sport2.0 16V",
+    "trim": "earlyPhaseI GermanLHD three-door naturallyaspirated five-speedmanual,15inchOZwheels; notPhaseII,Cup or182",
+    "market": "Germany"
+  },
+  "bodyClass": "hatchback",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.brochure-catalogue-voiture-neuve.fr/en/brochures/renault/clio/renault-clio-1998/2-1-ALL-09-1999-20-16V-DE/",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "tireSize",
+        "frontTire",
+        "rearTire",
+        "earlyPhaseIidentity"
+      ]
+    },
+    {
+      "url": "https://presse.renault.de/erster-renault-mit-neuem-markengesicht/",
+      "fields": [
+        "powerKw",
+        "relationshipAudit"
+      ]
+    },
+    {
+      "url": "https://www.km77.com/coches/renault/clio/1998/3-puertas/renault-sport/clio-20-16v-renault-sport/informacion/renault-clio-sport-2-0-explosion-controlada-informacion-general",
+      "fields": [
+        "identity"
+      ]
+    }
+  ]
+}

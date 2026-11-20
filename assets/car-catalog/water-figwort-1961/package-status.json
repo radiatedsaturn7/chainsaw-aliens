@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "water-figwort-1961",
+  "name": "Water Figwort 1961",
+  "stableCarId": "saved-car:Water Figwort 1961",
+  "referenceVehicle": "1961 Maserati Tipo 61 Birdcage, front-engine2.89NAfour two-seat sportsracer5MT,1961familyreference; noexactcrew/eventsetup claim",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "c09013d41c4b17588e3a0a719007b9a01d18980ba506fed5fe63ea6f030bf2c8",
+    "dashboard": "d8a1439f79703c9fd236458b31a1d70d0e1f497a061d402e8ec8b4793cfe6906",
+    "tires": "fa98be7776a058b56f3d5efa36a87d1a5a14fcd43af3a9f7d29a839efc9b8c00"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

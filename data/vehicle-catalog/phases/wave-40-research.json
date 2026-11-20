@@ -1,0 +1,1250 @@
+{
+  "schemaVersion": 1,
+  "base": "058e370eb8e8fbc6f4b2e776c20bf5f2daec0155",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "mazda-savanna-rx-7-1990-roster-candidate",
+      "identity": {
+        "year": 1990,
+        "make": "Mazda",
+        "model": "Savanna RX-7 GT-X",
+        "trim": "June1990 E-FC3S 13B1308cc single twin-scroll-turbo two-rotor RWD5MT four-seat coupe, standardfixedroof; notInfini215PS,AT orCabriolet",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1990 Japan Mazda Savanna RX-7 GT-X June1990 E-FC3S 13B1308cc single twin-scroll-turbo two-rotor RWD5MT four-seat coupe, standardfixedroof; notInfini215PS,AT orCabriolet",
+      "bodyClass": "three-door four-seat sports coupe",
+      "facts": {
+        "powerKw": 151,
+        "powerRpm": 6500,
+        "torqueNm": 269.7,
+        "torqueRpm": 3500,
+        "engineDisplacementL": 1.308,
+        "aspiration": "Turbocharged",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 1250,
+        "lengthM": 4.335,
+        "widthM": 1.69,
+        "heightM": 1.27,
+        "wheelbaseM": 2.43,
+        "trackFrontIn": 57.08661417322835,
+        "trackRearIn": 56.69291338582678,
+        "reverseRatio": 3.288,
+        "finalDrive": 4.1,
+        "fuelTankUSgal": 18.49204366507039,
+        "tireSize": [
+          205,
+          55,
+          16
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://gazoo.com/catalog/maker/MAZDA/SAVANNA_RX7/198904/2501795/",
+          "publisher": "Toyota GAZOO historical Mazda catalog; secondary compilation, not Mazda factory sheet",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "reverseRatio",
+            "finalDrive",
+            "fuelTankUSgal",
+            "tireSize"
+          ],
+          "access": "Read2026-11-18. ExactJune1990GT-X5MT1250kg entry;1270kgautomatic sibling excluded.205PS151kW,269.7Nm;5MT,reverse3.288/final4.1."
+        },
+        {
+          "url": "https://www.mazda.com/en/about/history/1980-1989/",
+          "publisher": "Mazda Motor Corporation official history",
+          "fields": [
+            "second-generationFC architecture",
+            "13B rotary",
+            "1985 introduction"
+          ],
+          "access": "Read2026-11-18. Primary1985launch185PS/dimensions are generation reference only, not transplanted to1990facelift205PS."
+        }
+      ],
+      "limits": [
+        "Rotary swept volume1308cc is retained without piston-equivalent doubling. Generic torque-based engine approximates rotary response, not rotor-chamber combustion or twin-scroll transient fidelity.",
+        "Exactyear facts are secondaryGAZOO; primaryMazda anchors distinctgeneration/architecture only. Forwardratios/redline/limiter/ABSselection and chassisestimates are not factory-certified.",
+        "All inputs outside facts are modeling estimates, including torque interpolation, losses, transients, steering/braking, suspension, grip and performance. Shared RTG-001 art only; no original-art or independent-drive completion claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "musk-mallow-1985",
+            "alias": "Musk Mallow 1985",
+            "reference": "US1985 first-generationFB13BNA GSL-SE5MT",
+            "documentId": "musk-mallow-1985",
+            "runtimeId": "saved-car:Musk Mallow 1985",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "rotorveil-1993",
+            "alias": "Rotorveil 1993",
+            "reference": "US1993 third-generationFD13B sequential-twinturbo base5MT",
+            "documentId": "rotorveil-1993",
+            "runtimeId": "saved-car:Rotorveil 1993",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No FC3S source identity found in fresh native/provenance catalog or authored docs. Second-generation single-turbo13B platform differs from existingFB naturallyaspirated andFD sequentialtwinturbo; not year-onlypower padding.",
+        "evidence": [
+          "https://gazoo.com/catalog/maker/MAZDA/SAVANNA_RX7/198904/2501795/",
+          "https://www.mazda.com/en/about/history/1980-1989/"
+        ]
+      },
+      "artHandoffStatus": "source-ready; shared-placeholder implementation pending; original eight-view exterior and fitted cockpit not authored",
+      "name": "Small Toadflax 1990",
+      "id": "small-toadflax-1990",
+      "simulationEstimates": {
+        "cgHeightM": 0.47,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.9,
+        "spring": 0.5,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.87,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.52,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 6.5,
+        "gearRatios": [
+          3.483,
+          2.015,
+          1.391,
+          1,
+          0.762
+        ]
+      }
+    },
+    {
+      "candidateId": "mazda-323-gt-r-1992-roster-candidate",
+      "identity": {
+        "year": 1992,
+        "make": "Mazda",
+        "model": "Familia GT-R (323 GT-R)",
+        "trim": "January1992 E-BG8Z BP1.8turbo road homologation three-door hatchback, modeled5MT; notGT-X,GT-Ae orrallycar",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1992 Japan Mazda Familia GT-R (323 GT-R) January1992 E-BG8Z BP1.8turbo road homologation three-door hatchback, modeled5MT; notGT-X,GT-Ae orrallycar",
+      "bodyClass": "three-door five-seat hot hatch",
+      "facts": {
+        "powerKw": 154.4547375,
+        "powerRpm": 6000,
+        "torqueNm": 250.069575,
+        "torqueRpm": 4500,
+        "aspiration": "Turbocharged",
+        "drivetrain": "awd"
+      },
+      "sources": [
+        {
+          "url": "https://www.mazda.com/en/about/history/1990-1999/",
+          "publisher": "Mazda Motor Corporation official history",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "aspiration",
+            "drivetrain"
+          ],
+          "access": "Read2026-11-18. January1992 entry explicitly GT-R/GT-Ae full-time4WD three-door,1800DOHCturbo,210PS6000NET and25.5kgm4500; converted PS/kgm to kW/Nm. English page oddly calls it Astina/323F despite three-door description; exactBG8Z identity corroborated bysecondary."
+        },
+        {
+          "url": "https://gazoo.com/catalog/maker/MAZDA/FAMILIA/198902/2501268/",
+          "publisher": "Toyota GAZOO historical Mazda catalog; secondary later1993 variant reference",
+          "fields": [
+            "BG8Z identity",
+            "suggestedEstimates geometry mass gearbox tire volume fuel"
+          ],
+          "access": "Read2026-11-18. June1993GT-R5MT1210kg,1839cc andgeometry are explicit carryover estimates for1992, NOT exact1992 factory facts. No forward/final ratios shown. No use ofGT-Ae lightermass/closegears."
+        }
+      ],
+      "limits": [
+        "Exact1992 introduction/output are primaryverified. Complete mass/dimension/tire/gearbox basis uses explicit later1993carryover estimates because no exact1992catalog numericaltable was retrieved.",
+        "Generic fixed50percentrear AWD/LSD only; no factory viscous-transfer or rally homologation extension simulation. StandardroadGT-R selected, not20kg-lighterGT-Ae.",
+        "All inputs outside facts are modeling estimates, including torque interpolation, losses, transients, steering/braking, suspension, grip and performance. Shared RTG-001 art only; no original-art or independent-drive completion claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "mouse-ear-2005",
+            "alias": "Mouse-ear 2005",
+            "reference": "2005US MazdaspeedMX5 turbo1.8RWD6MT",
+            "documentId": "mouse-ear-2005",
+            "runtimeId": "saved-car:Mouse-ear 2005",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "bellflower-2006",
+            "alias": "Bellflower 2006",
+            "reference": "2006US Mazda5Sport2.3FWD5MT",
+            "documentId": "bellflower-2006",
+            "runtimeId": "saved-car:Bellflower 2006",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoFamilia/323/BG8Z source identity in current catalog or authored docs. Compact transverseBP turboAWD hatch differs from samebrand1.8longitudinalRWD roadster andMazda5MPV; mechanicalfamily similarity is not identity duplication.",
+        "evidence": [
+          "https://www.mazda.com/en/about/history/1990-1999/",
+          "https://gazoo.com/catalog/maker/MAZDA/FAMILIA/198902/2501268/"
+        ]
+      },
+      "artHandoffStatus": "source-ready; shared-placeholder implementation pending; original eight-view exterior and fitted cockpit not authored",
+      "name": "Ivy Toadflax 1992",
+      "id": "ivy-toadflax-1992",
+      "simulationEstimates": {
+        "reverseRatio": 3.166,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.9,
+        "spring": 0.5,
+        "antiRollRear": 0.28,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.84,
+        "rearDifferentialAccel": 0.28,
+        "frontDifferentialAccel": 0.14,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "fuelTankUSgal": 15.850323141488905,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 6.4,
+        "engineDisplacementL": 1.839,
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 1210,
+        "lengthM": 4.075,
+        "widthM": 1.69,
+        "heightM": 1.39,
+        "wheelbaseM": 2.45,
+        "trackFrontIn": 56.88976377952756,
+        "trackRearIn": 56.496062992125985,
+        "tireSize": [
+          195,
+          50,
+          15
+        ],
+        "gearRatios": [
+          3.454,
+          1.833,
+          1.31,
+          0.97,
+          0.775
+        ],
+        "finalDrive": 4.214,
+        "centerDifferentialBalance": 0.5
+      }
+    },
+    {
+      "candidateId": "mazda-cosmo-110s-series-ii-1972-roster-candidate",
+      "identity": {
+        "year": 1972,
+        "make": "Mazda",
+        "model": "Cosmo Sport 110S Series II",
+        "trim": "L10B JapanRHD two-seat fixedroof 10A982cc naturallyaspirated twinrotor RWD modeled5MT, finalproductionyear; not1967L10A orlaterCosmoRX5",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1972 Japan Mazda Cosmo Sport 110S Series II L10B JapanRHD two-seat fixedroof 10A982cc naturallyaspirated twinrotor RWD modeled5MT, finalproductionyear; not1967L10A orlaterCosmoRX5",
+      "bodyClass": "two-door two-seat sports coupe",
+      "facts": {
+        "engineDisplacementL": 0.982,
+        "aspiration": "Naturally aspirated",
+        "publishedPeriodPowerPS": 128,
+        "publishedPeriodPowerRpm": 7000,
+        "periodPublishedRatings": {
+          "powerPS": 128,
+          "powerRpm": 7000,
+          "ratingBasis": "Period factory rating; gross/net unresolved. Not installed net output."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://www.mazda.com/en/about/history/1920-1979/",
+          "publisher": "Mazda Motor Corporation official history",
+          "fields": [
+            "engineDisplacementL",
+            "period128PS second-series reference",
+            "two-seat body"
+          ],
+          "access": "Read2026-11-18. Mazda1967entry confirms491ccx2,initial110PS, followingyear128PS. Outputtestbasis unresolved; publishedperiodrating retained withoutclaiming installednetpower."
+        },
+        {
+          "url": "https://toyota-automobile-museum.jp/en/archives/car-database/detail.html?id=94",
+          "publisher": "Toyota Automobile Museum curator vehicle database; primary physical collection record for1969L10B",
+          "fields": [
+            "same-series reference dimensions",
+            "same-series reference vehicle mass",
+            "publishedPeriodPowerPS",
+            "publishedPeriodPowerRpm"
+          ],
+          "access": "Read2026-11-18. 1969L10B960kg4130x1590x1165WB2350,94kW128PS7000. Used only as explicitcarryover estimates for1972; no1972exactfactorysheet claimed."
+        },
+        {
+          "url": "https://www.sec.gov/Archives/edgar/data/1688804/000168880419000005/253g2.htm",
+          "publisher": "RSE Archive LLC SEC offering circular; secondary owner asset description, not factory specification",
+          "fields": [
+            "1972SeriesII existence",
+            "5MT corroboration"
+          ],
+          "access": "Read2026-11-18. Specific1972L10B description corroboratesfinalyear/SeriesII/5MT. No private ownerdetails retained; published128hp/103lbft not treated as verifiednetrating."
+        }
+      ],
+      "limits": [
+        "Factoryperiodoutputbasis unresolved:128PS is source-only; installed110hp/95lbft are independent conservative simulation estimates, not mathematicalgross-to-net conversion.",
+        "1972exactdimensions/mass notverified.960kg andgeometry are explicitly estimated carryover from museum1969L10B; tireaspect/track/fuel/allratios/redline/performance likewiseestimates.",
+        "No copiedfactoryphotos or sponsorart; futurelogo-free originalbody should useL10B long2350mmwheelbase,largefrontopening/sidebrakeducts,tinycoveredwheels andstocktwo-seatcockpit.",
+        "All inputs outside facts are modeling estimates, including torque interpolation, losses, transients, steering/braking, suspension, grip and performance. Shared RTG-001 art only; no original-art or independent-drive completion claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "musk-mallow-1985",
+            "alias": "Musk Mallow 1985",
+            "reference": "US1985 first-generationFB13BNA GSL-SE5MT",
+            "documentId": "musk-mallow-1985",
+            "runtimeId": "saved-car:Musk Mallow 1985",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "rotorveil-1993",
+            "alias": "Rotorveil 1993",
+            "reference": "US1993 third-generationFD13B sequential-twinturbo base5MT",
+            "documentId": "rotorveil-1993",
+            "runtimeId": "saved-car:Rotorveil 1993",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoCosmo/L10B/10A native identity found. Early982ccNA two-seat low1960sbody is distinct fromFB13B1308cc roadcoupe andFDturbo, not anotherRX7trim.",
+        "evidence": [
+          "https://www.mazda.com/en/about/history/1920-1979/",
+          "https://toyota-automobile-museum.jp/en/archives/car-database/detail.html?id=94",
+          "https://www.sec.gov/Archives/edgar/data/1688804/000168880419000005/253g2.htm"
+        ]
+      },
+      "artHandoffStatus": "source-ready; shared-placeholder implementation pending; original eight-view exterior and fitted cockpit not authored",
+      "name": "Common Agrimony 1972",
+      "id": "common-agrimony-1972",
+      "simulationEstimates": {
+        "reverseRatio": 3.525,
+        "cgHeightM": 0.44,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.39,
+        "tireGrip": 0.78,
+        "spring": 0.42,
+        "antiRollRear": 0.22,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.88,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.5,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7300,
+        "fuelTankUSgal": 15.05780698441446,
+        "topSpeedMph": 115,
+        "zeroToSixtySec": 10.5,
+        "powerHp": 110,
+        "powerRpm": 7000,
+        "torqueLbFt": 95,
+        "torqueRpm": 5000,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 960,
+        "lengthM": 4.13,
+        "widthM": 1.59,
+        "heightM": 1.165,
+        "wheelbaseM": 2.35,
+        "trackFrontIn": 49.21259842519685,
+        "trackRearIn": 48.81889763779528,
+        "tireSize": [
+          165,
+          80,
+          15
+        ],
+        "gearRatios": [
+          3.363,
+          2.059,
+          1.391,
+          1,
+          0.844
+        ],
+        "finalDrive": 4.875
+      }
+    },
+    {
+      "candidateId": "gmc-typhoon-1992-candidate",
+      "identity": {
+        "year": 1992,
+        "make": "GMC",
+        "model": "Typhoon",
+        "trim": "US three-door sport-utility,4.3 turbo V6,4AT,full-time AWD,stock245/50R16",
+        "market": "United States"
+      },
+      "referenceVehicle": "1992 US GMC Typhoon three-door enclosed sport-utility wagon,4.3 turbo/intercooled V6,4-speed automatic,35:65 full-time AWD,3.42 rear LSD,stock245/50VR16; originalGMC/PAS launch brochure basis",
+      "bodyClass": "three-door-suv",
+      "artIdentity": "Short square first-generation Jimmy-derived enclosed three-door SUV, two passengerdoors and rear hatch, long rear sidewindows, lowbody cladding, rectangular headlights,16-inch turbine-style wheels; notSyclonepickup or liftedoffroadtruck.",
+      "facts": {
+        "engineDisplacementL": 4.3,
+        "aspiration": "Turbocharged",
+        "periodPublishedRatings": {
+          "powerHp": 285,
+          "powerRpm": 4200,
+          "torqueLbFt": 350,
+          "torqueRpm": 3200,
+          "ratingBasis": "OriginalGMC/PAS brochure explicitly SAE net285bhp at4200; preserve earlypublishedrating rather than silentlyoverwrite with common280rating."
+        },
+        "torqueLbFt": 350,
+        "torqueRpm": 3200,
+        "curbKg": 1750.8665482000001,
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "transmissionLabel": "Four-speed automatic with locking torque converter, BorgWarner4472full-timeAWD",
+        "gearCount": 4,
+        "finalDrive": 3.42,
+        "centerDifferentialBalance": 0.65,
+        "lengthM": 4.32562,
+        "widthM": 1.73228,
+        "heightM": 1.524,
+        "wheelbaseM": 2.5526999999999997,
+        "trackFrontIn": 57.8,
+        "trackRearIn": 58,
+        "groundClearanceM": 0.18033999999999997,
+        "frontWeightDistribution": 0.565,
+        "tireSize": [
+          245,
+          50,
+          16
+        ],
+        "fuelTankUSgal": 20,
+        "redlineRpm": 4800,
+        "absEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://www.lov2xlr8.no/brochures/gmc/92gt/bilder/3.jpg",
+          "publisher": "OriginalGMCTruck/PAS1992Typhoon factorysalesbrochure archivedbylov2xlr8",
+          "fields": [
+            "SAEnet285hp4200/350lbft3200",
+            "3860lbcurb",
+            "dimensions",
+            "35front65rearAWD",
+            "3.42LSD",
+            "redline4800",
+            "245/50VR16",
+            "20USgal",
+            "massdistribution"
+          ],
+          "access": "2026-11-18 originalfullimage andspecificationcrop visuallyread; noOCR. Backcoverimage4 identifiesGeneralMotors/PAS cooperation."
+        }
+      ],
+      "limits": [
+        "Original brochure285SAEnethp differs commonlyreported280productionrating. Installed280hp is explicitly conservative estimate; do not claim280 is valueonthissource orinventanengineupdate.",
+        "3860lb is factorybrochure curb basis, not shippingweight; no driveraddition. Factory35front65rear is runtimeREARshare.65.",
+        "Four-speed individualratios3.06/1.63/1/.70 and2.29reverse are estimated700R4implementation, not oninspectedbrochure. Torqueconverterlockup,viscouscoupling andrearloadleveling simplified with fixed runtimeparameters; no lowrangeoroffroadclaims.",
+        "Finalratio3.42andLSD are factory. Grips,spring,damping,CG,Cd,shiftcurve,performancetargets andcutoff areestimates. Nominaltiredimensionsnotloadedradius. SharedRTG001,notnewart/driveverified.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Orange Hawkweed 1991",
+            "documentId": "orange-hawkweed-1991",
+            "runtimeId": "saved-car:Orange Hawkweed 1991",
+            "reference": "1991 US GMC Syclone 4.3 turbo/intercooled V6 regular-cab pickup,4AT,full-time road AWD",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Fullcurrentcatalog audited:noTyphoon identity. RelatedSyclone regularcabpickup shares4.3turbo/drivetrain but differs substantially: enclosedSUVbody,seats/loadlevelrear,short100.5wheelbase,3860lbcurb versuspickup. Notbadge-onlyvariant.",
+        "evidence": [
+          "https://www.lov2xlr8.no/brochures/gmc/92gt/bilder/3.jpg"
+        ]
+      },
+      "name": "Fragrant Agrimony 1992",
+      "id": "fragrant-agrimony-1992",
+      "simulationEstimates": {
+        "reverseRatio": 2.29,
+        "cgHeightM": 0.6,
+        "dragCoefficient": 0.42,
+        "tireGrip": 0.9,
+        "spring": 0.53,
+        "antiRollRear": 0.22,
+        "suspensionTravelM": 0.15,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 300,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "revLimitRpm": 5000,
+        "topSpeedMph": 124,
+        "zeroToSixtySec": 5.8,
+        "powerHp": 280,
+        "powerRpm": 4200,
+        "gearRatios": [
+          3.06,
+          1.63,
+          1,
+          0.7
+        ],
+        "steeringRatio": 14.5
+      }
+    },
+    {
+      "candidateId": "dodge-viper-srt10-acr-2008-roster-candidate",
+      "identity": {
+        "year": 2008,
+        "make": "Dodge",
+        "model": "Viper SRT10 ACR",
+        "trim": "US coupe,standardACRwithaudio,nooptionalHardcoredelete,streetsetup",
+        "market": "United States"
+      },
+      "referenceVehicle": "2008 US Dodge Viper SRT10 ACR coupe,8.4V10/TR6060six-speed,standardACRwithaudio,notoptionalHardcorepackage; roadsetup rather thanmax-downforce trackextension",
+      "bodyClass": "two-door-sports-coupe",
+      "artIdentity": "Fourth-generationlonghoodwideV10coupe,sideexhaust,largefixedrearwing,frontsplitteranddiveplanes,deepventedhood,staggered18/19blackwheels; not2013+body or2016ExtremeAero. Fictionalbadge-free2994 treatment later;sharedart now.",
+      "facts": {
+        "powerHp": 600,
+        "powerRpm": 6100,
+        "torqueLbFt": 560,
+        "torqueRpm": 5000,
+        "engineDisplacementL": 8.4,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "transmissionLabel": "TremecTR6060six-speedmanual",
+        "gearCount": 6,
+        "gearRatios": [
+          2.66,
+          1.82,
+          1.3,
+          1,
+          0.74,
+          0.5
+        ],
+        "finalDrive": 3.07,
+        "lengthM": 4.46024,
+        "widthM": 1.91008,
+        "heightM": 1.20904,
+        "wheelbaseM": 2.5095199999999998,
+        "trackFrontIn": 61.6,
+        "trackRearIn": 60.9,
+        "groundClearanceM": 0.13017499999999999,
+        "frontWeightDistribution": 0.495,
+        "tireSize": [
+          295,
+          30,
+          18
+        ],
+        "rearTireSize": [
+          345,
+          30,
+          19
+        ],
+        "steeringRatio": 16.7,
+        "revLimitRpm": 6250,
+        "frontTire": [
+          295,
+          30,
+          18
+        ],
+        "rearTire": [
+          345,
+          30,
+          19
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.viperclub.org/vca/threads/the-vca-and-srt-are-very-proud-to-present.607996/",
+          "publisher": "Chrysler/DodgeSRT2008ACR pressrelease/specification reproduced injointVCA/SRT revealNovember9,2007",
+          "fields": [
+            "SAEnetoutput",
+            "TR6060forwardgears/finaldrive",
+            "dimensions",
+            "staggeredtires",
+            "distribution",
+            "estimatedcurbconflictingunits",
+            "fuelconflictingunits",
+            "6250maximumspeed",
+            "ViscoLok"
+          ],
+          "access": "2026-11-18 complete2008ACRspecification HTMLread, author explicitly introducesofficialSRTrelease inSRT-cooperativereveal; not auser-modifiedcarspec. Primaryauthoredcontentmirroredonownersclub,notdirectOEMPDF."
+        }
+      ],
+      "limits": [
+        "Publishedestimatedcurb3408lb(1552kg) is internallyinconsistent. Use1545.84279696kg computedfrom3408lb as explicitunit-choiceestimate; notproofmeasuredcurb or silentlyassert1552kgconversion. Excludes3366lbHardcore/audio-delete.",
+        "Factoryfuel16.0gal(70L) internallyinconsistent; select16USgal as explicitinterpretationestimate, not70L conversion.",
+        "600hpSAEnet retained; printed450kWrounded/inconsistent notused. Exactdisplacement8.4L is roundedmanufacturerfigure; no false8382precision.",
+        "Dimensions sourcefootnote saysmeasuredwithtwopassengers; do notapplythatfootnoteascurbmassdefinition. Streetsetup chosen; factory1000lbdownforce150mph isHIGH-DOWNFORCEsetup andnot asserted forsim. Normalizedaerovalues estimates.",
+        "6250maximumRPMfactory;6100redlineestimate. Reverse2.90,curve,brakes/ABSsetting,CG,Cd,grip,springs,damping andperformance estimated. ViscoLokapproximated fixedLSD; no adjustableaero/damper/skipshiftnewfeatures. SharedRTG001graphics only.",
+        "Runtime frontTire/rearTire aliases retain the exact source tireSize/rearTireSize dimensions.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Thornapple ACR 2016",
+            "documentId": "thornapple-acr-2016",
+            "runtimeId": "saved-car:Thornapple ACR 2016",
+            "reference": "2016 US Dodge Viper ACR six-speed manual, standard ACR aero, no optional Extreme Aero Package; not base SRT or earlier 600hp ACR",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Currentcatalog has2016ACRstandard-aerafifthgeneration,not2008fourthgeneration. Differentbody/chassiscalibration,600versus645hp,18/19versus19-inchfronttirelayout,earlierMichelinCup/brakes/wing. OldelevenFireweed is2016baseSRTcoupe,also not2008ACR. Exact2008backlogslotnotyearpadding.",
+        "evidence": [
+          "https://www.viperclub.org/vca/threads/the-vca-and-srt-are-very-proud-to-present.607996/"
+        ]
+      },
+      "name": "Greater Knapweed 2008",
+      "id": "greater-knapweed-2008",
+      "simulationEstimates": {
+        "reverseRatio": 2.9,
+        "cgHeightM": 0.43,
+        "dragCoefficient": 0.42,
+        "tireGrip": 1.08,
+        "spring": 0.7,
+        "antiRollRear": 0.32,
+        "suspensionTravelM": 0.1,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.4,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0.2,
+        "aeroRear": 0.27,
+        "shiftTimeMs": 230,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "redlineRpm": 6100,
+        "fuelTankUSgal": 16,
+        "topSpeedMph": 184,
+        "zeroToSixtySec": 3.5,
+        "curbKg": 1545.84279696
+      }
+    },
+    {
+      "candidateId": "audi-sport-quattro-1984-roster-candidate",
+      "identity": {
+        "year": 1984,
+        "make": "Audi",
+        "model": "Sport quattro",
+        "trim": "B2 road homologation 2.133L 20-valve turbo five-cylinder five-speed manual, original 306PS specification",
+        "market": "Germany"
+      },
+      "referenceVehicle": "1984 Germany Audi Sport quattro B2 road homologation coupe,2133cc20-valve turbo five,225kW350Nm AWD5MT;not1983showprototype,GroupBcompetition,PikesPeak orS1E2",
+      "facts": {
+        "powerKw": 225,
+        "publishedPowerPS": 306,
+        "powerRpm": 6700,
+        "torqueNm": 350,
+        "torqueRpm": 3700,
+        "engineDisplacementL": 2.133,
+        "aspiration": "Turbocharged",
+        "drivetrain": "awd"
+      },
+      "sources": [
+        {
+          "url": "https://www.audi.com/de/bilder/detail/audi-sport-quattro-b2-baujahr-1984-37236",
+          "publisher": "Audi AG historical archive, German caption A168879",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "identity"
+          ],
+          "access": "Read2026-11-18. Explicit Baujahr1984,2133cc,225kW306PS6700rpm,350Nm3700rpm; deliveries beganMay1984 followingSept1983IAA. GermanPS avoids Englishpage hp translation."
+        },
+        {
+          "url": "https://www.audi.com/de/medieninformationen/dem-fahrspass-auf-der-spurquattro-antrieb-und-fahrwerk-des-audi-e-tron-14245",
+          "publisher": "Audi AG quattro history",
+          "fields": [
+            "identity",
+            "drivetrain"
+          ],
+          "access": "Read2026-11-18. Describes shortened wider road Sportquattro225kW as homologation basis; distinguishes road model from competition successor."
+        }
+      ],
+      "limits": [
+        "No exact road factory dimensional/weight/gearing table recovered in this bounded pass. Every suggestedEstimates value is a simulation estimate, including1298kg curb without certified driver/fuel basis; not measured event-day or factory-certified setup.",
+        "Five-speed manual, wheel/tire specification, ratios, tracks, axle load,CG,clearance,redline,tank and acceleration remain estimates. Reusable intake models permanentAWD with fixed50:50 approximation; differential lock controls and authentic coupling behavior are not reproduced.",
+        "1983 backlog Sportquattro label may represent the same road car preview: do not implement both1983and1984slots as two distinct cars.1984selected because Audi explicitly dates customer deliveries.",
+        "Original logo-free shared art remains placeholder, not historical competition livery or completed original vehicle art.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "linum-1983",
+            "alias": "Linum 1983",
+            "referenceVehicle": "John Buffum Audi quattro A1 GroupB Matter chassis R44,1983 Pikes Peak rally-class-winning pre-A2 configuration tribute,long-wheelbase LHD turbo10-valve five,permanentAWD5MT. Not generic roadquattro,laterR44A2,Sportquattro,S1E2 or outright PikesPeak winner.",
+            "documentId": "linum-1983",
+            "runtimeId": "saved-car:Linum 1983",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "luzula-1985",
+            "alias": "Luzula 1985",
+            "referenceVehicle": "Michele Mouton,1985 Pikes Peak overall-winning short-wheelbase Audi Sport quattro GroupB pre-E2 competition tribute. Not road306PS Sport,not long-wheelbase A1/A2,not S1E2,not 1986Unser or1987Rohrl.",
+            "documentId": "luzula-1985",
+            "runtimeId": "saved-car:Luzula 1985",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "alder-rs-1994",
+            "alias": "Alder RS 1994",
+            "referenceVehicle": "Stock early1994 European Audi Avant RS2, LHD, 2.2 turbo five-cylinder permanent AWD6MT, standard period brochure tires; not S2, modified car or later RS4",
+            "documentId": "alder-rs-1994",
+            "runtimeId": "saved-car:Alder RS 1994",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Road homologation 306PS/350Nm with stock road mass, gearing and cabin differs from Luzula1985Mouton PikesPeak high-output competition setup and Linum1983long-wheelbase10-valveA1. Later RS2 wagon uses different body,2.2L20Vengine andsix-speed. No exact road Sportquattro found in fresh catalog or oldimport scan.",
+        "evidence": [
+          "https://www.audi.com/de/bilder/detail/audi-sport-quattro-b2-baujahr-1984-37236",
+          "https://www.audi.com/de/medieninformationen/dem-fahrspass-auf-der-spurquattro-antrieb-und-fahrwerk-des-audi-e-tron-14245"
+        ]
+      },
+      "name": "Lesser Knapweed 1984",
+      "id": "lesser-knapweed-1984",
+      "simulationEstimates": {
+        "reverseRatio": 3.5,
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7300,
+        "fuelTankUSgal": 23.78,
+        "topSpeedMph": 155.34,
+        "zeroToSixtySec": 4.8,
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 1298,
+        "lengthM": 4.16,
+        "widthM": 1.803,
+        "heightM": 1.345,
+        "wheelbaseM": 2.225,
+        "trackFrontIn": 59.69,
+        "trackRearIn": 58.74,
+        "tireSize": [
+          235,
+          45,
+          15
+        ],
+        "frontTire": [
+          235,
+          45,
+          15
+        ],
+        "rearTire": [
+          235,
+          45,
+          15
+        ],
+        "gearRatios": [
+          3.6,
+          2.125,
+          1.458,
+          1.071,
+          0.778
+        ],
+        "finalDrive": 3.889,
+        "centerDifferentialBalance": 0.5
+      }
+    },
+    {
+      "candidateId": "maserati-ghibli-cup-1997-roster-candidate",
+      "bodyClass": "coupe",
+      "identity": {
+        "year": 1997,
+        "make": "Maserati",
+        "model": "Ghibli Cup",
+        "trim": "Italian/European2.0 twin-turboV6 road coupe six-speed manual",
+        "market": "Italy/Europe"
+      },
+      "referenceVehicle": "1997 Italian/European Maserati Ghibli Cup AM336 two-door road coupe,1996cc330metricCV twin-turboV6,RWD6MT; not2.8Cup,ordinaryGhibliGT,OpenCup racer or laterfour-doorGhibli.",
+      "facts": {
+        "powerKw": 242.7145875,
+        "publishedPowerPS": 330,
+        "powerRpm": 6500,
+        "engineDisplacementL": 1.996,
+        "publishedDryKg": 1365,
+        "topSpeedMph": 167.77022190408016
+      },
+      "sources": [
+        {
+          "url": "https://www.maserati.com/it/it/brand/auto-storiche/biturbo-derivati/ghibli-cup",
+          "publisher": "Maserati factory",
+          "fields": [
+            "1995\u20131997production",
+            "1996cc",
+            "330CV6500rpm",
+            "1365kgdry",
+            "270kmh",
+            "two-doorfive-seatbody",
+            "twin-turboV6",
+            "over350Nm3250\u20136700rpm"
+          ],
+          "access": "Italian heritage table and narrative;2.0and2.8editions explicitly distinct. Read2026-11-18."
+        }
+      ],
+      "limits": [
+        "330metricCV=242.7145875kW, not330SAEhp. Primary specifies torque above350Nm over3250\u20136700rpm but not exactpeak;373Nm4250rpm is provisional, not verified.",
+        "1365kg is factory DRY mass. Installed1450kg running-order mass is estimated fluid/fuel allowance, not primary curb specification. All suggestedEstimates, including geometry, six-speed count/ratios, tires, dynamics, redline and0\u201360, require future period technical-table verification.",
+        "No OpenCup race tune or2.8engine substitution; shared RTG-001 art only.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Chervil 1973",
+            "documentId": "chervil-1973",
+            "runtimeId": "saved-car:Chervil 1973",
+            "reference": "CitroenSM with Maserati2.7V6 engine",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Marsh Violet 2007",
+            "documentId": "marsh-violet-2007",
+            "runtimeId": "saved-car:Marsh Violet 2007",
+            "reference": "Alfa8C4.7V8 road coupe",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Compact front-engine2.0twin-turboV6 road coupe has no exact model match. Different engine/body/transmission fromSM and8C; not a badge/year duplicate.",
+        "evidence": [
+          "https://www.maserati.com/it/it/brand/auto-storiche/biturbo-derivati/ghibli-cup"
+        ],
+        "audit": "Audited wave40 native catalogProvenance/referenceVehicle/inspiration plus repo tests/docs search for Ghibli/MC12/GranTurismo: no exact road Maserati identities. CitroenSM engine reference is not a Maserati vehicle. Existing660slot checked."
+      },
+      "name": "Field Bindweed 1997",
+      "id": "field-bindweed-1997",
+      "simulationEstimates": {
+        "reverseRatio": 3.154,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.98,
+        "spring": 0.51,
+        "antiRollRear": 0.18,
+        "suspensionTravelM": 0.19,
+        "frontOverhangM": 0.86,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 350,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.5,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "aspiration": "Turbocharged",
+        "fuelTankUSgal": 21.13,
+        "zeroToSixtySec": 5.5,
+        "bodyClass": "coupe",
+        "drivetrain": "rwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "torqueNm": 373,
+        "torqueRpm": 4250,
+        "transmission": "manual",
+        "gearCount": 6,
+        "curbKg": 1450,
+        "lengthM": 4.223,
+        "widthM": 1.775,
+        "heightM": 1.3,
+        "wheelbaseM": 2.514,
+        "trackFrontIn": 59.8,
+        "trackRearIn": 59.8,
+        "tireSize": [
+          215,
+          45,
+          17
+        ],
+        "frontTire": [
+          215,
+          45,
+          17
+        ],
+        "rearTire": [
+          245,
+          40,
+          17
+        ],
+        "gearRatios": [
+          3.154,
+          1.925,
+          1.45,
+          1.161,
+          0.939,
+          0.793
+        ],
+        "finalDrive": 3.73,
+        "transmissionLabel": "six-speed manual provisional gearing",
+        "torqueLbFt": 275.1106816804201
+      }
+    },
+    {
+      "candidateId": "maserati-mc12-2004-roster-candidate",
+      "bodyClass": "coupe",
+      "identity": {
+        "year": 2004,
+        "make": "Maserati",
+        "model": "MC12 Stradale",
+        "trim": "European road two-seat removable-hardtop coupe,6.0V12 Cambiocorsa",
+        "market": "Europe"
+      },
+      "referenceVehicle": "2004 European Maserati MC12 Stradale road coupe with hardtop fitted,5998cc naturally aspiratedV12,RWD six-speed Cambiocorsa automatedmanual; notGT1racecar orVersioneCorse.",
+      "facts": {
+        "powerKw": 463.3642125,
+        "publishedPowerPS": 630,
+        "powerRpm": 7500,
+        "engineDisplacementL": 5.998,
+        "topSpeedMph": 205.0524934383202
+      },
+      "sources": [
+        {
+          "url": "https://www.maserati.com/it/it/brand/auto-storiche/speciali/mc12-stradale",
+          "publisher": "Maserati factory",
+          "fields": [
+            "2004\u20132005production",
+            "5998cc",
+            "630CV7500rpm",
+            "330kmh",
+            "mid-engineV12",
+            "carbonmonocoque",
+            "roadremovable-hardtopbody"
+          ],
+          "access": "Italian factory heritage table. Weight basis conflict retained as limitation. Read2026-11-18."
+        }
+      ],
+      "limits": [
+        "630metricCV=463.3642125kW, not630SAEhp. Factory historical table5998cc selected; a2025factorynews article says5988cc, treated as conflicting retrospective entry.",
+        "Factory heritage labels1335kg running-order, while period reproduced technical material labels same1335kg dry. Neither asserted as reliable installed curb;1450kg estimated wet target. All suggestedEstimates include provisional geometry, torque, tire, gear, dynamics and performance values.",
+        "Cambiocorsa single-clutch automated manual approximated with existingautomatic selector, zero torque-converter slip and multiplication1; no hydraulic shift-control reconstruction.",
+        "Hardtop fitted reference; placeholder body has no retractable/removable-roof behavior. NoGT1orVersioneCorse competition tune.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Soapwort 1995",
+            "documentId": "soapwort-1995",
+            "runtimeId": "saved-car:Soapwort 1995",
+            "reference": "1995LeMans McLarenF1GTR#59",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Bogbean 2020",
+            "documentId": "bogbean-2020",
+            "runtimeId": "saved-car:Bogbean 2020",
+            "reference": "FerrariRoma front-engine turboV8",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Road-homologation mid-engineNAv12carbon-monocoque MC12 is mechanically and historically distinct from existingMcLarenracecar andRoma; no existingEnzo/MC12 reference found.",
+        "evidence": [
+          "https://www.maserati.com/it/it/brand/auto-storiche/speciali/mc12-stradale"
+        ],
+        "audit": "Audited wave40 native catalogProvenance/referenceVehicle/inspiration plus repo tests/docs search for Ghibli/MC12/GranTurismo: no exact road Maserati identities. CitroenSM engine reference is not a Maserati vehicle. Existing660slot checked."
+      },
+      "name": "Hedge Bindweed 2004",
+      "id": "hedge-bindweed-2004",
+      "simulationEstimates": {
+        "reverseRatio": 2.385,
+        "cgHeightM": 0.43,
+        "groundClearanceM": 0.11,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.98,
+        "spring": 0.51,
+        "antiRollRear": 0.18,
+        "suspensionTravelM": 0.19,
+        "frontOverhangM": 1.248,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 150,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.41,
+        "redlineRpm": 7500,
+        "revLimitRpm": 7700,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 30.38,
+        "zeroToSixtySec": 3.7,
+        "bodyClass": "coupe",
+        "drivetrain": "rwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "torqueNm": 652,
+        "torqueRpm": 5500,
+        "transmission": "automatic",
+        "gearCount": 6,
+        "curbKg": 1450,
+        "lengthM": 5.143,
+        "widthM": 2.096,
+        "heightM": 1.205,
+        "wheelbaseM": 2.8,
+        "trackFrontIn": 65.35433070866142,
+        "trackRearIn": 64.96062992125985,
+        "tireSize": [
+          245,
+          35,
+          19
+        ],
+        "frontTire": [
+          245,
+          35,
+          19
+        ],
+        "rearTire": [
+          345,
+          35,
+          19
+        ],
+        "gearRatios": [
+          3.154,
+          2.176,
+          1.565,
+          1.185,
+          0.935,
+          0.758
+        ],
+        "finalDrive": 4.1,
+        "transmissionLabel": "six-speed Cambiocorsa automated manual; automatic selector approximation",
+        "torqueLbFt": 480.8905213287772
+      }
+    },
+    {
+      "candidateId": "maserati-gran-turismo-s-2010-roster-candidate",
+      "bodyClass": "coupe",
+      "identity": {
+        "year": 2010,
+        "make": "Maserati",
+        "model": "GranTurismo S Automatic",
+        "trim": "European4.7NA V8 four-seat coupe ZF6AT",
+        "market": "Europe"
+      },
+      "referenceVehicle": "2010 European Maserati GranTurismo S Automatic four-seat coupe,4.7L naturally aspiratedV8 RWD ZF six-speed torque-converter automatic; notMCShift automatedmanual,MCStradale orGranCabrio.",
+      "facts": {
+        "powerKw": 323,
+        "powerRpm": 7000,
+        "torqueNm": 490,
+        "torqueRpm": 4750,
+        "engineDisplacementL": 4.7,
+        "transmission": "automatic",
+        "gearCount": 6
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/us-en/maserati/press/maserati-granturismo-s-automatic-unveiled-at-the-geneva-auto-show",
+          "publisher": "Maserati factory",
+          "fields": [
+            "4.7V8",
+            "323kW7000rpm",
+            "490Nm4750rpm",
+            "ZF6AT",
+            "20inchwheels"
+          ],
+          "access": "March2009factorylaunch of SAutomatic. Uses stated323kW ratherthan ambiguous440HP label. Read2026-11-18."
+        },
+        {
+          "url": "https://www.media.stellantis.com/uk-en/maserati/press/worldwide-paris-premiere-for-the-maserati-granturismo-mc-stradale",
+          "publisher": "Maserati factory",
+          "fields": [
+            "continued2010SAutomaticavailability",
+            "distinctionfromMCShiftandMCStradale"
+          ],
+          "access": "September2010factoryrange report confirms SAutomatic4.7V8/six-speedautomatic remains in production. Read2026-11-18."
+        }
+      ],
+      "limits": [
+        "Published323kW anchor retained; release also says440HP but does not useSAE basis. No unqualified440SAEhp claim.4.7L factory rounded displacement preserved.",
+        "1880kg is provisional running-order estimate with unverifieddriver/fuel convention, not independentlyverified curb. Geometry,tracks, tires beyond20in rim, ratios, finaldrive, grip, aero, redline, loadsplit and performance are simulation estimates.",
+        "Skyhook adaptive damping is represented by a fixed setup, no addedruntimecontrol. This is ZFtorque-converter automatic, deliberately not originalS MCShiftreartransaxle.",
+        "Four-seat long-wheelbaseGT with originalbody intended later; sharedRTG-001 art only.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Marsh Violet 2007",
+            "documentId": "marsh-violet-2007",
+            "runtimeId": "saved-car:Marsh Violet 2007",
+            "reference": "Alfa8CCompetizione4.7NAv8sixrobotized",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Water Forgetmenot 2008",
+            "documentId": "water-forgetmenot-2008",
+            "runtimeId": "saved-car:Water Forgetmenot 2008",
+            "reference": "AstonDBS5.935V12sixmanual",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Shares broadF136V8family with8C but substantiallydifferent long-wheelbasefour-seatGT body, mass andfront-mounted torque-converter transmission versus shorttwo-seatrobotizedtransaxlesportscar. Not badge-only variant.",
+        "evidence": [
+          "https://www.media.stellantis.com/us-en/maserati/press/maserati-granturismo-s-automatic-unveiled-at-the-geneva-auto-show",
+          "https://www.media.stellantis.com/uk-en/maserati/press/worldwide-paris-premiere-for-the-maserati-granturismo-mc-stradale"
+        ],
+        "audit": "Audited wave40 native catalogProvenance/referenceVehicle/inspiration plus repo tests/docs search for Ghibli/MC12/GranTurismo: no exact road Maserati identities. CitroenSM engine reference is not a Maserati vehicle. Existing660slot checked."
+      },
+      "name": "Sea Bindweed 2010",
+      "id": "sea-bindweed-2010",
+      "simulationEstimates": {
+        "reverseRatio": 3.403,
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.98,
+        "spring": 0.51,
+        "antiRollRear": 0.18,
+        "suspensionTravelM": 0.19,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 240,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.49,
+        "redlineRpm": 7200,
+        "revLimitRpm": 7400,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 22.72,
+        "topSpeedMph": 183,
+        "zeroToSixtySec": 4.9,
+        "bodyClass": "coupe",
+        "drivetrain": "rwd",
+        "torqueConverterSlip": 0.05,
+        "torqueConverterMultiplication": 1.8,
+        "curbKg": 1880,
+        "lengthM": 4.881,
+        "widthM": 1.847,
+        "heightM": 1.353,
+        "wheelbaseM": 2.942,
+        "trackFrontIn": 62.4,
+        "trackRearIn": 62.6,
+        "tireSize": [
+          245,
+          35,
+          20
+        ],
+        "frontTire": [
+          245,
+          35,
+          20
+        ],
+        "rearTire": [
+          285,
+          35,
+          20
+        ],
+        "gearRatios": [
+          4.171,
+          2.34,
+          1.521,
+          1.143,
+          0.867,
+          0.691
+        ],
+        "finalDrive": 3.73,
+        "transmissionLabel": "ZF six-speed torque-converter automatic"
+      }
+    }
+  ],
+  "deferred": [
+    {
+      "candidateId": "bmw-2002-turbo-1973-roster-candidate",
+      "reason": "Same mechanical road configuration already cairn-1974; legacy import/research confirms1974European2002turbo4MT."
+    },
+    {
+      "candidateId": "mercedes-benz-280-sl-1967-roster-candidate",
+      "reason": "Factory archive explicitly Nov1967pre-production,Jan1968standard production. Held per parent; no year carry.",
+      "source": "https://mercedes-benz-archive.com/marsClassic/en/instance/ko/280-SL--W-113-E-28-1968---1971.xhtml?oid=4715"
+    },
+    {
+      "candidateId": "bmw-323ti-sport-2000-roster-candidate",
+      "reason": "Factory archive validates base323ti1997\u20132000,125kW,but exactSporttrim not yet independently established."
+    },
+    {
+      "candidateId": "volkswagen-gti-vr6-mk3-1998-roster-candidate",
+      "reason": "1998exactUSbrochure unavailable in boundedpass; GermanGolfIIIenginearchive alone doesnotestablishUSGTItrim/year."
+    },
+    {
+      "candidateId": "audi-r8-coupe-v10-plus-5-2-fsi-quattro-2013-roster-candidate",
+      "reason": "Held to avoid tuning/faceliftpadding against moonwort-2010 unless meaningful gearbox/suspension distinction separately justified."
+    },
+    {
+      "candidateId": "audi-sport-quattro-1983-roster-candidate",
+      "reason": "1983 preview label of same Sport quattro road identity implemented as documented1984 production variant; do not generate a second car without distinct production evidence."
+    }
+  ]
+}

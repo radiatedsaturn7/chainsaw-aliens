@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "rough-clover-1964",
+  "name": "Rough Clover 1964",
+  "stableCarId": "saved-car:Rough Clover 1964",
+  "referenceVehicle": "1964 United States Chevrolet Impala Super Sport409, SportCoupehardtop,optional340-hp409four-barrelV8,optionalwide-ratio4MT,3.36axle;not400/425hp",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "358a79314006d866fb3812930269b1155e8866731f0ff9227d72b9099a4ad1fa",
+    "dashboard": "bc689be84c92b8ce62e26be5a40b7cc43fc5c9f59ce2a8c6b3a4b13902caa79e",
+    "tires": "ac17a5a99be7e961ca796827f44cbf447fc4427228996ca0dd4ab35e3dbb1cdf"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

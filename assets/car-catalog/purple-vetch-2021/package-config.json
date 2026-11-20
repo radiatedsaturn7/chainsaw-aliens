@@ -1,0 +1,79 @@
+{
+  "id": "purple-vetch-2021",
+  "name": "Purple Vetch 2021",
+  "stableCarId": "saved-car:Purple Vetch 2021",
+  "runtimeId": "saved-car:Purple Vetch 2021",
+  "candidateId": "lexus-lc-500-2021-roster-candidate",
+  "referenceVehicle": "2021 Canada Lexus LC 500, Canadian base V8 coupe10AT,standard20inchwheels/glassroof; not500h,convertible orPerformancePackage",
+  "identity": {
+    "year": 2021,
+    "make": "Lexus",
+    "model": "LC 500",
+    "trim": "Canadian base V8 coupe10AT,standard20inchwheels/glassroof; not500h,convertible orPerformancePackage",
+    "market": "Canada"
+  },
+  "bodyClass": "four-seat two-door grand touring coupe; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      515,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://toyotacanada.scene7.com/is/content/toyotacanada/2021_Lexus_LC_ENpdf",
+      "fields": [
+        "powerHp",
+        "engineDisplacementL",
+        "aspiration",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "groundClearanceM",
+        "fuelTankUSgal"
+      ]
+    },
+    {
+      "url": "https://pressroom.lexus.com/2021-lexus-lc-luxury-driving-evolved/",
+      "fields": [
+        "398lbft torque anchor",
+        "naturallyaspiratedV8",
+        "10AT",
+        "4.4sec manufacturer estimate"
+      ]
+    }
+  ]
+}

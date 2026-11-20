@@ -1,0 +1,64 @@
+{
+  "id": "purple-trefoil-2009",
+  "name": "Purple Trefoil 2009",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1269,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      1526,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://www.lotuscars.com/en/lotus-story/road-cars/2-eleven",
+      "fields": [
+        "powerHp",
+        "publishedPowerPS",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "gearCount",
+        "transmission",
+        "publishedMassKg",
+        "topSpeedMph"
+      ]
+    },
+    {
+      "url": "https://gglotus.org/ggrace/2-eleven/2-eleven.htm",
+      "fields": [
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "topSpeedMph",
+        "UKSVAidentity",
+        "factoryEstimatedZeroToSixtySec"
+      ]
+    }
+  ]
+}

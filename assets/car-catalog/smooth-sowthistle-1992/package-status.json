@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "smooth-sowthistle-1992",
+  "name": "Smooth Sowthistle 1992",
+  "stableCarId": "saved-car:Smooth Sowthistle 1992",
+  "referenceVehicle": "1992 United States Volkswagen GTI16V Mk2, 2.0-liter naturally aspirated DOHC16-valve fuel-injected inline-four, FWD close-ratio5MT and three-way catalyst; not European1.8, base8V, G60 or Mk3.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "addf5bb0cd2dde51d172327f53a452144a4924146fdb2f24a417bed7033461e9",
+    "dashboard": "8bac4ab6be6d0933b6c2292ff9196bc2a2579466b1911685dd10957bf7f2305b",
+    "tires": "e3ba6ca1f0d754261e5609a2e5047d49af71c9b150027f11b4cfa58a426930ff"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

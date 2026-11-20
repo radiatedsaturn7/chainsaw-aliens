@@ -1,0 +1,56 @@
+{
+  "id": "source-mandarin-clover-2013",
+  "name": "Mandarin Clover 2013",
+  "stableCarId": "saved-car:Mandarin Clover 2013",
+  "runtimeId": "saved-car:Mandarin Clover 2013",
+  "runtimeDocumentId": "mandarin-clover-2013",
+  "candidateId": null,
+  "referenceVehicle": "Germany January2013 Opel Adam base1.2naturallyaspirated,5MT. Three-door four-seat hatchback,baseAdam,notJam/Glam/Slam orlaterturbo.",
+  "identity": null,
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      235,
+      490,
+      510,
+      180
+    ],
+    "wheel": [
+      490,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://www.netcarshow.com/opel/2013-adam/",
+      "fields": [
+        "exact identity and visual configuration"
+      ]
+    }
+  ],
+  "runtimeDocumentIdVerified": true,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
+}

@@ -1,0 +1,161 @@
+{
+  "id": "harebell-2019",
+  "name": "Harebell 2019",
+  "rosterCommit": "757337b575627e7d327da108e2a00951f1e8dbe1",
+  "expectedDocumentSha256": "390c17c97b93e2b184cdb3d16b5d320476565f910340ca48b817d66c3def24f3",
+  "sourceDirectory": "assets/car-catalog/harebell-2019",
+  "sourceHashes": {
+    "body": "67403c25c4a62f2afb78b0a602aca5feb4ed27bb15315820c812a1a25dbdf10a",
+    "dashboard": "2e62ec660172b5d67a85882530dff96fbc6422e619fae39fb8375923244e93cd",
+    "tires": "478acc3ea8f6e09186a58b1ab48181a094fb5e4b6407123ad4e64e5379e6423d"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 75,
+        "y": 332,
+        "radius": 24
+      },
+      {
+        "wheel": "fr",
+        "x": 302,
+        "y": 332,
+        "radius": 24
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 612,
+        "y": 302,
+        "radius": 32
+      },
+      {
+        "wheel": "rr",
+        "x": 747,
+        "y": 282,
+        "radius": 27
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 924,
+        "y": 298,
+        "radius": 42
+      },
+      {
+        "wheel": "rr",
+        "x": 1221,
+        "y": 301,
+        "radius": 43
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1365,
+        "y": 288,
+        "radius": 23
+      },
+      {
+        "wheel": "rr",
+        "x": 1522,
+        "y": 300,
+        "radius": 32
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 77,
+        "y": 733,
+        "radius": 24
+      },
+      {
+        "wheel": "rl",
+        "x": 295,
+        "y": 733,
+        "radius": 24
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 586,
+        "y": 713,
+        "radius": 31
+      },
+      {
+        "wheel": "fl",
+        "x": 743,
+        "y": 701,
+        "radius": 23
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 896,
+        "y": 714,
+        "radius": 42
+      },
+      {
+        "wheel": "fl",
+        "x": 1186,
+        "y": 716,
+        "radius": 42
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1361,
+        "y": 704,
+        "radius": 24
+      },
+      {
+        "wheel": "fl",
+        "x": 1507,
+        "y": 725,
+        "radius": 34
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      300,
+      370,
+      420,
+      160
+    ],
+    "wheel": [
+      510,
+      645,
+      560
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e4efff",
+    "viewportWheelScale": 1.9
+  },
+  "steeringWheelSource": {
+    "artRef": "ct-steeringwheel",
+    "frameIndex": 0
+  }
+}

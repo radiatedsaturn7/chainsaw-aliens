@@ -1,0 +1,55 @@
+{
+  "id": "woolly-clover-2018",
+  "name": "Woolly Clover 2018",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      420,
+      470,
+      350,
+      140
+    ],
+    "wheel": [
+      595.0,
+      753,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://www.prnewswire.com/news-releases/subaru-to-enter-the-new-americas-rallycross-championship-300653480.html",
+      "fields": [
+        "powerHp",
+        "aspiration",
+        "drivetrain",
+        "publishedEngine",
+        "publishedCompetition",
+        "publishedTeam"
+      ]
+    },
+    {
+      "url": "https://dirtfish.com/tech/2018-subaru-wrx-sti-arx-supercar-vt18x-specs/",
+      "fields": [
+        "estimated torque/mass/transmission/fuel anchors"
+      ]
+    }
+  ]
+}

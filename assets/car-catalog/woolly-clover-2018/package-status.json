@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "woolly-clover-2018",
+  "name": "Woolly Clover 2018",
+  "stableCarId": "saved-car:Woolly Clover 2018",
+  "referenceVehicle": "2018 United States / international ARX competition Subaru WRX STI ARX Supercar, VT18x 2018 Americas Rallycross four-door competition build,45mm-restrictor configuration; not roadSTI,VT21x or unrestricted Airslayer",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "233a92d76484bfbf85b65b8a56c46d5541de4515ad7a30282f8d920bbc0d83c8",
+    "dashboard": "11cd1a79217d264b1c4eec4a6df5f18e012cd5b7d80cdc4965ac54e0608702fe",
+    "tires": "0c05ca474c215586adf361ecb14c0dd0d4b4d20d07e1a063c03421ee6aba6607"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

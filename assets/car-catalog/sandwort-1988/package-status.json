@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "sandwort-1988",
+  "name": "Sandwort 1988",
+  "stableCarId": "saved-car:Sandwort 1988",
+  "referenceVehicle": "1988 Volkswagen Scirocco II GTX 16V German102kW archive specification; modeled5MT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "479b0427934d59ca17cf815ebcbb1d9f8dce6851b08d8b69745e22d4c053ea03",
+    "dashboard": "aa6a87f8d93e28aa10100ecd11d4fed48078e2377f8abe05c6c767ae37fbf3d2",
+    "tires": "1f98c7114aa7bd0b471503aa60eb20b44d4c743e267c7418d4e140ce627a5baf"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

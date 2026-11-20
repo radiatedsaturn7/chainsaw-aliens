@@ -1,0 +1,1353 @@
+{
+  "schemaVersion": 1,
+  "base": "6e698d608ea1b95a0c8b9859bea2de06cf6247c6",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "mg-mga-twin-cam-1958-roster-candidate",
+      "identity": {
+        "year": 1958,
+        "make": "MG",
+        "model": "MGA Twin Cam",
+        "trim": "Home-market high-compression 9.9:1 open two-seater RHD, 1588 cc DOHC four, four-speed manual; not coupe or pushrod MGA",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "1958 UK MG MGA Twin Cam high-compression open two-seater RHD 4MT",
+      "bodyClass": "two-door two-seat open sports roadster; production",
+      "facts": {
+        "engineDisplacementL": 1.588,
+        "aspiration": "Naturally Aspirated",
+        "gearCount": 4,
+        "finalDrive": 4.3,
+        "gearRatios": [
+          3.64,
+          2.213953488372093,
+          1.3739534883720932,
+          1
+        ],
+        "reverseRatio": 4.76,
+        "curbKg": 991.09932845,
+        "lengthM": 3.9623999999999997,
+        "widthM": 1.4731999999999998,
+        "heightM": 1.27,
+        "wheelbaseM": 2.3876,
+        "trackFrontIn": 47.90625,
+        "trackRearIn": 48.875,
+        "groundClearanceM": 0.15239999999999998,
+        "cgHeightM": 0.4064,
+        "frontWeightDistribution": 0.5276,
+        "publishedStandardPowerBhp": 108,
+        "publishedStandardPowerRpm": 6700,
+        "publishedGrossSAEPowerBhp": 110,
+        "publishedGrossSAEPowerRpm": 6750,
+        "publishedStandardTorqueLbFt": 105,
+        "publishedStandardTorqueRpm": 4500,
+        "publishedKerbWeightLb": 2185,
+        "periodPublishedRatings": {
+          "publishedStandardPowerBhp": 108,
+          "publishedStandardPowerRpm": 6700,
+          "publishedGrossSAEPowerBhp": 110,
+          "publishedGrossSAEPowerRpm": 6750,
+          "publishedStandardTorqueLbFt": 105,
+          "publishedStandardTorqueRpm": 4500,
+          "ratingBasis": "Historical factory or custodian rating; exact test standard unresolved. Installed output is estimated, not a certified modern net conversion."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://mgaguru.com/mgtech/books/tdb/tdtc__general_data.pdf",
+          "publisher": "MG factory Engineering Technical Data, General section, preserved scan at MGAguru",
+          "fields": [
+            "dimensions",
+            "tracks",
+            "curbKg",
+            "weight distribution",
+            "CG",
+            "gear ratios",
+            "finalDrive"
+          ],
+          "access": "Read visually 2026-11-18 PDF pages 2-3. Beginning year 1958. Open two-seater kerb weight 2185 lb; coupe separately 2222 lb, shipping 2108 lb. Overall gearbox ratios divided by 4.3 axle; all unit conversions arithmetic."
+        },
+        {
+          "url": "https://mgaguru.com/mgtech/books/tdb/tdtc_b_engine.pdf",
+          "publisher": "MG factory Engineering Technical Data, Engine section, preserved scan at MGAguru",
+          "fields": [
+            "engineDisplacementL",
+            "publishedStandardPowerBhp",
+            "publishedStandardTorqueLbFt",
+            "publishedGrossSAEPowerBhp"
+          ],
+          "access": "Read visually 2026-11-18 PDF page 2. Factory explicitly distinguishes standard 108 bhp at 6700 from gross SAE-corrected 110 bhp at 6750; 105 lb-ft at 4500. Standard rating is NOT claimed to be a modern DIN/SAE net certification. Revised loose-leaf engineering reference, not an event-specific dynamometer sheet."
+        },
+        {
+          "url": "https://mgaguru.com/mgtech/twincam/tc125.htm",
+          "publisher": "Nuffield Press original April 1958 Top Performance brochure archive at MGAguru",
+          "fields": [
+            "1958 introduction",
+            "Twin Cam identity"
+          ],
+          "access": "Archive description identifies April 1958 factory brochure for July launch; numerical scan not used for simulation."
+        }
+      ],
+      "limits": [
+        "Installed 104 hp and 101 lb-ft are explicitly conservative simulation estimates anchored to published period standard ratings; they are not a factory net-output claim. Period standard versus gross figures remain separately preserved.",
+        "Mass uses the factory open two-seater kerb basis, not coupe/shipping weight. Factory static-unladen CG and weight distribution are used as coarse car-model parameters.",
+        "165/80R15 is an estimated radial equivalent for period narrow 15-inch tyres, not an assertion of original fitment. Fuel capacity, redline, transient behavior and performance estimates remain unverified.",
+        "Generic four-speed model does not reproduce first-gear synchromesh limitations. No shared simulation changes. Shared RTG-001 art is only placeholder, not real body/cockpit geometry or finished art.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data.",
+        "Historical output is not certified modern net; estimated installed output remains separate."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "hedgenettle-1968",
+            "alias": "Hedgenettle 1968",
+            "reference": "1968 UK home-market MGB GT MkII GHD4,1798cc high-compression8.8:1 twinSU four-cylinder,RWD all-synchromesh4MT,RHD,standarddisc14inchwheels,nooptionaloverdrive. Notroadster,MGC,V8,exportlowcompression81bhp,automatic,rubberbumper orcompetitionvariant.",
+            "documentId": "hedgenettle-1968",
+            "runtimeId": "saved-car:Hedgenettle 1968",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "cowslip-old-separate-checkpoint",
+            "alias": "Cowslip",
+            "reference": "1958 Austin-Healey Sprite Mk I",
+            "scope": "separate-preserved-checkpoint"
+          }
+        ],
+        "distinction": "Earlier MGA chassis and open body with distinct 1588 cc high-compression DOHC Twin Cam engine versus existing 1968 MGB GT pushrod 1798 cc coupe. Not an MGB model-year variant. Separate Sprite is a smaller 948 cc pushrod model and is excluded from this branch; no import or duplication.",
+        "evidence": [
+          "https://mgaguru.com/mgtech/books/tdb/tdtc__general_data.pdf",
+          "https://mgaguru.com/mgtech/books/tdb/tdtc_b_engine.pdf",
+          "https://mgaguru.com/mgtech/twincam/tc125.htm"
+        ]
+      },
+      "name": "Cream Clover 1958",
+      "id": "cream-clover-1958",
+      "simulationEstimates": {
+        "dragCoefficient": 0.5,
+        "tireGrip": 0.73,
+        "spring": 0.45,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.14,
+        "frontOverhangM": 0.75,
+        "rearDifferentialAccel": 0.03,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7300,
+        "fuelTankUSgal": 14.411398799999999,
+        "topSpeedMph": 113,
+        "zeroToSixtySec": 10.2,
+        "transmission": "manual",
+        "drivetrain": "rwd",
+        "powerHp": 104,
+        "powerRpm": 6700,
+        "torqueLbFt": 101,
+        "torqueRpm": 4500,
+        "tireSize": [
+          165,
+          80,
+          15
+        ],
+        "transmissionLabel": "4-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "jeep-grand-cherokee-srt-2014-roster-candidate",
+      "identity": {
+        "year": 2014,
+        "make": "Jeep",
+        "model": "Grand Cherokee SRT",
+        "trim": "US6.4naturally aspirated HEMI,8HP70automatic,Auto-mode40:60approximation,standardall-seasonrunflat20inchtires",
+        "market": "United States"
+      },
+      "referenceVehicle": "2014 United States Jeep Grand Cherokee SRT, US6.4naturally aspirated HEMI,8HP70automatic,Auto-mode40:60approximation,standardall-seasonrunflat20inchtires",
+      "bodyClass": "four-door-suv",
+      "artIdentity": "Five-seat WK2 performance SUV, short rear overhang, broad twin lower intakes, narrow front lamps and20-inch five-spoke wheels; not long three-rowDurango orTrackhawk-specificnose.",
+      "facts": {
+        "engineDisplacementL": 6.417,
+        "aspiration": "Naturally aspirated",
+        "powerHp": 470,
+        "powerRpm": 6000,
+        "torqueLbFt": 465,
+        "torqueRpm": 4300,
+        "revLimitRpm": 6400,
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "gearCount": 8,
+        "gearRatios": [
+          4.7,
+          3.13,
+          2.1,
+          1.67,
+          1.28,
+          1,
+          0.84,
+          0.67
+        ],
+        "reverseRatio": 3.53,
+        "finalDrive": 3.7,
+        "centerDifferentialBalance": 0.6,
+        "curbKg": 2336,
+        "lengthM": 4.859,
+        "widthM": 1.958,
+        "heightM": 1.756,
+        "wheelbaseM": 2.915,
+        "trackFrontIn": 63.7,
+        "trackRearIn": 64.3,
+        "tireSize": [
+          295,
+          45,
+          20
+        ],
+        "fuelTankUSgal": 24.6,
+        "frontWeightDistribution": 0.54,
+        "groundClearanceM": 0.2108,
+        "dragCoefficient": 0.39,
+        "steeringRatio": 17.5,
+        "absEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://wk2jeeps.knoxgeex.com/pdf/2014_wk2_specifications_srt.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "engineDisplacementL",
+            "aspiration",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "revLimitRpm",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "centerDifferentialBalance",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "fuelTankUSgal",
+            "frontWeightDistribution",
+            "groundClearanceM",
+            "dragCoefficient",
+            "steeringRatio",
+            "absEnabled"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Manufacturer-authored USspecification PDF mirroredbyWK2Jeeps.470hp/465lbft explicitlySAEJ2723; do notsubstitute later475hp or generic6.4ratings.",
+        "2336kg factorycurb includes standardequipment and fullfuel/lubricant/coolant, no driver; not6500lbGVWR. Published5150lb rounds differently, retainprintedkg. Bodyheightat roofrail1.756m excludes antenna1.952m; bodywidth excludesmirrors.",
+        "MP3010single-speedAuto40front/60rear approximated fixedsplit; runtimecenterDifferentialBalance isREARshare=.6. No Snow/Tow/Sport/Trackswitching,adaptiveBilstein,activeELSDlogic,launchcontrol,cylinderdeactivation ornewruntimecontrols. Differentiallockgains are estimates.",
+        "SharedRTG001referencegraphics,notoriginalartcomplete or independentlydriveverified.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Bogmyrtle 2018",
+            "documentId": "bogmyrtle-2018",
+            "runtimeId": "saved-car:Bogmyrtle 2018",
+            "reference": "2018 US Jeep Grand Cherokee Trackhawk 6.2supercharged V8 eight-speed automatic, standard20-inch wheels; Auto-mode approximation",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Bitter Dock 2018",
+            "documentId": "bitter-dock-2018",
+            "runtimeId": "saved-car:Bitter Dock 2018",
+            "reference": "2018 United States Dodge Durango SRT6.4HEMI AWD eight-speed TorqueFlite,standard295/45ZR20all-season tires;noHellcat orR/T",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Purple Loosestrife 2021",
+            "documentId": "purple-loosestrife-2021",
+            "runtimeId": "saved-car:Purple Loosestrife 2021",
+            "reference": "2021 US Dodge Durango SRT Hellcat 6.2 supercharged AWD8AT, six seats, standard295/45ZR20 all-season runflats, Auto mode approximation",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Actual450-car catalog contains Trackhawk6.2supercharged, not this6.4naturallyaspiratedSRT. Same-badgeTrackhawk has materially different engine/output/torque and mass. ExistingDurangoSRT shares engine family but is longer119.8inch-wheelbase three-row vehicle versus114.8inch five-seatJeep with different curb mass/distribution/geometry; not a badge-only reskin.",
+        "evidence": [
+          "https://wk2jeeps.knoxgeex.com/pdf/2014_wk2_specifications_srt.pdf"
+        ]
+      },
+      "name": "Caucasian Clover 2014",
+      "id": "caucasian-clover-2014",
+      "simulationEstimates": {
+        "cgHeightM": 0.68,
+        "tireGrip": 0.95,
+        "spring": 0.6,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.19,
+        "frontOverhangM": 0.88,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 210,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "redlineRpm": 6200,
+        "topSpeedMph": 160,
+        "zeroToSixtySec": 4.8,
+        "centerDifferentialAccel": 0.25
+      }
+    },
+    {
+      "candidateId": "lamborghini-reventon-2008-roster-candidate",
+      "identity": {
+        "year": 2008,
+        "make": "Lamborghini",
+        "model": "Reventon",
+        "trim": "650CV closed coupe 6-speed e-gear",
+        "market": "European production specification"
+      },
+      "bodyClass": "coupe",
+      "referenceVehicle": "2008 European Lamborghini Reventon 650CV closed coupe 6-speed e-gear; not roadster, modified car or later special edition",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "powerKw": 478,
+        "powerRpm": 8000,
+        "torqueNm": 660,
+        "torqueRpm": 6000,
+        "engineDisplacementL": 6.496,
+        "gearCount": 6,
+        "publishedDryWeightKg": 1665,
+        "lengthM": 4.7,
+        "widthM": 2.058,
+        "heightM": 1.135,
+        "wheelbaseM": 2.665,
+        "trackFrontIn": 64.37007874015748,
+        "trackRearIn": 66.73228346456693
+      },
+      "sources": [
+        {
+          "url": "https://www.carbodydesign.com/archive/2007/09/12-lamborghini-reventon/",
+          "publisher": "Automobili Lamborghini factory press material, reproduced with attribution",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "gearCount",
+            "publishedDryWeightKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn"
+          ],
+          "access": "Original2007 launch technical table read2026-11-18; 1665kg expressly dry/no fuel or liquids;650HP is paired with478kW."
+        },
+        {
+          "url": "https://www.lamborghini.com/en-en/news/lamborghini-reventon-first-few",
+          "publisher": "Automobili Lamborghini",
+          "fields": [
+            "identity",
+            "engineDisplacementL"
+          ],
+          "access": "Factory2019 heritage confirms20coupes,2007debut,6496cc650CV; excludes670CVRoadster."
+        },
+        {
+          "url": "https://www.lamborghiniregistry.com/lamborghini-models/murcielago-lp650-4-reventon",
+          "publisher": "International Lamborghini Registry factory-table archive",
+          "fields": [
+            "modelYear"
+          ],
+          "access": "Registry preserves factory technical table labeled MY2008; only used to corroborate delivery-year slot, not expand mechanicalfacts."
+        }
+      ],
+      "limits": [
+        "Published dry mass is NOT curb mass: modeled curbKg adds an explicitly estimated allowance for operating fluids/fuel; no verified weighing claim.",
+        "Every field in suggestedEstimates is a modeling estimate. AWD torque distribution is a fixed approximation, not the real viscous/Haldex control algorithm. No active suspension or aero fidelity claimed.",
+        "Shared referenced RTG001 art only, no original-art or drive-verified claim.",
+        "2008 slot selects customer-delivery period of2007-launched coupe; manufacturer history identifieslaunch rather than a separate2008mechanical revision. Registry MY2008 table corroboratesidentity; no new revision invented.",
+        "Automated manual uses existing automatic runtime abstraction; it is not a dual-clutch or torque-converter transmission.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Berseem Clover 1967",
+            "documentId": "berseem-clover-1967",
+            "runtimeId": "saved-car:Berseem Clover 1967",
+            "reference": "MiuraP400transverseNA4.0V12RWD5MT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Arrowleaf Clover 1972",
+            "documentId": "arrowleaf-clover-1972",
+            "runtimeId": "saved-car:Arrowleaf Clover 1972",
+            "reference": "JaramaSfront-engineNA4.0V12RWDGT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Egyptian Clover 1986",
+            "documentId": "egyptian-clover-1986",
+            "runtimeId": "saved-car:Egyptian Clover 1986",
+            "reference": "LM002front-engineV12utility4WD",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No Murcielago LP640 runtime entry exists. Reventon uses that6.5V12 viscous-AWD platform; distinct from clean-sheet Aventador monocoque/ISR and smallerV10 models. Do not subsequently inflate count with a mechanically equivalent LP640 solely for body. Current422baseline had no Lamborghini; wave46 Miura/Jarama/LM002 have distinct chassis/engine layouts. No new-car identity inferred from display name alone.",
+        "evidence": [
+          "https://www.carbodydesign.com/archive/2007/09/12-lamborghini-reventon/",
+          "https://www.lamborghini.com/en-en/news/lamborghini-reventon-first-few"
+        ]
+      },
+      "name": "Dwarf Clover 2008",
+      "id": "dwarf-clover-2008",
+      "simulationEstimates": {
+        "reverseRatio": 3.1,
+        "cgHeightM": 0.44,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.43,
+        "redlineRpm": 8500,
+        "revLimitRpm": 8700,
+        "fuelTankUSgal": 23.8,
+        "topSpeedMph": 211.3,
+        "zeroToSixtySec": 3.3,
+        "curbKg": 1770,
+        "tireSize": [
+          245,
+          35,
+          18
+        ],
+        "frontTire": [
+          245,
+          35,
+          18
+        ],
+        "rearTire": [
+          335,
+          30,
+          18
+        ],
+        "gearRatios": [
+          3.091,
+          2.105,
+          1.565,
+          1.241,
+          1.065,
+          0.939
+        ],
+        "finalDrive": 2.87,
+        "centerDifferentialBalance": 0.7,
+        "transmissionLabel": "6-speed e-gear automated manual approximation"
+      }
+    },
+    {
+      "candidateId": "lamborghini-gallardo-lp-570-4-superleggera-2011-roster-candidate",
+      "identity": {
+        "year": 2011,
+        "make": "Lamborghini",
+        "model": "Gallardo LP570-4 Superleggera",
+        "trim": "5.2V10 coupe e-gear standard19inch",
+        "market": "European production specification"
+      },
+      "bodyClass": "coupe",
+      "referenceVehicle": "2011 European Lamborghini Gallardo LP570-4 Superleggera 5.2V10 coupe e-gear standard19inch; not roadster, modified car or later special edition",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "powerKw": 419,
+        "engineDisplacementL": 5.2,
+        "gearCount": 6,
+        "publishedDryWeightKg": 1340
+      },
+      "sources": [
+        {
+          "url": "https://www.auto123.com/en/news/lamborghini-gallardo-lp-570-4-superleggera-is-the-new-top-model/22094/",
+          "publisher": "Automobili Lamborghini factory press material, reproduced with attribution",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "powerKw",
+            "engineDisplacementL",
+            "gearCount",
+            "publishedDryWeightKg"
+          ],
+          "access": "Explicit As reported by Lamborghini release1March2010:419kW570CV5.2L,1340kgdry,19inwheels."
+        },
+        {
+          "url": "https://www.lamborghini.com/en-en/history/gallardo",
+          "publisher": "Automobili Lamborghini",
+          "fields": [
+            "sixSpeed",
+            "awdArchitecture"
+          ],
+          "access": "Factory history confirms6speed e-gear option andviscousAWD architecture; no570kW error adopted."
+        }
+      ],
+      "limits": [
+        "Published dry mass is NOT curb mass: modeled curbKg adds an explicitly estimated allowance for operating fluids/fuel; no verified weighing claim.",
+        "Every field in suggestedEstimates is a modeling estimate. AWD torque distribution is a fixed approximation, not the real viscous/Haldex control algorithm. No active suspension or aero fidelity claimed.",
+        "Shared referenced RTG001 art only, no original-art or drive-verified claim.",
+        "2011 is a carryover production-year selection of2010-launched LP570, not evidence of a2011mechanicalupdate; source-table archive labels2010\u20132011.",
+        "Exact5204cc,540Nm6500rpm and8000rpm power peak remain estimates pending full originaltable. Registry/source reprint may corroborate but source-boundary conservatively preserved.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Berseem Clover 1967",
+            "documentId": "berseem-clover-1967",
+            "runtimeId": "saved-car:Berseem Clover 1967",
+            "reference": "MiuraP400transverseNA4.0V12RWD5MT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Arrowleaf Clover 1972",
+            "documentId": "arrowleaf-clover-1972",
+            "runtimeId": "saved-car:Arrowleaf Clover 1972",
+            "reference": "JaramaSfront-engineNA4.0V12RWDGT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Egyptian Clover 1986",
+            "documentId": "egyptian-clover-1986",
+            "runtimeId": "saved-car:Egyptian Clover 1986",
+            "reference": "LM002front-engineV12utility4WD",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Lightweight aluminum-spaceframe V10 car with single-clutch6speed andviscousAWD; not older5.0Superleggera or Huracan hybrid-material chassis7DCT. Differentengine/chassis family from V12Reventon/Aventador. Current422baseline had no Lamborghini; wave46 Miura/Jarama/LM002 have distinct chassis/engine layouts. No new-car identity inferred from display name alone.",
+        "evidence": [
+          "https://www.auto123.com/en/news/lamborghini-gallardo-lp-570-4-superleggera-is-the-new-top-model/22094/",
+          "https://www.lamborghini.com/en-en/history/gallardo"
+        ]
+      },
+      "name": "Buffalo Clover 2011",
+      "id": "buffalo-clover-2011",
+      "simulationEstimates": {
+        "reverseRatio": 3.1,
+        "cgHeightM": 0.44,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.43,
+        "redlineRpm": 8500,
+        "revLimitRpm": 8700,
+        "fuelTankUSgal": 23.8,
+        "topSpeedMph": 202,
+        "zeroToSixtySec": 3.3,
+        "curbKg": 1445,
+        "lengthM": 4.39,
+        "widthM": 1.9,
+        "heightM": 1.165,
+        "wheelbaseM": 2.56,
+        "trackFrontIn": 64.25196850393701,
+        "trackRearIn": 62.874015748031496,
+        "tireSize": [
+          235,
+          35,
+          19
+        ],
+        "frontTire": [
+          235,
+          35,
+          19
+        ],
+        "rearTire": [
+          295,
+          30,
+          19
+        ],
+        "gearRatios": [
+          2.563,
+          1.85,
+          1.423,
+          1.138,
+          0.939,
+          0.784
+        ],
+        "finalDrive": 3.58,
+        "centerDifferentialBalance": 0.7,
+        "transmissionLabel": "6-speed e-gear automated manual approximation",
+        "powerRpm": 8000,
+        "torqueNm": 540,
+        "torqueRpm": 6500,
+        "torqueLbFt": 398.28356060972345
+      }
+    },
+    {
+      "candidateId": "lamborghini-aventador-lp700-4-2012-roster-candidate",
+      "identity": {
+        "year": 2012,
+        "make": "Lamborghini",
+        "model": "Aventador LP700-4",
+        "trim": "launch-spec coupe 7-speed ISR standard19/20inch",
+        "market": "European production specification"
+      },
+      "bodyClass": "coupe",
+      "referenceVehicle": "2012 European Lamborghini Aventador LP700-4 launch-spec coupe 7-speed ISR standard19/20inch; not roadster, modified car or later special edition",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "powerKw": 515,
+        "powerRpm": 8250,
+        "torqueNm": 690,
+        "torqueRpm": 5500,
+        "engineDisplacementL": 6.498,
+        "gearCount": 7,
+        "publishedDryWeightKg": 1575,
+        "lengthM": 4.78,
+        "widthM": 2.03,
+        "heightM": 1.136,
+        "wheelbaseM": 2.7,
+        "trackFrontIn": 67.71653543307087,
+        "trackRearIn": 66.92913385826772,
+        "tireSize": [
+          255,
+          35,
+          19
+        ],
+        "frontTire": [
+          255,
+          35,
+          19
+        ],
+        "rearTire": [
+          335,
+          30,
+          20
+        ],
+        "frontWeightDistribution": 0.43,
+        "fuelTankUSgal": 23.775484712233357
+      },
+      "sources": [
+        {
+          "url": "https://www.allcarindex.com/blog/official-lamborghini-aventador-lp700-4-in-all-its-glory",
+          "publisher": "Automobili Lamborghini factory press material, reproduced with attribution",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "gearCount",
+            "publishedDryWeightKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "frontWeightDistribution",
+            "fuelTankUSgal"
+          ],
+          "access": "Read full factory launch table28February2011; late2011deliveries,515kW8250rpm690Nm5500,1575kgDRY,HaldexIV7ISR, listedgeometry/tires/90Ltank."
+        },
+        {
+          "url": "https://preowned.lamborghini.com/en_gb/vdp/25133587-2012-Aventador-LP-700-4",
+          "publisher": "Lamborghini official approved-used portal",
+          "fields": [
+            "modelYear"
+          ],
+          "access": "Manufacturer approved portal lists2012LP700-4coupe SCT; year corroboration only, no Taipei-specific specs mixed into Europeanlaunch technicaltable."
+        }
+      ],
+      "limits": [
+        "Published dry mass is NOT curb mass: modeled curbKg adds an explicitly estimated allowance for operating fluids/fuel; no verified weighing claim.",
+        "Every field in suggestedEstimates is a modeling estimate. AWD torque distribution is a fixed approximation, not the real viscous/Haldex control algorithm. No active suspension or aero fidelity claimed.",
+        "Shared referenced RTG001 art only, no original-art or drive-verified claim.",
+        "Select early2012European original-specification car before later cylinder-deactivation/stopstart update; not a claim that every2012registration has identical controls.",
+        "ISR is a single automated manual with dry twin-plate clutch, not dual-clutchDCT; existingautomatic dynamics approximate it.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Berseem Clover 1967",
+            "documentId": "berseem-clover-1967",
+            "runtimeId": "saved-car:Berseem Clover 1967",
+            "reference": "MiuraP400transverseNA4.0V12RWD5MT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Arrowleaf Clover 1972",
+            "documentId": "arrowleaf-clover-1972",
+            "runtimeId": "saved-car:Arrowleaf Clover 1972",
+            "reference": "JaramaSfront-engineNA4.0V12RWDGT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Egyptian Clover 1986",
+            "documentId": "egyptian-clover-1986",
+            "runtimeId": "saved-car:Egyptian Clover 1986",
+            "reference": "LM002front-engineV12utility4WD",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Clean-sheet6.498V12 carbonmonocoque/pushrod chassis and7ISR/Haldex differ from Reventon older6.496V12 steel/carbon architecture6egear. No AventadorJ body-only duplicate added. Current422baseline had no Lamborghini; wave46 Miura/Jarama/LM002 have distinct chassis/engine layouts. No new-car identity inferred from display name alone.",
+        "evidence": [
+          "https://www.allcarindex.com/blog/official-lamborghini-aventador-lp700-4-in-all-its-glory",
+          "https://preowned.lamborghini.com/en_gb/vdp/25133587-2012-Aventador-LP-700-4"
+        ]
+      },
+      "name": "Longstalk Clover 2012",
+      "id": "longstalk-clover-2012",
+      "simulationEstimates": {
+        "reverseRatio": 3.1,
+        "cgHeightM": 0.44,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "redlineRpm": 8500,
+        "revLimitRpm": 8700,
+        "topSpeedMph": 217.5,
+        "zeroToSixtySec": 2.8,
+        "curbKg": 1690,
+        "gearRatios": [
+          3.909,
+          2.438,
+          1.81,
+          1.458,
+          1.185,
+          0.967,
+          0.844
+        ],
+        "finalDrive": 2.867,
+        "centerDifferentialBalance": 0.7,
+        "transmissionLabel": "7-speed ISR automated manual approximation"
+      }
+    },
+    {
+      "candidateId": "lamborghini-hurac-n-lp-610-4-2014-roster-candidate",
+      "identity": {
+        "year": 2014,
+        "make": "Lamborghini",
+        "model": "Huracan LP610-4",
+        "trim": "launch coupe5.2V10 7LDF standard20inch",
+        "market": "European production specification"
+      },
+      "bodyClass": "coupe",
+      "referenceVehicle": "2014 European Lamborghini Huracan LP610-4 launch coupe5.2V10 7LDF standard20inch; not roadster, modified car or later special edition",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "powerKw": 448,
+        "powerRpm": 8250,
+        "torqueNm": 560,
+        "torqueRpm": 6500,
+        "engineDisplacementL": 5.2,
+        "gearCount": 7,
+        "publishedWeightKg": 1422
+      },
+      "sources": [
+        {
+          "url": "https://www.carbodydesign.com/2013/12/lamborghini-reveals-the-huracan-lp-610-4/",
+          "publisher": "Automobili Lamborghini factory press material, reproduced with attribution",
+          "fields": [
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "gearCount",
+            "publishedWeightKg"
+          ],
+          "access": "Lamborghini-attributed20December2013 launchrelease: spring2014deliveries,448kW610HP8250rpm,560Nm6500rpm,1422kgpublishedweight,7LDF,electronicAWD."
+        },
+        {
+          "url": "https://www.lamborghini.com/ko-en/%EB%89%B4%EC%8A%A4/huracan-revolution-a-story-of-technology-and-innovation",
+          "publisher": "Automobili Lamborghini",
+          "fields": [
+            "modelYear",
+            "powerRpm",
+            "transmission"
+          ],
+          "access": "Factoryretrospective explicitly2014LP610-4,610CV8250rpm,LDF. This supports8250over conflictingsecondary8000rpm tables."
+        }
+      ],
+      "limits": [
+        "Published dry mass is NOT curb mass: modeled curbKg adds an explicitly estimated allowance for operating fluids/fuel; no verified weighing claim.",
+        "Every field in suggestedEstimates is a modeling estimate. AWD torque distribution is a fixed approximation, not the real viscous/Haldex control algorithm. No active suspension or aero fidelity claimed.",
+        "Shared referenced RTG001 art only, no original-art or drive-verified claim.",
+        "1422kg is published lightweight/dry-family figure; source reprint doesnotstatebasisclearly. Modeled1530kgready mass explicitestimate, notclaimed factorycurb.",
+        "Published448kW vs610CV rounding mismatch is retained literally asfactorykWanchor, not silently converted449. Peak8250rpm factory launch/retrospective selected; conflictingsecondary8000rpm notused.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Berseem Clover 1967",
+            "documentId": "berseem-clover-1967",
+            "runtimeId": "saved-car:Berseem Clover 1967",
+            "reference": "MiuraP400transverseNA4.0V12RWD5MT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Arrowleaf Clover 1972",
+            "documentId": "arrowleaf-clover-1972",
+            "runtimeId": "saved-car:Arrowleaf Clover 1972",
+            "reference": "JaramaSfront-engineNA4.0V12RWDGT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Egyptian Clover 1986",
+            "documentId": "egyptian-clover-1986",
+            "runtimeId": "saved-car:Egyptian Clover 1986",
+            "reference": "LM002front-engineV12utility4WD",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "SuccessorV10 with direct+portinjection, mixedcarbon/aluminum chassis and7DCT electronicAWD rather than Gallardo6egear/viscousAWD; no SpyderorLP580-2copy. Current422baseline had no Lamborghini; wave46 Miura/Jarama/LM002 have distinct chassis/engine layouts. No new-car identity inferred from display name alone.",
+        "evidence": [
+          "https://www.carbodydesign.com/2013/12/lamborghini-reveals-the-huracan-lp-610-4/",
+          "https://www.lamborghini.com/ko-en/%EB%89%B4%EC%8A%A4/huracan-revolution-a-story-of-technology-and-innovation"
+        ]
+      },
+      "name": "Seaside Clover 2014",
+      "id": "seaside-clover-2014",
+      "simulationEstimates": {
+        "reverseRatio": 3.1,
+        "cgHeightM": 0.44,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.43,
+        "redlineRpm": 8500,
+        "revLimitRpm": 8700,
+        "fuelTankUSgal": 23.8,
+        "topSpeedMph": 202,
+        "zeroToSixtySec": 3.1,
+        "curbKg": 1530,
+        "lengthM": 4.459,
+        "widthM": 1.924,
+        "heightM": 1.165,
+        "wheelbaseM": 2.62,
+        "trackFrontIn": 65.66929133858268,
+        "trackRearIn": 63.77952755905512,
+        "tireSize": [
+          245,
+          30,
+          20
+        ],
+        "frontTire": [
+          245,
+          30,
+          20
+        ],
+        "rearTire": [
+          305,
+          30,
+          20
+        ],
+        "gearRatios": [
+          3.133,
+          2.588,
+          1.88,
+          1.475,
+          1.152,
+          0.93,
+          0.761
+        ],
+        "finalDrive": 3.59,
+        "centerDifferentialBalance": 0.7,
+        "transmissionLabel": "7-speed LDF dual-clutch approximation"
+      }
+    },
+    {
+      "candidateId": "bugatti-veyron-super-sport-2011-roster-candidate",
+      "bodyClass": "coupe",
+      "identity": {
+        "year": 2011,
+        "make": "Bugatti",
+        "model": "Veyron16.4SuperSport",
+        "trim": "standardproductionclosedcoupe8.0quad-turboW16 seven-speedDSG permanentAWD,415km/hlimiter;notWorldRecordunlimited431km/h,Vitesseorbase1001PS",
+        "market": "UK/Europe"
+      },
+      "referenceVehicle": "2011 Bugatti Veyron16.4SuperSport, standardproductionclosedcoupe8.0quad-turboW16 seven-speedDSG permanentAWD,415km/hlimiter;notWorldRecordunlimited431km/h,Vitesseorbase1001PS",
+      "facts": {
+        "powerHp": 1183.58408472,
+        "publishedPowerPS": 1200,
+        "torqueNm": 1500,
+        "engineDisplacementL": 8,
+        "topSpeedMph": 257.86904477849356
+      },
+      "sources": [
+        {
+          "url": "https://newsroom.bugatti.com/en/press-releases/bugatti-displays-new-models-at-auto-shanghai",
+          "publisher": "Bugatti2011factorypressrelease",
+          "fields": [
+            "powerHp",
+            "publishedPowerPS",
+            "torqueNm",
+            "engineDisplacementL",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        },
+        {
+          "url": "https://newsroom.bugatti.com/en/press-releases/bugatti-veyron-16-4-super-sport-awarded-top-gear-s-car-of-the-year",
+          "publisher": "Bugatti2011factorypressrelease",
+          "fields": [
+            "torqueNm",
+            "publishedPowerPS",
+            "topSpeedMph"
+          ],
+          "access": "Readweb2026-11-18."
+        }
+      ],
+      "limits": [
+        "Factory1200PS converted1183.58mechanicalhp, not1200SAEhp. Production415km/hnotrecord431. Mass,geometry,RPM,gearingsandtorquecurve endpointsestimated. MichelinPAX bespoke wheel/tiregeometry simplifiedtoapproximate20/21-inch metricrepresentation, notOEfitmentclaim. Activeaero/speed-key/heights andvariabledifferentialsnotemulated; .7REARshareestimated. Runtime0\u201360lowerfloor2.5retained.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Bentham Clover 2018",
+            "id": "bugatti-chiron-2018-roster-candidate",
+            "documentId": "bentham-clover-2018",
+            "runtimeId": "saved-car:Bentham Clover 2018",
+            "scope": "same-wave"
+          }
+        ],
+        "distinction": "VeyronSuperSport generationcarbonmonocoque/W16DSGplatform, distinctfromnewChirondevelopment andallcurrentnonBugattirostercars. Factorynewturbochargers/intercoolersandSuperSportchassisnotbaseVeyron.",
+        "evidence": [
+          "https://newsroom.bugatti.com/en/press-releases/bugatti-displays-new-models-at-auto-shanghai"
+        ],
+        "audit": "Wave47nativecatalogallfields/inspiration plusLotusintake inspected; actualtests/docsrg Bugatti/Veyron/Chiron/EB110/Divo foundnounrelatedcarconfigmatch. Exact660slotconfirmed. Fresh48absencecheckpending."
+      },
+      "name": "Woollyhead Clover 2011",
+      "id": "woollyhead-clover-2011",
+      "simulationEstimates": {
+        "reverseRatio": 3.2,
+        "cgHeightM": 0.42,
+        "groundClearanceM": 0.115,
+        "dragCoefficient": 0.36,
+        "tireGrip": 1.08,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0.025,
+        "aeroRear": 0.045,
+        "shiftTimeMs": 100,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.45,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "aspiration": "Turbocharged",
+        "fuelTankUSgal": 26.4,
+        "zeroToSixtySec": 2.5,
+        "bodyClass": "coupe",
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "gearCount": 7,
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 6400,
+        "torqueRpm": 3000,
+        "torquePlateauEndRpm": 5000,
+        "curbKg": 1990,
+        "lengthM": 4.462,
+        "widthM": 1.998,
+        "heightM": 1.19,
+        "wheelbaseM": 2.71,
+        "trackFrontIn": 67.6,
+        "trackRearIn": 64.4,
+        "tireSize": [
+          265,
+          35,
+          20
+        ],
+        "frontTire": [
+          265,
+          35,
+          20
+        ],
+        "rearTire": [
+          365,
+          30,
+          21
+        ],
+        "gearRatios": [
+          3.176,
+          2.263,
+          1.667,
+          1.29,
+          1.057,
+          0.878,
+          0.795
+        ],
+        "finalDrive": 2.73,
+        "transmissionLabel": "seven-speedDSG approximatedautomatic",
+        "centerDifferentialBalance": 0.7
+      }
+    },
+    {
+      "candidateId": "bugatti-chiron-2018-roster-candidate",
+      "bodyClass": "coupe",
+      "identity": {
+        "year": 2018,
+        "make": "Bugatti",
+        "model": "Chiron",
+        "trim": "original1500metricPS standardcoupe8.0W16quad-turboAWD7DCT;notSport,PurSport,SuperSport300+,DivoorhybridTourbillon",
+        "market": "UK/Europe"
+      },
+      "referenceVehicle": "2018 Bugatti Chiron, original1500metricPS standardcoupe8.0W16quad-turboAWD7DCT;notSport,PurSport,SuperSport300+,DivoorhybridTourbillon",
+      "facts": {
+        "powerHp": 1479.4801059000001,
+        "publishedPowerPS": 1500,
+        "torqueNm": 1600,
+        "torqueRpm": 2000,
+        "torquePlateauEndRpm": 6000,
+        "engineDisplacementL": 8,
+        "transmission": "automatic",
+        "gearCount": 7,
+        "topSpeedMph": 260.97590073968024
+      },
+      "sources": [
+        {
+          "url": "https://newsroom.bugatti.com/press-releases/geneva-international-motor-show-2016",
+          "publisher": "Bugatti2016factorylaunchtechnicaldescription",
+          "fields": [
+            "powerHp",
+            "publishedPowerPS",
+            "torqueNm",
+            "torqueRpm",
+            "torquePlateauEndRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        },
+        {
+          "url": "https://newsroom.bugatti.com/en/press-releases/bugatti-eb110-vs-chiron-super-sports-and-hyper-sports-cars-compared",
+          "publisher": "Bugatti2019factorycomparison",
+          "fields": [
+            "publishedPowerPS",
+            "powerUnitBasis",
+            "relationshipAudit"
+          ],
+          "access": "Readweb2026-11-18."
+        }
+      ],
+      "limits": [
+        "EnglishlaunchHPmeansmetric: factory2019comparison specifies1103kW/1500hp. Converted1479.48mechanicalhp.2018slotusesoriginalproductiongeneration, notSportintroduced2018.1995kg anddimensions/tires/gears/RPMestimated. Nativepowertraincannotemulatetwo-stageturboactivation/activediffs/aero; .7REARshareestimated.0\u201360set2.5minimumruntimecap, notfactory2.4s0\u2013100orclaimexactperformance.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Woollyhead Clover 2011",
+            "id": "bugatti-veyron-super-sport-2011-roster-candidate",
+            "documentId": "woollyhead-clover-2011",
+            "runtimeId": "saved-car:Woollyhead Clover 2011",
+            "scope": "same-wave"
+          }
+        ],
+        "distinction": "Entirelynewcarbonmonocoque, extensiveW16redesign, two-stageturbochargers/new7DCTandchassis versusVeyron; 1500PSoriginalmodel maintainedfor2018 notyear-paddinganotherChiron.",
+        "evidence": [
+          "https://newsroom.bugatti.com/press-releases/geneva-international-motor-show-2016"
+        ],
+        "audit": "Wave47nativecatalogallfields/inspiration plusLotusintake inspected; actualtests/docsrg Bugatti/Veyron/Chiron/EB110/Divo foundnounrelatedcarconfigmatch. Exact660slotconfirmed. Fresh48absencecheckpending."
+      },
+      "name": "Bentham Clover 2018",
+      "id": "bentham-clover-2018",
+      "simulationEstimates": {
+        "reverseRatio": 3.2,
+        "cgHeightM": 0.42,
+        "groundClearanceM": 0.115,
+        "dragCoefficient": 0.35,
+        "tireGrip": 1.1,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0.03,
+        "aeroRear": 0.05,
+        "shiftTimeMs": 100,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.45,
+        "redlineRpm": 6700,
+        "revLimitRpm": 6900,
+        "aspiration": "Turbocharged",
+        "fuelTankUSgal": 26.4,
+        "zeroToSixtySec": 2.5,
+        "bodyClass": "coupe",
+        "drivetrain": "awd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 6700,
+        "curbKg": 1995,
+        "lengthM": 4.544,
+        "widthM": 2.038,
+        "heightM": 1.212,
+        "wheelbaseM": 2.711,
+        "trackFrontIn": 68.8,
+        "trackRearIn": 65.4,
+        "tireSize": [
+          285,
+          30,
+          20
+        ],
+        "frontTire": [
+          285,
+          30,
+          20
+        ],
+        "rearTire": [
+          355,
+          25,
+          21
+        ],
+        "gearRatios": [
+          3.3,
+          2.27,
+          1.67,
+          1.3,
+          1.07,
+          0.89,
+          0.76
+        ],
+        "finalDrive": 2.85,
+        "transmissionLabel": "seven-speeddualclutch approximatedautomatic",
+        "centerDifferentialBalance": 0.7
+      }
+    },
+    {
+      "candidateId": "aston-martin-dbs-superleggera-2019-roster-candidate",
+      "bodyClass": "coupe",
+      "identity": {
+        "year": 2019,
+        "make": "Aston Martin",
+        "model": "DBS Superleggera",
+        "trim": "original2018launch/2019coupe5.2twin-turboV12 ZFeight-speedRWD2+2;notVolante,770Ultimate,DB11AMRor2008DBS",
+        "market": "UK/Europe"
+      },
+      "referenceVehicle": "2019 Aston Martin DBS Superleggera, original2018launch/2019coupe5.2twin-turboV12 ZFeight-speedRWD2+2;notVolante,770Ultimate,DB11AMRor2008DBS",
+      "facts": {
+        "powerHp": 715,
+        "publishedPowerPS": 725,
+        "powerRpm": 6500,
+        "torqueNm": 900,
+        "torqueRpm": 1800,
+        "torquePlateauEndRpm": 5000,
+        "engineDisplacementL": 5.2,
+        "transmission": "automatic",
+        "gearCount": 8,
+        "publishedDryKg": 1693,
+        "lengthM": 4.712,
+        "widthM": 1.968,
+        "heightM": 1.28,
+        "wheelbaseM": 2.805,
+        "frontWeightDistribution": 0.51,
+        "topSpeedMph": 211
+      },
+      "sources": [
+        {
+          "url": "https://www.astonmartin.com/en-gb/our-world/news/2018/6/26/introducing-the-new-dbs-superleggera-two-illustrious-names-one-magnificent-super-gt",
+          "publisher": "AstonMartin2018factorylaunchandspecificationtable",
+          "fields": [
+            "powerHp",
+            "publishedPowerPS",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "torquePlateauEndRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "publishedDryKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "frontWeightDistribution",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "1693kgfactoryDRY, running1800kgestimate; do notlabeldrycurb. Factorytracks/tires/finaldrive/groundclearance/weightdistribution repeated inestimatesforbuilder. Internalgears/reverse,fuelcapacity,RPMlimits,dynamiccoefficientsestimated. Activeaero/cylinderdeactivation notemulated.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Marsh Bedstraw 2017",
+            "documentId": "marsh-bedstraw-2017",
+            "runtimeId": "saved-car:Marsh Bedstraw 2017",
+            "reference": "DB11V12original608PS8AT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Water Forgetmenot 2008",
+            "documentId": "water-forgetmenot-2008",
+            "runtimeId": "saved-car:Water Forgetmenot 2008",
+            "reference": "DBSnaturallyaspiratedV12six-speedmanual",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "RelatedDB11architecture explicitlyacknowledged; carbonbody72kglighterdry,900NmtunedV12,newhigh-torqueZFtransaxleandfinaldrive,carbonceramicbrakes,differentaero/chassis. NotmerelyDB11modelyearorbadge.",
+        "evidence": [
+          "https://www.astonmartin.com/en-gb/our-world/news/2018/6/26/introducing-the-new-dbs-superleggera-two-illustrious-names-one-magnificent-super-gt"
+        ],
+        "audit": "Wave47nativecatalogallfields/inspiration plusLotusintake inspected; actualtests/docsrg Bugatti/Veyron/Chiron/EB110/Divo foundnounrelatedcarconfigmatch. Exact660slotconfirmed. Fresh48absencecheckpending."
+      },
+      "name": "Suckling Clover 2019",
+      "id": "suckling-clover-2019",
+      "simulationEstimates": {
+        "reverseRatio": 3.317,
+        "cgHeightM": 0.43,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.38,
+        "tireGrip": 1.04,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.915,
+        "rearDifferentialAccel": 0.3,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0.035,
+        "aeroRear": 0.05,
+        "shiftTimeMs": 150,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "aspiration": "Turbocharged",
+        "fuelTankUSgal": 20.6,
+        "zeroToSixtySec": 3.3,
+        "bodyClass": "coupe",
+        "drivetrain": "rwd",
+        "torqueConverterSlip": 0.03,
+        "torqueConverterMultiplication": 1.8,
+        "curbKg": 1800,
+        "trackFrontIn": 65.55118110236221,
+        "trackRearIn": 64.76377952755905,
+        "tireSize": [
+          265,
+          35,
+          21
+        ],
+        "frontTire": [
+          265,
+          35,
+          21
+        ],
+        "rearTire": [
+          305,
+          30,
+          21
+        ],
+        "gearRatios": [
+          4.714,
+          3.143,
+          2.106,
+          1.667,
+          1.285,
+          1,
+          0.839,
+          0.667
+        ],
+        "finalDrive": 2.93,
+        "transmissionLabel": "ZF eight-speed torque-converter automatic"
+      }
+    }
+  ],
+  "deferred": []
+}

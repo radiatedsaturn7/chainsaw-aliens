@@ -1,0 +1,82 @@
+{
+  "id": "mountain-trefoil-2012",
+  "name": "Mountain Trefoil 2012",
+  "stableCarId": "saved-car:Mountain Trefoil 2012",
+  "runtimeId": "saved-car:Mountain Trefoil 2012",
+  "candidateId": "mazda-mazda5-sport-2012-us-6mt-supplemental",
+  "referenceVehicle": "2012 United States Mazda Mazda5, SportCW-generation2.5L six-speedmanual,standard16-inchalloys,nooptionalmoonroof;notTouring/GrandTouring5AT or2006CR2.3",
+  "identity": {
+    "year": 2012,
+    "make": "Mazda",
+    "model": "Mazda5",
+    "trim": "SportCW-generation2.5L six-speedmanual,standard16-inchalloys,nooptionalmoonroof;notTouring/GrandTouring5AT or2006CR2.3",
+    "market": "United States"
+  },
+  "bodyClass": "five-door six-seat compact MPV with sliding rear doors; production",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    3,
+    4,
+    5,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://news.mazdausa.com/download/2012-Mazda5-Specifications.pdf",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueLbFt",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "gearCount",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "redlineRpm",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "frontWeightDistribution",
+        "groundClearanceM",
+        "fuelTankUSgal",
+        "steeringRatio",
+        "absEnabled"
+      ]
+    }
+  ]
+}

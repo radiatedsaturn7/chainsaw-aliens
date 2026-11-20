@@ -1,0 +1,72 @@
+{
+  "id": "yellow-archangel-1992",
+  "name": "Yellow Archangel 1992",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1269,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      1526,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://gazoo.com/catalog/maker/NISSAN/SILVIA/198805/1507203/",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "reverseRatio",
+        "finalDrive",
+        "fuelTankUSgal"
+      ]
+    },
+    {
+      "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/silvia_qs.html",
+      "fields": [
+        "generation",
+        "dimensions",
+        "1991SR20replacement",
+        "RWDarchitecture"
+      ]
+    }
+  ]
+}

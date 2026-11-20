@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "arrowleaf-clover-1972",
+  "name": "Arrowleaf Clover 1972",
+  "stableCarId": "saved-car:Arrowleaf Clover 1972",
+  "referenceVehicle": "1972 Lamborghini Jarama S GTS365CV front-engine V12 2+2 5MT; European production reference, not US emissions variant or modified example",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "arrowleaf-clover-1972",
+  "sourceHashes": {
+    "body": "21c693e0b5827ef6f32ea772a51a51a88e65234b72801ee8a6fe42a21b09bb42",
+    "dashboard": "def65c15fa88c09da192d9628681a1832846ea3843c9952466b2a8d7ca853ee5",
+    "tires": "21ed2e476b960c069b4485d8d7ed3f4a616a9118009a98bb65265e367b72e834"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

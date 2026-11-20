@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "hemp-agrimony-2022",
+  "name": "Hemp Agrimony 2022",
+  "stableCarId": "saved-car:Hemp Agrimony 2022",
+  "referenceVehicle": "2022 US Hyundai Kona N, standard US 8-speed wet dual-clutch automatic, not N Line or TCR",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "0a4c92879b7244dc165826d15f4c453264bf0c11f1e47a72455291bbf55efb8f",
+    "dashboard": "1564373b7f98be593e516aa0ec99b94b9a9b3cbac9997434142817b94fa650cd",
+    "tires": "e0c322d7389ee53dd1e2d4524cc10ffb68ed464b3f03035fac4eddf1bfc43bfe"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

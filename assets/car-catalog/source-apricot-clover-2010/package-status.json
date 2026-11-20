@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "source-apricot-clover-2010",
+  "name": "Apricot Clover 2010",
+  "stableCarId": "saved-car:Apricot Clover 2010",
+  "referenceVehicle": "US 2010 BMW Z4 E89 sDrive35i,twin-turbo six,6MT. Two-seat retractable-hardtop roadster,ROOF UP,standard17-inch wheels;not35is or earlierE86.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "apricot-clover-2010",
+  "sourceHashes": {
+    "body": "960bfa877062509b044daa9f2489d67e567ff06264ec8a692d5b11e234eda7c0",
+    "dashboard": "e3ebad74d0d20a7129fbe7c47cf03a91b9c78f25ab80aced32c7d7c7f708a354",
+    "tires": "7bccc891bf25042c32b028d1623b459368171772e985a2563d09f2280d3d8c43"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
+}

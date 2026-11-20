@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bent-clover-2010",
+  "name": "Bent Clover 2010",
+  "stableCarId": "saved-car:Bent Clover 2010",
+  "referenceVehicle": "2010 United States Suzuki SX4, Crossover withoptional i-AWD,2.0DOHC gasoline6MT,standard16-inchcoveredsteelwheels; notSportBack,sedan,CVT orFiatSedici",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "bent-clover-2010",
+  "sourceHashes": {
+    "body": "bbd07f0987d4f271dab57e2296bc696ced3e6e78bb70da8c2f732ca8dbc60126",
+    "dashboard": "3c6d22023d26a9191f3c2799ad4957b5a602a68146eb5da2b852eae0d8751b12",
+    "tires": "2d79667c9ee0f11b7c915c2f149bade89522a1b1ad6338a9be414fc2a96c592e"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

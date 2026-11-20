@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "spring-vetch-1970",
+  "name": "Spring Vetch 1970",
+  "stableCarId": "saved-car:Spring Vetch 1970",
+  "referenceVehicle": "1970 United States Chevrolet Chevelle SS454, SportCoupe,LS5-type360-hp454four-barrelV8,4MT,standardclosedhood,noLS6",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "7972707f37ce5fb2bb8a80c545fd35b31e832ef6eabf6e6d3ce5948f3fa77fef",
+    "dashboard": "567926b89638dac5a6b0568c009fe09aba79cef97d14ca598b19ec6a903fe5f3",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

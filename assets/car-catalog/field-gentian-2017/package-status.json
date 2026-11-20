@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "field-gentian-2017",
+  "name": "Field Gentian 2017",
+  "stableCarId": "saved-car:Field Gentian 2017",
+  "referenceVehicle": "2017 US Alfa Romeo Giulia Quadrifoglio 2.9 V6 RWD eight-speed automatic",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "field-gentian-2017",
+  "sourceHashes": {
+    "body": "f3e7e470375da588e457611de28ad775c8fad5cff890c81621817a9777452ffa",
+    "dashboard": "873d38aa45bf200bc325920fc92fe7eb0ed55b19e95737309252dcf5787af930",
+    "tires": "2b4efb2e5b243d80324db5a377544b9ca81f544dbaecc0627c17dc71cdd687ee"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

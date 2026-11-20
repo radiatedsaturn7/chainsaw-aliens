@@ -1,0 +1,1123 @@
+{
+  "schemaVersion": 1,
+  "base": "1d826fbff070e0d76390f819ab9dff1fa4b459c7",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "acura-mdx-base-2010-us-6at-supplemental",
+      "identity": {
+        "year": 2010,
+        "make": "Acura",
+        "model": "MDX",
+        "trim": "USbase3.7V6SH-AWDsix-speedautomatic,standardcoil/damper chassis; noTechnology/Advancepackage",
+        "market": "United States"
+      },
+      "referenceVehicle": "2010 United States Acura MDX, USbase3.7V6SH-AWDsix-speedautomatic,standardcoil/damper chassis; noTechnology/Advancepackage",
+      "bodyClass": "five-door seven-seat SUV; production",
+      "facts": {
+        "powerHp": 300,
+        "powerRpm": 6300,
+        "torqueLbFt": 270,
+        "torqueRpm": 4500,
+        "engineDisplacementL": 3.664,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 4.866639999999999,
+        "widthM": 1.9939,
+        "heightM": 1.73228,
+        "wheelbaseM": 2.7508199999999996,
+        "trackFrontIn": 67.7,
+        "trackRearIn": 67.5,
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "transmissionLabel": "6-speed automatic",
+        "gearCount": 6,
+        "gearRatios": [
+          3.359,
+          2.095,
+          1.485,
+          1.065,
+          0.754,
+          0.556
+        ],
+        "reverseRatio": 2.269,
+        "finalDrive": 4.25,
+        "curbKg": 2064,
+        "frontWeightDistribution": 0.56,
+        "redlineRpm": 6700,
+        "tireSize": [
+          255,
+          55,
+          18
+        ],
+        "absEnabled": true,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://hondanews.com/en-US/releases/release-90436797ceb4d5d5fbf975004c34bb27-2010-acura-mdx-introduction",
+          "publisher": "Acura original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "drivetrain",
+            "transmission",
+            "transmissionLabel",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "curbKg",
+            "frontWeightDistribution",
+            "redlineRpm",
+            "tireSize",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "Exactfactory2010USbase table read2026-11-18; specificbasecurb,mechanicalratiosanddimensions; noAdvancevariable-dampermass."
+        }
+      ],
+      "limits": [
+        "GenericAWD estimated35percentrearshare; noSH-AWDyawvectoring,variabletorqueoverdriveoradaptive-damperclaim.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "pink-trefoil-2003",
+            "alias": "Pink Trefoil 2003",
+            "reference": "2003 Pilot3.5AWD5AT",
+            "documentId": "pink-trefoil-2003",
+            "runtimeId": "saved-car:Pink Trefoil 2003",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "fern-clover-2007",
+            "alias": "Fern Clover 2007",
+            "reference": "2007 RDX2.3turboAWD",
+            "documentId": "fern-clover-2007",
+            "runtimeId": "saved-car:Fern Clover 2007",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "MDX is absent exactidentity. Second-generationMDX3.7/6AT differs fromfirst-generationPilot3.5/5AT; ZDXsharesMDXpowertrain but hasdistinctfive-seatfastbackbody,lowerheight,reducedmass anddifferentwheel/tiregeometry; notbadge-onlyclone.",
+        "evidence": [
+          "https://hondanews.com/en-US/releases/release-90436797ceb4d5d5fbf975004c34bb27-2010-acura-mdx-introduction"
+        ]
+      },
+      "name": "Whitecurrant Clover 2010",
+      "id": "whitecurrant-clover-2010",
+      "simulationEstimates": {
+        "cgHeightM": 0.65,
+        "groundClearanceM": 0.207,
+        "dragCoefficient": 0.36,
+        "tireGrip": 0.88,
+        "spring": 0.53,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 340,
+        "wheelWellAware": true,
+        "revLimitRpm": 6900,
+        "fuelTankUSgal": 20,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 7.0,
+        "centerDifferentialBalance": 0.35
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "acura-zdx-base-2010-us-6at-supplemental",
+      "identity": {
+        "year": 2010,
+        "make": "Acura",
+        "model": "ZDX",
+        "trim": "USbase3.7V6SH-AWDsix-speedautomatic,standardcoil/damper chassis; noTechnology/Advancepackage",
+        "market": "United States"
+      },
+      "referenceVehicle": "2010 United States Acura ZDX, USbase3.7V6SH-AWDsix-speedautomatic,standardcoil/damper chassis; noTechnology/Advancepackage",
+      "bodyClass": "five-door five-seat coupe-profile crossover; production",
+      "facts": {
+        "powerHp": 300,
+        "powerRpm": 6300,
+        "torqueLbFt": 270,
+        "torqueRpm": 4500,
+        "engineDisplacementL": 3.664,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 4.88696,
+        "widthM": 1.9939,
+        "heightM": 1.5951199999999999,
+        "wheelbaseM": 2.7508199999999996,
+        "trackFrontIn": 67.7,
+        "trackRearIn": 67.7,
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "transmissionLabel": "6-speed automatic",
+        "gearCount": 6,
+        "gearRatios": [
+          3.359,
+          2.095,
+          1.485,
+          1.065,
+          0.754,
+          0.556
+        ],
+        "reverseRatio": 2.269,
+        "finalDrive": 4.25,
+        "curbKg": 2006.8,
+        "frontWeightDistribution": 0.577,
+        "redlineRpm": 6800,
+        "tireSize": [
+          255,
+          50,
+          19
+        ],
+        "absEnabled": true,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://hondanews.com/en-US/releases/release-f5fd245b002706792aff59004c34bb15-2010-acura-zdx-specifications",
+          "publisher": "Acura original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "drivetrain",
+            "transmission",
+            "transmissionLabel",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "curbKg",
+            "frontWeightDistribution",
+            "redlineRpm",
+            "tireSize",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "Exactfactory2010USbase table read2026-11-18; specificbasecurb,mechanicalratiosanddimensions; noAdvancevariable-dampermass."
+        }
+      ],
+      "limits": [
+        "GenericAWD estimated35percentrearshare; noSH-AWDyawvectoring,variabletorqueoverdriveoradaptive-damperclaim.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "pink-trefoil-2003",
+            "alias": "Pink Trefoil 2003",
+            "reference": "2003 Pilot3.5AWD5AT",
+            "documentId": "pink-trefoil-2003",
+            "runtimeId": "saved-car:Pink Trefoil 2003",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "fern-clover-2007",
+            "alias": "Fern Clover 2007",
+            "reference": "2007 RDX2.3turboAWD",
+            "documentId": "fern-clover-2007",
+            "runtimeId": "saved-car:Fern Clover 2007",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "ZDX is absent exactidentity. Second-generationMDX3.7/6AT differs fromfirst-generationPilot3.5/5AT; ZDXsharesMDXpowertrain but hasdistinctfive-seatfastbackbody,lowerheight,reducedmass anddifferentwheel/tiregeometry; notbadge-onlyclone.",
+        "evidence": [
+          "https://hondanews.com/en-US/releases/release-f5fd245b002706792aff59004c34bb15-2010-acura-zdx-specifications"
+        ]
+      },
+      "name": "Goldenberry Clover 2010",
+      "id": "goldenberry-clover-2010",
+      "simulationEstimates": {
+        "cgHeightM": 0.59,
+        "groundClearanceM": 0.2,
+        "dragCoefficient": 0.36,
+        "tireGrip": 0.88,
+        "spring": 0.53,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 340,
+        "wheelWellAware": true,
+        "revLimitRpm": 7000,
+        "fuelTankUSgal": 20,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 7.0,
+        "centerDifferentialBalance": 0.35
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "acura-cl-type-s-2003-us-6mt-supplemental",
+      "identity": {
+        "year": 2003,
+        "make": "Acura",
+        "model": "CL Type-S",
+        "trim": "3.2V6six-speedmanual helicalLSD,non-navigation; notautomaticVSAmodel",
+        "market": "United States"
+      },
+      "referenceVehicle": "2003 United States Acura CL Type-S, 3.2V6six-speedmanual helicalLSD,non-navigation; notautomaticVSAmodel",
+      "bodyClass": "two-door four-seat luxury coupe; production",
+      "facts": {
+        "powerHp": 260,
+        "powerRpm": 6100,
+        "torqueLbFt": 232,
+        "torqueRpm": 3500,
+        "engineDisplacementL": 3.21,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 4.876799999999999,
+        "widthM": 1.792986,
+        "heightM": 1.3538199999999998,
+        "wheelbaseM": 2.7152600000000002,
+        "trackFrontIn": 61.1,
+        "trackRearIn": 60.9,
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "transmissionLabel": "6-speed manual",
+        "gearCount": 6,
+        "gearRatios": [
+          3.933,
+          2.478,
+          1.7,
+          1.25,
+          0.976,
+          0.771
+        ],
+        "reverseRatio": 4.008,
+        "finalDrive": 3.286,
+        "curbKg": 1563,
+        "tireSize": [
+          215,
+          50,
+          17
+        ],
+        "frontWeightDistribution": 0.62,
+        "redlineRpm": 6900,
+        "groundClearanceM": 0.158,
+        "fuelTankUSgal": 17.2,
+        "absEnabled": true,
+        "tractionControlEnabled": false
+      },
+      "sources": [
+        {
+          "url": "https://acuranews.com/en-US/releases/2003-acura-3-2-cl-and-cl-type-s-specifications",
+          "publisher": "Acura original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "drivetrain",
+            "transmission",
+            "transmissionLabel",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "curbKg",
+            "tireSize",
+            "frontWeightDistribution",
+            "redlineRpm",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "Factory2003table read2026-11-18:manual1563kg,260SAEnethp,232lbftplateau3500-5500,allratiosand62front. Widthtable69.2in contradicts1793mm; use1793mm convertedinches explicitly."
+        }
+      ],
+      "limits": [
+        "Factorywidthunitmismatch disclosed; metric1793mmpreferred. Differentiallockstrengthestimated, notexacthelicaltorquebias.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "redbud-v6-2007",
+            "alias": "Redbud V6 2007",
+            "reference": "2007 Accord3.0V6manualcoupe",
+            "documentId": "redbud-v6-2007",
+            "runtimeId": "saved-car:Redbud V6 2007",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "juniper-clover-1994",
+            "alias": "Juniper Clover 1994",
+            "reference": "1994 LegendTypeII3.2manualcoupe",
+            "documentId": "juniper-clover-1994",
+            "runtimeId": "saved-car:Juniper Clover 1994",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoCLidentityfound. YA4J32transverseVTECcoupehelicalLSD differs fromearlierlongitudinalLegend andlaterAccord3.0manual; noTypeSautomaticnearclone.",
+        "evidence": [
+          "https://acuranews.com/en-US/releases/2003-acura-3-2-cl-and-cl-type-s-specifications"
+        ]
+      },
+      "name": "Apple Clover 2003",
+      "id": "apple-clover-2003",
+      "simulationEstimates": {
+        "cgHeightM": 0.48,
+        "dragCoefficient": 0.32,
+        "tireGrip": 0.89,
+        "spring": 0.51,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.35,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "wheelWellAware": true,
+        "revLimitRpm": 7100,
+        "topSpeedMph": 145,
+        "zeroToSixtySec": 6.2
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "acura-ilx-2-4-premium-2013-us-6mt-supplemental",
+      "identity": {
+        "year": 2013,
+        "make": "Acura",
+        "model": "ILX",
+        "trim": "2.4Premium six-speedmanual nonhybrid,standard17-inchalloys; not2.0automatic orlaterDCT",
+        "market": "United States"
+      },
+      "referenceVehicle": "2013 United States Acura ILX, 2.4Premium six-speedmanual nonhybrid,standard17-inchalloys; not2.0automatic orlaterDCT",
+      "bodyClass": "four-door five-seat compact luxury sedan; production",
+      "facts": {
+        "powerHp": 201,
+        "powerRpm": 7000,
+        "torqueLbFt": 170,
+        "torqueRpm": 4400,
+        "engineDisplacementL": 2.354,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 4.5491399999999995,
+        "widthM": 1.7932399999999997,
+        "heightM": 1.41224,
+        "wheelbaseM": 2.6695399999999996,
+        "trackFrontIn": 59.4,
+        "trackRearIn": 60.3,
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "transmissionLabel": "6-speed manual",
+        "gearCount": 6,
+        "gearRatios": [
+          3.267,
+          2.04,
+          1.429,
+          1.073,
+          0.83,
+          0.647
+        ],
+        "reverseRatio": 3.583,
+        "finalDrive": 4.765,
+        "curbKg": 1351,
+        "tireSize": [
+          215,
+          45,
+          17
+        ],
+        "redlineRpm": 7100,
+        "groundClearanceM": 0.157,
+        "frontWeightDistribution": 0.6084620550705171,
+        "absEnabled": true,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://hondanews.com/en-US/releases/release-17040050707d4f50ae771efc1b2c0a6f-2013-ilx-introduction",
+          "publisher": "Acura original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "drivetrain",
+            "transmission",
+            "transmissionLabel",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "curbKg",
+            "tireSize",
+            "redlineRpm",
+            "groundClearanceM",
+            "frontWeightDistribution",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "Factory2013table read2026-11-18:2.4Premium2978lb1351kg,201hp,6MTratios,1812/1166axleweights. No2.0base2910lb orhybridfigures."
+        }
+      ],
+      "limits": [
+        "Amplitude-reactivedamper behavior collapsedtofixedestimatedspring/damping; nohybridsystem.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "hollyleaf-clover-2006",
+            "alias": "Hollyleaf Clover 2006",
+            "reference": "2006 CivicDX1.8manual",
+            "documentId": "hollyleaf-clover-2006",
+            "runtimeId": "saved-car:Hollyleaf Clover 2006",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "broadleaf-trefoil-2004",
+            "alias": "Broadleaf Trefoil 2004",
+            "reference": "2004 TSX2.4manual",
+            "documentId": "broadleaf-trefoil-2004",
+            "runtimeId": "saved-car:Broadleaf Trefoil 2004",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoILXidentityfound. CompactDE2Civic-derivedK24sedan differs fromR18CivicDX andlargerCL9TSXbody; noCivicSi samevariantentryfound.",
+        "evidence": [
+          "https://hondanews.com/en-US/releases/release-17040050707d4f50ae771efc1b2c0a6f-2013-ilx-introduction"
+        ]
+      },
+      "name": "Pear Clover 2013",
+      "id": "pear-clover-2013",
+      "simulationEstimates": {
+        "cgHeightM": 0.49,
+        "dragCoefficient": 0.3,
+        "tireGrip": 0.86,
+        "spring": 0.48,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "wheelWellAware": true,
+        "revLimitRpm": 7300,
+        "fuelTankUSgal": 13.2,
+        "topSpeedMph": 135,
+        "zeroToSixtySec": 6.8
+      }
+    },
+    {
+      "candidateId": "bmw-128i-2009-us-e82-6mt",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2009,
+        "make": "BMW",
+        "model": "128i",
+        "trim": "E82 Coupe naturally aspirated2996cc inline-six six-speed manual, standard nonSport; not135i,E87hatch orConvertible",
+        "market": "United States"
+      },
+      "referenceVehicle": "2009 United States BMW 128i E82 Coupe naturally aspirated2996cc inline-six six-speed manual, standard nonSport; not135i,E87hatch orConvertible",
+      "bodyClass": "coupe",
+      "facts": {
+        "powerKw": 171.51097056,
+        "powerRpm": 6500,
+        "torqueNm": 271.1635896,
+        "torqueRpm": 2750,
+        "engineDisplacementL": 2.996,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "curbKg": 1475.0823872400001,
+        "frontWeightDistribution": 0.508,
+        "gearRatios": [
+          4.3,
+          2.46,
+          1.66,
+          1.23,
+          1,
+          0.85
+        ],
+        "finalDrive": 3.23,
+        "reverseRatio": 3.94,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 6.1,
+        "fuelTankUSgal": 14
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/BMW/1%20Series/BMW_US%201SeriesCoupe_2009.pdf",
+          "publisher": "BMW original US factory brochure, archived scan",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "frontWeightDistribution",
+            "gearRatios",
+            "finalDrive",
+            "reverseRatio",
+            "topSpeedMph",
+            "zeroToSixtySec",
+            "fuelTankUSgal",
+            "identity"
+          ],
+          "access": "Downloaded original brochure and inspected technical tables; local PDF/text preserved in wave70 scratch."
+        }
+      ],
+      "limits": [
+        "Supplemental identity consumes an open canonical660 slot. All suggestedEstimates are explicitly estimates. No driving/test/art completion claim.",
+        "PDF22 separates manual3252lb from automatic3329lb; direct US unladen basis. Geometry/tires/CG/redline estimated.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "sierra-clover-2004",
+            "alias": "Sierra Clover 2004",
+            "referenceVehicle": "2004 Italy BMW 116i E87 five-door Eletta 1.6 gasoline five-speed manual, standard steel 16-inch runflat wheels; not Attiva, diesel, 120i or facelift",
+            "documentId": "sierra-clover-2004",
+            "runtimeId": "saved-car:Sierra Clover 2004",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "E82 coupe3.0six/6MT is mechanically distinct from E87 hatch1.6four/5MT, not a year or badge change.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/BMW/1%20Series/BMW_US%201SeriesCoupe_2009.pdf"
+        ]
+      },
+      "name": "Peach Clover 2009",
+      "id": "peach-clover-2009",
+      "simulationEstimates": {
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "lengthM": 4.36,
+        "widthM": 1.748,
+        "heightM": 1.423,
+        "wheelbaseM": 2.66,
+        "trackFrontIn": 58.3,
+        "trackRearIn": 59.3,
+        "tireSize": [
+          205,
+          55,
+          16
+        ],
+        "frontTire": [
+          205,
+          55,
+          16
+        ],
+        "rearTire": [
+          205,
+          55,
+          16
+        ],
+        "transmissionLabel": "6-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "bmw-550i-2008-us-e60-6mt",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2008,
+        "make": "BMW",
+        "model": "550i",
+        "trim": "E60 sedan4.8 naturally aspirated V8 six-speed manual, nonSport ordinary chassis; notM5,535i orautomatic",
+        "market": "United States"
+      },
+      "referenceVehicle": "2008 United States BMW 550i E60 sedan4.8 naturally aspirated V8 six-speed manual, nonSport ordinary chassis; notM5,535i orautomatic",
+      "bodyClass": "sedan",
+      "facts": {
+        "powerKw": 268.45195392,
+        "powerRpm": 6300,
+        "torqueNm": 488.09446128,
+        "torqueRpm": 3400,
+        "engineDisplacementL": 4.8,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "curbKg": 1789.8754920200001,
+        "frontWeightDistribution": 0.514,
+        "gearRatios": [
+          4.06,
+          2.4,
+          1.58,
+          1.19,
+          1,
+          0.87
+        ],
+        "finalDrive": 2.93,
+        "reverseRatio": 3.68,
+        "zeroToSixtySec": 5.4
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/BMW/5%20Series/BMW_US%205Series_2008-v2.pdf",
+          "publisher": "BMW original US factory brochure, archived scan",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "frontWeightDistribution",
+            "gearRatios",
+            "finalDrive",
+            "reverseRatio",
+            "zeroToSixtySec",
+            "identity"
+          ],
+          "access": "Downloaded original brochure and inspected technical tables; local PDF/text preserved in wave70 scratch."
+        }
+      ],
+      "limits": [
+        "Supplemental identity consumes an open canonical660 slot. All suggestedEstimates are explicitly estimates. No driving/test/art completion claim.",
+        "PDF26 exact550i manual column3946lb51.4%front and completegearset. Top130mph estimate reflects ordinary tire limiter, not universal150mph table footnote. Geometry/tires/tank estimate.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "heath-speedwell-2009",
+            "alias": "Heath Speedwell 2009",
+            "referenceVehicle": "2009 US BMW M5 Sedan E60 5.0 naturally aspirated V10 six-speed manual; not E39/E34 or SMG",
+            "documentId": "heath-speedwell-2009",
+            "runtimeId": "saved-car:Heath Speedwell 2009",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "saskatoon-clover-2008",
+            "alias": "Saskatoon Clover 2008",
+            "referenceVehicle": "2008 United States BMW 650i E63 Coupe4.8 naturally aspirated V8 standard six-speed manual, standard18inch all-season wheels, nonSport; not Convertible,M6 orSportAutomatic",
+            "documentId": "saskatoon-clover-2008",
+            "runtimeId": "saved-car:Saskatoon Clover 2008",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Ordinary N62V8 E60 sedan differs from S85V10 M5 in engine/chassis/output and from E63V8coupe in body,wheelbase,mass andfinaldrive.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/BMW/5%20Series/BMW_US%205Series_2008-v2.pdf"
+        ]
+      },
+      "name": "Plum Clover 2008",
+      "id": "plum-clover-2008",
+      "simulationEstimates": {
+        "cgHeightM": 0.53,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "fuelTankUSgal": 18.5,
+        "topSpeedMph": 130,
+        "lengthM": 4.841,
+        "widthM": 1.846,
+        "heightM": 1.468,
+        "wheelbaseM": 2.888,
+        "trackFrontIn": 61.3,
+        "trackRearIn": 62.3,
+        "tireSize": [
+          245,
+          45,
+          17
+        ],
+        "frontTire": [
+          245,
+          45,
+          17
+        ],
+        "rearTire": [
+          245,
+          45,
+          17
+        ],
+        "transmissionLabel": "6-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "bmw-z4-2010-us-sdrive35i-6mt",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2010,
+        "make": "BMW",
+        "model": "Z4",
+        "trim": "E89 sDrive35i twin-turbo inline-six six-speed manual retractable-hardtop roadster standard17inch wheels, roof-up; notDCT,sDrive35is orE86M",
+        "market": "United States"
+      },
+      "referenceVehicle": "2010 United States BMW Z4 E89 sDrive35i twin-turbo inline-six six-speed manual retractable-hardtop roadster standard17inch wheels, roof-up; notDCT,sDrive35is orE86M",
+      "bodyClass": "convertible",
+      "facts": {
+        "powerKw": 223.70996159999999,
+        "powerRpm": 5800,
+        "torqueNm": 406.74538440000003,
+        "torqueRpm": 1400,
+        "engineDisplacementL": 3.0,
+        "aspiration": "Twin-turbocharged",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "curbKg": 1564.8936765,
+        "frontWeightDistribution": 0.492,
+        "lengthM": 4.23926,
+        "widthM": 1.7907,
+        "heightM": 1.29032,
+        "wheelbaseM": 2.49682,
+        "trackFrontIn": 59.5,
+        "trackRearIn": 61.4,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 5.1,
+        "fuelTankUSgal": 14.5,
+        "tireSize": [
+          225,
+          45,
+          17
+        ],
+        "frontTire": [
+          225,
+          45,
+          17
+        ],
+        "rearTire": [
+          255,
+          40,
+          17
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/BMW/Z4/BMW_US%20Z4_2010.pdf",
+          "publisher": "BMW original US factory brochure, archived scan",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "frontWeightDistribution",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "topSpeedMph",
+            "zeroToSixtySec",
+            "fuelTankUSgal",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "identity"
+          ],
+          "access": "Downloaded original brochure and inspected technical tables; local PDF/text preserved in wave70 scratch."
+        }
+      ],
+      "limits": [
+        "Supplemental identity consumes an open canonical660 slot. All suggestedEstimates are explicitly estimates. No driving/test/art completion claim.",
+        "PDF33 manual3450lb distinct bracket3494lbDCT. Published3.0L rounded retained. Ratios/finaldrive estimated, no roof folding or adaptive suspension simulation.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "satureja-2007",
+            "alias": "Satureja 2007",
+            "referenceVehicle": "2007 United States BMW Z4 M Coupe E86,3246cc naturally aspirated inline-six,RWD six-speed manual,LHD,standard18inch staggered tires,brushed aluminum interior trim,no Premium Package or navigation. Not Z3,Z4M Roadster,3.0si or European343PS variant.",
+            "documentId": "satureja-2007",
+            "runtimeId": "saved-car:Satureja 2007",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "E89 turbo3.0 convertible differs from E86 naturally aspirated3.2M fixedroof coupe in generation, induction,torque andbody.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/BMW/Z4/BMW_US%20Z4_2010.pdf"
+        ]
+      },
+      "name": "Apricot Clover 2010",
+      "id": "apricot-clover-2010",
+      "simulationEstimates": {
+        "reverseRatio": 3.4,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "gearRatios": [
+          4.06,
+          2.4,
+          1.58,
+          1.19,
+          1,
+          0.87
+        ],
+        "finalDrive": 3.08,
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 119.99999997066864
+          },
+          {
+            "rpm": 1400,
+            "torqueLbFt": 299.9999999266716
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 299.9999999266716
+          },
+          {
+            "rpm": 5800,
+            "torqueLbFt": 271.6551725659702
+          },
+          {
+            "rpm": 7200,
+            "torqueLbFt": 179.99999995600294
+          }
+        ]
+      }
+    },
+    {
+      "candidateId": "audi-a5-2009-us-3-2-quattro-6mt",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2009,
+        "make": "Audi",
+        "model": "A5",
+        "trim": "3.2FSI naturally aspiratedV6 quattro six-speedmanual coupe standardchassis; notS5,RS5,2.0T orTiptronic",
+        "market": "United States"
+      },
+      "referenceVehicle": "2009 United States Audi A5 3.2FSI naturally aspiratedV6 quattro six-speedmanual coupe standardchassis; notS5,RS5,2.0T orTiptronic",
+      "bodyClass": "coupe",
+      "facts": {
+        "powerKw": 197.61046608,
+        "powerRpm": 6500,
+        "torqueNm": 329.46376136400005,
+        "engineDisplacementL": 3.2,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "awd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "lengthM": 4.62534,
+        "widthM": 1.8541999999999998,
+        "heightM": 1.3716,
+        "wheelbaseM": 2.7508199999999996,
+        "trackFrontIn": 62.6,
+        "trackRearIn": 62.1,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 5.8
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Audi/A5/Audi_US%20A5_2009.pdf",
+          "publisher": "Audi original US factory brochure, archived scan",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "topSpeedMph",
+            "zeroToSixtySec",
+            "identity"
+          ],
+          "access": "Downloaded original brochure and inspected technical tables; local PDF/text preserved in wave70 scratch."
+        }
+      ],
+      "limits": [
+        "Supplemental identity consumes an open canonical660 slot. All suggestedEstimates are explicitly estimates. No driving/test/art completion claim.",
+        "FactoryPDF18 explicitly265hp6500 and243lb-ft; torqueRPMprints6500, inconsistent withpowerpeak.3250rpm is a modeling estimate, not corrected factoryfact.",
+        "1630kg unladen estimate; gearset/tires/fuel/CG estimated, fixed40:60AWD approximates torque-sensing behavior.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "meadow-sage-2011",
+            "alias": "Meadow Sage 2011",
+            "referenceVehicle": "2011 UK Audi RS5 Coupe 4.2 FSI quattro 7-speed S tronic, standard 19-inch wheels",
+            "documentId": "meadow-sage-2011",
+            "runtimeId": "saved-car:Meadow Sage 2011",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "V6six-speedmanual A5 differs from high-rev4.2V8seven-DCT RS5 in engine andtransmission, not justbadge.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Audi/A5/Audi_US%20A5_2009.pdf"
+        ]
+      },
+      "name": "Nectarine Clover 2009",
+      "id": "nectarine-clover-2009",
+      "simulationEstimates": {
+        "reverseRatio": 3.4,
+        "cgHeightM": 0.51,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.55,
+        "redlineRpm": 6800,
+        "revLimitRpm": 7000,
+        "fuelTankUSgal": 17.2,
+        "curbKg": 1630,
+        "tireSize": [
+          245,
+          40,
+          18
+        ],
+        "frontTire": [
+          245,
+          40,
+          18
+        ],
+        "rearTire": [
+          245,
+          40,
+          18
+        ],
+        "gearRatios": [
+          3.667,
+          2.053,
+          1.367,
+          1.032,
+          0.838,
+          0.686
+        ],
+        "finalDrive": 3.889,
+        "torqueRpm": 3250,
+        "centerDifferentialBalance": 0.6
+      }
+    }
+  ],
+  "deferred": []
+}

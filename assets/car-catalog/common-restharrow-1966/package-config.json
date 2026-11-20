@@ -1,0 +1,72 @@
+{
+  "id": "common-restharrow-1966",
+  "name": "Common Restharrow 1966",
+  "stableCarId": "saved-car:Common Restharrow 1966",
+  "candidateId": "chevrolet-nova-super-sport-1966-roster-candidate",
+  "referenceVehicle": "1966 US Chevrolet Chevy II Nova Super Sport Coupe two-door hardtop, optional275-hp327cuin four-barrel Turbo-Fire V8, optional four-speed wide-ratio2.52 first gear,3.36 rear axle, RWD; not350-hpL79, later396Nova, four-door or racing conversion.",
+  "identity": {
+    "year": 1966,
+    "make": "Chevrolet",
+    "model": "Chevy II Nova Super Sport",
+    "trim": "Two-door hardtop Super Sport Coupe, optional275-hp327 Turbo-Fire V8, optional wide-ratio4MT, optional3.36 axle",
+    "market": "United States"
+  },
+  "bodyClass": "two-door-hardtop-coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      258,
+      515,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.lov2xlr8.no/brochures/chevy/66nova/bilder/8.jpg",
+      "fields": [
+        "327275-hpoption",
+        "4MTavailability",
+        "2.52versus2.20firstgear options",
+        "optional3.36axle",
+        "SuperSport14-inchwheels",
+        "SuperSportCoupe53.8-inchheight",
+        "183length71.3width110wheelbase56.8/56.3tracks",
+        "coilfrontleafrear",
+        "bucket-seatSuperSportidentity"
+      ]
+    },
+    {
+      "url": "https://www.lov2xlr8.no/brochures/chevy/66nova/66nova.html",
+      "fields": [
+        "factorybrochure context andbody illustrations"
+      ]
+    }
+  ]
+}

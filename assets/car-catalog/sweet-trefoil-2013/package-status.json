@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "sweet-trefoil-2013",
+  "name": "Sweet Trefoil 2013",
+  "stableCarId": "saved-car:Sweet Trefoil 2013",
+  "referenceVehicle": "2013 United States Volkswagen CC Sport2.0TSI six-speedmanual,standard17-inchVerme wheels,nonRLine;notSportPlusDSG,Lux,V6 or4MOTION",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "sweet-trefoil-2013",
+  "sourceHashes": {
+    "body": "ea43526270cecd9c6e05df47421e84f26b4632efe17194d5e2ab15c34cdbb3a7",
+    "dashboard": "672a23de401f77bd3252d82ba153aba96689a0eac39156234a1122050d0b6e3c",
+    "tires": "556e9d09f3c77eb382ef9590c7957289b7588549545e338580a1fdf2597b1974"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

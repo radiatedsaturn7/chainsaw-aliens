@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "goldilocks-1995",
+  "name": "Goldilocks 1995",
+  "stableCarId": "saved-car:Goldilocks 1995",
+  "referenceVehicle": "1995 European BMW M5 E34 3.8 S38B38 sedan, final-facelift6MT, catalyst; not Touring",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "goldilocks-1995",
+  "sourceHashes": {
+    "body": "9e8fcaf952676e814e5aae188dfc29894455ff8c343e120c5094d7a3115cea71",
+    "dashboard": "31c204a8b5ddd7214cb948004964268a8199e967975dd34a97cc2989be19d32d",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

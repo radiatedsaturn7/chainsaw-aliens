@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "mountain-trefoil-2012",
+  "name": "Mountain Trefoil 2012",
+  "stableCarId": "saved-car:Mountain Trefoil 2012",
+  "referenceVehicle": "2012 United States Mazda Mazda5, SportCW-generation2.5L six-speedmanual,standard16-inchalloys,nooptionalmoonroof;notTouring/GrandTouring5AT or2006CR2.3",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "mountain-trefoil-2012",
+  "sourceHashes": {
+    "body": "a5da300d7db7679cfad044738a9edbd564f2ca237f2411ad12f23a2ff5f70b62",
+    "dashboard": "a66c1a8da40fafcf807a0365de9d3e48b42073601ab8420f9997c0b69033e414",
+    "tires": "c4a291ce06012b370e6a9dd7468d3b65a2dc6c11aea1231e11cf6d7812d97a44"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    3,
+    4,
+    5,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

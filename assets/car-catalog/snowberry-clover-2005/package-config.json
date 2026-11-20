@@ -1,0 +1,50 @@
+{
+  "id": "snowberry-clover-2005",
+  "name": "Snowberry Clover 2005",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      240,
+      410,
+      490,
+      170
+    ],
+    "wheel": [
+      470,
+      753,
+      360
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Lincoln/LS/Lincoln_US%20LS_2005.pdf",
+      "fields": [
+        "aspiration",
+        "engineDisplacementL",
+        "powerHp",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "tireSize"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "id": "water-forgetmenot-2008",
+  "name": "Water Forgetmenot 2008",
+  "stableCarId": "saved-car:Water Forgetmenot 2008",
+  "candidateId": "aston-martin-dbs-2008-roster-candidate",
+  "referenceVehicle": "2008 UK Aston Martin DBS coupe 2+0 5.935L naturally aspirated V12 six-speed manual; not DBS Volante, later DBS Superleggera or DB11",
+  "identity": {
+    "year": 2008,
+    "make": "Aston Martin",
+    "model": "DBS Coupe",
+    "trim": "2+0 coupe 5.935 naturally aspirated V12 six-speed manual",
+    "market": "United Kingdom"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1942,
+      809
+    ],
+    "cluster": [
+      1250,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      1500,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Aston_Martin/dbs/Aston%20Martin_int%20DBS_2.pdf",
+      "fields": [
+        "identity",
+        "powerKw",
+        "publishedPowerHp",
+        "publishedPowerPS",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "finalDrive",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "tireSize",
+        "frontTire",
+        "rearTire",
+        "fuelTankUSgal",
+        "topSpeedMph"
+      ]
+    },
+    {
+      "url": "https://www.astonmartin.com/en/models/past-models/dbs-dbs-volante",
+      "fields": [
+        "identity",
+        "production period",
+        "engineDisplacementL",
+        "transmission"
+      ]
+    }
+  ]
+}

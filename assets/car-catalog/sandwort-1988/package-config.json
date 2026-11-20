@@ -1,0 +1,66 @@
+{
+  "id": "sandwort-1988",
+  "name": "Sandwort 1988",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      190,
+      480,
+      540,
+      180
+    ],
+    "wheel": [
+      465,
+      735,
+      315
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f3dea4"
+  },
+  "sources": [
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/engine-versions-scirocco-2-profile-19653",
+      "fields": [
+        "powerKw",
+        "publishedPowerPS",
+        "torqueNm",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL"
+      ]
+    },
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/vehicle-data-scirocco-2-profile-19652",
+      "fields": [
+        "identity",
+        "drivetrain",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM"
+      ]
+    },
+    {
+      "url": "https://www.volkswagen-newsroom.com/en/scirocco-2-19811992-19651",
+      "fields": [
+        "1985 16V introduction and catalyst option from1986"
+      ]
+    }
+  ]
+}

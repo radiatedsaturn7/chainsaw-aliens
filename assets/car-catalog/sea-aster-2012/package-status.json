@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "sea-aster-2012",
+  "name": "Sea Aster 2012",
+  "stableCarId": "saved-car:Sea Aster 2012",
+  "referenceVehicle": "2012 Japan Mercedes-Benz C 63 AMG Coupe Black Series, C204 M156 naturally aspirated V8 LHD two-seat 7-speed MCT, standard body aero; not optional rearwing package",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "d7d214f3fa6ff4d8d241f559db2c99249700c05556ba1b0bd0e40f63c6208388",
+    "dashboard": "3e65a1f18486873519eefdf2149f521ce00f80e0284e4b61c9eb6737923938ed",
+    "tires": "6e9ee712d531bc35b168187a2efdfb7b66495486d1356393dec2baaebe4777ed"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

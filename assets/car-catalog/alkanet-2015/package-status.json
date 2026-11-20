@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "alkanet-2015",
+  "name": "Alkanet 2015",
+  "stableCarId": "saved-car:Alkanet 2015",
+  "referenceVehicle": "2015 UK Audi S1 quattro UK three-door6MT standard17-inch wheels",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "5caf3e0c128ae8794010b67f4b1cf3485d6947f9da3da92717942f5fec0e015d",
+    "dashboard": "8dbbccd204ce3d24aaf85e9a433fc32911a8acaa30fd1939493109baee9aee4f",
+    "tires": "6dd1f665745af45ce696d6a224b9c399f099661318622bb19e684a960db342c3"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "creek-clover-2009",
+  "name": "Creek Clover 2009",
+  "stableCarId": "saved-car:Creek Clover 2009",
+  "referenceVehicle": "2009 Renault Modus Avantage1.2 16V75, Germany faceliftshort-body five-door miniMPV standardfive-speedmanual, naturallyaspiratedpetrol; notGrandlongbody,Quickshift78PS,TCe100or1.6",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "97f7147f5f2596ea1668d71b23b8d7d4faab472ddb8bad823083863a4ebb17ca",
+    "dashboard": "f93346d350796d8dba4638a8609cce1446eae980f137d27a5b68813574cf4447",
+    "tires": "7ac2b818c3ba5aa8520516d8a22808a69232f2f4093fc613646f589ef2bb6d59"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

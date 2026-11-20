@@ -1,0 +1,805 @@
+{
+  "schemaVersion": 1,
+  "base": "77d2297c119ab8074f19f3a067d49c4c39dabe2a",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "mazda-mazda6-i-sport-2010-us-federal-6mt-supplemental",
+      "identity": {
+        "year": 2010,
+        "make": "Mazda",
+        "model": "Mazda6",
+        "trim": "i Sport Federal2.5L six-speed manual sedan, standard16-inch steel wheels; not3.7V6,5AT,PZEVautomatic orMazdaspeed6",
+        "market": "United States"
+      },
+      "referenceVehicle": "2010 United States Mazda Mazda6, i Sport Federal2.5L six-speed manual sedan, standard16-inch steel wheels; not3.7V6,5AT,PZEVautomatic orMazdaspeed6",
+      "bodyClass": "four-door five-seat midsize sedan; production",
+      "facts": {
+        "powerHp": 170,
+        "powerRpm": 6000,
+        "torqueLbFt": 167,
+        "torqueRpm": 4000,
+        "engineDisplacementL": 2.489,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 4.91998,
+        "widthM": 1.8389600000000002,
+        "heightM": 1.4706599999999999,
+        "wheelbaseM": 2.7889199999999996,
+        "trackFrontIn": 62.8,
+        "trackRearIn": 62.8,
+        "gearCount": 6,
+        "gearRatios": [
+          3.454,
+          1.842,
+          1.31,
+          1.03,
+          0.837,
+          0.717
+        ],
+        "reverseRatio": 3.198,
+        "finalDrive": 4.388,
+        "curbKg": 1477.80394146,
+        "tireSize": [
+          205,
+          65,
+          16
+        ],
+        "redlineRpm": 6200,
+        "frontWeightDistribution": 0.6,
+        "groundClearanceM": 0.12954,
+        "fuelTankUSgal": 18.5,
+        "steeringRatio": 16.2,
+        "topSpeedMph": 121,
+        "absEnabled": true,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://news.mazdausa.com/download/2010-MAZDA6-specs.pdf",
+          "publisher": "Mazda original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "curbKg",
+            "tireSize",
+            "redlineRpm",
+            "frontWeightDistribution",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "steeringRatio",
+            "topSpeedMph",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "Public factory specdeck July22 2009 pp10-11 read2026-11-18. Federal manual3258lb, not3309lbautomatic;170hp167lbft notPZEV168/166. Listed121mph factory top speed;5.1in clearance laden."
+        }
+      ],
+      "limits": [
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "marestail-2003",
+            "alias": "Marestail 2003",
+            "reference": "2003 US HondaAccordDX2.4 five-speed",
+            "documentId": "marestail-2003",
+            "runtimeId": "saved-car:Marestail 2003",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "coast-clover-2008",
+            "alias": "Coast Clover 2008",
+            "reference": "2008 NissanAltima2.5Scoupe six-speed",
+            "documentId": "coast-clover-2008",
+            "runtimeId": "saved-car:Coast Clover 2008",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No Mazda6/626/Atenza identity found. North-American GH2.5L large sedan differs from existing Mazda3 compact, Mazda5 MPV and Nissan coupe; no Mazdaspeed6 badge/tune clone.",
+        "evidence": [
+          "https://news.mazdausa.com/download/2010-MAZDA6-specs.pdf"
+        ]
+      },
+      "name": "Field Trefoil 2010",
+      "id": "field-trefoil-2010",
+      "simulationEstimates": {
+        "cgHeightM": 0.51,
+        "dragCoefficient": 0.3,
+        "tireGrip": 0.83,
+        "spring": 0.43,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "wheelWellAware": true,
+        "revLimitRpm": 6500,
+        "zeroToSixtySec": 8.2,
+        "transmission": "manual",
+        "drivetrain": "fwd",
+        "transmissionLabel": "6-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "toyota-avalon-xl-2005-us-5at-supplemental",
+      "identity": {
+        "year": 2005,
+        "make": "Toyota",
+        "model": "Avalon",
+        "trim": "XL3.5V6 five-speed automatic model3534, standard16-inch alloys, cloth and no optionalmoonroof; notTouring,XLS,Limited or later268hp rerating",
+        "market": "United States"
+      },
+      "referenceVehicle": "2005 United States Toyota Avalon, XL3.5V6 five-speed automatic model3534, standard16-inch alloys, cloth and no optionalmoonroof; notTouring,XLS,Limited or later268hp rerating",
+      "bodyClass": "four-door five-seat full-size sedan; production",
+      "facts": {
+        "powerHp": 280,
+        "powerRpm": 6200,
+        "torqueLbFt": 260,
+        "torqueRpm": 4700,
+        "engineDisplacementL": 3.456,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 5.0088799999999996,
+        "widthM": 1.8491199999999999,
+        "heightM": 1.4859,
+        "wheelbaseM": 2.8194,
+        "trackFrontIn": 62.2,
+        "trackRearIn": 61.6,
+        "transmission": "automatic",
+        "gearCount": 5,
+        "finalDrive": 3.08,
+        "curbKg": 1583.0373713000001,
+        "tireSize": [
+          215,
+          60,
+          16
+        ],
+        "groundClearanceM": 0.13462,
+        "dragCoefficient": 0.291,
+        "fuelTankUSgal": 18.5,
+        "steeringRatio": 16.1,
+        "absEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Toyota/Avalon/Toyota_US%20Avalon_2005.pdf",
+          "publisher": "Toyota original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "transmission",
+            "gearCount",
+            "finalDrive",
+            "curbKg",
+            "tireSize",
+            "groundClearanceM",
+            "dragCoefficient",
+            "fuelTankUSgal",
+            "steeringRatio",
+            "absEnabled"
+          ],
+          "access": "Original2005 ToyotaMotorSalesUS eBrochure pp13-16 exactXL column;3490lb emission-reg curb, factory280SAEnet on91octane per footnote,260lbft4700. Standard16inch/P21560R16,3.080differential andCd.291. Individualgear ratios not in brochure."
+        }
+      ],
+      "limits": [
+        "Individual gear ratios and shift strategy are explicit simulation estimates; do not conflate factory2005 premium-fuel280hp with later SAE268hp rating.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "marjoram-2003",
+            "alias": "Marjoram 2003",
+            "reference": "2003 ToyotaCamryLE2.4 four-speed automatic",
+            "documentId": "marjoram-2003",
+            "runtimeId": "saved-car:Marjoram 2003",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No Avalon identity found. XX30 full-size3.5V6 five-speed luxury sedan differs from existing four-cylinderCamryXV30 and Crown/MarkII rear-drive families. NotToyotaCamry trim duplication.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Toyota/Avalon/Toyota_US%20Avalon_2005.pdf"
+        ]
+      },
+      "name": "Valley Clover 2005",
+      "id": "valley-clover-2005",
+      "simulationEstimates": {
+        "reverseRatio": 3.378,
+        "cgHeightM": 0.53,
+        "tireGrip": 0.83,
+        "spring": 0.43,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 6.8,
+        "drivetrain": "fwd",
+        "gearRatios": [
+          4.235,
+          2.36,
+          1.517,
+          1.047,
+          0.756
+        ]
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "nissan-armada-se-2005-us-5at-2wd-supplemental",
+      "identity": {
+        "year": 2005,
+        "make": "Nissan",
+        "model": "Armada",
+        "trim": "SE5.6V8 rear-wheel-drive five-speed automatic, eight-seat bench, standard18-inch alloys, no Tow orOffRoadpackage",
+        "market": "United States"
+      },
+      "referenceVehicle": "2005 United States Nissan Armada, SE5.6V8 rear-wheel-drive five-speed automatic, eight-seat bench, standard18-inch alloys, no Tow orOffRoadpackage",
+      "bodyClass": "five-door eight-seat full-size body-on-frame SUV; production",
+      "facts": {
+        "powerHp": 305,
+        "torqueLbFt": 385,
+        "engineDisplacementL": 5.6,
+        "aspiration": "Naturally Aspirated",
+        "transmission": "automatic",
+        "gearCount": 5,
+        "lengthM": 5.25526,
+        "wheelbaseM": 3.12928,
+        "tireSize": [
+          265,
+          70,
+          18
+        ],
+        "groundClearanceM": 0.25146,
+        "fuelTankUSgal": 28,
+        "absEnabled": true,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://usa.nissannews.com/en-US/releases/release-75f87e9f73a44b21b3f5ad6465872d19-2005-nissan-armada-press-kit-3",
+          "publisher": "Nissan original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "torqueLbFt",
+            "engineDisplacementL",
+            "aspiration",
+            "transmission",
+            "gearCount",
+            "lengthM",
+            "wheelbaseM",
+            "tireSize",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "Factory2005 press kit Overview/AtAGlance read2026-11-18. SE2WD exists,305hp385lbft,5AT,123.2WB206.9length,26570R18,9.9in2WDclearance28gal. Torque/powerRPM,gears,curb,width,height,tracks andperformance expresslyestimated."
+        }
+      ],
+      "limits": [
+        "2285kg is estimated base2WD unladen curb, not a sourced trim weight. Standard low axle ratio estimated without TowPackage. No 4WD modes, rear air-leveling, towing or cargo simulation.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "sumac-40-2012",
+            "alias": "Sumac 40 2012",
+            "reference": "2012 NissanXterraX4x2 4.0V6 five-speed automatic",
+            "documentId": "sumac-40-2012",
+            "runtimeId": "saved-car:Sumac 40 2012",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "osier-2005",
+            "alias": "Osier 2005",
+            "reference": "2005 DodgeDakota4.7V8 AWDautomatic",
+            "documentId": "osier-2005",
+            "runtimeId": "saved-car:Osier 2005",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No Armada/InfinitiQX56 identity found. Full-sizeFAlpha8-seat independent-rearV8SUV differs from XterraV6 compactSUV and Dakotapickup; no rebadgedInfiniti duplicate.",
+        "evidence": [
+          "https://usa.nissannews.com/en-US/releases/release-75f87e9f73a44b21b3f5ad6465872d19-2005-nissan-armada-press-kit-3"
+        ]
+      },
+      "name": "Glade Clover 2005",
+      "id": "glade-clover-2005",
+      "simulationEstimates": {
+        "reverseRatio": 2.613,
+        "cgHeightM": 0.82,
+        "dragCoefficient": 0.39,
+        "tireGrip": 0.79,
+        "spring": 0.62,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.23,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.03,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 440,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.52,
+        "redlineRpm": 5700,
+        "revLimitRpm": 6000,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 7.8,
+        "drivetrain": "rwd",
+        "finalDrive": 2.937,
+        "gearRatios": [
+          3.827,
+          2.368,
+          1.52,
+          1,
+          0.834
+        ],
+        "powerRpm": 4900,
+        "torqueRpm": 3600,
+        "curbKg": 2285,
+        "widthM": 2.01422,
+        "heightM": 1.9761199999999999,
+        "trackFrontIn": 67.5,
+        "trackRearIn": 67.5
+      }
+    },
+    {
+      "candidateId": "kia-sedona-lx-2012-us-6at-canonical-candidate",
+      "identity": {
+        "year": 2012,
+        "make": "Kia",
+        "model": "Sedona",
+        "trim": "LX3.5MPI V6 FWD6AT standard16-inchwheels,seatsseven,unladen",
+        "market": "United States"
+      },
+      "referenceVehicle": "2012 United States Kia Sedona, LX3.5MPI V6 FWD6AT standard16-inchwheels,seatsseven,unladen",
+      "bodyClass": "five-door-minivan",
+      "artIdentity": "VQminivan,tallslidingreardoors,longroof,largeplainheadlamps,16-inchwheels,clothseven-seatcabin;notmodernCarnival.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "transmission": "automatic",
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "engineDisplacementL": 3.47,
+        "powerHp": 271,
+        "powerRpm": 6300,
+        "torqueLbFt": 248,
+        "torqueRpm": 4500,
+        "drivetrain": "fwd",
+        "gearCount": 6,
+        "curbKg": 1984.0130263800002,
+        "lengthM": 5.1308,
+        "widthM": 1.9837399999999998,
+        "heightM": 1.76022,
+        "wheelbaseM": 3.02006,
+        "trackFrontIn": 66.3,
+        "trackRearIn": 66.3,
+        "groundClearanceM": 0.16763999999999998,
+        "tireSize": [
+          225,
+          70,
+          16
+        ],
+        "fuelTankUSgal": 21.1
+      },
+      "sources": [
+        {
+          "url": "https://www.kiamedia.com/us/en/models/sedona/2012/specifications",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "transmission",
+            "absEnabled",
+            "tractionControlEnabled",
+            "engineDisplacementL",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "drivetrain",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "groundClearanceM",
+            "tireSize",
+            "fuelTankUSgal"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        },
+        {
+          "url": "https://www.auto-brochures.com/makes/Kia/Sedona/Kia_US%20Sedona_2012.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "transmission",
+            "absEnabled",
+            "tractionControlEnabled",
+            "engineDisplacementL",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "drivetrain",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "groundClearanceM",
+            "tireSize",
+            "fuelTankUSgal"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "FactorySAEnet271/248;standard4374lbcurbnot4601fulloption. Heightwithoutroofrails/sunroof. Gearing/finaldrive/performanceestimated. Noautomaticdoororloadlevelcontrollerfeatures.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "2024 Caravan-9",
+            "documentId": "caravan-9-2024",
+            "runtimeId": "saved-car:2024 Caravan-9",
+            "reference": "2024 Kia Carnival LX7-passenger US8AT",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "OlderVQminivanMPI3.5/6AT differsfromKA4Carnival2024GDI3.5/8AT withlongerwheelbase/newbody. Notbadge/year-onlytrim. NoEntourageequivalentinactualnativecatalog.",
+        "evidence": [
+          "https://www.kiamedia.com/us/en/models/sedona/2012/specifications",
+          "https://www.auto-brochures.com/makes/Kia/Sedona/Kia_US%20Sedona_2012.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Brook Clover 2012",
+      "id": "brook-clover-2012",
+      "simulationEstimates": {
+        "reverseRatio": 3.39,
+        "cgHeightM": 0.65,
+        "dragCoefficient": 0.37,
+        "tireGrip": 0.8,
+        "spring": 0.38,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.2,
+        "frontOverhangM": 0.95,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 290,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6400,
+        "revLimitRpm": 6700,
+        "topSpeedMph": 115,
+        "zeroToSixtySec": 8.2,
+        "steeringRatio": 20,
+        "gearRatios": [
+          4.65,
+          2.83,
+          1.84,
+          1.39,
+          1,
+          0.77
+        ],
+        "finalDrive": 3.2
+      }
+    },
+    {
+      "candidateId": "kia-borrego-lx-v8-2009-us-rwd-6at-canonical-candidate",
+      "identity": {
+        "year": 2009,
+        "make": "Kia",
+        "model": "Borrego",
+        "trim": "LX4.6V8 2WD6AT,standard17-inchalloywheels,unladen",
+        "market": "United States"
+      },
+      "referenceVehicle": "2009 United States Kia Borrego, LX4.6V8 2WD6AT,standard17-inchalloywheels,unladen",
+      "bodyClass": "five-door-suv",
+      "artIdentity": "HMbody-on-frameSUV,boxybody,three-rowroofline,17-inchwheels,plainLXclothcabin;notSorentocrossover orMohavemodifieddiesel.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "transmission": "automatic",
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "engineDisplacementL": 4.627,
+        "powerHp": 337,
+        "powerRpm": 6000,
+        "torqueLbFt": 323,
+        "torqueRpm": 3500,
+        "drivetrain": "rwd",
+        "gearCount": 6,
+        "curbKg": 1998.07438985,
+        "lengthM": 4.88442,
+        "widthM": 1.91516,
+        "heightM": 1.8110199999999999,
+        "wheelbaseM": 2.8956,
+        "trackFrontIn": 64.2,
+        "trackRearIn": 64.6,
+        "groundClearanceM": 0.21589999999999998,
+        "tireSize": [
+          245,
+          70,
+          17
+        ],
+        "fuelTankUSgal": 20.6
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Kia/Borrego/Kia_US%20Borrego_2009.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "transmission",
+            "absEnabled",
+            "tractionControlEnabled",
+            "engineDisplacementL",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "drivetrain",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "groundClearanceM",
+            "tireSize",
+            "fuelTankUSgal"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "FactorySAEnet337/323,2WDV8curb4405lbnot4621four-wheel-drive. LXV8standard17-inchwheelsverifiedfeaturematrix. Heightincludesroofrails. Selected2WDso noTorqueOnDemand,lowrangeorlockingcontrolsclaim. Gearratios/finaldrive/performanceestimated.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [],
+        "distinction": "HMladder-frame4.6V8RWD utility distinctfromXMunibody3.5V6FWDSorento andSL2.4compactSportage. ActualcataloghasnoBorrego/Mohave.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Kia/Borrego/Kia_US%20Borrego_2009.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Frost Clover 2009",
+      "id": "frost-clover-2009",
+      "simulationEstimates": {
+        "reverseRatio": 3.4,
+        "cgHeightM": 0.69,
+        "dragCoefficient": 0.37,
+        "tireGrip": 0.8,
+        "spring": 0.38,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.2,
+        "frontOverhangM": 0.95,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 290,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 6400,
+        "revLimitRpm": 6700,
+        "topSpeedMph": 120,
+        "zeroToSixtySec": 7.2,
+        "steeringRatio": 20,
+        "gearRatios": [
+          4.17,
+          2.34,
+          1.52,
+          1.14,
+          0.87,
+          0.69
+        ],
+        "finalDrive": 3.36
+      }
+    },
+    {
+      "candidateId": "hyundai-equus-signature-2012-us-8at-canonical-candidate",
+      "identity": {
+        "year": 2012,
+        "make": "Hyundai",
+        "model": "Equus",
+        "trim": "Signature5.0GDI V8 RWD8AT,premiumfuel,standard19-inchstaggeredtires",
+        "market": "United States"
+      },
+      "referenceVehicle": "2012 United States Hyundai Equus, Signature5.0GDI V8 RWD8AT,premiumfuel,standard19-inchstaggeredtires",
+      "bodyClass": "four-door-sedan",
+      "artIdentity": "VIlargeformalflagshipsedan,widechrome-stylegrille,longhood,19-inchwheels,wood/leatherfive-seatcabin;notUltimatefour-seatfridgepackage.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "transmission": "automatic",
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "engineDisplacementL": 5,
+        "powerHp": 429,
+        "powerRpm": 6400,
+        "torqueLbFt": 376,
+        "torqueRpm": 5000,
+        "drivetrain": "rwd",
+        "gearCount": 8,
+        "lengthM": 5.15874,
+        "widthM": 1.88976,
+        "heightM": 1.49098,
+        "wheelbaseM": 3.04546,
+        "trackFrontIn": 63.8,
+        "trackRearIn": 64.1,
+        "tireSize": [
+          245,
+          45,
+          19
+        ],
+        "rearTireSize": [
+          275,
+          40,
+          19
+        ],
+        "fuelTankUSgal": 20.3,
+        "dragCoefficient": 0.27,
+        "manufacturerCurbRangeLb": [
+          4486,
+          4605
+        ],
+        "frontTire": [
+          245,
+          45,
+          19
+        ],
+        "rearTire": [
+          275,
+          40,
+          19
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Hyundai/Equus/Hyundai_US%20Equus_2012.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "transmission",
+            "absEnabled",
+            "tractionControlEnabled",
+            "engineDisplacementL",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "drivetrain",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "rearTireSize",
+            "fuelTankUSgal",
+            "dragCoefficient",
+            "manufacturerCurbRangeLb"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Factorypremiumfuel429/376 selected;regularfuelTBDnotguessed. FactorySignaturecurbrange4486\u20134605lbpreserved;2060kgselectedsimulatedcurbisestimatewithinrange,notexactfactorytrimweight. Ratios/final/performanceestimated. Airsuspension/CDCmodeapproximatedwithpassivefixedsetup,noactiveheight/dampinglogic oradvanceddriverassistclaim.",
+        "Runtime frontTire/rearTire aliases retain the exact source tireSize/rearTireSize dimensions.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [],
+        "distinction": "VIrear-wheel-drive5.0V8 flagship absent;distinctfromfront-driveCadenza3.3V6 andGenesisCoupe,notbadgeclone. NoHyundaiEquus/GenesisSedannativeequivalentfound.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Hyundai/Equus/Hyundai_US%20Equus_2012.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Rain Clover 2012",
+      "id": "rain-clover-2012",
+      "simulationEstimates": {
+        "reverseRatio": 2.467,
+        "cgHeightM": 0.53,
+        "groundClearanceM": 0.145,
+        "tireGrip": 0.8,
+        "spring": 0.34,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.18,
+        "frontOverhangM": 0.95,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 290,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 6400,
+        "revLimitRpm": 6700,
+        "topSpeedMph": 149,
+        "zeroToSixtySec": 5.6,
+        "steeringRatio": 20,
+        "curbKg": 2060,
+        "gearRatios": [
+          3.795,
+          2.473,
+          1.613,
+          1.177,
+          1,
+          0.831,
+          0.652,
+          0.571
+        ],
+        "finalDrive": 3.538
+      }
+    }
+  ],
+  "deferred": []
+}

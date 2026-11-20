@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "lesser-knapweed-1984",
+  "name": "Lesser Knapweed 1984",
+  "stableCarId": "saved-car:Lesser Knapweed 1984",
+  "referenceVehicle": "1984 Germany Audi Sport quattro B2 road homologation coupe,2133cc20-valve turbo five,225kW350Nm AWD5MT;not1983showprototype,GroupBcompetition,PikesPeak orS1E2",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "2d6fbfba30dbba82526752779bf14373a010917513c9bef85ec48ffe22703363",
+    "dashboard": "00bb7735c27b9c11caebed7ef5bb11e74d0205dac00825fc3f7b2e0ec0b65755",
+    "tires": "6dfc4bbb26be11dccdc55f8af83f31d41dfa3e1f37d24917a778354b5e13b93e"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

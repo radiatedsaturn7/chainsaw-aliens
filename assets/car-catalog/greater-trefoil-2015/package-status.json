@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "greater-trefoil-2015",
+  "name": "Greater Trefoil 2015",
+  "stableCarId": "saved-car:Greater Trefoil 2015",
+  "referenceVehicle": "2015 US Range Rover Sport SVR 5.0 superchargedV8 permanent4WD ZF8HP70 automatic, standard21-inch ContinentalCrossContact tires; high range,notlater575PSfacelift",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "greater-trefoil-2015",
+  "sourceHashes": {
+    "body": "1267efc62c6e7c6be974000c41fb3568bb7b809576e3f2faca8757d6c280954e",
+    "dashboard": "6047943b4d359d1775d14f1eaef448bfa2895efaa7f4a4e82d0bc839d988222a",
+    "tires": "34f1679be645454f535bf8277af4a49863f16ffab2bc42550d522e3d1758bff1"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

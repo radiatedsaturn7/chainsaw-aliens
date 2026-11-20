@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "white-stonecrop-2012",
+  "name": "White Stonecrop 2012",
+  "stableCarId": "saved-car:White Stonecrop 2012",
+  "referenceVehicle": "2012 UK/Europe Jaguar XKR-S Coupe5.0supercharged6AT;notConvertible,GTorXFR-S",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "34bac5f8c4b9dd80c7b6b300b2235e493fe19b1847200e43d08a62af4555fbc4",
+    "dashboard": "4bfc0f5bd7597203917d6d5c3779466a950e2f945e0ad51cca7975e3b69f1ba9",
+    "tires": "020cd19102363a698f555d3af924dfe1d31d22b1a74478b043647a2128ea19bf"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

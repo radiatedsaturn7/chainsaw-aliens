@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "shepherds-purse-1969",
+  "name": "Shepherds Purse 1969",
+  "stableCarId": "saved-car:Shepherds Purse 1969",
+  "referenceVehicle": "1969 Japan Nissan Fairlady Z432 PS30 S20 road coupe 5MT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "420ec46ce565c58a8a9678562e426e377fa4021bcc4434aee03158f9e2fe5f81",
+    "dashboard": "51850bbc72259fd47288106415bb0c8c2e1a5b82a3143f84a176c87d215823c0",
+    "tires": "9c328679a8557cb344595cb96d58861d57c5edcbcbdff9b7dac4358703ea17bd"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,526 @@
+{
+  "schemaVersion": 1,
+  "base": "7d796efb7df3152e32643272342b2cc36927825c",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "toyota-tundra-base-2005-us-regular-cab-v6-rwd-6mt-supplemental",
+      "identity": {
+        "year": 2005,
+        "make": "Toyota",
+        "model": "Tundra",
+        "trim": "base regular cab long bed 4x2 4.0 V6 six-speed manual, standard 16-inch wheels; no V8, Access Cab, Double Cab or TRD package",
+        "market": "United States"
+      },
+      "referenceVehicle": "2005 United States Toyota Tundra, base regular cab long bed 4x2 4.0 V6 six-speed manual, standard 16-inch wheels; no V8, Access Cab, Double Cab or TRD package",
+      "bodyClass": "two-door three-seat full-size pickup; production",
+      "facts": {
+        "powerHp": 245,
+        "powerRpm": 5200,
+        "torqueLbFt": 282,
+        "torqueRpm": 3800,
+        "engineDisplacementL": 4.0,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 5.54482,
+        "widthM": 1.91008,
+        "heightM": 1.7907,
+        "wheelbaseM": 3.25882,
+        "trackFrontIn": 66.1,
+        "trackRearIn": 64.9,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "transmissionLabel": "6-speed manual",
+        "gearCount": 6,
+        "finalDrive": 4.08,
+        "curbKg": 1784.88597595,
+        "tireSize": [
+          245,
+          70,
+          16
+        ],
+        "groundClearanceM": 0.26416,
+        "fuelTankUSgal": 26.4,
+        "absEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Toyota/Tundra/Toyota_US%20Tundra_2005.pdf",
+          "publisher": "Toyota original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "drivetrain",
+            "transmission",
+            "transmissionLabel",
+            "gearCount",
+            "finalDrive",
+            "curbKg",
+            "tireSize",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "absEnabled"
+          ],
+          "access": "Original Toyota 2005 US brochure mirrored by Auto-Brochures; downloaded PDF text read 2026-11-18. Web parser returned429 but normal PDF download succeeded. Mechanical and weights tables explicitly separate regularcab V6 manual3935lb from3965automatic and4275V8. Manual4.08axle is factory; individual gearbox ratios are estimates."
+        }
+      ],
+      "limits": [
+        "Curb is manufacturer regular-cab V6 manual unladen figure; no occupants, payload or towing simulation. Published power is period2005 rating, not later revisedSAE value.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "buckwheat-1997",
+            "alias": "Buckwheat 2.4 1997",
+            "reference": "1997 Tacoma2.4regular-cabRWDmanual",
+            "documentId": "buckwheat-1997",
+            "runtimeId": "saved-car:Buckwheat 2.4 1997",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "glade-clover-2005",
+            "alias": "Glade Clover 2005",
+            "reference": "2005 NissanArmadaSE5.6RWDautomatic",
+            "documentId": "glade-clover-2005",
+            "runtimeId": "saved-car:Glade Clover 2005",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No Tundra production identity in baseline or current59 packets. First-generation full-size V6 long-bed manual pickup differs from compact four-cylinder Tacoma and Sequoia V8 enclosed SUV; not Sequoia badge or engine-tune padding.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Toyota/Tundra/Toyota_US%20Tundra_2005.pdf"
+        ]
+      },
+      "name": "Gorse Clover 2005",
+      "id": "gorse-clover-2005",
+      "simulationEstimates": {
+        "reverseRatio": 3.607,
+        "cgHeightM": 0.7,
+        "dragCoefficient": 0.43,
+        "tireGrip": 0.77,
+        "spring": 0.55,
+        "antiRollRear": 0.18,
+        "suspensionTravelM": 0.23,
+        "frontOverhangM": 0.91,
+        "rearDifferentialAccel": 0.12,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.56,
+        "redlineRpm": 5500,
+        "revLimitRpm": 5800,
+        "topSpeedMph": 109,
+        "zeroToSixtySec": 8.5,
+        "gearRatios": [
+          4.171,
+          2.19,
+          1.488,
+          1.193,
+          1,
+          0.799
+        ]
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "toyota-solara-se-convertible-2005-us-v6-5at-supplemental",
+      "identity": {
+        "year": 2005,
+        "make": "Toyota",
+        "model": "Camry Solara",
+        "trim": "SE convertible 3.3 V6 five-speed automatic, four seats and17-inch wheels; notSLE,coupe,four-cylinder orTRD",
+        "market": "United States"
+      },
+      "referenceVehicle": "2005 United States Toyota Camry Solara, SE convertible 3.3 V6 five-speed automatic, four seats and17-inch wheels; notSLE,coupe,four-cylinder orTRD",
+      "bodyClass": "two-door four-seat soft-top convertible; production",
+      "facts": {
+        "powerHp": 225,
+        "powerRpm": 5600,
+        "torqueLbFt": 240,
+        "torqueRpm": 3600,
+        "engineDisplacementL": 3.3,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 4.8895,
+        "widthM": 1.8160999999999998,
+        "heightM": 1.4351,
+        "wheelbaseM": 2.7203399999999998,
+        "trackFrontIn": 61,
+        "trackRearIn": 60.4,
+        "drivetrain": "fwd",
+        "transmission": "automatic",
+        "transmissionLabel": "5-speed automatic",
+        "gearCount": 5,
+        "curbKg": 1609.7993211300002,
+        "tireSize": [
+          215,
+          55,
+          17
+        ],
+        "groundClearanceM": 0.13462,
+        "fuelTankUSgal": 18.5,
+        "absEnabled": true,
+        "tractionControlEnabled": false
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Toyota/Solara/Toyota_US%20Solara_2005.pdf",
+          "publisher": "Toyota original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "drivetrain",
+            "transmission",
+            "transmissionLabel",
+            "gearCount",
+            "curbKg",
+            "tireSize",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "Factory2005US brochure specification table read2026-11-18:SEconvertible3549lb versusSLE3582;225hp/240lbft5ATstandard. Convertible Cd printedNA, so .34 is estimate, notcopied coupe.29."
+        }
+      ],
+      "limits": [
+        "Roof modeled closed; no functioning roof-control claim. Gearing and convertible drag estimated. SE has no availableVSC/TRAC in factorytable; disabled.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "marjoram-2003",
+            "alias": "Marjoram 2003",
+            "reference": "2003 CamryLE2.4four-cylinderautomatic sedan",
+            "documentId": "marjoram-2003",
+            "runtimeId": "saved-car:Marjoram 2003",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "redbud-v6-2007",
+            "alias": "Redbud V6 2007",
+            "reference": "2007 HondaAccordV6six-speedfixed-roofcoupe",
+            "documentId": "redbud-v6-2007",
+            "runtimeId": "saved-car:Redbud V6 2007",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Camry-based Solara convertible has reinforced two-door four-seat soft-top body and3.3V6/5AT, distinct from existing2.4Camrysedan andHonda manualcoupe. No existing Solara body found. Not a badge-only sedan or model-year change.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Toyota/Solara/Toyota_US%20Solara_2005.pdf"
+        ]
+      },
+      "name": "Broom Clover 2005",
+      "id": "broom-clover-2005",
+      "simulationEstimates": {
+        "reverseRatio": 3.145,
+        "cgHeightM": 0.52,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.85,
+        "spring": 0.43,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 410,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6000,
+        "revLimitRpm": 6300,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 7.5,
+        "finalDrive": 3.291,
+        "gearRatios": [
+          3.943,
+          2.197,
+          1.413,
+          1.02,
+          0.703
+        ]
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "lexus-sc430-base-2005-ca-5at-supplemental",
+      "identity": {
+        "year": 2005,
+        "make": "Lexus",
+        "model": "SC430",
+        "trim": "Canadian standard4.3V8 RWDfive-speedautomatic retractable-hardtop,18-inchsummer tires; notRunFlat/PebbleBeach package orlater6AT",
+        "market": "Canada"
+      },
+      "referenceVehicle": "2005 Canada Lexus SC430, Canadian standard4.3V8 RWDfive-speedautomatic retractable-hardtop,18-inchsummer tires; notRunFlat/PebbleBeach package orlater6AT",
+      "bodyClass": "two-door four-seat retractable-hardtop convertible; production",
+      "facts": {
+        "powerHp": 300,
+        "powerRpm": 5600,
+        "torqueLbFt": 325,
+        "torqueRpm": 3400,
+        "engineDisplacementL": 4.3,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 4.515,
+        "widthM": 1.825,
+        "heightM": 1.35,
+        "wheelbaseM": 2.62,
+        "trackFrontIn": 60.98425196850394,
+        "trackRearIn": 60.35433070866142,
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "transmissionLabel": "5-speed automatic",
+        "gearCount": 5,
+        "curbKg": 1742,
+        "tireSize": [
+          245,
+          40,
+          18
+        ],
+        "dragCoefficient": 0.3,
+        "fuelTankUSgal": 19.812903926861132,
+        "absEnabled": true,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://toyotacanada.scene7.com/is/content/toyotacanada/05LexusSC430_E_specspdf-1",
+          "publisher": "Lexus Canada original manufacturer specification sheet",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "drivetrain",
+            "transmission",
+            "transmissionLabel",
+            "gearCount",
+            "curbKg",
+            "tireSize",
+            "dragCoefficient",
+            "fuelTankUSgal",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "Official LexusCanada2005SC430six-page specification PDF read2026-11-18;300hp5600,325lbft3400(440Nm),1742kgbase,5-speedSuperECT,dimensionsmm and24540ZR18. Metricwidth1825 preferred to looselyrounded72.0in.75L convertedUSgallons, not Canadian16.5imperial."
+        }
+      ],
+      "limits": [
+        "Roof closed and static; no roof mechanism simulation. Factoryperiod300hp retained, notlaterrevised288hp. Gear ratios,redline andperformance estimates; Canada factorysource notUS trim.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "marsh-sowthistle-1997",
+            "alias": "Marsh Sowthistle 1997",
+            "reference": "1997 JZZ30Soarer2.5GT-T turbo6cylinder5MTfixed-roofcoupe",
+            "documentId": "marsh-sowthistle-1997",
+            "runtimeId": "saved-car:Marsh Sowthistle 1997",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "magnolia-40-1990",
+            "alias": "Magnolia 40 1990",
+            "reference": "1990 LexusLS4004.0V8sedan4AT",
+            "documentId": "magnolia-40-1990",
+            "runtimeId": "saved-car:Magnolia 40 1990",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "UZZ40 naturally aspirated4.3V8 retractable-hardtop generation differs mechanically and structurally from JZZ30Soarer2.5turbo fixed-roof manual and LS400 sedan; no existingSC430 identity found.",
+        "evidence": [
+          "https://toyotacanada.scene7.com/is/content/toyotacanada/05LexusSC430_E_specspdf-1"
+        ]
+      },
+      "name": "Bilberry Clover 2005",
+      "id": "bilberry-clover-2005",
+      "simulationEstimates": {
+        "reverseRatio": 3.431,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.14,
+        "tireGrip": 0.93,
+        "spring": 0.49,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.1,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 6.1,
+        "finalDrive": 3.266,
+        "gearRatios": [
+          3.357,
+          2.18,
+          1.424,
+          1,
+          0.753
+        ]
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "infiniti-q45-luxury-2004-us-5at-supplemental",
+      "identity": {
+        "year": 2004,
+        "make": "Infiniti",
+        "model": "Q45",
+        "trim": "Luxury model F50 standard5AT RWD with17-inchwheels,withoutJourneyPackage,PremiumModeloroptionalrun-flat tires",
+        "market": "United States (49 continental states)"
+      },
+      "referenceVehicle": "2004 US Infiniti Q45 Luxury model4.5V8 RWD5AT standard17-inchalloywheels; notPremium18-inch active-damping package,JourneyPackage or2002preliminarylaunchspec.",
+      "bodyClass": "sedan",
+      "facts": {
+        "powerHp": 340,
+        "engineDisplacementL": 4.5,
+        "aspiration": "Naturally Aspirated",
+        "transmission": "automatic",
+        "gearCount": 5,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "publishedStandardWheelDiameterIn": 17
+      },
+      "sources": [
+        {
+          "url": "https://xr793.com/wp-content/uploads/2021/11/2004-Infiniti-Q45-Spec-Sheet.pdf",
+          "publisher": "Infiniti original2004 US electronic brochure, archivedmanufacturerpublication",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL",
+            "aspiration",
+            "transmission",
+            "gearCount",
+            "absEnabled",
+            "tractionControlEnabled",
+            "publishedStandardWheelDiameterIn",
+            "identity",
+            "drivetrain"
+          ],
+          "access": "Four-page original2004brochure read2026-11-18. p2 standardequipment340hp4.5V8RWD5AT17-inchwheels andp3 explicitlyLuxuryversusPremiummodels. Productionpricing andcopyright2004; no preliminarytable. Unsupportednumericsareestimates."
+        }
+      ],
+      "limits": [
+        "2004 production Luxury identity,340hp4.5V8RWD5AT and17-inch standard wheels corroborated by original brochure. No final2004 torque/RPM/gearing/curb/geometry table retrieved; these remain estimated. Earlier2002preliminaryshape/torque anchors inform approximate values but are not promoted to verified2004specs.",
+        "Runtime1770kg unoccupied curb is estimated; final3.133 andindividualratios are estimated, no claim of exact2004 toothcounts orcarryover2002ratios.",
+        "No optionalJourney/Premium active-damping/navigation/cruise orrun-flat functionality. Genericnativeautomatic approximatesconverter/learninglogic.",
+        "All other suggestedEstimates, suspension/load distribution/steering/drag/performance are model assumptions. SharedRTG001graphics, no originalart or independentdriving claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Elm Clover 2003",
+            "id": "elm-clover-2003",
+            "reference": "2003USInfinitiM45Y34RWD4.5V85AT",
+            "documentId": "elm-clover-2003",
+            "runtimeId": "saved-car:Elm Clover 2003",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No nativeQ45/Cima/Presidentreference exists. F50Q45flagshipbody andwheelbase differ fromY34M45 despite related4.5V8/5AT; earlier2002Q45 research is held/unimplemented, not an additional car. New2004production variant replaces no existing ID.",
+        "evidence": [
+          "https://xr793.com/wp-content/uploads/2021/11/2004-Infiniti-Q45-Spec-Sheet.pdf"
+        ]
+      },
+      "name": "Cranberry Clover 2004",
+      "id": "cranberry-clover-2004",
+      "simulationEstimates": {
+        "reverseRatio": 2.37,
+        "cgHeightM": 0.51,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.3,
+        "tireGrip": 0.83,
+        "spring": 0.43,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.08,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 400,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "fuelTankUSgal": 21.4,
+        "topSpeedMph": 149,
+        "zeroToSixtySec": 6.3,
+        "drivetrain": "rwd",
+        "finalDrive": 3.133,
+        "gearRatios": [
+          3.54,
+          2.264,
+          1.471,
+          1,
+          0.834
+        ],
+        "powerRpm": 6400,
+        "torqueRpm": 4000,
+        "curbKg": 1770,
+        "trackFrontIn": 61.8,
+        "trackRearIn": 61.4,
+        "torqueLbFt": 333,
+        "lengthM": 5.069839999999999,
+        "widthM": 1.8440399999999997,
+        "heightM": 1.49606,
+        "wheelbaseM": 2.8702,
+        "tireSize": [
+          225,
+          55,
+          17
+        ],
+        "transmissionLabel": "5-speed torque-converter automatic (estimated calibration and ratios)"
+      }
+    }
+  ],
+  "deferred": []
+}

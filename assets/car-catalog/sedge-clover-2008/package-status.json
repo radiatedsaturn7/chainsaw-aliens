@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "sedge-clover-2008",
+  "name": "Sedge Clover 2008",
+  "stableCarId": "saved-car:Sedge Clover 2008",
+  "referenceVehicle": "2008 United States Mazda Tribute, iSport2.3gasoline front-wheel-drive five-speed manual, standard16-inch alloys; notHybrid,V6,automatic or4WD",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "6d3b6cd980045e5a12cb37fac4f78773357445f500092850ed2dfe9b11005215",
+    "dashboard": "4f1c6f1ac29fae341cb3783c3fc62b06681492537ebf2d667c8c754acfcd05ee",
+    "tires": "1d655b88e0239dfc4695a38a0a7dbaa37cb23ab872ce779b96586bb5788c857a"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

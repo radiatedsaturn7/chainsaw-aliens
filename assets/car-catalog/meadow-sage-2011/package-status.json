@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "meadow-sage-2011",
+  "name": "Meadow Sage 2011",
+  "stableCarId": "saved-car:Meadow Sage 2011",
+  "referenceVehicle": "2011 UK Audi RS5 Coupe 4.2 FSI quattro 7-speed S tronic, standard 19-inch wheels",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "8b8f201701e4a51e7acdf8bb732bc824fb8d5f2c5cbdc817d571dbd8d6e63921",
+    "dashboard": "406880a97e2526abcfb0569a354e1f5f1e8cd263629f3d60ec2a5177c34a08c5",
+    "tires": "82c6472cc622f50180bf72f952532fb542e1da0a4295f93d3c1c6539d57fce71"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

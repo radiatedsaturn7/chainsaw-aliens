@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "source-olive-clover-2007",
+  "name": "Olive Clover 2007",
+  "stableCarId": "saved-car:Olive Clover 2007",
+  "referenceVehicle": "Germany July2007 Fiat Linea Active1.4 8V,5MT. Four-door sedan,baseActive trim,notT-Jet orMultijet.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "olive-clover-2007",
+  "sourceHashes": {
+    "body": "8bc65342d903712e4fab16d177020d0783abc0b49479a3d83387532da2f86796",
+    "dashboard": "19660768d1c5aa8d92fa00a813fb4db0845ada06e624f23b1874134f477ed564",
+    "tires": "720fc9775e903929335c41f1c785bed3bb3fa8b1b74663e0dd45a414bf7d96ba"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "cow-clover-1957",
+  "name": "Cow Clover 1957",
+  "stableCarId": "saved-car:Cow Clover 1957",
+  "referenceVehicle": "1957 European Porsche 356A1600 Speedster standard60PS pushrod4MT openbody,not1600Super/Carrera",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "76c4e51398ff26aa3a0120461f22b63d6715a0645cdf0fd321d2f421a2f953ec",
+    "dashboard": "b8b736cb612d76dc14c61fd451127aa5dbe698f2c3592d54c2453993689338c1",
+    "tires": "23255b508f2b26dcf03bc491697ed59183684572693c5ad912bf976660405235"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

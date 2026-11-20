@@ -1,0 +1,75 @@
+{
+  "id": "reed-clover-2003",
+  "name": "Reed Clover 2003",
+  "stableCarId": "saved-car:Reed Clover 2003",
+  "runtimeId": "saved-car:Reed Clover 2003",
+  "candidateId": "fiat-stilo-multi-wagon-dynamic-1-8-2003-supplemental-candidate",
+  "referenceVehicle": "2003 Fiat Stilo MultiWagonDynamic1.8 16V, UK February2003five-door estate C510five-speedmanual, standardDynamic16inchalloys, fixedroof; not3/5-doorhatch,Abarth,JTDorSkyWindow",
+  "identity": {
+    "year": 2003,
+    "make": "Fiat",
+    "model": "Stilo MultiWagonDynamic1.8 16V",
+    "trim": "UK February2003five-door estate C510five-speedmanual, standardDynamic16inchalloys, fixedroof; not3/5-doorhatch,Abarth,JTDorSkyWindow",
+    "market": "UK"
+  },
+  "bodyClass": "wagon",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1250,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      1500,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.media.stellantis.com/uk-en/fiat/press/fiat-stilo-multi-wagon",
+      "fields": [
+        "powerHp",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "gearCount",
+        "drivetrain",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "fuelTankUSgal",
+        "topSpeedMph"
+      ]
+    }
+  ]
+}

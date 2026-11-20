@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "copper-trefoil-2012",
+  "name": "Copper Trefoil 2012",
+  "stableCarId": "saved-car:Copper Trefoil 2012",
+  "referenceVehicle": "2012 United States Kia Sorento, LX3.5V6 FWD6AT,standard18-inchwheels,unladen",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "076895f03c886bfca9b26053c247f3c06b085c61e69605833610f9c5bbb0ee59",
+    "dashboard": "79fa9775381bfcc758d7ab47715f6b4448394bfa4538fb7e3a0ee87db0fa5228",
+    "tires": "74a93441871651b25f8445608d67de1b793b80aea08bcfcb61d0b0fdcd83a27c"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

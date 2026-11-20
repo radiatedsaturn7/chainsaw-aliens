@@ -1,0 +1,165 @@
+{
+  "id": "sea-holly-2024",
+  "name": "Sea Holly 2024",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "e6e6800cd514cdcac993af72abfb6f52cdc5233622bd906d65fc2a2dfeffba4d",
+  "sourceDirectory": "assets/car-catalog/sea-holly-2024",
+  "sourceHashes": {
+    "body": "f2ffcbc6dcd47ecd4d57a1eb18a2842570f0ff825703f2dfdba8642b6600aca7",
+    "dashboard": "628dbdde9a8aeb31483d3ed11d6ab86c648946f1f00413ef0390441ea165aad0",
+    "tires": "f98ed7dffc824c70c86e21b56b4ab7ee9d118039f033ae0fb1e40f474f59f6f0"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 108,
+        "y": 322,
+        "radius": 30
+      },
+      {
+        "wheel": "fr",
+        "x": 335,
+        "y": 322,
+        "radius": 30
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 672,
+        "y": 301,
+        "radius": 45
+      },
+      {
+        "wheel": "rr",
+        "x": 822,
+        "y": 266,
+        "radius": 39
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 974,
+        "y": 726,
+        "radius": 44
+      },
+      {
+        "wheel": "rr",
+        "x": 1225,
+        "y": 726,
+        "radius": 44
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 471,
+        "y": 708,
+        "radius": 38
+      },
+      {
+        "wheel": "rr",
+        "x": 609,
+        "y": 734,
+        "radius": 45
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 107,
+        "y": 743,
+        "radius": 30
+      },
+      {
+        "wheel": "rl",
+        "x": 334,
+        "y": 743,
+        "radius": 30
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1583,
+        "y": 300,
+        "radius": 44
+      },
+      {
+        "wheel": "fl",
+        "x": 1728,
+        "y": 266,
+        "radius": 38
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 987,
+        "y": 286,
+        "radius": 44
+      },
+      {
+        "wheel": "fl",
+        "x": 1253,
+        "y": 288,
+        "radius": 44
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1386,
+        "y": 704,
+        "radius": 38
+      },
+      {
+        "wheel": "fl",
+        "x": 1535,
+        "y": 738,
+        "radius": 46
+      }
+    ]
+  },
+  "wheelFit": "cover",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      265,
+      545,
+      425,
+      100
+    ],
+    "wheel": [
+      475,
+      655,
+      310
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#cce7ff",
+    "electric": false,
+    "viewportWheelScale": 2.0,
+    "gaugeBackground": "#101014"
+  },
+  "steeringWheelSource": {
+    "artRef": "pz-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementMethod": "Individual original-sheet arch measurements, followed by eight-view native static review. Head-on tread centers raised 10 source pixels and reduced per vehicle. Cockpit wheel center and viewport scale individually reviewed at 1280x720 and 390x844. Gameplay acceptance deferred.",
+  "runtimeFitted": false
+}

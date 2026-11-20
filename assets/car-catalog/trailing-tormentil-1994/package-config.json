@@ -1,0 +1,85 @@
+{
+  "id": "trailing-tormentil-1994",
+  "name": "Trailing Tormentil 1994",
+  "stableCarId": "saved-car:Trailing Tormentil 1994",
+  "candidateId": "nissan-fairlady-z-version-s-twin-turbo-1994-roster-candidate",
+  "referenceVehicle": "1994 Japan Nissan Fairlady Z Version S Twin Turbo October1994 E-CZ32 two-seater standard fixed roof VG30DETT2960cc RWD5MT, not2by2,T-bar,NA orUS300ZX",
+  "identity": {
+    "year": 1994,
+    "make": "Nissan",
+    "model": "Fairlady Z Version S Twin Turbo",
+    "trim": "October1994 E-CZ32 two-seater standard fixed roof VG30DETT2960cc RWD5MT, not2by2,T-bar,NA orUS300ZX",
+    "market": "Japan"
+  },
+  "bodyClass": "three-door two-seat fixed-roof sports coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1289,
+      515,
+      436,
+      119
+    ],
+    "wheel": [
+      1507,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://gazoo.com/catalog/maker/NISSAN/FAIRLADY_Z/198907/1501108/",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "tireSize",
+        "reverseRatio",
+        "finalDrive",
+        "fuelTankUSgal"
+      ]
+    },
+    {
+      "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/fairlady_z_300zx_146.html",
+      "fields": [
+        "generation",
+        "engine architecture",
+        "drivetrain architecture"
+      ]
+    }
+  ]
+}

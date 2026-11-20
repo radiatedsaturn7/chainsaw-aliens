@@ -1,0 +1,53 @@
+{
+  "id": "sandwort-1981",
+  "name": "Sandwort 1981",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      130,
+      535,
+      690,
+      160
+    ],
+    "wheel": [
+      470,
+      750,
+      290
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://www.bmw-m.com/en/topics/magazine-article-pool/bmw-m1-from-procar-to-icon.html",
+      "fields": [
+        "powerKw",
+        "torqueNm",
+        "heightM",
+        "publishedEmptyKg"
+      ]
+    },
+    {
+      "url": "https://www.bmwgroup-classic.com/en/models/bmw-classics/product-description-page.ad-234-1.bmw-m1-e26.html",
+      "fields": [
+        "1978\u20131981 production range"
+      ]
+    }
+  ]
+}

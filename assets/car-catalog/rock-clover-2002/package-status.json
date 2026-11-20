@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "rock-clover-2002",
+  "name": "Rock Clover 2002",
+  "stableCarId": "saved-car:Rock Clover 2002",
+  "referenceVehicle": "2002 Germany Volkswagen Polo 9N1 Basis five-door1.9SDI ASY naturally aspirated diesel, 02T five-speed manual standard chassis; notTDI,9N3 orGTI",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "5cb5b5cd5626dd6ca99c0c65369e08757be114142fa4d43b3a760da5cd7abc43",
+    "dashboard": "dd954a420a6ce7c57194a6308713fc2ec24ca5642c5e57f203fdf3dc81a7add1",
+    "tires": "80cad0f86fea9ae2aadb93a0f88a06f105e61069186a8ae11a7593a89eba81bd"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

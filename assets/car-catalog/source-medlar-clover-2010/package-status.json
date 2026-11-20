@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "source-medlar-clover-2010",
+  "name": "Medlar Clover 2010",
+  "stableCarId": "saved-car:Medlar Clover 2010",
+  "referenceVehicle": "US2010 Volkswagen Eos Komfort2.0TSI,6MT. Retractable-hardtop convertible ROOF UP,Komfort notLux orVR6.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "medlar-clover-2010",
+  "sourceHashes": {
+    "body": "bac56c7aa8f51b22d525ddda0052ae70ce45ba38b11fed3e2213f79f58cc326d",
+    "dashboard": "3def5d9cb22775e8abc97c628ddc960db2e771be6af7cba556acdb4f8250dc4b",
+    "tires": "a4578235020e41f12d1edb38819efd04dce2b8f26c31b74a49b926185f6feefe"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
+}

@@ -1,0 +1,80 @@
+{
+  "id": "western-clover-2017",
+  "name": "Western Clover 2017",
+  "stableCarId": "saved-car:Western Clover 2017",
+  "runtimeId": "saved-car:Western Clover 2017",
+  "candidateId": "maserati-levante-s-2017-roster-candidate",
+  "referenceVehicle": "2017 Maserati Levante S, UKSeptember2017 petrol3.0 twin-turboV6 Q4 eight-speed automatic SUV,standard19-inch wheels;notDiesel,350CVbase,GTS,Trofeo orlaterfacelift",
+  "identity": {
+    "year": 2017,
+    "make": "Maserati",
+    "model": "Levante S",
+    "trim": "UKSeptember2017 petrol3.0 twin-turboV6 Q4 eight-speed automatic SUV,standard19-inch wheels;notDiesel,350CVbase,GTS,Trofeo orlaterfacelift",
+    "market": "UK/Europe"
+  },
+  "bodyClass": "suv",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1250,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      1500,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.media.stellantis.com/uk-en/maserati/press/petrol-powered-levante-s-the-maserati-of-suvs-now-available-in-uk",
+      "fields": [
+        "engineDisplacementL",
+        "publishedPowerPS",
+        "transmission",
+        "gearCount",
+        "frontWeightDistribution",
+        "topSpeedMph"
+      ]
+    },
+    {
+      "url": "https://www.media.stellantis.com/uk-en/maserati/press/maserati-at-the-paris-motor-show-debuts-for-the-new-quattroporte-and-ghibli-model-year-2017",
+      "fields": [
+        "gearCount",
+        "frontWeightDistribution",
+        "Q4",
+        "identity"
+      ]
+    },
+    {
+      "url": "https://www.media.stellantis.com/it-it/maserati/press/maserati-levante-my19-press-kit",
+      "fields": [
+        "publishedPowerPS",
+        "provisionalSecondaryDimensionsMassGearingTiresTorque"
+      ]
+    }
+  ]
+}

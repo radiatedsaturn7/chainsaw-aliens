@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "alder-clover-2005",
+  "name": "Alder Clover 2005",
+  "stableCarId": "saved-car:Alder Clover 2005",
+  "referenceVehicle": "2005 United States Toyota Sequoia, SR5rear-wheel-drive4.7VVT-iV8 five-speed automatic,eightseats,standard24570R16,nooptionalrack orSportPackage; not4WD/Limited",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "alder-clover-2005",
+  "sourceHashes": {
+    "body": "99877713381de267f3411591c5fafdfefe0993bda9034dd8a8da930e2f8a0e26",
+    "dashboard": "97d3fbaee22b1085733b6bcea5b73ef97ea8ff2ffae3d471c848fb9248d14dda",
+    "tires": "3ce7b9e3e090bcd08fb242df076f97b90ca5ad01bbf1c2badbf6cbc00d148ee2"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

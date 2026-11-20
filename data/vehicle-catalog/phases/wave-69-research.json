@@ -1,0 +1,257 @@
+{
+  "schemaVersion": 1,
+  "base": "5f0ae72e1f8b10f366002fbf161c47014efab98f",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "lancia-y-ls-1-2-16v-1998-supplemental-candidate",
+      "bodyClass": "hatchback",
+      "identity": {
+        "year": 1998,
+        "make": "Lancia",
+        "model": "Y LS1.2 16V",
+        "trim": "Italy March1998 three-door compact hatchback five-speed manual productionLS without Geneva accessorypack, not8vECVT,LX orlaterYpsilon",
+        "market": "Italy"
+      },
+      "referenceVehicle": "1998 Lancia Y LS1.2 16V, Italy March1998 three-door compact hatchback five-speed manual productionLS without Geneva accessorypack, not8vECVT,LX orlaterYpsilon",
+      "facts": {
+        "powerHp": 84.8235260716,
+        "engineDisplacementL": 1.2,
+        "gearCount": 5,
+        "transmission": "manual",
+        "topSpeedMph": 109.9827010260081
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/it-it/lancia/press/lancia-y-e-lancia-delta-al-68-deg-salone-di-ginevra",
+          "publisher": "LanciaItaly March1998 factory engine/trim/transmission release",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL",
+            "gearCount",
+            "transmission",
+            "topSpeedMph"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        }
+      ],
+      "limits": [
+        "Factory86metricCV/63kW rounded pair;86CV converted84.8235mechanicalhp.5manual andECVT are the range gearboxes; factory specifically assignsECVT displayedcar to60CV8v, notchosen86CV16v. StandardLS selected without showcar alloy/wood accessorypack. Exact1242cc,6000powerRPM,114Nm4500,920kgdriver-excludedrunningmass,dimensions,tracks,tires,ratios,ABSavailability andtransients remain estimates. Factory0\u201310010.9 only;0\u20136010.5estimated.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Saffron 135 2010",
+            "documentId": "saffron-135-2010",
+            "runtimeId": "saved-car:Saffron 135 2010",
+            "reference": "FiatPuntoEvoSporting1.4MultiAirTurbo1355MT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Heather Clover 2004",
+            "documentId": "heather-clover-2004",
+            "runtimeId": "saved-car:Heather Clover 2004",
+            "reference": "FiatIdeaActive1.4five-seatMPV",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Distinct Punto176-era short three-door luxury city hatch with naturally aspirated16v FIRE, versus much later turboPuntoEvo and taller IdeaMPV. No existingY/Ypsilon identity found.",
+        "evidence": [
+          "https://www.media.stellantis.com/it-it/lancia/press/lancia-y-e-lancia-delta-al-68-deg-salone-di-ginevra"
+        ],
+        "audit": "Wave68 native catalog and allwave64 priorintakes audited through actualreferenceVehicle/inspiration/candidatefields; noY1.2/YpsilonorLybraproductionidentity. RelatedThesis acknowledged. Supplementalcanonicalreservation required."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Blackcurrant Clover 1998",
+      "id": "blackcurrant-clover-1998",
+      "simulationEstimates": {
+        "reverseRatio": 3.818,
+        "cgHeightM": 0.55,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.7,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 11.887742356116679,
+        "zeroToSixtySec": 10.5,
+        "bodyClass": "hatchback",
+        "drivetrain": "fwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 6000,
+        "torqueNm": 114,
+        "torqueRpm": 4500,
+        "curbKg": 920,
+        "lengthM": 3.723,
+        "widthM": 1.69,
+        "heightM": 1.435,
+        "wheelbaseM": 2.38,
+        "trackFrontIn": 55.5,
+        "trackRearIn": 54.5,
+        "tireSize": [
+          185,
+          60,
+          14
+        ],
+        "gearRatios": [
+          3.909,
+          2.158,
+          1.48,
+          1.121,
+          0.897
+        ],
+        "finalDrive": 3.563,
+        "transmissionLabel": "five-speed manual; estimated ratios",
+        "torqueLbFt": 84.08208501760828
+      }
+    },
+    {
+      "candidateId": "lancia-lybra-base-2-0-20v-1999-supplemental-candidate",
+      "bodyClass": "sedan",
+      "identity": {
+        "year": 1999,
+        "make": "Lancia",
+        "model": "Lybra base2.0 20V",
+        "trim": "Italy June1999 four-door sedan standardLybra trim naturally aspirated2.0 inline-five five-speedmanual; notLX,StationWagon orComfortronic",
+        "market": "Italy"
+      },
+      "referenceVehicle": "1999 Lancia Lybra base2.0 20V, Italy June1999 four-door sedan standardLybra trim naturally aspirated2.0 inline-five five-speedmanual; notLX,StationWagon orComfortronic",
+      "facts": {
+        "powerHp": 151.8932908724,
+        "engineDisplacementL": 2.0,
+        "gearCount": 5,
+        "transmission": "manual",
+        "lengthM": 4.46,
+        "widthM": 1.74,
+        "heightM": 1.46,
+        "absEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/it-it/lancia/press/lancia-lybra",
+          "publisher": "LanciaItaly21June1999 factory launch dossier",
+          "fields": [
+            "powerHp",
+            "engineDisplacementL",
+            "gearCount",
+            "transmission",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "absEnabled"
+          ],
+          "access": "Factory/custodian text or explicitly attributed factory press release read via web 2026-11-18."
+        },
+        {
+          "url": "https://www.media.stellantis.com/it-it/lancia/press/motor-show-di-bologna-1999-lancia-lybra",
+          "publisher": "LanciaItaly November1999 trim/transmission corroboration",
+          "fields": [
+            "identity",
+            "gearCount",
+            "transmission"
+          ],
+          "access": "Factory range explicitlyfive-speedmanual; automaticavailableonly2.0LXsedan/SW. Base2.0manualselected."
+        }
+      ],
+      "limits": [
+        "UseactualJune1999launch154metricCV113kW, notMarchpreview155CV114kW;154CVconverted151.8933mechanicalhp. Sedanheight1.46notSW1.47. Exact1998cc,powerRPM5900,torque186Nm3750,1340kgdriver-excludedrunningmass,wheelbase,tracks,tires,ratios andperformance estimates. Factory0\u20131009.9notruntime0\u201360; latter9.5estimate. Genericrear suspension approximation doesnotrecreateBLGgeometry.",
+        "All suggestedEstimates values provisional unless independently repeated in facts. Shared RTG-001 graphics; no art-complete or drive-verified claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Privet Clover 2003",
+            "documentId": "privet-clover-2003",
+            "runtimeId": "saved-car:Privet Clover 2003",
+            "reference": "LanciaThesisExecutive3.2V6five-speedautomatic",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Reed Clover 2003",
+            "documentId": "reed-clover-2003",
+            "runtimeId": "saved-car:Reed Clover 2003",
+            "reference": "FiatStiloMultiWagonDynamic1.8five-speedmanual",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Mid-size four-door five-cylinder manual sedan with dedicated BLG rear suspension, notlargerV6 Thesisflagship orfour-cylinderStiloestate. Distinct mechanical/body class notyearorbadgepadding.",
+        "evidence": [
+          "https://www.media.stellantis.com/it-it/lancia/press/lancia-lybra"
+        ],
+        "audit": "Wave68 native catalog and allwave64 priorintakes audited through actualreferenceVehicle/inspiration/candidatefields; noY1.2/YpsilonorLybraproductionidentity. RelatedThesis acknowledged. Supplementalcanonicalreservation required."
+      },
+      "canonicalReservationRequired": true,
+      "name": "Redcurrant Clover 1999",
+      "id": "redcurrant-clover-1999",
+      "simulationEstimates": {
+        "reverseRatio": 3.909,
+        "cgHeightM": 0.55,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.34,
+        "tireGrip": 0.82,
+        "spring": 0.48,
+        "antiRollRear": 0.12,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 550,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.63,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 15.850323141488905,
+        "topSpeedMph": 130.48795036984012,
+        "zeroToSixtySec": 9.5,
+        "bodyClass": "sedan",
+        "drivetrain": "fwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "powerRpm": 5900,
+        "torqueNm": 186,
+        "torqueRpm": 3750,
+        "curbKg": 1340,
+        "wheelbaseM": 2.593,
+        "trackFrontIn": 58.89763779527559,
+        "trackRearIn": 57.75590551181103,
+        "tireSize": [
+          195,
+          65,
+          15
+        ],
+        "gearRatios": [
+          3.545,
+          2.238,
+          1.52,
+          1.156,
+          0.946
+        ],
+        "finalDrive": 3.562,
+        "transmissionLabel": "five-speed manual; estimated ratios",
+        "torqueLbFt": 137.18655976557142
+      }
+    }
+  ],
+  "deferred": []
+}

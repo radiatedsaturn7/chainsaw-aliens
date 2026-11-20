@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "base": "515013726f990c633147aa8f2c5108fe7ac9e291",
+  "scope": "Materially distinct GP road configuration: two seats, coilovers, sports tires,160kW and1160kgDIN; not badge-only variation.",
+  "vehicles": [
+    {
+      "candidateId": "mini-john-cooper-works-gp-2012-roster-candidate",
+      "id": "water-mint-2012",
+      "name": "Water Mint 2012",
+      "identity": {
+        "year": 2012,
+        "make": "MINI",
+        "model": "John Cooper Works GP",
+        "trim": "R56 GP two-seat launch road car, six-speed manual, standard215/40R17 sports tires; not2006GP or2020GP",
+        "market": "continental Europe"
+      },
+      "referenceVehicle": "2012 continental Europe MINI John Cooper Works GP, R56 GP two-seat launch road car, six-speed manual, standard215/40R17 sports tires; not2006GP or2020GP",
+      "facts": {
+        "powerKw": 160,
+        "torqueNm": 260,
+        "engineDisplacementL": 1.6,
+        "transmission": "manual",
+        "gearCount": 6,
+        "curbKg": 1160,
+        "powerRpm": 6000,
+        "torqueRpm": 1750,
+        "tireSize": [
+          215,
+          40,
+          17
+        ]
+      },
+      "simulationEstimates": {
+        "drivetrain": "fwd",
+        "reverseRatio": 3.19,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.329,
+        "tireGrip": 1.1,
+        "spring": 0.64,
+        "antiRollRear": 0.34,
+        "suspensionTravelM": 0.14,
+        "frontOverhangM": 0.78,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0.04,
+        "shiftTimeMs": 240,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.63,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "lengthM": 3.73,
+        "widthM": 1.683,
+        "heightM": 1.407,
+        "wheelbaseM": 2.467,
+        "trackFrontIn": 57.2,
+        "trackRearIn": 57.5,
+        "gearRatios": [
+          3.308,
+          2.13,
+          1.483,
+          1.139,
+          0.949,
+          0.816
+        ],
+        "finalDrive": 3.706,
+        "aspiration": "Turbocharged",
+        "fuelTankUSgal": 13.2,
+        "topSpeedMph": 150,
+        "zeroToSixtySec": 6.4
+      },
+      "sources": [
+        {
+          "url": "https://www.press.bmwgroup.com/usa/article/detail/T0131532EN_US/gearing-up-for-its-world-debut:-the-mini-john-cooper-works-gp-european-specifications?language=en_US",
+          "publisher": "MINI factory European specifications press kit6September2012",
+          "fields": [
+            "powerKw",
+            "torqueNm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "powerRpm",
+            "torqueRpm",
+            "tireSize"
+          ],
+          "access": "Full factory page read2026-11-17. Explicit European-specification announcement hostedUSA; late2012production,160kW,260Nm continuous/280Nm temporary,1160kgDIN,215/40R17 standard not optional205/45."
+        }
+      ],
+      "limits": [
+        "Sustained260Nm modeled; temporary280Nm overboost intentionally not held continuously. Standard open front differential; brake-based EDLC/GPmode and proprietary stability control not reproduced.",
+        "All unlisted dimensions, mass, individual gears/final drive, alignment, aero coefficients and performance targets are explicit estimates. GP uses factory1160kg DIN without silently adding EU75kg driver. GP tire grip and suspension settings approximate its documented different hardware, not measured tire curves or setup.",
+        "Not a badge-only duplicate: GP is the documented two-seat, coilover, sports-tire variant with160kW and distinct mass. No Challenge race hardware or classic Mini physics copied. Both use shared RTG-001 art; original art and independent drives pending."
+      ]
+    }
+  ],
+  "deferred": []
+}

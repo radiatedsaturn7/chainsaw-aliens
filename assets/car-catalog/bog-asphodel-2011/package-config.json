@@ -1,0 +1,69 @@
+{
+  "id": "bog-asphodel-2011",
+  "name": "Bog Asphodel 2011",
+  "candidateId": "peugeot-308-gti-2011-roster-candidate",
+  "referenceVehicle": "2011 Germany Peugeot 308 GTi T7 facelift, 1.6 THP200 five-door hatchback, six-speed manual; not CC, SW or later T9 GTi270",
+  "identity": {
+    "year": 2011,
+    "make": "Peugeot",
+    "model": "308 GTi T7 facelift",
+    "trim": "1.6 THP200 five-door hatchback, six-speed manual; not CC, SW or later T9 GTi270",
+    "market": "Germany"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      200,
+      500,
+      510,
+      190
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e9de"
+  },
+  "sources": [
+    {
+      "url": "https://www.media.stellantis.com/de-de/peugeot/press/peugeot-308-gti-kompromisslose-emotion-langfassung",
+      "fields": [
+        "powerKw",
+        "torqueNm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount"
+      ]
+    },
+    {
+      "url": "https://www.media.stellantis.com/de-de/peugeot/press/peugeot-308-franzosischer-erfolgstyp-im-neuen-outfit-langfassung",
+      "fields": [
+        "2011 facelift GTi identity"
+      ]
+    },
+    {
+      "url": "https://www.media.stellantis.com/de-de/peugeot/press/peugeot-308-beliebte-kompakt-limousine-mit-umfangreicher-modellpflege",
+      "fields": [
+        "lengthM"
+      ]
+    }
+  ]
+}

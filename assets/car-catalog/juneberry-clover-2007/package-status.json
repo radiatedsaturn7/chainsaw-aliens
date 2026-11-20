@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "juneberry-clover-2007",
+  "name": "Juneberry Clover 2007",
+  "stableCarId": "saved-car:Juneberry Clover 2007",
+  "referenceVehicle": "2007 United States Volvo S40 2.4i naturally aspirated inline-five FWD standard five-speed manual sedan, ordinary chassis; not T5,T5AWD orGeartronic",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "ee63765dbd04834616803ade3c94b6c2c80de721ce6377060dad0f5310798dc9",
+    "dashboard": "daa3b25a217d7ddcb0e8b0d61f1f4fb6b70978570e46ead872ee5658d49d0424",
+    "tires": "c531cefd2fa8c6cd3928d1e5c6a95f1869c3ba1c3cd3f46fe8337b1b96ef7d59"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

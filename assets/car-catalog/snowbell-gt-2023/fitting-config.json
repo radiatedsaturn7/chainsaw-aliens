@@ -1,0 +1,165 @@
+{
+  "id": "snowbell-gt-2023",
+  "name": "Snowbell GT 2023",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "30d1d513fd235da5ed7bd52a379fcc7ef44b37f406ef040bb89eab57ef54a071",
+  "sourceDirectory": "assets/car-catalog/snowbell-gt-2023",
+  "sourceHashes": {
+    "body": "57f9e6fe555e5d247b477a3f0747abbac9dc2352463879be7ad5846c2ef12172",
+    "dashboard": "b59d09c63b22178ebbf98329e2006bae8df126a9cb9c3848f141f95f784db7e6",
+    "tires": "3de56c3a84c22d94164177aab4d2035ca7e8b92716371db43fe4b964b1c20742"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 104,
+        "y": 314,
+        "radius": 29
+      },
+      {
+        "wheel": "fr",
+        "x": 330,
+        "y": 314,
+        "radius": 29
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 637,
+        "y": 298,
+        "radius": 45
+      },
+      {
+        "wheel": "rr",
+        "x": 828,
+        "y": 276,
+        "radius": 40
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 959,
+        "y": 290,
+        "radius": 44
+      },
+      {
+        "wheel": "rr",
+        "x": 1243,
+        "y": 289,
+        "radius": 44
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 452,
+        "y": 724,
+        "radius": 40
+      },
+      {
+        "wheel": "rr",
+        "x": 617,
+        "y": 733,
+        "radius": 45
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 105,
+        "y": 748,
+        "radius": 29
+      },
+      {
+        "wheel": "rl",
+        "x": 333,
+        "y": 748,
+        "radius": 29
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1570,
+        "y": 292,
+        "radius": 44
+      },
+      {
+        "wheel": "fl",
+        "x": 1736,
+        "y": 277,
+        "radius": 39
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 964,
+        "y": 724,
+        "radius": 45
+      },
+      {
+        "wheel": "fl",
+        "x": 1254,
+        "y": 723,
+        "radius": 45
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1377,
+        "y": 710,
+        "radius": 40
+      },
+      {
+        "wheel": "fl",
+        "x": 1546,
+        "y": 740,
+        "radius": 46
+      }
+    ]
+  },
+  "wheelFit": "cover",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      240,
+      455,
+      480,
+      85
+    ],
+    "wheel": [
+      480,
+      545,
+      290
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#dbf4b4",
+    "electric": true,
+    "viewportWheelScale": 1.92,
+    "gaugeBackground": "#101014"
+  },
+  "steeringWheelSource": {
+    "artRef": "steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementMethod": "Individual original-sheet arch measurements, followed by eight-view native static review. Head-on tread centers raised 10 source pixels and reduced per vehicle. Cockpit wheel center and viewport scale individually reviewed at 1280x720 and 390x844. Gameplay acceptance deferred.",
+  "runtimeFitted": false
+}

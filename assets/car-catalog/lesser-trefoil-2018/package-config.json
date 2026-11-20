@@ -1,0 +1,76 @@
+{
+  "id": "lesser-trefoil-2018",
+  "name": "Lesser Trefoil 2018",
+  "stableCarId": "saved-car:Lesser Trefoil 2018",
+  "candidateId": "mini-john-cooper-works-countryman-all4-2018-roster-candidate",
+  "referenceVehicle": "2018 Mexico MINI John Cooper Works Countryman ALL4 secondgenerationF60 1998cc turbo four-cylinder8-speedSteptronic;notR56hatch,R60firstgeneration orlater306PScar",
+  "identity": {
+    "year": 2018,
+    "make": "MINI",
+    "model": "John Cooper Works Countryman ALL4",
+    "trim": "Mexico second-generation2.0turbo8-speedSteptronic standard19-inchJCWCourseSpoke",
+    "market": "Mexico"
+  },
+  "bodyClass": "hatchback",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      245,
+      420,
+      350,
+      115
+    ],
+    "wheel": [
+      490,
+      750,
+      320
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f5e8d4"
+  },
+  "sources": [
+    {
+      "url": "https://www.press.bmwgroup.com/mexico/article/detail/T0286274ES/el-nuevo-mini-john-cooper-works-countryman-llega-a-m%C3%A9xico-con-un-estilo-atl%C3%A9tico-m%C3%A1s-rabioso-y-m%C3%A1s-vers%C3%A1til",
+      "fields": [
+        "identity",
+        "torqueNm",
+        "powerRpm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "drivetrain",
+        "aspiration"
+      ]
+    },
+    {
+      "url": "https://www.press.bmwgroup.com/africa-dom-easteurope/article/detail/T0267376EN/extremely-athletic-extremely-versatile%3A-the-new-mini-john-cooper-works-countryman",
+      "fields": [
+        "powerKw",
+        "platform distinction",
+        "torqueNm",
+        "powerRpm",
+        "torqueRpm"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+{
+  "id": "bog-asphodel-2011",
+  "name": "Bog Asphodel 2011",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "a2f7249b50d2351b471dfdb2e5406aabf63946588b1ea2d2f1b7e5c4a648b1a8",
+  "sourceDirectory": "assets/car-catalog/bog-asphodel-2011",
+  "sourceHashes": {
+    "body": "2743c24891d2f2841beb333f164e7d25125f35662dd830d2e11d62680c17af9c",
+    "dashboard": "69e96bcba08f61b7c90367635cb8b1029507af114b4d279cef9a250e67365a85",
+    "tires": "5a43050d9c0216d1492d9fc17b05693a8724cf660087aae5003f96d29077fd05"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 141.92,
+        "y": 312.22,
+        "radius": 30.16
+      },
+      {
+        "wheel": "fr",
+        "x": 303.35,
+        "y": 312.22,
+        "radius": 30.16
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 675.894,
+        "y": 299.806,
+        "radius": 35.480000000000004
+      },
+      {
+        "wheel": "rr",
+        "x": 771.69,
+        "y": 278.51800000000003,
+        "radius": 28.384
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 1012.95,
+        "y": 299.81,
+        "radius": 35.48
+      },
+      {
+        "wheel": "rr",
+        "x": 1224.06,
+        "y": 299.81,
+        "radius": 35.48
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1436.94,
+        "y": 283.84000000000003,
+        "radius": 26.61
+      },
+      {
+        "wheel": "rr",
+        "x": 1530.962,
+        "y": 299.806,
+        "radius": 31.932000000000002
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 149.02,
+        "y": 741.53,
+        "radius": 30.16
+      },
+      {
+        "wheel": "rl",
+        "x": 299.81,
+        "y": 741.53,
+        "radius": 30.16
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 700.73,
+        "y": 729.114,
+        "radius": 33.706
+      },
+      {
+        "wheel": "fl",
+        "x": 787.6560000000001,
+        "y": 714.922,
+        "radius": 26.61
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 995.21,
+        "y": 736.21,
+        "radius": 35.48
+      },
+      {
+        "wheel": "fl",
+        "x": 1209.87,
+        "y": 736.21,
+        "radius": 37.25
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1442.262,
+        "y": 716.696,
+        "radius": 26.61
+      },
+      {
+        "wheel": "fl",
+        "x": 1530.962,
+        "y": 732.662,
+        "radius": 35.480000000000004
+      }
+    ]
+  },
+  "wheelFit": "average",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      208.22,
+      505.67,
+      495.75,
+      148.72
+    ],
+    "wheel": [
+      482.09,
+      768.27,
+      436.26
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#ffe1ab",
+    "viewportWheelScale": 2.15,
+    "gaugeBackground": "#101010"
+  },
+  "steeringWheelSource": {
+    "artRef": "steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementNotes": "Measured from original PNG via 1000px gridded preview. Direct front/rear wheel centers estimated from silhouette edge and side-view radius where no explicit arch cutout exists. Engine static review required; road/motion deferred."
+}

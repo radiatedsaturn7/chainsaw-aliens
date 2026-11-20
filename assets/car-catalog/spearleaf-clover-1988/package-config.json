@@ -1,0 +1,69 @@
+{
+  "id": "spearleaf-clover-1988",
+  "name": "Spearleaf Clover 1988",
+  "stableCarId": "saved-car:Spearleaf Clover 1988",
+  "runtimeId": "saved-car:Spearleaf Clover 1988",
+  "candidateId": "lamborghini-countach-lp5000-qv-1988-roster-candidate",
+  "referenceVehicle": "1988 Lamborghini Countach LP5000 Quattrovalvole, European downdraftcarbureted5.2V12five-speed;notUS420CVinjection,25thAnniversaryorLP500prototype",
+  "identity": {
+    "year": 1988,
+    "make": "Lamborghini",
+    "model": "Countach LP5000 Quattrovalvole",
+    "trim": "European downdraftcarbureted5.2V12five-speed;notUS420CVinjection,25thAnniversaryorLP500prototype",
+    "market": "UK/Europe"
+  },
+  "bodyClass": "coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.lamborghini.com/en-en/history/milestones",
+      "fields": [
+        "powerHp",
+        "publishedPowerPS",
+        "engineDisplacementL"
+      ]
+    },
+    {
+      "url": "https://www.lamborghini.com/en-en/history/countach",
+      "fields": [
+        "relationshipAudit",
+        "engineLayout",
+        "publishedPowerPS"
+      ]
+    }
+  ]
+}

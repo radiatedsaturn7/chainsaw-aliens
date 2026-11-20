@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "lark-clover-2009",
+  "name": "Lark Clover 2009",
+  "stableCarId": "saved-car:Lark Clover 2009",
+  "referenceVehicle": "2009 United States Audi A4 Avant B8 Premium2.0TFSI211hp quattro six-speedTiptronic wagon,standard17-inchwheels;not3.2sedan,manualsedan,CVT orRS4",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "lark-clover-2009",
+  "sourceHashes": {
+    "body": "f6ecec0e61c5f9dc6a1ca3ea249568512588b06dc1bd3d80ac05b909face9023",
+    "dashboard": "2fd59524ad26cea17de85c18bd924bd568111aeb724eb24dc434f674d911b342",
+    "tires": "d865d755cf5d35c9b5a7aa65dbea05fdefa969f0c254c22204cc7a706fb2043a"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

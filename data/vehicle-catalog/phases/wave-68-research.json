@@ -1,0 +1,1098 @@
+{
+  "schemaVersion": 1,
+  "base": "7505a8e0623117062859aab684e6986917dbedd8",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "mazda-mazda2-sport-2011-us-5mt-supplemental",
+      "identity": {
+        "year": 2011,
+        "make": "Mazda",
+        "model": "Mazda2",
+        "trim": "USSport1.5five-speedmanual five-door,15-inchsteelwheels,noTouringspoiler; notlaterToyota-badgedsedan",
+        "market": "United States"
+      },
+      "referenceVehicle": "2011 United States Mazda Mazda2, USSport1.5five-speedmanual five-door,15-inchsteelwheels,noTouringspoiler; notlaterToyota-badgedsedan",
+      "bodyClass": "five-door five-seat subcompact hatchback; production",
+      "facts": {
+        "powerHp": 100,
+        "powerRpm": 6000,
+        "torqueLbFt": 98,
+        "torqueRpm": 4000,
+        "engineDisplacementL": 1.498,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 3.9497,
+        "widthM": 1.69418,
+        "heightM": 1.47574,
+        "wheelbaseM": 2.4892,
+        "trackFrontIn": 58.1,
+        "trackRearIn": 57.7,
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "transmissionLabel": "5-speed manual",
+        "gearCount": 5,
+        "gearRatios": [
+          3.416,
+          1.842,
+          1.29,
+          0.972,
+          0.775
+        ],
+        "reverseRatio": 3.214,
+        "finalDrive": 3.85,
+        "tireSize": [
+          185,
+          55,
+          15
+        ],
+        "redlineRpm": 6300,
+        "frontWeightDistribution": 0.613,
+        "groundClearanceM": 0.12954,
+        "fuelTankUSgal": 11.3,
+        "steeringRatio": 15,
+        "absEnabled": true,
+        "tractionControlEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://news.mazdausa.com/download/2011-MAZDA2-Specifications.pdf",
+          "publisher": "Mazda original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "drivetrain",
+            "transmission",
+            "transmissionLabel",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "tireSize",
+            "redlineRpm",
+            "frontWeightDistribution",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "steeringRatio",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "OfficialMazdaUS2011specdeck readviawebPDF2026-11-18; directdownload403 so no localPDFclaim.100SAEnethp/98lbft,manualratios,61.3frontweight.2306lb ismanualfamilymassnottrim-split; placedinestimates."
+        }
+      ],
+      "limits": [
+        "Curbestimate usesfactory2306lbmanualfamilyfigure; notassertingSport-onlyweighing.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "smallhead-clover-2014",
+            "alias": "Smallhead Clover 2014",
+            "reference": "2014 Mazda3iSport2.0sedan",
+            "documentId": "smallhead-clover-2014",
+            "runtimeId": "saved-car:Smallhead Clover 2014",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "strawberry-trefoil-2012",
+            "alias": "Strawberry Trefoil 2012",
+            "reference": "2012 YarisL1.5three-door",
+            "documentId": "strawberry-trefoil-2012",
+            "runtimeId": "saved-car:Strawberry Trefoil 2012",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoMazda2identityfound. DE-platformMazda1.5five-door differs fromlargerMazda3 andToyotaXP130three-door; noToyotaYaris-badgedMazda2sedan.",
+        "evidence": [
+          "https://news.mazdausa.com/download/2011-MAZDA2-Specifications.pdf"
+        ]
+      },
+      "name": "Sandcherry Clover 2011",
+      "id": "sandcherry-clover-2011",
+      "simulationEstimates": {
+        "cgHeightM": 0.49,
+        "dragCoefficient": 0.31,
+        "tireGrip": 0.79,
+        "spring": 0.4,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "wheelWellAware": true,
+        "revLimitRpm": 6500,
+        "topSpeedMph": 108,
+        "zeroToSixtySec": 9.7,
+        "curbKg": 1045.98400522
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "toyota-matrix-xrs-2005-us-6mt-supplemental",
+      "identity": {
+        "year": 2005,
+        "make": "Toyota",
+        "model": "Matrix",
+        "trim": "XRS2ZZ-GE VVTL-i six-speedmanual FWD,16-inchalloys,solidroof; notbase1ZZ,XR,AWD orPontiacVibe",
+        "market": "United States"
+      },
+      "referenceVehicle": "2005 United States Toyota Matrix, XRS2ZZ-GE VVTL-i six-speedmanual FWD,16-inchalloys,solidroof; notbase1ZZ,XR,AWD orPontiacVibe",
+      "bodyClass": "five-door five-seat high-roof performance hatchback; production",
+      "facts": {
+        "powerHp": 170,
+        "powerRpm": 7600,
+        "torqueLbFt": 127,
+        "torqueRpm": 4400,
+        "engineDisplacementL": 1.8,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 4.35102,
+        "widthM": 1.77546,
+        "heightM": 1.56464,
+        "wheelbaseM": 2.60096,
+        "trackFrontIn": 59.6,
+        "trackRearIn": 58.9,
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "transmissionLabel": "6-speed manual",
+        "gearCount": 6,
+        "curbKg": 1270.058636,
+        "tireSize": [
+          205,
+          55,
+          16
+        ],
+        "groundClearanceM": 0.14986,
+        "fuelTankUSgal": 13.2,
+        "absEnabled": true,
+        "tractionControlEnabled": false
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Toyota/Matrix/Toyota_US%20Matrix_2005.pdf",
+          "publisher": "Toyota original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "drivetrain",
+            "transmission",
+            "transmissionLabel",
+            "gearCount",
+            "curbKg",
+            "tireSize",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "OriginalToyota2005USbrochure read2026-11-18 exactXRS170hp7600/127lbft4400,6MT2800lb,standard16-inch. Publishedperiodratingnotlaterrevised164. Individualgearsestimated."
+        }
+      ],
+      "limits": [
+        "Nooptional17-inchwheel,moonroof oraftermarketliftcontroller. VVTL-i representedbyestimatedtorquecurve, notswitchablevalvelift UI.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "woodrush-2005",
+            "alias": "Woodrush 2005",
+            "reference": "2005 CorollaCE1ZZmanualsedan",
+            "documentId": "woodrush-2005",
+            "runtimeId": "saved-car:Woodrush 2005",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "boxelder-2005",
+            "alias": "Boxelder 2005",
+            "reference": "2005 ScionxB1.5manual",
+            "documentId": "boxelder-2005",
+            "runtimeId": "saved-car:Boxelder 2005",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoMatrix/Vibeidentityfound. XRS2ZZhigh-liftengine6MTandhigh-roofhatch differs fromCorollaCE1ZZsedan andxB1.5boxbody; notbadge-twinVibeaddition.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Toyota/Matrix/Toyota_US%20Matrix_2005.pdf"
+        ]
+      },
+      "name": "Pincherry Clover 2005",
+      "id": "pincherry-clover-2005",
+      "simulationEstimates": {
+        "reverseRatio": 3.25,
+        "cgHeightM": 0.55,
+        "dragCoefficient": 0.33,
+        "tireGrip": 0.86,
+        "spring": 0.5,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 8200,
+        "revLimitRpm": 8400,
+        "topSpeedMph": 130,
+        "zeroToSixtySec": 7.4,
+        "finalDrive": 4.529,
+        "gearRatios": [
+          3.166,
+          2.05,
+          1.481,
+          1.166,
+          0.916,
+          0.725
+        ]
+      }
+    },
+    {
+      "canonicalReservationRequired": true,
+      "candidateId": "scion-tc-base-2010-us-5mt-supplemental",
+      "identity": {
+        "year": 2010,
+        "make": "Scion",
+        "model": "tC",
+        "trim": "2010USmonospec2.4five-speedmanual,standardpanoramicglassroof17-inchalloys; noTRDsupercharger/LSD,ReleaseSeries orsecondgeneration2.5",
+        "market": "United States"
+      },
+      "referenceVehicle": "2010 United States Scion tC, 2010USmonospec2.4five-speedmanual,standardpanoramicglassroof17-inchalloys; noTRDsupercharger/LSD,ReleaseSeries orsecondgeneration2.5",
+      "bodyClass": "three-door five-seat liftback coupe; production",
+      "facts": {
+        "powerHp": 161,
+        "powerRpm": 6000,
+        "torqueLbFt": 162,
+        "torqueRpm": 4000,
+        "engineDisplacementL": 2.362,
+        "aspiration": "Naturally Aspirated",
+        "lengthM": 4.4196,
+        "widthM": 1.7551399999999997,
+        "heightM": 1.41478,
+        "wheelbaseM": 2.70002,
+        "trackFrontIn": 59.3,
+        "trackRearIn": 59.3,
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "transmissionLabel": "5-speed manual",
+        "gearCount": 5,
+        "curbKg": 1329.93282884,
+        "tireSize": [
+          215,
+          45,
+          17
+        ],
+        "groundClearanceM": 0.13208,
+        "fuelTankUSgal": 14.5,
+        "absEnabled": true,
+        "tractionControlEnabled": false
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Scion/tC/Scion_US%20tC_2010.pdf",
+          "publisher": "Scion original US manufacturer specification document",
+          "fields": [
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "drivetrain",
+            "transmission",
+            "transmissionLabel",
+            "gearCount",
+            "curbKg",
+            "tireSize",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "absEnabled",
+            "tractionControlEnabled"
+          ],
+          "access": "OriginalScion2010USbrochure technicaltable read2026-11-18.161hp162lbft2362cc2932lbmanual versus2987auto;17-inch21545ZR17,allglassroofstandard. Not2005period160hprating."
+        }
+      ],
+      "limits": [
+        "NoTRDoptionalperformanceparts; gearratios/redline/handling estimated. Roofglassclosedstatic.",
+        "All geometry, gearing, redline and performance values in suggestedEstimates are modeling estimates, not claimed factory measurements. Curb mass basis excludes cargo/occupants.",
+        "Supplemental record requires canonical reservation within660; no expansion of historical660 list.",
+        "All unspecified torque-curve samples, tire compound, suspension, steering, braking, drag and drivetrain calibration are modeling estimates. Shared RTG-001 art does not reproduce the real body, cockpit or wheel geometry; no original-art or driving verification claim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "boxelder-2005",
+            "alias": "Boxelder 2005",
+            "reference": "2005 ScionxB1.5manualboxhatch",
+            "documentId": "boxelder-2005",
+            "runtimeId": "saved-car:Boxelder 2005",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "marjoram-2003",
+            "alias": "Marjoram 2003",
+            "reference": "2003 CamryLE2.4automaticsedan",
+            "documentId": "marjoram-2003",
+            "runtimeId": "saved-car:Marjoram 2003",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "No tC identity found. ANT10liftbackcoupe withmanualanddouble-wishbonerear differs fromxBboxhatch andCamrysedan despite2AZenginefamily; noequalbody/yearpadding.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Scion/tC/Scion_US%20tC_2010.pdf"
+        ]
+      },
+      "name": "Beachplum Clover 2010",
+      "id": "beachplum-clover-2010",
+      "simulationEstimates": {
+        "reverseRatio": 3.583,
+        "cgHeightM": 0.48,
+        "dragCoefficient": 0.32,
+        "tireGrip": 0.87,
+        "spring": 0.48,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0.03,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 380,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "topSpeedMph": 127,
+        "zeroToSixtySec": 7.8,
+        "finalDrive": 4.235,
+        "gearRatios": [
+          3.538,
+          2.045,
+          1.333,
+          0.972,
+          0.775
+        ]
+      }
+    },
+    {
+      "candidateId": "volvo-s40-2007-us-2-4i-5mt",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2007,
+        "make": "Volvo",
+        "model": "S40",
+        "trim": "2.4i naturally aspirated inline-five FWD standard five-speed manual sedan, ordinary chassis; not T5,T5AWD orGeartronic",
+        "market": "United States"
+      },
+      "referenceVehicle": "2007 United States Volvo S40 2.4i naturally aspirated inline-five FWD standard five-speed manual sedan, ordinary chassis; not T5,T5AWD orGeartronic",
+      "bodyClass": "sedan",
+      "facts": {
+        "powerKw": 125.277578496,
+        "powerRpm": 6000,
+        "torqueNm": 230.48905116000003,
+        "torqueRpm": 4400,
+        "engineDisplacementL": 2.4,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "zeroToSixtySec": 7.7,
+        "topSpeedMph": 130,
+        "fuelTankUSgal": 15.9
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Volvo/S40/Volvo_US%20S40_2007.pdf",
+          "publisher": "Volvo original factory US brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "zeroToSixtySec",
+            "topSpeedMph",
+            "fuelTankUSgal",
+            "identity"
+          ],
+          "access": "Original PDF downloaded and technical text reviewed; retained S402007.pdf/.txt in wave64 scratch."
+        }
+      ],
+      "limits": [
+        "Supplemental exact identity consumes an open canonical660 slot, not historical-list growth.",
+        "All suggestedEstimates explicitly estimated; no test, driving or original-art claim.",
+        "Factory brochure PDF6 and36 explicitly2.4i standard5MT,168hp6000/170lb-ft4400,manual7.7s.",
+        "Rounded2.4L retained; no unverified exact displacement.1450kg unladen mass, geometry, tires, gearset and handling estimates.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "snowdrop-t5-2008",
+            "alias": "Snowdrop T5 2008",
+            "referenceVehicle": "US2008 Volvo C30 T5 Version1.0 standard six-speed manual FWD LHD, no Custom Build options",
+            "documentId": "snowdrop-t5-2008",
+            "runtimeId": "saved-car:Snowdrop T5 2008",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "P1 sedan has naturally aspirated2.4 five/5MT versus related C30 turbo2.5five/6MT three-door hatch: different engine induction, output, gearbox and body, not badge-only.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Volvo/S40/Volvo_US%20S40_2007.pdf"
+        ]
+      },
+      "name": "Juneberry Clover 2007",
+      "id": "juneberry-clover-2007",
+      "simulationEstimates": {
+        "reverseRatio": 3.333,
+        "cgHeightM": 0.51,
+        "groundClearanceM": 0.135,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.6,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "curbKg": 1450,
+        "lengthM": 4.468,
+        "widthM": 1.77,
+        "heightM": 1.452,
+        "wheelbaseM": 2.64,
+        "trackFrontIn": 60.4,
+        "trackRearIn": 60.3,
+        "tireSize": [
+          205,
+          55,
+          16
+        ],
+        "frontTire": [
+          205,
+          55,
+          16
+        ],
+        "rearTire": [
+          205,
+          55,
+          16
+        ],
+        "gearRatios": [
+          3.385,
+          1.905,
+          1.194,
+          0.868,
+          0.652
+        ],
+        "finalDrive": 4.25
+      }
+    },
+    {
+      "candidateId": "bmw-650i-2008-us-e63-coupe-6mt",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2008,
+        "make": "BMW",
+        "model": "650i",
+        "trim": "E63 Coupe4.8 naturally aspirated V8 standard six-speed manual, standard18inch all-season wheels, nonSport; not Convertible,M6 orSportAutomatic",
+        "market": "United States"
+      },
+      "referenceVehicle": "2008 United States BMW 650i E63 Coupe4.8 naturally aspirated V8 standard six-speed manual, standard18inch all-season wheels, nonSport; not Convertible,M6 orSportAutomatic",
+      "bodyClass": "coupe",
+      "facts": {
+        "powerKw": 268.45195392,
+        "powerRpm": 6300,
+        "torqueNm": 488.09446128,
+        "torqueRpm": 3400,
+        "engineDisplacementL": 4.8,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "publishedWeightKg": 1730.0012991800002,
+        "frontWeightDistribution": 0.526,
+        "lengthM": 4.831079999999999,
+        "widthM": 1.8541999999999998,
+        "heightM": 1.37414,
+        "wheelbaseM": 2.77876,
+        "fuelTankUSgal": 18.5,
+        "topSpeedMph": 150,
+        "tireSize": [
+          245,
+          45,
+          18
+        ],
+        "frontTire": [
+          245,
+          45,
+          18
+        ],
+        "rearTire": [
+          245,
+          45,
+          18
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/BMW/6%20Series/BMW_US%206Series_2008.pdf",
+          "publisher": "BMW original factory US brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "publishedWeightKg",
+            "frontWeightDistribution",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "fuelTankUSgal",
+            "topSpeedMph",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "identity"
+          ],
+          "access": "Original PDF downloaded and technical text reviewed; retained BMW62008.pdf/.txt in wave64 scratch."
+        }
+      ],
+      "limits": [
+        "Supplemental exact identity consumes an open canonical660 slot, not historical-list growth.",
+        "All suggestedEstimates explicitly estimated; no test, driving or original-art claim.",
+        "Original2008 brochure explicitly standard6MT,360hp6300/360lb-ft3400,standard245/45R18.",
+        "3814lb US unladen coupe table not transmission-separated: publishedWeightKg anchor, selected1730kg manual curb estimate. Factory52.6%front model reference.",
+        "Acceleration choice5.4s estimated because parenthetical transmission mapping not resolved. Ratios/track/CG/redline estimated. No active steering or roll-stabilization reproduction.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "water-dock-1986",
+            "alias": "Water Dock 1986",
+            "referenceVehicle": "1986 UK BMW M635CSi E24 M88/3 non-catalyst3.453L naturally aspirated inline-six five-speed manual;not US S38 catalyst M6",
+            "documentId": "water-dock-1986",
+            "runtimeId": "saved-car:Water Dock 1986",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "wall-speedwell-2008",
+            "alias": "Wall Speedwell 2008",
+            "referenceVehicle": "2008 US BMW M3 Coupe E92 4.0 naturally aspirated V8 six-speed manual; not E46, DCT, sedan or convertible",
+            "documentId": "wall-speedwell-2008",
+            "runtimeId": "saved-car:Wall Speedwell 2008",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "E63 large4.8V8 luxury coupe/manual differs from E24 M635CSi3.45inline-six5MT and E92M3 high-rev4.0V8; different chassis and engine family, not year-only trim.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/BMW/6%20Series/BMW_US%206Series_2008.pdf"
+        ]
+      },
+      "name": "Saskatoon Clover 2008",
+      "id": "saskatoon-clover-2008",
+      "simulationEstimates": {
+        "reverseRatio": 3.677,
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "zeroToSixtySec": 5.4,
+        "curbKg": 1730,
+        "trackFrontIn": 61.3,
+        "trackRearIn": 62.8,
+        "gearRatios": [
+          4.055,
+          2.396,
+          1.582,
+          1.192,
+          1,
+          0.872
+        ],
+        "finalDrive": 3.23
+      }
+    },
+    {
+      "candidateId": "mercedes-benz-sl550-2008-us-r230-7at",
+      "canonicalReservationRequired": true,
+      "identity": {
+        "year": 2008,
+        "make": "Mercedes-Benz",
+        "model": "SL550",
+        "trim": "R230 naturally aspirated5.461V8 two-seat retractable-hardtop roadster7AT, standard18inch wheels, roof-up; not SL600,SL55AMG orSL65BlackSeries",
+        "market": "United States"
+      },
+      "referenceVehicle": "2008 United States Mercedes-Benz SL550 R230 naturally aspirated5.461V8 two-seat retractable-hardtop roadster7AT, standard18inch wheels, roof-up; not SL600,SL55AMG orSL65BlackSeries",
+      "bodyClass": "convertible",
+      "facts": {
+        "powerKw": 284.857351104,
+        "powerRpm": 6000,
+        "torqueNm": 530.124817668,
+        "torqueRpm": 2800,
+        "engineDisplacementL": 5.461,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "gearCount": 7,
+        "curbKg": 1914.1598014,
+        "lengthM": 4.5339,
+        "heightM": 1.2953999999999999,
+        "wheelbaseM": 2.56032,
+        "finalDrive": 2.65,
+        "fuelTankUSgal": 21.1,
+        "zeroToSixtySec": 5.3,
+        "tireSize": [
+          255,
+          40,
+          18
+        ],
+        "frontTire": [
+          255,
+          40,
+          18
+        ],
+        "rearTire": [
+          285,
+          35,
+          18
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Mercedes_Benz/SL-Class/Mercedes%20Benz_US%20SL-Class_2008.pdf",
+          "publisher": "Mercedes-Benz original factory US brochure, public archive",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "heightM",
+            "wheelbaseM",
+            "finalDrive",
+            "fuelTankUSgal",
+            "zeroToSixtySec",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "identity"
+          ],
+          "access": "Original PDF downloaded and technical text reviewed; retained SL2008.pdf/.txt in wave64 scratch."
+        }
+      ],
+      "limits": [
+        "Supplemental exact identity consumes an open canonical660 slot, not historical-list growth.",
+        "All suggestedEstimates explicitly estimated; no test, driving or original-art claim.",
+        "Factory PDF24 SL550column supports4220lb curb,5461cc,382hp6000/391lb-ft2800\u20134800,7AT2.65axle,staggeredtires and5.3s.",
+        "ABC active hydraulic suspension approximated passively; roof represented fixedup, not a folding mechanism.",
+        "Width excluding mirrors, tracks, internal gearing, weight distribution and handling explicitly estimated.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "sea-plantain-2009",
+            "alias": "Sea Plantain 2009",
+            "referenceVehicle": "2009 German Mercedes-Benz SL 65 AMG Black Series R230230.479 M275.9835.980L biturboV12 fixedroofcoupe5AT,notstandardSL65roadster",
+            "documentId": "sea-plantain-2009",
+            "runtimeId": "saved-car:Sea Plantain 2009",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "myrtle-clover-2005",
+            "alias": "Myrtle Clover 2005",
+            "referenceVehicle": "2005 United States Mercedes-Benz SLK350 R171 3498cc naturally aspirated V6 standard six-speed manual, standard17-inch staggered wheels, roof up; not SLK55 AMG or R172",
+            "documentId": "myrtle-clover-2005",
+            "runtimeId": "saved-car:Myrtle Clover 2005",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Ordinary R230 V8 retractable-hardtop roadster differs from existing R230SL65BlackSeries fixed-roof widebody biturboV12 and smaller R171SLK350V6manual; engine, transmission, body and chassis materially distinct.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Mercedes_Benz/SL-Class/Mercedes%20Benz_US%20SL-Class_2008.pdf"
+        ]
+      },
+      "name": "Hackberry Clover 2008",
+      "id": "hackberry-clover-2008",
+      "simulationEstimates": {
+        "reverseRatio": 3.42,
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "topSpeedMph": 155,
+        "widthM": 1.829,
+        "trackFrontIn": 61.4,
+        "trackRearIn": 60.6,
+        "gearRatios": [
+          4.38,
+          2.86,
+          1.92,
+          1.37,
+          1,
+          0.82,
+          0.73
+        ],
+        "transmissionLabel": "7-speed torque-converter automatic approximation"
+      }
+    },
+    {
+      "candidateId": "oldsmobile-bravada-2004-us-2wd-supplemental",
+      "identity": {
+        "year": 2004,
+        "make": "Oldsmobile",
+        "model": "Bravada",
+        "trim": "base2WD4.2Vortec4200 inline-six four-speedautomatic, standard3.73axle and17-inchwheels; notSmartTrakAWD orFinal500",
+        "market": "United States"
+      },
+      "referenceVehicle": "2004 United States Oldsmobile Bravada, base2WD4.2Vortec4200 inline-six four-speedautomatic, standard3.73axle and17-inchwheels; notSmartTrakAWD orFinal500",
+      "bodyClass": "five-door-suv",
+      "artIdentity": "GMT360 standard-length five-doorSUV withroundednose, traditionalroofrails and17-inchwheels; five-seatleatherinterior andoriginal badge-free body.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "transmission": "automatic",
+        "engineDisplacementL": 4.2,
+        "powerHp": 275,
+        "powerRpm": 6000,
+        "torqueLbFt": 275,
+        "torqueRpm": 3600,
+        "drivetrain": "rwd",
+        "gearCount": 4,
+        "finalDrive": 3.73,
+        "curbKg": 2014.8573075400002,
+        "lengthM": 4.87172,
+        "widthM": 1.91516,
+        "heightM": 1.8922999999999999,
+        "wheelbaseM": 2.8702,
+        "trackFrontIn": 63.1,
+        "trackRearIn": 62.1,
+        "tireSize": [
+          245,
+          65,
+          17
+        ],
+        "fuelTankUSgal": 19,
+        "groundClearanceM": 0.2032
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/oldsmobile/bravada/Oldsmobile_US%20Bravada_2004.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "transmission",
+            "engineDisplacementL",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "drivetrain",
+            "gearCount",
+            "finalDrive",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "fuelTankUSgal",
+            "groundClearanceM"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "Factorytable explicitlydistinguishes4442lb2WD from4628lbAWD; use2WDcolumn only. Originalbrochure archivedPDF readlocally despitewebparserfailure.",
+        "NoSmartTrakAWD,lockingrear orlow-range controls. Pneumaticrearleveling simplifiedasfixedestimatedsprings; noactiveheightbehaviorclaim. Internalratios/limiter/performanceremainestimates.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Teasel 2006",
+            "documentId": "teasel-2006",
+            "runtimeId": "saved-car:Teasel 2006",
+            "reference": "2006 Canada HUMMER H3 base5-door,3.5L Vortec3500 inline5,optional Hydra-Matic4L60-E4AT,standardP265/75R16,cloth,LHD,4HighOpen40:60. June2005GMCanada brochure122-06-B-002E. Not Adventure/Lux,33inch,AlphaV8,3.7L,H3T,manual orliftedtruck.",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Fragrant Agrimony 1992",
+            "documentId": "fragrant-agrimony-1992",
+            "runtimeId": "saved-car:Fragrant Agrimony 1992",
+            "reference": "1992 US GMC Typhoon three-door enclosed sport-utility wagon,4.3 turbo/intercooled V6,4-speed automatic,35:65 full-time AWD,3.42 rear LSD,stock245/50VR16; originalGMC/PAS launch brochure basis",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "NoGMT360Bravada/TrailBlazer/Envoy/Rainier/Ascender/9-7X nativecounterpart. 4.2naturallyaspiratedDOHCsix/RWD/SUV differs fromGMT345H3five-cylinder4WD andoldturbo4.3TyphoonAWDthree-door; notbadge-clonecounting.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/oldsmobile/bravada/Oldsmobile_US%20Bravada_2004.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Hawberry Clover 2004",
+      "id": "hawberry-clover-2004",
+      "simulationEstimates": {
+        "reverseRatio": 2.29,
+        "cgHeightM": 0.74,
+        "dragCoefficient": 0.42,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.21,
+        "frontOverhangM": 0.94,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.55,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6400,
+        "topSpeedMph": 108,
+        "zeroToSixtySec": 8.6,
+        "steeringRatio": 20,
+        "gearRatios": [
+          3.06,
+          1.625,
+          1,
+          0.696
+        ],
+        "transmissionLabel": "4-speed automatic (estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "chevrolet-impala-ls-2012-us-3-6-supplemental",
+      "identity": {
+        "year": 2012,
+        "make": "Chevrolet",
+        "model": "Impala",
+        "trim": "LS3.6SIDI DOHCV6 FWD six-speedautomatic,standard16-inchaluminumwheels andfrontbucketseats; notpolice,LTZ,SS or1964rear-drive",
+        "market": "United States"
+      },
+      "referenceVehicle": "2012 United States Chevrolet Impala, LS3.6SIDI DOHCV6 FWD six-speedautomatic,standard16-inchaluminumwheels andfrontbucketseats; notpolice,LTZ,SS or1964rear-drive",
+      "bodyClass": "four-door-sedan",
+      "artIdentity": "Ninth-generation Wbody full-size three-box sedan, roundedroof andlargeconventionaltrunk,small16-inchalloys, five-seatclothcabin; no policeequipment.",
+      "facts": {
+        "aspiration": "Naturally aspirated",
+        "transmission": "automatic",
+        "engineDisplacementL": 3.6,
+        "powerHp": 300,
+        "powerRpm": 6500,
+        "torqueLbFt": 262,
+        "torqueRpm": 5300,
+        "drivetrain": "fwd",
+        "gearCount": 6,
+        "lengthM": 5.09016,
+        "widthM": 1.85166,
+        "heightM": 1.49098,
+        "wheelbaseM": 2.8066999999999998,
+        "trackFrontIn": 62.4,
+        "trackRearIn": 61.5,
+        "fuelTankUSgal": 17.5
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Chevrolet/Impala/Chevrolet_US%20Impala_2012.pdf",
+          "publisher": "Original manufacturer specification sheet or sales brochure",
+          "fields": [
+            "aspiration",
+            "transmission",
+            "engineDisplacementL",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "drivetrain",
+            "gearCount",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "fuelTankUSgal"
+          ],
+          "access": "2026-11-18 original factory PDF text or brochure image visually reviewed; no OCR"
+        }
+      ],
+      "limits": [
+        "All suggestedEstimates are explicit modeling assumptions, not manufacturer claims. Shared RTG-001 graphics; not art-complete or drive-verified. No new runtime features.",
+        "BrochureconfirmsLS16-inchwheels,engine/outputs/6AT andbodygeometry; no selectedtrimcurbpublished, so1620kgexplicitestimate. Tireprofile,gears/axle andperformancealsoestimates.",
+        "Modelgasolineoutput only; noE85switch,policecalibration oractive-cylinderlogic. StabiliTrakrepresentedonlybyexistingbasictraction/ABSsemantics.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Henbit 2005",
+            "documentId": "henbit-2005",
+            "runtimeId": "saved-car:Henbit 2005",
+            "reference": "2005 mainland-US Chevrolet Malibu base Sedan,2.2L Ecotec DOHC inline4,4T45-E four-speed automatic,FWD,LHD. NotMaxx,Classic,LS/LT,V6,SS,sport or appearance package.",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Rough Clover 1964",
+            "documentId": "rough-clover-1964",
+            "runtimeId": "saved-car:Rough Clover 1964",
+            "reference": "1964 United States Chevrolet Impala Super Sport409, SportCoupehardtop,optional340-hp409four-barrelV8,optionalwide-ratio4MT,3.36axle;not400/425hp",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Running Clover 2002",
+            "documentId": "running-clover-2002",
+            "runtimeId": "saved-car:Running Clover 2002",
+            "reference": "2002 United States Buick LeSabre, US Custom3800SeriesII naturallyaspiratedV6 four-speedautomatic,standard15-inchcoveredsteelwheels,noGranTouringpackage",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "ModernWbodyFWD3.6DI/6ATsedan isentirelydifferent from1964Impala409RWDhardtop; notyearpadding. Also differsfromEpsilonMalibu2.2/4AT andHbodyLeSabre3800OHV4AT. NoWbodyImpala contemporaryentry.",
+        "evidence": [
+          "https://www.auto-brochures.com/makes/Chevrolet/Impala/Chevrolet_US%20Impala_2012.pdf"
+        ]
+      },
+      "canonicalReservationRequired": true,
+      "name": "Barberry Clover 2012",
+      "id": "barberry-clover-2012",
+      "simulationEstimates": {
+        "reverseRatio": 2.882,
+        "cgHeightM": 0.54,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.33,
+        "tireGrip": 0.8,
+        "spring": 0.5,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 1.0,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 420,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6700,
+        "revLimitRpm": 6900,
+        "topSpeedMph": 118,
+        "zeroToSixtySec": 6.8,
+        "steeringRatio": 20,
+        "curbKg": 1620,
+        "gearRatios": [
+          4.484,
+          2.872,
+          1.842,
+          1.414,
+          1,
+          0.742
+        ],
+        "finalDrive": 2.77,
+        "tireSize": [
+          225,
+          60,
+          16
+        ],
+        "transmissionLabel": "6-speed automatic (estimated shift calibration)"
+      }
+    }
+  ],
+  "deferred": []
+}

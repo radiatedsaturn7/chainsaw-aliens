@@ -1,0 +1,950 @@
+{
+  "schemaVersion": 1,
+  "base": "8fe8aef8dd580f6d5681d1c84dfffe27999895c4",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "mercedes-benz-c-32-amg-2004-roster-candidate",
+      "identity": {
+        "year": 2004,
+        "make": "Mercedes-Benz",
+        "model": "C 32 AMG",
+        "trim": "W203 type203.065 sedan5AT,early2004 production",
+        "market": "Germany"
+      },
+      "referenceVehicle": "Early2004 German Mercedes-Benz C32AMG W203 type203.065 M112.961 supercharged3.2V6 sedan standard5AT;not wagon,USrating,C55or500E",
+      "facts": {
+        "powerKw": 260,
+        "torqueNm": 450,
+        "powerRpm": 6100,
+        "torqueRpm": 4400,
+        "engineDisplacementL": 3.199,
+        "curbKg": 1635,
+        "transmission": "automatic",
+        "gearCount": 5,
+        "gearRatios": [
+          3.59,
+          2.19,
+          1.41,
+          1,
+          0.83
+        ],
+        "reverseRatio": 3.16,
+        "finalDrive": 3.06,
+        "lengthIn": 178.26771653543307,
+        "widthIn": 68.03149606299213,
+        "heightIn": 55.70866141732284,
+        "wheelbaseIn": 106.88976377952757,
+        "trackFrontIn": 58.77952755905512,
+        "trackRearIn": 58.18897637795276,
+        "tireSize": [
+          225,
+          45,
+          17
+        ],
+        "frontTire": [
+          225,
+          45,
+          17
+        ],
+        "rearTire": [
+          245,
+          40,
+          17
+        ],
+        "fuelTankUSgal": 16.378667246205204,
+        "topSpeedMph": 155.3427980593335
+      },
+      "sources": [
+        {
+          "url": "https://mercedes-benz-publicarchive.com/marsClassic/en/instance/ko/C-32-AMG.xhtml?oid=5540",
+          "publisher": "Mercedes-Benz official public archive C32AMG technical model record",
+          "fields": [
+            "identity",
+            "powerKw",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "curbKg",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "fuelTankUSgal",
+            "topSpeedMph"
+          ],
+          "access": "Read2026-11-17. Mainproduction04/2001\u201303/2004 confirms early2004choice. Mass1635kg EC92/21 includes68kgdriver+7kgbaggage and90percentfuel; retaineddirectly.260kW basis,not354mechanicalhp.0\u20131005.2sec not0\u201360."
+        }
+      ],
+      "limits": [
+        "Do not mix stationwagon1695kg or length4541mm. Mass includes75kgoccupant/baggage allowance,notdriver-excludedDIN.",
+        "Supercharger and automatic modeled with existing runtime; no exactAMGSpeedshift/ESP behavior claim. All non-facts simulation values estimated.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "White Clover 2004",
+      "id": "white-clover-2004",
+      "simulationEstimates": {
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.32,
+        "tireGrip": 1.03,
+        "spring": 0.56,
+        "antiRollRear": 0.26,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.52,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6700,
+        "aspiration": "Supercharged",
+        "zeroToSixtySec": 5.0,
+        "drivetrain": "rwd",
+        "transmissionLabel": "5-speed torque-converter automatic",
+        "torqueConverterSlip": 0.05,
+        "torqueConverterMultiplication": 1.7
+      }
+    },
+    {
+      "candidateId": "bmw-m3-1997-roster-candidate",
+      "identity": {
+        "year": 1997,
+        "make": "BMW",
+        "model": "M3",
+        "trim": "E36 S50B32 standardcoupe6MT,notSMG",
+        "market": "Germany"
+      },
+      "referenceVehicle": "1997 German BMW M3 E36 S50B32 3.201L naturally aspiratedinline6 coupe six-speedmanual;notUS240hpS52,3.0S50B30,E46orSMG",
+      "facts": {
+        "powerKw": 236,
+        "torqueNm": 350,
+        "powerRpm": 7400,
+        "torqueRpm": 3250,
+        "engineDisplacementL": 3.201,
+        "curbKg": 1440,
+        "transmission": "manual",
+        "gearCount": 6,
+        "gearRatios": [
+          4.23,
+          2.51,
+          1.67,
+          1.23,
+          1,
+          0.83
+        ],
+        "reverseRatio": 3.75,
+        "finalDrive": 3.23,
+        "lengthIn": 174.52755905511813,
+        "widthIn": 67.32283464566929,
+        "heightIn": 52.55905511811024,
+        "wheelbaseIn": 106.69291338582678,
+        "trackFrontIn": 55.98425196850394,
+        "trackRearIn": 56.61417322834646,
+        "tireSize": [
+          225,
+          45,
+          17
+        ],
+        "frontTire": [
+          225,
+          45,
+          17
+        ],
+        "rearTire": [
+          245,
+          40,
+          17
+        ],
+        "fuelTankUSgal": 17.17118340327965,
+        "topSpeedMph": 155.3427980593335,
+        "dragCoefficient": 0.32
+      },
+      "sources": [
+        {
+          "url": "https://newsroom.bmwgroup.com/emea/download/aa9d239a-59c1-4b89-9b87-85d76bd6cec6/20260902081242491-984.pdf",
+          "publisher": "BMW Corporate Communications TechnicalData BMW M Cars1978\u20132005,unmodifiedfactoryoriginals",
+          "fields": [
+            "identity",
+            "powerKw",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "curbKg",
+            "transmission",
+            "gearCount",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "lengthIn",
+            "widthIn",
+            "heightIn",
+            "wheelbaseIn",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "fuelTankUSgal",
+            "topSpeedMph",
+            "dragCoefficient"
+          ],
+          "access": "Page1 labels secondgeneration1995\u20131999;page12 original07/1995Germanmarket3.2spec visually reviewed2026-11-17.1997selectedwithinverifiedsame mechanicalvariant period. Coupe middlecolumn1440kgDIN,not1515kgEC or1460sedan.236kW anchor avoids321bhp ambiguous pairedunit.0\u20131005.5sec not0\u201360."
+        }
+      ],
+      "limits": [
+        "1997 mechanicalvariant based on factory1995\u20131999period and originalJuly1995spec,not claim of1997options-specific weight.",
+        "ChooseDIN1440kg notEC1515kg;European321metricPS family notUS240hpS52. Exactsamegeneration6MT notyearpadding againstexistingE46/E92.",
+        "All non-facts simulation values estimated:idle/limiter/torquecurve,CG/loadsplit,suspension/grip,brakebias/differential,shift and0\u201360.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Red Clover 1997",
+      "id": "red-clover-1997",
+      "simulationEstimates": {
+        "cgHeightM": 0.5,
+        "groundClearanceM": 0.13,
+        "tireGrip": 1.03,
+        "spring": 0.56,
+        "antiRollRear": 0.26,
+        "suspensionTravelM": 0.16,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.52,
+        "redlineRpm": 7600,
+        "revLimitRpm": 7800,
+        "aspiration": "Naturally aspirated",
+        "zeroToSixtySec": 5.3,
+        "drivetrain": "rwd",
+        "transmissionLabel": "6-speed manual (factory ratios; estimated shift calibration)",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1
+      }
+    },
+    {
+      "candidateId": "honda-s800-1970-roster-candidate",
+      "identity": {
+        "year": 1970,
+        "make": "Honda",
+        "model": "S800 M",
+        "trim": "Japan roadster 4MT, final-series live rear axle",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1970 Japan Honda S800 M roadster 791cc DOHC four, four-speed manual, final 1968-1970 specification; not chain-drive early S800 or coupe",
+      "facts": {
+        "powerRpm": 8000,
+        "torqueRpm": 6000,
+        "engineDisplacementL": 0.791,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 4,
+        "curbKg": 755,
+        "lengthM": 3.335,
+        "widthM": 1.4,
+        "heightM": 1.215,
+        "wheelbaseM": 2,
+        "trackFrontIn": 45.74803149606299,
+        "trackRearIn": 45.275590551181104,
+        "groundClearanceM": 0.16,
+        "fuelTankUSgal": 9.246021832535195,
+        "gearRatios": [
+          4.001,
+          2.48,
+          1.613,
+          1.143
+        ],
+        "reverseRatio": 4.572,
+        "periodPublishedRatings": {
+          "powerPS": 70,
+          "powerRpm": 8000,
+          "torqueKgfM": 6.7,
+          "torqueRpm": 6000,
+          "ratingBasis": "Honda archive does not specify gross/net. Do not recast as verified installed net output."
+        }
+      },
+      "limits": [
+        "No exact S800 exists in current decoded catalog; Honda Beat and N360 have different platforms and drivetrains. Old eleven Sprite is not Honda S800.",
+        "Honda explicitly dates archive information to 1970 and identifies May1968 final S800M series. Use live rear axle roadster, not early chain-drive independent-rear car.",
+        "Archive prints period70PS and6.7kgm but no test standard. Installed65hp/62Nm are transparent conservative simulation estimates, not net conversion claims.",
+        "145-SR13 period tires use unspecified full profile; 145/80R13 is an estimated dimensional equivalent. Final drive, redline, load split, CG, native suspension, grip and performance are estimates. Archive bore/stroke60x70 is internally inconsistent with791cc; omit rather than transplant.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "sources": [
+        {
+          "url": "https://www.honda.co.jp/auto-archive/s800/1970/s800m_sy.html",
+          "publisher": "Honda official 1970 S800M archived specification",
+          "fields": [
+            "identity",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "groundClearanceM",
+            "fuelTankUSgal",
+            "gearRatios",
+            "reverseRatio",
+            "periodPublishedRatings"
+          ],
+          "access": "Read2026-11-17. Page explicitly says data current1970, May1968 announced final model; full numeric specifications and four forward ratios."
+        },
+        {
+          "url": "https://www.honda.co.jp/auto-archive/s800/",
+          "publisher": "Honda official model archive",
+          "fields": [
+            "identity"
+          ],
+          "access": "S800M May1968-1970 distinguished from earlier1966 coupe/roadster."
+        }
+      ],
+      "name": "Lesser Pimpernel 1970",
+      "id": "lesser-pimpernel-1970",
+      "simulationEstimates": {
+        "cgHeightM": 0.43,
+        "dragCoefficient": 0.45,
+        "tireGrip": 0.82,
+        "spring": 0.37,
+        "antiRollRear": 0.15,
+        "suspensionTravelM": 0.14,
+        "frontOverhangM": 0.65,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.51,
+        "redlineRpm": 8500,
+        "revLimitRpm": 9000,
+        "aspiration": "Naturally aspirated",
+        "topSpeedMph": 99,
+        "zeroToSixtySec": 13.5,
+        "powerHp": 65,
+        "torqueNm": 62,
+        "finalDrive": 4.714,
+        "tireSize": [
+          145,
+          80,
+          13
+        ],
+        "torqueLbFt": 45.72885325519047,
+        "transmissionLabel": "4-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "toyota-mr2-gt-1995-roster-candidate",
+      "identity": {
+        "year": 1995,
+        "make": "Toyota",
+        "model": "MR2 GT SW20",
+        "trim": "UK naturally aspirated GT 5MT with removable glass sunroof, not T-Bar",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "1995 UK Toyota MR2 GT SW20 2.0 naturally aspirated 173bhp five-speed manual, standard glass sunroof; not Japanese turbo GT, GT T-Bar or AW11/Spyder",
+      "facts": {
+        "powerHp": 173,
+        "torqueLbFt": 137,
+        "powerRpm": 7000,
+        "torqueRpm": 4800,
+        "engineDisplacementL": 1.998,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 1285,
+        "lengthM": 4.18,
+        "widthM": 1.7,
+        "heightM": 1.23,
+        "wheelbaseM": 2.4,
+        "trackFrontIn": 57.874015748031496,
+        "trackRearIn": 57.08661417322835,
+        "groundClearanceM": 0.125,
+        "dragCoefficient": 0.31,
+        "fuelTankUSgal": 14.529462879698164,
+        "gearRatios": [
+          3.285,
+          1.96,
+          1.322,
+          1.028,
+          0.82
+        ],
+        "reverseRatio": 3.153,
+        "finalDrive": 3.944,
+        "tireSize": [
+          195,
+          55,
+          15
+        ],
+        "rearTireSize": [
+          225,
+          50,
+          15
+        ],
+        "steeringRatio": 17.6,
+        "absEnabled": true,
+        "frontTire": [
+          195,
+          55,
+          15
+        ],
+        "rearTire": [
+          225,
+          50,
+          15
+        ]
+      },
+      "limits": [
+        "Exact UK GT variant selected because backlog GT label leaves market unresolved; no claim to Japanese turbo or Forza simulation specifications. Toyota archive identifies these specs for1994-2000 range including1995.",
+        "Current Glimmer1986 and GlowmothSC1988 are AW11; Starwort2005 is ZZW30 Spyder. This SW20 naturally aspirated platform is absent; not year-only padding.",
+        "GT1285kg has tilt/removable glass sunroof; T-Bar1305kg is excluded. Factory staggered195/55R15front225/50R15rear must be preserved in physics when supported.",
+        "Redline, limiter, front weight distribution, CG, differential locking, native suspension/grip and acceleration calibration remain estimates; no turbo engine or LSD claim.",
+        "Runtime frontTire/rearTire aliases retain the exact source tireSize/rearTireSize dimensions.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "sources": [
+        {
+          "url": "https://media.toyota.co.uk/wp-content/uploads/sites/5/pdf/MR2-Gen2-new-engine.pdf",
+          "publisher": "Toyota GB original second-generation MR2 new-engine launch press pack",
+          "fields": [
+            "identity",
+            "powerHp",
+            "torqueLbFt",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "groundClearanceM",
+            "dragCoefficient",
+            "fuelTankUSgal",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "tireSize",
+            "rearTireSize",
+            "steeringRatio",
+            "absEnabled"
+          ],
+          "access": "Read2026-11-17. PDFp7 technical dimensions/mass/engine visually verified; p8S54ratios/final; p9staggeredtires/brakes/steering; p11GTversusGT-TBar equipment. Source is1994launch retained for1994-2000archive."
+        },
+        {
+          "url": "https://media.toyota.co.uk/vehicles/mr2-archive-1994/",
+          "publisher": "Toyota UK official MR2 1994-2000 archive",
+          "fields": [
+            "identity"
+          ],
+          "access": "Explicit 1994-2000 range includes1995;173bhp engine, standardABS, revised suspension/steering and rear body trim."
+        }
+      ],
+      "name": "Scarlet Pimpernel 1995",
+      "id": "scarlet-pimpernel-1995",
+      "simulationEstimates": {
+        "cgHeightM": 0.46,
+        "tireGrip": 1,
+        "spring": 0.52,
+        "antiRollRear": 0.26,
+        "suspensionTravelM": 0.15,
+        "frontOverhangM": 0.92,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.43,
+        "redlineRpm": 7200,
+        "revLimitRpm": 7400,
+        "aspiration": "Naturally aspirated",
+        "topSpeedMph": 137,
+        "zeroToSixtySec": 7.7,
+        "transmissionLabel": "5-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "dodge-charger-2015-srt-hellcat-candidate",
+      "identity": {
+        "year": 2015,
+        "make": "Dodge",
+        "model": "Charger",
+        "trim": "SRT Hellcat 6.2 supercharged RWD eight-speed automatic, standard all-season tires",
+        "market": "United States"
+      },
+      "referenceVehicle": "2015 US Dodge Charger SRT Hellcat 6.2 supercharged RWD TorqueFlite 8AT, full-power red-key equivalent, standard 275/40ZR20 all-season tires",
+      "facts": {
+        "powerHp": 707,
+        "torqueLbFt": 650,
+        "engineDisplacementL": 6.2,
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "gearCount": 8,
+        "finalDrive": 2.62,
+        "tireSize": [
+          275,
+          40,
+          20
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://www.auto-brochures.com/makes/Dodge/Charger/Dodge_US%20Charger_2015-2.pdf",
+          "publisher": "Dodge/FCA US factory 2015 Charger brochure, preserved by Auto-Brochures",
+          "fields": [
+            "US model-year and Hellcat powertrain",
+            "707 hp",
+            "650 lb-ft",
+            "eight-speed automatic",
+            "2.62 axle",
+            "standard P275/40ZR20 four-season tires",
+            "20x9.5 wheels",
+            "adaptive damping and Brembo brakes"
+          ],
+          "access": "2026-11-17 downloaded original PDF; Hellcat equipment table extracted locally in charger2015.txt"
+        },
+        {
+          "url": "https://blog.stellantisnorthamerica.com/2015/01/16/worlds-most-powerful-sports-sedan-uncaged/",
+          "publisher": "FCA North America official blog",
+          "fields": [
+            "2015 production and US/Canada delivery",
+            "6.2 supercharged HEMI",
+            "707 hp and 650 lb-ft",
+            "eight-speed TorqueFlite",
+            "full-power red key versus restricted black key"
+          ],
+          "access": "2026-11-17 web source read"
+        }
+      ],
+      "limits": [
+        "Distinct from existing 1970 Charger R/T 440; not Challenger Hellcat, SRT392 or later widebody.",
+        "Mass, dimensions, gear ratios, RPM limits and all dynamic calibration in suggestedEstimates remain modeling estimates, not independently verified factory figures in the cited brochure.",
+        "Represent fixed full-power mode; no claimed real key logic, adaptive damping controller, electronic differential controller or launch-control fidelity.",
+        "Standard four-season tire choice; do not silently claim optional three-season grip.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Wood Sage 2015",
+      "id": "wood-sage-2015",
+      "simulationEstimates": {
+        "reverseRatio": 3.3,
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.55,
+        "redlineRpm": 6100,
+        "revLimitRpm": 6200,
+        "aspiration": "Supercharged",
+        "fuelTankUSgal": 18.49204366507039,
+        "topSpeedMph": 199,
+        "zeroToSixtySec": 3.7,
+        "powerRpm": 6000,
+        "torqueRpm": 4800,
+        "gearRatios": [
+          4.71,
+          3.14,
+          2.11,
+          1.67,
+          1.29,
+          1,
+          0.84,
+          0.67
+        ],
+        "lengthM": 5.1,
+        "widthM": 1.905,
+        "heightM": 1.48,
+        "wheelbaseM": 3.058,
+        "transmissionLabel": "8-speed torque-converter automatic approximation",
+        "torqueConverterSlip": 0.05,
+        "torqueConverterMultiplication": 1.7,
+        "curbKg": 2075,
+        "trackFrontIn": 63.38582677165355,
+        "trackRearIn": 63.779527559055126
+      }
+    },
+    {
+      "candidateId": "cadillac-ats-v-2016-roster-candidate",
+      "identity": {
+        "year": 2016,
+        "make": "Cadillac",
+        "model": "ATS-V",
+        "trim": "6AE69 sedan 1SV, LF4 3.6 twin-turbo, MG9 six-speed manual, standard wheels",
+        "market": "United States"
+      },
+      "referenceVehicle": "2016 US Cadillac ATS-V sedan 1SV 3.6 LF4 twin-turbo V6 RWD MG9 six-speed manual, no Track Performance Package",
+      "facts": {
+        "powerHp": 464,
+        "torqueLbFt": 445,
+        "powerRpm": 5850,
+        "torqueRpm": 3500,
+        "engineDisplacementL": 3.564,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "finalDrive": 3.73,
+        "frontTireSize": [
+          255,
+          35,
+          18
+        ],
+        "rearTireSize": [
+          275,
+          35,
+          18
+        ],
+        "tireSize": [
+          255,
+          35,
+          18
+        ],
+        "frontTire": [
+          255,
+          35,
+          18
+        ],
+        "rearTire": [
+          275,
+          35,
+          18
+        ]
+      },
+      "sources": [
+        {
+          "url": "https://manuals.plus/m/29c34f095e25d2d443ffc2fdd7d10fe5bfd168a50d1efd0f028f987debe8914a",
+          "publisher": "GM 2016 Cadillac ATS-V Vehicle Order Guide, published October 2 2015; archived mirror",
+          "fields": [
+            "6AE69 sedan/1SV",
+            "final 464 hp at 5850 rpm and 445 lb-ft at 3500 rpm",
+            "MG9 manual standard",
+            "3.73 axle with MG9",
+            "255/35ZR18 front and 275/35ZR18 rear",
+            "electronic limited-slip differential"
+          ],
+          "access": "2026-11-17 original factory guide text read through indexed mirror; printed pages4 and20 and April2015 change history. Direct PDF download returned403."
+        },
+        {
+          "url": "https://www.cadillacvnet.com/tech-center/2016-2019-cadillac-ats-v/2016/2016-ats-v-preliminary-specifications.html",
+          "publisher": "GM Media preliminary specification sheet November18 2014, mirrored by Cadillac V-Net",
+          "fields": [
+            "3564cc LF4",
+            "preliminary six-speed ratios",
+            "preliminary sedan dimensions and 51/49 distribution",
+            "preliminary 6500rpm maximum and 60.5L tank"
+          ],
+          "access": "2026-11-17 read; deliberately retain preliminary geometry/gearing in suggestedEstimates rather than final verified facts"
+        }
+      ],
+      "limits": [
+        "Distinct from CTS-V LS6, CTS-V wagon and CT4-V/CT5-V Blackwing; production sedan, not ATS-V.R racer or coupe.",
+        "Use final 464 hp from October2015 guide, not early estimated455 hp. Guide carries inconsistent343.3kW alongside464hp; use horsepower and convert correctly.",
+        "Mass1730kg is explicit estimate. Preliminary ratios and sedan dimensions are defensible estimates until final specifications corroborate them.",
+        "Model fixed suspension and approximate limited-slip behavior only; do not claim exact active differential, magnetic damping, PTM, launch-control or no-lift-shift electronics.",
+        "Runtime frontTire/rearTire aliases retain the exact source tireSize/rearTireSize dimensions.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Field Sage 2016",
+      "id": "field-sage-2016",
+      "simulationEstimates": {
+        "reverseRatio": 3.28,
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.51,
+        "redlineRpm": 6300,
+        "revLimitRpm": 6500,
+        "aspiration": "Twin-turbocharged",
+        "fuelTankUSgal": 15.98240916766798,
+        "topSpeedMph": 189,
+        "zeroToSixtySec": 3.9,
+        "gearRatios": [
+          3.01,
+          2.07,
+          1.43,
+          1,
+          0.84,
+          0.57
+        ],
+        "lengthM": 4.673,
+        "widthM": 1.811,
+        "heightM": 1.415,
+        "wheelbaseM": 2.775,
+        "curbKg": 1730,
+        "trackFrontIn": 60.55118110236221,
+        "trackRearIn": 60.472440944881896
+      }
+    },
+    {
+      "candidateId": "audi-tt-rs-coupe-2010-roster-candidate",
+      "identity": {
+        "year": 2010,
+        "make": "Audi",
+        "model": "TT RS Coupe",
+        "trim": "2.5 TFSI quattro 6MT, standard 18-inch wheels",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "2010 UK Audi TT RS Coupe 2.5 TFSI quattro 6MT, standard 18-inch wheels",
+      "facts": {
+        "powerKw": 250.069575,
+        "publishedPowerPS": 340,
+        "powerRpm": 5400,
+        "torqueNm": 450,
+        "torqueRpm": 1600,
+        "torquePlateauEndRpm": 5300,
+        "engineDisplacementL": 2.48,
+        "curbKg": 1450,
+        "drivetrain": "awd",
+        "transmission": "manual",
+        "gearCount": 6,
+        "fuelTankUSgal": 15.850323141488905,
+        "tireSize": [
+          245,
+          40,
+          18
+        ],
+        "absEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://manuals.plus/m/fccd8c591319ce52eb39dfc50cc2bd06d6c6cb1dad45fcaccf34b49f550b7dad",
+          "publisher": "Original Audi UK Pricing and Specification Guide, May 2010; archived factory brochure",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "torquePlateauEndRpm",
+            "engineDisplacementL",
+            "curbKg",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "fuelTankUSgal",
+            "tireSize",
+            "absEnabled"
+          ],
+          "access": "Read factory brochure extracted technical table p38 and standard equipment/wheel tables, 2026-11-17. Mass is explicitly unladen WITHOUT DRIVER; options increase mass. Metric PS converted using 0.73549875 kW/PS. Brochure title establishes UK date and transmission."
+        }
+      ],
+      "limits": [
+        "Mass basis is factory unladen without driver, not laden operating weight. No driver mass has been silently added.",
+        "Ratios/final drive, reverse, RPM cutoffs, CG, distribution, grip, suspension and acceleration tuning are estimates. Geometry is provisionally transcribed from brochure drawing text and retained as estimates pending visual confirmation. Brochure 0-62 mph 4.6 seconds is not a measured in-game 0-60 result.",
+        "Generic AWD approximates variable quattro coupling/differentials. No claim of exact active torque distribution. Standard passive sport suspension selected; optional magnetic ride omitted. Not later 360 PS TT RS plus or Roadster.",
+        "Single-final-drive descending equivalent ratios are explicit simulation estimates; not a reproduction of the production multi-shaft gearbox.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Clary Sage 2010",
+      "id": "clary-sage-2010",
+      "simulationEstimates": {
+        "reverseRatio": 3.1,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 6800,
+        "revLimitRpm": 7000,
+        "aspiration": "Turbocharged",
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 4.5,
+        "lengthM": 4.198,
+        "widthM": 1.842,
+        "heightM": 1.342,
+        "wheelbaseM": 2.468,
+        "trackFrontIn": 61.22047244094488,
+        "trackRearIn": 60.86614173228347,
+        "gearRatios": [
+          3.36,
+          2.09,
+          1.48,
+          1.18,
+          0.96,
+          0.79
+        ],
+        "finalDrive": 3.44
+      }
+    },
+    {
+      "candidateId": "audi-rs-5-coupe-2011-roster-candidate",
+      "identity": {
+        "year": 2011,
+        "make": "Audi",
+        "model": "RS5 Coupe",
+        "trim": "4.2 FSI quattro 7-speed S tronic, standard 19-inch wheels",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "2011 UK Audi RS5 Coupe 4.2 FSI quattro 7-speed S tronic, standard 19-inch wheels",
+      "facts": {
+        "powerKw": 330.97443749999996,
+        "publishedPowerPS": 450,
+        "powerRpm": 8250,
+        "torqueNm": 430,
+        "torqueRpm": 4000,
+        "torquePlateauEndRpm": 6000,
+        "engineDisplacementL": 4.163,
+        "curbKg": 1725,
+        "drivetrain": "awd",
+        "transmission": "automatic",
+        "gearCount": 7,
+        "fuelTankUSgal": 16.9070113509215,
+        "tireSize": [
+          265,
+          35,
+          19
+        ],
+        "absEnabled": true
+      },
+      "sources": [
+        {
+          "url": "https://manuals.plus/m/e8cd0b53cc11b27ba8992e7f91f6b63752cf534fda890dda1687d8662cc2b656",
+          "publisher": "Original Audi UK Pricing and Specification Guide, August 2011; archived factory brochure",
+          "fields": [
+            "powerKw",
+            "publishedPowerPS",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "torquePlateauEndRpm",
+            "engineDisplacementL",
+            "curbKg",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "fuelTankUSgal",
+            "tireSize",
+            "absEnabled"
+          ],
+          "access": "Read factory brochure extracted technical table p38 and standard equipment/wheel tables, 2026-11-17. Mass is explicitly unladen WITHOUT DRIVER; options increase mass. Metric PS converted using 0.73549875 kW/PS. Brochure title establishes UK date and transmission."
+        }
+      ],
+      "limits": [
+        "Mass basis is factory unladen without driver, not laden operating weight. No driver mass has been silently added.",
+        "Ratios/final drive, reverse, RPM cutoffs, CG, distribution, grip, suspension and acceleration tuning are estimates. Geometry is provisionally transcribed from brochure drawing text and retained as estimates pending visual confirmation. Brochure 0-62 mph 4.6 seconds is not a measured in-game 0-60 result.",
+        "Generic AWD approximates variable quattro coupling/differentials. No claim of exact active torque distribution. Generic automatic approximates S tronic DCT; fixed suspension and differential behavior do not reproduce active DRC/sport torque vectoring. Not Cabriolet or later twin-turbo RS5.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "name": "Meadow Sage 2011",
+      "id": "meadow-sage-2011",
+      "simulationEstimates": {
+        "reverseRatio": 3.1,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.12,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.56,
+        "redlineRpm": 8500,
+        "revLimitRpm": 8700,
+        "aspiration": "Naturally aspirated",
+        "topSpeedMph": 155,
+        "zeroToSixtySec": 4.5,
+        "lengthM": 4.649,
+        "widthM": 1.86,
+        "heightM": 1.366,
+        "wheelbaseM": 2.751,
+        "trackFrontIn": 62.44094488188977,
+        "trackRearIn": 62.28346456692914,
+        "gearRatios": [
+          3.69,
+          2.15,
+          1.41,
+          1.03,
+          0.79,
+          0.63,
+          0.52
+        ],
+        "finalDrive": 4.375
+      }
+    }
+  ],
+  "deferred": [
+    {
+      "candidate": "Nissan Be-1 / Skyline GTS-R / Pulsar GTI-R / Z432",
+      "reason": "Already present as Pearlwort, Storksbill R, Ladyfern R and Shepherds Purse."
+    }
+  ]
+}

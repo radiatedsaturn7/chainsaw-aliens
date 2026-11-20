@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "alpine-trefoil-2010",
+  "name": "Alpine Trefoil 2010",
+  "stableCarId": "saved-car:Alpine Trefoil 2010",
+  "referenceVehicle": "2010 Germany BMW X1 E84 sDrive18i 2.0 naturally aspirated gasoline RWD6MT, standard17-inch steel wheels; not xDrive or later turbo/F48",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "b6f8f5e9cde7523628ad0f4926eff0143ff8612e4c6616ebd29622cbb8951bcd",
+    "dashboard": "b38bd1339de5b219edeb74d941f7b0c9949ad155fcb24eef2d5fcc1ca31cacb3",
+    "tires": "77bbba90c424eb5d6898f4c0f03f70c8506f76036652cbf0f7b8607a2e72e36e"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

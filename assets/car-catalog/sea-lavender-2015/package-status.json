@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "sea-lavender-2015",
+  "name": "Sea Lavender 2015",
+  "stableCarId": "saved-car:Sea Lavender 2015",
+  "referenceVehicle": "2015 UK Volvo V60 Polestar, first-generation T6 six-cylinder estate, six-speed automatic; not later four-cylinder/eight-speed",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "aa6257e834260bc0623da939aab2af3ba7f12dce4d550660009487ec0b4e15cf",
+    "dashboard": "df73937c98aa6cc22023d34bf1ae2de2b2f7bf5b1c25e69df4747a99c4bcd22f",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

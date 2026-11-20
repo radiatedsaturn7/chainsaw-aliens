@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "wineberry-clover-2008",
+  "name": "Wineberry Clover 2008",
+  "stableCarId": "saved-car:Wineberry Clover 2008",
+  "referenceVehicle": "2008 United States Subaru Tribeca, USbase3.6flat-sixAWDfive-speedautomatic,five seats,nooptionalthirdrow,roofrails ormoonroof; notLimited/olderB9three-liter",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "4637a442e90b82941a3008560fc101b557cae4d89767c5a0b4cc1d08812ef9ff",
+    "dashboard": "41be99db019b9abd71c1dd47b4c185fe921995fe75f2eb45f4fbc075055ff393",
+    "tires": "2de0e873d8a39dcc80ffa17bc4f49ad25d384b813b94c966e4cf5f0161316571"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

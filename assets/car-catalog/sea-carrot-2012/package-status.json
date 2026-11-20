@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "sea-carrot-2012",
+  "name": "Sea Carrot 2012",
+  "stableCarId": "saved-car:Sea Carrot 2012",
+  "referenceVehicle": "2012 UK Vauxhall Astra VXR 2.0turbo front-drive six-speed manual, standard245/40R19 wheels, nooptionalAeroPack",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "4774ebb3b75b40319e65f1f14069aa411d93c21bfd171c1cd9c8b107ddbe8419",
+    "dashboard": "a417ce197a893719a381366d91cd2e2bda306966429ba5c4378179d71488eb2a",
+    "tires": "54677eea6f474c5398c762bf2263935ad7704e7a2a6731202b45619f33106975"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

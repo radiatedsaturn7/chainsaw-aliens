@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "purple-toadflax-1955",
+  "name": "Purple Toadflax 1955",
+  "stableCarId": "saved-car:Purple Toadflax 1955",
+  "referenceVehicle": "1955 US Chevrolet One-Fifty Utility Sedan model1512/Fisher55-1211B, three seats, standard235.5cuin Blue Flame123 single-carburetor inline-six, three-speed manual without overdrive,3.70 axle, RWD",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "5ac6ef9a8a70e1fb3f24e9740f67b8ec29e0bb116c03d0b8f6d53dc18d7ff445",
+    "dashboard": "460f1e548053affa53e865d80c6d60dec790bbf98c983a5b078f6e72181c2486",
+    "tires": "cc6489e161355a6d4c17d66149ab2a2948a3ab1a68593663da7380e4d13636a9"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

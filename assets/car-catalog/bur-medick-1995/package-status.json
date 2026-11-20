@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bur-medick-1995",
+  "name": "Bur Medick 1995",
+  "stableCarId": "saved-car:Bur Medick 1995",
+  "referenceVehicle": "1995 United States Mitsubishi Eclipse RS 420A naturally aspirated FWD five-speed manual coupe, standard14-inch steel wheels, without optional ABS; stock representative production car, not film-car replica",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "bec2da8024917e8aa631861ea68febd91eebe117f21fa5d603979417d15edf78",
+    "dashboard": "744f9c37348817c1ce503ef79cf92a806ef2bc420e0e9b5945bac00f3ff41e19",
+    "tires": "fd707c014e3dc4166c7e78a2b6273f4cf1486f07e7015f1307546f1ad7fa54fc"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

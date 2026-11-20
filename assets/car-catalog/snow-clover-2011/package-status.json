@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "snow-clover-2011",
+  "name": "Snow Clover 2011",
+  "stableCarId": "saved-car:Snow Clover 2011",
+  "referenceVehicle": "2011 Lotus Evora S, UK/European original3.456superchargedV6 six-speedmanual2+2GT standard18/19wheels;notIPS,400,GT430orGTE",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "b6857edc4eaae25a07862c1dd506963a2fc8e17b42c1d2a36a4690341ef4af78",
+    "dashboard": "aecba94094f8c4c50b59c66882498aa5fdb4fd68cbba80d1c8631c612fbc5572",
+    "tires": "385f67affd5451ddec7de7f20c40c32138b44291ff79aad94f0f330e2605884a"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,49 @@
+{
+  "id": "sainfoin-1939",
+  "name": "Sainfoin 1939",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      720,
+      340,
+      500,
+      220
+    ],
+    "wheel": [
+      970,
+      753,
+      300
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e4efff"
+  },
+  "sources": [
+    {
+      "url": "https://www.maserati.com/es/es/noticias/80-anos-de-victoria-en-las-500-millas-de-indianapolis",
+      "fields": [
+        "publishedPowerPS",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "publishedMassKg",
+        "topSpeedMph"
+      ]
+    }
+  ]
+}

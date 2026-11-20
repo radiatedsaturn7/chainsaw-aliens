@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "corn-mint-2009",
+  "name": "Corn Mint 2009",
+  "stableCarId": "saved-car:Corn Mint 2009",
+  "referenceVehicle": "2009 United Kingdom MINI John Cooper Works Hatch, R56 three-door hatch, six-speed manual, not Convertible, Clubman or dealer tuning kit",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "91ea9d940bf9d0af7405821528ea50b3f1712fbe5a17a04464a76d98a7dc25a7",
+    "dashboard": "0ca03673728699dc4a6dcf8df9b20f05964d35a60ee87e7367e883b806462fe0",
+    "tires": "5968a259dbd79a01f00680a5d0efd60654fdd326e7e62a18c05be808419b0a01"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

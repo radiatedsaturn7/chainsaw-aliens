@@ -1,0 +1,51 @@
+{
+  "id": "curled-dock-2015",
+  "name": "Curled Dock 2015",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1269,
+      475,
+      535,
+      182
+    ],
+    "wheel": [
+      1526,
+      745,
+      317
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#eed9ae"
+  },
+  "sources": [
+    {
+      "url": "https://media.jlr.com/archive-jaguar/en-gb/news/2015/04/press-kit-new-jaguar-xe",
+      "fields": [
+        "identity",
+        "powerKw",
+        "torqueNm",
+        "engineDisplacementL",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "aspiration"
+      ]
+    }
+  ]
+}

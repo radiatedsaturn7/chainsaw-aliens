@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "hackberry-clover-2008",
+  "name": "Hackberry Clover 2008",
+  "stableCarId": "saved-car:Hackberry Clover 2008",
+  "referenceVehicle": "2008 United States Mercedes-Benz SL550 R230 naturally aspirated5.461V8 two-seat retractable-hardtop roadster7AT, standard18inch wheels, roof-up; not SL600,SL55AMG orSL65BlackSeries",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "de1e58173a06cca0f79ae9032bbdbfcfdc339b130d231fae09fc47e7ca4da5f0",
+    "dashboard": "4dcc2b89bc72063180d4acd790683f87e41b96e1e600a53299a32bf584a3e6d8",
+    "tires": "23c8d698145ae26ef702efbe09ffd8742d17e285efc5971606326306668c7356"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

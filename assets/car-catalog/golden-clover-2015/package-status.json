@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "golden-clover-2015",
+  "name": "Golden Clover 2015",
+  "stableCarId": "saved-car:Golden Clover 2015",
+  "referenceVehicle": "2015 Thailand MG MG3, ThailandMarch2015 base1.5C five-doorhatchback RHD VTi-TECH four-cylinder SeleMatic5-speedAMT, solidroof; notUKmanual,Xsunroof,Xross orlaterhybrid",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "54fee6293ac17ce99265acc65f54814d7e15fb544109a161cf05cb2a981a18fd",
+    "dashboard": "2c4a7d4b8837dd2e934a104b7620a219532ee6f105b8e4dd4ac176474ee7d752",
+    "tires": "7339b44974aaf27d4c101e84228f41af675bec270f354317a27859e22aedd2f9"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

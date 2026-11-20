@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "yellow-vetchling-2013",
+  "name": "Yellow Vetchling 2013",
+  "stableCarId": "saved-car:Yellow Vetchling 2013",
+  "referenceVehicle": "2013 UK Aston Martin V12 Vantage S 2013 launch coupe AM28 V12 Sportshift III seven-speed, standard forged wheels; not later dog-leg manual",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "3c69886b718f72ec6bc27b0dd5b9931106c0422a674b47c8b03bf8c8e2fd491a",
+    "dashboard": "1e3ede25d5c2bb99494cfb2ac5d46314cb9c1a5a259ff343eabfe0a44ff83249",
+    "tires": "40cb9b287ec0ec842686a78518ea038596007f9f959f9aaee3c92b86e4d965f4"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

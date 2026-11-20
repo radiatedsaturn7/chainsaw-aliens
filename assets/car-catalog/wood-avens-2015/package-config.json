@@ -1,0 +1,74 @@
+{
+  "id": "wood-avens-2015",
+  "name": "Wood Avens 2015",
+  "stableCarId": "saved-car:Wood Avens 2015",
+  "candidateId": "jaguar-f-type-r-coup-2015-roster-candidate",
+  "referenceVehicle": "2015 US Jaguar F-TYPE R Coupe 5.0superchargedV8 RWD8AT;not2016AWD,RConvertible,Project7 orlater575hp",
+  "identity": {
+    "year": 2015,
+    "make": "Jaguar",
+    "model": "F-TYPE R Coupe",
+    "trim": "US launchRWD5.0superchargedV8 eight-speedQuickshift standardsteelbrakes",
+    "market": "United States"
+  },
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      258,
+      515,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://media.jlr.com/jaguar/en-us/news/2013/11/jaguar-f-type-coupe-joins-jaguar-lineup",
+      "fields": [
+        "identity",
+        "powerKw",
+        "publishedPowerHp",
+        "engineDisplacementL",
+        "transmission",
+        "gearCount",
+        "gearRatios",
+        "finalDrive",
+        "aspiration",
+        "topSpeedMph",
+        "zeroToSixtySec"
+      ]
+    },
+    {
+      "url": "https://media.jlr.com/jaguar/en-us/news/2014/11/2016-f-type-gains-all-wheel-drive-and-manual-transmission-options",
+      "fields": [
+        "variant boundary only"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "fawn-clover-2011",
+  "name": "Fawn Clover 2011",
+  "stableCarId": "saved-car:Fawn Clover 2011",
+  "referenceVehicle": "2011 United States BMW 740i F01 short-wheelbase3.0TwinPower Turbo inline-sixRWD six-speedautomatic,standard18-inchallseason wheels;not740Li,750i,ActiveHybrid orxDrive",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "fawn-clover-2011",
+  "sourceHashes": {
+    "body": "56f876b722f0cc85e416530c935e159c535133230defccdac0821e4fd92151e1",
+    "dashboard": "b9f9b8e46a06abc87858d13ea710c605aee88a3681fd8cd0c2fa72fd6ec5c029",
+    "tires": "3a3223a2b44947673693d97f2647cbdfb3f2919b07a34b6c2e2657f3cc245259"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

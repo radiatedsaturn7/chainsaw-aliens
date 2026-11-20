@@ -1,0 +1,85 @@
+{
+  "id": "dew-clover-2012",
+  "name": "Dew Clover 2012",
+  "stableCarId": "saved-car:Dew Clover 2012",
+  "runtimeId": "saved-car:Dew Clover 2012",
+  "candidateId": "bmw-328i-2012-us-f30-6mt",
+  "referenceVehicle": "2012 United States BMW 328i F30 sedan2.0TwinPower Turbo four-cylinder RWDsix-speed manual,standard17-inchalloys,nonSportLine/noincreasedlimiter;notE90six-cylinder or335i",
+  "identity": {
+    "year": 2012,
+    "make": "BMW",
+    "model": "328i",
+    "trim": "F30 sedan2.0TwinPower Turbo four-cylinder RWDsix-speed manual,standard17-inchalloys,nonSportLine/noincreasedlimiter;notE90six-cylinder or335i",
+    "market": "United States"
+  },
+  "bodyClass": "sedan",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      180,
+      480,
+      550,
+      210
+    ],
+    "wheel": [
+      460,
+      750,
+      310
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#f4ead5"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/BMW/3%20Series/BMW_US%203SeriesSedan_2012.pdf",
+      "fields": [
+        "powerKw",
+        "powerRpm",
+        "torqueNm",
+        "torqueRpm",
+        "engineDisplacementL",
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "gearCount",
+        "curbKg",
+        "frontWeightDistribution",
+        "lengthM",
+        "widthM",
+        "heightM",
+        "wheelbaseM",
+        "trackFrontIn",
+        "trackRearIn",
+        "gearRatios",
+        "reverseRatio",
+        "finalDrive",
+        "fuelTankUSgal",
+        "zeroToSixtySec",
+        "topSpeedMph",
+        "tireSize",
+        "frontTire",
+        "rearTire",
+        "identity"
+      ]
+    }
+  ]
+}

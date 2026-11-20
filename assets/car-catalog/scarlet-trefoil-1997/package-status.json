@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "scarlet-trefoil-1997",
+  "name": "Scarlet Trefoil 1997",
+  "stableCarId": "saved-car:Scarlet Trefoil 1997",
+  "referenceVehicle": "1997 United States Acura 3.5 RL, base non-Premium 3.474 V6 four-speed automatic FWD sedan; not SH-AWD or later VTEC generation",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "2a997c7d953f3b0ebea0f268f5fd417680c2f35fd9aada8e301da9d1daf43d4d",
+    "dashboard": "de6b0575221805b28f53ab960be2fa87eddcbc49eb679f961ac732b20aadfd18",
+    "tires": "19eb28b8d751cb84341df007395da6d706c1067dc2ade86db2b15c24c8252938"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

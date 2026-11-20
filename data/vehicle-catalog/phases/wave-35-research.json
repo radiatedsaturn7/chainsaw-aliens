@@ -1,0 +1,1142 @@
+{
+  "schemaVersion": 1,
+  "base": "c0a997264e4b130798058e94694299fc03b86073",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "volkswagen-pickup-lx-1982-roster-candidate",
+      "identity": {
+        "year": 1982,
+        "make": "Volkswagen",
+        "model": "Pickup LX",
+        "trim": "US federal gasoline 1.7 fuel-injected regular-cab FWD four-speed manual; empty bed",
+        "market": "United States"
+      },
+      "referenceVehicle": "1982 US federal Volkswagen Pickup LX gasoline 1.7 fuel-injected inline-four, FWD standard four-speed manual, empty cargo bed; not diesel, California calibration or Sportruck.",
+      "facts": {
+        "powerHp": 78,
+        "powerRpm": 5500,
+        "torqueLbFt": 88.2,
+        "torqueRpm": 3000,
+        "engineDisplacementL": 1.715,
+        "transmission": "manual",
+        "gearCount": 4
+      },
+      "sources": [
+        {
+          "url": "https://xr793.com/wp-content/uploads/2019/10/1982-VW-Pickup.pdf",
+          "publisher": "Volkswagen of America factory 1982 Pickup brochure, archived by Dezo's Garage",
+          "fields": [
+            "identity",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount"
+          ],
+          "access": "Factory brochure supplied via archival mirror; visually read on 2026-11-18. Historical horsepower explicitly SAE net, not metric PS or gross. Any parameter outside facts is an estimated modeling input. PDF page4 explicitly describes LX; PDF page6 gasoline specification column gives 78 SAE net hp5500,88.2lbft3000,1715cc. Footnote California74hp5000 is excluded. LX upholstery and trim do not imply diesel; select standard gasoline and four-speed."
+        }
+      ],
+      "limits": [
+        "Empty-bed curb mass1010kg is an estimate: the inspected brochure does not provide a verified curb-mass figure or fill/driver convention. Not payload or gross mass. LX optional equipment not added.",
+        "Small scan text for geometry/ratios is not reliable enough to mark all values factory-verified. Geometry, four individual ratios/final drive,165/80R13 normalization and fuel capacity are explicitly provisional. Standard four-speed count itself is legible.",
+        "Front strut and rear leaf-sprung rigid axle are represented with generic suspension. No payload variation, diesel or Sportruck trim. RPM limits, curve shape, friction, CG, load distribution, aero, performance targets and all handling coefficients are estimates.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Fumitory 1983",
+            "documentId": "fumitory-1983",
+            "runtimeId": "saved-car:Fumitory 1983",
+            "reference": "1983 German Golf I GTI1.8 hatchback",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Woodbine 1995",
+            "documentId": "woodbine-1995",
+            "runtimeId": "saved-car:Woodbine 1995",
+            "reference": "1995 US Jetta GLS2.0 sedan",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Vetch 1978",
+            "documentId": "vetch-1978",
+            "runtimeId": "saved-car:Vetch 1978",
+            "reference": "1978 Canada rear-engine Type2 passenger bus",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Unibody small front-drive commercial pickup with two-seat cab, long cargo bed and leaf-sprung rear axle; US 1.7 gasoline calibration and four-speed versus German1.8 GTI five-speed. Not a badge/year variation of those passenger bodies.",
+        "evidence": [
+          "https://xr793.com/wp-content/uploads/2019/10/1982-VW-Pickup.pdf"
+        ],
+        "audit": "Checked all335 native catalog entries including provenance/inspiration and tests/docs exact references; no Pickup LX/Rabbit pickup implementation. Backlog slot confirmed separately."
+      },
+      "name": "Black Medick 1982",
+      "id": "black-medick-1982",
+      "simulationEstimates": {
+        "reverseRatio": 3.17,
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.44,
+        "tireGrip": 0.73,
+        "spring": 0.43,
+        "antiRollRear": 0.18,
+        "suspensionTravelM": 0.18,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 310,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.62,
+        "redlineRpm": 5800,
+        "revLimitRpm": 6100,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 16,
+        "topSpeedMph": 94,
+        "zeroToSixtySec": 13.5,
+        "drivetrain": "fwd",
+        "curbKg": 1010,
+        "lengthM": 4.38,
+        "widthM": 1.616,
+        "heightM": 1.356,
+        "wheelbaseM": 2.625,
+        "tireSize": [
+          165,
+          80,
+          13
+        ],
+        "frontTire": [
+          165,
+          80,
+          13
+        ],
+        "rearTire": [
+          165,
+          80,
+          13
+        ],
+        "gearRatios": [
+          3.45,
+          1.75,
+          1.06,
+          0.7
+        ],
+        "finalDrive": 4.47,
+        "trackFrontIn": 54.2,
+        "trackRearIn": 54.6,
+        "transmissionLabel": "standard four-speed manual"
+      }
+    },
+    {
+      "candidateId": "volkswagen-scirocco-s-1981-roster-candidate",
+      "identity": {
+        "year": 1981,
+        "make": "Volkswagen",
+        "model": "Scirocco S",
+        "trim": "US Mk1 1.7 fuel-injected SOHC gasoline three-door five-speed manual",
+        "market": "United States"
+      },
+      "referenceVehicle": "1981 US Volkswagen Scirocco S Mk1, 1715cc fuel-injected SOHC gasoline four-cylinder and standard five-speed manual; not later Mk2 GTX16V or Mk3 R.",
+      "facts": {
+        "powerHp": 74,
+        "powerRpm": 5000,
+        "torqueLbFt": 89.6,
+        "torqueRpm": 3000,
+        "engineDisplacementL": 1.715,
+        "transmission": "manual",
+        "gearCount": 5,
+        "lengthIn": 155.7,
+        "widthIn": 63.9,
+        "heightIn": 51.5,
+        "wheelbaseIn": 94.5,
+        "trackFrontIn": 54.7,
+        "trackRearIn": 53.5,
+        "gearRatios": [
+          3.45,
+          1.94,
+          1.29,
+          0.91,
+          0.71
+        ],
+        "reverseRatio": 3.17,
+        "finalDrive": 3.89,
+        "tireSize": [
+          175,
+          70,
+          13
+        ],
+        "frontTire": [
+          175,
+          70,
+          13
+        ],
+        "rearTire": [
+          175,
+          70,
+          13
+        ],
+        "fuelTankUSgal": 10.6,
+        "topSpeedMph": 99
+      },
+      "sources": [
+        {
+          "url": "https://xr793.com/wp-content/uploads/2019/10/1981-VW-Scirocco.pdf",
+          "publisher": "Volkswagen of America factory 1981 Scirocco brochure, archived by Dezo's Garage",
+          "fields": [
+            "identity",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "geometry",
+            "gearRatios",
+            "reverseRatio",
+            "finalDrive",
+            "tires",
+            "fuelTankUSgal",
+            "topSpeedMph"
+          ],
+          "access": "Factory brochure supplied via archival mirror; visually read on 2026-11-18. Historical horsepower explicitly SAE net, not metric PS or gross. Any parameter outside facts is an estimated modeling input. PDF page4 printed6\u20137 expressly Scirocco S, standard five-speed/175/70SR13/light-alloy wheels. PDF page6 printed10\u201311 specification table:74 SAE net hp5000;89.6 SAE net lbft3000;5MT ratios and3.89final;99mph. Printed0\u201350mph8.2sec is NOT0\u201360."
+        }
+      ],
+      "limits": [
+        "Curb mass920kg estimated; factory brochure inspected has no curb-weight value. No verified driver/fuel convention.",
+        "11.8sec0\u201360 is a modeling estimate and does not mislabel brochure0\u201350mph8.2sec. Factory99mph maximum is a reference claim, not measured runtime performance.",
+        "Factory dimensions are rounded paired imperial/metric; selected printed imperial values consistently. Body length may include US impact bumpers.",
+        "Generic passive suspension/open differential; no racing upgrades. Torque-curve interpolation, limiter, load distribution, CG/aero/handling and other non-fact parameters remain estimated.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Sandwort 1988",
+            "documentId": "sandwort-1988",
+            "runtimeId": "saved-car:Sandwort 1988",
+            "reference": "German Scirocco II GTX16V102kW5MT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Field Pennywort 2011",
+            "documentId": "field-pennywort-2011",
+            "runtimeId": "saved-car:Field Pennywort 2011",
+            "reference": "German Scirocco III R195kW6MT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Fumitory 1983",
+            "documentId": "fumitory-1983",
+            "runtimeId": "saved-car:Fumitory 1983",
+            "reference": "German Golf I GTI1.8 82kW hatchback",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "First-generation Giugiaro Scirocco US1715cc SOHC8v74SAEnethp coupe versus second-generation1.8DOHC16V and third-generation turbo2.0. Also distinct body and US low-output1.7 drivetrain/calibration versus existing GolfI GTI1.8. S trim chosen for exact slot, not counted in addition to a base Mk1 Scirocco.",
+        "evidence": [
+          "https://xr793.com/wp-content/uploads/2019/10/1981-VW-Scirocco.pdf",
+          "https://www.volkswagen-newsroom.com/en/engine-versions-scirocco-2-profile-19653",
+          "https://www.volkswagen-newsroom.com/en/engine-versions-scirocco-3-profile-19656"
+        ],
+        "audit": "All335 native catalog entries and tests/docs checked for exact1981/Mk1 Scirocco; no same-generation implementation found. Exact backlog slot confirmed."
+      },
+      "name": "Spotted Medick 1981",
+      "id": "spotted-medick-1981",
+      "simulationEstimates": {
+        "cgHeightM": 0.45,
+        "groundClearanceM": 0.117,
+        "dragCoefficient": 0.42,
+        "tireGrip": 0.73,
+        "spring": 0.39,
+        "antiRollRear": 0.18,
+        "suspensionTravelM": 0.18,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 310,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 5800,
+        "revLimitRpm": 6100,
+        "aspiration": "Naturally aspirated",
+        "zeroToSixtySec": 11.8,
+        "drivetrain": "fwd",
+        "curbKg": 920,
+        "transmissionLabel": "5-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "mitsubishi-eclipse-1995-rs-us-pending",
+      "identity": {
+        "year": 1995,
+        "make": "Mitsubishi",
+        "model": "Eclipse",
+        "trim": "RS 420A naturally aspirated FWD five-speed manual coupe, standard14-inch steel wheels, without optional ABS",
+        "market": "United States"
+      },
+      "referenceVehicle": "1995 United States Mitsubishi Eclipse RS 420A naturally aspirated FWD five-speed manual coupe, standard14-inch steel wheels, without optional ABS; stock representative production car, not film-car replica",
+      "facts": {
+        "powerHp": 140,
+        "powerRpm": 6000,
+        "torqueLbFt": 130,
+        "torqueRpm": 4800,
+        "engineDisplacementL": 2.0,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "fwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbLb": 2723,
+        "lengthIn": 172.2,
+        "widthIn": 68.3,
+        "wheelbaseIn": 98.8,
+        "tireSize": [
+          195,
+          70,
+          14
+        ],
+        "fuelTankUSgal": 16.9,
+        "dragCoefficient": 0.29
+      },
+      "sources": [
+        {
+          "url": "https://importarchive.com/brochure/mitsubishieclipse1995_01",
+          "publisher": "Mitsubishi Motor Sales of America original1995 Eclipse brochure MMSA-ADV-5618, archived public scan page15",
+          "fields": [
+            "identity",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbLb",
+            "lengthIn",
+            "widthIn",
+            "wheelbaseIn",
+            "tireSize",
+            "fuelTankUSgal",
+            "dragCoefficient"
+          ],
+          "access": "Read2026-11-18; original factory brochure public specification scan visually examined. Only clearly legible values retained as facts; uncertain fine print and transmission ratios remain estimates."
+        }
+      ],
+      "limits": [
+        "Published2723lb explicitly marked RS w/MT, notGS,GS-TorGSX. FactoryRS rear drums and195/70HR14 tires retained as identity; no turbo or AWD upgrade.",
+        "Numerical ratios/finaldrive, height, clearance, redline/revlimiter, chassis rates, CG/load distribution, grip and performance estimates are not claimed as factory verified. Rounded2.0L followsbrochure.",
+        "RS basic street variant is distinct from existing4G63turboAWDGSX. This consumes the requested1995RS backlog slot but does not claim any film hero modifications, paint scheme or likeness.",
+        "Shared RTG-001 artwork is explicitly temporary; no finished original-art or driving claim.",
+        "Front and rear track widths are explicit geometric estimates for the stock body and wheel fitment, not confidently transcribed factory measurements; they must remain classified as estimates.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "nightcoil-gt-1995",
+            "alias": "Nightcoil GT 1995",
+            "reference": "1995 US Eclipse GSX4G63turboAWD5MT210hp",
+            "documentId": "nightcoil-gt-1995",
+            "runtimeId": "saved-car:Nightcoil GT 1995",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "bluebell-gt-2006",
+            "alias": "Bluebell GT 2006",
+            "reference": "2006 US EclipseGT3.8V6FWD6MT",
+            "documentId": "bluebell-gt-2006",
+            "runtimeId": "saved-car:Bluebell GT 2006",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Complete native/provenance audit found GSX and laterV6GT only. Same1995body is acknowledged but RS has different naturally aspirated Chrysler420A engine, FWDdriveline,5-speedgearset, lower curbmass,14-inchtires and rear drums; meaningful requested entry, not badge/year padding.",
+        "evidence": [
+          "https://importarchive.com/brochure/mitsubishieclipse1995_01"
+        ]
+      },
+      "name": "Bur Medick 1995",
+      "id": "bur-medick-1995",
+      "simulationEstimates": {
+        "reverseRatio": 3.42,
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.14,
+        "tireGrip": 0.9,
+        "spring": 0.48,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.91,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.61,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "topSpeedMph": 122,
+        "zeroToSixtySec": 9.0,
+        "gearRatios": [
+          3.54,
+          2.13,
+          1.36,
+          1.03,
+          0.81
+        ],
+        "finalDrive": 3.94,
+        "heightIn": 49.8,
+        "trackFrontIn": 59.6,
+        "trackRearIn": 59.4
+      }
+    },
+    {
+      "candidateId": "nissan-240sx-film-pending",
+      "identity": {
+        "year": 1995,
+        "make": "Nissan",
+        "model": "240SX",
+        "trim": "base S14 KA24DE naturally aspirated five-speed manual coupe, standard15-inch steel wheels, no optional ABS/LSD package",
+        "market": "United States"
+      },
+      "referenceVehicle": "1995 United States Nissan 240SX base S14 KA24DE naturally aspirated five-speed manual coupe, standard15-inch steel wheels, no optional ABS/LSD package; stock representative production car, not film-car replica",
+      "facts": {
+        "powerHp": 155,
+        "powerRpm": 5600,
+        "torqueLbFt": 160,
+        "torqueRpm": 4400,
+        "engineDisplacementL": 2.4,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "lengthIn": 177.2,
+        "widthIn": 68.1,
+        "wheelbaseIn": 99.4,
+        "tireSize": [
+          195,
+          60,
+          15
+        ],
+        "fuelTankUSgal": 17.2
+      },
+      "sources": [
+        {
+          "url": "https://importarchive.com/brochure/nissan240sx1995_01",
+          "publisher": "Nissan Motor Corporation USA original1995 240SX brochure K404-4/94-300M-CMG, archived public scans pages34-35",
+          "fields": [
+            "identity",
+            "powerHp",
+            "powerRpm",
+            "torqueLbFt",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "lengthIn",
+            "widthIn",
+            "wheelbaseIn",
+            "tireSize",
+            "fuelTankUSgal"
+          ],
+          "access": "Read2026-11-18; original factory brochure public specification scan visually examined. Only clearly legible values retained as facts; uncertain fine print and transmission ratios remain estimates."
+        }
+      ],
+      "limits": [
+        "Backlog film-pending row has no year ortrim. This is an explicit stock1995USbase representative selection, not a claim to reproduce any particular screen vehicle or engine swap.",
+        "Public specification page confirms SAE net155hp5600rpm and160lbft4400rpm, rear drive and5MT; numerical gear/curb/height cells are too small for confident exact transcription. Accordingly2753lbcurb and all numericratios/finaldrive,height are explicit estimates, not factory-verified claims.",
+        "NoSuperHICAS or active rearsteering added. Stockbaseopen differential and nooptionalABS/LSDselected. Engine mass distribution,torque curve,redline, suspension,grip and performance remain estimates.",
+        "SharedS14platform withBrooklime is acknowledged. USKA24DE naturally aspirated2.4 andJDMturboSR20DET2.0 are substantially different engines/driving characters, not a year-only badge duplicate. No film liveries or likeness copied.",
+        "Shared RTG-001 graphics are temporary placeholders; no drive/originalart credit.",
+        "Front and rear track widths are explicit geometric estimates for the stock body and wheel fitment, not confidently transcribed factory measurements; they must remain classified as estimates.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "brooklime-1994",
+            "alias": "Brooklime 1994",
+            "reference": "1994JapanS14SilviaK'sTypeS SR20DETturbo5MT",
+            "documentId": "brooklime-1994",
+            "runtimeId": "saved-car:Brooklime 1994",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "starter-rwd",
+            "alias": "CT-86",
+            "reference": "Legacy story car; documented finalgenerationMR2Roadster, no240SXprovenance",
+            "documentId": "starter-rwd",
+            "runtimeId": "saved-car:CT-86",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Native production references identify existing S14 Brooklime as the Japanese 2.0L turbo Silvia. The selected stock US 240SX uses a naturally aspirated 2.4L KA24DE engine, 155 hp, open rear differential and base 15-inch wheels. It resolves the unspecified 240SX candidate as a representative production variant without asserting film-car identity.",
+        "evidence": [
+          "https://importarchive.com/brochure/nissan240sx1995_01"
+        ]
+      },
+      "name": "Birdsfoot Trefoil 1995",
+      "id": "birdsfoot-trefoil-1995",
+      "simulationEstimates": {
+        "reverseRatio": 3.382,
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.3,
+        "tireGrip": 0.9,
+        "spring": 0.48,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.91,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "topSpeedMph": 119,
+        "zeroToSixtySec": 7.8,
+        "curbLb": 2753,
+        "gearRatios": [
+          3.321,
+          1.902,
+          1.308,
+          1,
+          0.759
+        ],
+        "finalDrive": 4.083,
+        "heightIn": 50.8,
+        "trackFrontIn": 58.3,
+        "trackRearIn": 57.9
+      }
+    },
+    {
+      "candidateId": "chevrolet-150-utility-sedan-1955-roster-candidate",
+      "identity": {
+        "year": 1955,
+        "make": "Chevrolet",
+        "model": "One-Fifty Utility Sedan",
+        "trim": "1512 three-passenger two-door, standard Blue Flame 123 six and three-speed manual, no overdrive",
+        "market": "United States"
+      },
+      "referenceVehicle": "1955 US Chevrolet One-Fifty Utility Sedan model1512/Fisher55-1211B, three seats, standard235.5cuin Blue Flame123 single-carburetor inline-six, three-speed manual without overdrive,3.70 axle, RWD",
+      "facts": {
+        "powerHp": 109,
+        "powerRpm": 3600,
+        "torqueLbFt": 195,
+        "torqueRpm": 2000,
+        "engineDisplacementL": 3.859153572,
+        "aspiration": "Naturally aspirated",
+        "curbKg": 1458.2994695500001,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "transmissionLabel": "Standard column-shift three-speed manual without overdrive",
+        "gearCount": 3,
+        "finalDrive": 3.7,
+        "lengthM": 4.96824,
+        "widthM": 1.8796,
+        "heightM": 1.57734,
+        "wheelbaseM": 2.921,
+        "trackFrontIn": 58,
+        "trackRearIn": 58.8,
+        "frontOverhangM": 0.78994,
+        "frontWeightDistribution": 0.5412130637636081,
+        "groundClearanceM": 0.1651,
+        "periodPublishedRatings": {
+          "grossPowerHp": 123,
+          "grossPowerRpm": 3800,
+          "grossTorqueLbFt": 207,
+          "grossTorqueRpm": 2000,
+          "netPowerHp": 109,
+          "netPowerRpm": 3600,
+          "netTorqueLbFt": 195,
+          "netTorqueRpm": 2000,
+          "ratingBasis": "Period Chevrolet NET dynamometer simulation of installed conditions: regular muffler/tailpipe, fan operating, automatic spark advance, generator NOT charging; standard pressure29.92inHg/60F. Not modern SAE J1349. Gross used dynamometer exhaust, no fan, generator not charging and optimum spark."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://www.gm.com/content/dam/company/no_search/heritage-archive-docs/vehicle-information-kits/chevrolet/1955-Chevrolet.pdf",
+          "publisher": "Chevrolet original1955 specification sheets, GM Heritage Archive",
+          "fields": [
+            "1512 identity",
+            "manual six curb weight and axle loads",
+            "dimensions",
+            "standard3.70 axle",
+            "period net and gross engine output",
+            "6.70-15 tires"
+          ],
+          "access": "2026-11-18 original PDF physicalpages41,43,44,64,66,67 visually inspected. Enginegeneral sourcepage33 revisedJune10,1955; regular/BlueFlame123 column selected, not Powerglide136."
+        }
+      ],
+      "limits": [
+        "3215lb is factory revised curb weight including gasoline97lb and water33lb, not3085lb shipping; manual1512 row. No payload or600lb four-passenger performance-test weight added.",
+        "Installed engine anchors use explicitly printed PERIOD NET109hp/195lbft, not gross123hp/207lbft and not later modern certification. Factory net generator was not charging.",
+        "Three-seat utility sedan lacks a rear bench; not1508 sedan delivery, Bel Air, V8 or Powerglide.",
+        "2.94/1.68/1 ratios inferred from rounded factory combined ratios10.88/6.22/3.70; reverse inferred same2.94. Treat these as approximations, not independently measured gearsets.",
+        "Factory6.70-15 four-ply bias tires approximated185/85R15 for runtime dimensions. Clearance6.5in is loaded exhaust minimum, height62.1in is unloaded; neither is CG.",
+        "Fuel capacity, redline/limiter, top speed,0-60, Cd, CG and all suggestedEstimates are explicit simulation assumptions. 0-60 target18s is not an observed road test. Unspecified handling/brake/steering/curve values estimated; sharedRTG001 art.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Creeping Buttercup 1953",
+            "documentId": "creeping-buttercup-1953",
+            "runtimeId": "saved-car:Creeping Buttercup 1953",
+            "reference": "1953 Corvette235.5 triple-carburetor inline-six Powerglide roadster",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Sneezewort 1965",
+            "documentId": "sneezewort-1965",
+            "runtimeId": "saved-car:Sneezewort 1965",
+            "reference": "1965 Corvair Monza164 flat-six rear-engine3MT coupe",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Actual335-entry native audit has no One-Fifty/150 Utility1512. Different ordinary three-seat steel-body utility sedan, single-carburetor engine109 period net hp, three-speed manual and115in wheelbase versus Corvette triple-carb six/Powerglide roadster or rear-engine Corvair; not a badge/year clone.",
+        "evidence": [
+          "https://www.gm.com/content/dam/company/no_search/heritage-archive-docs/vehicle-information-kits/chevrolet/1955-Chevrolet.pdf"
+        ]
+      },
+      "name": "Purple Toadflax 1955",
+      "id": "purple-toadflax-1955",
+      "simulationEstimates": {
+        "reverseRatio": 2.94,
+        "cgHeightM": 0.6,
+        "dragCoefficient": 0.51,
+        "tireGrip": 0.73,
+        "spring": 0.43,
+        "antiRollRear": 0.15,
+        "suspensionTravelM": 0.19,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 500,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "redlineRpm": 4200,
+        "revLimitRpm": 4500,
+        "fuelTankUSgal": 16,
+        "topSpeedMph": 87,
+        "zeroToSixtySec": 18,
+        "gearRatios": [
+          2.94,
+          1.68,
+          1
+        ],
+        "tireSize": [
+          185,
+          85,
+          15
+        ]
+      }
+    },
+    {
+      "candidateId": "chevrolet-k10-custom-1972-roster-candidate",
+      "identity": {
+        "year": 1972,
+        "make": "Chevrolet",
+        "model": "K10 Custom",
+        "trim": "KS10734 regular-cab6.5-foot Fleetside, standard250 inline-six/3MT, NP205 in road2H",
+        "market": "United States"
+      },
+      "referenceVehicle": "1972 US Chevrolet K10 Custom KS10734 short115in-wheelbase Fleetside pickup,250cuin naturally aspirated inline-six, standard three-speed column manual,3.73axles, NewProcess205 operated in high-range2H RWD, unladen",
+      "facts": {
+        "powerHp": 110,
+        "powerRpm": 3800,
+        "torqueLbFt": 185,
+        "torqueRpm": 1600,
+        "engineDisplacementL": 4.096766,
+        "aspiration": "Naturally aspirated",
+        "curbKg": 1793.9578233500001,
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "transmissionLabel": "Standard ZW4 three-speed manual, NP205 high-range2H road configuration",
+        "gearCount": 3,
+        "finalDrive": 3.73,
+        "lengthM": 4.79425,
+        "widthM": 2.0065999999999997,
+        "heightM": 1.80975,
+        "wheelbaseM": 2.921,
+        "frontOverhangM": 0.8445499999999999,
+        "frontWeightDistribution": 0.5868520859671302,
+        "groundClearanceM": 0.18414999999999998,
+        "fuelTankUSgal": 20
+      },
+      "sources": [
+        {
+          "url": "https://www.gm.com/content/dam/company/no_search/heritage-archive-docs/vehicle-information-kits/chevrolet-trucks/1972-Chevrolet-Truck.pdf",
+          "publisher": "Chevrolet1972 Truck Specifications, GM Heritage Archive",
+          "fields": [
+            "KS10734 identity",
+            "3955lb curb and axle loads",
+            "115in wheelbase and bodygeometry",
+            "250I6 SAE net85F ratings",
+            "ZW4 manual",
+            "NP205",
+            "3.73axles",
+            "G78-15B tires",
+            "20gal tank"
+          ],
+          "access": "2026-11-18 original PDF physicalpages4,6,7,10,11,32 visually inspected. Pickup sheetsJan28,1972. EngineHighTorque250Six sourcepage identifies110hp/185lbft as SAE NET85F for series10\u201330."
+        }
+      ],
+      "limits": [
+        "KS10734 six-cylinder shortFleetside curb3955lb(front2321,rear1634) selected; do not useKE10734 V8 curb4087lb, C10 orStepside. Geometry is standardequipment/unloaded.",
+        "110hp3800/185lbft1600 is factory SAE NET85F, not145gross or116net60F. StandardK10 engine250, not optional292 restrictedtoK20 in this catalog.",
+        "Existing runtime represents NP205 HIGH-RANGE2H rear drive only. No selectable4H/4L, locking hubs, transfercase controls or low-range claim. Actual K10 part-time4WD hardware remains documented.",
+        "ZW4 gear ratios3.50/1.89/1 and reverse3.50 are estimated;3.73 axle is factoryfact. G78-15B bias tires approximated215/80R15 dimensional envelope, not modern radial specification.",
+        "Tracks65/62.5in, redline/limiter, CG,drag, acceleration/top-speed, grip/suspension/steering/brake/torque curve away fromanchors all explicit estimates.0-60 target21s is modeling metadata, not road-test evidence.1600rpm torquepeak must remain below latercurvepoints without duplicates.",
+        "Nopayload/towing/Cheyenne trim or V8 additions. SharedRTG001 art.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Feverfew 2005",
+            "documentId": "feverfew-2005",
+            "runtimeId": "saved-car:Feverfew 2005",
+            "reference": "2005 Avalanche1500 LS2WD LM75.3V8 4AT crewcab",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Pearlwort 1999",
+            "documentId": "pearlwort-1999",
+            "runtimeId": "saved-car:Pearlwort 1999",
+            "reference": "1999 Dakota2.5I4 regularcab2WD5MT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Brooklime 2003",
+            "documentId": "brooklime-2003",
+            "runtimeId": "saved-car:Brooklime 2003",
+            "reference": "2003 RangerXL2.3I4 regularcab2WD5MT",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Actual335-entry native provenance has no1972 K10/KS10734 or period250I6 GM full-size pickup. Body-on-frame shortFleetside with leaf-sprung4WD chassis in2H, low-rev carbureted250I6/3MT differs mechanically from later compact EFI pickups and V8 automatic Avalanche.",
+        "evidence": [
+          "https://www.gm.com/content/dam/company/no_search/heritage-archive-docs/vehicle-information-kits/chevrolet-trucks/1972-Chevrolet-Truck.pdf"
+        ]
+      },
+      "name": "Common Toadflax 1972",
+      "id": "common-toadflax-1972",
+      "simulationEstimates": {
+        "reverseRatio": 3.5,
+        "cgHeightM": 0.72,
+        "dragCoefficient": 0.57,
+        "tireGrip": 0.76,
+        "spring": 0.5,
+        "antiRollRear": 0.15,
+        "suspensionTravelM": 0.22,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 500,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "redlineRpm": 4200,
+        "revLimitRpm": 4500,
+        "topSpeedMph": 85,
+        "zeroToSixtySec": 21,
+        "gearRatios": [
+          3.5,
+          1.89,
+          1
+        ],
+        "tireSize": [
+          215,
+          80,
+          15
+        ],
+        "trackFrontIn": 65,
+        "trackRearIn": 62.5,
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 74.0
+          },
+          {
+            "rpm": 1600,
+            "torqueLbFt": 185
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 185
+          },
+          {
+            "rpm": 3800,
+            "torqueLbFt": 152.03157894736842
+          },
+          {
+            "rpm": 4500,
+            "torqueLbFt": 111.0
+          }
+        ]
+      }
+    },
+    {
+      "candidateId": "land-rover-range-rover-sport-svr-2015-roster-candidate",
+      "identity": {
+        "year": 2015,
+        "make": "Land Rover",
+        "model": "Range Rover Sport SVR",
+        "trim": "US 5.0 supercharged V8 eight-speed automatic, standard21-inch all-season tires",
+        "market": "United States"
+      },
+      "referenceVehicle": "2015 US Range Rover Sport SVR 5.0 superchargedV8 permanent4WD ZF8HP70 automatic, standard21-inch ContinentalCrossContact tires; high range,notlater575PSfacelift",
+      "facts": {
+        "powerKw": 410.13492937999996,
+        "publishedPowerHp": 550,
+        "torqueNm": 680.6206100466,
+        "engineDisplacementL": 4.9997,
+        "transmission": "automatic",
+        "gearCount": 8,
+        "drivetrain": "awd",
+        "lengthM": 4.872,
+        "widthM": 2.0185,
+        "heightM": 1.78,
+        "wheelbaseM": 2.923,
+        "tireSize": [
+          275,
+          45,
+          21
+        ],
+        "frontTire": [
+          275,
+          45,
+          21
+        ],
+        "rearTire": [
+          275,
+          45,
+          21
+        ],
+        "dragCoefficient": 0.38,
+        "fuelTankUSgal": 27.7,
+        "aspiration": "Supercharged",
+        "zeroToSixtySec": 4.5,
+        "topSpeedMph": 162,
+        "publishedWeightKg": 2335
+      },
+      "sources": [
+        {
+          "url": "https://media.jlr.com/range-rover/en-us/news/2014/08/2015-range-rover-sport-svr",
+          "publisher": "Jaguar Land Rover North America factory presskit10August2014",
+          "fields": [
+            "identity",
+            "powerKw",
+            "publishedPowerHp",
+            "torqueNm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "drivetrain",
+            "publishedWeightKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "tireSize",
+            "frontTire",
+            "rearTire",
+            "dragCoefficient",
+            "fuelTankUSgal",
+            "aspiration",
+            "zeroToSixtySec",
+            "topSpeedMph"
+          ],
+          "access": "Read full2015US technical table2026-11-18. US550hp and502lb-ft retained,notEuropean550PS. TableWeight from5148lb(2335kg); driver/fuelbasis notspecified. Width2018.5mm excludesmirrors;height1780mmstandard."
+        }
+      ],
+      "limits": [
+        "2335kg is published minimum Weight from, not proof of exact option-equipped curb or DIN/EU massbasis. No driver deduction applied.",
+        "US factory550hp differs from European550PS; modeled409.1349kW derives mechanicalhp, and680.6206Nm derivesUS502lb-ft. Do not substitute404.5kW silently. RPManchors,gearing/final,redline,loadsplit/CG and all handlingestimates are provisional.",
+        "Fixed AWD in high range approximates center/optionalrear locking, TerrainResponse2, active air-suspension/rollcontrol and adaptive damping. No new low-range/rideheight/terrain-control runtime or claimed proprietary behavior.",
+        "Placeholdergraphics only; no originalart or independently driven status.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "gorse-2015",
+            "alias": "Gorse 2015",
+            "referenceVehicle": "2015 UK/European RHD Land Rover Defender90 Station Wagon2.2 diesel6MT, factory optional235/85R16 HD steel wheels, high range; not110,130,new2020Defender or limited150PSedition",
+            "documentId": "gorse-2015",
+            "runtimeId": "saved-car:Gorse 2015",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "dog-violet-2016",
+            "alias": "Dog Violet 2016",
+            "referenceVehicle": "2016UK BentleyBentayga originalfive-seat5.950LW12 twin-turbo8AT permanentAWD;notSpeed,V8,DieselorHybrid",
+            "documentId": "dog-violet-2016",
+            "runtimeId": "saved-car:Dog Violet 2016",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "white-stonecrop-2012",
+            "alias": "White Stonecrop 2012",
+            "referenceVehicle": "2012 UK/Europe Jaguar XKR-S Coupe5.0supercharged6AT;notConvertible,GTorXFR-S",
+            "documentId": "white-stonecrop-2012",
+            "runtimeId": "saved-car:White Stonecrop 2012",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Gorse is ladder-frame2.2diesel Defender90manual; SVR is aluminium-unibody5.0superchargedV8luxurySUV8AT. Bentayga uses unrelatedW12architecture. XKR-S sharesJLR5.0family but is lighterRWDcoupe6AT,not4WDSUV. No exactRangeRover in nativeprovenance/test/docs audit.",
+        "evidence": [
+          "https://media.jlr.com/range-rover/en-us/news/2014/08/2015-range-rover-sport-svr"
+        ]
+      },
+      "name": "Greater Trefoil 2015",
+      "id": "greater-trefoil-2015",
+      "simulationEstimates": {
+        "reverseRatio": 3.317,
+        "cgHeightM": 0.72,
+        "groundClearanceM": 0.213,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.52,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "powerRpm": 6000,
+        "torqueRpm": 3500,
+        "gearRatios": [
+          4.714,
+          3.143,
+          2.106,
+          1.667,
+          1.285,
+          1,
+          0.839,
+          0.667
+        ],
+        "finalDrive": 3.21,
+        "trackFrontIn": 66.5,
+        "trackRearIn": 66.3,
+        "torqueConverterSlip": 0.04,
+        "torqueConverterMultiplication": 1.8,
+        "curbKg": 2335,
+        "centerDifferentialBalance": 0.5,
+        "transmissionLabel": "8-speed torque-converter automatic approximation"
+      }
+    },
+    {
+      "candidateId": "mini-john-cooper-works-countryman-all4-2018-roster-candidate",
+      "identity": {
+        "year": 2018,
+        "make": "MINI",
+        "model": "John Cooper Works Countryman ALL4",
+        "trim": "Mexico second-generation2.0turbo8-speedSteptronic standard19-inchJCWCourseSpoke",
+        "market": "Mexico"
+      },
+      "referenceVehicle": "2018 Mexico MINI John Cooper Works Countryman ALL4 secondgenerationF60 1998cc turbo four-cylinder8-speedSteptronic;notR56hatch,R60firstgeneration orlater306PScar",
+      "facts": {
+        "powerKw": 170,
+        "torqueNm": 350,
+        "powerRpm": 5000,
+        "torqueRpm": 1450,
+        "engineDisplacementL": 1.998,
+        "transmission": "automatic",
+        "gearCount": 8,
+        "drivetrain": "awd",
+        "aspiration": "Turbocharged"
+      },
+      "sources": [
+        {
+          "url": "https://www.press.bmwgroup.com/mexico/article/detail/T0286274ES/el-nuevo-mini-john-cooper-works-countryman-llega-a-m%C3%A9xico-con-un-estilo-atl%C3%A9tico-m%C3%A1s-rabioso-y-m%C3%A1s-vers%C3%A1til?language=es",
+          "publisher": "BMWGroupMINI Mexico factory25October2018 launchrelease",
+          "fields": [
+            "identity",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "transmission",
+            "gearCount",
+            "drivetrain",
+            "aspiration"
+          ],
+          "access": "Readindexedfactoryrelease2026-11-18:1998cc,231hpmarketinglabel5000\u20136000rpm,350Nm1450\u20134500rpm,ALL4,8-speedSteptronic,19-inchJCWCourseSpokewheels. Textstatessecondgeneration; pageR60taxonomy is stale andnotused."
+        },
+        {
+          "url": "https://www.press.bmwgroup.com/africa-dom-easteurope/article/detail/T0267376EN/extremely-athletic-extremely-versatile%3A-the-new-mini-john-cooper-works-countryman?language=en",
+          "publisher": "BMWGroupMINI factory17January2017 globalF60launch",
+          "fields": [
+            "powerKw",
+            "platform distinction",
+            "torqueNm",
+            "powerRpm",
+            "torqueRpm"
+          ],
+          "access": "Readindexedfactorytext2026-11-18:170kW/231hp,350Nm1450\u20134500,170kW5000\u20136000,secondgenerationlargerCountryman.170kWanchor pairedwithMexicoidentical231rating; no conversionofrounded231marketinghp to172kW."
+        }
+      ],
+      "limits": [
+        "1630kg is provisional unladen running-mass estimate; no exactMexicooption/driver/fuelbasis verified. Global2017poweranchor applied to matching2018Mexicolaunch output, not later225kW/306PSvariant.",
+        "Peakpower plateau5000\u20136000 and torque1450\u20134500; individualcurve points estimated. Mexican19-inchrim verified;225/45R19 tire dimensions remainestimated. All dimensions,gears/final,mass,loadsplit/CG/limitsandhandling areestimates.",
+        "Generic8ATandfixedAWDsplit approximateSteptronic/ALL4; no proprietary brakevectoring orvariabletorquedistribution fidelityclaim. Factory6.5s0\u2013100 is not asserted0\u201360.",
+        "SharedRTG-001placeholder only; research is not finishedart orindependentdriving evidence.",
+        "Custom five-point curve is estimated: preserve a smooth low-rpm diesel peak or a unique power-at-limiter endpoint. Factory rounded peak power/torque may not coincide exactly; curve is not a measured dyno trace.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "corn-mint-2009",
+            "alias": "Corn Mint 2009",
+            "referenceVehicle": "2009 United Kingdom MINI John Cooper Works Hatch, R56 three-door hatch, six-speed manual, not Convertible, Clubman or dealer tuning kit",
+            "documentId": "corn-mint-2009",
+            "runtimeId": "saved-car:Corn Mint 2009",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "water-mint-2012",
+            "alias": "Water Mint 2012",
+            "referenceVehicle": "2012 continental Europe MINI John Cooper Works GP, R56 GP two-seat launch road car, six-speed manual, standard215/40R17 sports tires; not2006GP or2020GP",
+            "documentId": "water-mint-2012",
+            "runtimeId": "saved-car:Water Mint 2012",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "periwinkle-1998",
+            "alias": "Periwinkle 1998",
+            "referenceVehicle": "1998 UK Rover Mini Cooper 1.3i standard 12-inch-wheel twin-point-injection catalyst 4MT. Not Sports Option Pack, John Cooper conversion, earlier single-point injection or BMW Mini.",
+            "documentId": "periwinkle-1998",
+            "runtimeId": "saved-car:Periwinkle 1998",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "CountrymanF60 is largerfive-doorAWDcrossover with1998ccturboand8AT; existingR56JCWhatch/GP use1598ccFWD6MTshortbodies, andclassicMini uses1275cc4MT. Distinctplatform,body,engineanddrivetrain ratherthanbadge/yearpadding.",
+        "evidence": [
+          "https://www.press.bmwgroup.com/mexico/article/detail/T0286274ES/el-nuevo-mini-john-cooper-works-countryman-llega-a-m%C3%A9xico-con-un-estilo-atl%C3%A9tico-m%C3%A1s-rabioso-y-m%C3%A1s-vers%C3%A1til?language=es",
+          "https://www.press.bmwgroup.com/africa-dom-easteurope/article/detail/T0267376EN/extremely-athletic-extremely-versatile%3A-the-new-mini-john-cooper-works-countryman?language=en"
+        ]
+      },
+      "name": "Lesser Trefoil 2018",
+      "id": "lesser-trefoil-2018",
+      "simulationEstimates": {
+        "reverseRatio": 4.015,
+        "cgHeightM": 0.59,
+        "groundClearanceM": 0.165,
+        "dragCoefficient": 0.36,
+        "tireGrip": 1.0,
+        "spring": 0.53,
+        "antiRollRear": 0.27,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.85,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.58,
+        "redlineRpm": 6200,
+        "revLimitRpm": 6500,
+        "fuelTankUSgal": 16.1,
+        "topSpeedMph": 145,
+        "zeroToSixtySec": 6.3,
+        "curbKg": 1630,
+        "lengthM": 4.299,
+        "widthM": 1.822,
+        "heightM": 1.557,
+        "wheelbaseM": 2.67,
+        "trackFrontIn": 61.7,
+        "trackRearIn": 61.7,
+        "tireSize": [
+          225,
+          45,
+          19
+        ],
+        "frontTire": [
+          225,
+          45,
+          19
+        ],
+        "rearTire": [
+          225,
+          45,
+          19
+        ],
+        "gearRatios": [
+          5.25,
+          3.029,
+          1.95,
+          1.457,
+          1.221,
+          1,
+          0.809,
+          0.673
+        ],
+        "finalDrive": 3.2,
+        "torqueConverterSlip": 0.035,
+        "torqueConverterMultiplication": 1.7,
+        "centerDifferentialBalance": 0.4,
+        "transmissionLabel": "8-speed torque-converter automatic approximation",
+        "engineCurveTorquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 103.2587008988172
+          },
+          {
+            "rpm": 1450,
+            "torqueLbFt": 258.14675224704297
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 258.14675224704297
+          },
+          {
+            "rpm": 5000,
+            "torqueLbFt": 239.46363249480495
+          },
+          {
+            "rpm": 6500,
+            "torqueLbFt": 154.8880513482258
+          }
+        ]
+      }
+    }
+  ],
+  "deferred": []
+}

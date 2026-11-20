@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "hungarian-clover-2015",
+  "name": "Hungarian Clover 2015",
+  "stableCarId": "saved-car:Hungarian Clover 2015",
+  "referenceVehicle": "2015 United States / Mexico SCORE competition Honda Ridgeline Baja Race Truck, HPD/Proctor Racing Group tube-frame Class2 Baja1000 debut, HR35TT twin-turbo V6; not production2017Ridgeline or later truck update",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "08ce09aae2a0c79854a3752cafef328af73bf6b92433ed124ff6865ec506a8e6",
+    "dashboard": "965f4b6ccb131adca58beea2d39881f3bd9bf255b7edc481ad692def6a15750b",
+    "tires": "18ff9bb9a617cde0f6e5a9e39bef2fc510dcb97e797f72e4ed059371cf33d2a6"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

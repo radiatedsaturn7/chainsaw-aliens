@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "ribwort-plantain-2011",
+  "name": "Ribwort Plantain 2011",
+  "stableCarId": "saved-car:Ribwort Plantain 2011",
+  "referenceVehicle": "2011 German Mercedes-Benz SLS AMG C197197.377 M159.9806.208L naturallyaspiratedV8 coupe7DCT,notGT/BlackSeries/Roadster",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "ribwort-plantain-2011",
+  "sourceHashes": {
+    "body": "d7134d66717299a54980d331f27ee314441ba412d9f9b86cf8c8af6b39199c88",
+    "dashboard": "cd5dff65abea71f06565c8cb54ea20b5ca45db707f168e93c728aa7f92d62bf1",
+    "tires": "66affe81af7d93278a3287ea3d5c0b580effe17e62113af5338cee068226db62"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

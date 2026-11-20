@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "ladyfern-r-1990",
+  "name": "Ladyfern R 1990",
+  "stableCarId": "saved-car:Ladyfern R 1990",
+  "referenceVehicle": "1990 Japan Nissan Pulsar GTI-R RNN14 1220kg production road reference 5MT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "bc41fdfaeace886f4cc339454c6788f43a0fce05cacaebb1611f3cb4b25e26f6",
+    "dashboard": "f03624488196be0f214d8ee875dc96ecfa9f5479b6ec5f0264b081a4c438d526",
+    "tires": "425e4d3353ae7477ac9610376bdca31055d578a8753c54464ffa22b8c2b0f3ae"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

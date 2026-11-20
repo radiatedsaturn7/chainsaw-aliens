@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "island-clover-2006",
+  "name": "Island Clover 2006",
+  "stableCarId": "saved-car:Island Clover 2006",
+  "referenceVehicle": "2006 United States Honda Ridgeline, RT first-generation3.5V6 VTM-4 five-speed automatic crew-cab pickup, standard steel wheels/covers; no accessories or moonroof",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "a78b432628a1b5096690ec59c34dd842274bee2d4d5f128ad472c21ef7305c56",
+    "dashboard": "1848c25ec1ba171e447fabf7d4a45c65eb30c0698417fc94c7e334c86d5a91ba",
+    "tires": "119379ab67336e5b0f1b6eb28d2e8f6c52349ad219f7945e95210dbdee258059"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "white-campion-2016",
+  "name": "White Campion 2016",
+  "stableCarId": "saved-car:White Campion 2016",
+  "referenceVehicle": "2016 US Mazda MX-5 Miata Sport ND 2.0 SKYACTIV-G six-speed manual, cloth soft top; not Club, Grand Touring or RF",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "1ab5201736e088ea5147d80e2847f373bde42d5351b537d6248a7c5a727b9a1b",
+    "dashboard": "594552a0e8919b31e730e83e38a4cdc70f604ea2226561ed07e94181f72cfde9",
+    "tires": "63b1a1a9cc5f28ff6094871c2aab577ab744489140122787debcb6574d180b9e"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

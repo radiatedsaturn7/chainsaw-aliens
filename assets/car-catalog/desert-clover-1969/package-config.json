@@ -1,0 +1,64 @@
+{
+  "id": "desert-clover-1969",
+  "name": "Desert Clover 1969",
+  "stableCarId": "saved-car:Desert Clover 1969",
+  "runtimeId": "saved-car:Desert Clover 1969",
+  "candidateId": "pontiac-gto-judge-1969-roster-candidate",
+  "referenceVehicle": "1969 United States Pontiac GTO Judge, standard400RamAirV8 andstandardfullysynchronized3MT,hardtop",
+  "identity": {
+    "year": 1969,
+    "make": "Pontiac",
+    "model": "GTO Judge",
+    "trim": "standard400RamAirV8 andstandardfullysynchronized3MT,hardtop",
+    "market": "United States"
+  },
+  "bodyClass": "two-door-coupe",
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      278,
+      523,
+      436,
+      119
+    ],
+    "wheel": [
+      476,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://www.lov2xlr8.no/brochures/pontiac/bilder/69ju.jpg",
+      "fields": [
+        "aspiration",
+        "drivetrain",
+        "transmission",
+        "engineDisplacementL",
+        "gearCount",
+        "periodPublishedRatings"
+      ]
+    }
+  ]
+}

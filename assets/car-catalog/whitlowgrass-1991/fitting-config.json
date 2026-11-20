@@ -1,0 +1,163 @@
+{
+  "id": "whitlowgrass-1991",
+  "name": "Whitlowgrass 1991",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "2d069d5f8a4a186d759940d9da89c1cd315db8d991dfe9648b5190b644c81b89",
+  "sourceDirectory": "assets/car-catalog/whitlowgrass-1991",
+  "sourceHashes": {
+    "body": "c28e04bb7736af34cabd894e429303085eb4af1755072c35c479d8cbbf56150a",
+    "dashboard": "492be940aa9595dc302b8aba75b313502ee4996dea88dc994cb669a26740f7db",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 47.9,
+        "y": 319.32,
+        "radius": 37.25
+      },
+      {
+        "wheel": "fr",
+        "x": 331.74,
+        "y": 319.32,
+        "radius": 37.25
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 636.87,
+        "y": 298.03,
+        "radius": 40.8
+      },
+      {
+        "wheel": "rr",
+        "x": 805.4,
+        "y": 264.33,
+        "radius": 31.93
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 904.74,
+        "y": 725.57,
+        "radius": 46.12
+      },
+      {
+        "wheel": "rr",
+        "x": 1229.38,
+        "y": 725.57,
+        "radius": 46.12
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 399.15,
+        "y": 695.41,
+        "radius": 31.93
+      },
+      {
+        "wheel": "rr",
+        "x": 512.69,
+        "y": 729.11,
+        "radius": 40.8
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 49.67,
+        "y": 746.85,
+        "radius": 37.25
+      },
+      {
+        "wheel": "rl",
+        "x": 319.32,
+        "y": 746.85,
+        "radius": 37.25
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1598.37,
+        "y": 285.61,
+        "radius": 40.8
+      },
+      {
+        "wheel": "fl",
+        "x": 1742.07,
+        "y": 266.1,
+        "radius": 31.93
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 943.77,
+        "y": 292.71,
+        "radius": 42.58
+      },
+      {
+        "wheel": "fl",
+        "x": 1245.35,
+        "y": 292.71,
+        "radius": 42.58
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1360.66,
+        "y": 691.86,
+        "radius": 30.16
+      },
+      {
+        "wheel": "fl",
+        "x": 1490.16,
+        "y": 729.11,
+        "radius": 40.8
+      }
+    ]
+  },
+  "wheelFit": "average",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1269,
+      426,
+      446,
+      135
+    ],
+    "wheel": [
+      1448,
+      744,
+      317
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e2e9e8",
+    "viewportWheelScale": 2.0,
+    "gaugeBackground": "#111111"
+  },
+  "steeringWheelSource": {
+    "artRef": "steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementNotes": "Individual source atlas and dashboard inspected on 1000x500 body / 1000x400 dash preview. Original-pixel coordinates; wheel hubs estimated at arch circle centers. Runtime render review still required."
+}

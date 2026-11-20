@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "smooth-tare-1940",
+  "name": "Smooth Tare 1940",
+  "stableCarId": "saved-car:Smooth Tare 1940",
+  "referenceVehicle": "1940 United States Ford De Luxe Coupe, 85-horsepower-reference flathead V8, ordinary Coupe (not Business Coupe or convertible), column-shift manual",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "smooth-tare-1940",
+  "sourceHashes": {
+    "body": "d87adb3624c7c8fc41db67ed0e45f378382cb3de7a7166ab2bfdf88dde886765",
+    "dashboard": "e5746d97a8ac36defff33dd66c3f5845af6933ae221858d80086ab279f347f40",
+    "tires": "f0f285ad0d1152eb3ba70c305fc2da73b8b3f9f4fad18df417f578602e2f990f"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    3,
+    4,
+    5,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

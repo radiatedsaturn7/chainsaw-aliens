@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bog-asphodel-2011",
+  "name": "Bog Asphodel 2011",
+  "stableCarId": "saved-car:Bog Asphodel 2011",
+  "referenceVehicle": "2011 Germany Peugeot 308 GTi T7 facelift, 1.6 THP200 five-door hatchback, six-speed manual; not CC, SW or later T9 GTi270",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "bog-asphodel-2011",
+  "sourceHashes": {
+    "body": "2743c24891d2f2841beb333f164e7d25125f35662dd830d2e11d62680c17af9c",
+    "dashboard": "69e96bcba08f61b7c90367635cb8b1029507af114b4d279cef9a250e67365a85",
+    "tires": "5a43050d9c0216d1492d9fc17b05693a8724cf660087aae5003f96d29077fd05"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

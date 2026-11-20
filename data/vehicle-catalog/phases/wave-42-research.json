@@ -1,0 +1,796 @@
+{
+  "schemaVersion": 1,
+  "base": "47e958437355dcb7503ec3f309a27ed9e06960bb",
+  "scope": "Parallel primary-source intake; exact missing generations/variants only, shared RTG-001 art references, no runtime/race/CI edits.",
+  "vehicles": [
+    {
+      "candidateId": "toyota-chaser-gt-twin-turbo-1991-roster-candidate",
+      "identity": {
+        "year": 1991,
+        "make": "Toyota",
+        "model": "Chaser GT Twin Turbo",
+        "trim": "E-JZX81 pre-VVT-i1JZ-GTE2.491L twin-turbo inline-six RWD factory4AT, standard nooptionalLSD",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1991 Japan Toyota Chaser GT Twin Turbo E-JZX81 1JZ-GTE2491cc pre-VVT-i twin-turbo RWD ECT-S4AT; August1990\u2013October1992 configuration, not JZX100TourerV ormanualconversion",
+      "bodyClass": "four-door five-seat hardtop sedan",
+      "facts": {
+        "powerKw": 206,
+        "powerRpm": 6200,
+        "torqueNm": 362.8,
+        "torqueRpm": 4800,
+        "engineDisplacementL": 2.491,
+        "aspiration": "Turbocharged",
+        "drivetrain": "rwd",
+        "transmission": "automatic",
+        "gearCount": 4,
+        "curbKg": 1540,
+        "lengthM": 4.76,
+        "widthM": 1.71,
+        "heightM": 1.375,
+        "wheelbaseM": 2.68,
+        "trackFrontIn": 57.28346456692914,
+        "trackRearIn": 57.28346456692914,
+        "tireSize": [
+          205,
+          55,
+          16
+        ],
+        "reverseRatio": 1.88,
+        "finalDrive": 4.1,
+        "fuelTankUSgal": 17.17118340327965
+      },
+      "sources": [
+        {
+          "url": "https://gazoo.com/catalog/maker/TOYOTA/CHASER/198904/1001290/",
+          "publisher": "Toyota GAZOO own-brand historical catalog, not a period engineering sheet",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "reverseRatio",
+            "finalDrive",
+            "fuelTankUSgal"
+          ],
+          "access": "Read2026-11-18. ExactJZX81GTTwinTurbo4AT1540kg entry coversAugust1990\u2013October1992;280PS206kW,362.8Nm4800. Factory4AT andoptionalLSD explicitlylisted; no inventedmanual."
+        },
+        {
+          "url": "https://toyota.jp/ucar/catalog/brand-TOYOTA/car-CHASER/",
+          "publisher": "Toyota Motor Corporation certified-used historical catalog",
+          "fields": [
+            "1991model family",
+            "2.5twin-turbo280PS",
+            "RWD",
+            "four-doorhardtop"
+          ],
+          "access": "Read2026-11-18.1991modelsections corroborate2.5twin-turbo280PSfamily. LaterJZX100VVT-i single-turbo not substituted."
+        }
+      ],
+      "limits": [
+        "1540kg is historicalcatalogvehicleweight for4AT, not driver-inclusive ormanualconversion. NooptionalLSD/sunroof selected.",
+        "Fourforwardratios,redline/limiter,torqueconverterbehavior,grip/load/CG/suspension andperformance areestimates. Genericautomatic andTC/ABS do notclaim ECT-S/factorycontroller calibration.",
+        "DistinctpreVVT-i twin-turboengine identity retained; no runtime model ofindividualturbochargers. SharedRTG-001 only; originalart/independentdriving remainpending.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "prickly-sowthistle-1997",
+            "alias": "Prickly Sowthistle 1997",
+            "reference": "1997MarkII JZX100VVT-i single-turbo1JZ-GTE5MT",
+            "documentId": "prickly-sowthistle-1997",
+            "runtimeId": "saved-car:Prickly Sowthistle 1997",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "marsh-sowthistle-1997",
+            "alias": "Marsh Sowthistle 1997",
+            "reference": "1997SoarerJZZ30VVT-i single-turbo1JZ-GTE5MT",
+            "documentId": "marsh-sowthistle-1997",
+            "runtimeId": "saved-car:Marsh Sowthistle 1997",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "EarlierJZX81 narrow1710mm four-doorplatform with2680mmwheelbase,preVVT-i twin-turbo torquepeak4800 and4AT differs fromlaterJZX100MarkII single-turboVVT-i5MT andSoarercoupe. Not a contemporaryMarkII/Chaser badge-only swap oryearpadding; noJZX81nativeidentity found.",
+        "evidence": [
+          "https://gazoo.com/catalog/maker/TOYOTA/CHASER/198904/1001290/",
+          "https://toyota.jp/ucar/catalog/brand-TOYOTA/car-CHASER/"
+        ]
+      },
+      "artHandoffStatus": "source-ready for shared-placeholder; original vehicle art pending",
+      "name": "Knotted Figwort 1991",
+      "id": "knotted-figwort-1991",
+      "simulationEstimates": {
+        "cgHeightM": 0.52,
+        "groundClearanceM": 0.155,
+        "dragCoefficient": 0.35,
+        "tireGrip": 0.9,
+        "spring": 0.48,
+        "antiRollRear": 0.25,
+        "suspensionTravelM": 0.18,
+        "frontOverhangM": 1.01,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": true,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.54,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 6.8,
+        "gearRatios": [
+          2.804,
+          1.531,
+          1,
+          0.705
+        ]
+      }
+    },
+    {
+      "candidateId": "mitsubishi-lancer-evolution-vi-gsr-1999-roster-candidate",
+      "identity": {
+        "year": 1999,
+        "make": "Mitsubishi",
+        "model": "Lancer Evolution VI GSR",
+        "trim": "January1999 GF-CP9A4G63turbo road5MT standard, notRS,TME orGroupA",
+        "market": "Japan"
+      },
+      "referenceVehicle": "1999 Japan Mitsubishi Lancer Evolution VI GSR GF-CP9A 1997cc4G63turbo AWD5MT road sedan1360kg; standardJanuary1999version, not2000TME,RS orMonteCarloGroupA",
+      "bodyClass": "four-door five-seat compact road sedan",
+      "facts": {
+        "powerKw": 206,
+        "powerRpm": 6500,
+        "torqueNm": 373,
+        "torqueRpm": 3000,
+        "engineDisplacementL": 1.997,
+        "aspiration": "Turbocharged",
+        "drivetrain": "awd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "curbKg": 1360,
+        "lengthM": 4.35,
+        "widthM": 1.77,
+        "heightM": 1.415,
+        "wheelbaseM": 2.51,
+        "trackFrontIn": 59.4488188976378,
+        "trackRearIn": 59.251968503937015,
+        "tireSize": [
+          225,
+          45,
+          17
+        ],
+        "reverseRatio": 3.416,
+        "finalDrive": 4.529,
+        "fuelTankUSgal": 13.20860261790742
+      },
+      "sources": [
+        {
+          "url": "https://gazoo.com/catalog/maker/MITSUBISHI/LANCER/199510/4003219/",
+          "publisher": "Toyota GAZOO historical Mitsubishi catalog; secondary compilation, not factoryengineering data",
+          "fields": [
+            "powerKw",
+            "powerRpm",
+            "torqueNm",
+            "torqueRpm",
+            "engineDisplacementL",
+            "aspiration",
+            "drivetrain",
+            "transmission",
+            "gearCount",
+            "curbKg",
+            "lengthM",
+            "widthM",
+            "heightM",
+            "wheelbaseM",
+            "trackFrontIn",
+            "trackRearIn",
+            "tireSize",
+            "reverseRatio",
+            "finalDrive",
+            "fuelTankUSgal"
+          ],
+          "access": "Read2026-11-18 exactJanuary1999GSR1360kg table;206kW6500/373Nm3000,5MT4.529final. No RS,TME orcompetition setup mixed."
+        },
+        {
+          "url": "https://www.mitsubishi-motors.com/en/company/history/car/",
+          "publisher": "Mitsubishi Motors official history",
+          "fields": [
+            "1999EvolutionVIidentity",
+            "dimensions",
+            "second-generationplatform",
+            "TME distinction"
+          ],
+          "access": "Read2026-11-18 primaryJanuary1999VI section confirms4350x1770x1415, revisedcooling/suspension. Titaniumturbine describedforRS only; TMEintroducedJanuary2000, notselectedGSR."
+        }
+      ],
+      "limits": [
+        "Genericfixed50percentrear AWD andlimited-slip approximation do NOT implement theGSR ActiveYawControl lateral rear torque transfer. NoACD/S-AWC/TME claim.",
+        "1360kgroadGSR280PS/373Nm intentionally differsfromHawkbitGroupAeventcar. Standardroadinterior/wheels/gearing, notracebody/sponsors orRS equipment.",
+        "Forwardgear ratios,redline/limiter,suspension/load/grip andperformance are estimates. All unsourced dynamics/interpolation/steering/brakes/transients are simulation assumptions. SharedRTG-001placeholder, nooriginalart/independentdriveclaim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "id": "hawkbit-1999",
+            "alias": "Hawkbit 1999",
+            "reference": "1999MonteCarlo EvoVI GroupAcompetition",
+            "documentId": "hawkbit-1999",
+            "runtimeId": "saved-car:Hawkbit 1999",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "cow-parsley-2008",
+            "alias": "Cow Parsley 2008",
+            "reference": "2008US EvoXGSR4B11T5MT",
+            "documentId": "cow-parsley-2008",
+            "runtimeId": "saved-car:Cow Parsley 2008",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "nightcoil-gt-1995",
+            "alias": "Nightcoil GT 1995",
+            "reference": "1995EclipseGSX4G63AWDcoupe",
+            "documentId": "nightcoil-gt-1995",
+            "runtimeId": "saved-car:Nightcoil GT 1995",
+            "scope": "current-runtime"
+          },
+          {
+            "id": "aconite",
+            "alias": "Aconite",
+            "reference": "Separateoldroster2006EvoIX5MT; excluded fromimport",
+            "scope": "separate-preserved-checkpoint"
+          },
+          {
+            "id": "white-deadnettle-1995",
+            "alias": "White Deadnettle 1995",
+            "reference": "1995first-generationCE9Aroad1260kg",
+            "documentId": "white-deadnettle-1995",
+            "runtimeId": "saved-car:White Deadnettle 1995",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "ExistingHawkbitVIis1999GroupAcompetition, not1360kgroadGSR; first-generationCE9AIII differs inplatform,width/tracks andengineinstallation fromsecond-generationCP9AVI. OlderAconiteIX isthird-generationCT9A; CowParsleyX isCZ4A4B11T. SelectingoneCP9Aroadrepresentative, not an adjacentVItrim oryear-onlyduplicate.",
+        "evidence": [
+          "https://gazoo.com/catalog/maker/MITSUBISHI/LANCER/199510/4003219/",
+          "https://www.mitsubishi-motors.com/en/company/history/car/"
+        ]
+      },
+      "artHandoffStatus": "source-ready for shared-placeholder; original vehicle art pending",
+      "name": "Purple Vetch 1999",
+      "id": "purple-vetch-1999",
+      "simulationEstimates": {
+        "cgHeightM": 0.49,
+        "groundClearanceM": 0.14,
+        "dragCoefficient": 0.34,
+        "tireGrip": 1.0,
+        "spring": 0.6,
+        "antiRollRear": 0.3,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0.1,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 260,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.59,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7300,
+        "topSpeedMph": 112,
+        "zeroToSixtySec": 5.2,
+        "gearRatios": [
+          2.928,
+          1.95,
+          1.407,
+          1.031,
+          0.72
+        ],
+        "centerDifferentialBalance": 0.5
+      }
+    },
+    {
+      "candidateId": "plymouth-barracuda-formula-s-1968-roster-candidate",
+      "identity": {
+        "year": 1968,
+        "make": "Plymouth",
+        "model": "Barracuda Formula S",
+        "trim": "340four-barrel V8 fastback,standard4MT,standard3.23openaxle,no383",
+        "market": "United States"
+      },
+      "referenceVehicle": "1968 US Plymouth Barracuda Formula S340 V8 fastback, four-speedmanual3.23openrearaxle;not383,notlaterE-bodyCuda orHemiSuperStock",
+      "bodyClass": "two-door-fastback-coupe",
+      "artIdentity": "Second-generationA-body fastback withlongslopingrear glass,smallnarrowbody,splitgrilleandroundheadlamps,shortrear deck,14-inch wheels; not1970E-bodyCuda,not1964hugebubbleglass.",
+      "facts": {
+        "engineDisplacementL": 5.57160176,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 4,
+        "gearRatios": [
+          2.66,
+          1.91,
+          1.39,
+          1
+        ],
+        "finalDrive": 3.23,
+        "lengthM": 4.89712,
+        "widthM": 1.8186399999999998,
+        "heightM": 1.3411199999999999,
+        "wheelbaseM": 2.7432,
+        "trackFrontIn": 57.4,
+        "trackRearIn": 55.6,
+        "fuelTankUSgal": 18,
+        "steeringRatio": 24,
+        "periodPublishedRatings": {
+          "advertisedPowerHp": 275,
+          "powerRpm": 5000,
+          "advertisedTorqueLbFt": 340,
+          "torqueRpm": 3200,
+          "ratingBasis": "Periodfactoryadvertisedbrakeoutput,notmodernnetcertification; retainseparatefrominstalledestimates."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://www.lov2xlr8.no/brochures/plymouth/68bar/bilder/6.jpg",
+          "publisher": "OriginalPlymouth/Chrysler factorybrochure archivedbylov2xlr8",
+          "fields": [
+            "340FormulaS275hp5000/340lbft3200",
+            "4MT2.66/1.91/1.39/1",
+            "standard3.23axle",
+            "fastbackgeometry",
+            "E70x14tires",
+            "18gal",
+            "FormulaSidentity"
+          ],
+          "access": "2026-11-18 originalspecificationimage visuallyreviewed,noOCR; sourcecropretainedlocally."
+        }
+      ],
+      "limits": [
+        "Installed225hp/285lbft areengineeringestimates,notmechanicalgross-to-netconversion. Periodbrochureoutput275/340 preservedseparately.",
+        "1450kgcurb explicitlyestimated; factoryinspectedpageprovidesnomass.52.8inV8fastbackheightisbasedonfive-passengerload,notunladenmeasurement.",
+        "E70x14biasbeltedoriginalapproximated195/70R14;loadedradiusandconstructionnotrecreated. Reverse2.59,performance,Cd,CG,suspension/steering/brakingandtorquecurveawayfrompeaks estimated.",
+        "SourcechartshowsoptionalSure-Grip; baseopen3.23selected,notoptional3.55/3.91. No Hemi or383transplant. SharedRTG001 only,nodrive/artcompletion.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [],
+        "distinction": "Currentnativecatalog pluswave41 authoredrows audited:noBarracudaFormulaS orA-body340fastback. Wave41ChallengerR/Tis1970largerE-body383bigblock/3MT,mechanicallydistinct; oldelevennone.",
+        "evidence": [
+          "https://www.lov2xlr8.no/brochures/plymouth/68bar/bilder/6.jpg"
+        ]
+      },
+      "name": "Bush Vetch 1968",
+      "id": "bush-vetch-1968",
+      "simulationEstimates": {
+        "reverseRatio": 2.59,
+        "cgHeightM": 0.54,
+        "groundClearanceM": 0.16,
+        "dragCoefficient": 0.49,
+        "tireGrip": 0.77,
+        "spring": 0.48,
+        "antiRollRear": 0.18,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.9,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 430,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.55,
+        "redlineRpm": 5800,
+        "revLimitRpm": 6100,
+        "topSpeedMph": 120,
+        "zeroToSixtySec": 7.1,
+        "powerHp": 225,
+        "powerRpm": 5000,
+        "torqueLbFt": 285,
+        "torqueRpm": 3200,
+        "curbKg": 1450,
+        "tireSize": [
+          195,
+          70,
+          14
+        ],
+        "transmissionLabel": "4-speed manual (factory ratios; estimated shift calibration)"
+      }
+    },
+    {
+      "candidateId": "plymouth-fury-1958-roster-candidate",
+      "identity": {
+        "year": 1958,
+        "make": "Plymouth",
+        "model": "Fury",
+        "trim": "two-doorhardtop,standardDualFuryV800318dual-four-barrelV8,standard3MT,3.73highperformanceaxle;notGoldenCommando350",
+        "market": "United States"
+      },
+      "referenceVehicle": "1958 US Plymouth Fury two-doorhardtop,standard318cuin DualFuryV800 two-four-barrelV8,three-speedmanual and3.73highperformancechassisaxle;not305hp350GoldenCommando,not1957model",
+      "bodyClass": "two-door-hardtop-coupe",
+      "artIdentity": "1958ForwardLookfullsizepillarlesshardtop,verytallrear fins,quadheadlights,broadchromebumpers,longlowroof,large14-inchcoveredwheels;fictionallogo-freecolors,nofilmreplica.",
+      "facts": {
+        "engineDisplacementL": 5.211086352,
+        "aspiration": "Naturally aspirated",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 3,
+        "finalDrive": 3.73,
+        "lengthM": 5.19684,
+        "widthM": 1.98628,
+        "heightM": 1.3716,
+        "wheelbaseM": 2.9972,
+        "fuelTankUSgal": 20,
+        "steeringRatio": 26.8,
+        "periodPublishedRatings": {
+          "advertisedPowerHp": 290,
+          "powerRpm": 5200,
+          "advertisedTorqueLbFt": 330,
+          "torqueRpm": 3600,
+          "ratingBasis": "Factoryperiodadvertisedhorsepower/torque;sourcehasnoaccessorytestdefinition,notmodernSAEnet."
+        }
+      },
+      "sources": [
+        {
+          "url": "https://www.lov2xlr8.no/brochures/plymouth/ply8/bilder/10.jpg",
+          "publisher": "OriginalPlymouth/Chrysler factorybrochure archivedbylov2xlr8",
+          "fields": [
+            "FuryexclusiveDualFuryV800318290hp5200/330lbft3600",
+            "twofourbarrel",
+            "manual3MT",
+            "highperformance3.73axle",
+            "dimensions",
+            "20gal",
+            "Fury8.00x14tires",
+            "torsionbarfrontleafrear"
+          ],
+          "access": "2026-11-18 originalspecificationimage visuallyreviewed,noOCR; sourcecropretainedlocally."
+        }
+      ],
+      "limits": [
+        "Installed235hp/285lbft areexplicitestimates;preserveperiod290/330separately,nofalsegross-to-netcertification.",
+        "1750kgoperatingcurb estimated; printedshippingweightsapply4doorsedans,NOTFuryhardtopandNOTcurb. Noothermodelmassborrowedasfact.",
+        "54inheightisfactoryLADENtwo-doorhardtop dimension. Tracks60.9/59.6in,groundclearance,CG anddistributionareexplicitgeometryestimates.",
+        "Factory8.00x14nylonFurytires approximated215/75R14;geometry/constructionnotexact.3MTinternalratios2.57/1.83/1 and3.35reverseestimated,notverifiedsheet.",
+        "FactoryV8manualhighperformancechassis3.73selected,notbase3.54,automatic3.31oroverdrive. NoTorqueFlitepushbuttonsimulationneeded. Performance/curve/grip/brakescalibration estimated; sharedRTG001,nodriveclaim.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [],
+        "distinction": "No1958FuryorForwardLookPlymouthincurrentcatalog.1955Chevroletutilitysedanunrelatedplatform/inline-six;wave41Dodge383E-body/1970 isdifferentera/body/powertrain. Oldelevennone.",
+        "evidence": [
+          "https://www.lov2xlr8.no/brochures/plymouth/ply8/bilder/10.jpg"
+        ]
+      },
+      "name": "Bithynian Vetch 1958",
+      "id": "bithynian-vetch-1958",
+      "simulationEstimates": {
+        "reverseRatio": 3.35,
+        "cgHeightM": 0.54,
+        "groundClearanceM": 0.16,
+        "dragCoefficient": 0.49,
+        "tireGrip": 0.77,
+        "spring": 0.48,
+        "antiRollRear": 0.18,
+        "suspensionTravelM": 0.17,
+        "frontOverhangM": 0.95,
+        "rearDifferentialAccel": 0,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 430,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.55,
+        "redlineRpm": 5500,
+        "revLimitRpm": 5800,
+        "topSpeedMph": 115,
+        "zeroToSixtySec": 9.3,
+        "powerHp": 235,
+        "powerRpm": 5200,
+        "torqueLbFt": 285,
+        "torqueRpm": 3600,
+        "curbKg": 1750,
+        "gearRatios": [
+          2.57,
+          1.83,
+          1
+        ],
+        "tireSize": [
+          215,
+          75,
+          14
+        ],
+        "trackFrontIn": 60.9,
+        "trackRearIn": 59.6
+      }
+    },
+    {
+      "candidateId": "fiat-dino-2-4-coupe-1969-roster-candidate",
+      "bodyClass": "coupe",
+      "identity": {
+        "year": 1969,
+        "make": "Fiat",
+        "model": "Dino 2400 Coupe",
+        "trim": "Italian Bertone2+2 coupe2.4NA V6 ZF5MT",
+        "market": "Italy"
+      },
+      "referenceVehicle": "1969 Italian Fiat Dino2400 Bertone coupe2+2,front-engine2.4NA V6,RWD ZFfive-speed; notDinoSpider,earlier2.0,FerrariDino246 orStratos.",
+      "facts": {
+        "powerKw": 132.389775,
+        "publishedPowerPS": 180,
+        "powerRpm": 6600,
+        "torqueNm": 216,
+        "torqueRpm": 4600,
+        "engineDisplacementL": 2.419,
+        "transmission": "manual",
+        "gearCount": 5
+      },
+      "sources": [
+        {
+          "url": "https://www.media.stellantis.com/it-it/heritage-hub-italy/press/fca-heritage-fa-ritorno-al-salon-retromobile",
+          "publisher": "Stellantis/FCA Heritage",
+          "fields": [
+            "FiatDinoCoupeBertone",
+            "2.4version180metricCV"
+          ],
+          "access": "Italianfactoryhistoricaltext read2026-11-18;2.0/160CV distinguishedfrom2.4/180CV."
+        },
+        {
+          "url": "https://www.museomotori.unipa.it/scheda.php?id=53",
+          "publisher": "University of Palermo Museum of Engines, primary technical record of retainedFiat135Cengine",
+          "fields": [
+            "1969\u20131972FiatDino2400application",
+            "2419cc",
+            "180CV6600",
+            "216Nm4600",
+            "ZF5MT"
+          ],
+          "access": "Museum object technical record read2026-11-18;Fiat135C.000 identification. Not genericdealerdata."
+        }
+      ],
+      "limits": [
+        "180CV metric, not180SAEhp. Universitymuseum2419cc record retained; commonrounded2418/2400 labels not mixed withFerrari transverse tune.",
+        "1400kgestimatedwet mass; no verified curb basis. All suggestedEstimates includinggeometry, tires, gearing, loadsplit, suspension, aero andperformance provisional.",
+        "Front-engineBertone2+2coupe, no borrowedStratosrace enginecurve. SharedRTG-001artonly.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Storksbill 1977",
+            "documentId": "storksbill-1977",
+            "runtimeId": "saved-car:Storksbill 1977",
+            "reference": "1977MonteCarlo LanciaStratosHFGroup4 DinoV6",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Madder 1969",
+            "documentId": "madder-1969",
+            "runtimeId": "saved-car:Madder 1969",
+            "reference": "Fiat1281116ccFWDsedan",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Fiatfront-engine2+2roadGT180CV withlongwheelbase andZFgearbox differs materially frommid-engineDino-poweredStratosracecar andordinaryFiat128.",
+        "evidence": [
+          "https://www.media.stellantis.com/it-it/heritage-hub-italy/press/fca-heritage-fa-ritorno-al-salon-retromobile",
+          "https://www.museomotori.unipa.it/scheda.php?id=53"
+        ],
+        "audit": "Wave41nativecatalogpluswave41five treatedimplemented; noexactDinoCoupe. Backlogslotconfirmed inpreviousfullinventory."
+      },
+      "name": "Hairy Tare 1969",
+      "id": "hairy-tare-1969",
+      "simulationEstimates": {
+        "reverseRatio": 3.0,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.15,
+        "dragCoefficient": 0.39,
+        "tireGrip": 0.83,
+        "spring": 0.47,
+        "antiRollRear": 0.1,
+        "suspensionTravelM": 0.19,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.25,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 500,
+        "absEnabled": false,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.52,
+        "redlineRpm": 7000,
+        "revLimitRpm": 7200,
+        "aspiration": "Naturally aspirated",
+        "fuelTankUSgal": 17.2,
+        "topSpeedMph": 127,
+        "zeroToSixtySec": 8.0,
+        "bodyClass": "coupe",
+        "drivetrain": "rwd",
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "transmissionLabel": "ZFfive-speed manual; ratios provisional",
+        "curbKg": 1400,
+        "lengthM": 4.51,
+        "widthM": 1.71,
+        "heightM": 1.315,
+        "wheelbaseM": 2.55,
+        "trackFrontIn": 55.2,
+        "trackRearIn": 54.6,
+        "tireSize": [
+          205,
+          70,
+          14
+        ],
+        "gearRatios": [
+          3.143,
+          1.958,
+          1.367,
+          1.1,
+          0.875
+        ],
+        "finalDrive": 3.73
+      }
+    },
+    {
+      "candidateId": "aston-martin-v8-vantage-v600-1998-roster-candidate",
+      "bodyClass": "coupe",
+      "identity": {
+        "year": 1998,
+        "make": "Aston Martin",
+        "model": "V8 Vantage V600",
+        "trim": "UK WorksService600bhp twin-superchargedV8 roadcoupe,manual representativepackage",
+        "market": "United Kingdom"
+      },
+      "referenceVehicle": "1998 UK AstonMartin WorksServiceV8VantageV600 twin-supercharged roadcoupe,representative manual conversion; not2018V12V600,LeMansedition orordinary550bhpVantage.",
+      "facts": {
+        "powerHp": 600
+      },
+      "sources": [
+        {
+          "url": "https://media.astonmartin.com/the-legend-lives-on-aston-martin-v600-reborn/?lang=eng",
+          "publisher": "Aston Martin factory2018release",
+          "fields": [
+            "1998originalV8V600",
+            "superchargedV8",
+            "600bhp"
+          ],
+          "access": "Factoryexplicitretrospective1998paragraph read2026-11-18; later2018V12is600PSandnotused."
+        },
+        {
+          "url": "https://media.astonmartin.com/v8-vantage/?lang=eng&pubDate=20251204",
+          "publisher": "AstonMartin factoryhistoricalmodel",
+          "fields": [
+            "WorksServiceupgradeidentity",
+            "twin-superchargerbase",
+            "600bhpupgrade",
+            "upratedbrakes/suspension"
+          ],
+          "access": "Historicaldescription read2026-11-18; confirms conversionpackage notseparateunmodifiedproductiontrim."
+        }
+      ],
+      "limits": [
+        "600bhp originalV8factoryclaim, not2018V12 600PS. No claimedexactconversiondate,chassis oruniformfactorysix-speed specification.",
+        "WorksServiceV600 is post-registrationupgrade;1998 isfactoryconfirmedofferdate. Manualfive-speed selection representative, notassertionallV600hadfivegears.",
+        "All suggestedEstimates, including5.34L, RPM/813Nm,1990kgwetmass,tire/geometry/ratios and200mph/4.4smodeltargets are provisional ratherthannewlyverifiedfactorydata. No automatic orlaterV12 mixing.",
+        "Twin-supercharger identified butsingle authoredtorquecurve approximatesboost;nonewglobalruntime. SharedRTG-001artonly.",
+        "Shared RTG-001 art references only; no original graphics or independent browser-driving completion claimed. All simulationEstimates, five-point torque curve, damping and unspecified steering/braking calibration are estimates rather than measured factory data."
+      ],
+      "relationshipAudit": {
+        "existingRelated": [
+          {
+            "alias": "Yellow Vetchling 2013",
+            "documentId": "yellow-vetchling-2013",
+            "runtimeId": "saved-car:Yellow Vetchling 2013",
+            "reference": "NAv12VantageS7AMT",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Spiny Restharrow 2001",
+            "documentId": "spiny-restharrow-2001",
+            "runtimeId": "saved-car:Spiny Restharrow 2001",
+            "reference": "VanquishNAv12ASM",
+            "scope": "current-runtime"
+          },
+          {
+            "alias": "Herb Bennet 1964",
+            "documentId": "herb-bennet-1964",
+            "runtimeId": "saved-car:Herb Bennet 1964",
+            "reference": "DB5NAstraight-six",
+            "scope": "current-runtime"
+          }
+        ],
+        "distinction": "Heavy1990sWorksconvertedtwinsuperchargedV8manual coupe usesdifferentengine/platform/body thanexistingNAv12Vantage/Vanquish orDB5. Notyear/badgepadding.",
+        "evidence": [
+          "https://media.astonmartin.com/the-legend-lives-on-aston-martin-v600-reborn/?lang=eng",
+          "https://media.astonmartin.com/v8-vantage/?lang=eng&pubDate=20251204"
+        ],
+        "audit": "Wave41nativecatalogandwave41five consideredimplemented; noV8V600exactmatch. Exact660slotconfirmedpreviousfullinventory."
+      },
+      "name": "Smooth Tare 1998",
+      "id": "smooth-tare-1998",
+      "simulationEstimates": {
+        "reverseRatio": 2.9,
+        "cgHeightM": 0.48,
+        "groundClearanceM": 0.13,
+        "dragCoefficient": 0.39,
+        "tireGrip": 0.97,
+        "spring": 0.55,
+        "antiRollRear": 0.2,
+        "suspensionTravelM": 0.19,
+        "frontOverhangM": 0.8,
+        "rearDifferentialAccel": 0.35,
+        "frontDifferentialAccel": 0,
+        "aeroFront": 0,
+        "aeroRear": 0,
+        "shiftTimeMs": 450,
+        "absEnabled": true,
+        "tractionControlEnabled": false,
+        "wheelWellAware": true,
+        "frontWeightDistribution": 0.53,
+        "redlineRpm": 6500,
+        "revLimitRpm": 6800,
+        "aspiration": "Supercharged",
+        "fuelTankUSgal": 27.7,
+        "topSpeedMph": 200,
+        "zeroToSixtySec": 4.4,
+        "bodyClass": "coupe",
+        "drivetrain": "rwd",
+        "transmission": "manual",
+        "gearCount": 5,
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "transmissionLabel": "representativefive-speedmanual V600 conversion; gearingestimated",
+        "torqueNm": 813,
+        "torqueRpm": 4400,
+        "curbKg": 1990,
+        "lengthM": 4.745,
+        "widthM": 1.944,
+        "heightM": 1.33,
+        "wheelbaseM": 2.61,
+        "trackFrontIn": 59.4,
+        "trackRearIn": 60.0,
+        "tireSize": [
+          285,
+          45,
+          18
+        ],
+        "gearRatios": [
+          2.68,
+          1.8,
+          1.29,
+          1,
+          0.75
+        ],
+        "finalDrive": 3.54,
+        "engineDisplacementL": 5.34,
+        "powerRpm": 6500,
+        "torqueLbFt": 599.638027362417
+      }
+    }
+  ],
+  "deferred": []
+}

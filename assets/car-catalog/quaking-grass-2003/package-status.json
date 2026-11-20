@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "quaking-grass-2003",
+  "name": "Quaking Grass 2003",
+  "stableCarId": "saved-car:Quaking Grass 2003",
+  "referenceVehicle": "2003 Volkswagen Golf IV R32 Europe3.2 VR6 4MOTION three-door6MT",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "f4a2f112dbe5fd31a71317a809ef32a2615537b270ec6886b197fd5d5575d32a",
+    "dashboard": "3a43ffc2d8b1345684c538154a55ad7788612f0db588a9449410ce661d3fd3ad",
+    "tires": "2d8b6931f02699e59ea39486882bfe2127433daf19b01988b5fe3837c392499c"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

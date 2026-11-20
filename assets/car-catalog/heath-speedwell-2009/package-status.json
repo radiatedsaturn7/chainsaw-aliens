@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "heath-speedwell-2009",
+  "name": "Heath Speedwell 2009",
+  "stableCarId": "saved-car:Heath Speedwell 2009",
+  "referenceVehicle": "2009 US BMW M5 Sedan E60 5.0 naturally aspirated V10 six-speed manual; not E39/E34 or SMG",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": null,
+  "sourceHashes": {
+    "body": "2ef17010f5dbff36ce4a6f6075c2a1ff44a8fa2ae133f1b93a4fc644205cecbf",
+    "dashboard": "45ebb44b2e817658a67f398994975d6498e222acf2f3c6475fa40e676861fe71",
+    "tires": "f8fb657449810a1421a8c7c7b3b1be2d0caa7f275bb64852d2054e071b41b524"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false
+}

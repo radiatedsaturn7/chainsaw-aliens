@@ -1,0 +1,163 @@
+{
+  "id": "bogmyrtle-2018",
+  "name": "Bogmyrtle 2018",
+  "rosterCommit": "40ed6400fd2de4e309b7b8216e2350922ecfa63b",
+  "expectedDocumentSha256": "fe1ee48cedd3f5a5fe9d0c635b137b61164ccff99bd0e277d28b3f4f76638837",
+  "sourceDirectory": "assets/car-catalog/bogmyrtle-2018",
+  "sourceHashes": {
+    "body": "7b6a505236bc4a24cf15b4e603c09955bf2beef54279255e24d8e5ec7406b254",
+    "dashboard": "1b9368f5fde207a7fce656a3e190a09e9041dc965934ac6529020e122cc3022f",
+    "tires": "6ee977d888f26e9d8af407e98a2da5b34d18fe2bce305c5bab41136f144e75c8"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 102.89,
+        "y": 335.29,
+        "radius": 40.8
+      },
+      {
+        "wheel": "fr",
+        "x": 338.83,
+        "y": 335.29,
+        "radius": 40.8
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 649.28,
+        "y": 314.0,
+        "radius": 40.8
+      },
+      {
+        "wheel": "rr",
+        "x": 824.91,
+        "y": 287.39,
+        "radius": 31.93
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 952.64,
+        "y": 741.53,
+        "radius": 44.35
+      },
+      {
+        "wheel": "rr",
+        "x": 1236.48,
+        "y": 739.76,
+        "radius": 44.35
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 463.01,
+        "y": 736.21,
+        "radius": 31.93
+      },
+      {
+        "wheel": "rr",
+        "x": 620.9,
+        "y": 752.18,
+        "radius": 42.58
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 104.67,
+        "y": 768.14,
+        "radius": 40.8
+      },
+      {
+        "wheel": "rl",
+        "x": 338.83,
+        "y": 768.14,
+        "radius": 40.8
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 1578.86,
+        "y": 312.22,
+        "radius": 42.58
+      },
+      {
+        "wheel": "fl",
+        "x": 1738.52,
+        "y": 287.39,
+        "radius": 31.93
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 981.02,
+        "y": 306.9,
+        "radius": 44.35
+      },
+      {
+        "wheel": "fl",
+        "x": 1266.64,
+        "y": 305.13,
+        "radius": 44.35
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1383.72,
+        "y": 725.57,
+        "radius": 31.93
+      },
+      {
+        "wheel": "fl",
+        "x": 1536.28,
+        "y": 755.72,
+        "radius": 42.58
+      }
+    ]
+  },
+  "wheelFit": "average",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      159,
+      480,
+      466,
+      178
+    ],
+    "wheel": [
+      541,
+      769,
+      323
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e2e9e8",
+    "viewportWheelScale": 2.02,
+    "gaugeBackground": "#111111"
+  },
+  "steeringWheelSource": {
+    "artRef": "steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementNotes": "Individual source atlas and dashboard inspected on 1000x500 body / 1000x400 dash preview. Original-pixel coordinates; wheel hubs estimated at arch circle centers. Runtime render review still required."
+}

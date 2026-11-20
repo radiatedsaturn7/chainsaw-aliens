@@ -1,0 +1,48 @@
+{
+  "id": "source-peach-clover-2009",
+  "name": "Peach Clover 2009",
+  "mapping": [
+    0,
+    1,
+    2,
+    5,
+    4,
+    3,
+    6,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1774,
+      887
+    ],
+    "cluster": [
+      213,
+      532,
+      426,
+      177
+    ],
+    "wheel": [
+      426,
+      834,
+      284
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e7e6de"
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/BMW/1%20Series/BMW_US%201SeriesCoupe_2009.pdf",
+      "fields": [
+        "exact identity and visual configuration"
+      ]
+    }
+  ],
+  "runtimeDocumentId": "peach-clover-2009",
+  "runtimeDocumentIdVerified": true,
+  "stableCarId": "saved-car:Peach Clover 2009",
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
+}

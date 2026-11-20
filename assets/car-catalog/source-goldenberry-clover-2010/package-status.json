@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "source-goldenberry-clover-2010",
+  "name": "Goldenberry Clover 2010",
+  "stableCarId": "saved-car:Goldenberry Clover 2010",
+  "referenceVehicle": "US 2010 Acura ZDX base 3.7 V6 SH-AWD, 6AT. Five-door five-seat coupe-roof crossover, no Technology/Advance package.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "goldenberry-clover-2010",
+  "sourceHashes": {
+    "body": "9775851abee5b43f2167c879799bcd99b0dc6a16390d5616b775711cd0469291",
+    "dashboard": "8f2d52edd8fd0902886cee7879f9621202fb61e8b553a80d824ed03faa89cc2a",
+    "tires": "332d10286cb084f21555d283d27c6dc7e059bfa1cb7d6c82ab638fdbf0c8bcbf"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
+}

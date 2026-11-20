@@ -1,0 +1,72 @@
+{
+  "id": "red-bartsia-2015",
+  "name": "Red Bartsia 2015",
+  "stableCarId": "saved-car:Red Bartsia 2015",
+  "candidateId": "jaguar-xfr-s-2015-roster-candidate",
+  "referenceVehicle": "2015 UK Jaguar XFR-S X250 four-door saloon,5.0 superchargedV8 550PS680Nm RWD eight-speed Quickshift automatic; not Sportbrake,XKR-S,F-TYPE R or laterXF generation.",
+  "identity": {
+    "year": 2015,
+    "make": "Jaguar",
+    "model": "XFR-S",
+    "trim": "UK X250 5.0 superchargedV8 saloon RWD8AT, standard small bootlid spoiler",
+    "market": "United Kingdom"
+  },
+  "bodyClass": null,
+  "staged": false,
+  "status": "placeholder",
+  "identityStatus": "handoff-ready",
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "tiresPng": "tires.png",
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      1348,
+      468,
+      397,
+      127
+    ],
+    "wheel": [
+      1547,
+      753,
+      297
+    ],
+    "wheelOpening": false,
+    "gaugeColor": "#e2e9e8"
+  },
+  "sources": [
+    {
+      "url": "https://media.jlr.com/jaguar/news/2012/11/jaguar-xfr-s-unveiled-los-angeles-auto-show-2012",
+      "fields": [
+        "550metricPS",
+        "torqueNm",
+        "engineDisplacementL",
+        "gearCount",
+        "topSpeedMph",
+        "RWDsaloonidentity"
+      ]
+    },
+    {
+      "url": "https://media.jlr.com/corporate/news/2014/02/jaguars-2015-model-year-xf-range-be-unveiled-geneva-international-motor-show-2014",
+      "fields": [
+        "2015MYXFRSsaloon",
+        "powerRpm",
+        "torqueRpm",
+        "torquePlateauEndRpm"
+      ]
+    }
+  ]
+}

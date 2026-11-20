@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "source-bergamot-clover-2013",
+  "name": "Bergamot Clover 2013",
+  "stableCarId": "saved-car:Bergamot Clover 2013",
+  "referenceVehicle": "GermanyMY2013 Opel Mokka entry1.6ecoFLEX115,FWD,5MT. First-generation five-door SUV,standardroof/basewheels,notMokkaX,MokkaB orturboAWD.",
+  "runtimeDocumentIdVerified": true,
+  "runtimeDocumentId": "bergamot-clover-2013",
+  "sourceHashes": {
+    "body": "41edab859d04af57919088c4b3bd53c775f2e32ea0327dde22bcf0322ce9ecec",
+    "dashboard": "7bf54842d02d375c27a28ebde116b40e48c3a0b17e0cf365433f78df4bbf7c2a",
+    "tires": "d6ea59b5aea6b81bffadb612815b4f6c121da3edca4964fd023210da29578e09"
+  },
+  "mapping": [
+    0,
+    1,
+    6,
+    5,
+    4,
+    3,
+    2,
+    7
+  ],
+  "status": "source-ready-native-regeneration-required",
+  "productionIntegrated": false,
+  "gameplayAccepted": false,
+  "runtimeBindingNote": "Exact saved-car name and decoded native car.id verified against combined input checkpoint 791a8250e08726a0c5b8d0beff18ce479cc45276; package key remains separate."
+}
