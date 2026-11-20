@@ -15,6 +15,9 @@
 | 10 Oak Creek | She repairs, cares and returns; he recognizes it yet argues | His uselessness fear and love-language need collide | Why won't he accept what she has shown? | Neither the words nor actions exhaust the truth |
 | 11 Angeles Crest / Pacific | Their promise reaches its geographic end | RESERVED | RESERVED | Earlier map and “come back” lines can be reconsidered |
 
+## New interpretive layer — Heaven's emotional polish
+Mission 06 introduces Rob's account of overly agreeable, script-like former friends. This is his judgment, not a confirmed loss of identity. The audience should first encounter Evelyn as a recognizably warm, idiosyncratic person. Mission 07 supplies an android that can easily say “I love you” by obedience, while Cait's refusal later makes her frustratingly *authentic* to Rob. This is a deliberate paradox for the player's second reading, documented in [The Reverse Turing Test](WORLD_LORE/REVERSE_TURING_TEST.md).
+
 ## Three revelation clocks (write these before scripting)
 
 **Historical clock shared by all three:** The upload migration took a few years, around ten years before the game's 2994 setting. Players should encounter evidence of a *recent* exodus (intact everyday objects, forgotten recent messages, working automation) rather than an ancient extinction.
