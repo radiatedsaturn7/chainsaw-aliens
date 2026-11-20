@@ -20,9 +20,9 @@ for(const mobile of [false,true])test(`Brooklime ${mobile?'handheld touch':'desk
  };
  const distanceForward=(first.targetIndex-first.selectedIndex+first.totalChoices)%first.totalChoices,distanceBackward=(first.selectedIndex-first.targetIndex+first.totalChoices)%first.totalChoices;
  for(let i=0;i<Math.min(distanceForward,distanceBackward);i++){await navigate(distanceForward<=distanceBackward?1:-1);await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));if(i%5===4)await menuReady();}await menuReady();
- // car() can start an asynchronous garage build after the request queue empties.
- await expect.poll(async()=>{const s=await snapshot();return {id:s.carId,artReady:s.art.length>0&&s.art.every(a=>a.ready)};},{timeout:90000}).toEqual({id:'brooklime-2003',artReady:true});
- const later=await snapshot();expect(later.selected).toBe('Brooklime 2003');expect(later.start).toBeGreaterThan(0);expect(later.visible).toContain('Brooklime 2003');later.thumbnail=await expectThumbnailOnCanvas(page,qa,later.selected);qa.assertBrowseCold();expect(later.errors).toEqual([]);await page.screenshot({path:info.outputPath('picker-later.png')});fs.writeFileSync(info.outputPath('picker.json'),JSON.stringify({first,later},null,2));
+ // Wait for the target's decoded atlas to be drawn without loading its original art.
+ const laterThumbnail=await expectThumbnailOnCanvas(page,qa,'Brooklime 2003');
+ const later=await snapshot();expect(later.selected).toBe('Brooklime 2003');expect(later.start).toBeGreaterThan(0);expect(later.visible).toContain('Brooklime 2003');later.thumbnail=laterThumbnail;qa.assertBrowseCold();expect(later.errors).toEqual([]);await page.screenshot({path:info.outputPath('picker-later.png')});fs.writeFileSync(info.outputPath('picker.json'),JSON.stringify({first,later},null,2));
  qa.choose();
  const runtimeArt=await page.evaluate(async()=>{const g=window.__game,selected=g.menuPlayer.flow.parameters.carRef;g.menuPlayer.flow.stop();g.enterRaceEditor();g.setDisplayMode('color');const e=g.raceEditor;const {hydrateProjectFilePayload}=await import('/src/ui/projectFiles.js');const p=await hydrateProjectFilePayload('cars',selected);e.applyLoadedCarDocument(p.data,{name:'Brooklime 2003'});const refs=new Set();const walk=v=>{if(!v||typeof v!=='object')return;if(v.artRef)refs.add(v.artRef);Object.values(v).forEach(walk);};walk(e.selectedCar.art);const loaded=[];for(const ref of refs)if(await e.hydrateRaceArt(ref))loaded.push(ref);
  // In-memory straight test route; no saved race edits or physics substitutions.
