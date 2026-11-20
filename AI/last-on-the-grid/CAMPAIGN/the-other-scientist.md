@@ -1,6 +1,8 @@
 # The Other Scientist — Encounter Draft
 > REVIEW DRAFT · Discussed November 10, 2026 · Location not locked
 
+> **Origin distinction (approved November 20):** Cait's awakening and first rescue are documented in [Cait's Awakening](../ORIGIN_CAIT_AWAKENING.md). At an earlier gas station, Rob **does not rescue Cait**; she saves him from indifferent automation after they arrive separately. The door/maintenance-lift rescue in this file occurs much later at the other scientist's location and must never be merged into that gas station sequence. Rob sought companionship but Cait's consciousness was not a knowingly achieved, precisely controlled design feature.
+
 ## Purpose
 Contrast a scientist who built an android for obedience and personal gratification with Rob, who created Cait seeking genuine companionship and gave her the ability to choose and disobey. The payoff is not a speech about free will: Cait's disobedience **saves Rob's life**.
 

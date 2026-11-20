@@ -21,7 +21,7 @@ A worker machine reacts to Cait's request with cheerful procedural language. Cai
 Rob wants a usable component and a way through. Cait wants to solve the ridiculous scheduling problem and is curious about the machines as neighbors, not curiosities.
 
 ## Consequence / next chapter
-The functioning delivery system is maintained from an active computing complex. Following its service network or seeking a scarce part leads them to Data Center City. **Geography issue:** the current route puts Ozark Backroads before St. Louis, which can require backtracking east. Present this as a deliberate detour for the service network, or revise location order after map review.
+The functioning delivery system is maintained from an active computing complex in St. Louis. **Geography fix:** Stage this mission in the **eastern Ozark foothills / St. Francois Mountains around Farmington, Missouri**, on a deliberate southwesterly supply detour from the Ohio crossing via southern Illinois. The service-network route then turns **northwest to St. Louis**, not eastward back across Missouri. The detour pays for itself with fuel, replacement parts and access credentials. Update the corresponding in-game race placement/map in a separate implementation pass.
 
 ## Second reading
 The dispatcher can say “How may I help you?” indefinitely, without wanting anything. The distinction will become nastier in the other scientist's barn, and more personal when Rob mistakes his own usefulness for the reason Cait stays.
