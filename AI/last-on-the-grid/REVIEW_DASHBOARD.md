@@ -4,6 +4,9 @@
 ## World history update (November 18)
 The mass upload into Heaven is now a **rapid Ascension**, over a few years, with Rob effectively the last biological human outside for **roughly ten years** by 2994. The illustrative 2980–2984 dates remain provisional. The new historical premise resolves the old Rob/Evelyn lifespan problem without adding immortality. See [The Ascension](WORLD_LORE/THE_ASCENSION.md) and the revised [Heaven dialogue benchmark](LITERARY_COMPANION/SCENE_BENCHMARK_HEAVEN.md), with [its original safely archived](ARCHIVE/HEAVEN_BENCHMARK_PRE_ASCENSION_2026-11-17.md).
 
+## New story decision (November 18): Rob's rejection of perfect reassurance
+Rob remained outside not simply to endure the physical world, but because **Heaven made familiar people seem too agreeable and scripted to him**. This introduces the [Reverse Turing Test](WORLD_LORE/REVERSE_TURING_TEST.md) and the central irony of Rob rejecting perfected reassurances but demanding verbal reassurance from Cait. **Keep Heaven's residents potentially real, happy and changed by choice**; this remains an interpretive conflict, not a “replaced by machines” reveal.
+
 ## Read in this order
 1. [Narrative Constitution](NARRATIVE_CONSTITUTION.md) — what we're trying to write, and how we'll tell whether it works.
 2. [Narrative Blueprint](NARRATIVE_BLUEPRINT.md) — the complete eleven-mission throughline.
