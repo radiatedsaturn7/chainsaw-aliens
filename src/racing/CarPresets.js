@@ -29,6 +29,8 @@ const legacyPresetFiles = {
   '2022 Subaru BRZ': 'subaru-brz-2022',
   '2023 Honda Civic Type R': 'honda-civic-type-r-2023'
 };
+export const LEGACY_PROJECT_CAR_PRESET_NAMES=Object.freeze(Object.keys(legacyPresetFiles));
+
 export function isSystemCarDocument(document, name = '') {
   const car = document?.car || document;
   return document?.systemFile === true || car?.systemFile === true

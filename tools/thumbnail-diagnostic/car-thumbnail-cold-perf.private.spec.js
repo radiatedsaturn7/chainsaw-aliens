@@ -23,7 +23,7 @@ for(const [name,p] of Object.entries(storage.folders.cars)){
  for(const x of ['shell','body','artRef','tires'])if(typeof car.art?.[x]==='string')refs.add(car.art[x]);
  walk(car.art?.tireSurfaces,refs);
  for(const ref of refs)if(storage.folders.art[ref])full.add(storage.folders.art[ref]);
- identity[name]={id:car.id,documentSHA:sha(bytes),refs:[...refs],path:p,dashboard:car.art?.interior?.dashboard?.artRef};
+ identity[name]={id:car.id,documentSHA:sha(bytes),refs:[...refs],path:p,dashboard:car.art?.interior?.dashboard?.artRef,frontBody:car.art?.angleLayers?.front?.body?.artRef,wheel:car.art?.tireSurfaces?.wheel?.artRef};
 }
 const posterPart=new Set(Object.values(thumbnails?.previews||{}).map(x=>x.poster?.url).filter(Boolean));
 const atlasPart=new Set(Object.values(thumbnails?.previews||{}).map(x=>x.url));
@@ -157,9 +157,9 @@ async function next(page,mobile){
 }
 async function exportProof(info,probe,metrics){
  const net=await probe.snapshot();
+ await info.attach('cold-thumbnail-telemetry',{body:Buffer.from(JSON.stringify({schema:1,variant:mode,metrics,network:net,pageErrors:probe.errors},null,2)),contentType:'application/json'});
  if(mode==='B')expect(net.rows.filter(r=>r.kind==='full-body-tire'&&r.phase!=='confirmed-open')).toEqual([]);
  expect(probe.errors).toEqual([]);
- await info.attach('cold-thumbnail-telemetry',{body:Buffer.from(JSON.stringify({schema:1,variant:mode,metrics,network:net},null,2)),contentType:'application/json'});
 }
 for(const mobile of [false,true])test(`thumbnail cold Select Car and true page-turn ${mobile?'handheld':'desktop'}`,async({browser,baseURL},info)=>{
  const p=await newProbe(browser,baseURL,mobile),{page}=p;
@@ -189,8 +189,15 @@ for(const kind of ['load','save-as'])test(`thumbnail cold editor Cars ${kind}`,a
   p.phase('editor-list');const start=await browserNow(page);
   await page.evaluate(async kind=>{
    const {openProjectBrowser}=await import('/src/ui/ProjectBrowserModal.js');
-   window.__perfModalResult=null;
-   void openProjectBrowser({fixedFolder:'cars',mode:kind==='save-as'?'saveAs':'open'}).then(x=>{window.__perfModalResult=x;});
+   const g=window.__game;
+   window.__perfModalResult=undefined;
+   // Actual row-click invokes the ordinary editor's application callback,
+   // but don't enter/render an unrelated editor car behind the cold modal.
+   const onOpen=kind==='load'?({name,payload})=>{
+    g.enterCarEditor();
+    g.carEditor.applyLoadedCarDocument(payload?.data,{name});
+   }:undefined;
+   void openProjectBrowser({fixedFolder:'cars',mode:kind==='save-as'?'saveAs':'open',onOpen}).then(x=>{window.__perfModalResult=x;});
   },kind);
   await page.getByRole('button',{name:'Search',exact:true}).click();
   await page.getByPlaceholder('Search in folder...').fill(target);
@@ -199,23 +206,33 @@ for(const kind of ['load','save-as'])test(`thumbnail cold editor Cars ${kind}`,a
   const ready=mode==='B'?await readyPreview(page,target,{row:true}):null;
   const listedAt=await browserNow(page);
   await page.screenshot({path:info.outputPath('editor-list.png')});
+  let opened=null;
   if(kind==='load'){
    p.phase('confirmed-open');
    await row.getByRole('button',{name:'Open',exact:true}).click();
    const payload=await (await page.waitForFunction(()=>window.__perfModalResult,{},{timeout:30000})).jsonValue();
    expect(payload.folder).toBe('cars');expect(payload.name).toBe(target);
    expect(payload.payload.data.car.id).toBe(identity[target].id);
-   expect(payload.payload.data.car.art.angleLayers.front.body.artRef).toBe('catalog-tutsan-2003-body');
+   expect(payload.payload.data.car.art.angleLayers.front.body.artRef).toBe(identity[target].frontBody);
+   expect(payload.payload.data.car.art.tireSurfaces.wheel.artRef).toBe(identity[target].wheel);
+   await expect.poll(()=>page.evaluate(()=>{
+    const g=window.__game,e=g.carEditor,c=e.selectedCar;
+    return {state:g.state,name:e.currentCarDocumentName,id:c?.id,body:c?.art?.angleLayers?.front?.body?.artRef,wheel:c?.art?.tireSurfaces?.wheel?.artRef};
+   })).toEqual({state:'car-editor',name:target,id:identity[target].id,body:identity[target].frontBody,wheel:identity[target].wheel});
+   // Cache hits and the live storage endpoint do not require a specific HTTP
+   // request. Real Open and installed canonical sources are the assertion;
+   // report any network observations rather than mechanically forcing a miss.
    const net=await p.snapshot();
-   expect(net.rows.filter(r=>r.phase==='confirmed-open'&&r.status===200).map(r=>r.path)).toEqual(expect.arrayContaining([
-    storage.folders.art['catalog-tutsan-2003-body'],storage.folders.art['catalog-tutsan-2003-wheels']
-   ]));
+   opened={id:identity[target].id,body:identity[target].frontBody,wheel:identity[target].wheel,
+    originalArtResponses:net.rows.filter(r=>r.phase==='confirmed-open'&&r.kind==='full-body-tire'&&r.status===200).map(r=>r.path)};
   }else{
    // This only exercises the real browse/Save As chooser; do not persist a file.
    await expect(row.getByRole('button',{name:'Overwrite',exact:true})).toBeVisible();
-   await page.getByRole('button',{name:'Close',exact:true}).click();
+   await page.locator('button.project-browser-close').click();
+   await expect(page.locator('button.project-browser-close')).toHaveCount(0);
+   await page.waitForFunction(()=>window.__perfModalResult===null);
   }
-  await exportProof(info,p,{kind,listedMs:listedAt-start,thumbnailMs:ready?ready.at-start:null,ready});
+  await exportProof(info,p,{kind,listedMs:listedAt-start,thumbnailMs:ready?ready.at-start:null,ready,opened});
  }finally{await p.context.close();}
 });
 
@@ -225,19 +242,21 @@ for(const version of ['recent','legacy'])test(`thumbnail cold campaign ${version
   p.phase('campaign-save-list');const at=await browserNow(page);
   const fixture=await page.evaluate(async ({version,target})=>{
    const g=window.__game,{CampaignSaves,CAMPAIGN_SAVE_KEY}=await import('/src/menus/CampaignSaves.js'),{createMenuDocument}=await import('/src/menus/MenuDocument.js');
-   const fakeProgress={selectedGameCar:target};let mockWrites=0;
-   const saves=new CampaignSaves({menuProgress:{}},{
+   const fakeProgress={selectedGameCar:target};let mockWrites=0,migrated=null;
+   // Omitting game.menuProgress exercises the actual legacy preference read;
+   // a truthy empty object would take precedence over that saved preference.
+   const saves=new CampaignSaves({},{
     now:()=>1900000000000,
     load:async key=>key===CAMPAIGN_SAVE_KEY?(version==='recent'?{version:1,slots:[{savedAt:1900000000000,progress:fakeProgress,items:{},summary:{car:target,condition:90}},null,null]}:null)
        :key==='menu-progress'?fakeProgress:{},
-    save:async()=>{mockWrites++;return {ok:true};}
+    save:async(key,snapshot)=>{if(key!==CAMPAIGN_SAVE_KEY)throw Error('wrong migration key');mockWrites++;migrated=snapshot;return {ok:true};}
    });
    await saves.load();g.campaignSaves=saves;
    g.setDisplayMode('color');await g.menuPlayer.open(createMenuDocument(),{preview:true,screenId:'splash'});
    g.menuPlayer.showSaveSlots('start'); // actual slot renderer; no persisted data or Continue
-   return {summary:saves.describeSlot(0),mockWrites};
+   return {summary:saves.describeSlot(0),mockWrites,migratedCar:migrated?.slots?.[0]?.progress?.selectedGameCar??null};
   },{version,target});
-  expect(fixture.summary.car).toBe(target);expect(fixture.mockWrites).toBe(version==='legacy'?1:0);
+  expect(fixture.summary?.car).toBe(target);expect(fixture.mockWrites).toBe(version==='legacy'?1:0);expect(fixture.migratedCar).toBe(version==='legacy'?target:null);
   const ready=await (mode==='B'?readyPreview(page,target):legacyCarsReady(page,target,{save:true}));
   await page.screenshot({path:info.outputPath('campaign-row.png')});
   await exportProof(info,p,{version,readyMs:ready.at-at,ready,fixture});
