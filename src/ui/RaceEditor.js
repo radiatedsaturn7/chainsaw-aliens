@@ -23875,7 +23875,8 @@ export default class RaceEditor {
     const rearZ = this.getRaceCarRearAxleBodyAnchor({}, car).longitudinalOffsetM;
     const cgHeight = Number(car.tuning?.cgHeightM) || 0.56;
     const distance = this.getRaceThirdPersonChaseDistance(car);
-    const cameraHeight = RACE_THIRD_PERSON_CAMERA_HEIGHT_ABOVE_BODY_M + carChaseClearanceLift(car);
+    // Authored wheel anchors use the fixed projection reference, independent of live chase clearance.
+    const cameraHeight = RACE_THIRD_PERSON_CAMERA_HEIGHT_ABOVE_BODY_M;
     const pitch = Math.atan2((cgHeight + cameraHeight) * this.getRaceThreeCameraLookDropScale('third-person'), 80);
     const yaw = getCarViewCameraYaw(viewSlot, 0);
     const sy = Math.sin(yaw), cy = Math.cos(yaw), sp = Math.sin(pitch), cp = Math.cos(pitch);
