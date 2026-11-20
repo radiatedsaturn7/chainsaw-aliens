@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 1,
+  "id": "woollyhead-clover-2011",
+  "name": "Woollyhead Clover 2011",
+  "integrationBasis": "1a5490e0e56d98fb51b4d4dafb4045440561bf64",
+  "classification": "prepared runtime art; original source preserved",
+  "originalCarDocumentSha256": "d0269a32684483dbb5304f7ca2dfc6d1ea033bbd3a0782a3382d937d9203d7b8",
+  "integratedNativeArtOnlyCarDocumentSha256": "2f3b6675a9fc35b9a9307ca679ee7414795acb2220422a8ca7590966e6690869",
+  "originalSourceHashes": {
+    "body": "5f998af35386fc44458bce80a6174a774b9084509e4c24e92f0b7bd63bcf3257",
+    "dashboard": "efdf459e5009b80aedb085c5da3206604579736868d9af2c0dab792b39481350",
+    "tires": "c7ad4c330707981bde1cda5dd4335fa4e08d03436335d69810a3a053302badb2"
+  },
+  "bodySourcePreserved": true,
+  "preparedRuntimeBodySha256": "e8b677bbcc6df2341988f9aa375ff205cfb8269fdc37effc9dc448bbbdbaac77",
+  "nativeArtOverlaySha256": "c9685d69d1d9d4ea21dd8d37b5565184c43f298f1ce79ade6f24166c3668770c",
+  "fittingConfigSha256": "55268c8f063bd3f399c51d91263670bdf89ad78ee0a0a355184431dee1a717ff",
+  "derivative": {
+    "kind": "per-model alpha-only inner-liner removal",
+    "coordinates": "original 1774x887 atlas, polygon pixel centers with odd-even inclusion; clear alpha only",
+    "sourcePixelsChanged": 1063,
+    "sourceFraction": 0.0006755477147676129,
+    "originalAtlasNeverEdited": true,
+    "scopedPolygons": [
+      [
+        [
+          1366,
+          222
+        ],
+        [
+          1373,
+          222
+        ],
+        [
+          1378,
+          228
+        ],
+        [
+          1382,
+          239
+        ],
+        [
+          1376,
+          243
+        ],
+        [
+          1365,
+          243
+        ],
+        [
+          1356,
+          239
+        ],
+        [
+          1360,
+          229
+        ]
+      ],
+      [
+        [
+          1358,
+          656
+        ],
+        [
+          1365,
+          656
+        ],
+        [
+          1371,
+          660
+        ],
+        [
+          1375,
+          667
+        ],
+        [
+          1376,
+          676
+        ],
+        [
+          1366,
+          682
+        ],
+        [
+          1349,
+          677
+        ],
+        [
+          1350,
+          668
+        ]
+      ],
+      [
+        [
+          853,
+          213
+        ],
+        [
+          859,
+          213
+        ],
+        [
+          864,
+          219
+        ],
+        [
+          864,
+          230
+        ],
+        [
+          856,
+          233
+        ],
+        [
+          845,
+          232
+        ],
+        [
+          842,
+          226
+        ],
+        [
+          851,
+          218
+        ]
+      ]
+    ],
+    "sourcePixelLedgers": [
+      {
+        "count": 382,
+        "ledgerSha256": "2e2db69c0c95b104646040a4d590028645aac1f055e95849ad9c5983fc034bb6",
+        "bounds": [
+          1356,
+          222,
+          1382,
+          243
+        ]
+      },
+      {
+        "count": 381,
+        "ledgerSha256": "911ec3e0f03c80192c00a10ea8b39ae85c1fdb7943ad24d3849bbb3626bb6e19",
+        "bounds": [
+          1349,
+          656,
+          1376,
+          682
+        ]
+      },
+      {
+        "count": 300,
+        "ledgerSha256": "56f95c7a74de91b389202a0a138715e9fb2520b82a9c40f35dd160bf79280867",
+        "bounds": [
+          842,
+          213,
+          864,
+          233
+        ]
+      }
+    ],
+    "preparedFrameLedgers": [
+      {
+        "frame": 0,
+        "count": 0,
+        "ledgerSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "frame": 1,
+        "count": 180,
+        "ledgerSha256": "1d255f55ca83b03612621b4686474af481f7c57e9d8f203eee1c1f0c6b076fcd"
+      },
+      {
+        "frame": 2,
+        "count": 0,
+        "ledgerSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "frame": 3,
+        "count": 285,
+        "ledgerSha256": "ed7fcc4ec58f26416983f63c9dbef8cbbb7ffecf682c7759abe998526a5bd8fb"
+      },
+      {
+        "frame": 4,
+        "count": 0,
+        "ledgerSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "frame": 5,
+        "count": 0,
+        "ledgerSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "frame": 6,
+        "count": 0,
+        "ledgerSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "frame": 7,
+        "count": 321,
+        "ledgerSha256": "a08014a692e7e99927982c614257de5d60a7f28be45bbe88f8c732fef9ef86f0"
+      }
+    ],
+    "runtimeBodyFrameBoundsPreserved": true,
+    "dashboardAndTiresMatchUnmaskedPreparation": true
+  },
+  "verification": {
+    "native8ReportSha256": "d73e01d0894134e06acc41c57c6b895ccf42d45212541b9b04f108b93d6debe5",
+    "native16ReportSha256": "d041542ae67362ffd69542b3cb838c2cd5cd8a428dfeb71219b1a308be0e8517",
+    "staticGuardSha256": "605c9da6c48fdebbd7bb4b5da9ae27609321bc14a6d49fc291142c3de594686a",
+    "minimumMeasuredArchCoverage8And16": [
+      0.9047940580688724,
+      0.9045239702903444
+    ],
+    "exteriorCockpitFitHolds": 0,
+    "nativeRoundtrip": true,
+    "nonArtPreserved": true,
+    "independentPublicNativeReplaySha256": "30f67f746dd1bb96b368a53ebf84f7db3223af2dbec021d97c2547c90708d724",
+    "exactRuntimeSourceAndSharedArtFence": true,
+    "fitReview": "all eight full-car views at menu and enlarged size; sixteen native rotations; two instrument views",
+    "gameplayAccepted": false,
+    "independentFullCarVisualReviewPassed": true,
+    "preparerLimitation": "The checkpoint public importer lacks the generic scoped polygon alpha option. This integration uses the reviewed archived native bytes, and separate source+stock pack reconstruction verified exact decoded frame semantics; no general importer/QA change is included."
+  }
+}

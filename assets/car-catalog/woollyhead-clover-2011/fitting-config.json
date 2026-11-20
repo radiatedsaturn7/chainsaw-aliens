@@ -1,0 +1,328 @@
+{
+  "id": "woollyhead-clover-2011",
+  "name": "Woollyhead Clover 2011",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "d0269a32684483dbb5304f7ca2dfc6d1ea033bbd3a0782a3382d937d9203d7b8",
+  "sourceDirectory": "assets/car-catalog/woollyhead-clover-2011",
+  "sourceHashes": {
+    "body": "5f998af35386fc44458bce80a6174a774b9084509e4c24e92f0b7bd63bcf3257",
+    "dashboard": "efdf459e5009b80aedb085c5da3206604579736868d9af2c0dab792b39481350",
+    "tires": "c7ad4c330707981bde1cda5dd4335fa4e08d03436335d69810a3a053302badb2"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 75.13,
+        "y": 352.225,
+        "radius": 26.775
+      },
+      {
+        "wheel": "fr",
+        "x": 367.87,
+        "y": 352.225,
+        "radius": 26.775
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 709.5,
+        "y": 279.0,
+        "radius": 25.0
+      },
+      {
+        "wheel": "rr",
+        "x": 851.0,
+        "y": 238.5,
+        "radius": 15.5
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 977.0,
+        "y": 277.5,
+        "radius": 34.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1247.0,
+        "y": 274.5,
+        "radius": 36.5
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1368.5,
+        "y": 248.0,
+        "radius": 15.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1485.0,
+        "y": 275.5,
+        "radius": 23.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 71.94,
+        "y": 776.55,
+        "radius": 27.45
+      },
+      {
+        "wheel": "rl",
+        "x": 372.06,
+        "y": 776.55,
+        "radius": 27.45
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 733.0,
+        "y": 720.5,
+        "radius": 23.5
+      },
+      {
+        "wheel": "fl",
+        "x": 848.0,
+        "y": 690.5,
+        "radius": 14.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 970.0,
+        "y": 720.5,
+        "radius": 36.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1240.0,
+        "y": 721.5,
+        "radius": 34.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1363.0,
+        "y": 684.5,
+        "radius": 15.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1506.0,
+        "y": 724.5,
+        "radius": 25.5
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      310,
+      435,
+      430,
+      150
+    ],
+    "wheel": [
+      525,
+      589.0,
+      300
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e4efff",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 0.8526615202911008,
+      "tireScaleY": 1.0830143283203977,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.6472493481294144,
+      "frontTireOffsetY": 0.09918338414919796,
+      "rearTireOffsetX": -0.970232559126994,
+      "rearTireOffsetY": 0.4027541837773802
+    },
+    "rearRight": {
+      "tireScaleX": 0.9368381562585711,
+      "tireScaleY": 1.2149592608205977,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 1.3652310649371346,
+      "frontTireOffsetY": 0.5190995689253808,
+      "rearTireOffsetX": -0.895869212747995,
+      "rearTireOffsetY": 0.06452861607642929
+    },
+    "rearLeft": {
+      "tireScaleX": 0.9873251544336724,
+      "tireScaleY": 1.196631437015492,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -1.4200360389739342,
+      "frontTireOffsetY": 0.8846253112721388,
+      "rearTireOffsetX": 0.8722874099252929,
+      "rearTireOffsetY": 0.0940028737296735
+    },
+    "frontLeft": {
+      "tireScaleX": 1.0018230565011719,
+      "tireScaleY": 1.198091056006764,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.5886736536413131,
+      "frontTireOffsetY": 0.11752722301519976,
+      "rearTireOffsetX": 1.0854405622610646,
+      "rearTireOffsetY": 0.41441034491137924
+    }
+  },
+  "bodyAlphaRemoval": {
+    "sourceSha256": "5f998af35386fc44458bce80a6174a774b9084509e4c24e92f0b7bd63bcf3257",
+    "reason": "Woollyhead original tire-backed distal wheel inner liner only, exclude real body metal, front vent and orange skirt.",
+    "polygons": [
+      [
+        [
+          1366,
+          222
+        ],
+        [
+          1373,
+          222
+        ],
+        [
+          1378,
+          228
+        ],
+        [
+          1382,
+          239
+        ],
+        [
+          1376,
+          243
+        ],
+        [
+          1365,
+          243
+        ],
+        [
+          1356,
+          239
+        ],
+        [
+          1360,
+          229
+        ]
+      ],
+      [
+        [
+          1358,
+          656
+        ],
+        [
+          1365,
+          656
+        ],
+        [
+          1371,
+          660
+        ],
+        [
+          1375,
+          667
+        ],
+        [
+          1376,
+          676
+        ],
+        [
+          1366,
+          682
+        ],
+        [
+          1349,
+          677
+        ],
+        [
+          1350,
+          668
+        ]
+      ],
+      [
+        [
+          853,
+          213
+        ],
+        [
+          859,
+          213
+        ],
+        [
+          864,
+          219
+        ],
+        [
+          864,
+          230
+        ],
+        [
+          856,
+          233
+        ],
+        [
+          845,
+          232
+        ],
+        [
+          842,
+          226
+        ],
+        [
+          851,
+          218
+        ]
+      ]
+    ],
+    "maximumChangedPixels": 1063
+  }
+}
