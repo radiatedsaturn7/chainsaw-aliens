@@ -56,7 +56,7 @@ Every treatment specifies (a) what *happens*, (b) what Rob wants, (c) what Cait 
 - [Character Arcs](CHARACTER_ARCS.md), [Revelation Map](REVELATION_MAP.md), [Motifs](MOTIFS_AND_SYMBOLS.md).
 - [Literary Companion — analysis](LITERARY_COMPANION/CHAPTER_ANALYSIS.md) and [discussion questions](LITERARY_COMPANION/DISCUSSION_QUESTIONS.md).
 - **Chronology updated:** A rapid Ascension about ten years before 2994 resolves the former Rob/Evelyn lifespan contradiction without needing immortality. Exact migration dates, how many years Rob was entirely without Cait, and upload mechanics remain OPEN. Read [world history](WORLD_LORE/THE_ASCENSION.md).
-- **Critical unresolved geography:** Ozarks → St. Louis (eastward) must be motivated as a detour or the route reconsidered. The final Angeles Crest race does not itself reach the Pacific.
+- **Geography decision (2026-11-20):** Mission 05's Ozark backroads are the **eastern Ozark foothills / St. Francois Mountains near Farmington, Missouri**, reached as a supply detour via southern Illinois; the route then goes **northwest to St. Louis** for Mission 06. This avoids the earlier west-to-east backtrack across the Ozarks. In-game map/track placements still need implementation. The final Angeles Crest race does not itself reach the Pacific.
 - **Critical unresolved characterization:** Exactly what Cait knew about her own creation and Rob's status before each conversation must be fixed prior to scripting mysteries.
 
 ## Recommended first review
