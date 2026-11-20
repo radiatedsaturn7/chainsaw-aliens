@@ -21,6 +21,9 @@
 ## 06 — Heaven
 **Literal scene:** An uploaded woman invites Cait to abandon her body and join a perfected virtual society. **Subtext:** The comfort of a perfect world might be real; so is the grief of those outside it. **Competing readings:** “Rob was abandoned” versus “Rob refused the invitation.” **Earn it:** Evelyn must be warmly credible in a longer conversation, and Rob's own recollection must be true but partial. **Failure test:** Without Rob's personal history, Heaven is a generic sci-fi lore dump. **World layer:** The exodus happened in only a few years, around a decade before 2994. Evelyn may still remember Rob vividly, and outside homes may still look lived-in. The open questions are upload mechanics and the meaning of being left behind, not thousand-year longevity.
 
+### Revision lens for 06 — Reverse Turing Test
+Rob's **felt loss of authenticity** is different from the claim that Heaven has objectively destroyed anyone's personhood. A reader should be able to argue both that Heaven's people became script-like and that they simply grew past unnecessary hostility. Evelyn needs enough agency, memories and idiosyncrasies to support the second reading. **Crucial counterpoint:** Rob loves Cait's willingness to argue but resents her refusal to make the declaration he wants. [Development notes](../WORLD_LORE/REVERSE_TURING_TEST.md).
+
 ## 07 — The Other Scientist
 **Literal scene:** A service android mechanically says loving words; a husk attack; Cait disobeys and saves Rob. **Subtext:** Forced words and chosen actions cannot be equated. **Competing reading:** Cait's ability to choose does not automatically prove her attachment has no designed influences. **Earn it:** She disobeys in a believable emergency; the android's routine is disturbing without indulgent spectacle. **Failure test:** Do not conclude “therefore Cait definitely loves Rob” in narration or dialogue.
 
