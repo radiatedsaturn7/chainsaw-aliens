@@ -1,0 +1,67 @@
+name: Thumbnail Jammy diagnostic (not a release gate)
+on:
+  push:
+    branches: ['dot/diagnostic-thumbnail-jammy']
+    paths: ['.github/workflows/thumbnail-cold-jammy.yml', 'tools/thumbnail-diagnostic/**']
+permissions:
+  contents: read
+jobs:
+  isolated:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        run:
+          - {group: tutsan-desktop, variant: B}
+          - {group: tutsan-handheld, variant: B}
+          - {group: traversal-desktop, variant: B}
+          - {group: traversal-handheld, variant: B}
+          - {group: cold, variant: A}
+          - {group: cold, variant: B}
+    env:
+      GROUP: ${{ matrix.run.group }}
+      VARIANT: ${{ matrix.run.variant }}
+      CI: 'true'
+    steps:
+      - name: Checkout diagnostic driver only (not another asset tree)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          path: driver
+          sparse-checkout: tools/thumbnail-diagnostic
+          sparse-checkout-cone-mode: false
+      - id: pin
+        name: Resolve and validate selected exact pin
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = refs/heads/dot/diagnostic-thumbnail-jammy
+          cd driver/tools/thumbnail-diagnostic
+          sha="$(python3 -c 'import json,sys; print(json.load(open("pins.json"))[sys.argv[1]]["commit"])' "$VARIANT")"
+          [[ "$sha" =~ ^[a-f0-9]{40}$ ]]
+          echo "commit=$sha" >> "$GITHUB_OUTPUT"
+      - name: Checkout one pinned app tree, no runtime substitutions
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ steps.pin.outputs.commit }}
+          fetch-depth: 1
+          persist-credentials: false
+          path: app
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+      - name: Validate scope, install packages and run exact small selection
+        working-directory: app
+        shell: bash
+        run: ../driver/tools/thumbnail-diagnostic/run-jammy.sh ../driver/tools/thumbnail-diagnostic
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: thumbnail-jammy-${{ matrix.run.variant }}-${{ matrix.run.group }}
+          path: app/diagnostic-results
+          if-no-files-found: warn
+          retention-days: 7
