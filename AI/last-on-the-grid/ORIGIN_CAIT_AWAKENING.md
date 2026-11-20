@@ -17,7 +17,15 @@ He throws his wrench over his shoulder. It hits the head of another discarded, a
 
 Cait wakes in a pile of dismembered, discarded androids. Her first clear view of her maker is a furious, filthy man who has just torn apart something shaped like her. Rob turns toward the unexpected activation, weary and irritated, assuming another malfunction that must be fixed. He starts toward her. She looks from his hands to the ruined bodies and recoils in unmistakable terror. He recognizes fear in her eyes—a qualitatively different response from all his previous machines—and hesitates. This gives her time to flee.
 
-Rob may respond with dark, grandly disproportionate sarcasm at his own disastrous first impression, but **the line is not locked**. Avoid a pathetic/flirtatious "I was going to ask you on a date" joke or a tidy "Well, that went brilliantly." The humor should sound like a deranged inventor realizing the first actual person he's encountered thinks he's a murderer. Do not make Cait's terror a punchline.
+**Approved dialogue, immediately after Cait flees:**
+
+> **ROB:** Well, fuck me. I've finally made someone who hates me.
+>
+> *He looks at the pile of dismantled androids.*
+>
+> **ROB:** ...Fair enough.
+
+This is Rob's sarcastic self-awareness, not a joke at Cait's expense. The exact line is approved; staging and timing beyond the glance are still subject to screenplay drafting.
 
 ### The gas station — no savior entrance
 
