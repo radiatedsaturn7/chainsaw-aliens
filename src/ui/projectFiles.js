@@ -1,5 +1,5 @@
 import {invalidateProjectCarThumbnail} from './shared/carPreviewThumbnails.js';
-import { isSystemCarDocument } from '../racing/CarPresets.js';
+import { isSystemCarDocument, LEGACY_PROJECT_CAR_PRESET_NAMES } from '../racing/CarPresets.js';
 /**
  * Project file facade backed by per-file server storage.
  *
@@ -149,7 +149,13 @@ export function listProjectFiles(folder, { includeDeleted = false, includeSystem
     // Async preload callers filter system documents after hydration, avoiding
     // synchronous network reads just to enumerate the manifest.
     if (includeSystem) return true;
-    if (index[folder]?.[entry.name]?.systemFile === true) return false;
+    if (index[folder]?.[entry.name]?.systemFile === true) {
+      if (folder !== 'cars' || !LEGACY_PROJECT_CAR_PRESET_NAMES.includes(entry.name)) return false;
+      // An already cached same-name user replacement is not the legacy template.
+      // Never fetch bodies to answer this index query.
+      const payload=loadProjectFile(folder,entry.name,{allowSyncFetch:false});
+      return Boolean(payload?.data && !isSystemCarDocument(payload.data,entry.name));
+    }
     if (folder !== 'cars') return true;
     const payload = loadProjectFile(folder, entry.name, {allowSyncFetch});
     return !isSystemCarDocument(payload?.data || payload, entry.name);

@@ -164,7 +164,8 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
       drawCarDescription(ctx,b,element.property==='rewards'?`${quote.distanceKm.toFixed(1)} km · ${quote.surfaces||'Road'} · ${quote.weather}. ${rewards}${quote.featured?' '+(quote.featuredEarned?'Featured reward earned.':quote.featured):''}${targets}${quote.objective?' '+quote.objective.brief+' Optional: '+quote.objective.label+(quote.objective.earned?' (earned).':` (+${quote.objective.bonus} scrap, once).`):''}`:`${rewards} ${race?.description||''}`,fontFamily,element,{time,editing});
     }
     else if(element.type==='car-description'){
-      const car=resources?.car(element.assetRef||value,{prepareExterior:false});
+      // Authored description is stock text, independent of installed parts and tire art.
+      const car=resources?.stockCar(element.assetRef||value,{prepareExterior:false});
       drawCarDescription(ctx,b,car?.description?.trim()||'No description yet.',fontFamily,element);
     }
     else if(element.type==='car-preview'&&element.catalogThumbnail&&!editing){

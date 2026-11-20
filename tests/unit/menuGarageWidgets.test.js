@@ -210,7 +210,7 @@ test('showroom replaces specifications with descriptions that follow keyboard an
  const p=await player(),screen=p.flow.screen;
  assert.ok(screen.elements.some(e=>e.type==='car-description'));
  assert.ok(!screen.elements.some(e=>['car-stats','power-curve'].includes(e.type)));
- p.resources.car=ref=>({description:`Description ${ref}`,art:{}});
+ p.resources.stockCar=ref=>({description:`Description ${ref}`,art:{}});
  p.resources.game.carEditor={getRaceCarProjectedArtRef:()=>({artRef:'test'})};p.resources.art=()=>null;p.resources.tuning=()=>({});p.resources.carPreview.drawSprite=()=>{};
  const labels=[],ctx=new Proxy({globalAlpha:1,fillText:t=>labels.push(t),measureText:t=>({width:t.length*6})},{get:(o,k)=>k in o?o[k]:(()=>{})});
  const render=parameters=>{labels.length=0;drawMenuScreen(ctx,{x:0,y:0,w:960,h:540},p.flow.document,screen,parameters,{resources:p.resources});return [...labels]};
@@ -246,7 +246,7 @@ test('selection borders can be hidden on arbitrary widgets without hiding author
   assert.equal(normalizeMenuElement(JSON.parse(JSON.stringify(e))).selectionBorder,selectionBorder);
   const doc=createMenuDocument(),screen={...doc.screens[0],elements:[e]},strokes=[];
   const ctx=new Proxy({strokeRect:(...b)=>strokes.push(b),measureText:t=>({width:t.length*6})},{get:(o,k)=>k in o?o[k]:(()=>{})});
-  const resources={art:()=>null,car:()=>({description:'Car'})};
+  const resources={art:()=>null,stockCar:()=>({description:'Car'})};
   for(const selection of [{focus:e.id},{selected:e.id}]){
    strokes.length=0;drawMenuScreen(ctx,{x:0,y:0,w:960,h:540},doc,screen,{}, {...selection,resources});assert.equal(strokes.length,selectionBorder?1:0);
   }

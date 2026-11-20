@@ -1,8 +1,10 @@
+import { LEGACY_PROJECT_CAR_PRESET_NAMES } from '../racing/CarPresets.js';
 import {projectStorageUrl} from './projectStorageUrls.js';
 const PROJECT_FILE_PREFIX = 'server-project-file:';
 const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'tires', 'models', 'menus', 'doodads', 'items', 'fonts', 'settings'];
 const STATIC_STORAGE_ROOT = projectStorageUrl('data/server-storage/files');
 let staticManifestPromise = null;
+let staticLegacyPresetMetadataPromise = null;
 let previewReleaseTask = null;
 let staticDocumentRoot = STATIC_STORAGE_ROOT;
 const staticLoads = new Map();
@@ -476,6 +478,20 @@ async function hydrateStaticStorageFiles() {
       serverIndex[folder][name] ||= {updatedAt: 0, size: 0};
     }
   }
+  // Only three known legacy project template names need cold classification.
+  // A present name alone is not enough: the published sidecar must opt in.
+  staticLegacyPresetMetadataPromise ??= Promise.all(LEGACY_PROJECT_CAR_PRESET_NAMES.map(async name=>{
+    const path=folders.cars?.[name];
+    if(typeof path!=='string')return [name,false];
+    const url=`${staticDocumentRoot}/${path.split('/').map(encodeURIComponent).join('/')}`;
+    if(!url.endsWith('/document.json'))return [name,false];
+    const meta=await requestStatic(url.replace(/\/document\.json$/,'/metadata.json')).catch(()=>null);
+    return [name,meta?.folder==='cars'&&meta?.name===name&&meta?.systemFile===true];
+  }));
+  for(const [name,systemFile] of await staticLegacyPresetMetadataPromise){
+    const entry=serverIndex.cars?.[name];
+    if(entry&&systemFile)serverIndex.cars[name]={...entry,systemFile:true};
+  }
   return serverIndex;
 }
 
@@ -680,6 +696,7 @@ export function clearCachedProjectFilesForTests() {
   volatileFiles.clear();
   volatileFileSources.clear();
   staticManifestPromise = null;
+  staticLegacyPresetMetadataPromise = null;
   staticDocumentRoot = STATIC_STORAGE_ROOT;
   previewReleaseTask = null;
   staticLoads.clear();

@@ -24,9 +24,10 @@ export class MenuResources {
     await this.garage?.load();
     await hydrateServerStorage({folder:'tires'}).catch(()=>null);
     this.cancelAutoUpgradeQuotes();
-    this.setupCatalog=await loadGarageSetupCatalog(this.garage);
+    // Startup catalog only needs item definitions; installed/selected parts load their art on demand.
+    this.setupCatalog=await loadGarageSetupCatalog(this.garage,{hydrateDependencies:false});
     const entries=await itemLibrary.list();
-    this.partCatalog=(await Promise.all(entries.map(async e=>{try{return {ref:e.name,item:await itemLibrary.load(e.name)};}catch{return null;}}))).filter(e=>e?.item.carPart);
+    this.partCatalog=(await Promise.all(entries.map(async e=>{try{return {ref:e.name,item:await itemLibrary.load(e.name,{hydrateDependencies:false})};}catch{return null;}}))).filter(e=>e?.item.carPart);
   }
   performance(car){return garageCarPerformance(car,this.game.carEditor.getRaceCarTuning(car));}
   cancelAutoUpgradeQuotes(){

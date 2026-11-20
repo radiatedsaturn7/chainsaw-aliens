@@ -31,7 +31,7 @@ export function prepareMenuScreen(resources,document,screen,parameters,{bounds={
       const ref=e.assetRef||parameters[e.binding];
       if(typeof ref==='string'&&ref){
         carRefs.add(ref);
-        if(e.property!=='stock')liveCarRefs.add(ref);
+        if(e.property!=='stock'&&e.type!=='car-description')liveCarRefs.add(ref);
         if(e.type==='car-preview'||e.type==='asset-preview')fullArtRefs.add(ref);
       }
     }

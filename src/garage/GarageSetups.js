@@ -2,10 +2,10 @@ import {GARAGE_SETUP_PROFILES,getGarageSetupProfile,garageSetupPartIds,garageSet
 import {buildGarageCar,garageTuningRanges,partFits,readCarSetting,safeGarageKey} from './CarPart.js';
 import {normalizeItemDocument} from '../items/ItemDocument.js';
 
-export async function loadGarageSetupCatalog(garage){
+export async function loadGarageSetupCatalog(garage,{hydrateDependencies=true}={}){
  const refs=[...new Set(GARAGE_SETUP_PROFILES.flatMap(garageSetupPartIds))];
  return new Map(await Promise.all(refs.map(async ref=>{
-  try{const value=await garage.items.library.load(ref);return [ref,value?normalizeItemDocument(value):null];}catch{return [ref,null];}
+  try{const value=await garage.items.library.load(ref,{hydrateDependencies});return [ref,value?normalizeItemDocument(value):null];}catch{return [ref,null];}
  })));
 }
 export function fitGarageParts(garage,progress,ref,stock,partRefs,catalog){
