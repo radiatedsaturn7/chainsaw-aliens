@@ -14,6 +14,11 @@ Humanity did not vanish a thousand years before the game. Over a few years, almo
 
 Heaven might recall a technological Rapture, while the abandoned outside resembles Rob's purgatory. These are interpretations, not established supernatural events. Ten years of neglect calls for a mix of **nearly intact homes and weather-damaged roads**; spectacular ruins need additional causes. See [The Ascension world history](WORLD_LORE/THE_ASCENSION.md).
 
+## Why Rob stayed outside Heaven [CORE MOTIVATION / INTERPRETATION OPEN]
+Rob rejected Heaven partly because **its perfection made old friends feel unfamiliar and fake to him**. They had become uniformly reassuring, agreeable and conflict-averse; speaking with them sometimes felt like talking to a scripted drive-through. Rob prefers imperfect, candid people and real experiences, even when they hurt. That is **his experience**, not proof that the uploaded are soulless, copies, or morally inferior. They may genuinely be happy and changed by choice.
+
+This creates the story's central irony: **Rob rejected the people who always knew what to say, yet becomes angry at Cait for refusing to say “I love you.”** A machine built without autonomy can say the words; Cait, who makes her own decisions, refuses them. See [The Reverse Turing Test](WORLD_LORE/REVERSE_TURING_TEST.md).
+
 ## Opening [ESTABLISHED]
 1. Start in gameplay on snowy Tower Hill Road, Cumberland, Rhode Island. Cait retrieves fuel and must return as a storm shifts. The timed segment can be failed; either outcome proceeds to the garage.
 2. Radio warning: “Hey… Winds shifted… Come back while you still can.”
