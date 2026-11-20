@@ -1,4 +1,5 @@
 import {test,expect} from '@playwright/test';
+import {installThumbnailBrowseWitness,expectThumbnailOnCanvas} from '../helpers/carThumbnailBrowseWitness.js';
 
 test('catalog pilot hydrates published art and renders eight body angles plus dashboard',async({page},testInfo)=>{
  test.setTimeout(120_000);
@@ -97,3 +98,132 @@ import '../helpers/carCatalogPlaceholderWave16PickerCases.js';
 import '../helpers/carCatalogPlaceholderWave17PickerCases.js';
 
 import '../helpers/carCatalogPlaceholderWave18PickerCases.js';
+
+const names=['2005 Flint Coupe','2018 Kestrel 660','2023 Volt-Hound GT','2024 Caravan-9'];
+async function holdImage(context,expectedPath){
+  const held=new Set();let release;
+  const waiting=new Promise(resolve=>{release=resolve;});
+  await context.route(url=>url.pathname===expectedPath,async route=>{
+    held.add(new URL(route.request().url()).pathname);
+    await waiting;
+    await route.continue();
+  });
+  // Track the retired fake-car fill only on the two actual preview surfaces.
+  await context.addInitScript(()=>{
+    window.__fakeCarFills=0;
+    window.__paintedStockPosters=new Set();
+    const drawImage=CanvasRenderingContext2D.prototype.drawImage;
+    CanvasRenderingContext2D.prototype.drawImage=function(image,...args){
+      const result=drawImage.call(this,image,...args);
+      if(this.canvas===window.__game?.canvas&&image instanceof HTMLImageElement&&image.naturalWidth>0&&args.length===8){
+        const path=new URL(image.currentSrc||image.src).pathname;
+        if(path.endsWith('-poster.webp'))window.__paintedStockPosters.add(path);
+      }
+      return result;
+    };
+    const original=CanvasRenderingContext2D.prototype.fill;
+    CanvasRenderingContext2D.prototype.fill=function(...args){
+      if(this.fillStyle==='#73848e'&&(this.canvas===window.__game?.canvas||this.canvas.closest('.project-browser-art-preview')))window.__fakeCarFills++;
+      return original.apply(this,args);
+    };
+  });
+  return {held,release};
+}
+
+test('car selector does not show a fake car while real stock previews load',async({browser})=>{
+  test.setTimeout(120000);
+  const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'});
+  await context.addInitScript(()=>Object.defineProperty(navigator,'userAgentData',{value:{mobile:true}}));
+  const qa=await installThumbnailBrowseWitness(context);
+  const target=names[0],path='/'+qa.thumb.previews[qa.thumb.carsByName[target]].url;
+  const net=await holdImage(context,path);
+  try{
+    const page=await context.newPage();
+    await page.goto('/index.html?hideFullscreenForTesting');
+    await page.waitForFunction(()=>window.__gameReady&&window.__game?.state!=='loading');
+    await page.evaluate(async target=>{
+      const {createMenuDocument}=await import('/src/menus/MenuDocument.js');
+      const g=window.__game;g.setDisplayMode('color');
+      const doc=createMenuDocument();doc.parameters.carRef=target;
+      // Scope the in-memory selection to this context before ordinary screen opening.
+      g.menuProgress={...g.menuProgress,carRef:target};
+      await g.menuPlayer.open(doc,{preview:true,screenId:'cars'});
+    },target);
+    const selected=await page.evaluate(()=>window.__game.menuPlayer.flow.parameters.carRef);
+    expect(selected).toBe(target);
+    await expect.poll(()=>net.held.has(path),{timeout:30000}).toBe(true);
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+    expect(await page.evaluate(()=>window.__fakeCarFills)).toBe(0);
+    qa.assertBrowseCold();
+    net.release();
+    for(const name of names)await expectThumbnailOnCanvas(page,qa,name,{selected:name===selected});
+    qa.assertBrowseCold();
+  }finally{net.release();await context.close();}
+});
+
+for(const mode of ['open','saveAs'])test('Cars '+mode+' stays blank until the actual poster is ready',async({browser})=>{
+  test.setTimeout(120000);
+  const context=await browser.newContext({serviceWorkers:'block'});
+  const qa=await installThumbnailBrowseWitness(context);
+  const target=names[0],path='/'+qa.thumb.previews[qa.thumb.carsByName[target]].poster.url;
+  const net=await holdImage(context,path);
+  try{
+    const page=await context.newPage();
+    await page.goto('/index.html?hideFullscreenForTesting');
+    await page.waitForFunction(()=>window.__gameReady&&window.__game?.state!=='loading');
+    await page.evaluate(async mode=>{
+      const {openProjectBrowser}=await import('/src/ui/ProjectBrowserModal.js');
+      void openProjectBrowser({fixedFolder:'cars',mode});
+    },mode);
+    const name=names[0];
+    await page.getByRole('button',{name:'Search',exact:true}).click();
+    await page.getByPlaceholder('Search in folder...').fill(name);
+    const canvas=page.locator('.project-browser-row[data-name="2005 Flint Coupe"] .project-browser-art-preview canvas');
+    await expect(canvas).toBeVisible();
+    await expect.poll(()=>net.held.has(path),{timeout:30000}).toBe(true);
+    const opaque=()=>canvas.evaluate(el=>{
+      const data=el.getContext('2d').getImageData(0,0,el.width,el.height).data;
+      let count=0;for(let i=3;i<data.length;i+=4)if(data[i]>128)count++;
+      return count;
+    });
+    expect(await opaque()).toBe(0);
+    expect(await page.evaluate(()=>window.__fakeCarFills)).toBe(0);
+    qa.assertBrowseCold();
+    net.release();
+    await expect.poll(opaque,{timeout:30000}).toBeGreaterThan(100);
+    qa.assertBrowseCold();
+  }finally{net.release();await context.close();}
+});
+
+test('campaign Load Save stays blank until the slot poster is ready',async({browser})=>{
+  test.setTimeout(120000);
+  const context=await browser.newContext({serviceWorkers:'block'});
+  const qa=await installThumbnailBrowseWitness(context);
+  const target=names[0],path='/'+qa.thumb.previews[qa.thumb.carsByName[target]].poster.url;
+  const net=await holdImage(context,path);
+  try{
+    const page=await context.newPage();
+    await page.goto('/index.html?hideFullscreenForTesting');
+    await page.waitForFunction(()=>window.__gameReady&&window.__game?.state!=='loading');
+    const name=names[0];
+    await page.evaluate(async name=>{
+      const {createMenuDocument}=await import('/src/menus/MenuDocument.js');
+      const {CampaignSaves}=await import('/src/menus/CampaignSaves.js');
+      const g=window.__game;g.setDisplayMode('color');
+      await g.menuPlayer.open(createMenuDocument(),{preview:true,screenId:'splash'});
+      // Seed a slot in memory only and enter the real campaign save chooser.
+      g.campaignSaves??=new CampaignSaves(g);
+      g.campaignSaves.slots[0]={summary:{car:name,condition:71},playTimeSeconds:2};
+      g.menuPlayer.showSaveSlots('start');
+    },name);
+    await expect.poll(()=>net.held.has(path),{timeout:30000}).toBe(true);
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+    expect(await page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('saves-start');
+    expect(await page.evaluate(()=>window.__fakeCarFills)).toBe(0);
+    expect(await page.evaluate(path=>window.__paintedStockPosters.has(path),path)).toBe(false);
+    qa.assertBrowseCold();
+    net.release();
+    await expect.poll(()=>page.evaluate(path=>window.__paintedStockPosters.has(path),path),{timeout:30000}).toBe(true);
+    qa.assertBrowseCold();
+  }finally{net.release();await context.close();}
+});

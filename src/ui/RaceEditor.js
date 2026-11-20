@@ -23875,7 +23875,8 @@ export default class RaceEditor {
     const rearZ = this.getRaceCarRearAxleBodyAnchor({}, car).longitudinalOffsetM;
     const cgHeight = Number(car.tuning?.cgHeightM) || 0.56;
     const distance = this.getRaceThirdPersonChaseDistance(car);
-    const cameraHeight = RACE_THIRD_PERSON_CAMERA_HEIGHT_ABOVE_BODY_M + carChaseClearanceLift(car);
+    // Authored wheel anchors use the fixed projection reference, independent of live chase clearance.
+    const cameraHeight = RACE_THIRD_PERSON_CAMERA_HEIGHT_ABOVE_BODY_M;
     const pitch = Math.atan2((cgHeight + cameraHeight) * this.getRaceThreeCameraLookDropScale('third-person'), 80);
     const yaw = getCarViewCameraYaw(viewSlot, 0);
     const sy = Math.sin(yaw), cy = Math.cos(yaw), sp = Math.sin(pitch), cp = Math.cos(pitch);
@@ -40375,7 +40376,7 @@ export default class RaceEditor {
       const roadHalf = this.getRaceRoadHalfWidthWorld(segment);
       const lateral = clamp(Number(ai.lineOffset || 0), -0.82, 0.82) * roadHalf;
       const right = this.getRaceRightVector(Number(pose.yaw || 0));
-      const car = runtimeCarOverride || ai.runtimeCar || this.findRaceProjectCarById(ai.carId) || this.selectedCar;
+      const car = ai.runtimeCar || this.findRaceProjectCarById(ai.carId) || this.selectedCar;
       const worldX = Number.isFinite(ai.worldX) ? ai.worldX : Number(pose.x || 0) + right.x * lateral;
       const worldZ = Number.isFinite(ai.worldZ) ? ai.worldZ : Number(pose.z || 0) + right.z * lateral;
       // Keep the AI state by reference; copying its entire physics/telemetry
