@@ -1,0 +1,107 @@
+name: Thumbnail delay check 674 (diagnostic only)
+on:
+  push:
+    branches: ['dot/diagnostic-674-thumbnail-delay-protected-20261120']
+    paths: ['.github/workflows/diagnostic-674-thumbnail-delay.yml']
+permissions:
+  contents: read
+jobs:
+  delayed-preview-diagnostic:
+    name: Protected Chromium delayed thumbnails (diagnostic only)
+    runs-on: ubuntu-22.04
+    timeout-minutes: 35
+    env:
+      CANDIDATE: '422c92f5805a470eec271fb17845961ef8cbb145'
+      CANDIDATE_TREE: 'df9557312b47fe00cb86738556e0d63df72102f9'
+      PARENT: '511a8a7ab0c2620c5398dd437ca7f2a51dfd6076'
+      CASE_GREP: 'car selector does not show a fake car while real stock previews load$|Cars (open|saveAs) stays blank until the actual poster is ready$|campaign Load Save stays blank until the slot poster is ready$'
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.CANDIDATE }}
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Fence exact candidate and unchanged release workflows
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE"
+          test "$(git rev-parse HEAD^{tree})" = "$CANDIDATE_TREE"
+          test "$(git rev-parse HEAD^)" = "$PARENT"
+          test "$(git rev-list --parents -n 1 HEAD)" = "$CANDIDATE $PARENT"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          test "$(git diff --name-status "$PARENT" HEAD)" = "$(printf 'M\ttests/playwright/car-catalog.spec.js')"
+          test "$(git rev-parse "$PARENT:tests/playwright/car-catalog.spec.js")" = '48c884151ced70cf0b94f888a0612562ed7f8089'
+          test "$(git rev-parse HEAD:tests/playwright/car-catalog.spec.js)" = '26dd2b4229fb4d085bd477f217202a3bba756ee7'
+          test "$(git rev-parse HEAD:package-lock.json)" = '71d9cce5e4c06f526b49a6d80c0eae694a8f3f6f'
+          test "$(git rev-parse HEAD:playwright.config.js)" = '9e93a2ca786f76d8617ee53994a21ddee5bccb67'
+          test "$(git rev-parse HEAD:tools/playwright/static-server.cjs)" = 'a6d55f8749e170a93e9237f4ea1389526a03404b'
+          git diff --exit-code "$PARENT" HEAD -- .github/workflows data assets src tools package.json package-lock.json playwright.config.js
+          printf 'Diagnostic only. Candidate %s, tree %s. This does not satisfy any merge gate.\n' "$CANDIDATE" "$CANDIDATE_TREE"
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+
+      - name: Install only the pinned release dependencies and Playwright Chromium
+        run: |
+          set -euo pipefail
+          npm ci --no-audit --no-fund
+          node --input-type=commonjs <<'JS'
+          const assert=require('node:assert/strict');
+          for(const name of ['@playwright/test','playwright','playwright-core']){
+            assert.equal(require(name+'/package.json').version,'1.58.2',name);
+          }
+          JS
+          ./node_modules/.bin/playwright install --with-deps chromium
+
+      - name: Verify headless Chromium is adequately sandboxed
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import {chromium} from 'playwright';
+          const browser=await chromium.launch({headless:true,channel:'chromium',chromiumSandbox:true});
+          try{
+            const page=await browser.newPage();
+            await page.goto('chrome://sandbox');
+            const status=await page.locator('body').innerText();
+            console.log(browser.version(),status);
+            assert.match(status,/You are adequately sandboxed/i);
+            await page.goto('data:text/html,<title>sandbox-ready</title>');
+            assert.equal(await page.title(),'sandbox-ready');
+          }finally{await browser.close();}
+          JS
+
+      - name: Exercise only the four delayed-thumbnail journeys twice
+        run: |
+          set -euo pipefail
+          config=.pw-674-thumbnail-diagnostic.config.js
+          test ! -e "$config"
+          trap 'rm -f "$config" "$RUNNER_TEMP/preview-674-list.txt"' EXIT
+          cat > "$config" <<'CONFIG'
+          import {defineConfig} from '@playwright/test';
+          import base from './playwright.config.js';
+          export default defineConfig({
+            ...base,
+            retries:0,
+            use:{...base.use,channel:'chromium',trace:'off',
+              launchOptions:{...base.use?.launchOptions,chromiumSandbox:true}}
+          });
+          CONFIG
+          PW=(./node_modules/.bin/playwright test --config="$config" tests/playwright/car-catalog.spec.js --grep "$CASE_GREP")
+          "${PW[@]}" --list | tee "$RUNNER_TEMP/preview-674-list.txt"
+          python3 - "$RUNNER_TEMP/preview-674-list.txt" <<'PY'
+          import pathlib,re,sys
+          lines=pathlib.Path(sys.argv[1]).read_text().splitlines()
+          expected=[
+            'car selector does not show a fake car while real stock previews load',
+            'Cars open stays blank until the actual poster is ready',
+            'Cars saveAs stays blank until the actual poster is ready',
+            'campaign Load Save stays blank until the slot poster is ready',
+          ]
+          found=[m.group(1) for line in lines if (m:=re.fullmatch(r'  car-catalog\.spec\.js:\d+:\d+ › (.+)',line))]
+          assert lines[-1]=='Total: 4 tests in 1 file' and found==expected, (lines,found)
+          PY
+          "${PW[@]}" --workers=1 --retries=0 --repeat-each=2 --reporter=line
