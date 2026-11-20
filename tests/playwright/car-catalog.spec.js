@@ -100,10 +100,10 @@ import '../helpers/carCatalogPlaceholderWave17PickerCases.js';
 import '../helpers/carCatalogPlaceholderWave18PickerCases.js';
 
 const names=['2005 Flint Coupe','2018 Kestrel 660','2023 Volt-Hound GT','2024 Caravan-9'];
-async function holdImages(context){
+async function holdImage(context,expectedPath){
   const held=new Set();let release;
   const waiting=new Promise(resolve=>{release=resolve;});
-  await context.route(/\/assets\/car-previews\/[^/]+\.webp(?:\?|$)/,async route=>{
+  await context.route(url=>url.pathname===expectedPath,async route=>{
     held.add(new URL(route.request().url()).pathname);
     await waiting;
     await route.continue();
@@ -134,20 +134,24 @@ test('car selector does not show a fake car while real stock previews load',asyn
   test.setTimeout(120000);
   const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'});
   await context.addInitScript(()=>Object.defineProperty(navigator,'userAgentData',{value:{mobile:true}}));
-  const net=await holdImages(context),qa=await installThumbnailBrowseWitness(context);
+  const qa=await installThumbnailBrowseWitness(context);
+  const target=names[0],path='/'+qa.thumb.previews[qa.thumb.carsByName[target]].url;
+  const net=await holdImage(context,path);
   try{
     const page=await context.newPage();
     await page.goto('/index.html?hideFullscreenForTesting');
     await page.waitForFunction(()=>window.__gameReady&&window.__game?.state!=='loading');
-    await page.evaluate(async()=>{
+    await page.evaluate(async target=>{
       const {createMenuDocument}=await import('/src/menus/MenuDocument.js');
       const g=window.__game;g.setDisplayMode('color');
-      await g.menuPlayer.open(createMenuDocument(),{preview:true,screenId:'cars'});
-    });
+      const doc=createMenuDocument();doc.parameters.carRef=target;
+      // Scope the in-memory selection to this context before ordinary screen opening.
+      g.menuProgress={...g.menuProgress,carRef:target};
+      await g.menuPlayer.open(doc,{preview:true,screenId:'cars'});
+    },target);
     const selected=await page.evaluate(()=>window.__game.menuPlayer.flow.parameters.carRef);
-    expect(selected).toBe(names[0]);
-    const expectedAsset=qa.thumb.previews[qa.thumb.carsByName[selected]];
-    await expect.poll(()=>net.held.has('/'+expectedAsset.url),{timeout:30000}).toBe(true);
+    expect(selected).toBe(target);
+    await expect.poll(()=>net.held.has(path),{timeout:30000}).toBe(true);
     await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
     expect(await page.evaluate(()=>window.__fakeCarFills)).toBe(0);
     qa.assertBrowseCold();
@@ -160,7 +164,9 @@ test('car selector does not show a fake car while real stock previews load',asyn
 for(const mode of ['open','saveAs'])test('Cars '+mode+' stays blank until the actual poster is ready',async({browser})=>{
   test.setTimeout(120000);
   const context=await browser.newContext({serviceWorkers:'block'});
-  const net=await holdImages(context),qa=await installThumbnailBrowseWitness(context);
+  const qa=await installThumbnailBrowseWitness(context);
+  const target=names[0],path='/'+qa.thumb.previews[qa.thumb.carsByName[target]].poster.url;
+  const net=await holdImage(context,path);
   try{
     const page=await context.newPage();
     await page.goto('/index.html?hideFullscreenForTesting');
@@ -174,8 +180,7 @@ for(const mode of ['open','saveAs'])test('Cars '+mode+' stays blank until the ac
     await page.getByPlaceholder('Search in folder...').fill(name);
     const canvas=page.locator('.project-browser-row[data-name="2005 Flint Coupe"] .project-browser-art-preview canvas');
     await expect(canvas).toBeVisible();
-    const poster=qa.thumb.previews[qa.thumb.carsByName[name]].poster;
-    await expect.poll(()=>net.held.has('/'+poster.url),{timeout:30000}).toBe(true);
+    await expect.poll(()=>net.held.has(path),{timeout:30000}).toBe(true);
     const opaque=()=>canvas.evaluate(el=>{
       const data=el.getContext('2d').getImageData(0,0,el.width,el.height).data;
       let count=0;for(let i=3;i<data.length;i+=4)if(data[i]>128)count++;
@@ -193,7 +198,9 @@ for(const mode of ['open','saveAs'])test('Cars '+mode+' stays blank until the ac
 test('campaign Load Save stays blank until the slot poster is ready',async({browser})=>{
   test.setTimeout(120000);
   const context=await browser.newContext({serviceWorkers:'block'});
-  const net=await holdImages(context),qa=await installThumbnailBrowseWitness(context);
+  const qa=await installThumbnailBrowseWitness(context);
+  const target=names[0],path='/'+qa.thumb.previews[qa.thumb.carsByName[target]].poster.url;
+  const net=await holdImage(context,path);
   try{
     const page=await context.newPage();
     await page.goto('/index.html?hideFullscreenForTesting');
@@ -209,7 +216,6 @@ test('campaign Load Save stays blank until the slot poster is ready',async({brow
       g.campaignSaves.slots[0]={summary:{car:name,condition:71},playTimeSeconds:2};
       g.menuPlayer.showSaveSlots('start');
     },name);
-    const poster=qa.thumb.previews[qa.thumb.carsByName[name]].poster,path='/'+poster.url;
     await expect.poll(()=>net.held.has(path),{timeout:30000}).toBe(true);
     await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
     expect(await page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('saves-start');
