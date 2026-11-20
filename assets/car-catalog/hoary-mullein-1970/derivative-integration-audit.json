@@ -1,0 +1,218 @@
+{
+  "schemaVersion": 1,
+  "id": "hoary-mullein-1970",
+  "name": "Hoary Mullein 1970",
+  "integrationBasis": "31df41f2e5cc37733b151ae16fa6558eba33238a",
+  "integrationBasisTree": "d9799bd9d0498a42c70bf30e96b52cb90e38d117",
+  "classification": "prepared runtime art; original source preserved",
+  "originalCarDocumentSha256": "2158b14f16f3f3e25ba94d0dd7b4b4cadc9eb4cef3f8c7d091c0ba6259b9eec2",
+  "integratedNativeArtOnlyCarDocumentSha256": "e73ba462f8d937fc7926e626629a1a3da476e6a07183a25bde448efb64f80251",
+  "originalSourceHashes": {
+    "body": "47e6109a2fd29e8e51c13f4bb2ca4148a51174eeb4a698d47d5f04aa085fc9f7",
+    "dashboard": "b71e1e04e2798b1f918608e6f10e63306c7e3bb32163ac19fc0d98f5345193c5",
+    "tires": "cad7f7f41a61bffe2945f16354b9c7a325aec3c2c81d025ba4eb511b830fc79b"
+  },
+  "bodySourcePreserved": true,
+  "preparedRuntimeBodySha256": "fd701356f5b2243c3de25e99b4bbccc59c4224ee5108fcbe9d6c0098d50b646f",
+  "nativeArtOverlaySha256": "bf43df7f8c0b9a86f7106a7c0870ec20b3316cbdc91f24aa01dd5f91cbe278ed",
+  "fittingConfigSha256": "df2b147409b9c8d9395552af50fd6e2bdd9366a9ed45625434827d500cf5603d",
+  "derivative": {
+    "kind": "per-model alpha-only inner-liner removal",
+    "physicalSlot": "rearRight",
+    "physicalWheel": "far-front-right",
+    "sourceFrame": 5,
+    "coordinates": "original 1774x887 atlas, polygon pixel centers with odd-even inclusion; clear alpha only",
+    "sourcePixelsChanged": 170,
+    "sourceFraction": 0.00010803679351880921,
+    "originalAtlasNeverEdited": true,
+    "scopedPolygons": [
+      [
+        [
+          488,
+          674
+        ],
+        [
+          493,
+          674
+        ],
+        [
+          496,
+          678
+        ],
+        [
+          497,
+          683
+        ],
+        [
+          497,
+          685
+        ],
+        [
+          484,
+          685
+        ],
+        [
+          484,
+          681
+        ],
+        [
+          485,
+          677
+        ]
+      ],
+      [
+        [
+          484,
+          685
+        ],
+        [
+          490,
+          685
+        ],
+        [
+          489,
+          688
+        ],
+        [
+          489,
+          693
+        ],
+        [
+          487,
+          693
+        ],
+        [
+          485,
+          690
+        ]
+      ],
+      [
+        [
+          495,
+          685
+        ],
+        [
+          497,
+          685
+        ],
+        [
+          498,
+          688
+        ],
+        [
+          497,
+          691
+        ],
+        [
+          496,
+          692
+        ],
+        [
+          495,
+          692
+        ]
+      ]
+    ],
+    "sourcePixelLedgers": [
+      {
+        "count": 122,
+        "ledgerSha256": "2b454cabaf0f66fd2ccab3119bed3b3927c36029231e8f32542a45e9450018e6",
+        "bounds": [
+          484,
+          674,
+          497,
+          685
+        ]
+      },
+      {
+        "count": 33,
+        "ledgerSha256": "8440d7c500797a566eda54b5b245df946334030fbd149580cb407384879e7590",
+        "bounds": [
+          484,
+          685,
+          490,
+          693
+        ]
+      },
+      {
+        "count": 15,
+        "ledgerSha256": "a16c8376d3c8d72256eb7d4f031f1e77f5eecf3e61e456c55054bd54ca9b7f22",
+        "bounds": [
+          495,
+          685,
+          498,
+          692
+        ]
+      }
+    ],
+    "preparedFrameLedgers": [
+      {
+        "frame": 0,
+        "count": 0,
+        "ledgerSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "frame": 1,
+        "count": 0,
+        "ledgerSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "frame": 2,
+        "count": 0,
+        "ledgerSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "frame": 3,
+        "count": 0,
+        "ledgerSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "frame": 4,
+        "count": 0,
+        "ledgerSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "frame": 5,
+        "count": 170,
+        "ledgerSha256": "867a0520ebc666e831eb36489efce46613bd36ddecaceab515712c03651d2728"
+      },
+      {
+        "frame": 6,
+        "count": 0,
+        "ledgerSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "frame": 7,
+        "count": 0,
+        "ledgerSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      }
+    ],
+    "runtimeBodyFrameBoundsPreserved": true,
+    "dashboardAndTiresMatchUnmaskedPreparation": true,
+    "transparentNativeCompositeCheck": {
+      "view": "rearRight",
+      "changedPixels": 297,
+      "newlyTransparentPixels": 0,
+      "othersByteEquivalentPixels": true
+    }
+  },
+  "verification": {
+    "native8ReportSha256": "8f6b123c3b5e0a099f90b51897bf56351d9de715b39ca719af72c4e5556080c0",
+    "native16ReportSha256": "1fd2ce444454c4a7de70e6f2a28f35105315d7e6825d447da51223dc918e7239",
+    "staticGuardSha256": "605c9da6c48fdebbd7bb4b5da9ae27609321bc14a6d49fc291142c3de594686a",
+    "minimumMeasuredArchCoverage8And16": [
+      0.9013761467889908,
+      0.9838187702265372
+    ],
+    "exteriorCockpitFitHolds": 0,
+    "nativeRoundtrip": true,
+    "nonArtPreserved": true,
+    "independentPublicNativeReplaySha256": "2566d391d1a03ee51aae817ea1ebd3349f5874c26a7b0fd184b33f7b9782c2af",
+    "exactRuntimeSourceAndSharedArtFence": true,
+    "fitReview": "all eight full-car views at menu and enlarged size; sixteen native rotations; two instrument views",
+    "gameplayAccepted": false,
+    "preparerLimitation": "The checkpoint public importer lacks this per-vehicle alpha polygon option. This integration uses the reviewed archived native bytes, and separate source+stock pack reconstruction verified exact decoded frame semantics; no general importer/QA change is included.",
+    "publicReplayModuleFenceSha256": "fa6d9db203cef3e337b9f1d469238f240e8357d6528131cf93452052f06e06bd",
+    "publicAndReviewedNativeElevenPngsByteIdentical": true
+  }
+}
