@@ -2428,7 +2428,10 @@
       "catalog-woollyhead-clover-2011-tires": "art/catalog-woollyhead-clover-2011-tires/document.json",
       "catalog-hoary-mullein-1970-body": "art/catalog-hoary-mullein-1970-body/document.json",
       "catalog-hoary-mullein-1970-dashboard": "art/catalog-hoary-mullein-1970-dashboard/document.json",
-      "catalog-hoary-mullein-1970-tires": "art/catalog-hoary-mullein-1970-tires/document.json"
+      "catalog-hoary-mullein-1970-tires": "art/catalog-hoary-mullein-1970-tires/document.json",
+      "catalog-strawberry-clover-1965-body": "art/catalog-strawberry-clover-1965-body/document.json",
+      "catalog-strawberry-clover-1965-dashboard": "art/catalog-strawberry-clover-1965-dashboard/document.json",
+      "catalog-strawberry-clover-1965-tires": "art/catalog-strawberry-clover-1965-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

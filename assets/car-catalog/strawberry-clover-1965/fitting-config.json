@@ -1,0 +1,388 @@
+{
+  "id": "strawberry-clover-1965",
+  "name": "Strawberry Clover 1965",
+  "rosterCommit": "75aa3acbf9e17738d96efa37c09ceb4ec964825e",
+  "expectedDocumentSha256": "aafcb0b418701652c3512c3f729e2397d9d587ccee40db5755bea7076c7cf400",
+  "sourceDirectory": "assets/car-catalog/strawberry-clover-1965",
+  "sourceHashes": {
+    "body": "ce70857046e4d39ffa7935bbe5d002da6c63f43c0085460c90ef55b44bcaa133",
+    "dashboard": "4383fc8cae6f3176aaf3c8649982e2fcfb81533458a9d38aa21e3c3bf3d63cc1",
+    "tires": "b8e01808db0eb36603928a1b896ee4dbe2186f4a20fe99079564f7694172d641"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 65.19999999999999,
+        "y": 331.5,
+        "radius": 28.5
+      },
+      {
+        "wheel": "fr",
+        "x": 376.8,
+        "y": 331.5,
+        "radius": 28.5
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 696.0,
+        "y": 287.5,
+        "radius": 30.5
+      },
+      {
+        "wheel": "rr",
+        "x": 842.5,
+        "y": 233.0,
+        "radius": 16.0
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 993.5,
+        "y": 274.0,
+        "radius": 44.0
+      },
+      {
+        "wheel": "rr",
+        "x": 1247.5,
+        "y": 263.0,
+        "radius": 40.0
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1376.0,
+        "y": 243.5,
+        "radius": 20.5
+      },
+      {
+        "wheel": "rr",
+        "x": 1530.0,
+        "y": 267.5,
+        "radius": 33.5
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 66.11,
+        "y": 760.575,
+        "radius": 28.425
+      },
+      {
+        "wheel": "rl",
+        "x": 376.89,
+        "y": 760.575,
+        "radius": 28.425
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 688.0,
+        "y": 713.5,
+        "radius": 34.5
+      },
+      {
+        "wheel": "fl",
+        "x": 840.0,
+        "y": 686.5,
+        "radius": 19.5
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 971.0,
+        "y": 708.5,
+        "radius": 40.5
+      },
+      {
+        "wheel": "fl",
+        "x": 1224.0,
+        "y": 715.5,
+        "radius": 43.5
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1374.5,
+        "y": 679.0,
+        "radius": 17.0
+      },
+      {
+        "wheel": "fl",
+        "x": 1520.5,
+        "y": 732.0,
+        "radius": 31.0
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      255,
+      450,
+      470,
+      195
+    ],
+    "wheel": [
+      490.0,
+      613.0,
+      300
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#e4efff",
+    "viewportWheelScale": 1.74,
+    "wheelOpeningInsets": [
+      [
+        0.1,
+        0.23
+      ],
+      [
+        0.34,
+        0.4
+      ],
+      [
+        0.76,
+        0.14
+      ]
+    ]
+  },
+  "allowSideTireOverrides": true,
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "method": "dense closed-apex alpha tracks; held-out native validation",
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false,
+    "nearWheelProbe": {
+      "horizontalProjectionFactor": 0.85,
+      "inwardAxleOffset": 0.4,
+      "accepted": false
+    }
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 0.7223552905616819,
+      "tireScaleY": 1.1047786796825725,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.5044447131297869,
+      "frontTireOffsetY": -0.19707577439630977,
+      "rearTireOffsetX": -0.9044447131297874,
+      "rearTireOffsetY": -0.10292422560368977
+    },
+    "rearRight": {
+      "tireScaleX": 0.8799874634857976,
+      "tireScaleY": 1.345863179448867,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.34049057307454794,
+      "frontTireOffsetY": 0.4581832424986524,
+      "rearTireOffsetX": 0.059509426925452615,
+      "rearTireOffsetY": -0.7581832424986525
+    },
+    "rearLeft": {
+      "tireScaleX": 0.9022562835990015,
+      "tireScaleY": 1.37992137491612,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.40377590906729505,
+      "frontTireOffsetY": 0.39361075858252237,
+      "rearTireOffsetX": 0.0037759090672922573,
+      "rearTireOffsetY": -0.6936107585825215
+    },
+    "frontLeft": {
+      "tireScaleX": 0.7378966274511572,
+      "tireScaleY": 1.1285477831605935,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.4993771236552547,
+      "frontTireOffsetY": -0.22215570767401593,
+      "rearTireOffsetX": 0.8993771236552559,
+      "rearTireOffsetY": -0.07784429232598361
+    },
+    "right": {
+      "tireScaleX": 1.3149078541981345,
+      "tireScaleY": 1.091419388391171,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.09360000000000204,
+      "frontTireOffsetY": -0.2859211890938996,
+      "rearTireOffsetX": 0.03157024793388514,
+      "rearTireOffsetY": -0.3489151833248915
+    },
+    "left": {
+      "tireScaleX": 1.3051039239162048,
+      "tireScaleY": 1.0313534963286277,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.10640000000000202,
+      "frontTireOffsetY": -0.36654324433881796,
+      "rearTireOffsetX": 0.031570247933883584,
+      "rearTireOffsetY": -0.4482931280799721
+    },
+    "front": {
+      "tireScaleX": 0.4051927732139252,
+      "tireScaleY": 0.5644339650447434,
+      "tireSpacingScale": 1.0975273673972503,
+      "frontTireOffsetX": 0.0,
+      "frontTireOffsetY": -0.22940265024308298,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0
+    },
+    "rear": {
+      "tireScaleX": 0.4083353570967893,
+      "tireScaleY": 0.5934311955218713,
+      "tireSpacingScale": 1.0838773199015823,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0.019941280603174447,
+      "rearTireOffsetY": -0.26408722960961123
+    }
+  },
+  "bodyAlphaRemoval": {
+    "sourceSha256": "ce70857046e4d39ffa7935bbe5d002da6c63f43c0085460c90ef55b44bcaa133",
+    "reason": "Strawberry exact four distal rims; dark liner only, keep original outside local patches.",
+    "polygons": [
+      [
+        [
+          1368,
+          650
+        ],
+        [
+          1374,
+          650
+        ],
+        [
+          1377,
+          654
+        ],
+        [
+          1379,
+          664
+        ],
+        [
+          1375,
+          669
+        ],
+        [
+          1362,
+          668
+        ],
+        [
+          1360,
+          662
+        ]
+      ],
+      [
+        [
+          842,
+          204
+        ],
+        [
+          849,
+          204
+        ],
+        [
+          853,
+          209
+        ],
+        [
+          857,
+          218
+        ],
+        [
+          853,
+          224
+        ],
+        [
+          841,
+          224
+        ],
+        [
+          837,
+          219
+        ]
+      ],
+      [
+        [
+          1366,
+          215
+        ],
+        [
+          1374,
+          215
+        ],
+        [
+          1378,
+          222
+        ],
+        [
+          1381,
+          230
+        ],
+        [
+          1375,
+          236
+        ],
+        [
+          1359,
+          235
+        ],
+        [
+          1359,
+          227
+        ]
+      ],
+      [
+        [
+          844,
+          660
+        ],
+        [
+          854,
+          660
+        ],
+        [
+          858,
+          667
+        ],
+        [
+          859,
+          675
+        ],
+        [
+          850,
+          680
+        ],
+        [
+          836,
+          678
+        ],
+        [
+          835,
+          669
+        ]
+      ]
+    ],
+    "maximumChangedPixels": 1254
+  },
+  "allowCardinalTireOverrides": true
+}
