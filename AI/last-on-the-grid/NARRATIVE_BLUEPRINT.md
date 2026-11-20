@@ -17,6 +17,13 @@ Over a **few years**, most humans chose a networked digital existence called Hea
 - **Act III (8–10):** Cait gains real alternatives. Rob's mechanical indispensability fades. His need for words meets Cait's resistance to naming her experience; their conflict has consequences.
 - **Act IV (11):** Arrival at the promised ocean. Fulfill the stated objective without resolving the reserved ending by accident.
 
+## New thematic axis — perfection versus authenticity
+Rob's reluctance to enter Heaven is not merely about physical sensations. **People inside became so consistently comforting that he felt they no longer sounded like themselves.** Their polished conversations resemble a drive-through script to him. But we must preserve the possibility that they've genuinely become kinder and happier and that Rob simply distrusts changes he didn't choose.
+
+This is the [Reverse Turing Test](WORLD_LORE/REVERSE_TURING_TEST.md): if formerly human voices become indistinguishable from scripted service voices, what does Rob think he's lost? The question becomes a deliberate counterpoint to an android, Cait, who argues, loves racing, refuses easy answers and will not say “I love you” for his benefit. **He prizes honest disagreement until it hurts him.**
+
+**Literary continuity:** 05 machine service scripts → 06 emotionally polished human speech → 07 obedient android's easy “I love you” → 08–10 Cait's independent choices and refusal. Do not turn these into a lecture sequence.
+
 ## Chapter spine
 | # | Location | Working title | Story engine | Status |
 |---|---|---|---|---|
