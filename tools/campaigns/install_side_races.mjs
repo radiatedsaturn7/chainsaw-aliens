@@ -1,3 +1,4 @@
+import {attachCampaignRoutePreviews} from './route_previews.mjs';
 import {configureCampaignRegionMap} from '../../src/menus/CampaignRegionDialogue.js';
 import {dressImportedRace} from './dress_imported_race.mjs';
 // Install successful imports only; never rewrite existing campaign races.
@@ -38,13 +39,14 @@ write(`${base}/catalog.json`,installed);
 const menuPath=`${root}/menus/Game Menu/document.json`,menu=read(menuPath);
 const racewaysPath='data/campaigns/america/raceways/catalog.json';
 const allEvents=[...installed,...(fs.existsSync(racewaysPath)?read(racewaysPath):[])];
-const {screens,hubs,sideGates}=createCampaignHubMenus(catalog,research,allEvents);
+const {screens,hubs,sideGates,progression}=createCampaignHubMenus(catalog,research,allEvents);
 menu.screens=menu.screens.filter(s=>!s.id.startsWith('campaign-hub-')).concat(screens);
 menu.parameters.campaignHubs=hubs;
 menu.parameters.campaignEventHubs=Object.fromEntries(allEvents.filter(e=>e.status==='installed').map(e=>[e.raceRef,e.hubRaceRef]));
 menu.parameters.campaignSideGates=sideGates;
+menu.parameters.campaignProgression=progression;
 configureCampaignRegionMap(menu);
-write(menuPath,menu);write(`${root}/menus/Game Menu/metadata.json`,{...read(`${root}/menus/Game Menu/metadata.json`),savedAt});
+attachCampaignRoutePreviews(menu);write(menuPath,menu);write(`${root}/menus/Game Menu/metadata.json`,{...read(`${root}/menus/Game Menu/metadata.json`),savedAt});
 const latestManifest=read(`${root}/manifest.json`);
 for(const event of installed.filter(e=>e.status==='installed'))latestManifest.folders.races[event.raceRef]=event.documentPath;
 write(`${root}/manifest.json`,latestManifest);

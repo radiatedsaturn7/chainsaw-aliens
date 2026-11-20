@@ -14,6 +14,7 @@ export async function setMenuProgress(game,variables){
  await loadMenuProgress(game);
  delete values.selectedGameCar;
  game.menuProgressSaving=(game.menuProgressSaving||Promise.resolve()).catch(()=>{}).then(async()=>{
+  for(const key of Object.keys(values))if(key.startsWith('raceCompleted.')&&game.menuProgress[key]===true)values[key]=true;
   const snapshot={...game.menuProgress,...values};
   const result=await persistProgress(game,snapshot);if(!result.ok)throw Error('Could not save menu progress');
   game.menuProgress=snapshot;

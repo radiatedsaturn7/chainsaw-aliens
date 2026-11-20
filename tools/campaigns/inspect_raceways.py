@@ -8,7 +8,27 @@ import import_side_races as side
 ROOT=Path('data/campaigns/america/raceways')
 def candidate_layouts(spec):
  ways=json.loads((ROOT/'sources'/f"{spec['key']}.json").read_text())
- ways=[w for w in ways if w.get('tags',{}).get('area')!='yes' and not re.search(r'\bpit\b|pitlane|kart',str(w.get('tags',{})),re.I)]
+ raw_ways=ways
+ ways=[w for w in ways if w.get('tags',{}).get('area')!='yes' and not track.is_service_raceway(w.get('tags',{})) and not re.search(r'kart',str(w.get('tags',{})),re.I)]
+ if spec.get('separateComponents'):
+  # A nearby driver-training maze must not consume the main circuit's cycle budget.
+  pending=list(ways);layouts=[]
+  while pending:
+   component=[pending.pop()];nodes=set(component[0]['nodes']);changed=True
+   while changed:
+    changed=False
+    for w in pending[:]:
+     if nodes.intersection(w['nodes']):component.append(w);nodes.update(w['nodes']);pending.remove(w);changed=True
+   try:layouts.extend(track.extract_layouts(component,(spec['lat'],spec['lon']),max_layouts=256,max_cycles=512))
+   except ValueError:pass
+  if spec.get('raceRelationWayIds'):
+   # Public road one-way restrictions apply outside race closures. The mapped
+   # race relation supplies the course, while its direction is reviewed below.
+   ids=set(spec['raceRelationWayIds'])
+   relation=[{**w,'tags':{**w['tags'],'oneway':'no'}} for w in raw_ways if w['id'] in ids]
+   if len(relation)!=len(ids):raise ValueError('Incomplete race relation snapshot')
+   layouts.extend(track.extract_layouts(relation,(spec['lat'],spec['lon'])))
+  return sorted(layouts,key=lambda l:-l['lengthM'])
  return track.extract_layouts(ways,(spec['lat'],spec['lon']),max_layouts=256,max_cycles=512)
 
 if __name__=='__main__':

@@ -1,0 +1,230 @@
+{
+  "date": "2026-11-18T05:11:22.629389+00:00",
+  "scope": "Selected standalone rally stages and geographic road recreations; no complete championship itinerary claimed.",
+  "routes": [
+    {
+      "key": "chile-conuco",
+      "reference": "https://www.biobiochile.cl/especial/rally/rutas.shtml",
+      "method": "Current OSM forest-road loop visually matched to the public 2024 Conuco shakedown map and organizer start-area coordinates. Geographic road recreation, not the exact 6.79 km competitive stage: mapped southern forest-road alignments and game timing boundaries differ. No invented connections or repeated road edges. Widths and surface roughness estimated; DEM does not survey ruts or jumps.",
+      "reviewedLayoutIssues": [],
+      "waypoints": [
+        [
+          -36.6373699,
+          -72.7700847
+        ],
+        [
+          -36.6450833,
+          -72.7719569
+        ],
+        [
+          -36.6496213,
+          -72.7745372
+        ],
+        [
+          -36.6541193,
+          -72.7676493
+        ],
+        [
+          -36.6579992,
+          -72.7675464
+        ],
+        [
+          -36.6597507,
+          -72.7574653
+        ],
+        [
+          -36.6419068,
+          -72.7593425
+        ]
+      ],
+      "selector": null
+    },
+    {
+      "key": "kenya-hells-gate",
+      "reference": "https://www.scribd.com/document/1053966482/WRC-Safari-Rally-2021-Safety-Book",
+      "method": "Current OSM roads reconstructed through the organizer 2021 Safety Book Hell's Gate start, radio controls and finish (public mirror). The 9.18 km control snaps 6.3 m to its mapped junction to avoid a false spur. The sharp Buffalo Circuit/Gorge Road junction is real connected topology (OSM ways 35283035/35283037), not an overlapping road reversal. Geographic recreation, not a surveyed historic stage; widths, small bridges and roughness are approximate.",
+      "reviewedLayoutIssues": [
+        "Abrupt 131-degree reversal at point 190; verify junction continuity"
+      ],
+      "waypoints": [
+        [
+          -0.8972833333333334,
+          36.3494
+        ],
+        [
+          -0.8958499999999999,
+          36.359766666666665
+        ],
+        [
+          -0.8879333333333334,
+          36.371716666666664
+        ],
+        [
+          -0.8797333333333334,
+          36.375683333333335
+        ],
+        [
+          -0.8735999999999999,
+          36.36408333333333
+        ],
+        [
+          -0.8650312,
+          36.37078
+        ],
+        [
+          -0.85815,
+          36.36363333333333
+        ]
+      ],
+      "selector": null
+    },
+    {
+      "key": "japan-bisan",
+      "reference": "https://www.rallyjapan.jp/e/pdf/10RJ_RG2_ENG08.11_SSMaps3.pdf",
+      "method": "Current OSM forest roads matched to the organizer 2010 Rally Guide 2 stage map and start/radio/finish coordinates. Geographic gravel-road recreation, not a surveyed 2010 stage; current road alignments and game timing lines differ. Naekawa radio controls are snapped up to 33 m to adjacent mapped junctions, avoiding off-road safety positions. Its sharp R3 junction is genuine connected topology (OSM ways 226201402/226201413). Road widths and roughness estimated.",
+      "reviewedLayoutIssues": [],
+      "waypoints": [
+        [
+          43.30663333333333,
+          141.88293333333334
+        ],
+        [
+          43.29388333333333,
+          141.90915
+        ],
+        [
+          43.2999,
+          141.9199
+        ]
+      ],
+      "selector": null
+    },
+    {
+      "key": "japan-naekawa",
+      "reference": "https://www.rallyjapan.jp/e/pdf/10RJ_RG2_ENG08.11_SSMaps3.pdf",
+      "method": "Current OSM forest roads matched to the organizer 2010 Rally Guide 2 stage map and start/radio/finish coordinates. Geographic gravel-road recreation, not a surveyed 2010 stage; current road alignments and game timing lines differ. Naekawa radio controls are snapped up to 33 m to adjacent mapped junctions, avoiding off-road safety positions. Its sharp R3 junction is genuine connected topology (OSM ways 226201402/226201413). Road widths and roughness estimated.",
+      "reviewedLayoutIssues": [
+        "Abrupt 152-degree reversal at point 302; verify junction continuity"
+      ],
+      "waypoints": [
+        [
+          43.41535,
+          141.92575
+        ],
+        [
+          43.3914,
+          141.95816666666667
+        ],
+        [
+          43.393624,
+          141.985795
+        ],
+        [
+          43.404221,
+          141.988323
+        ],
+        [
+          43.409745,
+          141.977191
+        ],
+        [
+          43.42565,
+          141.98486666666668
+        ],
+        [
+          43.446016666666665,
+          141.98035
+        ]
+      ],
+      "selector": null
+    },
+    {
+      "key": "turkey-ula-2019",
+      "reference": "https://www.google.com/maps/d/kml?mid=1fii0U2rDVwfqwYPumAlA9H-P7p-wEYUQ&forcekml=1",
+      "method": "Competitive-stage coordinate trace from the public 2019 Rally Turkey map linked by Marmaris Info (https://www.marmarisinfo.com/wrc-rally-turkey). Spectator access roads and repeat passes excluded. Predominantly gravel; exact widths, small paved crossings and surveyed roughness unresolved. Game timing lines differ from official controls.",
+      "reviewedLayoutIssues": [],
+      "waypoints": null,
+      "selector": "DAY 2 | SS 4/7 ULA"
+    },
+    {
+      "key": "turkey-cicekli-2019",
+      "reference": "https://www.google.com/maps/d/kml?mid=1fii0U2rDVwfqwYPumAlA9H-P7p-wEYUQ&forcekml=1",
+      "method": "Competitive-stage coordinate trace from the public 2019 Rally Turkey map linked by Marmaris Info (https://www.marmarisinfo.com/wrc-rally-turkey). Spectator access roads and repeat passes excluded. Predominantly gravel; exact widths, small paved crossings and surveyed roughness unresolved. Game timing lines differ from official controls.",
+      "reviewedLayoutIssues": [],
+      "waypoints": null,
+      "selector": "DAY 4 | SS 16 ÇİÇEKLİ"
+    },
+    {
+      "key": "turkey-icmeler-2019",
+      "reference": "https://www.google.com/maps/d/kml?mid=1fii0U2rDVwfqwYPumAlA9H-P7p-wEYUQ&forcekml=1",
+      "method": "Competitive-stage coordinate trace from the public 2019 Rally Turkey map linked by Marmaris Info (https://www.marmarisinfo.com/wrc-rally-turkey). Spectator access roads and repeat passes excluded. Predominantly gravel; exact widths, small paved crossings and surveyed roughness unresolved. Game timing lines differ from official controls.",
+      "reviewedLayoutIssues": [],
+      "waypoints": null,
+      "selector": "DAY 2 | SS 2/5 İÇMELER"
+    }
+  ],
+  "sourceControls": {
+    "kenya-hells-gate": {
+      "referenceYear": 2021,
+      "format": "latitude south minutes, longitude east degrees 36 + minutes",
+      "controls": [
+        [
+          53.837,
+          20.964
+        ],
+        [
+          53.751,
+          21.586
+        ],
+        [
+          53.276,
+          22.303
+        ],
+        [
+          52.784,
+          22.541
+        ],
+        [
+          52.416,
+          21.845
+        ],
+        [
+          51.903,
+          22.25
+        ],
+        [
+          51.489,
+          21.818
+        ]
+      ],
+      "publishedDistanceM": 10560
+    },
+    "japan-bisan": {
+      "referenceYear": 2010,
+      "pdfPage": 8,
+      "publishedDistanceM": 4710
+    },
+    "japan-naekawa": {
+      "referenceYear": 2010,
+      "pdfPage": 9,
+      "publishedDistanceM": 17860,
+      "junctionSnapMaxM": 33
+    },
+    "chile-conuco": {
+      "referenceYear": 2024,
+      "publishedDistanceM": 6790,
+      "mapImage": "https://www.biobiochile.cl/especial/rally/assets/img/shakedown.png",
+      "limitation": "Current OSM loop is longer; not represented as the exact shakedown."
+    }
+  },
+  "notImported": [
+    {
+      "name": "Datca / Kizlan / Marmaris / Gokce",
+      "reason": "Raw source traces have reversal artifacts; require targeted source review before use."
+    },
+    {
+      "name": "Modern Japan Isegami/Mikawako",
+      "reason": "Overview map is available; detailed alignment and tunnel elevation engineering remain unverified."
+    }
+  ]
+}

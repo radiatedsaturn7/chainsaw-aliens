@@ -122,8 +122,9 @@
     "references": [
       "https://motorsportspark.org/wp-content/uploads/2017/12/facility-overview.compressed.pdf"
     ],
-    "layoutIndex": 3,
-    "mappedLengthM": 5053.71
+    "layoutIndex": 4,
+    "mappedLengthM": 5037.966136009996,
+    "layoutNotes": "Reviewed continuous mapped loop; excludes the short reverse connector spur."
   },
   {
     "id": "state-la",

@@ -900,6 +900,7 @@ function createTrackStateStepScratch() {
     direction: { x: 0, z: 1 },
     queueOptions: {
       vehicleId: 'player',
+      resetGeneration: 0,
       wheelIds: RACE_WHEEL_IDS,
       collectAcceptedEvents: false,
       contactByWheel: trackStateContactByWheel,
@@ -999,6 +1000,7 @@ function emitAuthoritativeTrackStateStep({
   scratch.direction.z = Math.cos(yaw);
   const queueOptions = scratch.queueOptions;
   queueOptions.vehicleId = editor.playtestSession.carId || 'player';
+  queueOptions.resetGeneration = Number(telemetry.state?.vehicleResetGeneration) || 0;
   queueOptions.normalLoads = telemetry.state?.wheelLoadsN;
   queueOptions.tireSlipByWheel = telemetry.state?.wheelSlip;
   queueOptions.previousPositions = previousPositions;

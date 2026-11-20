@@ -1,0 +1,183 @@
+[
+  {
+    "key": "spain-fatarella",
+    "collection": "spain",
+    "collectionName": "Rally Spain",
+    "stageName": "La Fatarella\u2013Vilalba \u2014 Sant Francesc Road",
+    "country": "es",
+    "width": 5.5,
+    "artHubStage": 9,
+    "waypoints": [
+      [
+        41.1646,
+        0.470606
+      ],
+      [
+        41.2224654,
+        0.4162724
+      ],
+      [
+        41.2339504,
+        0.4143348
+      ]
+    ],
+    "url": "https://www.rallyracc.com/2019/en/ss_la-fatarella.html",
+    "bumpiness": 0.055,
+    "method": "Current connected Cami de Sant Francesc road from La Fatarella toward Sant Francesc, within the rally corridor. Partial geographic recreation, not the full 2019 stage: current mapped paving differs from the historical mixed-surface itinerary. OSM paved-to-gravel transition retained; no invented surface percentages. Width and small surface details estimated.",
+    "year": null,
+    "format": "mapped-road"
+  },
+  {
+    "key": "wales-sweet-lamb",
+    "collection": "wales",
+    "collectionName": "Wales \u2014 Sweet Lamb/Hafren",
+    "stageName": "Sweet Lamb\u2013Hafren \u2014 Western Section",
+    "country": "gb",
+    "width": 5.5,
+    "artHubStage": 3,
+    "waypoints": [
+      [
+        52.4508475,
+        -3.7278387
+      ],
+      [
+        52.4687156,
+        -3.7216594
+      ],
+      [
+        52.4710084,
+        -3.7175528
+      ],
+      [
+        52.4741352,
+        -3.7283811
+      ],
+      [
+        52.487339,
+        -3.7273887
+      ]
+    ],
+    "url": "https://files.freethought.website/freethought27/file/sweetlamb-hafren_1.pdf",
+    "bumpiness": 0.05,
+    "method": "Current OpenStreetMap road geometry matched to the public stage map. Selected continuous road recreation, not the complete competitive layout or exact timing controls. Widths and roughness are estimates; DEM does not resolve engineered jumps, ruts or camber. Sweet Lamb/Hafren corridor from the public RAC 2023 map; arena loops and artificial jumps omitted. Ends on the western Hafren forest climb; eastern forest loop omitted because current mapped connections need further verification. The two sharp bends are connected OSM track junctions (242278120/666309992 and 233409038/666309990), not retraced edges.",
+    "year": null,
+    "format": "mapped-road",
+    "reviewedLayoutIssues": [
+      "Abrupt 149-degree reversal at point 79; verify junction continuity",
+      "Abrupt 137-degree reversal at point 98; verify junction continuity"
+    ]
+  },
+  {
+    "key": "germany-panzerplatte",
+    "collection": "germany",
+    "collectionName": "Rally Germany",
+    "stageName": "Panzerplatte \u2014 Range Road Section",
+    "country": "de",
+    "surface": "asphalt",
+    "width": 6,
+    "artHubStage": 3,
+    "waypoints": [
+      [
+        49.6786653,
+        7.4258754
+      ],
+      [
+        49.6694136,
+        7.3807383
+      ],
+      [
+        49.6628624,
+        7.3904436
+      ]
+    ],
+    "url": "https://media.adac-motorsport.de/dl.php?dID=3722%2C135%2C136%2C1768&fID=37355",
+    "bumpiness": 0.025,
+    "method": "Current OpenStreetMap road geometry matched to the public stage map. Selected continuous road recreation, not the complete competitive layout or exact timing controls. Widths and roughness are estimates; DEM does not resolve engineered jumps, ruts or camber. Selected Baumholder range roads in the ADAC 2018 stage area, not the full Panzerplatte competition itinerary. Concrete retains its mapped material in provenance and uses the game asphalt physics; no separate concrete grip model. No surveyed Gina jump.",
+    "year": null,
+    "format": "mapped-road"
+  },
+  {
+    "key": "japan-isegami",
+    "collection": "japan-aichi",
+    "collectionName": "Rally Japan \u2014 Aichi",
+    "stageName": "Isegami\u2019s Tunnel \u2014 Road Section",
+    "country": "jp",
+    "surface": "asphalt",
+    "width": 4.5,
+    "artHubStage": 3,
+    "waypoints": [
+      [
+        35.1697503,
+        137.4252485
+      ],
+      [
+        35.1713194,
+        137.4283734
+      ],
+      [
+        35.1732546,
+        137.4308037
+      ],
+      [
+        35.177,
+        137.426
+      ]
+    ],
+    "url": "https://www.rallysupport.com/wp-content/uploads/2025/11/Rally-Japan-2025-Stage-Maps-Overview.pdf",
+    "bumpiness": 0.02,
+    "method": "Current OpenStreetMap road geometry matched to the public stage map. Selected continuous road recreation, not the complete competitive layout or exact timing controls. Widths and roughness are estimates; DEM does not resolve engineered jumps, ruts or camber. Isegami old-road/tunnel portion of the 2025 corridor; excludes the full approach and northern finish. Tunnel deck interpolated between portal terrain estimates, not surveyed heights.",
+    "tunnelDecks": true,
+    "year": null,
+    "format": "mapped-road"
+  },
+  {
+    "key": "100aw-cattle-guard",
+    "collection": "100-acre-wood",
+    "collectionName": "100 Acre Wood Rally",
+    "stageName": "Cattle Guard \u2014 Ollie Coleman Road",
+    "country": "us",
+    "stateCode": "MO",
+    "width": 6,
+    "artHubStage": 5,
+    "waypoints": [
+      [
+        37.7516706,
+        -91.2298415
+      ],
+      [
+        37.7946525,
+        -91.2575598
+      ]
+    ],
+    "url": "https://www.americanrallyassociation.org/post/stpr-and-missouri-ozark-rally-set-for-ara-regional-doubleheader",
+    "bumpiness": 0.045,
+    "method": "Current OpenStreetMap road geometry matched to the public stage map. Selected continuous road recreation, not the complete competitive layout or exact timing controls. Widths and roughness are estimates; DEM does not resolve engineered jumps, ruts or camber. Ollie Coleman Road section of the KP-to-Ollie/Cattle Guard corridor only. Exact cattle-guard jump location and profile are not surveyed; no artificial jump added.",
+    "year": null,
+    "format": "mapped-road"
+  },
+  {
+    "key": "ojibwe-steamboat",
+    "collection": "ojibwe",
+    "collectionName": "Ojibwe Forests Rally",
+    "stageName": "Steamboat \u2014 Forest Road Section",
+    "country": "us",
+    "stateCode": "MN",
+    "width": 5.5,
+    "artHubStage": 3,
+    "waypoints": [
+      [
+        47.1007719,
+        -94.8176167
+      ],
+      [
+        47.0687008,
+        -94.7328768
+      ]
+    ],
+    "url": "https://ojibweforestsrally.com/wp-content/uploads/2025/08/2025-Spectator-Guide-4.pdf",
+    "bumpiness": 0.055,
+    "method": "Current OpenStreetMap road geometry matched to the public stage map. Selected continuous road recreation, not the complete competitive layout or exact timing controls. Widths and roughness are estimates; DEM does not resolve engineered jumps, ruts or camber. Continuous Steamboat Forest Road, identified by the organizer map and ARA 2021 stage guide. Not the complete historic stage. Sandy gravel represented by the existing gravel surface model.",
+    "year": null,
+    "format": "mapped-road"
+  }
+]

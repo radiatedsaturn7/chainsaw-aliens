@@ -1,6 +1,6 @@
 import {raceCompletionKey} from './MenuWorldMap.js';
 
-export const AMERICA_OPENING_RACE = 'Tower Hill Road';
+export const AMERICA_OPENING_RACE = 'Providence, RI — Landmark Run';
 export const AMERICA_ROUTE_NAME = 'Middle Route';
 // Geographic positions, with explicit ordered connections/unlocks. The catalog
 // owns the itinerary; no fixed stage count or synthetic endpoint is required.

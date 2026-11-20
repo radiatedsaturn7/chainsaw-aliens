@@ -131,6 +131,7 @@ export function createWorkerTrackStateAuthority({
     const beforeSequence = trackState.nextSequence;
     queueRaceTrackStateTireEvents(trackState, {
       vehicleId,
+      resetGeneration: Number(state.vehicleResetGeneration) || 0,
       normalLoads: state.wheelLoadsN,
       tireSlipByWheel: state.wheelSlip,
       longitudinalSlipByWheel: scratch.longitudinalSlipByWheel,

@@ -63,7 +63,7 @@ test('intro presentation initializes grounded physics height without advancing t
  const {initializeRaceVehiclePresentation}=await import('../../src/racing/RaceSimulation.js');
  const e=new RaceEditor({});e.preloadSelectedRaceArtRefs=()=>{};e.prewarmRacePlaytestRenderResources=()=>{};
  e.startPlaytest(e.selectedCar.id,{hydrateCars:false});const s=e.playtestSession;
- assert.equal(s.countdownRemainingMs,6000,'five seconds to GO plus the GO display second');
+ assert.equal(s.countdownRemainingMs,4000,'three seconds after the showcase plus the GO display second');
  const before={countdown:s.countdownRemainingMs,elapsed:s.elapsedMs,distance:s.distance};
  initializeRaceVehiclePresentation(e);
  assert.equal(s.vehicleRenderState.position.y,s.vehicleDynamicsRunner.state.position.y);

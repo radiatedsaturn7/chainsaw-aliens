@@ -1,3 +1,4 @@
+import {campaignCompletionMark,selectedCampaignPreview,drawCampaignRoutePreview} from './CampaignRoutePreview.js';
 import {campaignRegionDialogue} from './CampaignRegionDialogue.js';
 import {raceRewardQuote} from '../garage/CampaignEconomy.js';
 import {loadingFact} from './MenuLoadingScreen.js';
@@ -43,7 +44,7 @@ function drawCachedButton(ctx,bounds,document,screen,element,parameters,options)
   const transform=ctx.getTransform?.();
   const density=Math.min(3,Math.max(1,Math.abs(transform?.a||1),Math.abs(transform?.d||1)));
   const b=menuElementBounds(element,bounds),pad=4;
-  const key=[bounds.w,bounds.h,density,options.focus===element.id,options.selected===element.id,
+  const key=[element.action?.parameter==='raceRef'?campaignCompletionMark(element.action.value,parameters,resources.garage?.progress):'',bounds.w,bounds.h,density,options.focus===element.id,options.selected===element.id,
     JSON.stringify(Object.fromEntries(Object.entries(element).filter(([k,v])=>!['fontData','cursorData'].includes(k)&&typeof v!=='object'))),
     caption(element.label,parameters),font].join('|');
   let cache=buttonFrames.get(element);
@@ -148,6 +149,11 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
     else if(element.type==='code-entry')drawCodeEntry(ctx,b,element,value,widgetStates.get(element.id),element.id===focus);
     else if(element.type==='garage-dialogue')drawGarageDialogueText(ctx,b,widgetStates.get(element.id)?.text??garageDialogueText(garageDialogueContext(screen,resources,parameters,widgetStates,focus||selected)),fontFamily,element,{time,editing});
     else if(element.type==='race-description'){
+      if(element.property==='route-preview'){
+        const ref=selectedCampaignPreview(screen,focus,widgetStates);
+        drawCampaignRoutePreview(ctx,b,document.parameters?.campaignRoutePreviews?.[ref],ref,resources,drawText,fontFamily);
+        ctx.restore();continue;
+      }
       const map=screen.elements.find(e=>e.type==='world-map'&&e.binding===element.binding);
       const ref=element.assetRef||value||(map?worldMapSelection(worldMapNodes(map,resources,document,parameters),parameters[map.binding])?.raceRef:'');
       if(element.property==='region-dialogue'){
@@ -183,6 +189,11 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
         const number=Number.isFinite(Number(value))?Number(value):element.min,ratio=Math.max(0,Math.min(1,(number-element.min)/(element.max-element.min||1)));
         ctx.fillStyle='#18242d';ctx.fillRect(b.x+10,b.y+b.h*0.7,b.w-20,5);ctx.fillStyle=element.color;ctx.fillRect(b.x+10,b.y+b.h*0.7,(b.w-20)*ratio,5);
         label+=`: ${Number(number.toFixed(2))}`;ctx.fillStyle=menuTextFill(ctx,element,b,label,textSize,b.y+b.h*.35);drawText(label,b.x+b.w/2,b.y+b.h*0.35,b.w-16);
+      }else if(element.action?.parameter==='raceRef'&&screen.id.startsWith('campaign-hub-')){
+        const mark=campaignCompletionMark(element.action.value,parameters,resources?.garage?.progress);
+        const pad=Math.min(28,b.w*.12);
+        if(mark){ctx.strokeStyle=mark==='gold'?'#ffcf40':'#54db83';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(b.x+pad,b.y+b.h*.5);ctx.lineTo(b.x+pad+4,b.y+b.h*.65);ctx.lineTo(b.x+pad+11,b.y+b.h*.32);ctx.stroke();}
+        ctx.textAlign='left';ctx.fillStyle=element.color;drawText(label,b.x+pad+18,b.y+b.h/2,b.w-pad-22);
       }else {ctx.fillStyle=menuTextFill(ctx,element,b,label,textSize);cursorLabelWidth=label?Math.min(ctx.measureText(label)?.width||0,Math.max(1,b.w-16)):null;drawText(label,b.x+b.w/2,b.y+b.h/2,Math.max(1,b.w-16));}
     }
     ctx.restore();

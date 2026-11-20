@@ -7,7 +7,7 @@ import {safeGarageKey} from './CarPart.js';
 // Main missions award equipment for the following leg. These are inventory
 // grants, never automatic installations or prerequisites for entering a race.
 export const CAMPAIGN_PART_REWARDS={
- 'Tower Hill Road':'snow-tires',
+ 'Providence, RI — Landmark Run':'snow-tires',
  'Mount Washington Auto Road — point-to-point':'rally-suspension',
  'Laurel Highlands Scenic Byway':'rain-tires',
  'Ohio River Crossing':'rally-tires',
@@ -27,7 +27,7 @@ export function raceRewardQuote(ref,race={},progress={},pi=500,carRef=''){
  // the course. The length-only fallback preserves older user-created events.
  const technical=race.road?.nodes?.length>1?Math.min(600,Math.max(0,Math.round((course.seconds-course.lengthM/25)/60)*20)):0;
  const scrap=Math.round((150+km*25+(main?150:0)+technical)/25)*25;
- const featured=featuredRewards[race.campaign?.sideEventId||race.id];
+ const featured=main?null:featuredRewards[race.campaign?.sideEventId||race.id];
  const prior=progress.rewards?.[ref];
  const first=!prior?.clears;
  const featuredPending=!!featured&&prior?.featuredRewardId!==featured.part;

@@ -104,10 +104,10 @@
         "mappedLengthM": 3668
       },
       {
-        "index": 52,
+        "index": 61,
         "key": "south",
         "label": "South Course",
-        "mappedLengthM": 2625
+        "mappedLengthM": 2610.089279078712
       },
       {
         "index": 6,
@@ -356,22 +356,745 @@
   },
   {
     "key": "nordschleife",
-    "name": "Nurburgring Nordschleife",
+    "name": "N\u00fcrburgring",
     "lat": 50.36,
     "lon": 6.96,
     "radius": 14000,
     "country": "de",
     "layouts": [
       {
-        "index": 17,
+        "index": 65,
         "key": "full",
         "label": "Nordschleife",
-        "mappedLengthM": 20747,
+        "mappedLengthM": 20746.720958627473,
         "raceRef": "Nurburgring Nordschleife",
         "legacyId": "nurburgring-nordschleife",
         "widthM": 10,
         "laps": 1
+      },
+      {
+        "index": 69,
+        "key": "gp",
+        "label": "Grand Prix",
+        "mappedLengthM": 5125.868091887461,
+        "widthM": 12,
+        "laps": 3,
+        "reverse": false
+      },
+      {
+        "index": 0,
+        "key": "sprint",
+        "label": "Sprint",
+        "mappedLengthM": 3610.951031337329,
+        "widthM": 12,
+        "laps": 3,
+        "reverse": false
+      },
+      {
+        "index": 147,
+        "key": "mullenbach",
+        "label": "M\u00fcllenbachschleife",
+        "mappedLengthM": 1487.522783842115,
+        "widthM": 12,
+        "laps": 3,
+        "reverse": false
+      },
+      {
+        "index": 13,
+        "key": "24h",
+        "label": "24 Hours Combined",
+        "mappedLengthM": 25320.79802920643,
+        "widthM": 12,
+        "laps": 1,
+        "reverse": false,
+        "renderSurfaceStepM": 5,
+        "terrainCellSizeM": 80
+      },
+      {
+        "index": 53,
+        "key": "nls",
+        "label": "NLS Combined",
+        "mappedLengthM": 24321.950343272572,
+        "widthM": 12,
+        "laps": 1,
+        "reverse": false,
+        "reference": "https://teilnehmer.vln.de/download.php?file=onb%2F2022-07-09%2FBRIEFING+PRESENTATION+Drivers+Briefing+NLS+2022.en.pdf"
       }
-    ]
+    ],
+    "reference": "https://media.adac-motorsport.de/dl.php?dID=2%2C10&fID=86440",
+    "reviewNotes": "Reviewed mapped course shapes, named connectors and published venue diagrams. Clockwise layouts. Pit lanes, rallycross shortcuts and unverified combinations excluded. OSM centerline lengths differ slightly from published homologation lengths; widths are estimates where unmapped, DEM does not survey banking. NLS uses the Sprint course WITH the arena and motorcycle chicane (published 24.358 km); 24h bypasses the arena and uses the full GP course."
+  },
+  {
+    "key": "silverstone",
+    "name": "Silverstone",
+    "lat": 52.073,
+    "lon": -1.016,
+    "country": "gb",
+    "reference": "https://www.silverstone.co.uk/track-and-testing/testing",
+    "layouts": [
+      {
+        "index": 8,
+        "key": "gp",
+        "label": "Grand Prix",
+        "mappedLengthM": 5889.541768382829,
+        "widthM": 12,
+        "laps": 3
+      },
+      {
+        "index": 22,
+        "key": "international",
+        "label": "International",
+        "mappedLengthM": 2975.759669786455,
+        "widthM": 12,
+        "laps": 3
+      },
+      {
+        "index": 24,
+        "key": "national",
+        "label": "National",
+        "mappedLengthM": 2635.2421906493546,
+        "widthM": 12,
+        "laps": 3
+      },
+      {
+        "index": 31,
+        "key": "stowe",
+        "label": "Stowe",
+        "mappedLengthM": 1278.352114626287,
+        "widthM": 10,
+        "laps": 5
+      }
+    ],
+    "separateComponents": true,
+    "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements."
+  },
+  {
+    "key": "brands-hatch",
+    "name": "Brands Hatch",
+    "lat": 51.3569,
+    "lon": 0.2631,
+    "country": "gb",
+    "reference": "https://www.brandshatch.co.uk/about/circuit-map",
+    "layouts": [
+      {
+        "index": 0,
+        "key": "gp",
+        "label": "Grand Prix",
+        "mappedLengthM": 3895.2188750000178,
+        "widthM": 12,
+        "laps": 3
+      },
+      {
+        "index": 1,
+        "key": "indy",
+        "label": "Indy",
+        "mappedLengthM": 1926.8331134780321,
+        "widthM": 12,
+        "laps": 3
+      }
+    ],
+    "separateComponents": true,
+    "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements."
+  },
+  {
+    "key": "spa",
+    "name": "Spa-Francorchamps",
+    "lat": 50.4372,
+    "lon": 5.9714,
+    "country": "be",
+    "reference": "https://www.spa-francorchamps.be/",
+    "layouts": [
+      {
+        "index": 0,
+        "key": "gp",
+        "label": "Grand Prix",
+        "mappedLengthM": 6994.554713359539,
+        "widthM": 12,
+        "laps": 3
+      },
+      {
+        "index": 1,
+        "key": "moto",
+        "label": "Motorcycle Chicane",
+        "mappedLengthM": 6976.320673112511,
+        "widthM": 12,
+        "laps": 3
+      }
+    ],
+    "separateComponents": true,
+    "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements."
+  },
+  {
+    "key": "suzuka",
+    "name": "Suzuka",
+    "lat": 34.8431,
+    "lon": 136.541,
+    "country": "jp",
+    "reference": "https://www.suzukacircuit.jp/eng/course_s/",
+    "layouts": [
+      {
+        "index": 3,
+        "key": "full",
+        "label": "Grand Prix",
+        "mappedLengthM": 5806.565584749984,
+        "widthM": 12,
+        "laps": 3
+      },
+      {
+        "index": 5,
+        "key": "west",
+        "label": "West",
+        "mappedLengthM": 3476.8423565659236,
+        "widthM": 12,
+        "laps": 3
+      },
+      {
+        "index": 6,
+        "key": "east",
+        "label": "East",
+        "mappedLengthM": 2241.3804235002813,
+        "widthM": 12,
+        "laps": 3
+      }
+    ],
+    "separateComponents": true,
+    "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements."
+  },
+  {
+    "key": "monza",
+    "name": "Monza",
+    "lat": 45.62,
+    "lon": 9.284,
+    "country": "it",
+    "reference": "https://www.monzanet.it/",
+    "layouts": [
+      {
+        "index": 0,
+        "key": "gp",
+        "label": "Grand Prix",
+        "mappedLengthM": 5794.31007440166,
+        "widthM": 12,
+        "laps": 3
+      },
+      {
+        "index": 5,
+        "key": "junior",
+        "label": "Junior",
+        "mappedLengthM": 2412.5014065550686,
+        "widthM": 12,
+        "laps": 3
+      }
+    ],
+    "separateComponents": true,
+    "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements."
+  },
+  {
+    "key": "imola",
+    "name": "Imola",
+    "lat": 44.344,
+    "lon": 11.716,
+    "country": "it",
+    "reference": "https://www.autodromoimola.it/",
+    "layouts": [
+      {
+        "index": 1,
+        "key": "gp",
+        "label": "Grand Prix",
+        "mappedLengthM": 4904.358215548621,
+        "widthM": 12,
+        "laps": 3
+      },
+      {
+        "index": 0,
+        "key": "chicane",
+        "label": "Variante Bassa",
+        "mappedLengthM": 4929.753467499867,
+        "widthM": 12,
+        "laps": 3
+      }
+    ],
+    "separateComponents": true,
+    "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements."
+  },
+  {
+    "key": "bathurst",
+    "name": "Mount Panorama",
+    "lat": -33.439,
+    "lon": 149.558,
+    "country": "au",
+    "reference": "https://www.mount-panorama.com/",
+    "layouts": [
+      {
+        "index": 0,
+        "key": "full",
+        "label": "Mount Panorama Circuit",
+        "mappedLengthM": 6196.958309224955,
+        "widthM": 12,
+        "laps": 3,
+        "reverse": true
+      }
+    ],
+    "separateComponents": true,
+    "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements. Public roads tagged alt_name=Mount Panorama Scenic Road adapted to raceway input; source highway retained in source:highway. Race direction is counterclockwise.",
+    "publicCircuitAltName": "Mount Panorama Scenic Road"
+  },
+  {
+    "key": "red-bull-ring",
+    "name": "Red Bull Ring",
+    "lat": 47.22,
+    "lon": 14.765,
+    "country": "at",
+    "reference": "https://www.redbullring.com/",
+    "layouts": [
+      {
+        "index": 7,
+        "key": "gp",
+        "label": "Grand Prix",
+        "mappedLengthM": 4300.318729389776,
+        "widthM": 12,
+        "laps": 3
+      },
+      {
+        "index": 13,
+        "key": "national",
+        "label": "National",
+        "mappedLengthM": 2329.952249619326,
+        "widthM": 12,
+        "laps": 3
+      },
+      {
+        "index": 4,
+        "key": "chicane",
+        "label": "MotoGP Chicane",
+        "mappedLengthM": 4329.209197733994,
+        "widthM": 12,
+        "laps": 3
+      }
+    ],
+    "separateComponents": true,
+    "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements."
+  },
+  {
+    "key": "interlagos",
+    "name": "Interlagos",
+    "lat": -23.701,
+    "lon": -46.697,
+    "country": "br",
+    "reference": "https://autodromodeinterlagos.prefeitura.sp.gov.br/pistaoficial",
+    "layouts": [
+      {
+        "index": 1,
+        "key": "gp",
+        "label": "Grand Prix",
+        "mappedLengthM": 4308.2167583051305,
+        "widthM": 12,
+        "laps": 3
+      }
+    ],
+    "separateComponents": true,
+    "mapHalfHeightDeg": 0.011,
+    "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements."
+  },
+  {
+    "key": "tsukuba",
+    "name": "Tsukuba",
+    "lat": 36.151,
+    "lon": 139.92,
+    "country": "jp",
+    "reference": "https://www.tsukuba-circuit.jp/",
+    "layouts": [
+      {
+        "index": 3,
+        "key": "2000",
+        "label": "Course 2000",
+        "mappedLengthM": 2121.3506013784745,
+        "widthM": 10,
+        "laps": 3
+      },
+      {
+        "index": 19,
+        "key": "1000",
+        "label": "Course 1000",
+        "mappedLengthM": 942.5754230229556,
+        "widthM": 10,
+        "laps": 5
+      }
+    ],
+    "separateComponents": true,
+    "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements. OSM centerline differs from published lengths; Course 2000 excludes the 2.5 m service-lane shortcut. Course 1000 uses the continuous 943 m mapped layout, not a rescaled 1000 m lap."
+  },
+  {
+    "key": "fuji",
+    "name": "Fuji Speedway",
+    "lat": 35.372,
+    "lon": 138.927,
+    "country": "jp",
+    "reference": "https://www.fsw.tv/",
+    "layouts": [
+      {
+        "index": 0,
+        "key": "gp",
+        "label": "Grand Prix",
+        "mappedLengthM": 4553.575838003616,
+        "widthM": 12,
+        "laps": 3
+      },
+      {
+        "index": 1,
+        "key": "gt",
+        "label": "GT Shortcut",
+        "mappedLengthM": 4519.909687863556,
+        "widthM": 12,
+        "laps": 3
+      },
+      {
+        "index": 13,
+        "key": "short-outer",
+        "label": "Short \u2014 Outer",
+        "mappedLengthM": 956.4956291160756,
+        "widthM": 10,
+        "laps": 5
+      },
+      {
+        "index": 15,
+        "key": "short-middle",
+        "label": "Short \u2014 Middle",
+        "mappedLengthM": 922.4792119822906,
+        "widthM": 10,
+        "laps": 5,
+        "reverse": true
+      },
+      {
+        "index": 22,
+        "key": "short-inner",
+        "label": "Short \u2014 Inner",
+        "mappedLengthM": 849.6397275153314,
+        "widthM": 10,
+        "laps": 5,
+        "reverse": true
+      }
+    ],
+    "separateComponents": true,
+    "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements."
+  },
+  {
+    "key": "donington",
+    "name": "Donington Park",
+    "lat": 52.83,
+    "lon": -1.376,
+    "country": "gb",
+    "reference": "https://www.donington-park.co.uk/circuit-information",
+    "layouts": [
+      {
+        "index": 0,
+        "key": "gp",
+        "label": "Grand Prix",
+        "mappedLengthM": 3995.391632353973,
+        "widthM": 12,
+        "laps": 3
+      },
+      {
+        "index": 1,
+        "key": "national",
+        "label": "National",
+        "mappedLengthM": 3177.890273991715,
+        "widthM": 12,
+        "laps": 3
+      }
+    ],
+    "separateComponents": true,
+    "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements."
+  },
+  {
+    "key": "lemans",
+    "name": "Le Mans",
+    "lat": 47.943,
+    "lon": 0.234,
+    "country": "fr",
+    "reference": "https://www.24h-lemans.com/en",
+    "mapHalfHeightDeg": 0.044,
+    "separateComponents": true,
+    "layouts": [
+      {
+        "index": 0,
+        "key": "sarthe",
+        "label": "Circuit de la Sarthe",
+        "mappedLengthM": 13611.744665817576,
+        "widthM": 12,
+        "laps": 2,
+        "reverse": true
+      },
+      {
+        "index": 4,
+        "key": "bugatti",
+        "label": "Bugatti",
+        "mappedLengthM": 4163.88111744143,
+        "widthM": 12,
+        "laps": 3,
+        "reverse": false
+      }
+    ],
+    "raceRelationWayIds": [
+      257319131,
+      226901650,
+      226901647,
+      1011729893,
+      34405909,
+      158840033,
+      1011729891,
+      231829814,
+      231829816,
+      1011729892,
+      1505387929,
+      1505387930,
+      121230938,
+      1505387935,
+      1505387934,
+      1494893860,
+      256130500,
+      1505387926,
+      158840027,
+      1505387925,
+      256130501,
+      159588880,
+      34405893,
+      25245509,
+      34405892,
+      1358131505,
+      159588882,
+      255699444,
+      158840041,
+      624045671,
+      624045670,
+      226901631,
+      226901643,
+      34405868,
+      1101935457,
+      773623627,
+      773623626,
+      1101935455,
+      773623628,
+      773623629,
+      258242164,
+      226901639,
+      226901626,
+      226901635,
+      258179494,
+      849478718,
+      354149765,
+      777192900,
+      777192901,
+      257063576
+    ],
+    "raceRelationId": 2126739,
+    "reviewNotes": "Continuous mapped layouts reviewed against venue maps; no invented connectors. Widths use OSM where available, otherwise 12 m estimate. Terrain is DEM, not surveyed track banking. Karting, pit shortcuts, penalty loops and unverified connector combinations omitted. Sarthe public roads from OSM relation 2126739; road-traffic direction restrictions do not apply during race closure. Race direction clockwise."
+  },
+  {
+    "key": "portimao",
+    "name": "Portim\u00e3o",
+    "lat": 37.232,
+    "lon": -8.627,
+    "country": "pt",
+    "reference": "https://autodromodoalgarve.com/the-park/racing-track/",
+    "mapHalfHeightDeg": 0.018,
+    "separateComponents": true,
+    "layouts": [
+      {
+        "index": 0,
+        "key": "gp",
+        "label": "Grand Prix",
+        "mappedLengthM": 4681.550525364743,
+        "widthM": 12,
+        "laps": 3,
+        "reverse": false
+      },
+      {
+        "index": 2,
+        "key": "motorcycle",
+        "label": "Motorcycle",
+        "mappedLengthM": 4647.572793579907,
+        "widthM": 12,
+        "laps": 3,
+        "reverse": false
+      }
+    ],
+    "reviewNotes": "Continuous mapped layouts reviewed against venue maps; no invented connectors. Widths use OSM where available, otherwise 12 m estimate. Terrain is DEM, not surveyed track banking. Karting, pit shortcuts, penalty loops and unverified connector combinations omitted."
+  },
+  {
+    "key": "zandvoort",
+    "name": "Zandvoort",
+    "lat": 52.388,
+    "lon": 4.542,
+    "country": "nl",
+    "reference": "https://www.circuitzandvoort.nl/en/",
+    "mapHalfHeightDeg": 0.018,
+    "separateComponents": true,
+    "layouts": [
+      {
+        "index": 1,
+        "key": "gp",
+        "label": "Grand Prix",
+        "mappedLengthM": 4253.174288060539,
+        "widthM": 12,
+        "laps": 3,
+        "reverse": false
+      },
+      {
+        "index": 4,
+        "key": "national",
+        "label": "National",
+        "mappedLengthM": 2865.371903486232,
+        "widthM": 12,
+        "laps": 3,
+        "reverse": false
+      },
+      {
+        "index": 6,
+        "key": "eastern",
+        "label": "Eastern",
+        "mappedLengthM": 1403.8933942732122,
+        "widthM": 12,
+        "laps": 3,
+        "reverse": false
+      }
+    ],
+    "reviewNotes": "Continuous mapped layouts reviewed against venue maps; no invented connectors. Widths use OSM where available, otherwise 12 m estimate. Terrain is DEM, not surveyed track banking. Karting, pit shortcuts, penalty loops and unverified connector combinations omitted."
+  },
+  {
+    "key": "gilles-villeneuve",
+    "name": "Circuit Gilles-Villeneuve",
+    "lat": 45.502,
+    "lon": -73.526,
+    "country": "ca",
+    "reference": "https://www.parcjeandrapeau.com/en/circuit-gilles-villeneuve-multi-purpose-track-provelo-sports-training-montreal/",
+    "mapHalfHeightDeg": 0.018,
+    "separateComponents": true,
+    "layouts": [
+      {
+        "index": 0,
+        "key": "gp",
+        "label": "Grand Prix",
+        "mappedLengthM": 4362.196777437724,
+        "widthM": 12,
+        "laps": 3,
+        "reverse": false
+      }
+    ],
+    "reviewNotes": "Continuous mapped layouts reviewed against venue maps; no invented connectors. Widths use OSM where available, otherwise 12 m estimate. Terrain is DEM, not surveyed track banking. Karting, pit shortcuts, penalty loops and unverified connector combinations omitted."
+  },
+  {
+    "key": "phillip-island",
+    "name": "Phillip Island",
+    "lat": -38.503,
+    "lon": 145.232,
+    "country": "au",
+    "reference": "https://www.phillipislandcircuit.com.au/circuit-info/circuit-map/",
+    "mapHalfHeightDeg": 0.018,
+    "separateComponents": true,
+    "layouts": [
+      {
+        "index": 0,
+        "key": "gp",
+        "label": "Grand Prix",
+        "mappedLengthM": 4453.659239726641,
+        "widthM": 12,
+        "laps": 3,
+        "reverse": false
+      }
+    ],
+    "reviewNotes": "Continuous mapped layouts reviewed against venue maps; no invented connectors. Widths use OSM where available, otherwise 12 m estimate. Terrain is DEM, not surveyed track banking. Karting, pit shortcuts, penalty loops and unverified connector combinations omitted."
+  },
+  {
+    "key": "hockenheim",
+    "name": "Hockenheimring",
+    "lat": 49.3288,
+    "lon": 8.5708,
+    "country": "de",
+    "reference": "https://www.hockenheimring.de/en/info/hockenheimring/data-facts/",
+    "mapHalfHeightDeg": 0.016,
+    "separateComponents": true,
+    "layouts": [
+      {
+        "index": 10,
+        "key": "gp",
+        "label": "Grand Prix",
+        "mappedLengthM": 4564.781199289075,
+        "widthM": 12,
+        "laps": 3,
+        "reverse": false
+      },
+      {
+        "index": 82,
+        "key": "short",
+        "label": "Short Course",
+        "mappedLengthM": 2604.270422276254,
+        "widthM": 12,
+        "laps": 3,
+        "reverse": false
+      }
+    ],
+    "reviewNotes": "Reviewed mapped course shapes, named connectors and published venue diagrams. Clockwise layouts. Pit lanes, rallycross shortcuts and unverified combinations excluded. OSM centerline lengths differ slightly from published homologation lengths; widths are estimates where unmapped, DEM does not survey banking."
+  },
+  {
+    "key": "hungaroring",
+    "name": "Hungaroring",
+    "lat": 47.583,
+    "lon": 19.251,
+    "country": "hu",
+    "reference": "https://hungaroring.hu/site/en/services/track-rental",
+    "mapHalfHeightDeg": 0.016,
+    "separateComponents": true,
+    "layouts": [
+      {
+        "index": 0,
+        "key": "gp",
+        "label": "Grand Prix",
+        "mappedLengthM": 4366.615036781052,
+        "widthM": 12,
+        "laps": 3,
+        "reverse": false
+      }
+    ],
+    "reviewNotes": "Reviewed mapped course shapes, named connectors and published venue diagrams. Clockwise layouts. Pit lanes, rallycross shortcuts and unverified combinations excluded. OSM centerline lengths differ slightly from published homologation lengths; widths are estimates where unmapped, DEM does not survey banking."
+  },
+  {
+    "key": "sepang",
+    "name": "Sepang International Circuit",
+    "lat": 2.76,
+    "lon": 101.738,
+    "country": "my",
+    "reference": "https://www.lamborghini.com/en-en/motorsport/super-trofeo/calendar-%26-results/sepang",
+    "mapHalfHeightDeg": 0.016,
+    "separateComponents": true,
+    "layouts": [
+      {
+        "index": 0,
+        "key": "gp",
+        "label": "Grand Prix",
+        "mappedLengthM": 5546.214952338125,
+        "widthM": 12,
+        "laps": 3,
+        "reverse": false
+      },
+      {
+        "index": 1,
+        "key": "north",
+        "label": "North Circuit",
+        "mappedLengthM": 2790.7613651391252,
+        "widthM": 12,
+        "laps": 3,
+        "reverse": false
+      },
+      {
+        "index": 2,
+        "key": "south",
+        "label": "South Circuit",
+        "mappedLengthM": 2615.5344605621885,
+        "widthM": 12,
+        "laps": 3,
+        "reverse": false
+      }
+    ],
+    "reviewNotes": "Reviewed mapped course shapes, named connectors and published venue diagrams. Clockwise layouts. Pit lanes, rallycross shortcuts and unverified combinations excluded. OSM centerline lengths differ slightly from published homologation lengths; widths are estimates where unmapped, DEM does not survey banking."
   }
 ]

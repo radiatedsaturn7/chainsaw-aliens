@@ -15,7 +15,7 @@ const run={eligible:true,measured:true,finished:true,carRef:'RTG-001',pi:500,ela
 const read=p=>{const d=JSON.parse(fs.readFileSync(p));return d.__chainsawStorage?JSON.parse(zlib.gunzipSync(Buffer.from(d.data,'base64'))):d;};
 function fixture(){const game={player:{credits:500},abilities:{}};const items=new ItemSystem(game,{load:async()=>({}),save:async()=>({ok:true}),library:{load:async id=>normalizeItemDocument(parts.items.find(p=>p.id===id))}});game.items=items;return {game,items,garage:items.garage};}
 test('every main mission has an attainable distinct goal; only the opener permits timed exit',()=>{
- assert.equal(Object.keys(OPENING_MISSIONS).length,11);
+ assert.equal(Object.keys(OPENING_MISSIONS).length,12);
  for(const [ref,goal] of Object.entries(OPENING_MISSIONS)){
   const clean={...run,elapsedMs:1000,componentDamage:{damper_fl:0,pads_fl:0}};
   assert.ok(openingObjective(ref,{},race));assert.equal(evaluateCampaignRun(ref,clean,{},race).objectiveBonus,goal.bonus,ref);

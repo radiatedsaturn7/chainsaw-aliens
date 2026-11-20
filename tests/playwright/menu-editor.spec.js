@@ -438,3 +438,22 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} world-map 
  expect(await page.evaluate(()=>window.__game.menuEditor.element.mapStyle.linePattern)).toBe('dashed');
  if(mobile){const ids=await page.evaluate(()=>window.__game.menuEditor.buttons.map(b=>b.id));for(const id of ['menu','undo','redo','menu-preview'])expect(ids).toContain(id);}
 });
+
+test('motorsport menus use standard controls and return to the world map',async({page})=>{
+ await ready(page,false);
+ await page.evaluate(async()=>{
+  const g=window.__game;
+  const doc=structuredClone(g.menuEditor.menu);
+  if(!doc.screens.some(s=>s.id==='world-map'))doc.screens.push({id:'world-map',elements:[]});
+  doc.startScreen='world-map';doc.parameters||={};
+  doc.parameters.raceIndex=['WeatherTech Raceway Laguna Seca','Watkins Glen — Long Course','Road America — Full Course'].map(ref=>({ref,properCircuit:true}));
+  await g.previewMenu(doc);g.menuPlayer.flow.goTo('world-map',{remember:false});
+ });
+ const activate=async id=>{await menuReady(page);await page.evaluate(async id=>{const p=window.__game.menuPlayer;await p.activate(p.flow.screen.elements.find(e=>e.id===id));},id);};
+ await activate('world-championships');
+ await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('motorsport-list');
+ await activate('motorsport-pick-0');
+ expect(await page.evaluate(()=>window.__game.menuPlayer.flow.screen.name)).toBe('American Apex');
+ await activate('motorsport-back');await activate('motorsport-back');
+ await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('world-map');
+});

@@ -1,3 +1,4 @@
+import {attachCampaignRoutePreviews} from './route_previews.mjs';
 import {addBayardLandmarks} from './bayard_landmarks.mjs';
 import {wildernessParent,addWildernessDistantScenery} from './wilderness_dressing.mjs';
 // Reuse the side-event dressing and native menu system for reviewed circuit imports.
@@ -22,7 +23,7 @@ const touchedRaces=new Map(),removedRaces=new Set();
 for(const row of read(`${reportBase}/report.json`)){
  if(row.status!=='imported')continue;
  const only=process.argv.find(a=>a.startsWith('--only='))?.slice(7).split(',');
- if(only&&!only.includes(row.venueKey||row.id))continue;
+ if(only&&!only.includes(row.venueKey||row.id)&&!only.includes(row.id))continue;
  if(row.city){row.name=`${row.city}, ${row.stateCode} — Landmark Run`;row.displayName=`${row.city}, ${row.stateCode}`;}
  const race=read(row.generatedPath);if(row.city)race.name=row.name;
  const hub=main.find(h=>h.stage===(row.hubStage||row.artHubStage||3));
@@ -63,7 +64,7 @@ for(const row of read(`${reportBase}/report.json`)){
  write(metaPath,{...(fs.existsSync(metaPath)?read(metaPath):{version:1}),name:raceRef,folder:'races',savedAt});
  manifest.folders.races[raceRef]=documentPath;touchedRaces.set(raceRef,documentPath);
  const superseded=installed.get(row.id);
- if(expansion&&/^(city|state)-/.test(row.id)&&superseded?.raceRef!==raceRef&&superseded?.documentPath){
+ if(((expansion&&/^(city|state)-/.test(row.id))||/^(rally|raceway)-/.test(row.id))&&superseded?.raceRef!==raceRef&&superseded?.documentPath){
   const oldPath=`${root}/${superseded.documentPath}`;
   // Only retire this importer's own superseded event document, never user races.
   if(fs.existsSync(oldPath)&&read(oldPath).race?.id===row.id){
@@ -87,8 +88,8 @@ for(const [name,file] of touchedRaces)latestManifest.folders.races[name]=file;
 for(const name of removedRaces)latestManifest.folders.races[name]&&delete latestManifest.folders.races[name];
 write(`${root}/manifest.json`,latestManifest);
 const menuPath=`${root}/menus/Game Menu/document.json`,menu=read(menuPath),research=read('AI/last-on-the-grid/last_on_the_grid_99_side_races.json');
-const all=[...side,...installed.values()],{screens,hubs,sideGates}=createCampaignHubMenus(main,research,all);
+const all=[...side,...installed.values()],{screens,hubs,sideGates,progression}=createCampaignHubMenus(main,research,all);
 menu.screens=menu.screens.filter(s=>!s.id.startsWith('campaign-hub-')).concat(screens);
-Object.assign(menu.parameters,{campaignHubs:hubs,campaignSideGates:sideGates,campaignEventHubs:Object.fromEntries(all.filter(e=>e.status==='installed'&&e.hubRaceRef).map(e=>[e.raceRef,e.hubRaceRef]))});
-write(menuPath,menu);
+Object.assign(menu.parameters,{campaignHubs:hubs,campaignSideGates:sideGates,campaignProgression:progression,campaignEventHubs:Object.fromEntries(all.filter(e=>e.status==='installed'&&e.hubRaceRef).map(e=>[e.raceRef,e.hubRaceRef]))});
+attachCampaignRoutePreviews(menu);write(menuPath,menu);
 const menuMeta=menuPath.replace(/document.json$/,'metadata.json');write(menuMeta,{...read(menuMeta),savedAt});
