@@ -129,12 +129,3 @@ export function paintCarThumbnail(ctx,bounds,name,angle=135,whenReady,usable,pre
   ctx.drawImage(image,(entry.count===1?0:frame)*entry.w,0,entry.w,entry.h,bounds.x+(bounds.w-w)/2,bounds.y+(bounds.h-h)/2,w,h);
   return true;
 }
-export function drawCarThumbnailPlaceholder(ctx,{x,y,w,h}){
-  const s=Math.min(w/90,h/42),a=x+(w-90*s)/2,b=y+(h-42*s)/2;
-  if(!Number.isFinite(s)||s<=0)return;
-  ctx.save();ctx.translate(a,b);ctx.scale(s,s);ctx.fillStyle='#73848e';
-  ctx.beginPath();ctx.moveTo(3,27);ctx.lineTo(16,22);ctx.lineTo(29,10);ctx.lineTo(57,10);ctx.lineTo(73,22);ctx.lineTo(84,24);ctx.lineTo(88,32);ctx.lineTo(86,34);ctx.lineTo(4,34);ctx.closePath();ctx.fill();
-  ctx.fillStyle='#26333a';
-  for(const c of [19,70]){ctx.beginPath();ctx.arc(c,34,7,0,Math.PI*2);ctx.fill();}
-  ctx.restore();
-}

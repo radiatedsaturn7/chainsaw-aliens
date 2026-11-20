@@ -18,7 +18,7 @@ import {menuElementPose,resolveMenuBackground} from './MenuDocument.js';
 import {drawCarComponent} from './MenuCarStats.js';
 
 export const menuElementBounds=(element,bounds,pose=element)=>({x:bounds.x+pose.x*bounds.w,y:bounds.y+pose.y*bounds.h,w:element.w*bounds.w,h:element.h*bounds.h});
-import {paintCarThumbnail,drawCarThumbnailPlaceholder} from '../ui/shared/carPreviewThumbnails.js';
+import {paintCarThumbnail} from '../ui/shared/carPreviewThumbnails.js';
 
 export const menuElementInteractive=e=>['garage-tuner','code-entry','world-map','car-showroom','garage-browser','button','choice','slider','toggle','keybind'].includes(e.type);
 export const menuHit=(point,b)=>point.x>=b.x&&point.x<=b.x+b.w&&point.y>=b.y&&point.y<=b.y+b.h;
@@ -138,7 +138,7 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
         if(editing){
           const car=resources?.car(entry.value),view={...element,type:'car-preview',showroomPreview:true,animation:'none',angleBinding:'',angle};
           drawCarComponent(ctx,preview,view,car,resources,time,parameters,fontFamily);
-        }else if(!paintCarThumbnail(ctx,preview,entry.value,angle,undefined,undefined,selected))drawCarThumbnailPlaceholder(ctx,preview);
+        }else paintCarThumbnail(ctx,preview,entry.value,angle,undefined,undefined,selected);
         ctx.fillStyle=element.color;drawText(entry.label,card.x+card.w/2,card.y+card.h-4,card.w-8);ctx.restore();
       }
 
@@ -175,7 +175,7 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
       drawCarDescription(ctx,b,car?.description?.trim()||'No description yet.',fontFamily,element);
     }
     else if(element.type==='car-preview'&&element.catalogThumbnail&&!editing){
-      if(!paintCarThumbnail(ctx,b,element.assetRef||value,element.angle))drawCarThumbnailPlaceholder(ctx,b);
+      paintCarThumbnail(ctx,b,element.assetRef||value,element.angle);
     }
     else if(['car-preview','car-stats','power-curve'].includes(element.type)){
       const options={prepareExterior:element.type==='car-preview'};
