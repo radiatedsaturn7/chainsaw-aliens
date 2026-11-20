@@ -20,6 +20,8 @@
 
 | Nov 18 | Ascension world-history revision | A fast, Rapture-like movement into digital Heaven over a few years; Rob outside for roughly ten years, not centuries. [Working history](WORLD_LORE/THE_ASCENSION.md); revised Heaven dialogue and visual decay rules. |
 
+| Nov 18 | Reverse Turing Test / Heaven's perfection | Rob perceived old friends as overly agreeable and scripted, like a drive-through; his preference for imperfection conflicts with his need for Cait to say “I love you.” [Thematic notes](WORLD_LORE/REVERSE_TURING_TEST.md). |
+
 ## Retrieval notes
 - Some older entries are only identifiable from summarized history. Titles marked “historical summary” may be descriptive rather than exact chat titles.
 - Preserve exact original dialogue when available; don't present remembered paraphrases as verbatim.
