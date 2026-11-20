@@ -1,0 +1,376 @@
+{
+  "id": "alpine-clover-2011",
+  "name": "Alpine Clover 2011",
+  "rosterCommit": "3c947e417acb79eb4e9a44083e94525a5bff55c5",
+  "expectedDocumentSha256": "3b73e66bd4cbdcbf143385c1677c10052b7d8847a90e3b4399d54b4d20e6714e",
+  "sourceDirectory": "assets/car-catalog/alpine-clover-2011",
+  "sourceHashes": {
+    "body": "3ee5a8e8886b1d2af3635e8cc8314c90b22a710dc1f1ac89c98ae1654cfbeb98",
+    "dashboard": "80d3eec95f6b4b5886650616a13d44f2de110403fe991f3057542f21d89bcd1b",
+    "tires": "d9217a4a81d9adc43b0d1ad74c83d7f12737bf5cffdb71e15fc6b029a5bcdd96"
+  },
+  "mapping": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 80,
+        "y": 315,
+        "radius": 26
+      },
+      {
+        "wheel": "fr",
+        "x": 340,
+        "y": 315,
+        "radius": 26
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 675,
+        "y": 277,
+        "radius": 44
+      },
+      {
+        "wheel": "rr",
+        "x": 828,
+        "y": 251,
+        "radius": 28
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 967,
+        "y": 275,
+        "radius": 38
+      },
+      {
+        "wheel": "rr",
+        "x": 1257,
+        "y": 269,
+        "radius": 43
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1380,
+        "y": 267,
+        "radius": 24
+      },
+      {
+        "wheel": "rr",
+        "x": 1516,
+        "y": 267,
+        "radius": 43
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 65,
+        "y": 738,
+        "radius": 26
+      },
+      {
+        "wheel": "rl",
+        "x": 350,
+        "y": 738,
+        "radius": 26
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 640,
+        "y": 700,
+        "radius": 43
+      },
+      {
+        "wheel": "fl",
+        "x": 799,
+        "y": 688,
+        "radius": 30
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 937,
+        "y": 703,
+        "radius": 40
+      },
+      {
+        "wheel": "fl",
+        "x": 1221,
+        "y": 705,
+        "radius": 38
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 1359,
+        "y": 669,
+        "radius": 30
+      },
+      {
+        "wheel": "fl",
+        "x": 1500,
+        "y": 713,
+        "radius": 48
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "size": [
+      1983,
+      793
+    ],
+    "cluster": [
+      330,
+      400,
+      420,
+      140
+    ],
+    "wheel": [
+      535,
+      630,
+      450
+    ],
+    "wheelOpening": true,
+    "gaugeColor": "#f4ead5",
+    "viewportWheelScale": 1.9,
+    "wheelOpeningInsets": [
+      [
+        0.15,
+        0.23
+      ],
+      [
+        0.35,
+        0.31
+      ],
+      [
+        0.64,
+        0.18
+      ]
+    ]
+  },
+  "steeringWheelSource": {
+    "artRef": "buse-steeringwheel",
+    "frameIndex": 0
+  },
+  "measurementReview": {
+    "family": "low mid-engine coupe",
+    "method": "Individual source-image wheel-arch and instrument-region inspection, in source pixels; native segmentation bounds cross-reference",
+    "confidence": {
+      "sideAndObliqueWheelCenters": "provisional measured arch centers",
+      "frontRearWheelCenters": "lower confidence: inferred from body/tread opening edges",
+      "cockpit": "measured panel region; pending render review"
+    },
+    "sourceImagesReviewed": true,
+    "runtimeFitAccepted": false,
+    "gameplayAccepted": false,
+    "iteration": "Third measured pass: per-car viewport sizing for handheld readability; SUV straight-on body/tread overlap calibrated against lower body silhouette. No physics or source-image changes."
+  },
+  "nativeTireTransformOverrides": {
+    "frontRight": {
+      "tireScaleX": 1.3135883273960154,
+      "tireScaleY": 1.3135883273960154,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.42633518640121565,
+      "frontTireOffsetY": -0.6586931940302888,
+      "rearTireOffsetX": -0.8538295194792127,
+      "rearTireOffsetY": 0.6586931940302887
+    },
+    "rearRight": {
+      "tireScaleX": 1.44579178322239,
+      "tireScaleY": 1.44579178322239,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0.8985038441465085,
+      "frontTireOffsetY": 1.1018892786001369,
+      "rearTireOffsetX": -0.35142027204704546,
+      "rearTireOffsetY": -1.1018892786001357
+    },
+    "rearLeft": {
+      "tireScaleX": 1.4439083526814178,
+      "tireScaleY": 1.4439083526814178,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.15095141169969334,
+      "frontTireOffsetY": 0.8466930181642263,
+      "rearTireOffsetX": -0.16166777235714536,
+      "rearTireOffsetY": -0.8466930181642263
+    },
+    "frontLeft": {
+      "tireScaleX": 1.522643459568252,
+      "tireScaleY": 1.522643459568252,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": -0.4917017681294935,
+      "frontTireOffsetY": -0.2551897593945183,
+      "rearTireOffsetX": 1.017848639610106,
+      "rearTireOffsetY": 0.25518975939451777
+    },
+    "rear": {
+      "tireScaleX": 0.4644471006507466,
+      "tireScaleY": 0.4644471006507466,
+      "tireSpacingScale": 1,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 2.8893147407503044e-16,
+      "rearTireOffsetY": 0.1923273174167949
+    }
+  },
+  "allowCardinalTireOverrides": true,
+  "nativeBodyTransformOverrides": {
+    "rear": {
+      "bodyScaleX": 1.298522574936417,
+      "bodyScaleY": 0.7747285811923018,
+      "bodyOffsetX": -0.017915598440072067,
+      "bodyOffsetY": -0.7206643986422812,
+      "bodyRotationDeg": 0
+    }
+  },
+  "bodyAlphaRemoval": {
+    "sourceSha256": "3ee5a8e8886b1d2af3635e8cc8314c90b22a710dc1f1ac89c98ae1654cfbeb98",
+    "reason": "Private Alpine tire-backed inner liner only; keep original and fender edge. Reviewed individually on source-derived FL, FR, RR and RL registrations.",
+    "polygons": [
+      [
+        [
+          1483,
+          674
+        ],
+        [
+          1503,
+          674
+        ],
+        [
+          1512,
+          688
+        ],
+        [
+          1510,
+          706
+        ],
+        [
+          1487,
+          707
+        ],
+        [
+          1472,
+          693
+        ],
+        [
+          1478,
+          682
+        ]
+      ],
+      [
+        [
+          672,
+          242
+        ],
+        [
+          691,
+          242
+        ],
+        [
+          696,
+          251
+        ],
+        [
+          696,
+          269
+        ],
+        [
+          679,
+          271
+        ],
+        [
+          667,
+          277
+        ],
+        [
+          659,
+          266
+        ],
+        [
+          667,
+          251
+        ]
+      ],
+      [
+        [
+          1499,
+          231
+        ],
+        [
+          1512,
+          231
+        ],
+        [
+          1519,
+          238
+        ],
+        [
+          1521,
+          254
+        ],
+        [
+          1511,
+          259
+        ],
+        [
+          1489,
+          256
+        ],
+        [
+          1490,
+          245
+        ]
+      ],
+      [
+        [
+          646,
+          667
+        ],
+        [
+          661,
+          667
+        ],
+        [
+          667,
+          674
+        ],
+        [
+          667,
+          688
+        ],
+        [
+          656,
+          692
+        ],
+        [
+          637,
+          691
+        ],
+        [
+          637,
+          680
+        ]
+      ]
+    ],
+    "maximumChangedPixels": 3097
+  }
+}
