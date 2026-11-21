@@ -1,0 +1,74 @@
+name: Local-fit stock preview batch 01
+on:
+  push:
+    branches: [dot/diagnostic-stock-preview-batch-01]
+permissions:
+  contents: read
+jobs:
+  render:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: b865de9125147f427c13249bcbabaa7dc0a693ba
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Verify exact offline-prepared diagnostic tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = b865de9125147f427c13249bcbabaa7dc0a693ba
+          test "$(git rev-parse HEAD^)" = 969748773953af2da54099bb52fd169e377a215a
+          test "$(git rev-parse HEAD^{tree})" = eaa81945a27fc0b05d08194da3d5b52713e2e2f0
+          test "$(git rev-parse HEAD:.github)" = 9acb7dae8496ff32e0f8ce6e6b4f1a216bc74980
+          test -z "$(git status --porcelain)"
+          printf '%s  %s\n' '5ff905225604ad597976e35d37e42af268baea039e28a6026f7ee1fc3aca1eb1' 'data/server-storage/files/art/catalog-brooklime-1994-body/document.json' | sha256sum --check --strict
+          printf '%s  %s\n' 'e992850081c4c9e84923d8972b9ec006802d69f826356efee0836523131f9da9' 'data/server-storage/files/art/catalog-brooklime-1994-dashboard/document.json' | sha256sum --check --strict
+          printf '%s  %s\n' 'a8668ed27a99eb37f4435a5b2510f7950b86d26857f746acd6f01207a1c9e2cc' 'data/server-storage/files/art/catalog-brooklime-1994-tires/document.json' | sha256sum --check --strict
+          printf '%s  %s\n' 'da00a237b7ac50ee5d87c8ae3fbf78060d608ac052552d9eca935bcc9db1a8c9' 'data/server-storage/files/art/catalog-moschatel-1973-body/document.json' | sha256sum --check --strict
+          printf '%s  %s\n' 'eadb66da725cfe71adfc0d66740a004ca041d55c48837ca9bf3bcdcd671a1030' 'data/server-storage/files/art/catalog-moschatel-1973-dashboard/document.json' | sha256sum --check --strict
+          printf '%s  %s\n' 'c4005d49c6369502bec9030c9e9b5cc26f3262b5cf1e7159f2a9186faa8032da' 'data/server-storage/files/art/catalog-moschatel-1973-tires/document.json' | sha256sum --check --strict
+          printf '%s  %s\n' 'e6c528579d70c1be3b267a8fc32db433800768cc8e6922d8fd39f076d43b18e9' 'data/server-storage/files/art/catalog-pearlwort-1987-body/document.json' | sha256sum --check --strict
+          printf '%s  %s\n' 'c524fa5bb2d1b5cdddcfb93183fccd16d18527481a14f528e5d314f20387f294' 'data/server-storage/files/art/catalog-pearlwort-1987-dashboard/document.json' | sha256sum --check --strict
+          printf '%s  %s\n' 'ad627db754ee8e550dec7422bd88b354b4c14d61d1e9ef9d80797e8fc6bf454d' 'data/server-storage/files/art/catalog-pearlwort-1987-tires/document.json' | sha256sum --check --strict
+          printf '%s  %s\n' 'b117783da9516eafbba76a5f9bb10de84dd00674cb21e8c115dcf4be9489d94b' 'data/server-storage/files/cars/Brooklime 1994/document.json' | sha256sum --check --strict
+          printf '%s  %s\n' '3c191cc6ab9ecfbb14b7ccba2b7b471b3750fb8d2d4c84e4c18318a03686e44a' 'data/server-storage/files/cars/Moschatel 1973/document.json' | sha256sum --check --strict
+          printf '%s  %s\n' '0cb09281993941428ab6397ed93f32e8f298bea52bb96b995cc1d8fa0af5771b' 'data/server-storage/files/cars/Pearlwort 1987/document.json' | sha256sum --check --strict
+          printf '%s  %s\n' 'f965789d1aecf8220da1bcea7310daee72652606eaac0d7360e429b799e06569' 'playwright.stock-matrix.config.mjs' | sha256sum --check --strict
+          printf '%s  %s\n' 'dd2719cc5d32f12157f64a00e2d537a551492e0e0ec34abe74c95af6ddcfbd48' 'tests/playwright/matrix.json' | sha256sum --check --strict
+          printf '%s  %s\n' '3a979da4912cffa8c362438396a5deed66cc8394e505ca85ade2fff19dfb6fe1' 'tests/playwright/stock-render-matrix.spec.js' | sha256sum --check --strict
+          printf '%s  %s\n' '3f2f3cb249f379f73f76e6d6ea1240ec989ff6e76863c7c82512c12dae66290f' 'tests/playwright/stock-verify.mjs' | sha256sum --check --strict
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - name: Preflight protected Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --no-install playwright install --with-deps chromium
+          node --input-type=module <<'JS'
+          import {chromium} from '@playwright/test';
+          const browser=await chromium.launch({headless:true,chromiumSandbox:true});
+          try {
+            const page=await browser.newPage();
+            await page.goto('data:text/html,<title>Protected preview batch browser</title>');
+            if(await page.title()!=='Protected preview batch browser')throw Error('Protected browser preflight failed');
+          } finally { await browser.close(); }
+          JS
+      - name: Render three menu atlases and Load Save posters
+        run: npx --no-install playwright test -c playwright.stock-matrix.config.mjs --workers=1 --reporter=line
+        env:
+          CI: 'true'
+          CAR_PREVIEW_LANE: batch
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: stock-preview-three-car-render-batch-01
+          path: |
+            test-results/**/*-preview-row.json
+            test-results/**/*-render-receipt.json
+            test-results/**/*.webp
+          retention-days: 3
+          if-no-files-found: ignore
