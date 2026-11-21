@@ -5503,6 +5503,890 @@
       "maxEdge": 512,
       "placements": [],
       "usageNote": "Visible grass substrate with thin frost/snow cover for preserved grass cells under authored snow weather; explicit pack16 per-route mappings."
+    },
+    {
+      "name": "environment-v1-columbia-hills",
+      "source": "environment-v1/columbia-hills.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": []
+    },
+    {
+      "name": "environment-v1-descartes",
+      "source": "environment-v1/descartes.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": []
+    },
+    {
+      "name": "environment-v1-endeavour",
+      "source": "environment-v1/endeavour.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": []
+    },
+    {
+      "name": "environment-v1-gale",
+      "source": "environment-v1/gale.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": []
+    },
+    {
+      "name": "environment-v1-hadley-apennine",
+      "source": "environment-v1/hadley-apennine.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": []
+    },
+    {
+      "name": "environment-v1-jezero-dry-delta",
+      "source": "environment-v1/jezero-dry-delta.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": []
+    },
+    {
+      "name": "environment-v1-mars-breccia",
+      "source": "environment-v1/planetary-rocks/mars-breccia.png",
+      "kind": "doodad",
+      "maxEdge": 512,
+      "placements": []
+    },
+    {
+      "name": "environment-v1-mars-sediment",
+      "source": "environment-v1/planetary-rocks/mars-sediment.png",
+      "kind": "doodad",
+      "maxEdge": 512,
+      "placements": []
+    },
+    {
+      "name": "environment-v1-moon-anorthosite",
+      "source": "environment-v1/planetary-rocks/moon-anorthosite.png",
+      "kind": "doodad",
+      "maxEdge": 512,
+      "placements": []
+    },
+    {
+      "name": "environment-v1-moon-apron",
+      "source": "environment-v1/planetary-rocks/moon-apron.png",
+      "kind": "doodad",
+      "maxEdge": 512,
+      "placements": []
+    },
+    {
+      "name": "environment-v1-taurus-littrow-massifs",
+      "source": "environment-v1/taurus-littrow-massifs.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": []
+    },
+    {
+      "name": "environment-acropolis-limestone-day-v1",
+      "source": "skyboxes/acropolis-limestone-day-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-acropolis-limestone-night-v1",
+      "source": "skyboxes/acropolis-limestone-night-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-nordic-boreal-snow-day-v1",
+      "source": "skyboxes/nordic-boreal-snow-day-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-croatia-ucka-karst-morning-v1",
+      "source": "skyboxes/croatia-ucka-karst-morning-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-kenya-hells-gate-rift-evening-v1",
+      "source": "skyboxes/kenya-hells-gate-rift-evening-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-nz-waikato-paddocks-noon-v1",
+      "source": "skyboxes/nz-waikato-paddocks-noon-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-sisteron-authon-clear-night-v1",
+      "source": "skyboxes/sisteron-authon-clear-night-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-chile-conuco-plantations-noon-v1",
+      "source": "skyboxes/chile-conuco-plantations-noon-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-estonia-maekula-lowland-noon-v1",
+      "source": "skyboxes/estonia-maekula-lowland-noon-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-japan-aichi-otaga-forest-evening-v1",
+      "source": "skyboxes/japan-aichi-otaga-forest-evening-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-latvia-andumi-lowland-noon-v1",
+      "source": "skyboxes/latvia-andumi-lowland-noon-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-sardegna-monte-lerno-granite-evening-v1",
+      "source": "skyboxes/sardegna-monte-lerno-granite-evening-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-wales-hafren-forest-night-v1",
+      "source": "skyboxes/wales-hafren-forest-night-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-catalunya-terra-alta-vines-evening-v1",
+      "source": "skyboxes/catalunya-terra-alta-vines-evening-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-cordoba-el-condor-highlands-morning-v1",
+      "source": "skyboxes/cordoba-el-condor-highlands-morning-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-corsica-castagniccia-ridges-morning-v1",
+      "source": "skyboxes/corsica-castagniccia-ridges-morning-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-michigan-old-state-snow-noon-v1",
+      "source": "skyboxes/michigan-old-state-snow-noon-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-minnesota-steamboat-forest-evening-v1",
+      "source": "skyboxes/minnesota-steamboat-forest-evening-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-norway-hof-finnskog-snow-night-v1",
+      "source": "skyboxes/norway-hof-finnskog-snow-night-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-croatia-skrad-inland-forest-night-v1",
+      "source": "skyboxes/croatia-skrad-inland-forest-night-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-fontbelle-authon-thoard-limestone-morning-v1",
+      "source": "skyboxes/fontbelle-authon-thoard-limestone-morning-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-hokkaido-bisan-mixed-woodland-noon-v1",
+      "source": "skyboxes/hokkaido-bisan-mixed-woodland-noon-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-hokkaido-naekawa-forest-night-v1",
+      "source": "skyboxes/hokkaido-naekawa-forest-night-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-portugal-arganil-schist-valley-evening-v1",
+      "source": "skyboxes/portugal-arganil-schist-valley-evening-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-portugal-fafe-granite-uplands-morning-v1",
+      "source": "skyboxes/portugal-fafe-granite-uplands-morning-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-portugal-gois-rolling-forest-morning-v1",
+      "source": "skyboxes/portugal-gois-rolling-forest-morning-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-portugal-lousa-schist-ridges-morning-v1",
+      "source": "skyboxes/portugal-lousa-schist-ridges-morning-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-turkey-cicekli-pine-karst-noon-v1",
+      "source": "skyboxes/turkey-cicekli-pine-karst-noon-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-turkey-ula-pine-limestone-morning-v1",
+      "source": "skyboxes/turkey-ula-pine-limestone-morning-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-aichi-isegami-cedar-ridges-noon-v1",
+      "source": "skyboxes/aichi-isegami-cedar-ridges-noon-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-estonia-arula-otepaa-fields-morning-v1",
+      "source": "skyboxes/estonia-arula-otepaa-fields-morning-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-estonia-rua-birch-meadows-evening-v1",
+      "source": "skyboxes/estonia-rua-birch-meadows-evening-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-latvia-milzkalne-treeline-morning-v1",
+      "source": "skyboxes/latvia-milzkalne-treeline-morning-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-latvia-tukums-farmland-evening-v1",
+      "source": "skyboxes/latvia-tukums-farmland-evening-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "environment-turkey-icmeler-inland-pine-ridges-evening-v1",
+      "source": "skyboxes/turkey-icmeler-inland-pine-ridges-evening-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Original 2994 rally backdrop; source/hash/location/lighting keyed to exact route receipts. No other placement authorized."
+    },
+    {
+      "name": "skybox-cota-day-2994",
+      "source": "skyboxes/cota-day-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for cota, day and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-fuji-speedway-day-2994",
+      "source": "skyboxes/fuji-speedway-day-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for fuji, day and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-long-beach-night-2994",
+      "source": "skyboxes/long-beach-night-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for long-beach, night and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-yas-marina-day-2994",
+      "source": "skyboxes/yas-marina-day-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for yas-marina, day and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-sepang-day-2994",
+      "source": "skyboxes/sepang-day-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for sepang, day and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-silverstone-day-2994",
+      "source": "skyboxes/silverstone-day-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for silverstone, day and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-sonoma-sears-point-day-2994",
+      "source": "skyboxes/sonoma-sears-point-day-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for sonoma, day and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-spa-ardenne-day-2994",
+      "source": "skyboxes/spa-ardenne-day-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for spa, day and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-suzuka-mie-day-2994",
+      "source": "skyboxes/suzuka-mie-day-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for suzuka, day and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-cota-night-2994",
+      "source": "skyboxes/cota-night-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for cota, night and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-fuji-speedway-night-2994",
+      "source": "skyboxes/fuji-speedway-night-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for fuji, night and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-sepang-night-2994",
+      "source": "skyboxes/sepang-night-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for sepang, night and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-spa-ardenne-night-2994",
+      "source": "skyboxes/spa-ardenne-night-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for spa, night and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-suzuka-mie-night-2994",
+      "source": "skyboxes/suzuka-mie-night-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for suzuka, night and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-yas-marina-night-2994",
+      "source": "skyboxes/yas-marina-night-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for yas-marina, night and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-brands-hatch-day-2994",
+      "source": "skyboxes/brands-hatch-day-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for brands-hatch, day and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-imola-day-2994",
+      "source": "skyboxes/imola-day-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for imola, day and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-mont-tremblant-day-2994",
+      "source": "skyboxes/mont-tremblant-day-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for mont-tremblant, day and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-monza-night-2994",
+      "source": "skyboxes/monza-night-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for monza, night and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-portimao-day-2994",
+      "source": "skyboxes/portimao-day-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for portimao, day and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-red-bull-ring-day-2994",
+      "source": "skyboxes/red-bull-ring-day-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for red-bull-ring, day and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-interlagos-day-2994",
+      "source": "skyboxes/interlagos-day-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for interlagos, day and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-lemans-sarthe-day-2994",
+      "source": "skyboxes/lemans-sarthe-day-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for lemans, day and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-tsukuba-day-2994",
+      "source": "skyboxes/tsukuba-day-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for tsukuba, day and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-tsukuba-night-2994",
+      "source": "skyboxes/tsukuba-night-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for tsukuba, night and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-zandvoort-day-2994",
+      "source": "skyboxes/zandvoort-day-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for zandvoort, day and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-zandvoort-night-2994",
+      "source": "skyboxes/zandvoort-night-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Authored 2994 regional circuit panorama for zandvoort, night and clear weather only; use exact saved refs from the source review."
+    },
+    {
+      "name": "skybox-barcelona-national-night-2994",
+      "source": "skyboxes/skybox-barcelona-national-night-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Art directed after this documented circuit landscape; only the exactly pinned authored clear night save."
+    },
+    {
+      "name": "skybox-dunsfold-evening-2994",
+      "source": "skyboxes/skybox-dunsfold-evening-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Art directed after this documented circuit landscape; only the exactly pinned authored clear day save."
+    },
+    {
+      "name": "skybox-goodwood-evening-2994",
+      "source": "skyboxes/skybox-goodwood-evening-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Art directed after this documented circuit landscape; only the exactly pinned authored clear day save."
+    },
+    {
+      "name": "skybox-jarama-night-2994",
+      "source": "skyboxes/skybox-jarama-night-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Art directed after this documented circuit landscape; only the exactly pinned authored clear night save."
+    },
+    {
+      "name": "skybox-mont-tremblant-night-2994",
+      "source": "skyboxes/skybox-mont-tremblant-night-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Art directed after this documented circuit landscape; only the exactly pinned authored clear night save."
+    },
+    {
+      "name": "skybox-autopolis-evening-2994",
+      "source": "skyboxes/skybox-autopolis-evening-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 circuit panorama for pinned authored evening only."
+    },
+    {
+      "name": "skybox-autopolis-morning-2994",
+      "source": "skyboxes/skybox-autopolis-morning-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 circuit panorama for pinned authored morning only."
+    },
+    {
+      "name": "skybox-barcelona-gp-morning-2994",
+      "source": "skyboxes/skybox-barcelona-gp-morning-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 circuit panorama for pinned authored morning only."
+    },
+    {
+      "name": "skybox-donington-evening-2994",
+      "source": "skyboxes/skybox-donington-evening-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 circuit panorama for pinned authored evening only."
+    },
+    {
+      "name": "skybox-hockenheim-morning-2994",
+      "source": "skyboxes/skybox-hockenheim-morning-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 circuit panorama for pinned authored morning only."
+    },
+    {
+      "name": "skybox-hockenheim-noon-2994",
+      "source": "skyboxes/skybox-hockenheim-noon-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 circuit panorama for pinned authored noon only."
+    },
+    {
+      "name": "skybox-istanbul-evening-2994",
+      "source": "skyboxes/skybox-istanbul-evening-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 circuit panorama for pinned authored evening only."
+    },
+    {
+      "name": "skybox-gilles-villeneuve-morning-2994",
+      "source": "skyboxes/skybox-gilles-villeneuve-morning-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 circuit panorama for pinned authored morning only."
+    },
+    {
+      "name": "skybox-hungaroring-morning-2994",
+      "source": "skyboxes/skybox-hungaroring-morning-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 circuit panorama for pinned authored morning only."
+    },
+    {
+      "name": "skybox-mount-panorama-noon-2994",
+      "source": "skyboxes/skybox-mount-panorama-noon-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 circuit panorama for pinned authored noon only."
+    },
+    {
+      "name": "skybox-mugello-evening-2994",
+      "source": "skyboxes/skybox-mugello-evening-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 circuit panorama for pinned authored evening only."
+    },
+    {
+      "name": "skybox-phillip-island-evening-2994",
+      "source": "skyboxes/skybox-phillip-island-evening-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 circuit panorama for pinned authored evening only."
+    },
+    {
+      "name": "environment-rally-bauxites-evening-v1",
+      "source": "skyboxes/environment-rally-bauxites-evening-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 rally panorama for pinned parent and authored evening only."
+    },
+    {
+      "name": "environment-rally-borregos-noon-v1",
+      "source": "skyboxes/environment-rally-borregos-noon-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 rally panorama for pinned parent and authored noon only."
+    },
+    {
+      "name": "environment-rally-dafni-evening-v1",
+      "source": "skyboxes/environment-rally-dafni-evening-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 rally panorama for pinned parent and authored evening only."
+    },
+    {
+      "name": "environment-rally-pavliani-morning-v1",
+      "source": "skyboxes/environment-rally-pavliani-morning-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 rally panorama for pinned parent and authored morning only."
+    },
+    {
+      "name": "environment-rally-platak-evening-v1",
+      "source": "skyboxes/environment-rally-platak-evening-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 rally panorama for pinned parent and authored evening only."
+    },
+    {
+      "name": "environment-rally-pozos-noon-v1",
+      "source": "skyboxes/environment-rally-pozos-noon-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 rally panorama for pinned parent and authored noon only."
+    },
+    {
+      "name": "environment-rally-valenciana-evening-v1",
+      "source": "skyboxes/environment-rally-valenciana-evening-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 rally panorama for pinned parent and authored evening only."
+    },
+    {
+      "name": "environment-rally-baumholder-noon-v1",
+      "source": "skyboxes/environment-rally-baumholder-noon-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 rally panorama for pinned parent and authored noon only."
+    },
+    {
+      "name": "environment-rally-coldwater-noon-v1",
+      "source": "skyboxes/environment-rally-coldwater-noon-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 rally panorama for pinned parent and authored noon only."
+    },
+    {
+      "name": "environment-rally-kemmelberg-evening-v1",
+      "source": "skyboxes/environment-rally-kemmelberg-evening-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 rally panorama for pinned parent and authored evening only."
+    },
+    {
+      "name": "environment-rally-panzerplatte-noon-v1",
+      "source": "skyboxes/environment-rally-panzerplatte-noon-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 rally panorama for pinned parent and authored noon only."
+    },
+    {
+      "name": "environment-rally-sherwood-morning-v1",
+      "source": "skyboxes/environment-rally-sherwood-morning-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 rally panorama for pinned parent and authored morning only."
+    },
+    {
+      "name": "environment-rally-strasinska-morning-v1",
+      "source": "skyboxes/environment-rally-strasinska-morning-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 rally panorama for pinned parent and authored morning only."
+    },
+    {
+      "name": "environment-rally-swietajno-evening-v1",
+      "source": "skyboxes/environment-rally-swietajno-evening-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 rally panorama for pinned parent and authored evening only."
+    },
+    {
+      "name": "environment-rally-agren-snow-morning-v1",
+      "source": "skyboxes/environment-rally-agren-snow-morning-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 rally panorama for pinned parent and authored morning only."
+    },
+    {
+      "name": "environment-rally-concord-pond-morning-v1",
+      "source": "skyboxes/environment-rally-concord-pond-morning-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 rally panorama for pinned parent and authored morning only."
+    },
+    {
+      "name": "environment-rally-likenas-snow-evening-v1",
+      "source": "skyboxes/environment-rally-likenas-snow-evening-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 rally panorama for pinned parent and authored evening only."
+    },
+    {
+      "name": "environment-rally-morton-cutoff-evening-v1",
+      "source": "skyboxes/environment-rally-morton-cutoff-evening-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 rally panorama for pinned parent and authored evening only."
+    },
+    {
+      "name": "environment-rally-north-road-evening-v1",
+      "source": "skyboxes/environment-rally-north-road-evening-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 rally panorama for pinned parent and authored evening only."
+    },
+    {
+      "name": "environment-rally-shoreline-snow-noon-v1",
+      "source": "skyboxes/environment-rally-shoreline-snow-noon-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 rally panorama for pinned parent and authored noon only."
+    },
+    {
+      "name": "environment-rally-svullrya-snow-morning-v1",
+      "source": "skyboxes/environment-rally-svullrya-snow-morning-v1.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Geographically reviewed 2994 rally panorama for pinned parent and authored morning only."
+    },
+    {
+      "name": "environment-nz-whaanga-tasman-morning-qav1b",
+      "source": "skyboxes/nz-whaanga-tasman-morning-qav1b.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": []
     }
   ]
 }
