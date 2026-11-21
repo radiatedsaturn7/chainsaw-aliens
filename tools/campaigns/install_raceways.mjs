@@ -47,6 +47,13 @@ for(const row of read(`${reportBase}/report.json`)){
  if(prior&&!row.hubStage&&prior.weather)race.weather=prior.weather;
  // Independent editor/free-race imports must not claim a US campaign location.
  if(!row.hubStage)delete race.campaign;
+ if(row.driftChallenge){
+  race.campaign={optional:true,eventType:'Drift challenge',scoring:'drift'};
+  race.weather='clear';race.timeOfDay='day';race.brightness=1;
+  race.competition={...race.competition,mode:'solo',trafficEnabled:false,aiDrivers:[]};
+  race.source.driftLayoutNotes='Full mapped loop for game score attacks; not a replica of professional judged zones. See layoutReview and layoutReference.';
+ }
+
  if(row.city){
   editor.applyLoadedRaceDocument(race);
   const origin=race.source.origin,R=6371008.8,rad=Math.PI/180;

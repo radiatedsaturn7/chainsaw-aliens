@@ -24674,9 +24674,12 @@ export default class RaceEditor {
     drawRaceDrivingAssistHud(this, ctx, bounds, layout);
     if(this.selectedRace?.campaign?.scoring==='drift'){
       ctx.save();const x=bounds.x+8,y=bounds.y+bounds.h*.46;
-      ctx.fillStyle='rgba(0,0,0,.8)';ctx.fillRect(x,y,146,28);
+      ctx.fillStyle='rgba(0,0,0,.8)';ctx.fillRect(x,y,146,this.selectedRace?.driftChallenge?48:28);
       ctx.fillStyle=session.driftScore?.sliding?'#efc36b':'#fff';ctx.font=`600 13px ${UI_SUITE.font.family}`;
-      ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(`Drift ${Math.floor(session.driftScore?.points||0)}`,x+6,y+14);ctx.restore();
+      ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(`Drift ${Math.floor(session.driftScore?.points||0)}`,x+6,y+14);
+      const targets=this.selectedRace?.driftChallenge?.targets;
+      if(targets){const next=targets.findIndex(t=>t>(session.driftScore?.points||0));ctx.fillStyle='#fff';ctx.fillText(next<0?'Gold earned':`${['Bronze','Silver','Gold'][next]} ${targets[next]}`,x+6,y+34);}
+      ctx.restore();
     }
 
     if(this.raceInput.drivingIntentVisible && session.drivingIntent){

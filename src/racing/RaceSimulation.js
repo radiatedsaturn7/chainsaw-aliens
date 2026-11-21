@@ -1,5 +1,5 @@
 import { tireSizeForWheel } from './TireSizes.js';
-import {advanceRaceDriftScore} from './RaceDriftScore.js';
+import {advanceRaceDriftScore,driftContactCount} from './RaceDriftScore.js';
 import { advanceRaceSimulationClock } from './RaceFrameBudget.js';
 import {updateGlassWeather} from './GlassWeather.js';
 import {prepareRaceSceneryTriggers} from './simulation/DamageModel.js';
@@ -4125,7 +4125,8 @@ export function updateRaceSimulation({
       distanceM:Math.max(0,Math.min(routeAdvance,Math.hypot(Number(authoritativeVelocity.x||0),Number(authoritativeVelocity.z||0))*seconds)),
       longitudinalSpeed:Number(presentationState.bodyLongitudinalSpeedMps)||0,
       lateralSpeed:Number(presentationState.bodyLateralSpeedMps)||0,
-      contactCount:Object.values(presentationState.contactPatches||{}).filter(p=>p?.inContact).length,
+      contactCount:driftContactCount(presentationState.contactPatches),
+      progressM:editor.selectedRace?.driftChallenge?Math.max(0,(Number(editor.playtestSession.lap)||1)-1)*routeLength+previousDistance+routeAdvance:undefined,
       onCourse:Math.abs(projectedLateralMeters)<=projectedRoadHalfWidth,
       active:!countdownActive&&!editor.playtestSession.pendingEdgeCenterReset
     });

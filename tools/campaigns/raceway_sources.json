@@ -718,6 +718,20 @@
         "mappedLengthM": 942.5754230229556,
         "widthM": 10,
         "laps": 5
+      },
+      {
+        "index": 19,
+        "key": "1000-drift",
+        "label": "Course 1000 \u2014 Drift Reverse",
+        "mappedLengthM": 942.5754230229556,
+        "widthM": 10,
+        "laps": 2,
+        "reverse": true,
+        "maxSegmentLengthM": 20,
+        "renderSurfaceStepM": 2,
+        "driftChallenge": true,
+        "publishedLengthM": 1000,
+        "reference": "https://www.tsukuba-circuit.jp/more-info/pdf/1000drift.pdf"
       }
     ],
     "separateComponents": true,
@@ -1690,5 +1704,166 @@
     ],
     "reviewNotes": "Explicit connected way order preserves the full current Top Gear figure-eight. At-grade crossing, not a bridge. Physical track still offered by Dunsfold Park in 2026. No fictional reverse variants.",
     "artHubStage": 3
+  },
+  {
+    "key": "ebisu",
+    "name": "Ebisu Circuit",
+    "lat": 37.644224,
+    "lon": 140.372278,
+    "separateComponents": true,
+    "reference": "https://www.ebisu-circuit.com/course.html",
+    "country": "jp",
+    "artHubStage": 3,
+    "mapHalfHeightDeg": 0.012,
+    "reviewNotes": "Mapped paved centerlines; pit-lane alternatives excluded. OSM length is retained, not rescaled to published lap lengths. Full mapped loops used for game drift score attacks, not professional judged zones. DEM is approximate and banking is not surveyed. Widths use OSM where available, otherwise conservative venue defaults. North 950 m vs published 1155 m; Touge 881 m vs 1200 m; West 1917 m vs 2103 m. South/Minami excluded because it is now a dirt Slide Park. School uses the mapped perimeter rather than inventing cone paths.",
+    "layouts": [
+      {
+        "index": 5,
+        "key": "north",
+        "label": "North Course",
+        "mappedLengthM": 950.3000417398737,
+        "widthM": 9,
+        "laps": 2,
+        "maxSegmentLengthM": 20,
+        "renderSurfaceStepM": 2,
+        "driftChallenge": true,
+        "publishedLengthM": 1155
+      },
+      {
+        "index": 10,
+        "key": "school",
+        "label": "School Course",
+        "mappedLengthM": 408.8804170739324,
+        "widthM": 8,
+        "laps": 2,
+        "maxSegmentLengthM": 20,
+        "renderSurfaceStepM": 2,
+        "driftChallenge": true,
+        "publishedLengthM": 420
+      },
+      {
+        "index": 6,
+        "key": "touge",
+        "label": "Touge Course",
+        "mappedLengthM": 880.7513260874008,
+        "widthM": 7,
+        "laps": 2,
+        "maxSegmentLengthM": 20,
+        "renderSurfaceStepM": 2,
+        "driftChallenge": true,
+        "publishedLengthM": 1200
+      },
+      {
+        "index": 7,
+        "key": "west-drift",
+        "label": "West Drift Course",
+        "mappedLengthM": 635.6257273736247,
+        "widthM": 8,
+        "laps": 2,
+        "maxSegmentLengthM": 20,
+        "renderSurfaceStepM": 2,
+        "driftChallenge": true
+      },
+      {
+        "index": 2,
+        "key": "west",
+        "label": "West Course",
+        "mappedLengthM": 1917.1164166560638,
+        "widthM": 10,
+        "laps": 2,
+        "maxSegmentLengthM": 20,
+        "renderSurfaceStepM": 2,
+        "driftChallenge": true,
+        "publishedLengthM": 2103
+      }
+    ]
+  },
+  {
+    "key": "nikko",
+    "name": "Nikko Circuit",
+    "lat": 36.66217,
+    "lon": 139.86261,
+    "reference": "https://www.nikko-circuit.jp/",
+    "country": "jp",
+    "artHubStage": 3,
+    "mapHalfHeightDeg": 0.005,
+    "reviewNotes": "Mapped paved centerlines; pit-lane alternatives excluded. OSM length is retained, not rescaled to published lap lengths. Full mapped loops used for game drift score attacks, not professional judged zones. DEM is approximate and banking is not surveyed. Widths use OSM where available, otherwise conservative venue defaults.",
+    "layouts": [
+      {
+        "index": 0,
+        "key": "main",
+        "label": "Main Course",
+        "mappedLengthM": 1020.6631713423237,
+        "widthM": 10,
+        "laps": 2,
+        "maxSegmentLengthM": 20,
+        "renderSurfaceStepM": 2,
+        "driftChallenge": true
+      }
+    ]
+  },
+  {
+    "key": "mobara",
+    "name": "Mobara Twin Circuit",
+    "lat": 35.38218,
+    "lon": 140.28175,
+    "separateComponents": true,
+    "reference": "https://www.mobara-tc.com/1/1-1.html",
+    "country": "jp",
+    "artHubStage": 3,
+    "mapHalfHeightDeg": 0.005,
+    "reviewNotes": "Mapped paved centerlines; pit-lane alternatives excluded. OSM length is retained, not rescaled to published lap lengths. Full mapped loops used for game drift score attacks, not professional judged zones. DEM is approximate and banking is not surveyed. Widths use OSM where available, otherwise conservative venue defaults. 1121 m mapped vs published 1270 m. Real drift sessions have restricted sections; the game scores the complete mapped loop.",
+    "layouts": [
+      {
+        "index": 2,
+        "key": "east",
+        "label": "East Course",
+        "mappedLengthM": 1121.4182426592674,
+        "widthM": 10,
+        "laps": 2,
+        "maxSegmentLengthM": 20,
+        "renderSurfaceStepM": 2,
+        "driftChallenge": true,
+        "publishedLengthM": 1270
+      }
+    ]
+  },
+  {
+    "key": "bihoku",
+    "name": "Bihoku Highland Circuit",
+    "lat": 34.97409,
+    "lon": 133.61441,
+    "separateComponents": true,
+    "reference": "https://bihoku-circuit.com/course-guide/",
+    "country": "jp",
+    "artHubStage": 3,
+    "mapHalfHeightDeg": 0.005,
+    "reviewNotes": "Mapped paved centerlines; pit-lane alternatives excluded. OSM length is retained, not rescaled to published lap lengths. Full mapped loops used for game drift score attacks, not professional judged zones. DEM is approximate and banking is not surveyed. Widths use OSM where available, otherwise conservative venue defaults.",
+    "layouts": [
+      {
+        "index": 1,
+        "key": "a",
+        "label": "Course A",
+        "mappedLengthM": 666.5142174117198,
+        "widthM": 9,
+        "laps": 2,
+        "maxSegmentLengthM": 20,
+        "renderSurfaceStepM": 2,
+        "driftChallenge": true,
+        "publishedLengthM": 710
+      },
+      {
+        "index": 0,
+        "key": "b",
+        "label": "Course B",
+        "mappedLengthM": 1004.0695439426498,
+        "widthM": 9,
+        "laps": 2,
+        "maxSegmentLengthM": 20,
+        "renderSurfaceStepM": 2,
+        "driftChallenge": true,
+        "publishedLengthM": 1100
+      }
+    ]
   }
 ]

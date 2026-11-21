@@ -1,3 +1,4 @@
+import {driftMedal,driftBestKey,driftResultVariables} from './DriftChallenges.js';
 import {normalizeMenuDocument} from './MenuDocument.js';
 import {setMenuProgress} from './MenuProgress.js';
 import {motorsportCatalog,createMotorsportEvent,readMotorsportEvent,completeMotorsportRound,seriesStandings,serviceMotorsportEvent,availableSeriesService,seriesServiceHealth,SERIES_SAVE_KEY} from './MotorsportEvents.js';
@@ -14,7 +15,7 @@ export class MotorsportMenu {
  get game(){return this.player.game;}
  get state(){return readMotorsportEvent(this.player.flow?.parameters?.[SERIES_SAVE_KEY]);}
  get catalog(){return motorsportCatalog(this.player.flow.document.parameters.raceIndex||[]);}
- async save(state){await setMenuProgress(this.game,{[SERIES_SAVE_KEY]:state?JSON.stringify(state):''});}
+ async save(state,variables={}){await setMenuProgress(this.game,{...variables,[SERIES_SAVE_KEY]:state?JSON.stringify(state):''});}
  screen(id,title,buttons,lines=[],{remember=true,refresh=false,extraElements=[]}={}){
   const elements=[{id:'heading',type:'text',label:title,x:.035,y:.025,w:.93,h:.095,fontSize:26,useDefaultFont:true,color:'#ffffff'},
    ...buttons.map(([label,key],i)=>({id:key,type:'button',label,x:.035,y:.15+i*.1,w:.46,h:.085,fontSize:21,useDefaultFont:true,color:'#ffffff',background:'#000000',selectionIndicator:'cursor',cursorText:'>',action:{type:'back'}})),
@@ -26,7 +27,7 @@ export class MotorsportMenu {
  home(){
   if(this.state)return this.showEvent({remember:false});
   this.screen('motorsport-home','Championships',[
-   ['Circuit Cups','motorsport-circuits'],['Rally','motorsport-rallies'],
+   ['Circuit Cups','motorsport-circuits'],['Rally','motorsport-rallies'],['Drift','motorsport-drift'],
    ['Back','motorsport-back']]);
  }
  entries(kind=this.kind){return this.catalog[kind==='rallies'?'rallyGroups':kind]||[];}
@@ -48,9 +49,13 @@ export class MotorsportMenu {
   const buttons=[['▲','motorsport-up'],...entries.slice(start,start+5).map((e,i)=>[e.name,`motorsport-pick-${i+start}`]),['▼','motorsport-down']];
   const focus=`motorsport-pick-${index}`;
   this.player.screenFocus?.set('motorsport-list',focus);
-  this.screen('motorsport-list',kind==='rallies'?'Rally':'Circuit Cups',buttons,entries.length?kind==='rallies'?['Short: 4 stages','Full: 12 stages','Total time decides the winner.','Damage carries between stages.','Limited / full service: 30 / 60 pts','Full: six sections, two passes.']:[`Difficulty: ${entries[index].heat} / 3`,...entries[index].rounds.map((r,i)=>`${i+1}. ${r.ref}`)]:['No eligible events installed.'],{refresh:this.player.flow.screenId==='motorsport-list'});
+  this.screen('motorsport-list',kind==='rallies'?'Rally':kind==='drift'?'Drift':'Circuit Cups',buttons,entries.length?kind==='drift'?this.driftDetails(entries[index]):kind==='rallies'?['Short: 4 stages','Full: 12 stages','Total time decides the winner.','Damage carries between stages.','Limited / full service: 30 / 60 pts','Full: six sections, two passes.']:[`Difficulty: ${entries[index].heat} / 3`,...entries[index].rounds.map((r,i)=>`${i+1}. ${r.ref}`)]:['No eligible events installed.'],{refresh:this.player.flow.screenId==='motorsport-list'});
   const items=this.player.interactive?.()||this.player.flow.screen.elements.filter(e=>e.type==='button');
   this.player.focus=Math.max(0,items.findIndex(e=>e.id===focus));
+ }
+ driftDetails(definition){
+  const best=Number(this.player.flow.parameters[driftBestKey(definition)])||0;
+  return [definition.rounds[0].ref,'2 laps · solo drift score',...definition.targets.map((t,i)=>`${['Bronze','Silver','Gold'][i]}: ${t}`),`Best: ${best} · ${driftMedal(definition,best)}`];
  }
  scroll(direction){this.open(this.kind,(this.lists[this.kind]?.index||0)+direction);}
  guard(){
@@ -71,6 +76,12 @@ export class MotorsportMenu {
  preview(definition){
   if(this.state)return this.showEvent({remember:false});
   this.selection=definition;
+  if(definition.kind==='drift'){
+   this.screen('motorsport-preview',definition.name,[['Enter','motorsport-enter']],this.driftDetails(definition),{
+    extraElements:[{id:'drift-preview',type:'race-description',property:'route-preview',assetRef:definition.rounds[0].ref,x:.035,y:.3,w:.46,h:.56}]
+   });
+   return;
+  }
   if(definition.kind==='championship'){
    const text={type:'text',useDefaultFont:true,color:'#ffffff',fontSize:19};
    const cards=definition.rounds.map((round,i)=>({x:.035+i*.32,round,i}));
@@ -91,6 +102,11 @@ export class MotorsportMenu {
   const buttons=complete?[['Close Event','motorsport-close']]:[[state.phase==='racing'?'Restart Round':'Start Next','motorsport-drive']];
   if(state.phase==='between'&&definition.kind==='rally'&&state.round%definition.serviceEvery===0)buttons.push([`Service (${state.serviceBudget} pts)`,'motorsport-service']);
   if(!complete)buttons.push(['Quit Event','motorsport-retire']);
+  if(definition.kind==='drift'){
+   const result=state.results[0]?.classification?.[0];
+   const lines=complete?[result?.dnf?'DNF':`${result?.score||0} pts · ${driftMedal(definition,result?.score||0)}`,...this.driftDetails(definition)]:this.driftDetails(definition);
+   this.screen('motorsport-event',definition.name,buttons,lines,{remember});return;
+  }
   const next=definition.rounds[state.round];
   const lines=[complete?'Final standings':`Next: ${state.round+1} / ${definition.rounds.length}`,next?`${next.ref}${next.pass?' · Pass '+next.pass:''}`:'Event complete',
    ...seriesStandings(state).map((r,i)=>`${i+1}. ${r.name}  ${definition.kind==='rally'?(r.retired?'DNF':time(r.timeMs)):`${r.points} pts`}`),
@@ -122,7 +138,8 @@ export class MotorsportMenu {
  async record(session,{dnf=false}={}){
   const state=this.state,config=session.menuConfiguration;
   if(!state||config?.motorsportId!==state.id||config.motorsportRound!==state.round||state.phase!=='racing')return;
-  await this.save(completeMotorsportRound(state,session,{dnf}));
+  const next=completeMotorsportRound(state,session,{dnf});
+  await this.save(next,driftResultVariables(next,this.player.flow.parameters));
  }
  async finish(session){
   await this.record(session);this.showEvent({remember:false});
@@ -133,6 +150,7 @@ export class MotorsportMenu {
   if(id==='motorsport-back'){this.back();return;}
   if(id==='motorsport-up'||id==='motorsport-down'){this.scroll(id.endsWith('down')?1:-1);return;}
   if(id==='motorsport-circuits'){this.open('championships');return;}
+  if(id==='motorsport-drift'){this.open('drift');return;}
   if(id==='motorsport-rallies'){this.open('rallies');return;}
   if(id.startsWith('motorsport-format-')){this.preview(this.rallySelection.formats.find(f=>f.rounds.length===Number(id.slice(18))));return;}
   if(id.startsWith('motorsport-pick-')){const entry=this.entries()[Number(id.slice(16))];if(this.kind==='rallies')this.formats(entry);else this.preview(entry);return;}

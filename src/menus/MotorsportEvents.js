@@ -1,3 +1,4 @@
+import {driftChallengeCatalog} from './DriftChallenges.js';
 import {isRaceRouteLoopClosed} from '../racing/RaceRouteProgress.js';
 import {campaignCourse} from '../garage/CampaignChallenges.js';
 import {normalizeCarCondition} from '../garage/GarageRepairs.js';
@@ -45,7 +46,7 @@ export function motorsportCatalog(entries=[]){
   }
  }
  const rallyGroups=[...groups.keys()].map(id=>({id,name:groups.get(id)[0].rally.name,formats:rallies.filter(r=>r.rallyId===id)})).sort((a,b)=>a.name.localeCompare(b.name));
- return {championships,rallies,rallyGroups};
+ return {championships,rallies,rallyGroups,drift:driftChallengeCatalog(byRef)};
 }
 export function createMotorsportEvent(definition,carRef,configuration={},id=globalThis.crypto?.randomUUID?.()||String(Date.now())){
  if(!carRef||!definition?.rounds?.length)throw Error('Choose a car and event first.');
@@ -54,7 +55,7 @@ export function createMotorsportEvent(definition,carRef,configuration={},id=glob
 }
 export function readMotorsportEvent(value){
  try{const s=typeof value==='string'?JSON.parse(value):value;
-  return s?.version===1&&typeof s.id==='string'&&typeof s.carRef==='string'&&['championship','rally'].includes(s.definition?.kind)&&Array.isArray(s.definition.rounds)&&s.definition.rounds.length<=12&&s.definition.rounds.every(r=>typeof r.ref==='string')&&Number.isInteger(s.round)&&s.round>=0&&s.round<=s.definition.rounds.length&&Array.isArray(s.results)&&['ready','racing','between','complete'].includes(s.phase)?structuredClone(s):null;
+  return s?.version===1&&typeof s.id==='string'&&typeof s.carRef==='string'&&['championship','rally','drift'].includes(s.definition?.kind)&&Array.isArray(s.definition.rounds)&&s.definition.rounds.length<=12&&s.definition.rounds.every(r=>typeof r.ref==='string')&&Number.isInteger(s.round)&&s.round>=0&&s.round<=s.definition.rounds.length&&Array.isArray(s.results)&&['ready','racing','between','complete'].includes(s.phase)?structuredClone(s):null;
  }catch{return null;}
 }
 export function seriesStandings(state){
@@ -73,7 +74,10 @@ export function completeMotorsportRound(state,session,{dnf=false}={}){
  const next=structuredClone(state),definition=next.definition,round=definition.rounds[next.round];
  const elapsed=Math.max(1,Number(session.elapsedMs)||1);
  let classification;
- if(definition.kind==='rally'){
+ if(definition.kind==='drift'){
+  const points=Number(session.driftScore?.points);
+  classification=[{id:'player',timeMs:elapsed,dnf,score:dnf||!Number.isFinite(points)?0:Math.max(0,Math.floor(points))}];
+ }else if(definition.kind==='rally'){
   // Seeded stage-time competitors: independent of the player's result, never rubber-banded.
   classification=SERIES_RIVALS.map((name,i)=>({id:`series-ai-${i}`,timeMs:Math.round(round.seconds*1000*(1.08-i*.035+(variance(`${definition.id}:${next.round}:${i}`)-.5)*.06))}));
   classification.push({id:'player',timeMs:elapsed,dnf});classification.sort((a,b)=>Number(!!a.dnf)-Number(!!b.dnf)||a.timeMs-b.timeMs);
@@ -127,11 +131,17 @@ export function serviceMotorsportEvent(state,id){
 export function applyMotorsportRace(race,state){
  if(!state)return race;
  const round=state.definition.rounds[state.round];if(!round)throw Error('Event is already complete.');
- if(state.definition.kind==='championship'&&!motorsportRaceMetadata(race).properCircuit)throw Error('Championship rounds require a closed, imported circuit.');
+ if(['championship','drift'].includes(state.definition.kind)&&!motorsportRaceMetadata(race).properCircuit)throw Error('Championship rounds require a closed, imported circuit.');
  const level=SERIES_LEVELS[state.definition.heat-1]||SERIES_LEVELS[1];
- const next={...race,laps:state.definition.kind==='championship'?round.laps:1,mechanicalMission:{},raceStart:{...race.raceStart,cutsceneRef:''},
+ const next={...race,laps:state.definition.kind!=='rally'?round.laps:1,mechanicalMission:{},raceStart:{...race.raceStart,cutsceneRef:''},
   finishBehavior:{type:'menu',menuScreen:'motorsport-event'},competition:{...race.competition,mode:state.definition.kind==='championship'?'ai-race':'solo',trafficEnabled:false,
    aiDrivers:state.definition.kind==='championship'?SERIES_RIVALS.map((name,i)=>({id:`series-ai-${i}`,name,enabled:true,skill:level.skill+i*.008,aggression:level.aggression,rubberBanding:0,difficulty:state.definition.heat===3?'expert':state.definition.heat===2?'hard':'medium'})):[]}};
+ if(state.definition.kind==='drift'){
+  // Scoring/HUD reuse the existing campaign drift observer, without campaign unlock/reward IDs.
+  next.campaign={scoring:'drift'};
+  next.weather='clear';next.timeOfDay='day';next.brightness=1;
+  next.driftChallenge={targets:[...state.definition.targets],id:state.definition.id};
+ }
  // Authored node destinations must not leave the series or play campaign cutscenes.
  if(next.road?.network)next.road={...next.road,network:{...next.road.network,nodes:next.road.network.nodes.map(n=>({...n,finish:n.finish?{destination:next.finishBehavior,variables:{}}:n.finish}))}};
  return next;

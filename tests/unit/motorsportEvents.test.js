@@ -1,3 +1,4 @@
+import {DRIFT_CHALLENGES} from '../../src/menus/DriftChallenges.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -121,7 +122,7 @@ test('installed catalog has all twelve cups and all saved rally collections; men
  assert.ok(catalog.rallyGroups.length>=15);
  for(const r of catalog.rallies)assert.equal(new Set(r.rounds.map(s=>s.ref)).size,r.rounds.length===4?4:6);
  const {controller:c,player:p}=menuFixture();p.flow.document.parameters.raceIndex=menu.parameters.raceIndex;
- for(const kind of ['championships','rallies']){
+ for(const kind of ['championships','rallies','drift']){
   c.open(kind);const count=c.entries().length;
   for(let i=0;i<count;i++){
    assert.equal(c.lists[kind].index,i);
@@ -232,4 +233,67 @@ test('circuit preview shows three fixed route cards and returns without a Back b
  assert.equal(buttons.find(e=>e.id==='motorsport-up').label,'▲');
  assert.equal(buttons.find(e=>e.id==='motorsport-down').label,'▼');
  assert.ok(!buttons.some(e=>e.label==='Back'));
+});
+
+test('drift challenges use installed real circuits, solo two-lap scoring and preserve original track data',()=>{
+ const menu=JSON.parse(fs.readFileSync('data/server-storage/files/menus/Game Menu/document.json'));
+ const events=motorsportCatalog(menu.parameters.raceIndex).drift;
+ assert.equal(events.length,13);
+ assert.equal(motorsportCatalog([]).drift.length,0);
+ for(const event of events){
+  assert.deepEqual([...event.targets].sort((a,b)=>a-b),event.targets);
+  assert.equal(event.rounds.length,1);
+  const original=structuredClone(circuit),race=applyMotorsportRace(circuit,run(event));
+  assert.equal(race.laps,2);assert.equal(race.competition.mode,'solo');
+  assert.equal(race.competition.aiDrivers.length,0);assert.equal(race.campaign.scoring,'drift');
+  assert.equal(race.timeOfDay,'day');assert.equal(race.weather,'clear');
+  assert.deepEqual(race.driftChallenge.targets,event.targets);assert.deepEqual(circuit,original);
+  assert.equal(readMotorsportEvent(run(event)).definition.kind,'drift');
+ }
+});
+test('drift medals and personal bests use score, survive profile normalization, and reject DNF results',async()=>{
+ const {DRIFT_CHALLENGES,driftMedal,driftBestKey,driftResultVariables}=await import('../../src/menus/DriftChallenges.js');
+ const definition=motorsportCatalog(DRIFT_CHALLENGES.map(c=>({ref:c.ref,properCircuit:true}))).drift[0];
+ const result=completeMotorsportRound(run(definition),{...session(),driftScore:{points:7000.9}});
+ assert.equal(result.phase,'complete');assert.equal(result.results[0].classification[0].score,7000);
+ assert.equal(driftMedal(definition,7000),'Gold');assert.equal(driftMedal(definition,0),'No medal');
+ const key=driftBestKey(definition);
+ assert.deepEqual(normalizeMenuVariables(driftResultVariables(result)),{[key]:7000});
+ assert.deepEqual(driftResultVariables(result,{[key]:8000}),{[key]:8000});
+ assert.deepEqual(driftResultVariables(completeMotorsportRound(run(definition),{driftScore:{points:9000}},{dnf:true})),{});
+});
+test('Drift navigation includes a route preview, stores the best on completion and offers no phantom AI standings',async()=>{
+ const {player:p,controller:c}=menuFixture();
+ const menu=JSON.parse(fs.readFileSync('data/server-storage/files/menus/Game Menu/document.json'));
+ p.flow.document.parameters.raceIndex=menu.parameters.raceIndex;
+ c.save=async(state,variables={})=>Object.assign(p.flow.parameters,variables,{motorsportEvent:state?JSON.stringify(state):''});
+ c.home();assert.ok(p.flow.screen.elements.some(e=>e.id==='motorsport-drift'));
+ await c.activate('motorsport-drift');assert.equal(c.entries().length,13);
+ await c.activate('motorsport-pick-0');
+ assert.ok(p.flow.screen.elements.some(e=>e.property==='route-preview'));
+ await c.enter();await c.save({...c.state,phase:'racing'});
+ const s={...session(),driftScore:{points:7000},menuConfiguration:{motorsportId:c.state.id,motorsportRound:0}};
+ await c.record(s);c.showEvent();
+ assert.equal(c.state.phase,'complete');
+ assert.ok(p.flow.screen.elements.some(e=>e.label==='7000 pts · Gold'));
+ assert.ok(!p.flow.screen.elements.some(e=>/Vera|Service|Next:/.test(e.label)));
+ await c.activate('motorsport-close');
+ assert.equal(c.state,null);assert.equal(p.flow.parameters['driftBest.drift-horse-thief'],7000);
+ await c.activate('motorsport-drift');
+ assert.ok(p.flow.screen.elements.some(e=>e.label==='Best: 7000 · Gold'));
+});
+
+test('every offered drift track decodes, qualifies as a circuit and retains its imported road geometry',async()=>{
+ const {gunzipSync}=await import('node:zlib');
+ const menu=JSON.parse(fs.readFileSync('data/server-storage/files/menus/Game Menu/document.json'));
+ for(const event of motorsportCatalog(menu.parameters.raceIndex).drift){
+  const folder=encodeURIComponent(event.rounds[0].ref).replaceAll('%20',' ');
+  const stored=JSON.parse(fs.readFileSync('data/server-storage/files/races/'+folder+'/document.json'));
+  const doc=stored.encoding?JSON.parse(gunzipSync(Buffer.from(stored.data,'base64'))):stored;
+  const race=doc.race||doc;
+  assert.equal(motorsportRaceMetadata(race).properCircuit,true,event.name);
+  const overlay=applyMotorsportRace(race,run(event));
+  assert.deepEqual(overlay.road,race.road);assert.deepEqual(overlay.scenery,race.scenery);
+  assert.ok(race.road.segments.every(s=>s.surface==='asphalt'));
+ }
 });

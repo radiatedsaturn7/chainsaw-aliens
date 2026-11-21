@@ -9811,6 +9811,166 @@
         "weather": "clear",
         "snowDepthIn": 0,
         "snowBuilds": false
+      },
+      "Tsukuba — Course 1000 — Drift Reverse": {
+        "points": "132,499 95,551 59,603 22,655 5,705 0,757 9,812 29,864 62,908 100,939 144,959 188,979 244,989 300,1000 350,975 381,914 413,853 444,792 476,730 507,669 539,608 570,547 589,477 608,407 627,337 646,266 665,196 684,126 684,84 684,42 678,26 654,6 636,0 567,3 498,5 480,16 445,66 411,117 417,158 437,206 456,254 475,303 477,341 478,379 466,433 443,491 419,549 396,607 372,664 349,722 305,691 262,659 218,628 260,582 303,535 318,486 334,438 349,389 347,347 311,314 279,318 242,342 205,394 169,447 132,499",
+        "surfaces": {
+          "dirt": 0,
+          "snow": 0,
+          "gravel": 0,
+          "asphalt": 100
+        },
+        "distanceM": 1881,
+        "laps": 2,
+        "climbM": 3,
+        "timeOfDay": "day",
+        "weather": "clear",
+        "snowDepthIn": 0,
+        "snowBuilds": false
+      },
+      "Ebisu Circuit — North Course": {
+        "points": "140,326 114,381 88,435 61,489 35,543 9,597 0,622 6,671 21,692 46,707 97,717 117,713 172,689 228,665 253,628 262,576 263,530 264,485 279,439 294,394 296,358 282,324 268,290 267,258 284,221 311,209 333,210 347,245 361,279 378,297 404,302 427,285 439,263 444,228 437,191 430,155 431,134 443,115 500,90 557,65 604,58 652,51 714,68 777,85 839,102 901,119 964,136 992,130 1000,100 948,83 895,66 843,49 791,32 738,16 675,5 623,2 571,0 512,7 453,14 412,32 371,50 326,77 281,104 249,134 218,164 192,218 166,272 140,326",
+        "surfaces": {
+          "dirt": 0,
+          "snow": 0,
+          "gravel": 0,
+          "asphalt": 100
+        },
+        "distanceM": 1898,
+        "laps": 2,
+        "climbM": 61,
+        "timeOfDay": "day",
+        "weather": "clear",
+        "snowDepthIn": 0,
+        "snowBuilds": false
+      },
+      "Ebisu Circuit — School Course": {
+        "points": "232,234 322,215 392,192 461,169 556,197 652,226 747,254 777,230 772,193 673,131 662,57 750,0 792,0 905,47 981,124 1000,214 970,316 930,343 810,353 690,362 617,355 544,347 455,418 398,408 323,350 284,345 218,386 152,426 85,441 34,424 4,383 0,322 52,272 142,253 232,234",
+        "surfaces": {
+          "dirt": 0,
+          "snow": 0,
+          "gravel": 0,
+          "asphalt": 100
+        },
+        "distanceM": 811,
+        "laps": 2,
+        "climbM": 8,
+        "timeOfDay": "day",
+        "weather": "clear",
+        "snowDepthIn": 0,
+        "snowBuilds": false
+      },
+      "Ebisu Circuit — Touge Course": {
+        "points": "439,60 381,73 323,85 265,98 209,93 166,81 123,69 88,74 39,95 0,145 0,205 11,232 15,291 18,350 30,359 52,349 77,292 101,234 132,192 186,166 244,151 302,136 326,135 359,145 392,155 414,197 450,212 500,175 521,138 562,104 598,107 635,110 693,98 752,86 791,86 848,93 873,110 874,127 860,138 811,153 762,168 731,186 699,203 698,226 707,236 727,240 776,225 824,210 877,206 931,202 984,198 1000,171 984,149 934,133 923,121 913,91 888,58 857,41 826,24 788,19 749,14 685,27 625,0 582,3 539,5 485,21 439,60",
+        "surfaces": {
+          "dirt": 0,
+          "snow": 0,
+          "gravel": 0,
+          "asphalt": 100
+        },
+        "distanceM": 1752,
+        "laps": 2,
+        "climbM": 83,
+        "timeOfDay": "day",
+        "weather": "clear",
+        "snowDepthIn": 0,
+        "snowBuilds": false
+      },
+      "Ebisu Circuit — West Drift Course": {
+        "points": "286,309 351,331 416,353 481,375 543,407 605,438 667,469 722,504 778,539 833,574 872,582 910,590 942,584 969,568 990,533 1000,467 974,415 923,387 872,359 834,328 769,308 703,300 636,292 584,277 531,263 472,217 458,184 453,140 418,93 378,62 337,32 300,16 263,0 222,3 181,5 137,35 93,65 49,95 7,127 0,148 4,195 26,219 91,242 156,264 221,286 286,309",
+        "surfaces": {
+          "dirt": 0,
+          "snow": 0,
+          "gravel": 0,
+          "asphalt": 100
+        },
+        "distanceM": 1269,
+        "laps": 2,
+        "climbM": 32,
+        "timeOfDay": "day",
+        "weather": "clear",
+        "snowDepthIn": 0,
+        "snowBuilds": false
+      },
+      "Ebisu Circuit — West Course": {
+        "points": "592,57 618,55 643,52 669,50 694,48 718,50 740,60 762,70 783,81 795,94 806,108 807,117 804,126 796,132 784,133 769,129 754,124 731,114 709,104 686,94 668,90 654,101 651,108 653,125 660,133 683,141 706,149 728,157 751,164 774,172 796,180 819,188 841,199 862,209 884,220 903,233 922,245 942,257 955,260 969,263 980,260 989,255 997,243 1000,220 991,201 973,192 955,182 936,165 916,148 897,132 877,115 858,98 839,82 819,65 800,48 780,32 761,15 741,3 718,0 703,1 687,2 667,7 646,11 625,16 601,19 578,22 554,25 531,27 507,29 483,30 459,31 435,32 411,34 387,35 370,34 353,33 332,25 312,17 292,11 271,6 262,7 239,19 219,33 200,48 180,62 165,69 150,76 128,81 105,86 83,92 61,97 38,103 16,108 2,118 0,126 2,133 13,141 25,144 39,142 63,135 87,128 111,121 135,114 158,107 182,100 206,93 224,79 242,65 256,61 274,69 293,76 313,81 338,79 364,77 389,75 415,72 440,70 465,68 491,66 516,64 542,61 567,59 592,57",
+        "surfaces": {
+          "dirt": 0,
+          "snow": 0,
+          "gravel": 0,
+          "asphalt": 100
+        },
+        "distanceM": 3831,
+        "laps": 2,
+        "climbM": 82,
+        "timeOfDay": "day",
+        "weather": "clear",
+        "snowDepthIn": 0,
+        "snowBuilds": false
+      },
+      "Nikko Circuit — Main Course": {
+        "points": "373,237 426,186 479,136 533,85 586,35 622,5 656,0 688,9 729,41 753,89 778,138 777,191 735,224 718,223 661,183 617,178 581,191 531,241 481,290 431,340 381,389 332,439 282,488 232,538 182,587 163,630 168,680 172,731 202,798 227,822 269,831 316,812 362,794 376,760 367,701 379,667 436,647 493,627 551,608 583,608 653,637 722,666 743,684 763,736 753,777 743,817 697,859 627,882 558,906 488,929 419,953 349,976 280,1000 229,1000 160,984 106,947 73,891 50,830 27,768 4,707 0,646 16,593 53,541 106,490 160,439 213,389 266,338 320,288 373,237",
+        "surfaces": {
+          "dirt": 0,
+          "snow": 0,
+          "gravel": 0,
+          "asphalt": 100
+        },
+        "distanceM": 2039,
+        "laps": 2,
+        "climbM": 6,
+        "timeOfDay": "day",
+        "weather": "clear",
+        "snowDepthIn": 0,
+        "snowBuilds": false
+      },
+      "Mobara Twin Circuit — East Course": {
+        "points": "377,441 308,456 239,471 171,487 94,486 45,465 27,447 14,409 0,372 8,327 16,281 42,235 84,191 126,148 168,105 230,77 292,48 354,20 424,50 494,80 524,80 571,54 618,27 665,0 692,0 756,35 765,59 741,94 678,131 615,167 552,204 517,198 448,165 379,132 336,133 288,158 241,184 194,209 148,243 102,276 77,326 75,379 86,398 108,411 132,412 206,392 280,372 321,349 356,312 376,268 398,250 428,257 464,289 499,321 557,317 613,284 670,252 726,219 782,186 820,179 874,196 910,246 946,297 982,347 1000,385 998,455 981,516 944,536 918,532 899,514 869,463 838,413 808,362 788,350 720,365 651,381 582,396 514,411 445,426 377,441",
+        "surfaces": {
+          "dirt": 0,
+          "snow": 0,
+          "gravel": 0,
+          "asphalt": 100
+        },
+        "distanceM": 2236,
+        "laps": 2,
+        "climbM": 31,
+        "timeOfDay": "day",
+        "weather": "clear",
+        "snowDepthIn": 0,
+        "snowBuilds": false
+      },
+      "Bihoku Highland Circuit — Course A": {
+        "points": "810,119 736,88 662,57 588,25 534,13 480,0 426,40 405,98 384,156 348,204 288,199 223,166 158,134 109,120 60,105 0,134 3,165 73,210 142,255 212,301 250,347 288,394 318,468 348,542 379,578 441,582 469,520 496,457 524,395 552,332 579,270 610,224 681,185 740,187 778,210 816,233 846,265 876,298 937,321 997,290 1000,244 966,193 914,169 862,144 810,119",
+        "surfaces": {
+          "dirt": 0,
+          "snow": 0,
+          "gravel": 0,
+          "asphalt": 100
+        },
+        "distanceM": 1333,
+        "laps": 2,
+        "climbM": 16,
+        "timeOfDay": "day",
+        "weather": "clear",
+        "snowDepthIn": 0,
+        "snowBuilds": false
+      },
+      "Bihoku Highland Circuit — Course B": {
+        "points": "452,179 384,121 316,63 248,5 199,2 150,0 90,41 40,94 0,155 5,214 38,290 106,323 185,307 234,272 283,236 330,228 398,236 454,278 510,319 577,380 644,441 712,503 778,555 845,607 894,674 897,733 868,750 818,741 761,689 738,645 715,601 670,553 625,504 561,464 498,424 410,388 361,382 312,375 220,391 148,427 134,469 164,537 216,569 267,601 324,614 380,627 430,627 480,627 556,615 609,621 668,670 705,732 741,795 778,857 832,891 882,890 934,873 984,835 1000,783 998,724 982,658 929,586 861,528 793,469 725,411 657,353 588,295 520,237 452,179",
+        "surfaces": {
+          "dirt": 0,
+          "snow": 0,
+          "gravel": 0,
+          "asphalt": 100
+        },
+        "distanceM": 2008,
+        "laps": 2,
+        "climbM": 15,
+        "timeOfDay": "day",
+        "weather": "clear",
+        "snowDepthIn": 0,
+        "snowBuilds": false
       }
     },
     "raceIndex": [
@@ -20609,6 +20769,156 @@
           "timing": "Distinct subsection of an imported road; game timing lines, not official stage controls.",
           "section": 6
         }
+      },
+      {
+        "properCircuit": true,
+        "stageSeconds": 125,
+        "ref": "Tsukuba — Course 1000 — Drift Reverse",
+        "name": "Tsukuba — Course 1000 — Drift Reverse",
+        "location": {
+          "country": "JP",
+          "stateCode": "",
+          "place": "Tsukuba",
+          "lat": 36.151,
+          "lon": 139.92
+        },
+        "venue": "Tsukuba",
+        "layout": "Course 1000 — Drift Reverse"
+      },
+      {
+        "properCircuit": true,
+        "stageSeconds": 137,
+        "ref": "Ebisu Circuit — North Course",
+        "name": "Ebisu Circuit — North Course",
+        "location": {
+          "country": "JP",
+          "stateCode": "",
+          "place": "Ebisu Circuit",
+          "lat": 37.644224,
+          "lon": 140.372278
+        },
+        "venue": "Ebisu Circuit",
+        "layout": "North Course"
+      },
+      {
+        "properCircuit": true,
+        "stageSeconds": 90,
+        "ref": "Ebisu Circuit — School Course",
+        "name": "Ebisu Circuit — School Course",
+        "location": {
+          "country": "JP",
+          "stateCode": "",
+          "place": "Ebisu Circuit",
+          "lat": 37.644224,
+          "lon": 140.372278
+        },
+        "venue": "Ebisu Circuit",
+        "layout": "School Course"
+      },
+      {
+        "properCircuit": true,
+        "stageSeconds": 167,
+        "ref": "Ebisu Circuit — Touge Course",
+        "name": "Ebisu Circuit — Touge Course",
+        "location": {
+          "country": "JP",
+          "stateCode": "",
+          "place": "Ebisu Circuit",
+          "lat": 37.644224,
+          "lon": 140.372278
+        },
+        "venue": "Ebisu Circuit",
+        "layout": "Touge Course"
+      },
+      {
+        "properCircuit": true,
+        "stageSeconds": 93,
+        "ref": "Ebisu Circuit — West Drift Course",
+        "name": "Ebisu Circuit — West Drift Course",
+        "location": {
+          "country": "JP",
+          "stateCode": "",
+          "place": "Ebisu Circuit",
+          "lat": 37.644224,
+          "lon": 140.372278
+        },
+        "venue": "Ebisu Circuit",
+        "layout": "West Drift Course"
+      },
+      {
+        "properCircuit": true,
+        "stageSeconds": 219,
+        "ref": "Ebisu Circuit — West Course",
+        "name": "Ebisu Circuit — West Course",
+        "location": {
+          "country": "JP",
+          "stateCode": "",
+          "place": "Ebisu Circuit",
+          "lat": 37.644224,
+          "lon": 140.372278
+        },
+        "venue": "Ebisu Circuit",
+        "layout": "West Course"
+      },
+      {
+        "properCircuit": true,
+        "stageSeconds": 143,
+        "ref": "Nikko Circuit — Main Course",
+        "name": "Nikko Circuit — Main Course",
+        "location": {
+          "country": "JP",
+          "stateCode": "",
+          "place": "Nikko Circuit",
+          "lat": 36.66217,
+          "lon": 139.86261
+        },
+        "venue": "Nikko Circuit",
+        "layout": "Main Course"
+      },
+      {
+        "properCircuit": true,
+        "stageSeconds": 173,
+        "ref": "Mobara Twin Circuit — East Course",
+        "name": "Mobara Twin Circuit — East Course",
+        "location": {
+          "country": "JP",
+          "stateCode": "",
+          "place": "Mobara Twin Circuit",
+          "lat": 35.38218,
+          "lon": 140.28175
+        },
+        "venue": "Mobara Twin Circuit",
+        "layout": "East Course"
+      },
+      {
+        "properCircuit": true,
+        "stageSeconds": 107,
+        "ref": "Bihoku Highland Circuit — Course A",
+        "name": "Bihoku Highland Circuit — Course A",
+        "location": {
+          "country": "JP",
+          "stateCode": "",
+          "place": "Bihoku Highland Circuit",
+          "lat": 34.97409,
+          "lon": 133.61441
+        },
+        "venue": "Bihoku Highland Circuit",
+        "layout": "Course A"
+      },
+      {
+        "properCircuit": true,
+        "stageSeconds": 151,
+        "ref": "Bihoku Highland Circuit — Course B",
+        "name": "Bihoku Highland Circuit — Course B",
+        "location": {
+          "country": "JP",
+          "stateCode": "",
+          "place": "Bihoku Highland Circuit",
+          "lat": 34.97409,
+          "lon": 133.61441
+        },
+        "venue": "Bihoku Highland Circuit",
+        "layout": "Course B"
       }
     ]
   },
@@ -84695,7 +85005,7 @@
           "fill": "#49758c",
           "stroke": "#ffffff",
           "strokeWidth": 0,
-          "label": "Up",
+          "label": "▲",
           "x": 0.04,
           "y": 0.12,
           "w": 0.46,
@@ -85459,7 +85769,7 @@
           "fill": "#49758c",
           "stroke": "#ffffff",
           "strokeWidth": 0,
-          "label": "Down",
+          "label": "▼",
           "x": 0.04,
           "y": 0.85,
           "w": 0.46,

@@ -20,3 +20,28 @@ test('best drift score is retained separately from campaign completion and only 
  assert.deepEqual(raceDriftScoreVariables(race,{points:100},{'raceScore.H11-S08':250}),{'raceScore.H11-S08':250});
  assert.deepEqual(raceDriftScoreVariables({}, {points:100}),{});
 });
+
+test('score attacks cannot farm a corner by retracing course progress',()=>{
+ const first=advanceRaceDriftScore(null,{...motion,progressM:10});
+ const back=advanceRaceDriftScore(first,{...motion,progressM:5});
+ const retry=advanceRaceDriftScore(back,{...motion,progressM:10});
+ assert.equal(retry.points,first.points);
+ assert.ok(advanceRaceDriftScore(retry,{...motion,progressM:20}).points>first.points);
+});
+test('authoritative supported wheels count for scoring without a nonexistent inContact field',async()=>{
+ const {driftContactCount}=await import('../../src/racing/RaceDriftScore.js');
+ assert.equal(driftContactCount({fl:{wheelGrounded:true,normalLoadN:3000},fr:{normalLoadN:2800},
+ rl:{wheelGrounded:false,normalLoadN:10},rr:{normalLoadN:0}}),2);
+ assert.equal(driftContactCount(),0);
+});
+
+test('real contact solver output can earn drift points',async()=>{
+ const {ContactPatchTireModel}=await import('../../src/racing/simulation/ContactPatchTireModel.js');
+ const {createVehicleDynamicsConfig,createVehicleDynamicsState}=await import('../../src/racing/simulation/VehicleDynamicsRunner.js');
+ const {driftContactCount}=await import('../../src/racing/RaceDriftScore.js');
+ const config=createVehicleDynamicsConfig({massKg:1400});
+ const result=new ContactPatchTireModel().step({config,
+ state:createVehicleDynamicsState({position:{x:0,y:config.cgHeightM,z:0},speedMps:20,velocity:{x:5,y:0,z:20}}),
+ controls:{throttle:0,brake:0,handbrake:0,steering:0,requestedGear:1},environment:{surfaceHeightByWheel:{fl:0,fr:0,rl:0,rr:0}},dt:1/360});
+ assert.ok(advanceRaceDriftScore(null,{...motion,contactCount:driftContactCount(result.contactPatches)}).points>0);
+});

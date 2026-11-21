@@ -4085,7 +4085,17 @@
       "Rally Australia — Stage 3": "races/Rally Australia %E2%80%94 Stage 3/document.json",
       "Rally Australia — Stage 4": "races/Rally Australia %E2%80%94 Stage 4/document.json",
       "Rally Australia — Stage 5": "races/Rally Australia %E2%80%94 Stage 5/document.json",
-      "Rally Australia — Stage 6": "races/Rally Australia %E2%80%94 Stage 6/document.json"
+      "Rally Australia — Stage 6": "races/Rally Australia %E2%80%94 Stage 6/document.json",
+      "Tsukuba — Course 1000 — Drift Reverse": "races/Tsukuba %E2%80%94 Course 1000 %E2%80%94 Drift Reverse/document.json",
+      "Ebisu Circuit — North Course": "races/Ebisu Circuit %E2%80%94 North Course/document.json",
+      "Ebisu Circuit — School Course": "races/Ebisu Circuit %E2%80%94 School Course/document.json",
+      "Ebisu Circuit — Touge Course": "races/Ebisu Circuit %E2%80%94 Touge Course/document.json",
+      "Ebisu Circuit — West Drift Course": "races/Ebisu Circuit %E2%80%94 West Drift Course/document.json",
+      "Ebisu Circuit — West Course": "races/Ebisu Circuit %E2%80%94 West Course/document.json",
+      "Nikko Circuit — Main Course": "races/Nikko Circuit %E2%80%94 Main Course/document.json",
+      "Mobara Twin Circuit — East Course": "races/Mobara Twin Circuit %E2%80%94 East Course/document.json",
+      "Bihoku Highland Circuit — Course A": "races/Bihoku Highland Circuit %E2%80%94 Course A/document.json",
+      "Bihoku Highland Circuit — Course B": "races/Bihoku Highland Circuit %E2%80%94 Course B/document.json"
     },
     "settings": {
       "chainsaw-gm-soundfont-url": "settings/chainsaw-gm-soundfont-url/document.json",

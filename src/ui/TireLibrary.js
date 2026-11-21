@@ -91,6 +91,8 @@ export function openTireProperties(tire, onApply) {
       el('h3','Water and wear');
       el('p','Water evacuation and tread depth affect resistance to aquaplaning. Higher wear rate wears tires faster.');
     }
+    if(field.path==='compound.slidingFrictionRatio')el('h3','Sliding behavior');
+    if(field.path==='compound.abrasionResistance')el('h3','Durability');
     if(field.path==='size.widthMm'){
       el('h3','Size and pressure');
       el('p','Physical dimensions and default cold pressure applied when selecting this tire on a car. Graphic size and position are adjusted in the Car Editor.');

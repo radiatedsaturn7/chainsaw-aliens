@@ -22,11 +22,11 @@ export function contactTireWear({patch={},thermal={},dt=0}={}){
  const heat=1+Math.max(0,temperature-100)/70;
  const work=Math.max(0,Number(thermal.frictionHeatingWorkJ)||0)/.78;
  const rolling=load*speed*dt*.002*(1+clamp(Number(material.roughness)||0,0,1)); // baseline tread abrasion from rolling contact
- const wear=(work+rolling)*1e-9*profile.abrasion*clamp(Number(compound.wearRate)||1,.5,3)*pressureStress*heat;
+ const wear=(work+rolling)*1e-9*profile.abrasion*clamp(Number(compound.wearRate)||1,.5,3)*pressureStress*heat/clamp(Number(compound.abrasionResistance)||1,.5,3);
  // Stone cuts need both gravel and an overloaded casing. Snow alone cannot cut it.
- const casingCapacityN=6500*(profile.stoneExposure<1?1.5:1)*clamp(pressure/target,.35,1.2);
+ const casingCapacityN=6500*clamp(Number(compound.casingStrength)||1,.5,3)*(profile.stoneExposure<1?1.5:1)*clamp(pressure/target,.35,1.2);
  const overload=Math.max(0,load/casingCapacityN-1);
- return {wear,damage:profile.stoneExposure*overload*overload*Math.min(speed/10,3)*dt*.4};
+ return {wear,damage:profile.stoneExposure*overload*overload*Math.min(speed/10,3)*dt*.4/clamp(Number(compound.stoneResistance)||1,.5,3)};
 }
 
 // Deformation starts above the installed assembly's load capacity. Travel and

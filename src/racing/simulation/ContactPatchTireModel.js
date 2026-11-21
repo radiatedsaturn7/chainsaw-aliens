@@ -1170,8 +1170,9 @@ export function calculateBrushTireForce({
   const demandX = rawDemandX * naturalPeakSlip / Math.max(EPSILON, output.peakLongitudinalSlipRatio);
   const demandY = rawDemandY * peakSlipScale;
   const demand = Math.hypot(demandX, demandY);
-  const slidingFrictionRatio = clamp(Number(tire.slidingFrictionRatio ?? (0.66 + (Number(tire.compound?.snowSlidingRatio ?? .88) - .66) * snowResponseWeight)), 0.35, 1);
-  const postPeakFalloff = clamp(Number(tire.postPeakFalloff ?? 1.8), 0.1, 8);
+  const drySlidingRatio = Number(tire.compound?.slidingFrictionRatio ?? .66);
+  const slidingFrictionRatio = clamp(Number(tire.slidingFrictionRatio ?? (drySlidingRatio + (Number(tire.compound?.snowSlidingRatio ?? .88) - drySlidingRatio) * snowResponseWeight)), 0.35, 1);
+  const postPeakFalloff = clamp(Number(tire.postPeakFalloff ?? tire.compound?.postPeakFalloff ?? 1.8), 0.1, 8);
   const transition = Math.max(EPSILON, 3 * limit);
   let magnitude;
   let postPeakSlidingForceN = limit;
@@ -2063,7 +2064,7 @@ export class ContactPatchTireModel {
       const relaxationLengthM = clamp(Number(input.tire.relaxationLengthM ?? 0.03), 0.03, 3);
       const peakSlip = clamp(Number(input.tire.peakSlip ?? (getSnowResponseWeight(input.material) > 0 ? previousPatch.peakLongitudinalSlipRatio ?? .18 : .16)), 0.03, 1.5);
       const breakawayHysteresis = clamp(Number(input.tire.breakawayHysteresis ?? 0.025), 0, 0.3);
-      const recoveryHysteresis = clamp(Number(input.tire.recoveryHysteresis ?? 0.04), 0, 0.3);
+      const recoveryHysteresis = clamp(Number(input.tire.recoveryHysteresis ?? input.tire.compound?.recoveryHysteresis ?? 0.04), 0, 0.3);
       const rawCombinedSlip = Math.hypot(
         Number(rawKinematics.slipRatio || 0),
         Math.tan(Number(rawKinematics.slipAngleRad || 0))
@@ -2351,7 +2352,7 @@ export class ContactPatchTireModel {
       const staticTorqueCapacityNm = Math.max(0, Number(capacityByWheel[wheelId] || 0)) * rollingRadiusM;
       const tire = wheelInputs[wheelId].tire || {};
       const peakSlip = clamp(Number(tire.peakSlip ?? (force.snowResponseWeight > 0 ? force.peakLongitudinalSlipRatio : .16)), 0.03, 1.5);
-      const recoveryHysteresis = clamp(Number(tire.recoveryHysteresis ?? 0.04), 0, 0.3);
+      const recoveryHysteresis = clamp(Number(tire.recoveryHysteresis ?? tire.compound?.recoveryHysteresis ?? 0.04), 0, 0.3);
       const widthScale = clamp(Number(tire.widthMm ?? 245) / 245, 0.7, 1.4);
       const longitudinalStiffnessN = Math.max(
         1000,
@@ -2633,6 +2634,7 @@ export class ContactPatchTireModel {
       output.chassisWheelReactionImpulseWorldNms.y = q(chassisReactionImpulseWorldNms.y);
       output.chassisWheelReactionImpulseWorldNms.z = q(chassisReactionImpulseWorldNms.z);
       output.absModulation = q(powertrainStep.state.absModulationByWheel?.[wheelId] ?? 1);
+      output.tireParameters.compound = wheelInputs[wheelId].tire.compound;
       output.tireParameters.pressurePsi = q(wheelInputs[wheelId].tire.pressurePsi ?? 32);
       output.tireParameters.coldPressurePsi = q(wheelInputs[wheelId].tire.coldPressurePsi
         ?? wheelInputs[wheelId].tire.pressurePsi ?? 32);
