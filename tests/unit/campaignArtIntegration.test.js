@@ -25,6 +25,24 @@ const regionalFences=read('data/campaigns/america/regional-fences.json').assets;
 const loadDefinition=createSavedDoodadResolver(manifest,p=>read(root+p));
 const savedEditor=()=>{const e=new RaceEditor({});e.loadRaceDoodadDocument=loadDefinition;return e;};
 const race=read(root+'races/Laurel Highlands Scenic Byway/document.json').race;
+// The authored route-art plan names the preserved Tower Hill prologue and the
+// Mount Washington stage explicitly. The current stage-one city is a different
+// authored race, not a replacement for either race's scenery plan.
+function authoredCampaignArtRoutes(){
+ const catalog=read('data/campaigns/america/catalog.json');
+ const tower='Tower Hill Road', mount='Mount Washington Auto Road — point-to-point';
+ const mountEntry=catalog.find(e=>e.id==='osm-cf573fba73e0');
+ assert.equal(mountEntry?.documentPath,manifest.folders.races[mount]);
+ const routes=[
+  {name:tower,documentPath:manifest.folders.races[tower],sourceKey:'tower'},
+  {...mountEntry,sourceKey:'mount'},
+  ...catalog.filter(e=>e.sourceKey)
+ ];
+ const planned=Object.keys(read('data/campaigns/america/distant-scenery.json')).sort();
+ assert.deepEqual(routes.map(r=>r.sourceKey).sort(),planned,'every named route-art plan is still checked');
+ assert.ok(routes.every(r=>r.documentPath));
+ return routes;
+}
 test('reviewed PNG imports are registered, bounded and preserve alpha',()=>{
  assertCampaignImportInventory(imports,inventory,expanded,regionalFences);
  for(const [name,record] of Object.entries(imports)){
@@ -218,9 +236,8 @@ test('road detail repeats along each imported campaign stage and landmarks leave
 
 
 test('expanded landmarks use reviewed regions and stay outside the driving corridor',()=>{
- const catalog=read('data/campaigns/america/catalog.json');
- for(const entry of catalog){
-  const key=entry.sourceKey||(catalog.indexOf(entry)===0?'tower':'mount');
+ for(const entry of authoredCampaignArtRoutes()){
+  const key=entry.sourceKey;
   const r=read(root+entry.documentPath).race,editor=new RaceEditor({});editor.applyLoadedRaceDocument(r);
   const fences=new Map();
   for(const p of r.scenery.filter(p=>p.artRef?.startsWith('expanded-'))){
@@ -250,12 +267,33 @@ test('expanded landmarks use reviewed regions and stay outside the driving corri
 });
 
  test('matching campaign skyboxes use saved editor settings and preload',()=>{
- const catalog=read('data/campaigns/america/catalog.json');
- for(const [i,e] of catalog.entries()){
-  const key=e.sourceKey||(i===0?'tower':'mount'),r=read(root+e.documentPath).race;
+ for(const e of authoredCampaignArtRoutes()){
+  const key=e.sourceKey,r=read(root+e.documentPath).race;
   const a=expanded.find(a=>a.kind==='skybox'&&a.placements.some(p=>p.race===key));
   assert.ok(a);assert.equal(r.skyboxArtRef,a.name);assert.equal(r.skyboxSettings.artRef,a.name);
   const editor=new RaceEditor({});editor.applyLoadedRaceDocument(r);assert.ok(editor.collectSelectedRaceArtRefs().includes(a.name));
+ }
+});
+
+test('Providence campaign stage uses its own city sky and all four authored landmarks',()=>{
+ const entry=read('data/campaigns/america/catalog.json').find(e=>e.id==='city-ri');
+ const name='Providence, RI — Landmark Run';
+ assert.equal(entry?.name,name);
+ assert.equal(entry.documentPath,manifest.folders.races[name]);
+ const r=read(root+entry.documentPath).race;
+ const sky='environment-v1-providence-noon';
+ assert.equal(r.skyboxArtRef,sky);
+ assert.equal(r.skyboxSettings.artRef,sky);
+ const city=read('AI/last-on-the-grid/state-expansion-landmark-artwork.json').cities.find(c=>c.raceRef===name);
+ assert.equal(city.landmarks.length,4);
+ assert.deepEqual(r.source.routeReference.landmarkOrder,city.landmarks.map(p=>p.name));
+ const editor=savedEditor();editor.applyLoadedRaceDocument(r);
+ assert.ok(editor.collectSelectedRaceArtRefs().includes(sky));
+ for(const {suggestedArtRef} of city.landmarks){
+  const placed=r.scenery.filter(p=>p.id===`city-landmark-${suggestedArtRef}`);
+  assert.equal(placed.length,1,suggestedArtRef);
+  assert.equal(placed[0].artRef,suggestedArtRef);
+  assertSceneryArtwork(editor,placed[0],manifest,loadDefinition);
  }
 });
 
@@ -278,8 +316,8 @@ test('eastern foliage is grounded, region-specific and soft plants do not become
   if(a.kind==='vegetation'){assert.equal(def.defaultRule.behavior,'flatten');assert.equal(def.defaultRule.damage.panels,0);}
   if(a.kind==='tree')assert.ok(def.hitboxWidthM<=.65,a.name+' trunk hitbox');
  }
- for(const [i,e] of read('data/campaigns/america/catalog.json').entries()){
-  const key=e.sourceKey||(i===0?'tower':'mount'),r=read(root+e.documentPath).race;
+ for(const e of authoredCampaignArtRoutes()){
+  const key=e.sourceKey,r=read(root+e.documentPath).race;
   for(const p of r.scenery){
    const a=foliage.find(a=>a.name===p.artRef);if(!a)continue;
    assert.ok(a.placements.some(plan=>plan.race===key),p.id);
@@ -295,8 +333,8 @@ test('eastern foliage is grounded, region-specific and soft plants do not become
 
 test('every campaign has biome-specific distant clusters inside saved terrain and outside the road corridor',()=>{
  const configs=read('data/campaigns/america/distant-scenery.json');
- for(const [i,e] of read('data/campaigns/america/catalog.json').entries()){
-  const key=e.sourceKey||(i===0?'tower':'mount'),r=read(root+e.documentPath).race,config=configs[key],tile=r.road.tileMap;
+ for(const e of authoredCampaignArtRoutes()){
+  const key=e.sourceKey,r=read(root+e.documentPath).race,config=configs[key],tile=r.road.tileMap;
   const allowed=new Set([...config.refs.flat(),...(config.upper?.refs||[])]);
   const placements=r.scenery.filter(p=>p.campaignDistanceLayer);
   assert.ok(placements.length>150,e.name+' distant layer');
