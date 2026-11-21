@@ -15,11 +15,11 @@ export class MotorsportMenu {
  get state(){return readMotorsportEvent(this.player.flow?.parameters?.[SERIES_SAVE_KEY]);}
  get catalog(){return motorsportCatalog(this.player.flow.document.parameters.raceIndex||[]);}
  async save(state){await setMenuProgress(this.game,{[SERIES_SAVE_KEY]:state?JSON.stringify(state):''});}
- screen(id,title,buttons,lines=[],{remember=true,refresh=false}={}){
+ screen(id,title,buttons,lines=[],{remember=true,refresh=false,extraElements=[]}={}){
   const elements=[{id:'heading',type:'text',label:title,x:.035,y:.025,w:.93,h:.095,fontSize:26,useDefaultFont:true,color:'#ffffff'},
    ...buttons.map(([label,key],i)=>({id:key,type:'button',label,x:.035,y:.15+i*.1,w:.46,h:.085,fontSize:21,useDefaultFont:true,color:'#ffffff',background:'#000000',selectionIndicator:'cursor',cursorText:'>',action:{type:'back'}})),
    ...lines.map((label,i)=>({id:`detail-${i}`,type:'text',label,x:.52,y:.16+i*.075,w:.45,h:.07,fontSize:19,useDefaultFont:true,color:'#ffffff'}))];
-  const screen=normalizeMenuDocument({screens:[{id,name:title,background:'#000000',useDefaultBackground:false,effect:'none',musicMode:'continue',elements}]}).screens[0];
+  const screen=normalizeMenuDocument({screens:[{id,name:title,background:'#000000',useDefaultBackground:false,effect:'none',musicMode:'continue',elements:[...elements,...extraElements]}]}).screens[0];
   const flow=this.player.flow,at=flow.document.screens.findIndex(s=>s.id===id);if(at<0)flow.document.screens.push(screen);else flow.document.screens[at]=screen;
   if(!refresh||flow.screenId!==id)flow.goTo(id,{remember:remember&&flow.screenId!==id});
  }
@@ -45,10 +45,10 @@ export class MotorsportMenu {
   top=Math.max(0,Math.min(top,Math.max(0,entries.length-5)));
   this.lists[kind]={index,top};
   const start=this.lists[kind].top;
-  const buttons=[['Up','motorsport-up'],...entries.slice(start,start+5).map((e,i)=>[e.name,`motorsport-pick-${i+start}`]),['Down','motorsport-down'],['Back','motorsport-back']];
+  const buttons=[['▲','motorsport-up'],...entries.slice(start,start+5).map((e,i)=>[e.name,`motorsport-pick-${i+start}`]),['▼','motorsport-down']];
   const focus=`motorsport-pick-${index}`;
   this.player.screenFocus?.set('motorsport-list',focus);
-  this.screen('motorsport-list',kind==='rallies'?'Rally':'Circuit Cups',buttons,entries.length?kind==='rallies'?['Short: 4 stages','Full: 12 stages','Total time decides the winner.','Damage carries between stages.','Limited / full service: 30 / 60 pts','Full: six sections, two passes.']:['Named three-race cups','Closed circuits only','Six drivers · 3 laps per round','Points: 25 / 18 / 15 / 12 / 10 / 8','Heat 1–3 sets opponent difficulty.']:['No eligible events installed.'],{refresh:this.player.flow.screenId==='motorsport-list'});
+  this.screen('motorsport-list',kind==='rallies'?'Rally':'Circuit Cups',buttons,entries.length?kind==='rallies'?['Short: 4 stages','Full: 12 stages','Total time decides the winner.','Damage carries between stages.','Limited / full service: 30 / 60 pts','Full: six sections, two passes.']:[`Difficulty: ${entries[index].heat} / 3`,...entries[index].rounds.map((r,i)=>`${i+1}. ${r.ref}`)]:['No eligible events installed.'],{refresh:this.player.flow.screenId==='motorsport-list'});
   const items=this.player.interactive?.()||this.player.flow.screen.elements.filter(e=>e.type==='button');
   this.player.focus=Math.max(0,items.findIndex(e=>e.id===focus));
  }
@@ -71,8 +71,19 @@ export class MotorsportMenu {
  preview(definition){
   if(this.state)return this.showEvent({remember:false});
   this.selection=definition;
+  if(definition.kind==='championship'){
+   const text={type:'text',useDefaultFont:true,color:'#ffffff',fontSize:19};
+   const cards=definition.rounds.map((round,i)=>({x:.035+i*.32,round,i}));
+   this.screen('motorsport-preview',definition.name,[],[],{extraElements:[
+    ...cards.flatMap(({x,round,i})=>[
+     {...text,id:`round-name-${i}`,label:`${i+1}. ${round.ref}`,x,y:.17,w:.29,h:.14},
+     {...text,id:`round-preview-${i}`,type:'race-description',property:'route-preview',assetRef:round.ref,x,y:.33,w:.29,h:.58}
+    ])
+   ]});
+   return;
+  }
   this.screen('motorsport-preview',definition.name,[['Enter','motorsport-enter'],['Back','motorsport-back']],
-   [`Heat ${definition.heat} / 3`,definition.kind==='rally'?`${definition.rounds.length} stages · timed rivals`:'3 rounds · live AI opponents',...definition.rounds.slice(0,6).map((r,i)=>`${i+1}. ${r.ref}${r.pass?' · P'+r.pass+' · ~'+Math.round(r.seconds/60)+' min':''}`),...(definition.rounds.length>6?['…plus six further stages']:[]),definition.kind==='rally'?`Service every ${definition.serviceEvery} stages`:'Points decide the championship']);
+   [`Heat ${definition.heat} / 3`,`${definition.rounds.length} stages · timed rivals`,...definition.rounds.slice(0,6).map((r,i)=>`${i+1}. ${r.ref}${r.pass?' · P'+r.pass+' · ~'+Math.round(r.seconds/60)+' min':''}`),...(definition.rounds.length>6?['…plus six further stages']:[]),`Service every ${definition.serviceEvery} stages`]);
  }
  showEvent({remember=true}={}){
   const state=this.state;if(!state)return this.open(this.kind);
