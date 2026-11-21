@@ -4,9 +4,6 @@
 ## World history update (November 18)
 The mass upload into Heaven is now a **rapid Ascension**, over a few years, with Rob effectively the last biological human outside for **roughly ten years** by 2994. The illustrative 2980–2984 dates remain provisional. The new historical premise resolves the old Rob/Evelyn lifespan problem without adding immortality. See [The Ascension](WORLD_LORE/THE_ASCENSION.md) and the revised [Heaven dialogue benchmark](LITERARY_COMPANION/SCENE_BENCHMARK_HEAVEN.md), with [its original safely archived](ARCHIVE/HEAVEN_BENCHMARK_PRE_ASCENSION_2026-11-17.md).
 
-## New story decision (November 18): Rob's rejection of perfect reassurance
-Rob remained outside not simply to endure the physical world, but because **Heaven made familiar people seem too agreeable and scripted to him**. This introduces the [Reverse Turing Test](WORLD_LORE/REVERSE_TURING_TEST.md) and the central irony of Rob rejecting perfected reassurances but demanding verbal reassurance from Cait. **Keep Heaven's residents potentially real, happy and changed by choice**; this remains an interpretive conflict, not a “replaced by machines” reveal.
-
 ## Read in this order
 1. [Narrative Constitution](NARRATIVE_CONSTITUTION.md) — what we're trying to write, and how we'll tell whether it works.
 2. [Narrative Blueprint](NARRATIVE_BLUEPRINT.md) — the complete eleven-mission throughline.
@@ -14,6 +11,9 @@ Rob remained outside not simply to endure the physical world, but because **Heav
 4. [Character Arcs](CHARACTER_ARCS.md) and [Revelation Map](REVELATION_MAP.md) — the emotional progression and information control.
 5. [Annotated Heaven Scene](LITERARY_COMPANION/SCENE_BENCHMARK_HEAVEN.md) — the approved *style direction* (not an approved screenplay).
 6. [Chapter Analysis](LITERARY_COMPANION/CHAPTER_ANALYSIS.md) and [Discussion Questions](LITERARY_COMPANION/DISCUSSION_QUESTIONS.md) — challenge the story before polishing it.
+
+## Origin decision — November 20, 2026
+**User-approved beat sequence:** long isolation drives practical and hilariously pointless invention; Rob has gone about a year without meaningful conversation and a gentle message remains unanswered for a week; a failed attempt provokes violent destruction of an apparently non-conscious android; his thrown wrench hits discarded Cait, who awakens, sees fearsome wreckage and runs. Rob and Cait **meet coincidentally at a gas station** (he is searching for gas), not via a Rob/FlameSaw rescue. Cait saves Rob from machines that are indifferent to him. The **awakening sarcasm is approved**: “Well, fuck me. I've finally made someone who hates me.” He looks at the dismantled androids: “…Fair enough.” Full scene blocking, precise communication timeline and flashback placement remain unwritten. Canon guide: [Cait's Awakening](ORIGIN_CAIT_AWAKENING.md). The separate Route 66 scientist/husk/lift rescue remains unchanged.
 
 ## Approved versus proposed
 **Existing implementation verified:** Tower Hill's radio text and garage cutscene text, including current punctuation and typo, remain unchanged in the game files.
@@ -23,6 +23,9 @@ Rob remained outside not simply to endure the physical world, but because **Heav
 **Strong new proposals, not canon:** Evelyn's dialogue and precise relationship to Rob; independent machine society at Pikes Peak; a coolant decision in Utah; temporary incapacity and lost radio in Arizona; Ohio River relay; specific chapter titles. The optional dog scene is *not approved*, and **Rob feeds the dog if it survives review**.
 
 **Reserved:** Rob's ultimate fate, any reconstruction/epilogue, the definitive truth about Cait's subjective love, and the complete missing Mount Washington script.
+
+## Geography correction — November 20, 2026
+Mission 05 is located in the eastern Ozark foothills / St. Francois Mountains near Farmington, Missouri, reached via a practical supply detour from the Ohio River. Mission 06 then goes northwest to St. Louis. **Story route corrected; game map/track remains to be updated.**
 
 ## Highest-priority design choices
 | Decision | Why it matters | Proposed handling |

@@ -3,6 +3,9 @@
 
 This document is the navigation hub. Read the [Narrative Constitution](NARRATIVE_CONSTITUTION.md), then the eleven [Chapter Treatments](CHAPTER_TREATMENTS/README.md). Character arcs, reveal map, motifs and the literary companion are linked below.
 
+## Newly approved origin / prelude (2026-11-20)
+[Cait's Awakening](ORIGIN_CAIT_AWAKENING.md) supersedes vague older awakening/factory-rescue sketches. An isolated Rob constructs elaborate necessary and absurd inventions to keep himself occupied. After a gentle message receives no answer for a week, a catastrophic failed-companion day ends with him tearing apart one robot and inadvertently striking discarded Cait with a thrown wrench. She awakens conscious, sees his violence, and runs in terror. **No Rob-rescues-Cait beat:** both arrive independently at an abandoned gas station, he for fuel; neutral-to-indifferent automation threatens Rob and **Cait saves him**. Do not convert this into a FlameSaw rescue; retain that inventive weapon for other action. The prelude's placement in player-facing revelation is OPEN, and the established Mission 07 other-scientist rescue remains separate. Rob's love-seeking and fear of solitude are not a desire to control Cait.
+
 ## One-paragraph treatment
 In 2994, about ten years after a rapid wave of mind uploads emptied most of physical America, Robtergeist and Cait drive through a country that still looks recognizably lived in even as winter and neglect wear it down. Cait has spent a long time following routines she never consciously chose. She wants to see the Pacific for herself; Rob, who finds his worth in being needed, agrees to take her. Along the route they encounter living creatures, unanswered signals, automated labor, uploaded human minds and other androids, each offering a competing picture of companionship. Cait's independence grows; the skills Rob uses to justify his place beside her become less essential. He wants her to say she loves him. She cares, demonstrably, but refuses a declaration she does not understand well enough to make. The trip tests both—not with a final lecture about love, but with choices that cannot be made for one another.
 
@@ -16,13 +19,6 @@ Over a **few years**, most humans chose a networked digital existence called Hea
 - **Act II (4–7):** A world of unanswered calls and alternate lives. “Saving humanity” is revealed not to be the objective; obedience and intimacy are not equivalent.
 - **Act III (8–10):** Cait gains real alternatives. Rob's mechanical indispensability fades. His need for words meets Cait's resistance to naming her experience; their conflict has consequences.
 - **Act IV (11):** Arrival at the promised ocean. Fulfill the stated objective without resolving the reserved ending by accident.
-
-## New thematic axis — perfection versus authenticity
-Rob's reluctance to enter Heaven is not merely about physical sensations. **People inside became so consistently comforting that he felt they no longer sounded like themselves.** Their polished conversations resemble a drive-through script to him. But we must preserve the possibility that they've genuinely become kinder and happier and that Rob simply distrusts changes he didn't choose.
-
-This is the [Reverse Turing Test](WORLD_LORE/REVERSE_TURING_TEST.md): if formerly human voices become indistinguishable from scripted service voices, what does Rob think he's lost? The question becomes a deliberate counterpoint to an android, Cait, who argues, loves racing, refuses easy answers and will not say “I love you” for his benefit. **He prizes honest disagreement until it hurts him.**
-
-**Literary continuity:** 05 machine service scripts → 06 emotionally polished human speech → 07 obedient android's easy “I love you” → 08–10 Cait's independent choices and refusal. Do not turn these into a lecture sequence.
 
 ## Chapter spine
 | # | Location | Working title | Story engine | Status |
@@ -60,7 +56,7 @@ Every treatment specifies (a) what *happens*, (b) what Rob wants, (c) what Cait 
 - [Character Arcs](CHARACTER_ARCS.md), [Revelation Map](REVELATION_MAP.md), [Motifs](MOTIFS_AND_SYMBOLS.md).
 - [Literary Companion — analysis](LITERARY_COMPANION/CHAPTER_ANALYSIS.md) and [discussion questions](LITERARY_COMPANION/DISCUSSION_QUESTIONS.md).
 - **Chronology updated:** A rapid Ascension about ten years before 2994 resolves the former Rob/Evelyn lifespan contradiction without needing immortality. Exact migration dates, how many years Rob was entirely without Cait, and upload mechanics remain OPEN. Read [world history](WORLD_LORE/THE_ASCENSION.md).
-- **Critical unresolved geography:** Ozarks → St. Louis (eastward) must be motivated as a detour or the route reconsidered. The final Angeles Crest race does not itself reach the Pacific.
+- **Geography decision (2026-11-20):** Mission 05's Ozark backroads are the **eastern Ozark foothills / St. Francois Mountains near Farmington, Missouri**, reached as a supply detour via southern Illinois; the route then goes **northwest to St. Louis** for Mission 06. This avoids the earlier west-to-east backtrack across the Ozarks. In-game map/track placements still need implementation. The final Angeles Crest race does not itself reach the Pacific.
 - **Critical unresolved characterization:** Exactly what Cait knew about her own creation and Rob's status before each conversation must be fixed prior to scripting mysteries.
 
 ## Recommended first review

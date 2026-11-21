@@ -191,14 +191,25 @@ test('regression: editor survives playtest round trip and still handles input', 
   });
   expect(inputResetCheck.activeAfterUp).toBeFalsy();
 
-  const beforeX = await page.evaluate(() => window.__game.editor.camera.x);
+  // Measure input after the returned editor has drawn its own viewport.
+  await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  const before = await page.evaluate(() => {
+    const editor = window.__game.editor;
+    const { width, height } = editor.getViewportSize();
+    const { minX, maxX } = editor.getCameraBounds();
+    // A returning camera can be on a clamp edge. Arrange a legal start through
+    // the real editor camera API so a working Right key must move it.
+    editor.centerCameraOnWorld((minX + maxX + width) / 2, editor.camera.y + height / 2);
+    return { x: editor.camera.x, maxX: editor.getCameraBounds().maxX };
+  });
+  expect(before.maxX - before.x, 'room to pan right after the editor returns').toBeGreaterThan(10);
   await page.keyboard.down('ArrowRight');
-  await page.waitForTimeout(150);
-  await page.keyboard.up('ArrowRight');
-  await page.waitForTimeout(50);
-  const afterX = await page.evaluate(() => window.__game.editor.camera.x);
-
-  expect(afterX).toBeGreaterThanOrEqual(beforeX);
+  try {
+    await expect.poll(() => page.evaluate(() => window.__game.editor.camera.x),
+      { message: 'the real Right key pans the editor camera after playtest' }).toBeGreaterThan(before.x);
+  } finally {
+    await page.keyboard.up('ArrowRight');
+  }
 });
 
 test('shared confirm overlays keep cancel before primary action', async ({ page }) => {

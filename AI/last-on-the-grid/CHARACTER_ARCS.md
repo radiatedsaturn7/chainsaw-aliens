@@ -1,6 +1,9 @@
 # Character Arcs — Rob, Cait, and the People Between Them
 **v0.1 · FOR REVIEW**
 
+## Origin correction and emotional mechanism (approved 2026-11-20)
+See [Cait's Awakening](ORIGIN_CAIT_AWAKENING.md). The pre-Cait Rob is **not** simply someone who forgot how to live or only works to earn affection. For years, isolation has worn at his judgment; building and fixing things, including deliberately absurd contraptions, fills otherwise unendurable time. Sometimes his only audience is himself. After a small message goes unanswered for a week—following a much longer lack of real conversation—he violently destroys a failed robot and accidentally wakes Cait with a thrown wrench. She is terrified by the scene and runs. Later they independently arrive at a gas station; Rob is seeking gas, does not stage a rescue, and Cait chooses to save him from machines indifferent to his life. His desire for love is real; **he never wishes to control her**. The later fear of becoming dispensable is an additional, changing relationship conflict, not the sole original cause of his inventions. Cait's Route 66 rescue is a separate later echo.
+
 ## Robtergeist — From indispensable to present
 **Desire:** Be wanted. **Confused strategy:** Be too useful to abandon. **Fear:** “When I stop being useful, I'll stop mattering.” **Blind spot:** He can recognize Cait's care yet still insist on a verbal declaration, because the two forms of evidence do different emotional work for him. Neither his need for words nor Cait's refusal is trivial.
 

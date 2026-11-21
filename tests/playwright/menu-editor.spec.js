@@ -287,9 +287,17 @@ for(const mode of ['desktop','portrait','landscape','gamepad'])test(`${mode} fou
   const p=g.menuPlayer,choices=p.resources.choices.bind(p.resources);
   p.resources.choices=(source,...args)=>source==='cars'?refs.map(value=>({value,label:value})):source==='races'?[{value:'First',label:'First'}]:choices(source,...args);
   await p.open(createMenuDocument(),{preview:true,screenId:'cars'});
-  const original=g.ctx.fillText.bind(g.ctx);g.ctx.fillText=(text,...args)=>{if(String(text).startsWith('Description '))window.__showroomDescription=text;original(text,...args);};
+  window.__showroomPaintedChoices=new Set();
+  const original=g.ctx.fillText.bind(g.ctx);g.ctx.fillText=(text,...args)=>{
+   if(String(text).startsWith('Description '))window.__showroomDescription=text;
+   if(refs.includes(text))window.__showroomPaintedChoices.add(text);
+   original(text,...args);
+  };
  });
- await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.resources.cars.size)).toBeGreaterThanOrEqual(4);
+ // These custom fixture cars have no stock thumbnails. Verify the actual cards
+ // and selected car's description without requiring eager car-document loads.
+ await expect.poll(()=>page.evaluate(()=>Array.from(window.__showroomPaintedChoices))).toEqual(['Showroom 0','Showroom 1','Showroom 2','Showroom 3']);
+ await expect.poll(()=>page.evaluate(()=>window.__showroomDescription)).toBe('Description 0');
  await page.screenshot({path:`test-results/menu-showroom-four-${mode}.png`});
  const press=async(code,button)=>{await menuReady(page);
   if(mode==='gamepad')await page.evaluate(button=>{
@@ -298,7 +306,6 @@ for(const mode of ['desktop','portrait','landscape','gamepad'])test(`${mode} fou
    p.update({wasGamepadPressed:()=>false},.016);
   },button);else await pressKey(page,code);
  };
- await expect.poll(()=>page.evaluate(()=>window.__showroomDescription)).toBe('Description 0');
  await press('ArrowRight','dpadRight');
  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.parameters.carRef)).toBe('Showroom 1');
  await expect.poll(()=>page.evaluate(()=>window.__showroomDescription)).toBe('Description 1');

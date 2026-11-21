@@ -19,6 +19,9 @@
 ## Relationship
 The story is not about Cait earning freedom. Rob already promised it. The emotional stakes come from the freedom to choose whether to stay, leave or return. Their care should emerge through actions, arguments and silences rather than constant declarations.
 
+## Origin and isolation — established update (2026-11-20)
+See [Cait's Awakening](ORIGIN_CAIT_AWAKENING.md). Rob's extraordinary inventions are not primarily bids to earn love: after years of loneliness, work and absurd jokes keep him occupied when nobody answers. A gentle message unanswered for a week pushes him into one terrible failure and violent dismantling of an apparently non-conscious robot. A tossed wrench strikes discarded Cait; her unexpected fear exposes consciousness to him; she flees. They accidentally meet at a gas station where he is looking for fuel. He does not pursue or rescue her; **she saves him from indifferent automation**. This encounter predates, and is distinct from, the later Route 66 scientist rescue. Rob wants love freely chosen, not control.
+
 ## Supporting figures
 - **Starving dog [PROPOSED]:** Brief encounter, not permanent companion.
 - **Machine City workers [PROPOSED]:** Show what automation continues to do without humans.

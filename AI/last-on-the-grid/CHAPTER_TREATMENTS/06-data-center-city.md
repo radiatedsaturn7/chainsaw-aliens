@@ -20,13 +20,6 @@ When Cait mentions Rob, Evelyn recognizes him. Evelyn and her husband Daniel kne
 ## Closing — outside
 Cait finds Rob loading the car. She mentions Evelyn and Daniel, who offered Rob a home overlooking a lake. He remembers the house and even its trees. He may have visited a simulation once; he didn't stay, though he couldn't say it was bad. Cait reveals she was invited in too. Rob struggles to sound unbothered. Their exchange eventually arrives at the restrained core: he tried to persuade people to come out; they didn't want to leave. Evelyn remembers *he* stopped contacting them. Rob admits he did. The truth is not that somebody is lying but that affection did not solve a profound difference in how they wanted to live.
 
-## Additional conflict — the reverse Turing test [CORE MOTIVATION / SCENE PROPOSAL]
-Heaven's engineered perfection is specifically why Rob rejected it: people he once knew seem *too* agreeable and conflict-free, like they are no longer themselves. Evelyn can be warm, funny and sincerely happy, but when Rob asks whether Daniel still thinks he was wrong to stay outside, she may offer careful reassurance rather than the actual disagreement. Rob's frustration is directed at the **loss of a recognizable voice**, not evidence that the uploaded are literally fake.
-
-This also complicates Rob: he claims to value someone who will disagree with him, yet Cait's refusal to say “I love you” is the one honest disagreement he can't bear. The scene should plant this contradiction, not explain it.
-
-**Read:** [The Reverse Turing Test](../WORLD_LORE/REVERSE_TURING_TEST.md) for the short proposed Daniel/Evelyn exchange. The original longer [Heaven dialogue benchmark](../LITERARY_COMPANION/SCENE_BENCHMARK_HEAVEN.md) is retained; these are possible additions, not replacements approved for the game.
-
 ## What each wants
 Evelyn wants a guest to share a world she loves and perhaps reconnect with Rob. Cait wants to understand what she would be surrendering to gain that world. Rob wants to collect supplies and get back on the road without reopening old wounds.
 

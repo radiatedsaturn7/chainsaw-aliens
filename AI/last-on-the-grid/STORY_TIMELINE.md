@@ -5,7 +5,7 @@
 
 | Act / sequence | Event | Status | Purpose |
 |---|---|---|---|
-| Prelude (optional) | Rob builds/awakens Cait; factory danger | EARLIER DRAFT | Origin mystery; avoid premature exposition |
+| Prelude (optional) | Rob's failed-companion breakdown; wrench awakens Cait; she flees; independent gas-station encounter; Cait first saves Rob | EARLIER DRAFT | User-approved origin beats; flashback reveal timing open; distinct from Mission 07 |
 | Opening | Cait returns with fuel along Tower Hill in worsening storm | ESTABLISHED | Immediate gameplay and trust in Cait |
 | Garage | Sparse exchange about leaving tomorrow | ESTABLISHED | Promise and unspoken tension |
 | Early journey | Mount Washington climb | PLANNED / PLACEMENT OPEN | Cait wants the view; Rob thinks it pointless |
