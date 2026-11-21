@@ -1,0 +1,64 @@
+name: Campaign Artwork staging-candidate parity
+on:
+  push:
+    branches: [dot/diagnostic-campaign-artwork-679]
+permissions:
+  contents: read
+jobs:
+  artwork:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 09471c99f9df34ec1ee9b7ea906dacc60b89c96b
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Verify exact reviewed staging candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 09471c99f9df34ec1ee9b7ea906dacc60b89c96b
+          test "$(git rev-parse HEAD^)" = 5f89284b153c60024c504b3f5bd7d64e2db9c9bb
+          test "$(git rev-parse HEAD^{tree})" = fc168b018326485acc56d84430faec5735491b46
+          test "$(git rev-parse HEAD:.github)" = 9acb7dae8496ff32e0f8ce6e6b4f1a216bc74980
+          test -z "$(git status --porcelain)"
+          printf '%s  %s\n' \
+            fd2ccc5ea6ec2ca916d8ecb9bf61aa7257ae75aaa506751c6c30f077b998598d playwright.config.js \
+            b9cec6516bcb0941a5f72232e1809cb05690132da1dffb577f1a3610611403a2 .github/workflows/campaign-art.yml | sha256sum --check --strict
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: node --test tests/unit/campaignArtIntegration.test.js tests/unit/americaCampaign.test.js tests/unit/raceTerrainTextureBlend.test.js tests/unit/raceRoadTextures.test.js tests/unit/raceDecals.test.js tests/unit/raceVisualFx.test.js
+      - name: Install pinned browser and require Chromium sandbox
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --no-install playwright install --with-deps chromium
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import {chromium} from '@playwright/test';
+          const browser=await chromium.launch({headless:true,chromiumSandbox:true});
+          try {
+            const page=await browser.newPage();
+            await page.goto('data:text/html,<title>Campaign artwork sandbox preflight</title>');
+            if(await page.title()!=='Campaign artwork sandbox preflight')throw Error('Protected browser did not start');
+          } finally {
+            await browser.close();
+          }
+          // Runner-local launch security only. Keep the normal test command/config behavior otherwise.
+          const file='playwright.config.js', source=fs.readFileSync(file,'utf8'), anchor="  use: {\n";
+          if(source.split(anchor).length!==2)throw Error('Expected a unique verified Playwright use block');
+          fs.writeFileSync(file,source.replace(anchor,anchor+'    launchOptions: {chromiumSandbox: true},\n'));
+          JS
+      - run: npx playwright test tests/playwright/race-road-textures.spec.js --workers=1 --reporter=line
+        env:
+          CI: 'true'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: campaign-artwork-679-browser
+          path: test-results
+          retention-days: 3
+          if-no-files-found: ignore
