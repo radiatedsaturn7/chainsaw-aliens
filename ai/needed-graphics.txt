@@ -1,3 +1,73 @@
 No missing scenery artwork references found in the saved race library.
 The green rectangles were caused by artwork preloading missing indirect doodad references, not absent images.
 No new graphics are requested by this audit.
+
+Planetary simulator stages (2026-11-17)
+Existing saved gravel/rock artwork is used as a working fallback; no missing references.
+- skybox-moon-taurus-littrow: seamless lunar valley panorama, black sky, gray massifs; no vegetation, Earth buildings or cloud fog. Keep the visible orbital terrain unobstructed.
+- skybox-mars-jezero: seamless dusty ochre Jezero horizon, subdued tan sky, distant rim; no vegetation or buildings.
+- ground-lunar-regolith and road-lunar-regolith: seamless gray regolith, subtle tracks, no painted lanes.
+- ground-martian-regolith and road-martian-regolith: seamless rusty dust and small gravel, no painted lanes.
+- lunar-rock-01..03 and martian-rock-01..03: transparent rock sprites with bases at ground level; varied sizes.
+- apollo17-rover-landmark and perseverance-rover-landmark: optional non-colliding landmark art, do not imply the historic vehicle stood at invented locations.
+
+International circuit / rally expansion (2026-11-17)
+These races use existing saved art and have no broken asset references. Dedicated identity art is optional next work:
+- Nurburgring: pit tower / GP grandstand, weathered Nordschleife graffiti decals, Eifel forest skyline.
+- Hockenheim: Motodrom grandstand and Mercedes tribune silhouettes; forest-edge skyline.
+- Hungaroring: hillside grandstands, pit complex and rolling Hungarian countryside skyline.
+- Sepang: distinctive umbrella grandstand roof and tropical hill skyline, adapted to the abandoned setting.
+- Fafe: Pedra Sentada hillside skyline, rural Portuguese granite walls / farm buildings, abandoned rally-direction signs.
+- El Condor-Copina: rounded highland granite boulders, low tussock grass and hanging-bridge visual details. No trees covering the exposed high plateau.
+- Sisteron-Fontbelle-Thoard: limestone ridges, weathered stone hamlet buildings, sparse alpine forest skyline.
+- Ruuhimaki: Finnish rural houses / barns, birch-pine forest skyline and gravel roadside plants.
+Keep transparent sprite bases grounded; no embedded rectangular background or fake road surfaces in landmark sprites.
+
+Rally collections (2026-11-17): optional identity art; races already use saved fallback assets.
+- Portugal Arganil / Gois / Lousa: hillside eucalyptus/pine skyline, Portuguese stone walls, abandoned village/farm facades and gravel-bank vegetation.
+- Acropolis Ano Pavliani / Dafni / Tarzan / Bauxites: dry Greek pine slopes, pale limestone banks, bauxite mine rock piles, ruined mountain huts. No alpine snow coating on every object.
+- New England Concord Pond / Morton Cutoff / North Road: Maine mixed-forest skyline, grounded fern/grass/verge sprites, weathered logging gates and timber stacks.
+Use transparent bases at ground level, readable distant silhouettes and no road-shaped rectangles. Landmark placement must be checked against the source route before adding recognizably located buildings.
+
+RALLY EXPANSION — Sweden / Sno*Drift / New Zealand
+Existing saved assets provide playable fallback scenery. Dedicated regional art wanted:
+- Rally Sweden: Scandinavian red timber cabins, birch/pine forest edges, snowbanks, Colin's Crest spectator banner (no invented jump geometry).
+- Sno*Drift Michigan: leafless northern hardwoods, snow-covered pines, rural mailboxes and plowed forest-road snowbanks; isolated bonfire spectator props for future Bonfire Alley stage (not yet imported).
+- Rally New Zealand: coastal flax, tree ferns, wind-shaped coastal scrub, pasture fences and farm gates, distant Tasman Sea/cliff backdrop. Whaanga Coast, Te Hutewai and Te Akau South.
+All props need transparent backgrounds and grounded bases. Small vegetation should remain drive-through; don't add rigid collisions just for decoration.
+
+RALLY MEXICO / RALLY OF NATIONS: dry highland gravel shoulders, pale eroded
+rock, sparse scrub, agave, mining-region ruins and roadside masonry.
+NORWAY FINNSKOG: snow-laden conifers, birch edges, snowbanks, isolated
+red timber cabins and narrow forestry-road markers. Keep existing fallback
+assets until dedicated art is saved; no new missing asset references added.
+
+RALLY CHILE / CONUCO: pine and eucalyptus forestry edges, logging clearings,
+light-brown dirt cuts, wood stacks and weathered plantation signs.
+SAFARI KENYA / HELL'S GATE: volcanic cliff faces, tan dust, dry grass, sparse
+acacias, basalt boulders, Fischer's Tower silhouette and park markers.
+RALLY JAPAN / HOKKAIDO: mixed birch/conifer forest, gravel forest roads,
+forestry gates, Japanese warning signs, drainage culverts and simple farm sheds.
+RALLY TURKEY / MARMARIS: coastal pine, scrub, pale limestone cuts, gravel
+banks, olive trees, dry stone walls and distant Mediterranean coves.
+
+GT/FM circuit and WRC-area additions (2026-11-20)
+All new races resolve existing saved artwork; these are optional identity assets,
+not missing dependencies. Reuse art across layouts/sections of the same venue.
+- Barcelona: pit/paddock facade, main grandstand, Catalan hill skyline.
+- Mugello: Tuscan hills, pit complex, scarlet/white kerb decals.
+- Sonoma: dry California hills, pit structures, sparse oak/grass margins.
+- Long Beach: waterfront skyline, palms, marina barriers, aquarium-area silhouette.
+- Autopolis: Kyushu mountain panorama, pit complex and hillside grandstands.
+- Goodwood: low historic pit buildings, grass banks, Sussex treeline.
+- Dunsfold: aerodrome hangars, control tower, runway markings and tyre barriers.
+- Sardinia: Mediterranean scrub, pale rock cuts and weathered stone farm walls.
+- Croatia: limestone mountain ridges, beech forest and abandoned village facades.
+- Estonia / Latvia / Poland: regional birch/pine edges, farmhouses, crop stubble,
+  sandy/gravel shoulders and lake-country skylines; avoid universal alpine snow.
+- Central Europe: Czech foothill villages, patchwork fields, mixed forest edges.
+- Corsica: steep chestnut-covered valleys, stone villages and granite parapets.
+- Ypres: low Flemish farmhouses, drainage ditches, hedges and patchwork fields.
+- Australia: eucalyptus forest edges, red/brown gravel cuts and timber gates.
+Transparent sprite bases must sit on the ground. Place recognizable landmarks
+only after checking their actual position; don't paint false roads into sprites.

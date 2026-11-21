@@ -20,12 +20,12 @@ test('distance-based payouts have first-clear bonus, predictable repeats and no 
 });
 test('win pays scrap and a reusable part once; retries are idempotent; next run pays repeat reward',async()=>{
  const {game,garage,items,saved}=fixture();await garage.load();
- const first=await awardCampaignRace(garage,{ref:'Tower Hill Road',race,runId:'run1'});
+ const first=await awardCampaignRace(garage,{ref:'Providence, RI — Landmark Run',race,runId:'run1'});
  assert.equal(first.scrap,1200);assert.equal(game.player.credits,1700);assert.equal(items.progress.bags.items['snow-tires'],1);
  assert.equal(items.progress.garage.cars['RTG-001'],undefined,'reward must not install itself');
- await awardCampaignRace(garage,{ref:'Tower Hill Road',race,runId:'run1'});assert.equal(game.player.credits,1700);assert.equal(items.events.length,1);
- await awardCampaignRace(garage,{ref:'Tower Hill Road',race,runId:'run2'});assert.equal(game.player.credits,2300);assert.equal(items.progress.bags.items['snow-tires'],1);
- assert.equal(saved().stats.credits,2300);assert.equal(normalizeItemProgress(saved()).garage.rewards['Tower Hill Road'].clears,2);
+ await awardCampaignRace(garage,{ref:'Providence, RI — Landmark Run',race,runId:'run1'});assert.equal(game.player.credits,1700);assert.equal(items.events.length,1);
+ await awardCampaignRace(garage,{ref:'Providence, RI — Landmark Run',race,runId:'run2'});assert.equal(game.player.credits,2300);assert.equal(items.progress.bags.items['snow-tires'],1);
+ assert.equal(saved().stats.credits,2300);assert.equal(normalizeItemProgress(saved()).garage.rewards['Providence, RI — Landmark Run'].clears,2);
 });
 test('failed missions and failed saves do not award anything; retry after failed save succeeds',async()=>{
  const {garage,items,game}=fixture();await garage.load();

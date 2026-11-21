@@ -70,6 +70,8 @@ test('buy and install is atomic on dependency or save failure and stock restores
 async function captureThumbnailFrames(times,{selected='car-1',count=4}={}){
  const {clearCachedProjectFilesForTests}=await import('../../src/ui/serverStorage.js');
  clearCachedProjectFilesForTests();
+ const {resetCarPreviewThumbnailsForTests}=await import('../../src/ui/shared/carPreviewThumbnails.js');
+ resetCarPreviewThumbnailsForTests();
  const previous={document:globalThis.document,fetch:globalThis.fetch,Image:globalThis.Image};
  const doc=createMenuDocument(),screen=doc.screens.find(s=>s.id==='cars');
  screen.elements=screen.elements.filter(e=>e.type==='car-showroom');

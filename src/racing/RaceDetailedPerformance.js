@@ -1,6 +1,7 @@
 // Deliberate synchronous boundaries, not every helper or per-triangle operation.
 const editorMethods = [
  'updateRaceSceneryCollisions','updateRaceWearAndDamage','updateRaceDiagnostics',
+ 'updateRaceAutomaticVehicleRecovery',
  'stepRaceTireFxParticles','updateRaceEngineAudio','updateRaceTireAudio',
  'recordRaceGhostSample','updateRaceTriggers','updateRaceEdgeCenterResetFade',
  'updateRaceCheckpointProgress','getRaceTrackStateVisualCells',

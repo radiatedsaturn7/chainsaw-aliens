@@ -1,0 +1,102 @@
+Rally expansion: Sweden, Sno*Drift and New Zealand
+
+Nine new standalone races. World Map > Rallies groups them into three additional
+collections. They also appear in the geographic index (Michigan for Sno*Drift;
+International for Sweden/New Zealand). No campaign progression changes.
+
+Sweden — mapped-road recreations guided by official 2019 GPS controls:
+  Vargåsen: approximately 14.3 km
+  Torsby: approximately 9.2 km
+  Likenäs: approximately 20.0 km
+  https://rallysweden.com/wp-content/uploads/2018/11/gps-positioner.pdf
+Checkpoint anchors are mapped road nodes within 60 m of the published controls.
+Radio positions can be on side roads; blindly snapping to the closest edge caused
+an access-spur detour on Vargåsen. Reviewed node anchors avoid that detour.
+These are not claimed as exact historical competition geometry or surveyed jumps.
+
+Sno*Drift — partial named-road sections from the 2025 organizer stage-map area:
+  Agren: approximately 3.6 km (does not include Hunters)
+  Shoreline: approximately 3.4 km (does not include Orchard)
+  Old State: approximately 9.7 km (does not include Huff)
+  Organizer reference is recorded in import_rally_collections.py and each race.
+All six winter races have snow road surfaces and snow weather. They use existing
+snow physics and saved art, with estimated widths and DEM terrain.
+
+New Zealand — partial mapped-road sections:
+  Whaanga Coast: approximately 18.2 km of Whaanga Road; no Ruapuke approach
+  Te Hutewai: approximately 10.4 km gravel section
+  Te Akau South: approximately 10.6 km gravel section
+  https://www.hella.co.nz/assets/Raglan_Rally_of_the_Coast_-_Spectator_Guide_Map_and_Itinerary.pdf
+Mapped surfaces are retained, including short paved portions on Whaanga Road.
+These are not full WRC stages. No repeated passes count as separate stages.
+
+Distances above are source geometry, rounded. Saved previews report playable
+length after the shared importer places timing lines on suitable straights.
+
+Reproducibility:
+  tools/campaigns/import_rally_collections.py contains stage specifications.
+  rally-road-sources.json records OSM query bounds and road filters.
+  sources/*.json retains the actual imported geometry; each saved race records
+  source snapshot/hash and organizer reference. Terrain uses Tilezen Terrarium.
+  Rebuild using the existing import/install/finalize commands in the review JSON.
+
+Deferred rather than guessed:
+  100 Acre Wood: public spectator maps found; continuous stage trace unverified.
+  Olympus: detailed organizer KMZ found was restricted to entrant recce use.
+  Neither is represented as a newly playable collection.
+
+Dedicated regional scenery is requested in ai/needed-graphics.txt. Current saved
+fallback art is playable but does not reproduce every regional landmark/species.
+
+2026-11-18: Mexico and Norway additions
+Mexico: organizer Rally of Nations 2025 KMZ, not a claimed WRC 2025 event.
+  Valenciana 6.09 km; Mineral de Pozos 18.06 km; Mesa de Borregos 12.03 km.
+  Source: https://rally.calymedia.com/files/2025/RoN2025_v2.11.kmz
+  Byte-identical repeat-pass polylines deduplicated. Distinct alternatives
+  (Santa Rosa) rejected instead of concatenating or guessing a variant.
+  Mineral de Pozos source has a 441 m gap between sampled vertices. Native
+  importer densifies to <=60 m, but cannot recover unrecorded road detail.
+Norway: Hof-Finnskog 23.74 km; Svullrya 22.42 km (source distances).
+  Reference: https://rallysweden.com/wp-content/uploads/2018/11/gps-positioner.pdf
+  Current OSM through-roads matched to Norwegian stage controls in Rally
+  Sweden 2019. Snow geographic recreations, not exact Rally Norway stages.
+  Hof omits a short control approach; radio/control points are snapped to
+  adjacent through-road nodes. Terrain uses the existing Terrarium DEM.
+Remaining requests: Japan, Turkey, Chile and Safari Kenya remain pending,
+with the specific source access/geometry limitations in rally-collections.json.
+Regional art still uses saved fallback assets, not unique new landmarks.
+
+Saved playable timing-line distances for the new batch:
+  Valenciana 5.89 km; Mineral de Pozos 17.97 km; Mesa de Borregos 11.51 km;
+  Hof-Finnskog 23.48 km; Svullrya 21.44 km.
+Testing: 7 rally import tests, 4 international import tests and 22 JS tests
+passed. Full worker bake results are recorded in rally-collections-review.json.
+
+2026-11-18 follow-up: Chile, Kenya, Japan and Turkey
+Conuco: 7.65 km current forest-road loop, NOT exact 6.79 km shakedown.
+Hell's Gate: 10.60 km recreation through 2021 organizer safety controls.
+Bisan: 4.89 km and Naekawa: 17.48 km, mapped-road recreations using 2010
+Rally Japan organizer maps. These are historic Hokkaido GRAVEL routes, not
+the modern Aichi tarmac stages. Naekawa controls snapped <=33 m to junctions.
+Turkey: Ula 16.78 km, Cicekli 13.16 km, Icmeler 24.86 km from the 2019
+public KML linked by Marmaris Info. Spectator-access traces excluded.
+Raw Datca/Kizlan/Marmaris/Gokce traces failed reversal checks and were omitted.
+Full provenance, reviewed real junctions and unresolved candidates:
+  rally-geography-review.json
+Sharp real junction exceptions are exact-message matches scoped per source;
+new or changed layout warnings still fail the import.
+Regional art is saved fallback scenery; no dedicated new landmark art claimed.
+
+Playable distances after shared timing-line placement:
+  Conuco 6.73 km; Hell's Gate 10.51 km; Bisan 4.39 km; Naekawa 17.28 km;
+  Ula 15.80 km; Cicekli 13.13 km; Icmeler 24.04 km.
+40 focused checks passed (8 rally-source, 4 international-source, 4 planetary
+source, 24 JavaScript integration/menu/preview tests). Full native worker bake
+results are retained separately in rally-collections-review.json.
+
+Final verification: 60 focused tests passed (9 rally-source, 18 native track
+importer, 4 international-source, 4 planetary-source, 25 JS integration).
+All seven new saved tracks passed native worker loading after the fine_gravel
+-> gravel and sand -> dirt importer correction and Chile/Kenya rebuild.
+Road-fit tolerance warnings persist on some long stages, particularly Icmeler;
+see review JSON. Successful loading is not an on-device visual seam audit.

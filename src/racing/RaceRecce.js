@@ -1,9 +1,10 @@
+import {buildRaceRacingLine} from './RaceRacingLine.js';
 // WRC-style vocabulary; thresholds below are our reference-car calibration,
 // not claimed to be WRC Generations' proprietary note-generation algorithm.
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const angle=v=>Math.atan2(Math.sin(v),Math.cos(v));
 const DEG=180/Math.PI;
-export const RECCE_VERSION='steering-recce-v6';
+export const RECCE_VERSION='steering-recce-v7';
 // Cutting warnings describe a collision hazard, not a small speed penalty for
 // driving through foliage. Missing collision evidence must not invent danger.
 export function isRecceCutHazard(sprite,definition) {
@@ -42,6 +43,17 @@ function buildRecce(editor) {
     const deck=roadbed?editor.sampleRaceRoadbedProfileAtDistance(i*step,roadbed):null;
     return Number.isFinite(deck?.elevation)?{...pose,elevation:deck.elevation}:pose;
   });
+  // Grade the usable paved corridor, not only its centerline. Keep the
+  // centerline for turn grouping/landmarks so a wide line cannot erase an S.
+  // Use the planner's reference vehicle clearance rather than cutting to an edge.
+  const obstacles=(editor.selectedRace?.scenery||[]).filter(s=>s&&s.visible!==false).flatMap(s=>{
+    const def=editor.getRaceDoodadForScenery?.(s)||s.previewDoodad||s;
+    return isRecceCutHazard(s,def)?[{x:Number(s.x)||0,z:Number(s.z??s.y)||0,
+      radius:Math.max(.1,Number(def.hitboxWidthM||def.widthM||s.widthM)||1.5)/2}]:[];
+  });
+  const coherent=poses.every((p,i)=>!i||Math.abs(angle(p.yaw-Math.atan2(p.x-poses[i-1].x,p.z-poses[i-1].z)))<.35);
+  const line=coherent?buildRaceRacingLine(poses,poses.map(p=>editor.getRaceRoadHalfWidthWorld(p.segment)),
+    {circuit,step,vehicleWidth:2.2,margin:1.1,obstacles}):null;
   const tuning=editor.getRaceCarTuning?.(editor.selectedCar)||{};
   const wheelbase=clamp(Number(tuning.wheelbaseM)||2.65,1.8,4);
   const mass=Math.max(450,Number(tuning.weightKg)||1200);
@@ -60,7 +72,7 @@ function buildRecce(editor) {
     }
     signed[i]=turn/Math.max(step,span);
     grade[i]=((at(i+1).elevation||0)-(at(i-1).elevation||0))*12/(2*step);
-    speed[i]=Math.min(55,Math.sqrt(6/Math.max(.0001,Math.abs(signed[i]))));
+    speed[i]=Math.min(55,Math.sqrt(6/Math.max(.0001,line?line.curvature[i]:Math.abs(signed[i]))));
   }
   // Virtual recce: cornering demand, backward braking envelope, then forward
   // acceleration. Keep geometry grades stable; weather/live grip affects the
@@ -76,7 +88,7 @@ function buildRecce(editor) {
     for(let i=1;i<count;i++)speed[i]=Math.min(speed[i],Math.sqrt(speed[i-1]**2+2*Math.max(.5,accelerationAt(speed[i-1])-9.81*grade[i])*step));
   }
   const observations=poses.map((p,i)=>({at:i*step,pose:p,curvature:signed[i],
-    steeringDeg:Math.atan(wheelbase*signed[i])*DEG,speedMps:speed[i],limitMps:limit[i],
+    steeringDeg:Math.atan(wheelbase*(line?line.curvature[i]:Math.abs(signed[i])))*DEG,speedMps:speed[i],limitMps:limit[i],
     accelerationMps2:i?(speed[i]**2-speed[i-1]**2)/(2*step):0}));
   const groups=[];let group=null;
   const flush=()=>{if(group){groups.push(group);group=null;}};
@@ -118,7 +130,7 @@ function buildRecce(editor) {
     const demand=ordered[Math.floor((ordered.length-1)*.8)];
     const severity=steeringSeverity(demand);
     const apexCandidates=samples.filter(s=>Math.abs(s.steeringDeg)>=demand*.9);
-    const apex=apexCandidates[Math.floor(apexCandidates.length/2)];
+    const apex=apexCandidates[Math.floor(apexCandidates.length/2)]||samples[Math.floor(samples.length/2)];
     const span=(g.end-g.start)*step;
     const shape=recceTurnShape(totalAngle,span,demand);
     // With Three's +Y up and forward +Z, increasing yaw bends screen-left.

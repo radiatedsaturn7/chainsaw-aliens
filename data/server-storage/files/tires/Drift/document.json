@@ -18,7 +18,10 @@
     },
     "wetEvacuationFactor": 0.68,
     "treadDepthMm": 5,
-    "wearRate": 1.42
+    "wearRate": 1.18,
+    "slidingFrictionRatio": 0.82,
+    "postPeakFalloff": 0.65,
+    "recoveryHysteresis": 0.02
   },
   "size": {
     "widthMm": 245,

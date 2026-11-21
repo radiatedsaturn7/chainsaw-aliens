@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-18",
+  "installedAdditionalMissions": 5,
+  "totalSpaceMissions": 7,
+  "focusedTestsPassed": 30,
+  "worldPreparation": [
+    {
+      "id": "space-apollo15-hadley-apennine",
+      "ok": true,
+      "seconds": 10.764,
+      "terrainHeightWarnings": 66
+    },
+    {
+      "id": "space-apollo16-descartes",
+      "ok": true,
+      "seconds": 12.46,
+      "terrainHeightWarnings": 117
+    },
+    {
+      "id": "space-curiosity-gale",
+      "ok": true,
+      "seconds": 10.394,
+      "terrainHeightWarnings": 4
+    },
+    {
+      "id": "space-spirit-columbia-hills",
+      "ok": true,
+      "seconds": 8.393,
+      "terrainHeightWarnings": 14
+    },
+    {
+      "id": "space-opportunity-endeavour-rim",
+      "ok": true,
+      "seconds": 10.905,
+      "terrainHeightWarnings": 406
+    }
+  ],
+  "limitation": "World preparation passed; residual terrain height-tolerance diagnostics remain and need visual driving review, especially Opportunity. No browser driving session was performed."
+}

@@ -46,7 +46,7 @@ test('overwrite requires confirmation and failed persistence preserves the slot 
  await assert.rejects(saves.startNew(0),/Confirm/);fail(true);
  await assert.rejects(saves.startNew(0,{overwrite:true}),/Could not save/);
  assert.deepEqual(store.get(CAMPAIGN_SAVE_KEY),original);assert.equal(game.menuProgress.selectedGameCar,'Keep Me');
- fail(false);await saves.startNew(0,{overwrite:true});assert.deepEqual(game.menuProgress,{});
+ fail(false);await saves.startNew(0,{overwrite:true});assert.deepEqual(game.menuProgress,{campaignProgressionVersion:1});
  assert.equal(game.player.credits,500);assert.equal(saves.slots[1],null);
 });
 test('legacy car and garage migrate once into Slot 1 without deleting legacy data',async()=>{
@@ -55,7 +55,7 @@ test('legacy car and garage migrate once into Slot 1 without deleting legacy dat
  const {saves}=await fixture(store);assert.equal(saves.slots[0].progress.selectedGameCar,'Existing');
  await saves.resume(0);assert.equal(saves.game.player.credits,345);
  assert.deepEqual(store.get('menu-progress'),legacy);
- await saves.startNew(0,{overwrite:true});const restarted=await fixture(store);assert.deepEqual(restarted.saves.slots[0].progress,{});
+ await saves.startNew(0,{overwrite:true});const restarted=await fixture(store);assert.deepEqual(restarted.saves.slots[0].progress,{campaignProgressionVersion:1});
 });
 test('concurrent progress and inventory writes keep both updates in the active slot',async()=>{
  const {game,saves}=await fixture();await saves.startNew(2);
@@ -231,7 +231,7 @@ test('pre-slot HACKME and SKIPME survive new/continued slot selection and bypass
   assert.equal(player.flow.pendingOpeningRace,'');
   assert.equal(saves.slots[0].progress[raceCompletionKey('Tower Hill Road')],true);
   const available=worldMapSelectableNodes(worldMapNodes(map,player.resources,document,player.flow.parameters));
-  assert.equal(available.length,code==='HACKME'?catalog.length:2);
+  assert.equal(available.length,code==='HACKME'?catalog.length:1);
   if(mode==='new'){
    player.resources.choices=()=>[{value:'RTG-001',label:'RTG-001'}];
    await player.activate(player.flow.screen.elements.find(e=>e.type==='car-showroom'),1,{choose:true});
@@ -277,16 +277,21 @@ test('manual-only hardware defaults to automatic assistance and respects each pr
  editor.toggleRaceTransmissionMode();await game.menuProgressSaving;
  assert.equal(editor.raceInput.autoShift,false);
  assert.deepEqual(editor.getRaceCarTuning(car).gearRatios,ratios);
- editor.toggleRaceAbs();editor.toggleRaceTractionControl();await game.menuProgressSaving;
+ editor.toggleRaceAbs();editor.toggleRaceTractionControl();
+ editor.toggleRaceBrakeAssist();editor.cycleRaceDigitalThrottle();await game.menuProgressSaving;
  await saves.startNew(1);
  editor.startPlaytest(car.id,{hydrateCars:false});
  assert.equal(editor.raceInput.autoShift,true,'new slot does not inherit manual');
  assert.equal(editor.raceInput.absEnabled,true);
+ assert.equal(editor.raceInput.brakeAssistEnabled,false);
+ assert.equal(editor.raceInput.digitalThrottleMode,'off');
  assert.equal(editor.raceInput.tractionControlEnabled,true);
  await saves.resume(0);
  editor.startPlaytest(car.id,{hydrateCars:false});
  assert.equal(editor.raceInput.autoShift,false);
  assert.equal(editor.raceInput.absEnabled,false);
+ assert.equal(editor.raceInput.brakeAssistEnabled,true);
+ assert.equal(editor.raceInput.digitalThrottleMode,'on');
  assert.equal(editor.raceInput.tractionControlEnabled,false);
  editor.toggleRaceTransmissionMode();await game.menuProgressSaving;
  assert.equal(editor.raceInput.autoShift,true,'manual-only car can select Auto again');
@@ -294,6 +299,8 @@ test('manual-only hardware defaults to automatic assistance and respects each pr
  const reload=await fixture(store);await reload.saves.resume(0);
  assert.equal(reload.game.menuProgress.raceTransmission,'automatic');
  assert.equal(reload.game.menuProgress.raceAbs,false);
+ assert.equal(reload.game.menuProgress.raceBrakeAssist,true);
+ assert.equal(reload.game.menuProgress.raceDigitalThrottle,'on');
 });
 
 test('menu controls, audio and haptics are isolated, copied and restored with each slot',async()=>{

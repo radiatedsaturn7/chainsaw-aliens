@@ -92,6 +92,19 @@ export class DamageModel {
   }
 }
 
+// A separately authored expansion decoration is never a physics object.
+// Missing or invalid opt-ins deliberately follow unchanged legacy rules.
+export function isVisualOnlyRaceScenery(sprite) {
+  const d = sprite?.previewDoodad;
+  return sprite?.visualOnly === true && sprite.expansionScenery?.version === 1
+    && sprite.solid === false && sprite.collidable === false && !sprite.fenceId && !sprite.fencePath
+    && !sprite.itemType && !sprite.item && !sprite.trigger && !sprite.triggers
+    && d?.defaultRule?.behavior === 'decoration' && d.defaultRule.speedDrainPercent === 0
+    && ['panels','suspension','engine'].every(k => d.defaultRule.damage?.[k] === 0)
+    && Array.isArray(d.rules) && d.rules.length === 0 && !d.isFence
+    && !d.itemType && !d.item && !d.trigger && !d.triggers && !d.model;
+}
+
 export function prepareRaceSceneryTriggers(editor, source = null) {
   const session = editor.playtestSession;
   if (!session) return;
@@ -101,7 +114,7 @@ export function prepareRaceSceneryTriggers(editor, source = null) {
   let cache = session.sceneryTriggerCandidates;
   if (!cache || cache.source !== allScenery || cache.length !== allScenery.length || session.carEditorPreview) {
     cache = {source:allScenery, length:allScenery.length, sprites:allScenery.filter(sprite => {
-      if (sprite?.fenceId) return false;
+      if (sprite?.fenceId || isVisualOnlyRaceScenery(sprite)) return false;
       const doodad = editor.getRaceDoodadForScenery(sprite);
       if (isMixTape(doodad) || doodad.itemType === 'item') return true;
       const rules = [doodad.defaultRule, ...(doodad.rules || [])].filter(Boolean);

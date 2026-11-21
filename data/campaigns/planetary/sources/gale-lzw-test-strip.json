@@ -1,0 +1,7 @@
+{
+  "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/Mars/MSL/MSL_Gale_DEM_Mosaic_1m_v3.tif",
+  "row": 28000,
+  "expectedBytes": 131920,
+  "decodedSha256": "a7a16f058d8e8c78a62597c7de09c0c5dde91c2088ecd25790c2a1b98ad5a163",
+  "verification": "Byte-for-byte equal to libtiff TIFFReadEncodedStrip"
+}

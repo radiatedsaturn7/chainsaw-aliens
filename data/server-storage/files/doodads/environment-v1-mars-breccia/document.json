@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "selectedDoodadId": "environment-v1-mars-breccia",
+  "doodad": {
+    "id": "environment-v1-mars-breccia",
+    "name": "Martian angular breccia cluster",
+    "artRef": "environment-v1-mars-breccia",
+    "isFence": false,
+    "itemType": "scenery",
+    "model": null,
+    "widthM": 5.4,
+    "heightM": 2.7,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 5.4,
+    "hitboxHeightM": 2.7,
+    "weightKg": 45,
+    "defaultRule": {
+      "minSpeedMph": 0,
+      "behavior": "flatten",
+      "speedDrainPercent": 0,
+      "damage": {
+        "panels": 0,
+        "suspension": 0,
+        "engine": 0
+      }
+    },
+    "rules": []
+  }
+}

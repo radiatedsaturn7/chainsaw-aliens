@@ -1,0 +1,33 @@
+{
+  "H03-S09": {
+    "name": "North Track / South Track",
+    "lengthM": 4381.294212553232,
+    "reason": "Source loop reviewed to avoid imported reverse spurs and pit/service roads."
+  },
+  "H05-S09": {
+    "name": "Mapped circuit",
+    "lengthM": 6214.653221143889,
+    "reason": "Source loop reviewed to avoid imported reverse spurs and pit/service roads."
+  },
+  "H01-S05": {
+    "name": "Road Course / Thompson Speedway",
+    "lengthM": 2655.112626771437,
+    "wayDirections": {
+      "343462914": "-1"
+    },
+    "reason": "Official road-course map uses upper oval in the opposite direction to oval racing; omit drift/short-course connectors.",
+    "reference": "https://www.thompsonspeedway.com/about-thompson/"
+  },
+  "H10-S08": {
+    "name": "Back Straight / Hillcrest / Sunset Bend / The Ascent / The Chute / The Essess / The Keyhole / The Kink / The Podium Straight / The Sweeper",
+    "lengthM": 3759.848987196753,
+    "reference": "https://www.podiumclub.com/track-map",
+    "reason": "Continuous full circuit; reject reverse joins between alternate configurations."
+  },
+  "raceway-vir-south": {
+    "name": "Fish Hook / Oak Tree Curve / Patriot Course / South Bend / Spiral",
+    "lengthM": 2610.089279078712,
+    "reference": "https://virnow.com/track/configurations/",
+    "reason": "Published South Course, including Fish Hook and Spiral; omit spurious alternate-loop joins."
+  }
+}

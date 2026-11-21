@@ -1,3 +1,4 @@
+import {applyMotorsportRace} from '../menus/MotorsportEvents.js';
 import {WheelService} from '../hardware/wheels/WheelService.js';
 import {openWheelSettings} from '../hardware/wheels/WheelSettings.js';
 import {RaceHaptics} from '../racing/RaceHaptics.js';
@@ -1908,7 +1909,7 @@ export default class Game {
     if (!raceName) {
       return fail('Choose a race first.');
     }
-    if(params.menuFlow){
+    if(params.menuFlow&&!params.motorsportEvent){
       const flow=params.menuFlow,generation=flow.generation;
       try{
         const payload=await hydrateProjectFilePayload('races',raceName);
@@ -1939,6 +1940,7 @@ export default class Game {
       if(garage)runtimeCar=await garage.build(car.documentName||car.name||params.carRef,runtimeCar);
     }catch(error){return fail(`Garage could not prepare car: ${error.message}`);}
     if (params.menuFlow && (!params.menuFlow.active || params.menuFlow !== this.menuPlayer?.flow)) return false;
+    if(params.motorsportEvent)runtimeCar={...runtimeCar,condition:structuredClone(params.motorsportEvent.condition)};
     const engineSfxRef = String(runtimeCar.audio?.engineSoundId || '').trim();
     const engineSfxPreparation = this.prepareRacePlaytestAudio({
       engineSoundId: engineSfxRef
@@ -1974,17 +1976,20 @@ export default class Game {
       try {
         const payload = await hydrateProjectFilePayload('races', raceName);
         gridRace = payload?.data?.race || payload?.data;
+        if(params.motorsportEvent)gridRace=applyMotorsportRace(gridRace,params.motorsportEvent);
         const competition = gridRace?.competition;
         soloWithoutTraffic = competition?.mode === 'solo'
           && competition.trafficEnabled === false
           && Array.isArray(competition.aiDrivers)
           && !competition.aiDrivers.some(driver => driver.enabled !== false);
       } catch { /* Let the existing worker/fallback path report loading errors. */ }
-      let savedCars = soloWithoutTraffic ? []
+      let savedCars = (soloWithoutTraffic || params.motorsportEvent) ? []
         : await this.raceEditor.hydrateSavedRaceCarsForTravel?.() || [];
       if (this.raceTravelSession !== travelSession) return false;
       if (gridRace && this.raceEditor.selectRaceTravelGridCars) {
-        preparedAiCarIds = this.raceEditor.selectRaceTravelGridCars(gridRace, car.id);
+        preparedAiCarIds = params.motorsportEvent
+          ? gridRace.competition.aiDrivers.map(()=>car.id)
+          : this.raceEditor.selectRaceTravelGridCars(gridRace, car.id);
         // Select once, then use this exact grid when the runtime starts. Random
         // selection must not pick different cars after their artwork was packed.
         if (gridRace.competition?.trafficEnabled === false) {
@@ -2091,7 +2096,11 @@ export default class Game {
         else setTimeout(resolve, 0);
       });
       if (this.raceTravelSession !== travelSession) return false;
-      if (['easy','medium','hard'].includes(travelSession.menuConfiguration.difficulty)) {
+      if(params.motorsportEvent){
+        const selected=this.raceEditor.selectedRace;
+        Object.assign(selected,applyMotorsportRace(selected,params.motorsportEvent));
+      }
+      if (!params.motorsportEvent && ['easy','medium','hard'].includes(travelSession.menuConfiguration.difficulty)) {
         const difficulty = travelSession.menuConfiguration.difficulty;
         for (const driver of this.raceEditor.selectedRace.competition?.aiDrivers || []) {
           driver.difficulty = difficulty;
@@ -2106,6 +2115,8 @@ export default class Game {
         preparedArtOnly: true,
         runtimeCarOverrides: runtimeCar,
         preparedAiCarIds,
+        preserveMechanicalCondition:!!params.motorsportEvent,
+        matchedAiCar:!!params.motorsportEvent,
         trackStateSnapshot: travelSession.trackStateByRace?.[raceName]
           || travelSession.trackStateByRace?.[raceDocument.id]
           || null
@@ -2204,6 +2215,9 @@ export default class Game {
     trackStateSnapshot = null
   } = {}) {
     const session = this.ensureRaceTravelSession(carId);
+    if(session.menuConfiguration?.motorsportId){
+      return this.menuPlayer.motorsport.finish(this.raceEditor.playtestSession);
+    }
     session.trackStateByRace ||= {};
     if (trackStateSnapshot) {
       if (raceId) session.trackStateByRace[raceId] = trackStateSnapshot;

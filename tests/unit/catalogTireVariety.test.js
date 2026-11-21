@@ -65,7 +65,10 @@ const cases=[
         },
         "wetEvacuationFactor": 0.68,
         "treadDepthMm": 5,
-        "wearRate": 1.42
+        "wearRate": 1.18,
+        "slidingFrictionRatio": 0.82,
+        "postPeakFalloff": 0.65,
+        "recoveryHysteresis": 0.02
       },
       "size": {
         "widthMm": 245,
@@ -93,14 +96,17 @@ const cases=[
           "wet-asphalt": 0.68,
           "dirt": 1,
           "gravel": 1.08,
-          "mud": 1.02,
-          "wet-gravel": 1.04,
+          "mud": 1.2,
+          "wet-gravel": 1.14,
           "snow": 0.66,
           "slush": 0.76
         },
         "wetEvacuationFactor": 1.16,
         "treadDepthMm": 11,
-        "wearRate": 1.08
+        "wearRate": 1.08,
+        "abrasionResistance": 1.25,
+        "casingStrength": 1.25,
+        "stoneResistance": 1.5
       },
       "size": {
         "widthMm": 245,

@@ -85,18 +85,23 @@ export const RACE_TIRE_COMPOUNDS = [
   {
     id: 'offroad',
     label: 'Offroad',
-    surfaceGrip: { asphalt: 0.7, 'wet-asphalt': 0.68, dirt: 1.0, gravel: 1.08, mud: 1.02, 'wet-gravel': 1.04, snow: 0.95, slush: 0.86 },
+    // Game calibration: mud and rough-ground endurance, at the cost of paved/dry-stage pace.
+    surfaceGrip: { asphalt: 0.7, 'wet-asphalt': 0.68, dirt: 1.0, gravel: 1.08, mud: 1.20, 'wet-gravel': 1.14, snow: 0.66, slush: 0.76 },
     wetEvacuationFactor: 1.16,
     treadDepthMm: 11,
-    wearRate: 1.08
+    wearRate: 1.08,
+    abrasionResistance: 1.25, casingStrength: 1.25, stoneResistance: 1.5
   },
   {
     id: 'drift',
     label: 'Drift',
+    // Game calibration within the brush model, not measured tire test coefficients.
+    // Broaden the slide without raising peak grip or bypassing the friction circle.
     surfaceGrip: { asphalt: 0.88, 'wet-asphalt': 0.78, dirt: 0.62, gravel: 0.58, mud: 0.38, 'wet-gravel': 0.48, snow: 0.24, slush: 0.3 },
     wetEvacuationFactor: 0.68,
     treadDepthMm: 5,
-    wearRate: 1.42
+    wearRate: 1.18,
+    slidingFrictionRatio: 0.82, postPeakFalloff: 0.65, recoveryHysteresis: 0.02
   },
   {
     id: 'snow',

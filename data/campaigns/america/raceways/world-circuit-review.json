@@ -1,0 +1,394 @@
+{
+  "venues": [
+    {
+      "key": "silverstone",
+      "country": "gb",
+      "reference": "https://www.silverstone.co.uk/track-and-testing/testing",
+      "sourceSnapshot": "sources/silverstone.json",
+      "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements.",
+      "layouts": [
+        {
+          "raceRef": "Silverstone — Grand Prix",
+          "id": "raceway-silverstone-gp",
+          "mappedLengthM": 5889.5,
+          "elevationRangeM": 12.4,
+          "laps": 3,
+          "gradeSeparation": null
+        },
+        {
+          "raceRef": "Silverstone — International",
+          "id": "raceway-silverstone-international",
+          "mappedLengthM": 2975.8,
+          "elevationRangeM": 11.0,
+          "laps": 3,
+          "gradeSeparation": null
+        },
+        {
+          "raceRef": "Silverstone — National",
+          "id": "raceway-silverstone-national",
+          "mappedLengthM": 2635.2,
+          "elevationRangeM": 5.7,
+          "laps": 3,
+          "gradeSeparation": null
+        },
+        {
+          "raceRef": "Silverstone — Stowe",
+          "id": "raceway-silverstone-stowe",
+          "mappedLengthM": 1278.4,
+          "elevationRangeM": 6.3,
+          "laps": 5,
+          "gradeSeparation": null
+        }
+      ]
+    },
+    {
+      "key": "brands-hatch",
+      "country": "gb",
+      "reference": "https://www.brandshatch.co.uk/about/circuit-map",
+      "sourceSnapshot": "sources/brands-hatch.json",
+      "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements.",
+      "layouts": [
+        {
+          "raceRef": "Brands Hatch — Grand Prix",
+          "id": "raceway-brands-hatch-gp",
+          "mappedLengthM": 3895.2,
+          "elevationRangeM": 34.0,
+          "laps": 3,
+          "gradeSeparation": null
+        },
+        {
+          "raceRef": "Brands Hatch — Indy",
+          "id": "raceway-brands-hatch-indy",
+          "mappedLengthM": 1926.8,
+          "elevationRangeM": 22.5,
+          "laps": 3,
+          "gradeSeparation": null
+        }
+      ]
+    },
+    {
+      "key": "spa",
+      "country": "be",
+      "reference": "https://www.spa-francorchamps.be/",
+      "sourceSnapshot": "sources/spa.json",
+      "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements.",
+      "layouts": [
+        {
+          "raceRef": "Spa-Francorchamps — Grand Prix",
+          "id": "raceway-spa-gp",
+          "mappedLengthM": 6994.6,
+          "elevationRangeM": 105.1,
+          "laps": 3,
+          "gradeSeparation": null
+        },
+        {
+          "raceRef": "Spa-Francorchamps — Motorcycle Chicane",
+          "id": "raceway-spa-moto",
+          "mappedLengthM": 6976.3,
+          "elevationRangeM": 104.6,
+          "laps": 3,
+          "gradeSeparation": null
+        }
+      ]
+    },
+    {
+      "key": "suzuka",
+      "country": "jp",
+      "reference": "https://www.suzukacircuit.jp/eng/course_s/",
+      "sourceSnapshot": "sources/suzuka.json",
+      "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements.",
+      "layouts": [
+        {
+          "raceRef": "Suzuka — Grand Prix",
+          "id": "raceway-suzuka-full",
+          "mappedLengthM": 5806.6,
+          "elevationRangeM": 44.8,
+          "laps": 3,
+          "gradeSeparation": {
+            "method": "Mapped overpass, explicit independent network nodes; DEM ground heights with approximate 6.5 m minimum deck clearance and blended approaches. Not surveyed bridge elevations.",
+            "crossings": [
+              {
+                "upperSegment": 174,
+                "lowerSegment": 103,
+                "centerM": 5479.0255212558,
+                "clearanceM": 6.5,
+                "liftM": 5.956234963602171
+              }
+            ]
+          }
+        },
+        {
+          "raceRef": "Suzuka — West",
+          "id": "raceway-suzuka-west",
+          "mappedLengthM": 3476.8,
+          "elevationRangeM": 20.5,
+          "laps": 3,
+          "gradeSeparation": {
+            "method": "Mapped overpass, explicit independent network nodes; DEM ground heights with approximate 6.5 m minimum deck clearance and blended approaches. Not surveyed bridge elevations.",
+            "crossings": [
+              {
+                "upperSegment": 71,
+                "lowerSegment": 0,
+                "centerM": 2401.307206212886,
+                "clearanceM": 6.5,
+                "liftM": 6.12227636469304
+              }
+            ]
+          }
+        },
+        {
+          "raceRef": "Suzuka — East",
+          "id": "raceway-suzuka-east",
+          "mappedLengthM": 2241.4,
+          "elevationRangeM": 39.0,
+          "laps": 3,
+          "gradeSeparation": null
+        }
+      ]
+    },
+    {
+      "key": "monza",
+      "country": "it",
+      "reference": "https://www.monzanet.it/",
+      "sourceSnapshot": "sources/monza.json",
+      "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements.",
+      "layouts": [
+        {
+          "raceRef": "Monza — Grand Prix",
+          "id": "raceway-monza-gp",
+          "mappedLengthM": 5794.3,
+          "elevationRangeM": 18.1,
+          "laps": 3,
+          "gradeSeparation": null
+        },
+        {
+          "raceRef": "Monza — Junior",
+          "id": "raceway-monza-junior",
+          "mappedLengthM": 2412.5,
+          "elevationRangeM": 12.7,
+          "laps": 3,
+          "gradeSeparation": null
+        }
+      ]
+    },
+    {
+      "key": "imola",
+      "country": "it",
+      "reference": "https://www.autodromoimola.it/",
+      "sourceSnapshot": "sources/imola.json",
+      "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements.",
+      "layouts": [
+        {
+          "raceRef": "Imola — Grand Prix",
+          "id": "raceway-imola-gp",
+          "mappedLengthM": 4904.4,
+          "elevationRangeM": 33.9,
+          "laps": 3,
+          "gradeSeparation": null
+        },
+        {
+          "raceRef": "Imola — Variante Bassa",
+          "id": "raceway-imola-chicane",
+          "mappedLengthM": 4929.8,
+          "elevationRangeM": 33.8,
+          "laps": 3,
+          "gradeSeparation": null
+        }
+      ]
+    },
+    {
+      "key": "bathurst",
+      "country": "au",
+      "reference": "https://www.mount-panorama.com/",
+      "sourceSnapshot": "sources/bathurst.json",
+      "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements. Public roads tagged alt_name=Mount Panorama Scenic Road adapted to raceway input; source highway retained in source:highway. Race direction is counterclockwise.",
+      "layouts": [
+        {
+          "raceRef": "Mount Panorama — Mount Panorama Circuit",
+          "id": "raceway-bathurst-full",
+          "mappedLengthM": 6197.0,
+          "elevationRangeM": 178.9,
+          "laps": 3,
+          "gradeSeparation": null
+        }
+      ]
+    },
+    {
+      "key": "red-bull-ring",
+      "country": "at",
+      "reference": "https://www.redbullring.com/",
+      "sourceSnapshot": "sources/red-bull-ring.json",
+      "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements.",
+      "layouts": [
+        {
+          "raceRef": "Red Bull Ring — Grand Prix",
+          "id": "raceway-red-bull-ring-gp",
+          "mappedLengthM": 4300.3,
+          "elevationRangeM": 61.0,
+          "laps": 3,
+          "gradeSeparation": null
+        },
+        {
+          "raceRef": "Red Bull Ring — National",
+          "id": "raceway-red-bull-ring-national",
+          "mappedLengthM": 2330.0,
+          "elevationRangeM": 24.8,
+          "laps": 3,
+          "gradeSeparation": null
+        },
+        {
+          "raceRef": "Red Bull Ring — MotoGP Chicane",
+          "id": "raceway-red-bull-ring-chicane",
+          "mappedLengthM": 4329.2,
+          "elevationRangeM": 60.9,
+          "laps": 3,
+          "gradeSeparation": null
+        }
+      ]
+    },
+    {
+      "key": "interlagos",
+      "country": "br",
+      "reference": "https://autodromodeinterlagos.prefeitura.sp.gov.br/pistaoficial",
+      "sourceSnapshot": "sources/interlagos.json",
+      "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements.",
+      "layouts": [
+        {
+          "raceRef": "Interlagos — Grand Prix",
+          "id": "raceway-interlagos-gp",
+          "mappedLengthM": 4308.2,
+          "elevationRangeM": 42.7,
+          "laps": 3,
+          "gradeSeparation": null
+        }
+      ]
+    },
+    {
+      "key": "tsukuba",
+      "country": "jp",
+      "reference": "https://www.tsukuba-circuit.jp/",
+      "sourceSnapshot": "sources/tsukuba.json",
+      "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements. OSM centerline differs from published lengths; Course 2000 excludes the 2.5 m service-lane shortcut. Course 1000 uses the continuous 943 m mapped layout, not a rescaled 1000 m lap.",
+      "layouts": [
+        {
+          "raceRef": "Tsukuba — Course 2000",
+          "id": "raceway-tsukuba-2000",
+          "mappedLengthM": 2121.4,
+          "elevationRangeM": 5.8,
+          "laps": 3,
+          "gradeSeparation": null
+        },
+        {
+          "raceRef": "Tsukuba — Course 1000",
+          "id": "raceway-tsukuba-1000",
+          "mappedLengthM": 942.6,
+          "elevationRangeM": 5.2,
+          "laps": 5,
+          "gradeSeparation": null
+        }
+      ]
+    },
+    {
+      "key": "fuji",
+      "country": "jp",
+      "reference": "https://www.fsw.tv/",
+      "sourceSnapshot": "sources/fuji.json",
+      "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements.",
+      "layouts": [
+        {
+          "raceRef": "Fuji Speedway — Grand Prix",
+          "id": "raceway-fuji-gp",
+          "mappedLengthM": 4553.6,
+          "elevationRangeM": 50.9,
+          "laps": 3,
+          "gradeSeparation": null
+        },
+        {
+          "raceRef": "Fuji Speedway — GT Shortcut",
+          "id": "raceway-fuji-gt",
+          "mappedLengthM": 4519.9,
+          "elevationRangeM": 50.7,
+          "laps": 3,
+          "gradeSeparation": null
+        },
+        {
+          "raceRef": "Fuji Speedway — Short — Outer",
+          "id": "raceway-fuji-short-outer",
+          "mappedLengthM": 956.5,
+          "elevationRangeM": 18.1,
+          "laps": 5,
+          "gradeSeparation": null
+        },
+        {
+          "raceRef": "Fuji Speedway — Short — Middle",
+          "id": "raceway-fuji-short-middle",
+          "mappedLengthM": 922.5,
+          "elevationRangeM": 17.8,
+          "laps": 5,
+          "gradeSeparation": null
+        },
+        {
+          "raceRef": "Fuji Speedway — Short — Inner",
+          "id": "raceway-fuji-short-inner",
+          "mappedLengthM": 849.6,
+          "elevationRangeM": 16.0,
+          "laps": 5,
+          "gradeSeparation": null
+        }
+      ]
+    },
+    {
+      "key": "donington",
+      "country": "gb",
+      "reference": "https://www.donington-park.co.uk/circuit-information",
+      "sourceSnapshot": "sources/donington.json",
+      "reviewNotes": "OSM centerline and continuous circuit joins reviewed against venue course maps. Training mazes, pit-lane shortcuts and combinatorial connector loops excluded. Mapped lengths are not official lap measurements.",
+      "layouts": [
+        {
+          "raceRef": "Donington Park — Grand Prix",
+          "id": "raceway-donington-gp",
+          "mappedLengthM": 3995.4,
+          "elevationRangeM": 35.2,
+          "laps": 3,
+          "gradeSeparation": null
+        },
+        {
+          "raceRef": "Donington Park — National",
+          "id": "raceway-donington-national",
+          "mappedLengthM": 3177.9,
+          "elevationRangeM": 35.2,
+          "laps": 3,
+          "gradeSeparation": null
+        }
+      ]
+    }
+  ],
+  "venueCount": 12,
+  "layoutCount": 29,
+  "access": "World map SELECT -> Race Index -> International country groups. Also available in Race Editor. No fictional US campaign location assigned.",
+  "geometrySource": "OpenStreetMap API bounded map snapshots, shared editor track importer; ODbL attribution retained on every race.",
+  "elevationSource": "Mapzen/Tilezen Terrarium global terrain data, zoom 12; 64 road samples and a 5x5 surrounding terrain survey interpolated by the existing importer.",
+  "limitations": [
+    "Not laser-scanned. DEM can include vegetation/buildings and does not measure track banking or bridge decks.",
+    "Unmapped widths use explicit 10 m / 12 m defaults.",
+    "Suzuka bridge clearance is an authored 6.5 m approximation over DEM heights; explicit network topology keeps both levels separate.",
+    "Circuit start lines are placed on suitable mapped straights by the existing line-placement audit, not surveyed official grid coordinates.",
+    "Tsukuba mapped lengths are approximately 2121 m / 943 m; geometry is not stretched to match published measurements.",
+    "Shared existing scenery and road textures are used; venue-specific grandstands and landmarks are not replicas.",
+    "This batch includes identifiable continuous mapped layouts, not every arbitrary connector combination, kart circuit, defunct oval or service road. Fuji Short labels describe mapped variants; they are not claimed official configuration codes."
+  ],
+  "validation": {
+    "offlineTestsPassed": 77,
+    "checks": [
+      "Frozen OSM layout identity and continuity",
+      "Closed laps and direction",
+      "Saved asset references and menu index coverage",
+      "Every native editor route length and sampled pose",
+      "Suzuka bridge separation and layered geometry"
+    ],
+    "loadingReport": "artifacts/world-circuit-loading.json",
+    "browserVisualTest": "Not run: Playwright is unsupported on this Android/Termux host.",
+    "fullLoadingTestsPassed": 29,
+    "maxLoadingTestSeconds": 25.981
+  }
+}

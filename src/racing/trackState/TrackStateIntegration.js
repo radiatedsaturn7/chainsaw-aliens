@@ -3,6 +3,8 @@ import { TrackState, RUNTIME_TRACK_STATE_CHECKPOINT_OPTIONS } from './TrackState
 import { getTrackStateSurfaceProfile } from './TrackStateProfiles.js';
 
 const EMPTY_ACCEPTED_TIRE_EVENTS = Object.freeze([]);
+// Contact history belongs to this live track/vehicle, not serialized terrain.
+const tireResetGenerations = new WeakMap();
 
 function getAuthoredBaseSurface(sample = {}) {
   const region = String(sample.region || 'terrain');
@@ -102,6 +104,7 @@ export function createRaceTrackStateWeatherForcing({
 
 export function queueRaceTrackStateTireEvents(trackState, {
   vehicleId = 'player',
+  resetGeneration = null,
   normalLoads = {},
   tireSlipByWheel = {},
   longitudinalSlipByWheel = {},
@@ -122,6 +125,14 @@ export function queueRaceTrackStateTireEvents(trackState, {
   contactByWheel = null
 } = {}) {
   if (!trackState) return collectAcceptedEvents ? [] : EMPTY_ACCEPTED_TIRE_EVENTS;
+  let resetContactPath = false;
+  if (Number.isFinite(resetGeneration)) {
+    let generations = tireResetGenerations.get(trackState);
+    if (!generations) tireResetGenerations.set(trackState, generations = new Map());
+    const previousGeneration = generations.get(vehicleId);
+    resetContactPath = previousGeneration !== undefined && previousGeneration !== resetGeneration;
+    generations.set(vehicleId, resetGeneration);
+  }
   const current = wheelSurfaceState.positions || {};
   const wheelIds = providedWheelIds || [
     ...new Set([...Object.keys(current), ...Object.keys(wheelContactScaleByWheel)])
@@ -132,7 +143,9 @@ export function queueRaceTrackStateTireEvents(trackState, {
     const position = current[wheelId];
     const contactScale = Number(wheelContactScaleByWheel[wheelId] ?? 0);
     if (!position || contactScale <= 0.001) continue;
-    const previousPosition = previousPositions[wheelId] || position;
+    // A reset is placement, not travel. Do not sweep or deposit material
+    // across the gap; ordinary motion (including high speed) remains exact.
+    const previousPosition = resetContactPath ? position : previousPositions[wheelId] || position;
     const dx = Number(position.x || 0) - Number(previousPosition.x || 0);
     const dz = Number(position.z || 0) - Number(previousPosition.z || 0);
     const distanceM = Math.hypot(dx, dz);

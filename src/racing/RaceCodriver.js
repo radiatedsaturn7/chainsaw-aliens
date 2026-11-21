@@ -1,3 +1,4 @@
+import {RACE_INTRO_DURATION} from './RaceIntro.js';
 // Calls are scheduled against travel time, not a fixed distance. This is our
 // calibration, not a reproduction of any commercial game's private algorithm.
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -65,10 +66,11 @@ export function updateCodriverEvents(state,session,dt,{enabled,paused,intro,acti
     state.damageBands[part]=band;
   }
   if(!enabled||paused){stopCodriver(state);state.pendingChatter=null;return;}
-  // Camera shots have their own presentation timing. All spoken numbers must
-  // use the same race clock so five/four cannot linger between camera cuts.
-  if(intro)return;
-  const remaining=Number(session.countdownRemainingMs)||0;
+  // Count toward GO across the camera handoff: five/four occupy the last
+  // two intro seconds, then the existing three-second driving-view countdown.
+  // Camera shot boundaries must never trigger spoken beats.
+  const remaining=(Number(session.countdownRemainingMs)||0)
+    +(intro?Math.max(0,RACE_INTRO_DURATION-(Number(session.raceIntro?.elapsed)||0))*1000:0);
   if(remaining>0){
     const beat=remaining>1000?Math.ceil((remaining-1000)/1000):0;
     if(beat<=5&&beat!==state.countdownBeat&&speakCodriver(state,beat?String(beat):'Go!','countdown'))state.countdownBeat=beat;

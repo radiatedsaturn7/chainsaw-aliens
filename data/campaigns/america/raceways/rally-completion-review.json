@@ -1,0 +1,307 @@
+{
+  "imports": [
+    {
+      "key": "chile-conuco-forest",
+      "lengthM": 12971.01680206244,
+      "points": 1074,
+      "sourceWayIds": [
+        842933304,
+        889291221,
+        889291226,
+        889340704,
+        889340705,
+        889443853,
+        889631929,
+        889631930,
+        889631931
+      ],
+      "start": [
+        -36.6965521,
+        -72.7128169
+      ],
+      "finish": [
+        -36.6414269,
+        -72.7274993
+      ],
+      "reference": "https://www.biobiochile.cl/especial/rally/rutas.shtml",
+      "raceRef": "Rally Chile \u2014 Conuco \u2014 Outer Forest Roads",
+      "timedLengthM": 12802.891924546639,
+      "geometryMethod": "Additional continuous mapped road in the rally region, not an official historical competitive stage. Original OSM node connections and surface tags retained; existing parent-stage edges excluded. Gameplay timing lines and estimated road widths. Public DEM provides terrain, not surveyed ruts, camber or jumps.",
+      "linePlacement": {
+        "beforeDegrees": [
+          52.42,
+          0
+        ],
+        "lengthBeforeM": 12950.07,
+        "lineWindowsM": [
+          80,
+          40
+        ],
+        "corridorDegrees": [
+          0,
+          0
+        ],
+        "trimStartM": 107.05,
+        "trimFinishM": 40.13,
+        "status": "adjusted",
+        "afterDegrees": [
+          0,
+          0
+        ],
+        "lengthAfterM": 12802.89
+      }
+    },
+    {
+      "key": "wales-hafren-forest",
+      "lengthM": 10936.289919158095,
+      "points": 310,
+      "sourceWayIds": [
+        106159253,
+        233409036,
+        391354206,
+        391354207,
+        391354505,
+        635678471,
+        635678472,
+        666281423,
+        666281432,
+        666281436,
+        666281439,
+        666296785,
+        666304757,
+        666305079,
+        666306780,
+        666306781,
+        666310864,
+        666310867,
+        666757885,
+        1418075298,
+        1418075299,
+        1418075302,
+        1418075304,
+        1418075305,
+        1418075306
+      ],
+      "start": [
+        52.4412994,
+        -3.7667156
+      ],
+      "finish": [
+        52.464833,
+        -3.6881018
+      ],
+      "reference": "https://files.freethought.website/freethought27/file/sweetlamb-hafren_1.pdf",
+      "raceRef": "Wales \u2014 Sweet LambHafren \u2014 Hafren \u2014 Forest Traverse",
+      "timedLengthM": 10444.25144750645,
+      "geometryMethod": "Additional continuous mapped road in the rally region, not an official historical competitive stage. Original OSM node connections and surface tags retained; existing parent-stage edges excluded. Gameplay timing lines and estimated road widths. Public DEM provides terrain, not surveyed ruts, camber or jumps. Selected Hafren forest tracks; ends before a tight forest junction rather than adding a false hairpin.",
+      "linePlacement": {
+        "beforeDegrees": [
+          63.82,
+          14.78
+        ],
+        "lengthBeforeM": 10937.12,
+        "lineWindowsM": [
+          80,
+          80
+        ],
+        "corridorDegrees": [
+          6.43,
+          0
+        ],
+        "trimStartM": 267.57,
+        "trimFinishM": 225.29,
+        "status": "adjusted",
+        "afterDegrees": [
+          6.43,
+          0
+        ],
+        "lengthAfterM": 10444.25
+      }
+    },
+    {
+      "key": "germany-baumholder-range",
+      "lengthM": 6257.987192401269,
+      "points": 192,
+      "sourceWayIds": [
+        128115472,
+        128115923
+      ],
+      "start": [
+        49.67813,
+        7.4105217
+      ],
+      "finish": [
+        49.694546,
+        7.4333527
+      ],
+      "reference": "https://media.adac-motorsport.de/dl.php?dID=3722%2C135%2C136%2C1768&fID=37355",
+      "raceRef": "Rally Germany \u2014 Baumholder \u2014 Concrete Range Roads",
+      "timedLengthM": 5699.756791994935,
+      "geometryMethod": "Additional continuous mapped road in the rally region, not an official historical competitive stage. Original OSM node connections and surface tags retained; existing parent-stage edges excluded. Gameplay timing lines and estimated road widths. Public DEM provides terrain, not surveyed ruts, camber or jumps.",
+      "linePlacement": {
+        "beforeDegrees": [
+          9.95,
+          94.88
+        ],
+        "lengthBeforeM": 6257.8,
+        "lineWindowsM": [
+          80,
+          40
+        ],
+        "corridorDegrees": [
+          3.27,
+          0
+        ],
+        "trimStartM": 339.04,
+        "trimFinishM": 219,
+        "status": "adjusted",
+        "afterDegrees": [
+          0,
+          0
+        ],
+        "lengthAfterM": 5699.76
+      }
+    },
+    {
+      "key": "japan-otaga-mountain",
+      "lengthM": 15506.924171851872,
+      "points": 928,
+      "sourceWayIds": [
+        117257270,
+        117257274,
+        117257473,
+        117258462,
+        117260095,
+        117260157,
+        117260163,
+        117260803,
+        117260996,
+        117261364,
+        117261540,
+        117262324,
+        117262334,
+        117262364,
+        117262443,
+        117263891,
+        117264255,
+        117268112,
+        117268708,
+        117270768,
+        117270838,
+        117271500,
+        117273210,
+        117273270,
+        117275039,
+        117275709,
+        117276685,
+        117277255,
+        1385304118,
+        1385304119,
+        1385304146,
+        1385304147,
+        1385304149
+      ],
+      "start": [
+        35.1711527,
+        137.4274383
+      ],
+      "finish": [
+        35.2010635,
+        137.42084
+      ],
+      "reference": "https://www.rallysupport.com/wp-content/uploads/2025/11/Rally-Japan-2025-Stage-Maps-Overview.pdf",
+      "raceRef": "Rally Japan \u2014 Aichi \u2014 Otaga \u2014 Mountain Roads",
+      "timedLengthM": 10149.132572261362,
+      "geometryMethod": "Additional continuous mapped road in the rally region, not an official historical competitive stage. Original OSM node connections and surface tags retained; existing parent-stage edges excluded. Gameplay timing lines and estimated road widths. Public DEM provides terrain, not surveyed ruts, camber or jumps. Additional Otaga-area mountain roads near Isegami, not the full Isegami WRC stage. Old tunnel is retained only in its original standalone race. Timing-line search may omit up to 4.5 km at each end to find a usable straight on this winding road.",
+      "linePlacement": {
+        "beforeDegrees": [
+          30.98,
+          87.1
+        ],
+        "lengthBeforeM": 15482.01,
+        "lineWindowsM": [
+          40,
+          40
+        ],
+        "corridorDegrees": [
+          8.39,
+          7.09
+        ],
+        "trimStartM": 3799.97,
+        "trimFinishM": 1532.9,
+        "status": "adjusted",
+        "afterDegrees": [
+          0,
+          0
+        ],
+        "lengthAfterM": 10149.13
+      }
+    },
+    {
+      "key": "100aw-kp-road",
+      "lengthM": 8609.583206717838,
+      "points": 85,
+      "sourceWayIds": [
+        18428647,
+        18428654,
+        18428656
+      ],
+      "start": [
+        37.764486,
+        -91.309259
+      ],
+      "finish": [
+        37.8157616,
+        -91.324912
+      ],
+      "reference": "https://www.americanrallyassociation.org/post/from-pa-to-mo-ara-competitors-conquer-summer-regional-rally-double-header",
+      "raceRef": "100 Acre Wood Rally \u2014 K P Road \u2014 Northern Section",
+      "timedLengthM": 8492.68276362809,
+      "geometryMethod": "Additional continuous mapped road in the rally region, not an official historical competitive stage. Original OSM node connections and surface tags retained; existing parent-stage edges excluded. Gameplay timing lines and estimated road widths. Public DEM provides terrain, not surveyed ruts, camber or jumps. K P Road in the KP-to-Ollie corridor identified by ARA and the organizer spectator location; does not claim the full KP-to-Ollie layout.",
+      "linePlacement": {
+        "beforeDegrees": [
+          0,
+          0
+        ],
+        "lengthBeforeM": 8609.53,
+        "lineWindowsM": [
+          80,
+          80
+        ],
+        "corridorDegrees": [
+          8.57,
+          4.51
+        ],
+        "trimStartM": 59.21,
+        "trimFinishM": 57.64,
+        "status": "adjusted",
+        "afterDegrees": [
+          8.57,
+          4.51
+        ],
+        "lengthAfterM": 8492.68
+      }
+    }
+  ],
+  "sourcePolicy": "Connected current OSM roads in the rally region; geographic recreations, not exact official historical stages. Preserve attribution and source-way IDs in edge snapshots.",
+  "validation": {
+    "collections": 21,
+    "sections": 126,
+    "sourceEdgeTests": "tools/campaigns/test_rally_completion.py",
+    "sectionTests": "tests/unit/rallySections.test.js",
+    "loadingReport": "artifacts/rally-completion-loading.json",
+    "parentLoadingReport": "artifacts/rally-completion-parents-loading.json",
+    "unitTestsPassed": 41,
+    "pythonTestsPassed": 5,
+    "savedSectionHttpLoadsPassed": 126,
+    "affectedSectionBakesPassed": 30,
+    "newParentBakesPassed": 5,
+    "finalJapanLoadingReport": "artifacts/rally-completion-japan-final-loading.json",
+    "finalJapanBakesPassed": 6
+  },
+  "limitations": [
+    "Current mapped regional roads, not exact official WRC stage boundaries.",
+    "DEM, estimated widths and fictional scenery do not reproduce surveyed ruts/jumps.",
+    "Terrain bakes pass but retain some height-tolerance diagnostics; browser visual verification remains outstanding."
+  ]
+}

@@ -27,7 +27,7 @@
       "reason": "Saved manifest race is reachable through Game Menu race selector; exact native race binding is checked independently of enabled campaign choices. Legacy test identity is retained, not counted as a campaign stage."
     },
     "environment-v1-mountwashington-storm": {
-      "raceRef": "Mount Washington Auto Road \u2014 point-to-point Copy",
+      "raceRef": "Mount Washington Auto Road — point-to-point Copy",
       "slot": "sky",
       "reason": "Saved manifest race is reachable through Game Menu race selector; exact native race binding is checked independently of enabled campaign choices. Legacy test identity is retained, not counted as a campaign stage."
     },
@@ -60,6 +60,574 @@
       "raceRef": "p2loadtest",
       "slot": "sky",
       "reason": "Saved manifest race is reachable through Game Menu race selector; exact native race binding is checked independently of enabled campaign choices. Legacy test identity is retained, not counted as a campaign stage."
+    },
+    "environment-v1-columbia-hills": {
+      "raceRef": "Mars — Spirit Columbia Hills",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-v1-descartes": {
+      "raceRef": "Moon — Apollo 16 Descartes",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-v1-endeavour": {
+      "raceRef": "Mars — Opportunity Endeavour Rim",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-v1-gale": {
+      "raceRef": "Mars — Curiosity Gale Crater",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-v1-hadley-apennine": {
+      "raceRef": "Moon — Apollo 15 Hadley–Apennine",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-v1-jezero-dry-delta": {
+      "raceRef": "Mars — Perseverance Jezero",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-v1-mars-breccia": {
+      "raceRef": "Mars — Opportunity Endeavour Rim",
+      "slot": "scenery",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check.",
+      "placementId": "expansion-art-v1-71598dd0ba17b36a",
+      "doodadRef": "environment-v1-mars-breccia"
+    },
+    "environment-v1-mars-sediment": {
+      "raceRef": "Mars — Curiosity Gale Crater",
+      "slot": "scenery",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check.",
+      "placementId": "expansion-art-v1-252828e2e8069fbb",
+      "doodadRef": "environment-v1-mars-sediment"
+    },
+    "environment-v1-moon-anorthosite": {
+      "raceRef": "Moon — Apollo 15 Hadley–Apennine",
+      "slot": "scenery",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check.",
+      "placementId": "expansion-art-v1-292b03040239a7a5",
+      "doodadRef": "environment-v1-moon-anorthosite"
+    },
+    "environment-v1-moon-apron": {
+      "raceRef": "Moon — Apollo 15 Hadley–Apennine",
+      "slot": "scenery",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check.",
+      "placementId": "expansion-art-v1-6fdaca0c22a6cf3d",
+      "doodadRef": "environment-v1-moon-apron"
+    },
+    "environment-v1-taurus-littrow-massifs": {
+      "raceRef": "Moon — Apollo 17 Taurus-Littrow",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-acropolis-limestone-day-v1": {
+      "raceRef": "Acropolis Rally — Stage 4",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-acropolis-limestone-night-v1": {
+      "raceRef": "Acropolis Rally — Tarzan Power Stage 2021",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-nordic-boreal-snow-day-v1": {
+      "raceRef": "Rally Sweden — Stage 1",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-croatia-ucka-karst-morning-v1": {
+      "raceRef": "Croatia Rally — Stage 1",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-kenya-hells-gate-rift-evening-v1": {
+      "raceRef": "Safari Rally Kenya — Hell’s Gate — Road Recreation",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-nz-waikato-paddocks-noon-v1": {
+      "raceRef": "Rally New Zealand — Stage 4",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-sisteron-authon-clear-night-v1": {
+      "raceRef": "Monte Carlo Rally — Stage 3",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-chile-conuco-plantations-noon-v1": {
+      "raceRef": "Rally Chile — Conuco — Forest Road Recreation",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-estonia-maekula-lowland-noon-v1": {
+      "raceRef": "Rally Estonia — MÄEKÜLA 2020",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-japan-aichi-otaga-forest-evening-v1": {
+      "raceRef": "Rally Japan — Aichi — Otaga — Mountain Roads",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-latvia-andumi-lowland-noon-v1": {
+      "raceRef": "Rally Latvia — Andumi 2024",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-sardegna-monte-lerno-granite-evening-v1": {
+      "raceRef": "Rally Italia Sardegna — Monte Lerno — Monti di Alà 2024",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-wales-hafren-forest-night-v1": {
+      "raceRef": "Wales — Sweet Lamb/Hafren — Stage 1",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-catalunya-terra-alta-vines-evening-v1": {
+      "raceRef": "Rally Spain — La Fatarella–Vilalba — Sant Francesc Road",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-cordoba-el-condor-highlands-morning-v1": {
+      "raceRef": "El Cóndor — Copina",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-corsica-castagniccia-ridges-morning-v1": {
+      "raceRef": "Tour de Corse — La Porta — Barchetta — Road Recreation",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-michigan-old-state-snow-noon-v1": {
+      "raceRef": "Sno*Drift Rally — Stage 3",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-minnesota-steamboat-forest-evening-v1": {
+      "raceRef": "Ojibwe Forests Rally — Stage 1",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-norway-hof-finnskog-snow-night-v1": {
+      "raceRef": "Norway — Finnskog Rally Roads — Hof-Finnskog — Road Recreation",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-croatia-skrad-inland-forest-night-v1": {
+      "raceRef": "Croatia Rally — Ravna Gora - Skrad 2026",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-fontbelle-authon-thoard-limestone-morning-v1": {
+      "raceRef": "Col de Fontbelle — Authon to Thoard",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-hokkaido-bisan-mixed-woodland-noon-v1": {
+      "raceRef": "Rally Japan — Hokkaido — Bisan — Road Recreation",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-hokkaido-naekawa-forest-night-v1": {
+      "raceRef": "Rally Japan — Hokkaido — Naekawa — Road Recreation",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-portugal-arganil-schist-valley-evening-v1": {
+      "raceRef": "Rally Portugal — Arganil 2026",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-portugal-fafe-granite-uplands-morning-v1": {
+      "raceRef": "Fafe — Rally Portugal",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-portugal-gois-rolling-forest-morning-v1": {
+      "raceRef": "Rally Portugal — Góis 2026",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-portugal-lousa-schist-ridges-morning-v1": {
+      "raceRef": "Rally Portugal — Lousã 2026",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-turkey-cicekli-pine-karst-noon-v1": {
+      "raceRef": "Rally Turkey — Çiçekli 2019",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-turkey-ula-pine-limestone-morning-v1": {
+      "raceRef": "Rally Turkey — Stage 1",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-aichi-isegami-cedar-ridges-noon-v1": {
+      "raceRef": "Rally Japan — Aichi — Isegami’s Tunnel — Road Section",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-estonia-arula-otepaa-fields-morning-v1": {
+      "raceRef": "Rally Estonia — ARULA 2020",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-estonia-rua-birch-meadows-evening-v1": {
+      "raceRef": "Rally Estonia — RÜA 2020",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-latvia-milzkalne-treeline-morning-v1": {
+      "raceRef": "Rally Latvia — Milzkalne 2024",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-latvia-tukums-farmland-evening-v1": {
+      "raceRef": "Rally Latvia — Stage 2",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-turkey-icmeler-inland-pine-ridges-evening-v1": {
+      "raceRef": "Rally Turkey — İçmeler 2019",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-cota-day-2994": {
+      "raceRef": "Circuit of the Americas — Club",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-fuji-speedway-day-2994": {
+      "raceRef": "Fuji Speedway — GT Shortcut",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-long-beach-night-2994": {
+      "raceRef": "Long Beach — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-yas-marina-day-2994": {
+      "raceRef": "Yas Marina Circuit — GP Corkscrew",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-sepang-day-2994": {
+      "raceRef": "Sepang International Circuit — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-silverstone-day-2994": {
+      "raceRef": "Silverstone — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-sonoma-sears-point-day-2994": {
+      "raceRef": "Sonoma Raceway — Full Course",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-spa-ardenne-day-2994": {
+      "raceRef": "Spa-Francorchamps — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-suzuka-mie-day-2994": {
+      "raceRef": "Suzuka — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-cota-night-2994": {
+      "raceRef": "Circuit of the Americas — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-fuji-speedway-night-2994": {
+      "raceRef": "Fuji Speedway — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-sepang-night-2994": {
+      "raceRef": "Sepang International Circuit — North Circuit",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-spa-ardenne-night-2994": {
+      "raceRef": "Spa-Francorchamps — Motorcycle Chicane",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-suzuka-mie-night-2994": {
+      "raceRef": "Suzuka — East",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-yas-marina-night-2994": {
+      "raceRef": "Yas Marina Circuit — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-brands-hatch-day-2994": {
+      "raceRef": "Brands Hatch — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-imola-day-2994": {
+      "raceRef": "Imola — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-mont-tremblant-day-2994": {
+      "raceRef": "Circuit Mont-Tremblant — Grand Prix — Chicane",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-monza-night-2994": {
+      "raceRef": "Monza — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-portimao-day-2994": {
+      "raceRef": "Portimão — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-red-bull-ring-day-2994": {
+      "raceRef": "Red Bull Ring — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-interlagos-day-2994": {
+      "raceRef": "Interlagos — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-lemans-sarthe-day-2994": {
+      "raceRef": "Le Mans — Bugatti",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-tsukuba-day-2994": {
+      "raceRef": "Tsukuba — Course 2000",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-tsukuba-night-2994": {
+      "raceRef": "Tsukuba — Course 1000",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-zandvoort-day-2994": {
+      "raceRef": "Zandvoort — Eastern",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-zandvoort-night-2994": {
+      "raceRef": "Zandvoort — National",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-barcelona-national-night-2994": {
+      "raceRef": "Circuit de Barcelona-Catalunya — National",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-dunsfold-evening-2994": {
+      "raceRef": "Dunsfold — Top Gear Test Track — Full Course",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-goodwood-evening-2994": {
+      "raceRef": "Goodwood Motor Circuit — Motor Circuit",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-jarama-night-2994": {
+      "raceRef": "Circuito del Jarama — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-mont-tremblant-night-2994": {
+      "raceRef": "Circuit Mont-Tremblant — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-autopolis-evening-2994": {
+      "raceRef": "Autopolis — Shortcut Course",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-autopolis-morning-2994": {
+      "raceRef": "Autopolis — International Course",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-barcelona-gp-morning-2994": {
+      "raceRef": "Circuit de Barcelona-Catalunya — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-donington-evening-2994": {
+      "raceRef": "Donington Park — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-hockenheim-morning-2994": {
+      "raceRef": "Hockenheimring — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-hockenheim-noon-2994": {
+      "raceRef": "Hockenheimring — Short Course",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-istanbul-evening-2994": {
+      "raceRef": "Istanbul Park — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-gilles-villeneuve-morning-2994": {
+      "raceRef": "Circuit Gilles-Villeneuve — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-hungaroring-morning-2994": {
+      "raceRef": "Hungaroring — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-mount-panorama-noon-2994": {
+      "raceRef": "Mount Panorama — Mount Panorama Circuit",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-mugello-evening-2994": {
+      "raceRef": "Mugello Circuit — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "skybox-phillip-island-evening-2994": {
+      "raceRef": "Phillip Island — Grand Prix",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-rally-bauxites-evening-v1": {
+      "raceRef": "Acropolis Rally — Bauxites 2021",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-rally-borregos-noon-v1": {
+      "raceRef": "Rally Mexico — Rally of Nations — Mesa de Borregos 2025",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-rally-dafni-evening-v1": {
+      "raceRef": "Acropolis Rally — Dafni 2024",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-rally-pavliani-morning-v1": {
+      "raceRef": "Acropolis Rally — Ano Pavliani 2024",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-rally-platak-evening-v1": {
+      "raceRef": "Croatia Rally — Platak 2026",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-rally-pozos-noon-v1": {
+      "raceRef": "Rally Mexico — Rally of Nations — Mineral de Pozos 2025",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-rally-valenciana-evening-v1": {
+      "raceRef": "Rally Mexico — Rally of Nations — Stage 1",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-rally-baumholder-noon-v1": {
+      "raceRef": "Rally Germany — Baumholder — Concrete Range Roads",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-rally-coldwater-noon-v1": {
+      "raceRef": "Rally Australia — Coldwater Creek Road — Road Recreation",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-rally-kemmelberg-evening-v1": {
+      "raceRef": "Ypres Rally — Kemmelberg — Road Recreation",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-rally-panzerplatte-noon-v1": {
+      "raceRef": "Rally Germany — Panzerplatte — Range Road Section",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-rally-sherwood-morning-v1": {
+      "raceRef": "Rally Australia — Sherwood Road — Road Recreation",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-rally-strasinska-morning-v1": {
+      "raceRef": "Central European Rally — Stage 1",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-rally-swietajno-evening-v1": {
+      "raceRef": "Rally Poland — Świętajno — Pietrasze to Chełchy — Road Recreatio",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-rally-agren-snow-morning-v1": {
+      "raceRef": "Sno*Drift Rally — Stage 1",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-rally-concord-pond-morning-v1": {
+      "raceRef": "NEFR — Concord Pond — Road Section",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-rally-likenas-snow-evening-v1": {
+      "raceRef": "Rally Sweden — Likenäs — Road Recreation",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-rally-morton-cutoff-evening-v1": {
+      "raceRef": "NEFR — Morton Cutoff — Road Section",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-rally-north-road-evening-v1": {
+      "raceRef": "NEFR — North Road — Road Section",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-rally-shoreline-snow-noon-v1": {
+      "raceRef": "Sno*Drift Rally — Stage 2",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-rally-svullrya-snow-morning-v1": {
+      "raceRef": "Norway — Finnskog Rally Roads — Stage 4",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
+    },
+    "environment-nz-whaanga-tasman-morning-qav1b": {
+      "raceRef": "Rally New Zealand — Stage 1",
+      "slot": "sky",
+      "reason": "Exact active binding in a saved, runtime-selectable expansion race, outside the enabled base campaign path check."
     }
   }
 }

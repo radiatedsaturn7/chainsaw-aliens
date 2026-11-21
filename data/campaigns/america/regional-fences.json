@@ -100,6 +100,46 @@
       "heightM": 15,
       "thicknessM": 1,
       "mirrorRepeat": false
+    },
+    {
+      "name": "fence-region-generic-building-row",
+      "source": "regional-fences/fence-generic-building-row.png",
+      "label": "Adjacent town buildings",
+      "region": "Generic",
+      "widthM": 36,
+      "heightM": 12,
+      "thicknessM": 1,
+      "mirrorRepeat": false
+    },
+    {
+      "name": "fence-region-generic-canyon-wall",
+      "source": "regional-fences/fence-generic-canyon-wall.png",
+      "label": "Tall layered canyon wall",
+      "region": "Generic",
+      "widthM": 30,
+      "heightM": 10,
+      "thicknessM": 1.4,
+      "mirrorRepeat": true
+    },
+    {
+      "name": "fence-region-generic-race-wall-catchfence",
+      "source": "regional-fences/fence-generic-race-wall-catchfence.png",
+      "label": "Concrete track wall and catch fence",
+      "region": "Generic",
+      "widthM": 12,
+      "heightM": 4,
+      "thicknessM": 0.45,
+      "mirrorRepeat": false
+    },
+    {
+      "name": "fence-region-generic-tree-line",
+      "source": "regional-fences/fence-generic-tree-line.png",
+      "label": "Mixed roadside tree line",
+      "region": "Generic",
+      "widthM": 30,
+      "heightM": 10,
+      "thicknessM": 1,
+      "mirrorRepeat": true
     }
   ]
 }

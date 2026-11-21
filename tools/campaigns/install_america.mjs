@@ -18,14 +18,14 @@ const imported=read(`${source}/imported-middle.json`);
 const specs=read('tools/campaigns/middle_route.json');
 if(imported.length!==specs.length || imported.some((stage,i)=>stage.sourceKey!==specs[i].key))throw Error('Import every configured Middle Route stage in order before installation');
 const manifestPath=`${root}/manifest.json`,manifest=read(manifestPath);
-const existing=[['Tower Hill Road','Tower Hill Road',41.9964,-71.437],['Mount Washington Auto Road — point-to-point','Mount Washington Auto Road',44.271,-71.303]];
+const existing=[['Providence, RI — Landmark Run','Providence, Rhode Island',41.824,-71.4128],['Mount Washington Auto Road — point-to-point','Mount Washington Auto Road',44.271,-71.303]];
 const opening=existing.map(([name,label,lat,lon],i)=>{
  const relative=manifest.folders.races[name];if(!relative)throw Error(`Missing preserved race ${name}`);
  const doc=read(`${root}/${relative}`),race=doc.race;
  return {id:race.id,branch:'middle',stage:i+1,difficulty:i+1,name,label,documentPath:relative,
-  location:{lat,lon,place:i?'Mount Washington, New Hampshire':'Cumberland, Rhode Island'},lengthM:race.source.mappedLengthM,
-  preserveExisting:true,estimatedDrivingSeconds:i?null:210,
-  durationMethod:i?'Existing Mount Washington implementation retained; no new lap-time measurement.':'Existing opening ends at completion or 210 seconds, whichever comes first.'};
+  location:{lat,lon,place:i?'Mount Washington, New Hampshire':'Providence, Rhode Island'},lengthM:race.source.mappedLengthM,
+  preserveExisting:true,estimatedDrivingSeconds:null,
+  durationMethod:i?'Existing Mount Washington implementation retained; no new lap-time measurement.':'Existing Providence city run retained; actual pace depends on car and conditions.'};
 });
 const catalog=[...opening,...imported];
 const savedAt=Date.parse('2026-11-10T12:00:00Z');

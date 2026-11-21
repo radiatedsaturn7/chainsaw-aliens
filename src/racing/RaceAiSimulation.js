@@ -1404,6 +1404,7 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
           ai.awaitingStartLine = false;
         } else {
           ai.lap += 1;
+          if(session.menuConfiguration?.motorsportId && ai.lap>Number(editor.selectedRace.laps||1) && !ai.seriesFinishMs)ai.seriesFinishMs=Math.max(1,session.elapsedMs||1);
           if (!ai.bestLapMs || ai.currentLapMs < ai.bestLapMs) ai.bestLapMs = ai.currentLapMs;
         }
         ai.currentLapMs = 0;

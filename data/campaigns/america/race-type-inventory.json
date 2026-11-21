@@ -1,0 +1,5556 @@
+{
+  "method": "Snow includes snow/blizzard weather or snow cover. Otherwise majority dirt/gravel is offroad; paved circuits are race tracks; remainder road. Mixed tracks remain noted independently. All saved layouts count separately.",
+  "total": 346,
+  "counts": {
+    "Road races": 150,
+    "Race tracks": 120,
+    "Dirt / gravel": 60,
+    "Snow": 16
+  },
+  "campaignTotal": 235,
+  "campaignCounts": {
+    "Road races": 140,
+    "Race tracks": 67,
+    "Dirt / gravel": 22,
+    "Snow": 6
+  },
+  "mixed": 13,
+  "tracks": [
+    {
+      "ref": "Col de Turini",
+      "category": "Snow",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "snow",
+      "snowDepthIn": 0,
+      "distanceM": 14977
+    },
+    {
+      "ref": "Daytona Tri-Oval",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12049
+    },
+    {
+      "ref": "Demo Track",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 1000
+    },
+    {
+      "ref": "Mount Washington Auto Road — point-to-point",
+      "category": "Snow",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 100,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "snow",
+      "snowDepthIn": 1,
+      "distanceM": 12117
+    },
+    {
+      "ref": "Mount Washington Auto Road — point-to-point Copy",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "storm",
+      "snowDepthIn": 0,
+      "distanceM": 12117
+    },
+    {
+      "ref": "Nurburgring Nordschleife",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 20729
+    },
+    {
+      "ref": "Ouninpohja",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 17017
+    },
+    {
+      "ref": "Studio Sprint",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 1000
+    },
+    {
+      "ref": "Studio Sprint Copy",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 1000
+    },
+    {
+      "ref": "Studio Sprint2",
+      "category": "Snow",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "snow",
+      "snowDepthIn": 0,
+      "distanceM": 1000
+    },
+    {
+      "ref": "Tower Hill Road",
+      "category": "Snow",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "snow",
+      "snowDepthIn": 0,
+      "distanceM": 3916
+    },
+    {
+      "ref": "WeatherTech Raceway Laguna Seca",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10788
+    },
+    {
+      "ref": "buse1",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 1500
+    },
+    {
+      "ref": "p1",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 1000
+    },
+    {
+      "ref": "p2loadtest",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "rain",
+      "snowDepthIn": 0,
+      "distanceM": 1000
+    },
+    {
+      "ref": "Laurel Highlands Scenic Byway",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 14265
+    },
+    {
+      "ref": "Ohio River Crossing",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "storm",
+      "snowDepthIn": 0,
+      "distanceM": 13112
+    },
+    {
+      "ref": "Ozark Backroads",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 73,
+        "snow": 0,
+        "gravel": 27,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 13590
+    },
+    {
+      "ref": "Data Center City",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": true,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 8,
+        "asphalt": 92
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10645
+    },
+    {
+      "ref": "Historic Route 66",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 15654
+    },
+    {
+      "ref": "Pikes Peak Highway",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 9185
+    },
+    {
+      "ref": "Moki Dugway",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 16,
+        "snow": 0,
+        "gravel": 84,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12366
+    },
+    {
+      "ref": "Oak Creek Canyon",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12258
+    },
+    {
+      "ref": "Angeles Crest Highway",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 11282
+    },
+    {
+      "ref": "RI 116 — North Smithfield Scituate",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 9182
+    },
+    {
+      "ref": "Thompson Speedway — 1.7-mile road course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7962
+    },
+    {
+      "ref": "I-95 — Attleboro to Warwick curves",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 17965
+    },
+    {
+      "ref": "RI 102 — Victory Highway",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10426
+    },
+    {
+      "ref": "Pachaug State Forest — public gravel access roads",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 100,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4500
+    },
+    {
+      "ref": "Seekonk Speedway — oval",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4039
+    },
+    {
+      "ref": "RI 44 — Putnam Pike Glocester",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10908
+    },
+    {
+      "ref": "Lime Rock Park — Connecticut",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7113
+    },
+    {
+      "ref": "Palmer Motorsports Park — Massachusetts",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7320
+    },
+    {
+      "ref": "Kancamagus Highway — NH 112",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8874
+    },
+    {
+      "ref": "Bear Notch Road — Bartlett",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8042
+    },
+    {
+      "ref": "Hurricane Mountain Road — Conway",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6625
+    },
+    {
+      "ref": "Crawford Notch — US 302",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10643
+    },
+    {
+      "ref": "Pinkham Notch — NH 16",
+      "category": "Snow",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 100,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "snow",
+      "snowDepthIn": 0,
+      "distanceM": 10996
+    },
+    {
+      "ref": "Club Motorsports — Tamworth",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7203
+    },
+    {
+      "ref": "Team O’Neil-inspired Rally Stage (2994)",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 3103
+    },
+    {
+      "ref": "New Hampshire Motor Speedway — Loudon",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7715
+    },
+    {
+      "ref": "New England Dragway — Epping",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 402
+    },
+    {
+      "ref": "PA 381 — Ohiopyle approach",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10940
+    },
+    {
+      "ref": "PA 711 — Normalville Champion",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12163
+    },
+    {
+      "ref": "US 40 — Chalk Hill Summit",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 11886
+    },
+    {
+      "ref": "PA 31 — Donegal to Laurel Ridge",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 11569
+    },
+    {
+      "ref": "County Line Road — Seven Springs",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 9341
+    },
+    {
+      "ref": "Forbes State Forest — designated gravel roads",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 5640
+    },
+    {
+      "ref": "Jennerstown Speedway — oval",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 5775
+    },
+    {
+      "ref": "Keystone Motorsports Park — New Alexandria",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 402
+    },
+    {
+      "ref": "Pittsburgh International Race Complex — Wampum",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8758
+    },
+    {
+      "ref": "OH 26 — Covered Bridge Scenic Byway",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6850
+    },
+    {
+      "ref": "OH 555 — Triple Nickel",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6665
+    },
+    {
+      "ref": "OH 550 — Barlow approach",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 11160
+    },
+    {
+      "ref": "OH 536 — Ohio River hills",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4435
+    },
+    {
+      "ref": "OH 676 — Western county hills",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 5125
+    },
+    {
+      "ref": "Marietta–Williamstown — I-77 river bridge",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12987
+    },
+    {
+      "ref": "Washington County western covered-bridge gravel loop",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 100,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 5262
+    },
+    {
+      "ref": "Ohio Valley Speedway — Washington, West Virginia",
+      "category": "Dirt / gravel",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 100,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 3619
+    },
+    {
+      "ref": "Mid-Ohio Sports Car Course — Lexington",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10838
+    },
+    {
+      "ref": "MO 19 — Eminence Current River",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 9233
+    },
+    {
+      "ref": "MO 106 — Alley Spring approach",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 9925
+    },
+    {
+      "ref": "MO 106 — Powder Mill approach",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 9373
+    },
+    {
+      "ref": "MO V — Two Rivers access",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4652
+    },
+    {
+      "ref": "MO H NN — Roberts Field access",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": true,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 20,
+        "asphalt": 80
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10181
+    },
+    {
+      "ref": "Jerktail Landing gravel road",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 3501
+    },
+    {
+      "ref": "US 60 — Winona Van Buren",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12784
+    },
+    {
+      "ref": "Glade Top Trail — Mark Twain National Forest",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": true,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 6,
+        "asphalt": 94
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6158
+    },
+    {
+      "ref": "Ozarks International Raceway — Gravois Mills",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6205
+    },
+    {
+      "ref": "World Wide Technology Raceway — road course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 5615
+    },
+    {
+      "ref": "World Wide Technology Raceway — oval",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8170
+    },
+    {
+      "ref": "World Wide Technology Raceway — drag strip",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 402
+    },
+    {
+      "ref": "I-64 — St. Louis downtown approaches",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10171
+    },
+    {
+      "ref": "I-70 — Stan Musial Veterans Memorial Bridge",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 9055
+    },
+    {
+      "ref": "IL 100 — Great River Road bluffs",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12069
+    },
+    {
+      "ref": "MO 94 — Defiance Augusta",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10075
+    },
+    {
+      "ref": "Gateway Kartplex — WWT complex",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4968
+    },
+    {
+      "ref": "Federated Auto Parts Raceway at I-55 — Pevely",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 3153
+    },
+    {
+      "ref": "Old Route 66 — Shamrock McLean",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 9446
+    },
+    {
+      "ref": "Old Route 66 — Groom Conway",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": true,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 2,
+        "asphalt": 98
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 13367
+    },
+    {
+      "ref": "Amarillo — Historic 6th Avenue alignment",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4312
+    },
+    {
+      "ref": "Old Route 66 — Vega Adrian",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 11644
+    },
+    {
+      "ref": "Old Route 66 — Adrian Glenrio",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 13648
+    },
+    {
+      "ref": "Palo Duro Canyon — Park Road 5",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6023
+    },
+    {
+      "ref": "Amarillo Dragway",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 402
+    },
+    {
+      "ref": "Route 66 — Bridgeport Pony Bridge, Oklahoma",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12489
+    },
+    {
+      "ref": "Hallett Motor Racing Circuit — Jennings, Oklahoma",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 5660
+    },
+    {
+      "ref": "Gold Camp Road — Colorado Springs",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": true,
+      "mixed": true,
+      "surfaces": {
+        "dirt": 53,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 47
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 5251
+    },
+    {
+      "ref": "Phantom Canyon Road — Gold Belt Tour",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 100,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 2803
+    },
+    {
+      "ref": "Shelf Road — Gold Belt Tour",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 2797
+    },
+    {
+      "ref": "Skyline Drive — Cañon City",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 3981
+    },
+    {
+      "ref": "US 24 — Ute Pass Woodland Park",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 9546
+    },
+    {
+      "ref": "CO 67 — Woodland Park Cripple Creek",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6975
+    },
+    {
+      "ref": "Garden of the Gods — paved park road",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 3935
+    },
+    {
+      "ref": "Pikes Peak International Raceway — Fountain",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6339
+    },
+    {
+      "ref": "Pueblo Motorsports Park — road course or drag strip",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7019
+    },
+    {
+      "ref": "Valley of the Gods Road — San Juan CR 242",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 100,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 3515
+    },
+    {
+      "ref": "Muley Point Road — CR 241",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 100,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 5427
+    },
+    {
+      "ref": "UT 316 — Goosenecks State Park Road",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 5454
+    },
+    {
+      "ref": "US 163 — Mexican Hat Monument Valley approach",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12943
+    },
+    {
+      "ref": "UT 95 — Comb Ridge Cedar Mesa",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 13300
+    },
+    {
+      "ref": "UT 276 — Halls Crossing approach",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12057
+    },
+    {
+      "ref": "US 191 — Bluff Blanding",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 13438
+    },
+    {
+      "ref": "Shafer Trail — Canyonlands National Park",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 100,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 3146
+    },
+    {
+      "ref": "Burr Trail switchbacks — Capitol Reef",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 100,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 3193
+    },
+    {
+      "ref": "SR 179 — Red Rock Scenic Byway",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7763
+    },
+    {
+      "ref": "Upper Lower Red Rock Loop Road",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 5229
+    },
+    {
+      "ref": "Page Springs Road",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8319
+    },
+    {
+      "ref": "Beaverhead Flat Road — CR 78",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 9811
+    },
+    {
+      "ref": "Boynton Pass Road FR 525 loop",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4867
+    },
+    {
+      "ref": "Schnebly Hill Road — Sedona",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 3187
+    },
+    {
+      "ref": "SR 89A — Mingus Mountain Jerome",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 5806
+    },
+    {
+      "ref": "Podium Club at Attesa — Casa Grande",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7517
+    },
+    {
+      "ref": "Firebird Motorsports Park — Chandler",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 402
+    },
+    {
+      "ref": "Angeles Forest Highway — County N3",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7468
+    },
+    {
+      "ref": "Upper Big Tujunga Canyon Road",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8129
+    },
+    {
+      "ref": "Big Tujunga Canyon Road",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6600
+    },
+    {
+      "ref": "Glendora Mountain Road",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4173
+    },
+    {
+      "ref": "Glendora Ridge Road",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4228
+    },
+    {
+      "ref": "San Gabriel Canyon Road — SR 39",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 5982
+    },
+    {
+      "ref": "Little Tujunga Canyon Road",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4243
+    },
+    {
+      "ref": "Willow Springs — Horse Thief Mile",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4823
+    },
+    {
+      "ref": "In-N-Out Burger Pomona Dragstrip",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 402
+    },
+    {
+      "ref": "Old Staples Road",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": false,
+      "mixed": true,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 7,
+        "asphalt": 93
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 2003
+    },
+    {
+      "ref": "Watkins Glen — Long Course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 16410
+    },
+    {
+      "ref": "Watkins Glen — Short Course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 11800
+    },
+    {
+      "ref": "Watkins Glen — Long — No Inner Loop",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 16346
+    },
+    {
+      "ref": "Watkins Glen — Short — No Inner Loop",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 11736
+    },
+    {
+      "ref": "Road America — Full Course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 19303
+    },
+    {
+      "ref": "Road America — The Bend",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 19469
+    },
+    {
+      "ref": "Road Atlanta — Grand Prix",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12259
+    },
+    {
+      "ref": "Road Atlanta — Short Course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8557
+    },
+    {
+      "ref": "Road Atlanta — Club Course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4342
+    },
+    {
+      "ref": "Virginia International Raceway — Full Course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 15775
+    },
+    {
+      "ref": "Virginia International Raceway — North Course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10993
+    },
+    {
+      "ref": "Virginia International Raceway — South Course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7823
+    },
+    {
+      "ref": "Virginia International Raceway — Grand Course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 19919
+    },
+    {
+      "ref": "Sebring International Raceway — Full Circuit",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 17586
+    },
+    {
+      "ref": "Sebring International Raceway — Short Circuit",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 9351
+    },
+    {
+      "ref": "Sebring International Raceway — Club Circuit",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8058
+    },
+    {
+      "ref": "Indianapolis Motor Speedway — Oval",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12210
+    },
+    {
+      "ref": "Indianapolis Motor Speedway — Grand Prix Road Course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 11721
+    },
+    {
+      "ref": "Homestead-Miami Speedway — Oval",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7250
+    },
+    {
+      "ref": "Homestead-Miami Speedway — Road Course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10993
+    },
+    {
+      "ref": "Homestead-Miami Speedway — Modified Road Course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10565
+    },
+    {
+      "ref": "Daytona International Speedway — Sports Car Course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 17270
+    },
+    {
+      "ref": "Daytona International Speedway — Stock Car Road Course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 17312
+    },
+    {
+      "ref": "Willow Springs — Big Willow",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 11819
+    },
+    {
+      "ref": "Willow Springs — Streets of Willow",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7713
+    },
+    {
+      "ref": "Willow Springs — Streets — Short",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 5908
+    },
+    {
+      "ref": "Lime Rock Park — West Chicane",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7231
+    },
+    {
+      "ref": "Lime Rock Park — Both Chicanes",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7208
+    },
+    {
+      "ref": "Mid-Ohio Sports Car Course — Chicane Course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10928
+    },
+    {
+      "ref": "Mid-Ohio Sports Car Course — Short Course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8183
+    },
+    {
+      "ref": "Hatcher Pass — Palmer-Fishhook Climb",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7422
+    },
+    {
+      "ref": "Pig Trail — Arkansas 23",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12791
+    },
+    {
+      "ref": "Brandywine Valley — Montchanin Road",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8604
+    },
+    {
+      "ref": "Hana Highway — Rainforest Bends",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7330
+    },
+    {
+      "ref": "Grafton Notch — Maine 26",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 13985
+    },
+    {
+      "ref": "National Road — Sideling Hill",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8620
+    },
+    {
+      "ref": "Natchez Trace — Tishomingo",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 13611
+    },
+    {
+      "ref": "Beartooth Highway — Rock Creek Climb",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 11775
+    },
+    {
+      "ref": "Barber Motorsports Park",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 11146
+    },
+    {
+      "ref": "Raceway Park of the Midlands",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10716
+    },
+    {
+      "ref": "Heartland Motorsports Park",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 11903
+    },
+    {
+      "ref": "NCM Motorsports Park",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 15091
+    },
+    {
+      "ref": "NOLA Motorsports Park",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 13267
+    },
+    {
+      "ref": "GingerMan Raceway",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10312
+    },
+    {
+      "ref": "Brainerd — Competition Course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 11676
+    },
+    {
+      "ref": "Spring Mountain — North South",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10496
+    },
+    {
+      "ref": "NJMP — Thunderbolt",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10486
+    },
+    {
+      "ref": "Sandia Speedway — Road Course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7914
+    },
+    {
+      "ref": "NCCAR — Road Course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 9807
+    },
+    {
+      "ref": "Theodore Roosevelt — North Unit Drive",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7906
+    },
+    {
+      "ref": "Needles Highway — Granite Gates",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 9763
+    },
+    {
+      "ref": "Smugglers Notch — Vermont 108",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12756
+    },
+    {
+      "ref": "Wind River Canyon — Canyon Walls",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10880
+    },
+    {
+      "ref": "Motorsport Park Hastings",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10097
+    },
+    {
+      "ref": "Portland International Raceway",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 9471
+    },
+    {
+      "ref": "Carolina Motorsports Park",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 11018
+    },
+    {
+      "ref": "Pacific Raceways",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10863
+    },
+    {
+      "ref": "Ponderosa Pine — Idaho 21",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7504
+    },
+    {
+      "ref": "Birmingham, AL — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12546
+    },
+    {
+      "ref": "Phoenix, AZ — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7482
+    },
+    {
+      "ref": "Los Angeles, CA — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7034
+    },
+    {
+      "ref": "Hartford, CT — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7244
+    },
+    {
+      "ref": "Wilmington, DE — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7605
+    },
+    {
+      "ref": "Miami, FL — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7396
+    },
+    {
+      "ref": "Atlanta, GA — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8883
+    },
+    {
+      "ref": "Chicago, IL — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6732
+    },
+    {
+      "ref": "Des Moines, IA — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7274
+    },
+    {
+      "ref": "Louisville, KY — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7193
+    },
+    {
+      "ref": "Baltimore, MD — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7303
+    },
+    {
+      "ref": "Detroit, MI — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8663
+    },
+    {
+      "ref": "Anchorage, AK — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7449
+    },
+    {
+      "ref": "Little Rock, AR — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10703
+    },
+    {
+      "ref": "Boise, ID — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7653
+    },
+    {
+      "ref": "Wichita, KS — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8622
+    },
+    {
+      "ref": "Portland, ME — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6907
+    },
+    {
+      "ref": "Honolulu, HI — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7360
+    },
+    {
+      "ref": "Indianapolis, IN — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7528
+    },
+    {
+      "ref": "New Orleans, LA — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7729
+    },
+    {
+      "ref": "Boston, MA — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12532
+    },
+    {
+      "ref": "Minneapolis, MN — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10146
+    },
+    {
+      "ref": "Jackson, MS — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7225
+    },
+    {
+      "ref": "St. Louis, MO — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8325
+    },
+    {
+      "ref": "Billings, MT — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6952
+    },
+    {
+      "ref": "Las Vegas, NV — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7230
+    },
+    {
+      "ref": "Manchester, NH — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7677
+    },
+    {
+      "ref": "Newark, NJ — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7457
+    },
+    {
+      "ref": "Albuquerque, NM — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7210
+    },
+    {
+      "ref": "Charlotte, NC — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7323
+    },
+    {
+      "ref": "Fargo, ND — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7324
+    },
+    {
+      "ref": "Cleveland, OH — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8472
+    },
+    {
+      "ref": "Denver, CO — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7474
+    },
+    {
+      "ref": "Omaha, NE — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6780
+    },
+    {
+      "ref": "New York, NY — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7374
+    },
+    {
+      "ref": "Oklahoma City, OK — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8223
+    },
+    {
+      "ref": "San Antonio, TX — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7270
+    },
+    {
+      "ref": "Portland, OR — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7136
+    },
+    {
+      "ref": "Providence, RI — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7348
+    },
+    {
+      "ref": "Philadelphia, PA — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6290
+    },
+    {
+      "ref": "Charleston, SC — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7367
+    },
+    {
+      "ref": "Sioux Falls, SD — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7244
+    },
+    {
+      "ref": "Nashville, TN — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7492
+    },
+    {
+      "ref": "Salt Lake City, UT — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7391
+    },
+    {
+      "ref": "Burlington, VT — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7094
+    },
+    {
+      "ref": "Richmond, VA — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8624
+    },
+    {
+      "ref": "Flatrock Motorclub — Club Course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 16878
+    },
+    {
+      "ref": "Seattle, WA — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7461
+    },
+    {
+      "ref": "Charleston, WV — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7334
+    },
+    {
+      "ref": "Milwaukee, WI — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7519
+    },
+    {
+      "ref": "Cheyenne, WY — Landmark Run",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4636
+    },
+    {
+      "ref": "Thompson Pass — Snowline Climb",
+      "category": "Snow",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 100,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "snow",
+      "snowDepthIn": 1,
+      "distanceM": 14021
+    },
+    {
+      "ref": "Denali Highway — Tundra Gravel",
+      "category": "Snow",
+      "circuit": false,
+      "campaign": true,
+      "mixed": true,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 38,
+        "gravel": 62,
+        "asphalt": 0
+      },
+      "weather": "snow",
+      "snowDepthIn": 1,
+      "distanceM": 12005
+    },
+    {
+      "ref": "Skalkaho Pass — Forest Rally",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8060
+    },
+    {
+      "ref": "Magruder Corridor — Wilderness Ridge",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 100,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6368
+    },
+    {
+      "ref": "Chief Joseph — Dead Indian Pass",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 13975
+    },
+    {
+      "ref": "Tantalus — Honolulu Heights",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "rain",
+      "snowDepthIn": 0,
+      "distanceM": 7866
+    },
+    {
+      "ref": "Haleakala — Volcano Ascent",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 9647
+    },
+    {
+      "ref": "Maunakea — Cinder Summit",
+      "category": "Snow",
+      "circuit": false,
+      "campaign": true,
+      "mixed": true,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 45,
+        "gravel": 46,
+        "asphalt": 9
+      },
+      "weather": "snow",
+      "snowDepthIn": 1,
+      "distanceM": 10345
+    },
+    {
+      "ref": "Sandhills Journey — Open Prairie",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 26281
+    },
+    {
+      "ref": "Grand Canyon — Desert View Drive",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 18259
+    },
+    {
+      "ref": "Grand Canyon — Diamond Creek Descent",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 100,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10534
+    },
+    {
+      "ref": "Bayard — Road 77 to City Park",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": true,
+      "mixed": true,
+      "surfaces": {
+        "dirt": 76,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 24
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 5402
+    },
+    {
+      "ref": "Blue Hills — Reservation Parkways",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8603
+    },
+    {
+      "ref": "Squaw Creek — Highland Center",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": true,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 6,
+        "snow": 0,
+        "gravel": 94,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 23976
+    },
+    {
+      "ref": "Silverstone — Grand Prix",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 17648
+    },
+    {
+      "ref": "Silverstone — International",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8919
+    },
+    {
+      "ref": "Silverstone — National",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7898
+    },
+    {
+      "ref": "Silverstone — Stowe",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6376
+    },
+    {
+      "ref": "Brands Hatch — Grand Prix",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 11677
+    },
+    {
+      "ref": "Brands Hatch — Indy",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 5774
+    },
+    {
+      "ref": "Spa-Francorchamps — Grand Prix",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 20967
+    },
+    {
+      "ref": "Spa-Francorchamps — Motorcycle Chicane",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 20912
+    },
+    {
+      "ref": "Suzuka — Grand Prix",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 5801
+    },
+    {
+      "ref": "Suzuka — West",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 3474
+    },
+    {
+      "ref": "Suzuka — East",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6715
+    },
+    {
+      "ref": "Monza — Grand Prix",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 17368
+    },
+    {
+      "ref": "Monza — Junior",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7231
+    },
+    {
+      "ref": "Imola — Grand Prix",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 14699
+    },
+    {
+      "ref": "Imola — Variante Bassa",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 14773
+    },
+    {
+      "ref": "Mount Panorama — Mount Panorama Circuit",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 18577
+    },
+    {
+      "ref": "Red Bull Ring — Grand Prix",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12891
+    },
+    {
+      "ref": "Red Bull Ring — National",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6984
+    },
+    {
+      "ref": "Red Bull Ring — MotoGP Chicane",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12975
+    },
+    {
+      "ref": "Interlagos — Grand Prix",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12908
+    },
+    {
+      "ref": "Tsukuba — Course 2000",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6356
+    },
+    {
+      "ref": "Tsukuba — Course 1000",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4703
+    },
+    {
+      "ref": "Fuji Speedway — Grand Prix",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 13642
+    },
+    {
+      "ref": "Fuji Speedway — GT Shortcut",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 13543
+    },
+    {
+      "ref": "Fuji Speedway — Short — Outer",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4772
+    },
+    {
+      "ref": "Fuji Speedway — Short — Middle",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4602
+    },
+    {
+      "ref": "Fuji Speedway — Short — Inner",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4245
+    },
+    {
+      "ref": "Donington Park — Grand Prix",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 11975
+    },
+    {
+      "ref": "Donington Park — National",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 9525
+    },
+    {
+      "ref": "Le Mans — Circuit de la Sarthe",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 27207
+    },
+    {
+      "ref": "Le Mans — Bugatti",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12475
+    },
+    {
+      "ref": "Portimão — Grand Prix",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 14028
+    },
+    {
+      "ref": "Portimão — Motorcycle",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 13927
+    },
+    {
+      "ref": "Zandvoort — Grand Prix",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12739
+    },
+    {
+      "ref": "Zandvoort — National",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8582
+    },
+    {
+      "ref": "Zandvoort — Eastern",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4203
+    },
+    {
+      "ref": "Circuit Gilles-Villeneuve — Grand Prix",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 13072
+    },
+    {
+      "ref": "Phillip Island — Grand Prix",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 13349
+    },
+    {
+      "ref": "Moon — Apollo 17 Taurus-Littrow",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6104
+    },
+    {
+      "ref": "Mars — Perseverance Jezero",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 5863
+    },
+    {
+      "ref": "Hockenheimring — Grand Prix",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 13680
+    },
+    {
+      "ref": "Hockenheimring — Short Course",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7802
+    },
+    {
+      "ref": "Hungaroring — Grand Prix",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 13082
+    },
+    {
+      "ref": "Sepang International Circuit — Grand Prix",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 16624
+    },
+    {
+      "ref": "Sepang International Circuit — North Circuit",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 8364
+    },
+    {
+      "ref": "Sepang International Circuit — South Circuit",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 7840
+    },
+    {
+      "ref": "Nürburgring — Grand Prix",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 15356
+    },
+    {
+      "ref": "Nürburgring — Sprint",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10818
+    },
+    {
+      "ref": "Nürburgring — Müllenbachschleife",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4455
+    },
+    {
+      "ref": "Nürburgring — 24 Hours Combined",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 25298
+    },
+    {
+      "ref": "Nürburgring — NLS Combined",
+      "category": "Race tracks",
+      "circuit": true,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 24299
+    },
+    {
+      "ref": "Fafe — Rally Portugal",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": true,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 99,
+        "asphalt": 1
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10630
+    },
+    {
+      "ref": "El Cóndor — Copina",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 14987
+    },
+    {
+      "ref": "Ruuhimäki — Gravel Road",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4127
+    },
+    {
+      "ref": "Sisteron — Authon",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 15424
+    },
+    {
+      "ref": "Col de Fontbelle — Authon to Thoard",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 21605
+    },
+    {
+      "ref": "Rally Portugal — Arganil 2026",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 17900
+    },
+    {
+      "ref": "Rally Portugal — Góis 2026",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 14851
+    },
+    {
+      "ref": "Rally Portugal — Lousã 2026",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 5872
+    },
+    {
+      "ref": "Acropolis Rally — Ano Pavliani 2024",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 22517
+    },
+    {
+      "ref": "Acropolis Rally — Dafni 2024",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 21840
+    },
+    {
+      "ref": "Acropolis Rally — Tarzan 2024",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 23231
+    },
+    {
+      "ref": "Acropolis Rally — Bauxites 2021",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 22116
+    },
+    {
+      "ref": "Acropolis Rally — Tarzan Power Stage 2021",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 12039
+    },
+    {
+      "ref": "NEFR — Concord Pond — Road Section",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 17,
+        "snow": 0,
+        "gravel": 83,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 11054
+    },
+    {
+      "ref": "NEFR — Morton Cutoff — Road Section",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 2795
+    },
+    {
+      "ref": "NEFR — North Road — Road Section",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 5923
+    },
+    {
+      "ref": "Rally Sweden — Vargåsen — Road Recreation",
+      "category": "Snow",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 100,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "snow",
+      "snowDepthIn": 0,
+      "distanceM": 13974
+    },
+    {
+      "ref": "Rally Sweden — Torsby — Road Recreation",
+      "category": "Snow",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 100,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "snow",
+      "snowDepthIn": 0,
+      "distanceM": 8582
+    },
+    {
+      "ref": "Rally Sweden — Likenäs — Road Recreation",
+      "category": "Snow",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 100,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "snow",
+      "snowDepthIn": 0,
+      "distanceM": 19746
+    },
+    {
+      "ref": "SnoDrift Rally — Agren — Road Section",
+      "category": "Snow",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 100,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "snow",
+      "snowDepthIn": 0,
+      "distanceM": 3509
+    },
+    {
+      "ref": "SnoDrift Rally — Shoreline — Road Section",
+      "category": "Snow",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 100,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "snow",
+      "snowDepthIn": 0,
+      "distanceM": 3318
+    },
+    {
+      "ref": "SnoDrift Rally — Old State — Road Section",
+      "category": "Snow",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 100,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "snow",
+      "snowDepthIn": 0,
+      "distanceM": 9141
+    },
+    {
+      "ref": "Rally New Zealand — Whaanga Coast — Road Section",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": true,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 94,
+        "asphalt": 6
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 17886
+    },
+    {
+      "ref": "Rally New Zealand — Te Hutewai — Road Section",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 9841
+    },
+    {
+      "ref": "Rally New Zealand — Te Akau South — Road Section",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10375
+    },
+    {
+      "ref": "Rally Mexico — Rally of Nations — Valenciana 2025",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 5889
+    },
+    {
+      "ref": "Rally Mexico — Rally of Nations — Mineral de Pozos 2025",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 17971
+    },
+    {
+      "ref": "Rally Mexico — Rally of Nations — Mesa de Borregos 2025",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 11505
+    },
+    {
+      "ref": "Norway — Finnskog Rally Roads — Hof-Finnskog — Road Recreation",
+      "category": "Snow",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 100,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "snow",
+      "snowDepthIn": 0,
+      "distanceM": 23479
+    },
+    {
+      "ref": "Norway — Finnskog Rally Roads — Svullrya — Road Recreation",
+      "category": "Snow",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 100,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "snow",
+      "snowDepthIn": 0,
+      "distanceM": 21444
+    },
+    {
+      "ref": "Rally Chile — Conuco — Forest Road Recreation",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 26,
+        "snow": 0,
+        "gravel": 74,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6729
+    },
+    {
+      "ref": "Safari Rally Kenya — Hell’s Gate — Road Recreation",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 100,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 10514
+    },
+    {
+      "ref": "Rally Japan — Hokkaido — Bisan — Road Recreation",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4390
+    },
+    {
+      "ref": "Rally Japan — Hokkaido — Naekawa — Road Recreation",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": true,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 97,
+        "asphalt": 3
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 17280
+    },
+    {
+      "ref": "Rally Turkey — Ula 2019",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 15803
+    },
+    {
+      "ref": "Rally Turkey — Çiçekli 2019",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 13127
+    },
+    {
+      "ref": "Rally Turkey — İçmeler 2019",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 24043
+    },
+    {
+      "ref": "Moon — Apollo 15 Hadley–Apennine",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 2810
+    },
+    {
+      "ref": "Moon — Apollo 16 Descartes",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 3366
+    },
+    {
+      "ref": "Mars — Curiosity Gale Crater",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 3132
+    },
+    {
+      "ref": "Mars — Spirit Columbia Hills",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 3151
+    },
+    {
+      "ref": "Mars — Opportunity Endeavour Rim",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 2625
+    },
+    {
+      "ref": "Rally Spain — La Fatarella–Vilalba — Sant Francesc Road",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": false,
+      "mixed": true,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 9,
+        "asphalt": 91
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 14090
+    },
+    {
+      "ref": "Wales — Sweet LambHafren — Sweet Lamb–Hafren — Western Section",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6520
+    },
+    {
+      "ref": "Rally Germany — Panzerplatte — Range Road Section",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 4865
+    },
+    {
+      "ref": "Rally Japan — Aichi — Isegami’s Tunnel — Road Section",
+      "category": "Road races",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 3432
+    },
+    {
+      "ref": "100 Acre Wood Rally — Cattle Guard — Ollie Coleman Road",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 6036
+    },
+    {
+      "ref": "Ojibwe Forests Rally — Steamboat — Forest Road Section",
+      "category": "Dirt / gravel",
+      "circuit": false,
+      "campaign": false,
+      "mixed": false,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "weather": "clear",
+      "snowDepthIn": 0,
+      "distanceM": 9268
+    }
+  ]
+}

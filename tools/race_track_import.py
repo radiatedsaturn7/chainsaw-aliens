@@ -139,6 +139,14 @@ def metric(lat, lon, origin):
             -(lat-origin[0])*math.pi/180*6371008.8)
 
 
+def is_service_raceway(tags):
+    # OSM often identifies these only by name, with highway=raceway. Including
+    # them in cycle search can pick a length-matching loop through pit exits.
+    name = tags.get('name', '').lower().strip()
+    if re.search(r'\bpit straight\b|\bpaddock hill\b|^paddock bend$', name):return False
+    return bool(re.search(r'\b(pit(?:s|lane)?|paddock|false grid)\b', name))
+
+
 def extract_layouts(elements, origin, *, max_layouts=24, max_cycles=64):
     """Find closed circuits through shared OSM node IDs; never join nearby crossings.
     Degree-two chains are collapsed before bounded cycle enumeration. Pit lanes omitted.
@@ -147,7 +155,7 @@ def extract_layouts(elements, origin, *, max_layouts=24, max_cycles=64):
     points, graph, tags, allowed = {}, {}, {}, set()
     for way in elements:
         t = way.get('tags', {})
-        if way.get('type') != 'way' or t.get('highway') != 'raceway' or t.get('raceway') == 'pit_lane' or t.get('service') == 'pit_lane' or t.get('name','').lower().strip() in ('pit lane','pit road','pitlane'):
+        if way.get('type') != 'way' or t.get('highway') != 'raceway' or t.get('raceway') == 'pit_lane' or t.get('service') == 'pit_lane' or is_service_raceway(t):
             continue
         ids, geometry = way.get('nodes', []), way.get('geometry', [])
         if len(ids) != len(geometry):
@@ -261,6 +269,43 @@ def layouts(token, fetch=request_json):
                        'points':[{'x':p['x'],'y':p['y']} for p in r['points']]} for r in found], 'attribution':ATTRIBUTION}
 
 
+def apply_reviewed_way_directions(ways, review):
+    """Apply source-specific direction corrections only after map verification."""
+    directions = (review or {}).get('wayDirections', {})
+    found = set()
+    for way in ways:
+        key = str(way.get('id'))
+        if key in directions:
+            if directions[key] not in ('yes', '-1', 'no'):
+                raise ValueError('Invalid reviewed raceway direction')
+            way['tags'] = {**way.get('tags', {}), 'oneway': directions[key]}
+            found.add(key)
+    if found != set(directions):
+        raise ValueError('Reviewed raceway is missing from source; review before importing')
+    return ways
+
+
+def layout_review_issues(layout):
+    """Flag suspicious joins; never flatten a real hairpin into a shortcut."""
+    pts = layout.get('points', [])
+    issues = []
+    names = {p.get('tags', {}).get('name', '').casefold() for p in pts}
+    if any('drift' in n for n in names) and any('road course' in n for n in names):
+        issues.append('Road course mixes drifting connectors; verify the intended layout')
+    closed = len(pts) > 3 and math.hypot(pts[0]['x']-pts[-1]['x'], pts[0]['y']-pts[-1]['y']) < .01
+    ring = pts[:-1] if closed else pts
+    for i in range(0 if closed else 1, len(ring) if closed else len(ring)-1):
+        a,b,c = ring[i-1],ring[i],ring[(i+1)%len(ring)]
+        u=(b['x']-a['x'],b['y']-a['y']);v=(c['x']-b['x'],c['y']-b['y'])
+        length=math.hypot(*u)*math.hypot(*v)
+        if length < 1e-8: continue
+        angle=math.degrees(math.acos(max(-1,min(1,(u[0]*v[0]+u[1]*v[1])/length))))
+        join=a.get('tags',{}).get('osmWayId') != b.get('tags',{}).get('osmWayId')
+        if angle >= (120 if join else 155):
+            issues.append(f'Abrupt {angle:.0f}-degree reversal at point {i}; verify junction continuity')
+    return issues
+
+
 def rank_layouts(layouts, venue_name):
     venue = venue_name.casefold().strip()
     def key(layout):
@@ -268,7 +313,7 @@ def rank_layouts(layouts, venue_name):
         matches = venue in names
         auxiliary = any(word in layout['name'].casefold() for word in ('autocross', 'skidpad', 'kart', 'proving ground'))
         chicanes = sum('chicane' in n for n in names)
-        return (not matches, names != [venue], auxiliary, chicanes if matches else 0, -layout['lengthM'])
+        return (bool(layout_review_issues(layout)), not matches, names != [venue], auxiliary, chicanes if matches else 0, -layout['lengthM'])
     return sorted(layouts, key=key)
 
 
@@ -349,6 +394,7 @@ def build(layout, width=12, use_elevation=True, reverse=False, fetch=request_jso
         pts=[{**p,'tags':pts[i-1].get('tags',{})} for i,p in reversed(list(enumerate(pts)))]
     if len(pts)>max_control_points: raise ValueError(f'This circuit has too many editable points (limit {max_control_points}).')
     warnings=['Banking is set to 0°; set banking per segment in the editor.', 'Start line and driving direction are provisional; verify against the real circuit.', 'Road width uses OSM width where available, otherwise your default.']
+    warnings.extend(layout_review_issues(layout))
     heights=[0.0]*len(pts); cells={}; base=0
     origin=layout['place']; grid=[]; samples=[]; sampled={}
     if use_elevation and origin['country']=='us':
@@ -407,7 +453,7 @@ def build(layout, width=12, use_elevation=True, reverse=False, fetch=request_jso
         try:w=float(mapped_width)
         except (TypeError,ValueError):w=width
         if not math.isfinite(w) or not 3<=w<=30:w=width
-        surface={'unpaved':'dirt','ground':'dirt','compacted':'gravel','concrete':'asphalt'}.get(tags.get('surface'),tags.get('surface','asphalt'))
+        surface={'unpaved':'dirt','ground':'dirt','sand':'dirt','compacted':'gravel','fine_gravel':'gravel','pebblestone':'gravel','concrete':'asphalt'}.get(tags.get('surface'),tags.get('surface','asphalt'))
         if surface not in ['asphalt','dirt','gravel','mud','snow']:surface='asphalt'
         yaw=math.atan2(b['x']-a['x'],b['y']-a['y'])
         previous=nodes[i-1] if i else (nodes[-2] if not is_open else {'x':a['x']-(b['x']-a['x']),'y':a['y']-(b['y']-a['y'])})

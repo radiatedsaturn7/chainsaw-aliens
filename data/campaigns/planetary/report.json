@@ -1,0 +1,154 @@
+[
+  {
+    "id": "space-apollo17-taurus-littrow",
+    "name": "Moon \u2014 Apollo 17 Taurus-Littrow",
+    "raceRef": "Moon \u2014 Apollo 17 Taurus-Littrow",
+    "body": "Moon",
+    "generatedPath": "artifacts/planetary/apollo17-taurus-littrow-race.json",
+    "lengthM": 6103.960745425293,
+    "elevationRangeM": 90.506591796875,
+    "terrainCells": 9409,
+    "source": {
+      "sourceRecord": 8,
+      "mission": "Apollo 17",
+      "route": "Haase et al. 2018 reconstructed traverse"
+    }
+  },
+  {
+    "id": "space-perseverance-jezero",
+    "name": "Mars \u2014 Perseverance Jezero",
+    "raceRef": "Mars \u2014 Perseverance Jezero",
+    "body": "Mars",
+    "generatedPath": "artifacts/planetary/perseverance-jezero-race.json",
+    "lengthM": 5863.447059194203,
+    "elevationRangeM": 51.284423828125,
+    "terrainCells": 6667,
+    "source": {
+      "solStart": 379,
+      "solEnd": 419,
+      "startSclk": 700583343.0,
+      "endSclk": 704139420.0,
+      "mission": "Perseverance",
+      "route": "NASA/JPL PDS best_interp localizations"
+    }
+  },
+  {
+    "id": "space-apollo15-hadley-apennine",
+    "name": "Moon \u2014 Apollo 15 Hadley\u2013Apennine",
+    "raceRef": "Moon \u2014 Apollo 15 Hadley\u2013Apennine",
+    "body": "Moon",
+    "generatedPath": "artifacts/planetary/apollo15-hadley-apennine-race.json",
+    "lengthM": 2809.687023980793,
+    "elevationRangeM": 24.622314453125,
+    "terrainCells": 2001,
+    "source": {
+      "mission": "Apollo 15",
+      "route": "PDS Analyst\u2019s Notebook / Phil Stooke reconstructed rover traverse",
+      "sourceUrl": "https://anms.rsl.wustl.edu/arcgis/rest/services/Apollo/Apollo15_vec/MapServer/4/query?where=1%3D1&outFields=*&returnGeometry=true&f=pjson",
+      "sourceSnapshot": "data/campaigns/planetary/sources/apollo15-traverse.json",
+      "sourceSha256": "b94d4218a4a42b3c53799edca57ced6e0d2668e892d31ba5c8bceaa36625340d",
+      "sourceObjectId": 55,
+      "sourcePath": 0,
+      "nativeCrs": {
+        "wkt": "PROJCS[\"Moon_Equirectangular_Apollo15_CLat0\",GEOGCS[\"GCS_Moon_2000\",DATUM[\"D_Moon_2000\",SPHEROID[\"Moon_2000_IAU_IAG\",1737400.0,0.0]],PRIMEM[\"Reference_Meridian\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Plate_Carree\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",0.0],UNIT[\"Meter\",1.0]]"
+      },
+      "selection": "One complete continuous mapped source feature. No connections invented between features; not a complete EVA."
+    }
+  },
+  {
+    "id": "space-apollo16-descartes",
+    "name": "Moon \u2014 Apollo 16 Descartes",
+    "raceRef": "Moon \u2014 Apollo 16 Descartes",
+    "body": "Moon",
+    "generatedPath": "artifacts/planetary/apollo16-descartes-race.json",
+    "lengthM": 3365.9675050816163,
+    "elevationRangeM": 87.01304794102907,
+    "terrainCells": 3760,
+    "source": {
+      "mission": "Apollo 16",
+      "route": "PDS Analyst\u2019s Notebook / Phil Stooke reconstructed rover traverse",
+      "sourceUrl": "https://anms.rsl.wustl.edu/arcgis/rest/services/Apollo/Apollo16_vec/MapServer/6/query?where=1%3D1&outFields=*&returnGeometry=true&f=pjson",
+      "sourceSnapshot": "data/campaigns/planetary/sources/apollo16-traverse.json",
+      "sourceSha256": "da8ca2beb8430b00d4de4cedaa2d444e3d4fe71afc24e87d92f9f2b3c4833fac",
+      "sourceObjectId": 84,
+      "sourcePath": 0,
+      "nativeCrs": {
+        "wkt": "PROJCS[\"Moon2000_Equidistant_Cylindrical_C0\",GEOGCS[\"GCS_Moon_2000\",DATUM[\"D_Moon_2000\",SPHEROID[\"Moon_2000_IAU_IAG\",1737400.0,0.0]],PRIMEM[\"Reference_Meridian\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Plate_Carree\"],PARAMETER[\"false_easting\",0.0],PARAMETER[\"false_northing\",0.0],PARAMETER[\"central_meridian\",0.0],UNIT[\"Meter\",1.0]]"
+      },
+      "selection": "One complete continuous mapped source feature. No connections invented between features; not a complete EVA."
+    }
+  },
+  {
+    "id": "space-curiosity-gale",
+    "name": "Mars \u2014 Curiosity Gale Crater",
+    "raceRef": "Mars \u2014 Curiosity Gale Crater",
+    "body": "Mars",
+    "generatedPath": "artifacts/planetary/curiosity-gale-race.json",
+    "lengthM": 3131.635221938533,
+    "elevationRangeM": 28.4990234375,
+    "terrainCells": 4216,
+    "source": {
+      "mission": "Curiosity",
+      "route": "NASA/JPL PDS MSL PLACES localized_interp",
+      "sourceUrl": "https://planetarydata.jpl.nasa.gov/img/data/msl/msl_places/data_localizations/localized_interp.csv",
+      "sourceSnapshot": "data/campaigns/planetary/sources/curiosity-section.json.gz",
+      "sourceSha256": "ab2028dd258e344c012e7f692552b773a600400b3877b7ae167cfa543a3a1e29",
+      "solStart": 402,
+      "solEnd": 597,
+      "selection": "Continuous sols 400\u2013600 traverse; sub-8 m localization movements omitted. No stitching around science-stop reversals.",
+      "terrainCredit": "Calef III and Parker, 2016; NASA/JPL-Caltech/USGS/UArizona, MSL Gale Merged DEM 1m v3; source mosaic includes lower-resolution infill."
+    }
+  },
+  {
+    "id": "space-opportunity-endeavour-rim",
+    "name": "Mars \u2014 Opportunity Endeavour Rim",
+    "raceRef": "Mars \u2014 Opportunity Endeavour Rim",
+    "body": "Mars",
+    "generatedPath": "artifacts/planetary/opportunity-endeavour-rim-race.json",
+    "lengthM": 2624.9096423036963,
+    "elevationRangeM": 60.59130859375,
+    "terrainCells": 2550,
+    "source": {
+      "mission": "Opportunity",
+      "route": "PDS Analyst\u2019s Notebook / Tim Parker corrected rover traverse",
+      "sourceUrl": "https://an.rsl.wustl.edu/mera/AN/meri/MER/traverse/MERB_traverse_5130.zip",
+      "sourceSnapshot": "data/campaigns/planetary/sources/MERB_TRAVERSE.dbf",
+      "sourceSha256": "49fc2689347076d99bdf20b6516aa09c922381027cd51d76bcd6812b5e3379c1",
+      "solStart": 3200,
+      "solEnd": 3400,
+      "selection": "One continuous sol interval; geographic coordinates from corrected source DBF, sub-8 m movements omitted. Source is interpolated localization, not certified wheel-track odometry.",
+      "terrainCredit": "NASA/JPL/UArizona/USGS HiRISE stereo DTM",
+      "demProjection": {
+        "radiusM": 3396190.0,
+        "standardParallel": 0.0,
+        "centralMeridian": 354.62
+      }
+    }
+  },
+  {
+    "id": "space-spirit-columbia-hills",
+    "name": "Mars \u2014 Spirit Columbia Hills",
+    "raceRef": "Mars \u2014 Spirit Columbia Hills",
+    "body": "Mars",
+    "generatedPath": "artifacts/planetary/spirit-columbia-hills-race.json",
+    "lengthM": 3150.759083748776,
+    "elevationRangeM": 29.3011474609375,
+    "terrainCells": 4592,
+    "source": {
+      "mission": "Spirit",
+      "route": "PDS Analyst\u2019s Notebook / Tim Parker corrected rover traverse",
+      "sourceUrl": "https://an.rsl.wustl.edu/mera/AN/meri/MER/traverse/MERA_traverse.zip",
+      "sourceSnapshot": "data/campaigns/planetary/sources/MERA_TRAVERSE.dbf",
+      "sourceSha256": "198064d6fda093e96b98e61ee7b2359253553da0bec8d14e8a1278c9e543e4bc",
+      "solStart": 50,
+      "solEnd": 350,
+      "selection": "One continuous sol interval; geographic coordinates from corrected source DBF, sub-8 m movements omitted. Source is interpolated localization, not certified wheel-track odometry.",
+      "terrainCredit": "NASA/JPL/UArizona/USGS HiRISE stereo DTM",
+      "demProjection": {
+        "radiusM": 3395580.0,
+        "standardParallel": -10.0,
+        "centralMeridian": 175.5
+      }
+    }
+  }
+]

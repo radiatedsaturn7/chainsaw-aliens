@@ -1,8 +1,8 @@
 import { tireSizeForWheel } from './TireSizes.js';
-import {advanceRaceDriftScore} from './RaceDriftScore.js';
+import {advanceRaceDriftScore,driftContactCount} from './RaceDriftScore.js';
 import { advanceRaceSimulationClock } from './RaceFrameBudget.js';
 import {updateGlassWeather} from './GlassWeather.js';
-import {prepareRaceSceneryTriggers} from './simulation/DamageModel.js';
+import {isVisualOnlyRaceScenery,prepareRaceSceneryTriggers} from './simulation/DamageModel.js';
 import {advanceTurnSignals} from './TurnSignals.js';
 import { advanceNetworkRaceProgress, sampleNetworkEdge } from './RaceRouteNetwork.js';
 import { getRaceStickLook, stepRaceLookAngle } from './RaceCameraInput.js';
@@ -599,6 +599,7 @@ export function createRaceStaticColliderWorld(editor, {
     }
   }
   scenery.forEach((sprite) => {
+    if (isVisualOnlyRaceScenery(sprite)) return;
     const doodad = editor.getRaceDoodadForScenery?.(sprite) || {};
     if (sprite.state === 'removed') return;
     if (doodad.itemType === 'mix-tape' || doodad.itemType === 'item') return;
@@ -900,6 +901,7 @@ function createTrackStateStepScratch() {
     direction: { x: 0, z: 1 },
     queueOptions: {
       vehicleId: 'player',
+      resetGeneration: 0,
       wheelIds: RACE_WHEEL_IDS,
       collectAcceptedEvents: false,
       contactByWheel: trackStateContactByWheel,
@@ -999,6 +1001,7 @@ function emitAuthoritativeTrackStateStep({
   scratch.direction.z = Math.cos(yaw);
   const queueOptions = scratch.queueOptions;
   queueOptions.vehicleId = editor.playtestSession.carId || 'player';
+  queueOptions.resetGeneration = Number(telemetry.state?.vehicleResetGeneration) || 0;
   queueOptions.normalLoads = telemetry.state?.wheelLoadsN;
   queueOptions.tireSlipByWheel = telemetry.state?.wheelSlip;
   queueOptions.previousPositions = previousPositions;
@@ -4123,7 +4126,8 @@ export function updateRaceSimulation({
       distanceM:Math.max(0,Math.min(routeAdvance,Math.hypot(Number(authoritativeVelocity.x||0),Number(authoritativeVelocity.z||0))*seconds)),
       longitudinalSpeed:Number(presentationState.bodyLongitudinalSpeedMps)||0,
       lateralSpeed:Number(presentationState.bodyLateralSpeedMps)||0,
-      contactCount:Object.values(presentationState.contactPatches||{}).filter(p=>p?.inContact).length,
+      contactCount:driftContactCount(presentationState.contactPatches),
+      progressM:editor.selectedRace?.driftChallenge?Math.max(0,(Number(editor.playtestSession.lap)||1)-1)*routeLength+previousDistance+routeAdvance:undefined,
       onCourse:Math.abs(projectedLateralMeters)<=projectedRoadHalfWidth,
       active:!countdownActive&&!editor.playtestSession.pendingEdgeCenterReset
     });

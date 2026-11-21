@@ -1,0 +1,583 @@
+{
+  "method": "All saved centerlines: turns exceeding 120 degrees and mixed circuit source names. Flags require map review, not automatic corner removal.",
+  "unresolvedCircuits": [
+    "World Wide Technology Raceway \u2014 road course: source contains two abrupt joins; no continuous replacement loop matching the road course exists in this snapshot. Needs corrected source geometry."
+  ],
+  "races": [
+    {
+      "name": "OH 26 \u2014 Covered Bridge Scenic Byway",
+      "id": "side-h04-s01",
+      "type": "destination",
+      "turns": [
+        [
+          60,
+          1985
+        ]
+      ],
+      "sourceNames": [
+        ""
+      ],
+      "path": "data/server-storage/files/races/OH 26 %E2%80%94 Covered Bridge Scenic Byway/document.json"
+    },
+    {
+      "name": "OH 536 \u2014 Ohio River hills",
+      "id": "side-h04-s04",
+      "type": "destination",
+      "turns": [
+        [
+          24,
+          709
+        ]
+      ],
+      "sourceNames": [
+        ""
+      ],
+      "path": "data/server-storage/files/races/OH 536 %E2%80%94 Ohio River hills/document.json"
+    },
+    {
+      "name": "Baltimore, MD \u2014 Landmark Run",
+      "id": "city-md",
+      "type": "destination",
+      "turns": [
+        [
+          138,
+          3039
+        ],
+        [
+          145,
+          3158
+        ]
+      ],
+      "sourceNames": [
+        "",
+        "East Chase Street",
+        "East Mount Vernon Place",
+        "East Pratt Street",
+        "East Saratoga Street",
+        "Ensor Street",
+        "Guilford Avenue",
+        "Harford Avenue",
+        "Market Place",
+        "North Eutaw Street",
+        "North Gay Street",
+        "North Howard Street",
+        "Park Avenue",
+        "Russell Street",
+        "Saint Paul Street",
+        "South Eutaw Street",
+        "South Gay Street",
+        "South Paca Street",
+        "South Street",
+        "Washington Place",
+        "Water Street",
+        "West Centre Street",
+        "West Hamburg Street",
+        "West Lexington Street",
+        "West Mulberry Street",
+        "West Ostend Street",
+        "West Redwood Street"
+      ],
+      "path": "data/server-storage/files/races/Baltimore%2C MD %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "name": "World Wide Technology Raceway \u2014 road course",
+      "id": "side-h06-s01",
+      "type": "circuit",
+      "turns": [
+        [
+          48,
+          1664
+        ],
+        [
+          62,
+          1893
+        ]
+      ],
+      "sourceNames": [
+        "Gateway International Raceway",
+        "World Wide Technology Raceway Road Course"
+      ],
+      "path": "data/server-storage/files/races/World Wide Technology Raceway %E2%80%94 road course/document.json"
+    },
+    {
+      "name": "IL 100 \u2014 Great River Road bluffs",
+      "id": "side-h06-s06",
+      "type": "destination",
+      "turns": [
+        [
+          181,
+          7850
+        ]
+      ],
+      "sourceNames": [
+        "",
+        "Great River Road",
+        "Mc Adams Highway",
+        "River Road"
+      ],
+      "path": "data/server-storage/files/races/IL 100 %E2%80%94 Great River Road bluffs/document.json"
+    },
+    {
+      "name": "Billings, MT \u2014 Landmark Run",
+      "id": "city-mt",
+      "type": "destination",
+      "turns": [
+        [
+          73,
+          1658
+        ]
+      ],
+      "sourceNames": [
+        "",
+        "1st Avenue North",
+        "1st Street West",
+        "2nd Avenue North",
+        "3rd Avenue North",
+        "4th Avenue North",
+        "6th Avenue North",
+        "8th Avenue South",
+        "9th Avenue South",
+        "Alderson Avenue",
+        "Avenue C",
+        "Beverly Hill Boulevard",
+        "Division Street",
+        "Montana Avenue",
+        "North 22nd Street",
+        "North 23rd Street",
+        "North 24th Street",
+        "North 25th Street",
+        "North 27th Street",
+        "North 28th Street",
+        "North 29th Street",
+        "North 32nd Street",
+        "North Broadway",
+        "South 27th Street",
+        "South 28th Street"
+      ],
+      "path": "data/server-storage/files/races/Billings%2C MT %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "name": "Birmingham, AL \u2014 Landmark Run",
+      "id": "city-al",
+      "type": "destination",
+      "turns": [
+        [
+          507,
+          11490
+        ]
+      ],
+      "sourceNames": [
+        "10th Avenue South",
+        "16th Street North",
+        "1st Avenue North",
+        "20th Place South",
+        "20th Street South",
+        "21st Avenue South",
+        "24th Street South",
+        "27th Street South",
+        "2nd Avenue North",
+        "31st Street South",
+        "32nd Street North",
+        "32nd Street South",
+        "34th Street North",
+        "3rd Avenue North",
+        "5th Avenue South",
+        "6th Avenue South",
+        "Carraway Boulevard",
+        "Magnolia Avenue",
+        "Magnolia Avenue South",
+        "Richard Arrington Jr Boulevard South",
+        "University Boulevard",
+        "Valley Avenue",
+        "Valley View Drive",
+        "Vulcan Park Road"
+      ],
+      "path": "data/server-storage/files/races/Birmingham%2C AL %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "name": "Boise, ID \u2014 Landmark Run",
+      "id": "city-id",
+      "type": "destination",
+      "turns": [
+        [
+          217,
+          4896
+        ]
+      ],
+      "sourceNames": [
+        "North 17th Street",
+        "North 6th Street",
+        "North 9th Street",
+        "North Capitol Boulevard",
+        "South 6th Street",
+        "South 9th Street",
+        "South Capitol Boulevard",
+        "South Federal Way",
+        "South Protest Road",
+        "West Bannock Street",
+        "West Boise Avenue",
+        "West Crescent Rim Drive",
+        "West Grove Street",
+        "West Idaho Street",
+        "West Jefferson Street",
+        "West Rossi Street"
+      ],
+      "path": "data/server-storage/files/races/Boise%2C ID %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "name": "Boston, MA \u2014 Landmark Run",
+      "id": "city-ma",
+      "type": "destination",
+      "turns": [
+        [
+          251,
+          5360
+        ],
+        [
+          266,
+          5702
+        ]
+      ],
+      "sourceNames": [
+        "A Street",
+        "Arlington Street",
+        "Austin Street",
+        "Beacon Street",
+        "Bowdoin Street",
+        "Boylston Street",
+        "Cambridge Street",
+        "Cambridgeside Place",
+        "Charles Street",
+        "Charlestown Avenue",
+        "Charter Street",
+        "Clarendon Street",
+        "Commercial Street",
+        "Congress Street",
+        "Court Street",
+        "D Street",
+        "Derne Street",
+        "Dorchester Avenue",
+        "Edwin H. Land Boulevard",
+        "Exeter Street",
+        "Fifth Street",
+        "Fulkerson Street",
+        "Hancock Street",
+        "Hanover Street",
+        "Herald Street",
+        "Hull Street",
+        "Hurley Street",
+        "Joy Street",
+        "Medallion Avenue",
+        "Mount Vernon Street",
+        "New Chardon Street",
+        "New Cypher Street",
+        "New Rutherford Avenue",
+        "Newbury Street",
+        "North Washington Street",
+        "Otis Street",
+        "Richards Street",
+        "Rutherford Avenue",
+        "Salem Street",
+        "Sciarappa Street",
+        "Second Street",
+        "Sixth Street",
+        "Spring Street",
+        "State Street",
+        "Stuart Street",
+        "Thorndike Street",
+        "Traveler Street",
+        "Washington Street",
+        "West Broadway",
+        "West First Street",
+        "West Second Street"
+      ],
+      "path": "data/server-storage/files/races/Boston%2C MA %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "name": "Honolulu, HI \u2014 Landmark Run",
+      "id": "city-hi",
+      "type": "destination",
+      "turns": [
+        [
+          199,
+          4199
+        ]
+      ],
+      "sourceNames": [
+        "Ala Moana Boulevard",
+        "Aloha Tower Drive",
+        "Bethel Street",
+        "Bishop Street",
+        "Cedar Street",
+        "Kinau Street",
+        "Merchant Street",
+        "Mililani Street",
+        "Nimitz Highway",
+        "Palm Drive",
+        "Pensacola Street",
+        "Punchbowl Street",
+        "Queen Street",
+        "Richards Street",
+        "South Beretania Street",
+        "South King Street",
+        "South Street",
+        "Victoria Street",
+        "Young Street"
+      ],
+      "path": "data/server-storage/files/races/Honolulu%2C HI %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "name": "Los Angeles, CA \u2014 Landmark Run",
+      "id": "city-ca",
+      "type": "destination",
+      "turns": [
+        [
+          139,
+          2868
+        ]
+      ],
+      "sourceNames": [
+        "Bloom Street",
+        "Cardinal Street",
+        "East Aliso Street",
+        "East Elmyra Street",
+        "North Alameda Street",
+        "North Broadway",
+        "North Los Angeles Street",
+        "North Main Street",
+        "North Spring Street",
+        "South Figueroa Street",
+        "South Flower Street",
+        "South Hope Street",
+        "Venice Boulevard",
+        "West 1st Street",
+        "West 3rd Street",
+        "West Temple Street"
+      ],
+      "path": "data/server-storage/files/races/Los Angeles%2C CA %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "name": "Portland, ME \u2014 Landmark Run",
+      "id": "city-me",
+      "type": "destination",
+      "turns": [
+        [
+          90,
+          2011
+        ]
+      ],
+      "sourceNames": [
+        "Atlantic Street",
+        "Center Street",
+        "Commercial Street",
+        "Congress Street",
+        "Cutter Street",
+        "Danforth Street",
+        "Eastern Promenade",
+        "Exchange Street",
+        "Federal Street",
+        "Fore Street",
+        "High Street",
+        "Middle Street",
+        "Park Street",
+        "Pearl Street",
+        "Spring Street",
+        "Storer Street",
+        "Temple Street",
+        "Union Street",
+        "Wilson Street",
+        "York Street"
+      ],
+      "path": "data/server-storage/files/races/Portland%2C ME %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "name": "Road Atlanta \u2014 Short Course",
+      "id": "raceway-road-atlanta-short",
+      "type": "circuit",
+      "turns": [],
+      "sourceNames": [
+        "Road Atlanta Racetrack",
+        "Short Course Turn 5",
+        "The Esses"
+      ],
+      "path": "data/server-storage/files/races/Road Atlanta %E2%80%94 Short Course/document.json"
+    },
+    {
+      "name": "San Antonio, TX \u2014 Landmark Run",
+      "id": "city-tx",
+      "type": "destination",
+      "turns": [
+        [
+          64,
+          1455
+        ]
+      ],
+      "sourceNames": [
+        "3rd Street",
+        "Austin Street",
+        "Avenue E",
+        "Bowie Street",
+        "Brooklyn Avenue",
+        "Dolorosa Street",
+        "East Commerce Street",
+        "East Houston Street",
+        "East Market Street",
+        "Interstate 37 South",
+        "Lamar Street",
+        "Montana Street",
+        "South Alamo Street",
+        "South Flores Street",
+        "South Laredo Street",
+        "Tower of the Americas Way",
+        "West Commerce Street"
+      ],
+      "path": "data/server-storage/files/races/San Antonio%2C TX %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "name": "Route 66 \u2014 Bridgeport Pony Bridge, Oklahoma",
+      "id": "side-h07-s08",
+      "type": "destination",
+      "turns": [
+        [
+          258,
+          11438
+        ]
+      ],
+      "sourceNames": [
+        ""
+      ],
+      "path": "data/server-storage/files/races/Route 66 %E2%80%94 Bridgeport Pony Bridge%2C Oklahoma/document.json"
+    },
+    {
+      "name": "Miami, FL \u2014 Landmark Run",
+      "id": "city-fl",
+      "type": "destination",
+      "turns": [
+        [
+          176,
+          3920
+        ]
+      ],
+      "sourceNames": [
+        "Biscayne Boulevard",
+        "East Flagler Street",
+        "North Bayshore Drive",
+        "Northeast 13th Street",
+        "Northeast 15th Street",
+        "Northeast 17th Terrace",
+        "Northeast 18th Street",
+        "Northeast 1st Avenue",
+        "Northeast 2nd Avenue",
+        "Northeast 2nd Street",
+        "Northeast 3rd Avenue",
+        "Northeast 4th Avenue",
+        "Northeast 6th Street",
+        "Northeast 9th Street",
+        "Southwest 1st Street",
+        "Southwest 2nd Avenue",
+        "Southwest 5th Avenue",
+        "West Flagler Street"
+      ],
+      "path": "data/server-storage/files/races/Miami%2C FL %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "name": "Seattle, WA \u2014 Landmark Run",
+      "id": "city-wa",
+      "type": "destination",
+      "turns": [
+        [
+          136,
+          3009
+        ]
+      ],
+      "sourceNames": [
+        "1st Avenue",
+        "1st Avenue South",
+        "2nd Avenue",
+        "2nd Avenue Extension South",
+        "3rd Avenue",
+        "4th Avenue",
+        "4th Avenue South",
+        "Airport Way South",
+        "Cedar Street",
+        "Clay Street",
+        "Denny Way",
+        "Lenora Street",
+        "Seattle Boulevard South",
+        "South Main Street",
+        "South Royal Brougham Way",
+        "West Denny Way",
+        "Western Avenue",
+        "Yesler Way"
+      ],
+      "path": "data/server-storage/files/races/Seattle%2C WA %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "name": "Wichita, KS \u2014 Landmark Run",
+      "id": "city-ks",
+      "type": "destination",
+      "turns": [
+        [
+          90,
+          1910
+        ],
+        [
+          187,
+          3772
+        ]
+      ],
+      "sourceNames": [
+        "East 1st Street North",
+        "East Douglas Avenue",
+        "East English Street",
+        "Franklin Street",
+        "Litchfield Street",
+        "McLean Boulevard",
+        "North Broadway Street",
+        "North Mead Street",
+        "North Seneca Street",
+        "Pattie Street",
+        "South Washington Street",
+        "Stackman Drive",
+        "West 1st Street North",
+        "West 2nd Street North",
+        "West Douglas Avenue",
+        "West Museum Boulevard",
+        "West Pine Street",
+        "West Sim Park Drive"
+      ],
+      "path": "data/server-storage/files/races/Wichita%2C KS %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "name": "Watkins Glen \u2014 Short \u2014 No Inner Loop",
+      "id": "raceway-watkins-short-no-loop",
+      "type": "circuit",
+      "turns": [],
+      "sourceNames": [
+        "Outer Loop",
+        "Short Course",
+        "The Esses",
+        "The Fast Lefthander",
+        "The Ninety",
+        "Watkins Glen International"
+      ],
+      "path": "data/server-storage/files/races/Watkins Glen %E2%80%94 Short %E2%80%94 No Inner Loop/document.json"
+    },
+    {
+      "name": "Watkins Glen \u2014 Short Course",
+      "id": "raceway-watkins-short",
+      "type": "circuit",
+      "turns": [],
+      "sourceNames": [
+        "Inner Loop",
+        "Outer Loop",
+        "Short Course",
+        "The Esses",
+        "The Fast Lefthander",
+        "The Ninety",
+        "Watkins Glen International"
+      ],
+      "path": "data/server-storage/files/races/Watkins Glen %E2%80%94 Short Course/document.json"
+    }
+  ]
+}

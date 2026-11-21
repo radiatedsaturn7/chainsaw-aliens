@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {buildTireLibraryChoices,openTireLibrary} from '../../src/ui/TireLibrary.js';
+import {buildTireLibraryChoices,openTireLibrary,openTireProperties} from '../../src/ui/TireLibrary.js';
 import {createTireDefinition} from '../../src/racing/raceTires.js';
 import {upsertCachedProjectFile,clearCachedProjectFilesForTests} from '../../src/ui/serverStorage.js';
 import {resetProjectFilesForTests} from '../../src/ui/projectFiles.js';
@@ -95,4 +95,26 @@ test('opening tire picker refreshes all saved tires and preserves the selected t
     assert.equal(select.value,'saved:Offroad');
     nodes.find(node=>node.tag==='button'&&node.textContent==='Cancel').onclick();await pending;
   }finally{globalThis.document=previousDocument;globalThis.fetch=previousFetch;clearCachedProjectFilesForTests();resetProjectFilesForTests();}
+});
+
+
+test('tire properties dialog applies sliding and durability controls to the document',()=>{
+  const previous=globalThis.document,{document,nodes}=fakeDocument();globalThis.document=document;
+  try{
+    let applied;
+    openTireProperties(createTireDefinition('drift'),value=>{applied=value;});
+    for(const [label,value] of [['Sliding grip fraction',.78],['Slide falloff',.8],['Slide recovery margin',.03],
+      ['Abrasion resistance',1.4],['Casing strength',1.3],['Stone cut resistance',1.6]]){
+      const node=nodes.find(n=>n.tag==='label'&&n.textContent===label);
+      assert.ok(node,label+' is reachable in Properties');node.children[0].value=value;
+    }
+    nodes.filter(n=>n.tag==='input').forEach(n=>n.reportValidity=()=>true);
+    nodes.find(n=>n.tag==='button'&&n.textContent==='Apply').onclick();
+    assert.equal(applied.compound.slidingFrictionRatio,.78);
+    assert.equal(applied.compound.postPeakFalloff,.8);
+    assert.equal(applied.compound.recoveryHysteresis,.03);
+    assert.equal(applied.compound.abrasionResistance,1.4);
+    assert.equal(applied.compound.casingStrength,1.3);
+    assert.equal(applied.compound.stoneResistance,1.6);
+  }finally{globalThis.document=previous;}
 });

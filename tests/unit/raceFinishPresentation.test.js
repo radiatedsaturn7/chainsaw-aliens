@@ -78,3 +78,24 @@ test('handheld completion fades only the game display, leaving controls visible'
  assert.deepEqual(draws.filter(d=>d.color==='rgba(0,0,0,1)'),[{color:'rgba(0,0,0,1)',...screen}]);
  assert.equal(draws.at(-1).color,'controls');assert.equal(e.playtestSession.finishFade.blackDrawn,true);
 });
+
+test('series results join the profile save barrier and cannot advance twice',async()=>{
+ const e=Object.create(RaceEditor.prototype);let records=0,persists=0,release;
+ const barrier=new Promise(resolve=>{release=resolve;});
+ e.game={menuPlayer:{motorsport:{record:async()=>{records++;}}}};
+ e.persistRaceMechanicalCondition=async()=>{persists++;await barrier;};
+ const session={menuConfiguration:{motorsportId:'event'}};
+ const task=e.saveCampaignRaceResult(session);
+ assert.equal(e.game.campaignSavePending,task);assert.equal(e.saveCampaignRaceResult(session),task);
+ release();await task;await e.saveCampaignRaceResult(session);
+ assert.equal(records,1);assert.equal(persists,1);assert.equal(session.campaignProgressSaved,true);
+});
+
+test('restart preserves the series grid and result destination',()=>{
+ const e=Object.create(RaceEditor.prototype),config={motorsportId:'event',motorsportRound:2};
+ e.playtestSession={carId:'player',menuConfiguration:config,aiRuntime:[{carId:'player'}],damage:{},mechanical:{}};
+ e.raceInput={autoShift:true};e.game={raceTravelSession:{}};
+ e.getRaceSessionCar=()=>({});e.disposeRacePlaytestSession=()=>{};e.resetRacePlaytestInputs=()=>{};
+ let options;e.startPlaytest=(id,value)=>{options=value;e.playtestSession={};};e.restartRacePlaytest();
+ assert.equal(options.matchedAiCar,true);assert.deepEqual(options.preparedAiCarIds,['player']);assert.deepEqual(e.playtestSession.menuConfiguration,config);
+});

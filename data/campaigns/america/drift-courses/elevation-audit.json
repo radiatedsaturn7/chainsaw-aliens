@@ -1,0 +1,92 @@
+[
+  {
+    "race": "Tsukuba \u2014 Course 1000 \u2014 Drift Reverse",
+    "mappedLengthM": 942.5754230229556,
+    "elevationLayers": [
+      "dem5a"
+    ],
+    "maxNodeGradePercent": 0.91,
+    "nodeHeightRangeM": 0.72
+  },
+  {
+    "race": "Ebisu Circuit \u2014 North Course",
+    "mappedLengthM": 950.3000417398737,
+    "elevationLayers": [
+      "dem5a"
+    ],
+    "maxNodeGradePercent": 15.79,
+    "nodeHeightRangeM": 30.53
+  },
+  {
+    "race": "Ebisu Circuit \u2014 School Course",
+    "mappedLengthM": 408.8804170739324,
+    "elevationLayers": [
+      "dem5a"
+    ],
+    "maxNodeGradePercent": 5.86,
+    "nodeHeightRangeM": 2.18
+  },
+  {
+    "race": "Ebisu Circuit \u2014 Touge Course",
+    "mappedLengthM": 880.7513260874008,
+    "elevationLayers": [
+      "dem5a"
+    ],
+    "maxNodeGradePercent": 20.54,
+    "nodeHeightRangeM": 36.69
+  },
+  {
+    "race": "Ebisu Circuit \u2014 West Drift Course",
+    "mappedLengthM": 635.6257273736247,
+    "elevationLayers": [
+      "dem5a"
+    ],
+    "maxNodeGradePercent": 12.48,
+    "nodeHeightRangeM": 15.08
+  },
+  {
+    "race": "Ebisu Circuit \u2014 West Course",
+    "mappedLengthM": 1917.1164166560638,
+    "elevationLayers": [
+      "dem5a"
+    ],
+    "maxNodeGradePercent": 11.51,
+    "nodeHeightRangeM": 38.36
+  },
+  {
+    "race": "Nikko Circuit \u2014 Main Course",
+    "mappedLengthM": 1020.6631713423237,
+    "elevationLayers": [
+      "dem5b"
+    ],
+    "maxNodeGradePercent": 2.45,
+    "nodeHeightRangeM": 1.56
+  },
+  {
+    "race": "Mobara Twin Circuit \u2014 East Course",
+    "mappedLengthM": 1121.4182426592674,
+    "elevationLayers": [
+      "dem5b"
+    ],
+    "maxNodeGradePercent": 8.83,
+    "nodeHeightRangeM": 12.23
+  },
+  {
+    "race": "Bihoku Highland Circuit \u2014 Course A",
+    "mappedLengthM": 666.5142174117198,
+    "elevationLayers": [
+      "dem5a"
+    ],
+    "maxNodeGradePercent": 7.99,
+    "nodeHeightRangeM": 5.86
+  },
+  {
+    "race": "Bihoku Highland Circuit \u2014 Course B",
+    "mappedLengthM": 1004.0695439426498,
+    "elevationLayers": [
+      "dem5a"
+    ],
+    "maxNodeGradePercent": 4.07,
+    "nodeHeightRangeM": 3.5
+  }
+]

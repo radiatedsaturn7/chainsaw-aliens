@@ -2,6 +2,7 @@ import {normalizeMenuDocument} from './MenuDocument.js';
 
 // Surface comes from the installed course, not the old core/wildcard priority.
 export function campaignEventCategory(event) {
+ if(['roads','cities','detours','raceways'].includes(event.campaignCategory))return event.campaignCategory;
  if(event.city || event.kind==='city')return 'cities';
  if(event.venueKey || /circuit|drag|raceway|oval|kart/i.test(`${event.import_kind||''} ${event.event_type||event.eventType||''}`))return 'raceways';
  const surfaces=event.installedSurfaces||event.surface||[];
@@ -12,15 +13,16 @@ export function campaignEventCategory(event) {
 
 export function createCampaignHubMenus(catalog, research, installed = []) {
  const ready = new Map(installed.filter(e => e.status === 'installed').map(e => [e.id,e]));
- const screens=[], hubs={},sideGates={};
+ const screens=[], hubs={},sideGates={},progression={version:1,regions:[]};
  const select=ref=>({type:'set-param',parameter:'raceRef',value:ref,then:{type:'screen',target:'garage'}});
  const back={label:'Back',action:{type:'back'}};
  const link=(label,target)=>({label,action:{type:'screen',target}});
  const screen=(id,name,rows)=>({
   id,name,background:'#000000',useDefaultBackground:false,effect:'none',musicMode:'continue',
   elements:[{id:'heading',type:'text',label:name,x:.06,y:.03,w:.88,h:.1,fontSize:28,useDefaultFont:true},
-   ...rows.map((r,i)=>({id:`row-${i}`,type:'button',x:.06,y:.17+i*.09,w:.88,h:.08,fontSize:24,
-    color:'#ffffff',background:'#000000',selectionIndicator:'cursor',cursorText:'>',useDefaultFont:true,...r}))]
+   ...rows.map((r,i)=>({id:`row-${i}`,type:'button',x:.04,y:.17+i*.09,w:.45,h:.08,fontSize:24,
+    color:'#ffffff',background:'#000000',selectionIndicator:'cursor',cursorText:'>',useDefaultFont:true,...r})),
+   {id:'route-preview',type:'race-description',property:'route-preview',x:.52,y:.17,w:.44,h:.74,useDefaultFont:true,color:'#ffffff'}]
  });
  // Five choices plus Previous/Next/Back always fits the eight-button limit.
  const pages=(id,name,rows,gate)=>{
@@ -37,11 +39,22 @@ export function createCampaignHubMenus(catalog, research, installed = []) {
  for(const chapter of research.hubs){
   const boss=catalog.find(e=>e.stage===chapter.sequence);
   if(!boss)throw Error(`Missing campaign stage ${chapter.sequence}`);
-  const id=`campaign-hub-${boss.stage}`,gate=boss.stage===1?boss.name:null;
+  const id=`campaign-hub-${boss.stage}`,gate=null;
   hubs[boss.name]=id;
   const candidates=chapter.races.map(r=>({...r,...ready.get(r.id)}));
   const known=new Set(candidates.map(r=>r.id));
   candidates.push(...installed.filter(e=>e.hubStage===boss.stage&&!known.has(e.id)));
+  // A promoted city race is the boss, not also a repeatable side-event entry.
+  for(let i=candidates.length-1;i>=0;i--)if(candidates[i].raceRef===boss.name)candidates.splice(i,1);
+  const pool=candidates.filter(r=>ready.has(r.id)),ordered=[];
+  // Gentle local opening, then rotate disciplines to leave meaningful choice.
+  if(boss.stage===1)for(const ref of ['Tower Hill Road','RI 116 — North Smithfield Scituate','Blue Hills — Reservation Parkways','RI 44 — Putnam Pike Glocester']){
+   const e=pool.find(e=>e.raceRef===ref);if(e){ordered.push(e.raceRef);pool.splice(pool.indexOf(e),1);}
+  }
+  while(pool.length)for(const category of ['roads','detours','cities','raceways']){
+   const i=pool.findIndex(e=>campaignEventCategory(e)===category);if(i>=0)ordered.push(pool.splice(i,1)[0].raceRef);
+  }
+  progression.regions.push({bossRef:boss.name,stage:boss.stage,events:[...new Set(ordered)],batchSize:4,clearsPerBatch:3,bossClears:Math.min(9,ordered.length)});
   screens.push(screen(id,boss.label||boss.name,[
    {label:'Main Mission',action:select(boss.name)},
    link('Road Runs',`${id}-roads`),link('City Runs',`${id}-cities`),link('Detours',`${id}-detours`),link('Raceways',`${id}-raceways`),back
@@ -61,5 +74,5 @@ export function createCampaignHubMenus(catalog, research, installed = []) {
    pages(`${id}-${category}`,`${boss.label||boss.name} · ${label}`,rows,gate);
   }
  }
- return {screens:normalizeMenuDocument({screens:[...screens,{id:'garage',elements:[]}]}).screens.filter(s=>s.id!=='garage'),hubs,sideGates};
+ return {screens:normalizeMenuDocument({screens:[...screens,{id:'garage',elements:[]}]}).screens.filter(s=>s.id!=='garage'),hubs,sideGates,progression};
 }

@@ -86,8 +86,16 @@ def build(candidate,hub):
         points=[{'x':x,'y':y,'lat':lat-math.degrees(y/6371008.8),'lon':lon+math.degrees(x/(6371008.8*math.cos(math.radians(lat)))),'tags':{'surface':authored['surface'],'width':str(authored['widthM'])}} for x,y in authored['pointsM']]
         layout={'name':authored['name'],'points':points,'lengthM':america.profile(points)[0][-1],'place':origin,'open':True}
     elif kind=='circuit':
-        layouts=track.extract_layouts(ways,(lat,lon))
-        if key=='H06-S08':
+        reviewed=json.loads(Path('tools/campaigns/circuit_route_overrides.json').read_text()).get(key)
+        track.apply_reviewed_way_directions(ways,reviewed)
+        layouts=track.extract_layouts(ways,(lat,lon),max_layouts=256,max_cycles=512)
+        layouts=[l for l in layouts if not track.layout_review_issues(l)]
+        if not layouts:raise ValueError('Circuit junctions or mixed layouts require source review before importing')
+        if reviewed:
+            choices=[l for l in layouts if l['name']==reviewed['name'] and abs(l['lengthM']-reviewed['lengthM'])<1]
+            if not choices:raise ValueError('Reviewed circuit source changed; review route before importing')
+            layout=choices[0]
+        elif key=='H06-S08':
             layouts=[l for l in layouts if 'Kartplex' in l['name']]
             if not layouts:raise ValueError('Named Gateway Kartplex layout missing')
             layout=max(layouts,key=lambda l:l['lengthM'])

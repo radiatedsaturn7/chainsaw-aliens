@@ -1,0 +1,99 @@
+{
+  "sourceDate": "2026-11-17",
+  "category": "International",
+  "layouts": [
+    {
+      "id": "raceway-lemans-sarthe",
+      "raceRef": "Le Mans \u2014 Circuit de la Sarthe",
+      "venueKey": "lemans",
+      "layoutLabel": "Circuit de la Sarthe",
+      "lengthM": 13611.744665817576,
+      "laps": 2,
+      "documentPath": "races/Le Mans %E2%80%94 Circuit de la Sarthe/document.json"
+    },
+    {
+      "id": "raceway-lemans-bugatti",
+      "raceRef": "Le Mans \u2014 Bugatti",
+      "venueKey": "lemans",
+      "layoutLabel": "Bugatti",
+      "lengthM": 4163.88111744143,
+      "laps": 3,
+      "documentPath": "races/Le Mans %E2%80%94 Bugatti/document.json"
+    },
+    {
+      "id": "raceway-portimao-gp",
+      "raceRef": "Portim\u00e3o \u2014 Grand Prix",
+      "venueKey": "portimao",
+      "layoutLabel": "Grand Prix",
+      "lengthM": 4681.550525364743,
+      "laps": 3,
+      "documentPath": "races/Portim%C3%A3o %E2%80%94 Grand Prix/document.json"
+    },
+    {
+      "id": "raceway-portimao-motorcycle",
+      "raceRef": "Portim\u00e3o \u2014 Motorcycle",
+      "venueKey": "portimao",
+      "layoutLabel": "Motorcycle",
+      "lengthM": 4647.572793579907,
+      "laps": 3,
+      "documentPath": "races/Portim%C3%A3o %E2%80%94 Motorcycle/document.json"
+    },
+    {
+      "id": "raceway-zandvoort-gp",
+      "raceRef": "Zandvoort \u2014 Grand Prix",
+      "venueKey": "zandvoort",
+      "layoutLabel": "Grand Prix",
+      "lengthM": 4253.174288060539,
+      "laps": 3,
+      "documentPath": "races/Zandvoort %E2%80%94 Grand Prix/document.json"
+    },
+    {
+      "id": "raceway-zandvoort-national",
+      "raceRef": "Zandvoort \u2014 National",
+      "venueKey": "zandvoort",
+      "layoutLabel": "National",
+      "lengthM": 2865.371903486232,
+      "laps": 3,
+      "documentPath": "races/Zandvoort %E2%80%94 National/document.json"
+    },
+    {
+      "id": "raceway-zandvoort-eastern",
+      "raceRef": "Zandvoort \u2014 Eastern",
+      "venueKey": "zandvoort",
+      "layoutLabel": "Eastern",
+      "lengthM": 1403.8933942732122,
+      "laps": 3,
+      "documentPath": "races/Zandvoort %E2%80%94 Eastern/document.json"
+    },
+    {
+      "id": "raceway-gilles-villeneuve-gp",
+      "raceRef": "Circuit Gilles-Villeneuve \u2014 Grand Prix",
+      "venueKey": "gilles-villeneuve",
+      "layoutLabel": "Grand Prix",
+      "lengthM": 4362.196777437724,
+      "laps": 3,
+      "documentPath": "races/Circuit Gilles-Villeneuve %E2%80%94 Grand Prix/document.json"
+    },
+    {
+      "id": "raceway-phillip-island-gp",
+      "raceRef": "Phillip Island \u2014 Grand Prix",
+      "venueKey": "phillip-island",
+      "layoutLabel": "Grand Prix",
+      "lengthM": 4453.659239726641,
+      "laps": 3,
+      "documentPath": "races/Phillip Island %E2%80%94 Grand Prix/document.json"
+    }
+  ],
+  "limitations": [
+    "OSM centerlines and Mapzen DEM, not laser-scanned tracks.",
+    "Widths default to 12 m where not mapped. Banking is not surveyed, including Zandvoort.",
+    "Portim\u00e3o: GP and motorcycle layouts reviewed; unverified combinations of connectors omitted.",
+    "Zandvoort: main, National and Eastern mapped loops; pit-lane variants omitted.",
+    "Le Mans Sarthe includes public roads selected by OSM relation 2126739; ordinary traffic directions overridden only for the closed-race relation.",
+    "Circuit scenery reuses existing saved artwork."
+  ],
+  "validation": {
+    "fullRaceLoading": "9/9 passed",
+    "report": "artifacts/international-expansion-loading.json"
+  }
+}

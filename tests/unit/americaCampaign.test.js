@@ -11,7 +11,7 @@ const catalog=read('data/campaigns/america/catalog.json');
 const map=normalizeMenuElement({type:'world-map',...createAmericaWorldMap(catalog)});
 const decode=d=>d.__chainsawStorage?JSON.parse(zlib.gunzipSync(Buffer.from(d.data,'base64'))):d;
 const raceFor=s=>decode(read(path.join('data/server-storage/files',s.documentPath))).race;
-const expected=['Tower Hill Road','Mount Washington Auto Road','Laurel Highlands Scenic Byway','Ohio River Crossing','Ozark Backroads','Data Center City','Historic Route 66','Pikes Peak Highway','Moki Dugway','Oak Creek Canyon','Angeles Crest Highway'];
+const expected=['Providence, Rhode Island','Mount Washington Auto Road','Laurel Highlands Scenic Byway','Ohio River Crossing','Ozark Backroads','Data Center City','Historic Route 66','Pikes Peak Highway','Moki Dugway','Oak Creek Canyon','Angeles Crest Highway'];
 
 test('eleven ordered Middle Route locations resolve to installed races',()=>{
  assert.deepEqual(catalog.map(s=>s.label||s.name),expected);
@@ -80,7 +80,7 @@ test('saved menu retains route progression with editable pin positions and old c
  assert.ok(saved.nodes.every(n=>Number.isFinite(n.x)&&Number.isFinite(n.y)));
  const parameters={[raceCompletionKey('North 01 - Providence - Blackstone')]:true,[raceCompletionKey(AMERICA_OPENING_RACE)]:true};
  assert.deepEqual(worldMapSelectableNodes(worldMapNodes(saved,null,null,parameters)).map(n=>n.raceRef),catalog.slice(0,2).map(s=>s.name));
- assert.equal(menu.parameters.campaignOpeningRace,AMERICA_OPENING_RACE);
+ assert.equal(menu.parameters.campaignOpeningRace,'Tower Hill Road');
 });
 
 test('campaign map remains extensible beyond eleven races',()=>{
@@ -109,7 +109,7 @@ test('geographic pins and selected labels stay legible on phone and landscape ma
   for(let i=0;i<points.length;i++)for(let j=i+1;j<points.length;j++)assert.ok(Math.hypot(points[i].x-points[j].x,points[i].y-points[j].y)>diameter,'selection rings overlap');
   const labels=[];const ctx=new Proxy({globalAlpha:1},{get:(o,k)=>k in o?o[k]:()=>{}});
   drawWorldMap(ctx,b,map,null,{}, {},catalog[0].name,{drawText:(text,x,y,width)=>labels.push({text,x,y,width})});
-  assert.ok(labels.some(l=>l.text.includes('Tower Hill Road')));
+  assert.ok(labels.some(l=>l.text.includes('Providence')));
   assert.ok(!labels.some(l=>l.text===catalog[2].name),'avoid overlapping long geographic labels; show them in the selected detail');
  }
 });

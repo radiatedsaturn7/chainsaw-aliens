@@ -65,3 +65,53 @@ test('explicit invalidation clears current shared signature maps inside nested s
  });
  assert.equal(e.raceGeometryReadCache,undefined);
 });
+
+
+function updateFixture(){
+ const e=fixture();e.game={};e.previewOffset=0;
+ for(const name of ['syncRacePhysicalGamepad','updateRacePlaytestFps','updateRaceMapThumbstickPan','updateRaceKeyboardInput'])e[name]=()=>{};
+ e.isLivePlaytestSession=()=>true;e.hasPhysicalRaceGamepad=()=>false;
+ e.getRaceWorldPoseAtDistance=()=>{e.getRaceSurfaceGeometryRevisionKey();return {x:0,z:10,yaw:0};};
+ e.getRaceSessionCar=()=>({});e.getRaceCarTuning=()=>({});
+ let simulationScope;
+ e.updatePlaytestSafely=()=>e.withRaceGeometryReadCache(()=>{
+  simulationScope=e.raceGeometryReadCache;e.getRaceSurfaceGeometryRevisionKey();return true;
+ });
+ e.surfaceReads=0;
+ e.getRaceSurfaceModel=()=>({samplePhysicsGeometry:p=>{
+  e.surfaceReads++;e.getRaceSurfaceGeometryRevisionKey();return {valid:true,region:'road',heightM:p.y};
+ }});
+ e.getRaceRouteProjectionForWorldPoint=()=>({distance:10});
+ e.playtestSession.vehicleDynamicsRunner={state:{orientation:{x:0,y:0,z:0,w:1},
+  position:{x:0,y:.55,z:10},grounded:true,supportedWheelCount:4,
+  contactPatches:Object.fromEntries(['fl','fr','rl','rr'].map(id=>[id,{
+   validTreadContact:true,normalLoadN:1000,contactPointWorld:{x:0,y:0,z:10}
+  }]))}};
+ e.updateRaceAutomaticVehicleRecovery=dt=>{
+  assert.equal(e.raceGeometryReadCache,simulationScope,'post-simulation recovery must share the read cache');
+  return RaceEditor.prototype.updateRaceAutomaticVehicleRecovery.call(e,dt);
+ };
+ return e;
+}
+test('full update shares road signatures across simulation, assists and recovery',()=>{
+ const e=updateFixture();
+ e.update({},1/60);const reads=e.nodeReads;
+ assert.ok(reads>0);assert.equal(e.surfaceReads,12);assert.equal(e.raceGeometryReadCache,undefined);
+ for(let i=0;i<50;i++)e.update({},1/60);
+ assert.equal(e.nodeReads,reads,'unchanged road must not be reserialized by post-simulation reads');
+ e.selectedRace.road.tileMap.revision++;e.update({},1/60);
+ assert.ok(e.nodeReads>reads,'authored changes must still invalidate the cache');
+});
+test('failed simulation and thrown recovery still close the read scope and frame budget',()=>{
+ for(const failure of ['simulation','recovery']){
+  const e=updateFixture();let finished=0,recoveryCalls=0;
+  e.playtestSession.frameBudget={finish:()=>finished++};
+  e.updateRaceAutomaticVehicleRecovery=()=>{recoveryCalls++;throw new Error('recovery failure');};
+  if(failure==='simulation')e.updatePlaytestSafely=()=>false;
+  if(failure==='simulation')e.update({},1/60);
+  else assert.throws(()=>e.update({},1/60),/recovery failure/);
+  assert.equal(recoveryCalls,failure==='simulation'?0:1);
+  assert.equal(finished,1);assert.equal(e.deferRaceFrameBudgetFinish,false);
+  assert.equal(e.raceGeometryReadCache,undefined);
+ }
+});
