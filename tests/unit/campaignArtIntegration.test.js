@@ -118,6 +118,34 @@ test('every delivered PNG is imported exactly once and decals remain surface art
  }
 });
 
+test('free-race scenery intent proves one active saved placement and native artwork binding',()=>{
+ const artRef='free-race-rock',doodadRef='free-race-doodad',placementId='expansion-art-v1-test';
+ const registry={schemaVersion:1,assets:{[artRef]:{slot:'scenery',reason:'Exact saved use',raceRef:'Free race',placementId,doodadRef}}};
+ const menu={screens:[{elements:[{source:'races',binding:'raceRef'}]}]};
+ const freeRaceManifest={folders:{races:{'Free race':'race'},art:{[artRef]:'art'},doodads:{[doodadRef]:'doodad'}}};
+ const placement={id:placementId,doodadRef,artRef,visualOnly:true,solid:false,collidable:false,expansionScenery:{version:1},
+  previewDoodad:{artRef,defaultRule:{behavior:'decoration',speedDrainPercent:0,damage:{panels:0,suspension:0,engine:0}},rules:[]}};
+ const validate=({scenery=[placement],savedArt=artRef,paths=[],registryOverride=registry,manifestOverride=freeRaceManifest}={})=>
+  authoredFreeRaceArtwork(registryOverride,menu,manifestOverride,p=>({race:{race:{scenery}},doodad:{doodad:{artRef:savedArt}}})[p],paths);
+ assert.deepEqual([...validate()],[artRef]);
+ assert.throws(()=>validate({scenery:[]}),/one exact saved placement/);
+ assert.throws(()=>validate({scenery:[placement,placement]}),/one exact saved placement/);
+ assert.throws(()=>validate({scenery:[{...placement,artRef:'different'}]}),/placement art/);
+ assert.throws(()=>validate({scenery:[{...placement,doodadRef:'different'}]}),/placement doodad/);
+ assert.throws(()=>validate({scenery:[{...placement,collidable:true}]}),/active visual-only placement/);
+ assert.throws(()=>validate({scenery:[{...placement,state:'removed'}]}),/active visual-only placement/);
+ assert.throws(()=>validate({scenery:[{...placement,previewDoodad:{...placement.previewDoodad,artRef:'different'}}]}),/preview art/);
+ assert.throws(()=>validate({manifestOverride:{folders:{...freeRaceManifest.folders,doodads:{}}}}),/Missing free-race scenery doodad/);
+ assert.throws(()=>validate({savedArt:'different'}),/native doodad art/);
+ assert.throws(()=>validate({paths:['race']}),/Campaign asset must retain campaign guard/);
+ const missingPlacement=structuredClone(registry);
+ delete missingPlacement.assets[artRef].placementId;
+ assert.throws(()=>validate({registryOverride:missingPlacement}),/Invalid free-race scenery witness/);
+ const unknownSlot=structuredClone(registry);
+ unknownSlot.assets[artRef].slot='preload';
+ assert.throws(()=>validate({registryOverride:unknownSlot}),/Invalid free-race intent/);
+});
+
 test('delivered art satisfies explicit campaign, editor and configured-unused intent',t=>{
  const used=new Set();
  const paths=campaignArtworkRacePaths(read('data/campaigns/america/catalog.json'),read('AI/last-on-the-grid/last_on_the_grid_99_side_races.json'),[...read('data/campaigns/america/side-races/catalog.json'),...read('data/campaigns/america/raceways/catalog.json')],manifest);
