@@ -1,0 +1,76 @@
+# Proposal only. Keep separate from scenery candidate and existing CI.
+name: Exact scenery candidate smoke
+on:
+  push:
+    branches: [dot/diagnostic-scenery-315]
+permissions:
+  contents: read
+jobs:
+  scenery-smoke:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        viewport: [desktop, handheld]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 10120581b69c880fdb1328e10c852a7926d026c9
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Verify reviewed candidate and staging provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 10120581b69c880fdb1328e10c852a7926d026c9
+          test "$(git rev-parse HEAD^)" = d3b854f86da1bc6aa46b24a2f81bce385202ae45
+          test "$(git rev-parse HEAD^{tree})" = 1b9d8ace317ae9bba93348eff16b0eb1dbbec4b5
+          test "$(git rev-parse HEAD:.github)" = 9acb7dae8496ff32e0f8ce6e6b4f1a216bc74980
+          test -z "$(git status --porcelain=v1)"
+          printf '%s  %s\n' \
+            65240ec71416b7b2f377b2390d1fc15b88878e63aeaedee308f794b24b27df48 data/server-storage/files/manifest.json \
+            4e010152c0e29c5ac2aa1cfb120df20652c17dfd0c45c59cb35d19829547152a tests/playwright/scenery-expansion-smoke.spec.js \
+            1da083a710d53e88dba547e46a32d6f81bf9e953b5c4df664bed2cdb2761786f playwright.scenery-private.config.mjs | sha256sum --check --strict
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned Playwright and bootstrap mandatory sandbox
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+          npx --no-install playwright install --with-deps chromium
+          node --input-type=module <<'JS'
+          import { chromium } from '@playwright/test';
+          const browser = await chromium.launch({headless:true, chromiumSandbox:true});
+          try {
+            const page = await browser.newPage();
+            await page.goto('data:text/html,<title>Scenery sandbox preflight</title>');
+            if (await page.title() !== 'Scenery sandbox preflight') throw Error('Protected renderer did not start');
+          } finally { await browser.close(); }
+          JS
+      - name: Run exactly six smoke tests for this viewport
+        shell: bash
+        env:
+          SCENERY_VIEWPORT: ${{ matrix.viewport }}
+        run: |
+          set -euo pipefail
+          case "$SCENERY_VIEWPORT" in desktop|handheld) ;; *) exit 1 ;; esac
+          cfg=playwright.scenery-private.config.mjs
+          spec=tests/playwright/scenery-expansion-smoke.spec.js
+          npx --no-install playwright test -c "$cfg" "$spec" --grep "(^| )$SCENERY_VIEWPORT " --list --reporter=json > "${RUNNER_TEMP}/scenery-collected.json"
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const listing=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+'/scenery-collected.json','utf8'));
+          const tests=suites=>suites.flatMap(s=>[...(s.specs||[]).flatMap(x=>x.tests||[]),...tests(s.suites||[])]);
+          if(tests(listing.suites).length!==6)throw Error('Expected exactly six tests for one verified viewport');
+          JS
+          npx --no-install playwright test -c "$cfg" "$spec" --grep "(^| )$SCENERY_VIEWPORT " --reporter=list
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scenery-smoke-${{ matrix.viewport }}
+          path: artifacts/scenery-private-smoke/
+          retention-days: 3
+          if-no-files-found: ignore
