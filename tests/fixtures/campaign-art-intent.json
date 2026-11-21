@@ -56,6 +56,26 @@
       "kind": "skybox",
       "source": "assets/campaign-art/skyboxes/providence-2994.png",
       "reason": "Editor skybox used by Studio Sprint and other saved editor courses."
+    },
+    "fence-region-generic-building-row": {
+      "kind": "doodad",
+      "source": "assets/campaign-art/regional-fences/fence-generic-building-row.png",
+      "reason": "Reusable solid repeating strip exposed through the Race Editor Fence picker; does not require inserting collision into a saved race."
+    },
+    "fence-region-generic-canyon-wall": {
+      "kind": "doodad",
+      "source": "assets/campaign-art/regional-fences/fence-generic-canyon-wall.png",
+      "reason": "Reusable solid repeating strip exposed through the Race Editor Fence picker; does not require inserting collision into a saved race."
+    },
+    "fence-region-generic-race-wall-catchfence": {
+      "kind": "doodad",
+      "source": "assets/campaign-art/regional-fences/fence-generic-race-wall-catchfence.png",
+      "reason": "Reusable solid repeating strip exposed through the Race Editor Fence picker; does not require inserting collision into a saved race."
+    },
+    "fence-region-generic-tree-line": {
+      "kind": "doodad",
+      "source": "assets/campaign-art/regional-fences/fence-generic-tree-line.png",
+      "reason": "Reusable solid repeating strip exposed through the Race Editor Fence picker; does not require inserting collision into a saved race."
     }
   },
   "configuredUnused": {
