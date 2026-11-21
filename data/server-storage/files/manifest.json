@@ -2523,7 +2523,10 @@
       "environment-rally-north-road-evening-v1": "art/environment-rally-north-road-evening-v1/document.json",
       "environment-rally-shoreline-snow-noon-v1": "art/environment-rally-shoreline-snow-noon-v1/document.json",
       "environment-rally-svullrya-snow-morning-v1": "art/environment-rally-svullrya-snow-morning-v1/document.json",
-      "environment-nz-whaanga-tasman-morning-qav1b": "art/environment-nz-whaanga-tasman-morning-qav1b/document.json"
+      "environment-nz-whaanga-tasman-morning-qav1b": "art/environment-nz-whaanga-tasman-morning-qav1b/document.json",
+      "catalog-alkanet-2015-body": "art/catalog-alkanet-2015-body/document.json",
+      "catalog-alkanet-2015-dashboard": "art/catalog-alkanet-2015-dashboard/document.json",
+      "catalog-alkanet-2015-tires": "art/catalog-alkanet-2015-tires/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

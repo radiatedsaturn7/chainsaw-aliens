@@ -227,3 +227,87 @@ test('campaign Load Save stays blank until the slot poster is ready',async({brow
     qa.assertBrowseCold();
   }finally{net.release();await context.close();}
 });
+
+// This pilot shares the exact staging-gated suite, not a manually skipped smoke.
+const alkanetPilotName='Alkanet 2015';
+function expectAlkanetBindings(qa){
+  const name=alkanetPilotName,id=qa.thumb.carsByName[name];
+  const row=qa.thumb.previews[id];
+  expect(row).toBeTruthy();
+  expect(row.carId).toBe('alkanet-2015');
+  expect(row.stockSources.filter(source=>source.folder==='cars').map(source=>source.name)).toEqual([name]);
+  expect(row.stockSources.map(source=>source.name)).toContain('catalog-alkanet-2015-body');
+  expect(row.stockSources.map(source=>source.name)).toContain('catalog-alkanet-2015-tires');
+  expect(row.stockSources.map(source=>source.name)).not.toContain('8300 body');
+  // The real starter remains the alternate control, not a preview for Alkanet.
+  const starter=qa.thumb.previews[qa.thumb.carsByName['RTG-001']];
+  expect(starter.stockSources.map(source=>source.name)).toContain('8300 body');
+  expect(row.url).not.toBe(starter.url);
+  expect(row.poster.url).not.toBe(starter.poster.url);
+  return row;
+}
+
+for(const [surface,options] of [
+  ['desktop',{viewport:{width:1280,height:900}}],
+  ['touch',{viewport:{width:390,height:844},isMobile:true,hasTouch:true}],
+])test('Alkanet stock picker loads its own atlas without starter fallback on '+surface,async({browser})=>{
+  test.setTimeout(120000);
+  const context=await browser.newContext({...options,serviceWorkers:'block'});
+  if(surface==='touch')await context.addInitScript(()=>Object.defineProperty(navigator,'userAgentData',{value:{mobile:true}}));
+  const qa=await installThumbnailBrowseWitness(context);
+  const row=expectAlkanetBindings(qa),path='/'+row.url;
+  const net=await holdImage(context,path);
+  try{
+    const page=await context.newPage();
+    await page.goto('/index.html?hideFullscreenForTesting');
+    await page.waitForFunction(()=>window.__gameReady&&window.__game?.state!=='loading');
+    await page.evaluate(async name=>{
+      const {createMenuDocument}=await import('/src/menus/MenuDocument.js');
+      const g=window.__game,doc=createMenuDocument();
+      g.setDisplayMode('color');
+      doc.parameters.carRef=name;
+      g.menuProgress={...g.menuProgress,carRef:name}; // Local context only; no save.
+      await g.menuPlayer.open(doc,{preview:true,screenId:'cars'});
+    },alkanetPilotName);
+    expect(await page.evaluate(()=>window.__game.menuPlayer.flow.parameters.carRef)).toBe(alkanetPilotName);
+    await expect.poll(()=>net.held.has(path),{timeout:30000}).toBe(true);
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+    expect(await page.evaluate(()=>window.__fakeCarFills)).toBe(0);
+    qa.assertBrowseCold();
+    net.release();
+    await expectThumbnailOnCanvas(page,qa,alkanetPilotName,{selected:true});
+    qa.assertBrowseCold();
+  }finally{net.release();await context.close();}
+});
+
+test('Alkanet campaign Load Save paints its own poster without a generic placeholder',async({browser})=>{
+  test.setTimeout(120000);
+  const context=await browser.newContext({serviceWorkers:'block'});
+  const qa=await installThumbnailBrowseWitness(context);
+  const row=expectAlkanetBindings(qa),path='/'+row.poster.url;
+  const net=await holdImage(context,path);
+  try{
+    const page=await context.newPage();
+    await page.goto('/index.html?hideFullscreenForTesting');
+    await page.waitForFunction(()=>window.__gameReady&&window.__game?.state!=='loading');
+    await page.evaluate(async name=>{
+      const {createMenuDocument}=await import('/src/menus/MenuDocument.js');
+      const {CampaignSaves}=await import('/src/menus/CampaignSaves.js');
+      const g=window.__game;
+      g.setDisplayMode('color');
+      await g.menuPlayer.open(createMenuDocument(),{preview:true,screenId:'splash'});
+      g.campaignSaves??=new CampaignSaves(g);
+      g.campaignSaves.slots[0]={summary:{car:name,condition:71},playTimeSeconds:2};
+      g.menuPlayer.showSaveSlots('start');
+    },alkanetPilotName);
+    await expect.poll(()=>net.held.has(path),{timeout:30000}).toBe(true);
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+    expect(await page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('saves-start');
+    expect(await page.evaluate(()=>window.__fakeCarFills)).toBe(0);
+    expect(await page.evaluate(path=>window.__paintedStockPosters.has(path),path)).toBe(false);
+    qa.assertBrowseCold();
+    net.release();
+    await expect.poll(()=>page.evaluate(path=>window.__paintedStockPosters.has(path),path),{timeout:30000}).toBe(true);
+    qa.assertBrowseCold();
+  }finally{net.release();await context.close();}
+});
