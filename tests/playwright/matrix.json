@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Glasswort 181 1973",
+    "id": "glasswort-181-1973",
+    "expected": {
+      "car": "d9976f639d7aca029aded6c54d30f744cb9d274928bfc30061712cb1a76e3a4c",
+      "body": "aeb84324316ffcad74d711a829c3ac9490c8b2ea80aa89e539bf3b756740d938",
+      "dashboard": "441cc6d244f6acf6260d8974799afa0193670bd6e31c1ac1a0f466b15b861cbd",
+      "tires": "c0167453aa537de595e0ea53baf98ab690d24b5554938cd39bca8a57f0e74071"
+    }
+  },
+  {
+    "name": "Brooklime 1994",
+    "id": "brooklime-1994",
+    "expected": {
+      "car": "b117783da9516eafbba76a5f9bb10de84dd00674cb21e8c115dcf4be9489d94b",
+      "body": "5ff905225604ad597976e35d37e42af268baea039e28a6026f7ee1fc3aca1eb1",
+      "dashboard": "e992850081c4c9e84923d8972b9ec006802d69f826356efee0836523131f9da9",
+      "tires": "a8668ed27a99eb37f4435a5b2510f7950b86d26857f746acd6f01207a1c9e2cc"
+    }
+  },
+  {
+    "name": "Moschatel 1973",
+    "id": "moschatel-1973",
+    "expected": {
+      "car": "3c191cc6ab9ecfbb14b7ccba2b7b471b3750fb8d2d4c84e4c18318a03686e44a",
+      "body": "da00a237b7ac50ee5d87c8ae3fbf78060d608ac052552d9eca935bcc9db1a8c9",
+      "dashboard": "eadb66da725cfe71adfc0d66740a004ca041d55c48837ca9bf3bcdcd671a1030",
+      "tires": "c4005d49c6369502bec9030c9e9b5cc26f3262b5cf1e7159f2a9186faa8032da"
+    }
+  },
+  {
+    "name": "Pearlwort 1987",
+    "id": "pearlwort-1987",
+    "expected": {
+      "car": "0cb09281993941428ab6397ed93f32e8f298bea52bb96b995cc1d8fa0af5771b",
+      "body": "e6c528579d70c1be3b267a8fc32db433800768cc8e6922d8fd39f076d43b18e9",
+      "dashboard": "c524fa5bb2d1b5cdddcfb93183fccd16d18527481a14f528e5d314f20387f294",
+      "tires": "ad627db754ee8e550dec7422bd88b354b4c14d61d1e9ef9d80797e8fc6bf454d"
+    }
+  }
+]
