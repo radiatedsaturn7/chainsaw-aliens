@@ -1,1 +1,9 @@
-{"name":"Alkanet 2015","folder":"cars","version":1,"savedAt":1794873600000,"stockPreviewReleaseRevision":"dd8cbe5b93d57c652791db00fd26a56ed02f4afd9b0397ffc48fcd445f10f82c","stockPreviewSha256":"32d1ffac2d87d3bc73f66f62794f3ef710d8884a3ef31123c4b9ad8ba49d5241","stockPreviewBytes":365471}
+{
+  "name": "Alkanet 2015",
+  "folder": "cars",
+  "version": 1,
+  "savedAt": 1794873600000,
+  "stockPreviewReleaseRevision": "34964586d034c2eabaeb0729dc66d0990ae6b3909d28bfcdf93757cb66f80632",
+  "stockPreviewSha256": "92c36f81454e733f1bb4314677d414dc07a2fe6766b901a3fbc4bb36eaa235c6",
+  "stockPreviewBytes": 234206
+}
