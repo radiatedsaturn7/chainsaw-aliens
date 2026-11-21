@@ -3,6 +3,9 @@
 > **CURRENT REVIEW PACKAGE (2026-11-17):** [Review Dashboard](REVIEW_DASHBOARD.md) · [Narrative Blueprint v0.1](NARRATIVE_BLUEPRINT.md) · [Chapter Treatments](CHAPTER_TREATMENTS/README.md) · [Literary Companion](LITERARY_COMPANION/CHAPTER_ANALYSIS.md). This older bible remains a historical snapshot; newer ideas are **proposed**, not approved canon. In the latest review, the dead-scientist scene is mapped to Mission 07, the dog encounter is optional (Rob feeds it if retained), Cait initiates the California trip, and the ending remains deliberately reserved.
 > REVIEW DRAFT · 2026-11-13 · Not all entries are canon.
 
+## Origin clarification — approved November 20, 2026
+[Cait's Awakening](ORIGIN_CAIT_AWAKENING.md) is the current user-approved source for Cait's awakening and first meeting with Rob. Long isolation drives Rob's inventive absurdity and deterioration: some machines are built to survive, others to have something to laugh about when nobody answers. On a breaking day after a gentle message remains unanswered for a week, he angrily destroys a failed robot, throws a wrench that strikes discarded Cait, and unexpectedly wakes her. She sees the torn-apart machines, fears him, and flees. They later reach the **same gas station independently**; Rob is there for gasoline, **does not rescue her**, and **Cait saves him** from indifferent automated machines. Preserve this *first* rescue separately from Mission 07's later maintenance-lift rescue. Specific one-liner, message recipient and fight choreography remain draft.
+
 ## Premise [ESTABLISHED]
 Year 2994. Roughly a decade after a rapid migration of humanity into digital Heaven, Rob (one of the last, perhaps the last, biological humans outside) and Cait (an android) drive west through a snowy, recently abandoned United States toward the Pacific. Rob promised Cait he would show her the ocean; after that, she is free to leave. Their journey is both a racing game and a story about loneliness, autonomy, love, mortality and what remains of humanity.
 
@@ -13,11 +16,6 @@ Restrained, character-driven dialogue. Let the world and silences communicate mo
 Humanity did not vanish a thousand years before the game. Over a few years, almost everyone **chose to upload into digital Heaven**. The last major wave occurred approximately **ten years before 2994**; 2980–2984 are draft chronology anchors, not finalized dates. Rob witnessed the exodus, remained in the physical world and has been effectively alone *as a biological human* for about a decade. He built Cait at some point during that period; how long they have lived together is **OPEN**. His former acquaintances in Heaven, including Evelyn in the current treatment, can therefore remember him personally without immortality lore.
 
 Heaven might recall a technological Rapture, while the abandoned outside resembles Rob's purgatory. These are interpretations, not established supernatural events. Ten years of neglect calls for a mix of **nearly intact homes and weather-damaged roads**; spectacular ruins need additional causes. See [The Ascension world history](WORLD_LORE/THE_ASCENSION.md).
-
-## Why Rob stayed outside Heaven [CORE MOTIVATION / INTERPRETATION OPEN]
-Rob rejected Heaven partly because **its perfection made old friends feel unfamiliar and fake to him**. They had become uniformly reassuring, agreeable and conflict-averse; speaking with them sometimes felt like talking to a scripted drive-through. Rob prefers imperfect, candid people and real experiences, even when they hurt. That is **his experience**, not proof that the uploaded are soulless, copies, or morally inferior. They may genuinely be happy and changed by choice.
-
-This creates the story's central irony: **Rob rejected the people who always knew what to say, yet becomes angry at Cait for refusing to say “I love you.”** A machine built without autonomy can say the words; Cait, who makes her own decisions, refuses them. See [The Reverse Turing Test](WORLD_LORE/REVERSE_TURING_TEST.md).
 
 ## Opening [ESTABLISHED]
 1. Start in gameplay on snowy Tower Hill Road, Cumberland, Rhode Island. Cait retrieves fuel and must return as a storm shifts. The timed segment can be failed; either outcome proceeds to the garage.
@@ -60,7 +58,7 @@ The Pacific coast is the story destination, not necessarily the final listed rac
 - Ending concept: Rob dies near the destination or before Cait can return; Cait initially leaves, returns too late, and eventually tries to reconstruct him from surviving cells. A possible 10,000-year aftermath has been discussed. **This is a concept, not locked staging.**
 
 ## The Other Scientist — Cait's choice [ESTABLISHED CORE / PLACEMENT PROPOSED]
-Rob and Cait find a dead scientist whose android continues its programmed sexual routine without awareness or freedom to choose. The scientist designed the machine to serve his desires; unlike him, Rob wanted genuine companionship and allowed Cait independent judgment. Hostile husks/robots attack. Rob orders Cait to shut a door; she recognizes it will not hold, disobeys, and uses a maintenance lift to block the attackers. **Her disobedience saves Rob's life.** This is the dramatic payoff, not merely the discovery of the other android.
+Rob and Cait find a dead scientist whose android continues its programmed sexual routine without awareness or freedom to choose. The scientist designed the machine to serve his desires; unlike him, Rob sought genuine companionship, but Cait's independent consciousness emerged unexpectedly and cannot be treated as a feature Rob successfully programmed. Hostile husks/robots attack. Rob orders Cait to shut a door; she recognizes it will not hold, disobeys, and uses a maintenance lift to block the attackers. **Her disobedience saves Rob's life.** This is the dramatic payoff, not merely the discovery of the other android.
 
 The encounter can take place at a roadside shelter or barn after a race (Laurel Highlands is a possible setting), but the emotional story is independent of the race location. Exact dialogue and action are preserved as review drafts in [The Other Scientist](CAMPAIGN/the-other-scientist.md).
 

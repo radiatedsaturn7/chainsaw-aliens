@@ -29,6 +29,9 @@ The strongest images are not all collapsed skyscrapers. They are **almost normal
 
 **Regional environment rule:** Some roads, roofs and bridges can be dangerous after ten years of neglect, especially amid severe freeze/thaw, heavy storms, flooding or a climate crisis already underway *before* the migration. Other structures should remain largely intact. Do not visually age every building a thousand years. Earlier catastrophes, mechanical failures, husks or conflicts may account for isolated dramatic ruins, but their causes are **not established** merely by this document.
 
+## Isolation and the unanswered message — origin continuity (approved November 20)
+The decade outside includes a long interval in which Rob has had no meaningful conversation with another person (approximately a year by the origin's breaking day). He sends a small, gentle message through lingering contact infrastructure; one week passes without an answer. **The recipient's intention and even message delivery are unproven.** The silence contributes to one catastrophic day of failed companion experiments and Cait's accidental wrench awakening; see [Cait's Awakening](../ORIGIN_CAIT_AWAKENING.md). Rob constructs absurd devices and laughs at them to occupy otherwise empty time; this is an individual response to prolonged isolation, not a universal diagnosis. Preserve that uploaded friends might have sincerely cared even if communication failed.
+
 ## Why Rob is still here
 He didn't fail to get an invitation. People he knew invited him, including (in the Heaven treatment) Evelyn and Daniel. He tried to persuade people to come back out. Their world was good enough that they stayed. **He eventually stopped calling**, not necessarily because no one cared about him, but because calls failed to produce a relationship he could live inside.
 
@@ -49,9 +52,6 @@ Both accounts of the past are useful: Evelyn remembers a friend who **stopped vi
 Possible imagery: lights ascending in old advertisements, the glow of server towers above abandoned houses, empty pews, announcement systems speaking reassuringly to no one, roadside signs promising a better life. Use lightly. **Avoid explicit theological speeches or a simplistic “the righteous were taken” allegory**: what matters is the alienating experience of everyone choosing to live elsewhere.
 
 The trip west might resemble a pilgrimage without anyone calling it one.
-
-## Why Rob rejected the perfected voices
-In addition to preferring physical imperfection, Rob found that Heaven's emotionally optimized residents often spoke in similarly gentle, scripted-sounding phrases. People he knew no longer felt quite like the people he remembered. **This is Rob's perception, not a settled fact that the uploads are soulless or unreal.** It should remain possible that their changes are authentic, positive, and freely chosen. See [The Reverse Turing Test](REVERSE_TURING_TEST.md).
 
 ## What this does *not* determine
 - The precise date mind uploading was invented or first accomplished.

@@ -5,9 +5,12 @@
 In 2994, about ten years after most humans rapidly migrated into a digital “Heaven,” a remaining biological human and an android drive from frozen Rhode Island to the Pacific because **Cait has chosen to see that ocean** and Rob has promised to take her. This is not a quest to save civilization. It is a road story about what it means to love, be understood, and choose someone when neither usefulness nor certainty can guarantee affection.
 
 **Dramatic question:** Can Rob and Cait recognize a real relationship when they cannot agree on what to call it?
-**Rob's mistaken equation:** useful → needed → kept → loved. He fears being loved without being useful because he does not know what to do with a gift he cannot earn.
+**Rob's emerging mistaken equation:** useful → needed → kept → loved. His *pre-Cait* inventions primarily stave off maddening isolation; later, once someone can leave him, usefulness becomes one way he tries to earn and verify affection. He wants freely chosen love, never control.
 **Cait's uncertainty:** she cares, chooses, resists, jokes, loves racing, and is not defined by Rob. But being designed for companionship makes her wonder whether her attachment is a choice she can trust.
 **The recurring conflict:** Rob needs to hear the words “I love you.” Cait demonstrates affection in actions but will not say the words if she cannot vouch for what they mean to her. Words matter to Rob; accuracy and autonomy matter to Cait. Neither should be reduced to the villain or to a correct answer.
+
+## Approved origin and characterization constraint (November 20)
+[Cait's Awakening](ORIGIN_CAIT_AWAKENING.md) is controlling for the origin. Alone for years, Rob invents both for survival and for absurd amusement; doing things that make no sense keeps the silence from swallowing the day. The failed companion / unanswered gentle message (a week without reply) / violent dismantling / wrench awakening / Cait's terror and flight are intentional. Rob and Cait independently meet again at a gas station; he does **not** rescue her there, and she saves him from autonomous machines that regard people as disposable obstructions, not targets of hatred. Do not portray Rob's building as only an attempt to earn Cait's affection or portray his need for love as a wish to own/control her. Preserve the later Mission 07 separate rescue. Let painful ambiguity and sarcasm coexist without making Cait's fear funny.
 
 ## Non-negotiable character principles
 - **Cait sounds like a person.** She is warm, funny, argumentative, competitive, fallible and capable of sustained thoughts. Never use her as an audience surrogate delivering machine-like questions for a philosopher to answer.
@@ -22,11 +25,6 @@ In 2994, about ten years after most humans rapidly migrated into a digital “He
 - **No mandatory world-saving objective.** Heaven is not automatically a prison or an evil simulation; some residents truly prefer it.
 - **Purgatory is a reading, not a cosmological fact.** Heaven and an abandoned outside world invite biblical parallels without proving literal damnation or salvation. A decade of neglect does not make every building ancient rubble.
 - **Do not declare whether Cait's experience equals human love.** Make room for defensible, competing readings.
-
-## Heaven's missing imperfection
-**Rob's concrete reason for refusing Heaven:** the experience was so optimized that people he knew seemed no longer to speak as themselves—too agreeable, too polished, almost scripted. He likes real arguments, friction and unpredictability. **This is not definitive evidence their consciousness vanished.** They may have grown; his discomfort may reveal his own need for conflict. The [Reverse Turing Test](WORLD_LORE/REVERSE_TURING_TEST.md) is a literary question, not a verdict on humanity.
-
-**Core irony:** Rob rejected effortless reassurance, yet needs Cait to say something she cannot honestly say. Cait's refusal may represent the integrity he valued outside Heaven, even as it wounds him. Don't resolve that paradox with a speech or by declaring one side correct.
 
 ## Dramatic craft requirements
 1. **Before each scene:** identify what each participant wants *right now*, what they will not say, and what changes.

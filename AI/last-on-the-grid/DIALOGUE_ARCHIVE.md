@@ -59,3 +59,16 @@ The discovery and escape dialogue, including alternate versions, is collected in
 
 ## Archiving rule
 Keep exact implemented strings, timing and source paths. Any proposed correction or rewrite belongs in a separate clearly labeled draft. Do not conflate the conversation draft with the deployed cutscene.
+
+## Cait's Awakening — approved origin dialogue (not implemented)
+**Source:** user approval November 20, 2026; [Origin document](ORIGIN_CAIT_AWAKENING.md).
+
+After Cait awakens among dismantled androids, sees Rob's violence and flees:
+
+**ROB:** “Well, fuck me. I've finally made someone who hates me.”
+
+*He looks at the pile of dismantled androids.*
+
+**ROB:** “…Fair enough.”
+
+**Status:** APPROVED WRITING, **not** implemented cutscene text. Preserve the exact wording and keep distinct from deployed Tower Hill/garage dialogue.
