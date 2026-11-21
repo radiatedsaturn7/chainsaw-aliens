@@ -7,6 +7,14 @@ from inspect_raceways import candidate_layouts
 from rebuild_legacy_stages import sample_terrain_grid
 
 class MappedRaceways(unittest.TestCase):
+ def test_service_classifier_distinguishes_pit_routes_from_circuit_names(self):
+  for name in ('Pit Lane','Pitlane','Pit Exit','Paddock Access','False Grid'):
+   with self.subTest(name=name):
+    self.assertTrue(track.is_service_raceway({'name':name}))
+  for name in ('National Pit Straight','Pit Straight','Spitzkehre','Paddock Hill Bend'):
+   with self.subTest(name=name):
+    self.assertFalse(track.is_service_raceway({'name':name}))
+
  def test_terrain_samples_use_same_geographic_axes_and_datum_as_road(self):
   origin=(43.98,7.39)
   cells={key:{'elevation':0} for key in ['-2,3','4,-5','0,0']}
@@ -21,6 +29,13 @@ class MappedRaceways(unittest.TestCase):
 
  def test_selected_layouts_are_closed_unique_contiguous_source_edges(self):
   root=Path('data/campaigns/america/raceways')
+  # Reviewed course straights/hairpins, not service links. Keep their exact OSM ways.
+  named_circuit_ways={
+   ('silverstone','gp'):(3571477,'National Pit Straight'),
+   ('silverstone','national'):(3571477,'National Pit Straight'),
+   ('bathurst','full'):(306192512,'Pit Straight'),
+   ('hockenheim','gp'):(117570502,'Spitzkehre'),
+  }
   for venue in json.loads(Path('tools/campaigns/raceway_sources.json').read_text()):
    layouts=candidate_layouts(venue)
    ways=json.loads((root/'sources'/f"{venue['key']}.json").read_text())
@@ -36,7 +51,14 @@ class MappedRaceways(unittest.TestCase):
      self.assertEqual(coords[0],coords[-1]);used=set()
      for a,b in zip(coords,coords[1:]):
       edge=frozenset([a,b]);self.assertIn(edge,edges);self.assertNotIn(edge,used);used.add(edge)
-     self.assertFalse(any('pit' in p.get('tags',{}).get('name','').lower() for p in points))
+     selected_tags=[p.get('tags',{}) for p in points[:-1]]
+     for tags in selected_tags:
+      self.assertNotEqual(tags.get('raceway'),'pit_lane',tags)
+      self.assertNotEqual(tags.get('service'),'pit_lane',tags)
+      self.assertFalse(track.is_service_raceway(tags),tags)
+     reviewed=named_circuit_ways.get((venue['key'],choice['key']))
+     if reviewed:
+      self.assertIn(reviewed,{(tags.get('osmWayId'),tags.get('name')) for tags in selected_tags})
  def test_editor_limits_remain_bounded_and_default_limit_unchanged(self):
   # Offline dense routes opt in; interactive imports retain the existing 600 cap.
   points=[{'x':i*10,'y':(i%2)*10,'lat':40+i*.0001,'lon':-75,'tags':{}} for i in range(650)]
