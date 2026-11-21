@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "selectedDoodadId": "fence-region-generic-tree-line",
+  "doodad": {
+    "id": "fence-region-generic-tree-line",
+    "name": "Mixed roadside tree line [solid fence]",
+    "artRef": "fence-region-generic-tree-line",
+    "isFence": true,
+    "fenceMirrorRepeat": true,
+    "fenceThicknessM": 1,
+    "itemType": "scenery",
+    "model": null,
+    "widthM": 30,
+    "heightM": 10,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 30,
+    "hitboxHeightM": 10,
+    "weightKg": 10000,
+    "defaultRule": {
+      "minSpeedMph": 0,
+      "behavior": "collide",
+      "speedDrainPercent": 45,
+      "damage": {
+        "panels": 14,
+        "suspension": 6,
+        "engine": 3.5
+      }
+    },
+    "rules": []
+  },
+  "regionalFence": {
+    "region": "Generic",
+    "collision": "Continuous solid fence; transparent art is not an opening.",
+    "source": "regional-fences/fence-generic-tree-line.png"
+  }
+}

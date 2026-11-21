@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "selectedDoodadId": "environment-v1-moon-anorthosite",
+  "doodad": {
+    "id": "environment-v1-moon-anorthosite",
+    "name": "Lunar pale anorthosite cluster",
+    "artRef": "environment-v1-moon-anorthosite",
+    "isFence": false,
+    "itemType": "scenery",
+    "model": null,
+    "widthM": 5.2,
+    "heightM": 2.6,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 5.2,
+    "hitboxHeightM": 2.6,
+    "weightKg": 45,
+    "defaultRule": {
+      "minSpeedMph": 0,
+      "behavior": "flatten",
+      "speedDrainPercent": 0,
+      "damage": {
+        "panels": 0,
+        "suspension": 0,
+        "engine": 0
+      }
+    },
+    "rules": []
+  }
+}
