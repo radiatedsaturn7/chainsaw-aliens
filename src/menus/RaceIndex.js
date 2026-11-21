@@ -19,12 +19,12 @@ export function raceIndexScreen(entries,index=0,top=0,access=()=>({allowed:true}
  if(entries.length&&!rows.some(r=>r.index===index))return raceIndexScreen(entries,index,top+1,access,category);
  const elements=[{id:'heading',type:'text',label:category==='space'?'Space':category==='international'?'International':category==='rallies'?'Rallies':'Race Index',x:.04,y:.02,w:.92,h:.09,fontSize:28,useDefaultFont:true}];
  const button={type:'button',x:.04,w:.46,h:.07,fontSize:20,useDefaultFont:true,color:'#ffffff',background:'#000000',selectionIndicator:'cursor',cursorText:'>'};
- elements.push({...button,id:'index-up',label:'Up',y:.12,action:{type:'back'}});
+ elements.push({...button,id:'index-up',label:'▲',y:.12,action:{type:'back'}});
  for(const [row,r] of rows.entries())elements.push(r.heading?
   {id:`state-${row}`,type:'text',label:r.label,x:.04,y:.22+row*.085,w:.46,h:.075,fontSize:22,useDefaultFont:true,color:'#ffffff'}:
   {...button,id:`index-race-${r.index}`,label:((category==='international'||category==='rallies')?(r.entry.layout||r.entry.name):r.entry.name)+(access(r.entry.ref).allowed?'':' (Locked)'),y:.22+row*.085,
    action:{type:'set-param',parameter:'raceRef',value:r.entry.ref,then:{type:'screen',target:'garage'}}});
- elements.push({...button,id:'index-down',label:'Down',y:.85,action:{type:'back'}},
+ elements.push({...button,id:'index-down',label:'▼',y:.85,action:{type:'back'}},
   {id:'route-preview',type:'race-description',property:'route-preview',x:.53,y:.15,w:.43,h:.76,useDefaultFont:true,color:'#ffffff'});
  const screen=normalizeMenuDocument({screens:[{id:'race-index',name:'Race Index',background:'#000000',useDefaultBackground:false,effect:'none',musicMode:'continue',elements},{id:'garage',elements:[]}]}).screens[0];
  return {screen,index,top,category};

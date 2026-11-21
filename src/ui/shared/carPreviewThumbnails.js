@@ -86,9 +86,9 @@ function verifyVisible(id,entry,name,whenReady,usable){
   const previous=verified.get(id);
   if(previous?.token===token&&previous.expires>now)return previous.ok;
   if(previous?.pending||verificationActive>=MAX_LOADING)return false;
-  const state={token,expires:0,ok:false,pending:true};verified.set(id,state);verificationActive++;
+  const state={token,expires:0,ok:false,pending:true,rejected:previous?.token===token&&previous.rejected===true};verified.set(id,state);verificationActive++;
   void verifyProjectCarPreviewStock(preparedCatalog.revision,id,name,entry.carId,entry.sources).then(ok=>{
-    state.ok=ok;state.expires=Date.now()+(isProjectStorageReadOnly()?60000:5000);state.pending=false;verificationActive--;
+    state.ok=ok;state.rejected=!ok;state.expires=Date.now()+(isProjectStorageReadOnly()?60000:5000);state.pending=false;verificationActive--;
     if(usable?.()!==false)whenReady?.();
   });
   return false;
@@ -118,6 +118,18 @@ function requestPreview(name,frame,preferAtlas,whenReady,usable){
   pump();
   return record.status==='ready'?record:null;
 }
+// Only fall back after a definite rejection/missing asset, never while a stock
+// preview is still loading. This keeps normal catalog browsing lightweight.
+export function carThumbnailNeedsFallback(name,angle=135,preferAtlas=false){
+  if(locallyChanged.has(name))return true;
+  if(preparedCatalog===undefined)return false;
+  const id=preparedCatalog?.names.get(name),entry=preparedCatalog?.previews.get(id);
+  if(!entry||!entry.sources||!preparedCatalog.revision)return true;
+  if(verified.get(id)?.rejected)return true;
+  const frame=((Math.round((Number(angle)||0)/45)%8)+8)%8;
+  const source=!preferAtlas&&entry.poster?.frameIndex===frame?entry.poster:entry;
+  return images.get(source.id)?.status==='missing';
+}
 export function paintCarThumbnail(ctx,bounds,name,angle=135,whenReady,usable,preferAtlas=false){
   const frame=((Math.round((Number(angle)||0)/45)%8)+8)%8;
   const found=requestPreview(name,frame,preferAtlas,whenReady,usable);
@@ -128,4 +140,8 @@ export function paintCarThumbnail(ctx,bounds,name,angle=135,whenReady,usable,pre
   if(!Number.isFinite(scale)||scale<=0)return false;
   ctx.drawImage(image,(entry.count===1?0:frame)*entry.w,0,entry.w,entry.h,bounds.x+(bounds.w-w)/2,bounds.y+(bounds.h-h)/2,w,h);
   return true;
+}
+
+export function resetCarPreviewThumbnailsForTests(){
+  manifestTask=undefined;preparedCatalog=undefined;images.clear();verified.clear();locallyChanged.clear();verificationActive=0;active=0;
 }

@@ -532,6 +532,10 @@ export default class MenuPlayer {
     if(this.movie){if(pressed('Space')||pressed('Enter')||pad('gamepadStart')||pad('jump'))void this.resumeMovie();return;}
     if(flow.busy)return;
     if((input?.wasGamepadPressed?.('gamepadSelect')||touch('nextWeapon'))&&flow.screen.elements.some(e=>e.type==='world-map')){this.openRaceIndex();return;}
+    if(flow.screen.id==='motorsport-preview'&&this.motorsport.selection?.kind==='championship'){
+      if(pressed('Space')||pressed('Enter')||pad('gamepadStart')||pad('jump'))void this.activate({id:'motorsport-enter',type:'button'});
+      return;
+    }
     if(flow.screen.id==='motorsport-list'){
       const direction=pressed('ArrowDown')||navigation==='down'?1:pressed('ArrowUp')||navigation==='up'?-1:0;
       if(direction){this.motorsport.scroll(direction);return;}

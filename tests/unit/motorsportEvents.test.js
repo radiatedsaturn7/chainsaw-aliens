@@ -127,6 +127,10 @@ test('installed catalog has all twelve cups and all saved rally collections; men
    assert.equal(c.lists[kind].index,i);
    const buttons=p.flow.screen.elements.filter(e=>e.type==='button');
    assert.ok(buttons.length<=8);assert.ok(buttons.some(e=>e.id===`motorsport-pick-${i}`));
+   if(kind==='championships'){
+    const entry=c.entries()[i],details=p.flow.screen.elements.filter(e=>e.id.startsWith('detail-')).map(e=>e.label);
+    assert.deepEqual(details,[`Difficulty: ${entry.heat} / 3`,...entry.rounds.map((r,j)=>`${j+1}. ${r.ref}`)]);
+   }
    assert.ok(!buttons.some(e=>['Previous','Next','Resume Event'].includes(e.label)));
    c.scroll(1);
   }
@@ -212,4 +216,20 @@ test('list scrolling does not push history or reset the screen timer, and keeps 
  assert.deepEqual(p.flow.history,history);assert.equal(p.flow.time,20);assert.equal(c.lists.rallies.top,6);
  c.open('championships');assert.equal(c.lists.championships.index,0);
  c.open('rallies');assert.equal(c.lists.rallies.index,10);
+});
+
+test('circuit preview shows three fixed route cards and returns without a Back button',()=>{
+ const {controller:c,player:p}=menuFixture();c.open();c.preview(cup);
+ const elements=p.flow.screen.elements,cards=elements.filter(e=>e.property==='route-preview');
+ assert.deepEqual(cards.map(e=>e.assetRef),cup.rounds.map(r=>r.ref));
+ assert.equal(cards.length,3);
+ assert.ok(cards[0].x+cards[0].w<cards[1].x&&cards[1].x+cards[1].w<cards[2].x);
+ assert.equal(elements.filter(e=>e.type==='button').length,0);
+ assert.ok(!elements.some(e=>e.id==='difficulty'||e.id==='return-hint'));
+ assert.equal(elements.find(e=>e.id==='heading').label,cup.name);
+ assert.equal(c.back(),true);assert.equal(p.flow.screenId,'motorsport-list');
+ const buttons=p.flow.screen.elements.filter(e=>e.type==='button');
+ assert.equal(buttons.find(e=>e.id==='motorsport-up').label,'▲');
+ assert.equal(buttons.find(e=>e.id==='motorsport-down').label,'▼');
+ assert.ok(!buttons.some(e=>e.label==='Back'));
 });

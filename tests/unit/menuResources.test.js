@@ -130,12 +130,14 @@ test('stock save-slot icons prepare without garage builds or tuning calculations
  }finally{globalThis.document=previous;}
 });
 
-test('showroom entry prepares the visible page instead of decoding the entire car catalog',async()=>{
+test('modified-car fallback prepares only the visible page instead of the entire catalog',async()=>{
  const {normalizeMenuDocument}=await import('../../src/menus/MenuDocument.js');
  const previous=globalThis.document;
  const ctx=new Proxy({measureText:()=>({width:20})},{get:(o,k)=>k in o?o[k]:()=>{},set:(o,k,v)=>(o[k]=v,true)});
  globalThis.document={createElement:()=>({getContext:()=>ctx})};
  try{
+  const {invalidateProjectCarThumbnail}=await import('../../src/ui/shared/carPreviewThumbnails.js');
+  for(let i=8;i<12;i++)invalidateProjectCarThumbnail(`Car ${i}`);
   const requested=new Set();
   const resources=new MenuResources({carEditor:{getRaceCarProjectedArtRef:()=>({artRef:''})}});
   resources.choices=()=>Array.from({length:60},(_,i)=>({value:`Car ${i}`,label:`Car ${i}`}));
@@ -143,7 +145,7 @@ test('showroom entry prepares the visible page instead of decoding the entire ca
   resources.exteriorArtRefs=()=>[];resources.carPreview.drawSprite=()=>true;resources.carPreview.draw=()=>true;
   const doc=normalizeMenuDocument({screens:[{id:'cars',elements:[{id:'showroom',type:'car-showroom',binding:'carRef',maxVisible:4}]}]});
   await resources.prepareScreen(doc,doc.screens[0],{carRef:'Car 9'});
-  assert.deepEqual([...requested],[],'thumbnail browsing does not hydrate any full vehicle');
+  assert.deepEqual([...requested],['Car 8','Car 9','Car 10','Car 11'],'native fallback is limited to the visible page');
   assert.equal(resources.cars.size,0);
  }finally{globalThis.document=previous;}
 });
@@ -166,7 +168,7 @@ test('car sheets decode sequentially into one renderer cache, including shared s
  }finally{globalThis.document=previous;resetProjectFilesForTests();}
 });
 
-test('static showroom fetches only its four cars, without cockpit or smoke dependencies',async()=>{
+test('missing-thumbnail fallback fetches only four cars, without cockpit or smoke dependencies',async()=>{
  const {resetProjectFilesForTests}=await import('../../src/ui/projectFiles.js');
  const {hydrateServerStorage}=await import('../../src/ui/serverStorage.js');
  const {normalizeMenuDocument}=await import('../../src/menus/MenuDocument.js');
@@ -193,8 +195,8 @@ test('static showroom fetches only its four cars, without cockpit or smoke depen
   const doc=normalizeMenuDocument({screens:[{id:'cars',elements:[{id:'showroom',type:'car-showroom',binding:'carRef',maxVisible:4}]}]});
   const before=resources.choices('cars').map(c=>c.value);
   await resources.prepareScreen(doc,doc.screens[0],{carRef:'Car 09'});
-  assert.deepEqual(downloads,[],'thumbnail browsing never downloads full car or art documents');
-  assert.equal(resources.cars.size,0);
+  assert.deepEqual([...downloads].sort(),['Car 08','Car 09','Car 10','Car 11'],'missing thumbnails load only the visible cars');
+  assert.equal(resources.cars.size,4);
   assert.equal(resources.errors.size,0);
   assert.deepEqual(resources.choices('cars').map(c=>c.value),before,'downloads must not reshuffle the carousel');
  }finally{globalThis.document=previousDocument;globalThis.fetch=previousFetch;resetProjectFilesForTests();}
