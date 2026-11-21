@@ -1,5 +1,5 @@
 # Proposal only. Keep separate from scenery candidate and existing CI.
-name: Exact scenery candidate smoke
+name: Serial desktop scenery and staging control
 on:
   push:
     branches: [dot/diagnostic-scenery-315]
@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        viewport: [desktop, handheld]
+        viewport: [desktop, staging-control]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -50,27 +50,105 @@ jobs:
             if (await page.title() !== 'Scenery sandbox preflight') throw Error('Protected renderer did not start');
           } finally { await browser.close(); }
           JS
-      - name: Run exactly six smoke tests for this viewport
+      - name: Run exact desktop smoke serially
+        if: matrix.viewport == 'desktop'
         shell: bash
         env:
-          SCENERY_VIEWPORT: ${{ matrix.viewport }}
+          PLAYWRIGHT_JSON_OUTPUT_FILE: ${{ runner.temp }}/scenery-desktop.json
         run: |
           set -euo pipefail
-          case "$SCENERY_VIEWPORT" in desktop|handheld) ;; *) exit 1 ;; esac
           cfg=playwright.scenery-private.config.mjs
           spec=tests/playwright/scenery-expansion-smoke.spec.js
-          npx --no-install playwright test -c "$cfg" "$spec" --grep "(^| )$SCENERY_VIEWPORT " --list --reporter=json > "${RUNNER_TEMP}/scenery-collected.json"
+          env -u PLAYWRIGHT_JSON_OUTPUT_FILE npx --no-install playwright test -c "$cfg" "$spec" --grep '(^| )desktop ' --workers=1 --list --reporter=json > "${RUNNER_TEMP}/scenery-collected.json"
           node --input-type=module <<'JS'
           import fs from 'node:fs';
           const listing=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+'/scenery-collected.json','utf8'));
-          const tests=suites=>suites.flatMap(s=>[...(s.specs||[]).flatMap(x=>x.tests||[]),...tests(s.suites||[])]);
-          if(tests(listing.suites).length!==6)throw Error('Expected exactly six tests for one verified viewport');
+          const count=suites=>suites.flatMap(s=>[...(s.specs||[]).flatMap(x=>x.tests||[]),...count(s.suites||[])]);
+          if(count(listing.suites).length!==6)throw Error('Expected exactly six desktop tests');
           JS
-          npx --no-install playwright test -c "$cfg" "$spec" --grep "(^| )$SCENERY_VIEWPORT " --reporter=list
+          result=0
+          npx --no-install playwright test -c "$cfg" "$spec" --grep '(^| )desktop ' --workers=1 --reporter=list,json || result=$?
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const r=JSON.parse(fs.readFileSync(process.env.PLAYWRIGHT_JSON_OUTPUT_FILE,'utf8'));
+          const walk=suites=>suites.flatMap(s=>[...(s.specs||[]),...walk(s.suites||[])]);
+          for(const s of walk(r.suites)){
+            for(const t of s.tests||[])for(const attempt of t.results||[]){
+              if(attempt.status==='passed')continue;
+              const a=attempt.attachments?.find(x=>x.name==='startup state');
+              const receipt=a?.body?Buffer.from(a.body,'base64').toString('utf8'):a?.path?fs.readFileSync(a.path,'utf8'):null;
+              console.log(JSON.stringify({title:s.title,status:attempt.status,receipt}));
+            }
+          }
+          JS
+          exit "$result"
+      - name: Run unchanged staging Acropolis control
+        if: matrix.viewport == 'staging-control'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp playwright.scenery-private.config.mjs "${RUNNER_TEMP}/scenery-control-config.mjs"
+          git checkout --detach d3b854f86da1bc6aa46b24a2f81bce385202ae45
+          test "$(git rev-parse HEAD)" = d3b854f86da1bc6aa46b24a2f81bce385202ae45
+          test "$(git rev-parse HEAD^{tree})" = ef23bee30767f4398347da5304836c1726f2a51c
+          test -z "$(git status --porcelain=v1 --untracked-files=no)"
+          cp "${RUNNER_TEMP}/scenery-control-config.mjs" playwright.scenery-private.config.mjs
+          cat > tests/playwright/scenery-acropolis-stage-control.spec.js <<'JS'
+          import fs from 'node:fs';
+          import {test,expect} from '@playwright/test';
+          import {resolveDiagnosticRaceChoice} from '../../tools/race-environments/selector.mjs';
+          test.use({viewport:{width:1280,height:720},isMobile:false,hasTouch:false});
+          test('unchanged staging Acropolis startup',async({page})=>{
+            test.setTimeout(300_000);
+            const name='Acropolis Rally — Stage 4';
+            const errors=[];
+            page.on('pageerror',e=>errors.push(e.message));
+            const snapshot=()=>page.evaluate(()=>{
+              const g=window.__game, e=g?.raceEditor, s=e?.playtestSession;
+              return {state:g?.state,status:e?.status,race:e?.selectedRace?.name,phase:e?.racePlaytestPreparation?.phase,
+                      sky:e?.getRaceSkyboxSettings()?.artRef,running:s?.running,pending:s?.startupFramePending,
+                      elapsed:s?.elapsedMs,draws:window.__controlSkyDraws};
+            });
+            const started=Date.now();
+            try{
+              await page.goto('/index.html?hideFullscreenForTesting');
+              await page.waitForFunction(()=>window.__gameReady&&!window.__game.loading,null,{timeout:120_000});
+              const choices=await page.evaluate(async()=>{
+                const {hydrateServerStorage}=await import('/src/ui/serverStorage.js');
+                await hydrateServerStorage({folder:'races'});
+                return window.__game.menuPlayer.resources.choices('races',{});
+              });
+              const path=JSON.parse(fs.readFileSync('data/server-storage/files/manifest.json')).folders.races[name];
+              expect(path).toMatch(/^races[/].+[/]document[.]json$/u);
+              const selected=resolveDiagnosticRaceChoice(choices,name,path);
+              expect(await page.evaluate(value=>{
+                const g=window.__game,e=g.raceEditor,draw=e.drawRaceSkyboxArt;
+                window.__controlSkyDraws=0;
+                e.drawRaceSkyboxArt=function(...args){
+                  const drawn=draw.apply(this,args);
+                  if(drawn&&this.playtestSession?.running)window.__controlSkyDraws++;
+                  return drawn;
+                };
+                g.setDisplayMode('color');
+                return g.startRaceTravel({raceName:value,carSelection:'specific',carRef:'RTG-001'});
+              },selected.value)).toBe(true);
+              await page.waitForFunction(()=>{
+                const g=window.__game,e=g.raceEditor,s=e.playtestSession;
+                if(g.state==='prompt'&&!s?.running)throw Error('Race left startup: '+e.status);
+                return s?.running&&!s.startupFramePending&&s.elapsedMs>2000;
+              },null,{timeout:180_000});
+              expect((await snapshot()).race).toBe(name);
+              expect(errors).toEqual([]);
+            }finally{
+              console.log(JSON.stringify({baseline:true,wallMs:Date.now()-started,state:await snapshot().catch(()=>null),errors}));
+            }
+          });
+          JS
+          npx --no-install playwright test -c playwright.scenery-private.config.mjs tests/playwright/scenery-acropolis-stage-control.spec.js --workers=1 --reporter=list
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: scenery-smoke-${{ matrix.viewport }}
+          name: scenery-serial-${{ matrix.viewport }}
           path: artifacts/scenery-private-smoke/
           retention-days: 3
           if-no-files-found: ignore
