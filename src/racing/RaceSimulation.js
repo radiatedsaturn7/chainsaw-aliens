@@ -2,7 +2,7 @@ import { tireSizeForWheel } from './TireSizes.js';
 import {advanceRaceDriftScore,driftContactCount} from './RaceDriftScore.js';
 import { advanceRaceSimulationClock } from './RaceFrameBudget.js';
 import {updateGlassWeather} from './GlassWeather.js';
-import {prepareRaceSceneryTriggers} from './simulation/DamageModel.js';
+import {isVisualOnlyRaceScenery,prepareRaceSceneryTriggers} from './simulation/DamageModel.js';
 import {advanceTurnSignals} from './TurnSignals.js';
 import { advanceNetworkRaceProgress, sampleNetworkEdge } from './RaceRouteNetwork.js';
 import { getRaceStickLook, stepRaceLookAngle } from './RaceCameraInput.js';
@@ -599,6 +599,7 @@ export function createRaceStaticColliderWorld(editor, {
     }
   }
   scenery.forEach((sprite) => {
+    if (isVisualOnlyRaceScenery(sprite)) return;
     const doodad = editor.getRaceDoodadForScenery?.(sprite) || {};
     if (sprite.state === 'removed') return;
     if (doodad.itemType === 'mix-tape' || doodad.itemType === 'item') return;

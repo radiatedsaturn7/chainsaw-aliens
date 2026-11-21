@@ -33074,17 +33074,24 @@ export default class RaceEditor {
       ctx.fillStyle = groundFillOverride || skybox.ground;
       ctx.fillRect(coverage.x, groundStart, coverage.w, Math.max(1, coverage.y + coverage.h - groundStart));
     }
-    const haze = ctx.createLinearGradient?.(0, horizon - hazeHeight * 0.62, 0, horizon + hazeHeight) || null;
-    if (haze) {
-      haze.addColorStop(0, 'rgba(217,230,210,0)');
-      haze.addColorStop(0.32, 'rgba(245,248,239,0.34)');
-      haze.addColorStop(0.58, 'rgba(217,230,210,0.18)');
-      haze.addColorStop(1, 'rgba(217,230,210,0)');
-      ctx.fillStyle = haze;
-      ctx.fillRect(coverage.x, horizon - hazeHeight * 0.62, coverage.w, hazeHeight * 1.62);
-    } else {
-      ctx.fillStyle = 'rgba(245,248,239,0.28)';
-      ctx.fillRect(coverage.x, horizon - 4, coverage.w, 10);
+    // Only verified Moon simulator routes are airless. A reused sky preset
+    // or a missing body marker alone keeps the existing atmosphere.
+    const source = this.selectedRace?.source;
+    const airlessMoon = this.selectedRace?.skybox === 'lunar-simulator'
+      && source?.planetarySimulator === true && source.origin?.body === 'Moon';
+    if (!airlessMoon) {
+      const haze = ctx.createLinearGradient?.(0, horizon - hazeHeight * 0.62, 0, horizon + hazeHeight) || null;
+      if (haze) {
+        haze.addColorStop(0, 'rgba(217,230,210,0)');
+        haze.addColorStop(0.32, 'rgba(245,248,239,0.34)');
+        haze.addColorStop(0.58, 'rgba(217,230,210,0.18)');
+        haze.addColorStop(1, 'rgba(217,230,210,0)');
+        ctx.fillStyle = haze;
+        ctx.fillRect(coverage.x, horizon - hazeHeight * 0.62, coverage.w, hazeHeight * 1.62);
+      } else {
+        ctx.fillStyle = 'rgba(245,248,239,0.28)';
+        ctx.fillRect(coverage.x, horizon - 4, coverage.w, 10);
+      }
     }
     this.drawRaceSkyVisibility(ctx, coverage);
     if(this.getRaceLightningFlash()>0)this.drawRaceWeatherLightning(ctx,{...bounds,h:Math.max(0,horizon-bounds.y)},this.playtestSession?.weatherFxState,{cameraYaw});

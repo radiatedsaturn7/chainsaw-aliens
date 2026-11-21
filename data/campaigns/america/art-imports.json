@@ -4751,5 +4751,817 @@
     "documentSha256": "5554b9f2ad312c8316247361a3a59b41214d980497a69a1bf3d6f807982630f0",
     "width": 512,
     "height": 512
+  },
+  "fence-region-generic-building-row": {
+    "source": "assets/campaign-art/regional-fences/fence-generic-building-row.png",
+    "sourceSha256": "94a5acb5509d2cdf5a6ed3a96ae38bc8f0f8ba50cb0a5693fb3452c4e6a37727",
+    "documentSha256": "b992d38a06f379ae893c282c8ab4bb97f0177c3f88b09cb2ad567d90bd0a2d5c",
+    "width": 512,
+    "height": 171
+  },
+  "fence-region-generic-canyon-wall": {
+    "source": "assets/campaign-art/regional-fences/fence-generic-canyon-wall.png",
+    "sourceSha256": "5119c4ea7122f3f1cba4a414e4f7e940b4302bf72657891e10cb79d8098b806e",
+    "documentSha256": "40237a3a1777b4d7ccfce393f62a6d755975988e43a2e37df209b1ca23e97f66",
+    "width": 512,
+    "height": 171
+  },
+  "fence-region-generic-race-wall-catchfence": {
+    "source": "assets/campaign-art/regional-fences/fence-generic-race-wall-catchfence.png",
+    "sourceSha256": "e1b0f0836ccbffa23a6207cf03c48e21b706b5a29bba02b9aa1ccd8537713db0",
+    "documentSha256": "c4ba2b42a65a86ae84f05fee7354650459ea5101cd71d9abbae9868bc60d7ea4",
+    "width": 512,
+    "height": 171
+  },
+  "fence-region-generic-tree-line": {
+    "source": "assets/campaign-art/regional-fences/fence-generic-tree-line.png",
+    "sourceSha256": "2fcaeda73a958f48b3eaf19da7457f4ed40a9911cebaab6f80a05e320ff7e526",
+    "documentSha256": "9f14c39ee795d72e97c74061588949d96d1185d499c430e0cd2ca2c8d720969c",
+    "width": 512,
+    "height": 171
+  },
+  "environment-v1-columbia-hills": {
+    "source": "assets/campaign-art/environment-v1/columbia-hills.png",
+    "sourceSha256": "61bc463b66b0565b578dbe86bc79d24e9a07e54b27515e966e5088c0bf9b0071",
+    "documentSha256": "5c6abe4272b1384296ab595d7be6a4d07eaa63f96639fcb248e8769be3862548",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-descartes": {
+    "source": "assets/campaign-art/environment-v1/descartes.png",
+    "sourceSha256": "694702610d1165aa7e0b12d4bd567f3006cd636be0a102523560134cc1bd13bb",
+    "documentSha256": "100d99265f1dded3c2fe2a00a2000d99696164a2cf3a353dfadf2672f4a8b850",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-endeavour": {
+    "source": "assets/campaign-art/environment-v1/endeavour.png",
+    "sourceSha256": "bbc2868d4183d4a4207cb82cda7e299c522237eca43dea196c706ec11b23f665",
+    "documentSha256": "9fbc26969bfb4e64e407159df7e19c15a540a5e85baa07350420fbda7bd32e32",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-gale": {
+    "source": "assets/campaign-art/environment-v1/gale.png",
+    "sourceSha256": "230ccf0c1bff8d73424789dd9e826b93bfd49cc3cfaa03bee1607b4197c583f3",
+    "documentSha256": "66aade82c9d9b5e814ead33a606ee5c1c31c6647d3b4172208921970b01ba7c4",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-hadley-apennine": {
+    "source": "assets/campaign-art/environment-v1/hadley-apennine.png",
+    "sourceSha256": "d613a38eaf75859b8fea8f85ca73d4dbe61a1b73dd8a559cc4968418ee46dd59",
+    "documentSha256": "61c07bdb9201de2e6252ad07adad4b1ac80e5d1cb6abd6bbe4765db82b62197b",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-jezero-dry-delta": {
+    "source": "assets/campaign-art/environment-v1/jezero-dry-delta.png",
+    "sourceSha256": "f7735004aa5f7698eb8d97dc084be7618eed2a84a54ca3325ad0d15a9badd5d1",
+    "documentSha256": "739e6720e9847256a9a7f9118358b4ebaac3f8fc6ae8addb8d6fdbe5ec4a3d06",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-mars-breccia": {
+    "source": "assets/campaign-art/environment-v1/planetary-rocks/mars-breccia.png",
+    "sourceSha256": "1e44349f6f960a0ff55858654ac6d8327df21d82fbcd1f4ffd76b02d91774040",
+    "documentSha256": "948039ac5ee790e9d3f287a0189a4403b6bee0314e2f9aea78b548c832c0f40e",
+    "width": 512,
+    "height": 256
+  },
+  "environment-v1-mars-sediment": {
+    "source": "assets/campaign-art/environment-v1/planetary-rocks/mars-sediment.png",
+    "sourceSha256": "30daf82ddab1a46e4127417106584dc8f3ee36c50e64a804b93c7809e6da4d70",
+    "documentSha256": "581306e9b4fc256dec69a60978a2a006ad5b3274cc298555206bf74b7d4755af",
+    "width": 512,
+    "height": 171
+  },
+  "environment-v1-moon-anorthosite": {
+    "source": "assets/campaign-art/environment-v1/planetary-rocks/moon-anorthosite.png",
+    "sourceSha256": "84b6fe9b2b8f80dd51d519bf74d878a006efc93ff08d2685d4bed0803297dba3",
+    "documentSha256": "acf48450088b4d6b42bf649c2a1b202663683f7dabd5321b11bfa8693b43adf3",
+    "width": 512,
+    "height": 256
+  },
+  "environment-v1-moon-apron": {
+    "source": "assets/campaign-art/environment-v1/planetary-rocks/moon-apron.png",
+    "sourceSha256": "1062503548ba3e2f4d03c2db9552bb82a62172a4257d065cbe60d566cff8a2bf",
+    "documentSha256": "52064fa01bd75536bd18d294d1588737953ba0ab2c29ec5e410ae07c9ee75d6e",
+    "width": 512,
+    "height": 256
+  },
+  "environment-v1-taurus-littrow-massifs": {
+    "source": "assets/campaign-art/environment-v1/taurus-littrow-massifs.png",
+    "sourceSha256": "e049de8c242dab0c2b52b61636fb8c0b32df7e6151a4d7f82d4f0be21ec80ea9",
+    "documentSha256": "0102dda1cd76934116dbfda32405dc236765a16e532e164ed3d7735f3a76a973",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-acropolis-limestone-day-v1": {
+    "source": "assets/campaign-art/skyboxes/acropolis-limestone-day-v1.png",
+    "sourceSha256": "07856cfb945a4e6776bbeb7a7ef92e52b08bd9ce9178729e9089b3abcf5580cc",
+    "documentSha256": "8ac5b553eddb0bc4848f0935705419d926e41c042bc296f7e531a8be2de99ea0",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-acropolis-limestone-night-v1": {
+    "source": "assets/campaign-art/skyboxes/acropolis-limestone-night-v1.png",
+    "sourceSha256": "f25481b0252420db1cf494d66760081875254188ee427898fe304b975747202a",
+    "documentSha256": "00e6b52c23b28b79b854b8be0920552506ddce977b5a4832fd657443331651b8",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-nordic-boreal-snow-day-v1": {
+    "source": "assets/campaign-art/skyboxes/nordic-boreal-snow-day-v1.png",
+    "sourceSha256": "76a1d4f3d0cbeb0b2a59ca3686b7c129aa85aa53921fb92646ea0bcab86879cc",
+    "documentSha256": "06fbbbd20f276117841cd9ca8476b96d0adbffd93230ee9626261d534409ece2",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-croatia-ucka-karst-morning-v1": {
+    "source": "assets/campaign-art/skyboxes/croatia-ucka-karst-morning-v1.png",
+    "sourceSha256": "d130bf6df9e3c786835331f93cc19de6069f01ea035b64105bfcdfe3d497ecbc",
+    "documentSha256": "7aabaac067a9d76289c8f3bfec88f673b87369d44159e8204f2b40ce22254335",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-kenya-hells-gate-rift-evening-v1": {
+    "source": "assets/campaign-art/skyboxes/kenya-hells-gate-rift-evening-v1.png",
+    "sourceSha256": "b248f99a4b5fb564ee5dfca7bcd0c8b1cfcd927789a205f03d61976cc88110f0",
+    "documentSha256": "d1b15164bfcdcd071b261b3050daa42c8e47c12907d33330638fd0769f726976",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-nz-waikato-paddocks-noon-v1": {
+    "source": "assets/campaign-art/skyboxes/nz-waikato-paddocks-noon-v1.png",
+    "sourceSha256": "55385c1bc890f180c9ad9fc8da62aa7c788cbfe976626468bdcae0d9b7f0dbc9",
+    "documentSha256": "441134b2e8c28a7a7f1bf0f4cb9d3d5d8cc053e467821031ba06e2196c1f2bfb",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-sisteron-authon-clear-night-v1": {
+    "source": "assets/campaign-art/skyboxes/sisteron-authon-clear-night-v1.png",
+    "sourceSha256": "d7cfb944b2f46375afad9b3c12d45e809f769c59f6c0ad92f0b78de6cdd36482",
+    "documentSha256": "d44bfc3d1b2aa8736d2f29e05488bb70b7aee47b973f863b4bcd195ece394d1c",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-chile-conuco-plantations-noon-v1": {
+    "source": "assets/campaign-art/skyboxes/chile-conuco-plantations-noon-v1.png",
+    "sourceSha256": "0c3f432baee5b1cdc5f6dde9cae9a98c69bcd0ce4df4508fa7f46964af024f3e",
+    "documentSha256": "ac3dc26ad0b9ab88e2fbf45f006bef055cb1664840eca20492883935a9562dc4",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-estonia-maekula-lowland-noon-v1": {
+    "source": "assets/campaign-art/skyboxes/estonia-maekula-lowland-noon-v1.png",
+    "sourceSha256": "503ef2b0ad24a29858611e99e48cf12100ddc563dae9817c2e69fa5faa67330b",
+    "documentSha256": "50c758ea9a79e7b52b8439b78a633dd3893e40f4a072b18c7349369bec9a68a9",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-japan-aichi-otaga-forest-evening-v1": {
+    "source": "assets/campaign-art/skyboxes/japan-aichi-otaga-forest-evening-v1.png",
+    "sourceSha256": "a18cb71101f27dfb8a1b4adf4238532e05c1d8e5537039b3300ad7613c324101",
+    "documentSha256": "de27e10dc9c460eba27811926f732681bad18027e94a8bc02897902bc2bee232",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-latvia-andumi-lowland-noon-v1": {
+    "source": "assets/campaign-art/skyboxes/latvia-andumi-lowland-noon-v1.png",
+    "sourceSha256": "4c03648eeb1aae5fccd2c22790d5a3e797fda0f000ed8d85d3e64325f969a218",
+    "documentSha256": "0309944178ce95f89f31bcc199fbad32dffc1f4dd5d314ba204dfb4b312d181b",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-sardegna-monte-lerno-granite-evening-v1": {
+    "source": "assets/campaign-art/skyboxes/sardegna-monte-lerno-granite-evening-v1.png",
+    "sourceSha256": "1d70a507b4effd85eb4619150cedeb9ea672fe6f40256f8affd0ee7daace9740",
+    "documentSha256": "b2e23d69d4f3612c447ce20b40bffc3f50ce3ff8542de925f32cadbd92b0a4d8",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-wales-hafren-forest-night-v1": {
+    "source": "assets/campaign-art/skyboxes/wales-hafren-forest-night-v1.png",
+    "sourceSha256": "42ad1e73e3d763652f57dc0c8d0b465e5a2ee31b1484f3f18cc173af315be990",
+    "documentSha256": "a71b2f7f560e9a44d1e65e72732dc8de385ef0b5a6f0ecfbe2d36bae18eb9b6d",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-catalunya-terra-alta-vines-evening-v1": {
+    "source": "assets/campaign-art/skyboxes/catalunya-terra-alta-vines-evening-v1.png",
+    "sourceSha256": "7b02a7a9f2455faa7089bf2286686c5d97014513ca38c1bb531afc36ce5ff878",
+    "documentSha256": "8e0fd28317b0407c0a51f2e8b0477163b636819a93fe35a3ff15d2e7142ffa1d",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-cordoba-el-condor-highlands-morning-v1": {
+    "source": "assets/campaign-art/skyboxes/cordoba-el-condor-highlands-morning-v1.png",
+    "sourceSha256": "545d30180d39c4363c0dc28b505b3bdfaf2237a94441d542157397b34dd208d2",
+    "documentSha256": "6a7c92a8e0fb87e4ef33a08e007ea5e293024d290462e14e1f15fbb910819c3e",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-corsica-castagniccia-ridges-morning-v1": {
+    "source": "assets/campaign-art/skyboxes/corsica-castagniccia-ridges-morning-v1.png",
+    "sourceSha256": "4a968a0651091bb451d4d6710f33e5c37a56d1419d83b6299e90595eb2df7ca7",
+    "documentSha256": "91ec53e1baecd5d36fe749e55565e2e17c22ec1af1a60597294a4533c50568b0",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-michigan-old-state-snow-noon-v1": {
+    "source": "assets/campaign-art/skyboxes/michigan-old-state-snow-noon-v1.png",
+    "sourceSha256": "e9fb089c93689bb322f1dd5805397f9f7d540d2176d029457efad5257c16d5f5",
+    "documentSha256": "d2fb76b80abdc684892582baef26395b51e072399313ae30f2e0dd4b10b7332b",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-minnesota-steamboat-forest-evening-v1": {
+    "source": "assets/campaign-art/skyboxes/minnesota-steamboat-forest-evening-v1.png",
+    "sourceSha256": "e67ff944c90c9f58d1bd205b1441708f020a812bebf8ae36fcd68c1136b842a0",
+    "documentSha256": "cf24b7bb362809c389a63eff763b7968c4f32e6e1669b0f0fc357fd135999828",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-norway-hof-finnskog-snow-night-v1": {
+    "source": "assets/campaign-art/skyboxes/norway-hof-finnskog-snow-night-v1.png",
+    "sourceSha256": "a4a2bcc7edd95a061b14285c22b61143e6b2df399c32772d299bf0ac24c4d681",
+    "documentSha256": "d27f46a2fa6e79c4a593456c0de1d997a82b81cbcc140cc581e9aab306da9253",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-croatia-skrad-inland-forest-night-v1": {
+    "source": "assets/campaign-art/skyboxes/croatia-skrad-inland-forest-night-v1.png",
+    "sourceSha256": "76d9d699ef2bd72c42df184e0c74142b8b1a3ce64e586406b73d7ec8bd2f7b4e",
+    "documentSha256": "59bc4074dae8919156932456132be5496a5364f27934628729203af0228fbaa0",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-fontbelle-authon-thoard-limestone-morning-v1": {
+    "source": "assets/campaign-art/skyboxes/fontbelle-authon-thoard-limestone-morning-v1.png",
+    "sourceSha256": "356e6bf36484ba452066dcbc5b68167da8c6db9714d1ea4c57b4c6706c1489c6",
+    "documentSha256": "0e590b39d0e18c539d05a57e5b99171c42d04e0ded6d1fefb53f62557d016e78",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-hokkaido-bisan-mixed-woodland-noon-v1": {
+    "source": "assets/campaign-art/skyboxes/hokkaido-bisan-mixed-woodland-noon-v1.png",
+    "sourceSha256": "908a2e88f041a681c2c39a3c5619508d0152b98c93745209bd206ab5b1f6ddae",
+    "documentSha256": "ffa8af1648a5f1ca4a8a936762b058633dc0fa4e4f1a649995aead7d99fe761f",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-hokkaido-naekawa-forest-night-v1": {
+    "source": "assets/campaign-art/skyboxes/hokkaido-naekawa-forest-night-v1.png",
+    "sourceSha256": "c40070f2dc26521dd5caf33c8c7ac6858fa54c0a472cff217a7db1ba4ac9684a",
+    "documentSha256": "b3ae3d0c4e0a04c3e3b43ef7563fe706e889821b3751a056cce6d4b62538c70d",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-portugal-arganil-schist-valley-evening-v1": {
+    "source": "assets/campaign-art/skyboxes/portugal-arganil-schist-valley-evening-v1.png",
+    "sourceSha256": "6ed3a26e1bbc9d86f8a89fcdc878b1168d65fc8264348c12dbe4812bf75415c9",
+    "documentSha256": "cd97b840bd1eb53048ac0bf054d5f47e235d0386dd9a54e88cc1cefab4322fa2",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-portugal-fafe-granite-uplands-morning-v1": {
+    "source": "assets/campaign-art/skyboxes/portugal-fafe-granite-uplands-morning-v1.png",
+    "sourceSha256": "277143b1905bdaa441981090ce4a20827733eba65cf2521c464b35705152c8b0",
+    "documentSha256": "be3a0d023a2aeeb17844b219c29b467cd77acd67c7d3b91c3f93bf7fbf9bfba0",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-portugal-gois-rolling-forest-morning-v1": {
+    "source": "assets/campaign-art/skyboxes/portugal-gois-rolling-forest-morning-v1.png",
+    "sourceSha256": "5ff1a0735618188eb33cc9ea6f80feb190cbb158a14ca5973aee438fbb04e0ff",
+    "documentSha256": "10ae14f81ccb6ce6a66aa52b5aa1c9cf852f54ad01185eaa66c43cb37395d930",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-portugal-lousa-schist-ridges-morning-v1": {
+    "source": "assets/campaign-art/skyboxes/portugal-lousa-schist-ridges-morning-v1.png",
+    "sourceSha256": "892da00edcf7812fe806d55855a8aa23f20654fecccd52f147cdfcacf3bde233",
+    "documentSha256": "66a2f349849a22234e61d3863bea7dec209885caf4fc0c4e1137f0583a7988c5",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-turkey-cicekli-pine-karst-noon-v1": {
+    "source": "assets/campaign-art/skyboxes/turkey-cicekli-pine-karst-noon-v1.png",
+    "sourceSha256": "a59eaff442e8e2520c8b40133f36eb4bb542437e7fbb257138ae9ef78850c246",
+    "documentSha256": "6fbb515102da554f14afa803f869c6a781cbe71a7b62b8878944a227910768ea",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-turkey-ula-pine-limestone-morning-v1": {
+    "source": "assets/campaign-art/skyboxes/turkey-ula-pine-limestone-morning-v1.png",
+    "sourceSha256": "dbcacc5dd27c47c5b3186ecc56240788599d80439de796cf00cd7912628aed7e",
+    "documentSha256": "3e668b19f96769353cde2ed5468344715ee77aeb34197cda406fbcaa6dadbf4c",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-aichi-isegami-cedar-ridges-noon-v1": {
+    "source": "assets/campaign-art/skyboxes/aichi-isegami-cedar-ridges-noon-v1.png",
+    "sourceSha256": "d26a5003dce8f4faa27690171f9623e768f94677ecd6b3a2a036929cda5296f7",
+    "documentSha256": "d91f6b87a382bdc789b7f0f61faf09e05dd79594a4f09109e6851799bf784fdd",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-estonia-arula-otepaa-fields-morning-v1": {
+    "source": "assets/campaign-art/skyboxes/estonia-arula-otepaa-fields-morning-v1.png",
+    "sourceSha256": "6dba80f7f52814e5dc9c714fa9290fa0cd76736de2f3d8c16e16aa88e89d75e8",
+    "documentSha256": "706e80d71305a672a919d149be47c4c22b01a30b378402161b0841f7badee2c2",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-estonia-rua-birch-meadows-evening-v1": {
+    "source": "assets/campaign-art/skyboxes/estonia-rua-birch-meadows-evening-v1.png",
+    "sourceSha256": "109b539be7fcb09bbd1632fbe461f0f5c8fb0fa92d00932c8b2503038167d9bc",
+    "documentSha256": "a8e259de73d9c1d0c0b1294b15e45a98c0f9f3d363f544a89a995d58065f9972",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-latvia-milzkalne-treeline-morning-v1": {
+    "source": "assets/campaign-art/skyboxes/latvia-milzkalne-treeline-morning-v1.png",
+    "sourceSha256": "b357d4fdafbf0f516c4d6cd76c8468ec1416262696be0cc305412e31db405c30",
+    "documentSha256": "7d9046316b2d264c4d557c55e06426f755507c11c9355e2c93c00eedd5829a93",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-latvia-tukums-farmland-evening-v1": {
+    "source": "assets/campaign-art/skyboxes/latvia-tukums-farmland-evening-v1.png",
+    "sourceSha256": "72b63349a11fd811284a37be27da7cc0f6ec8bda29a8558fa085508fca2fd2ec",
+    "documentSha256": "c262744de61d4b993ce87741f5fc8c802d4178577d8765678b5ac5164e738a40",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-turkey-icmeler-inland-pine-ridges-evening-v1": {
+    "source": "assets/campaign-art/skyboxes/turkey-icmeler-inland-pine-ridges-evening-v1.png",
+    "sourceSha256": "854e23478731f39524ee172a3990c6e1f1541f3dbf53c96fb49a0b32ecaa0d26",
+    "documentSha256": "fb889b4e84ec0409d77683b60526ad64dfb1c4b263bf9f8d0adf1a96ad1940bf",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-cota-day-2994": {
+    "source": "assets/campaign-art/skyboxes/cota-day-2994.png",
+    "sourceSha256": "f21e1aeeea89bb0f336c4ab07e95d6a95851c216db30dbcb1697c5fe82ffbd8f",
+    "documentSha256": "95a505d5a280edeb6dcd7dfce4041562afe1574d34cab53d542bc50b9fe58906",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-fuji-speedway-day-2994": {
+    "source": "assets/campaign-art/skyboxes/fuji-speedway-day-2994.png",
+    "sourceSha256": "ed597b6113a4c76439420f39ba9407e70511e599c0002388367bd99d70a8c617",
+    "documentSha256": "d540b618bb119ec67aa4167d945653d2aa9a93ee765ec620d5f36f5fe44ff46c",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-long-beach-night-2994": {
+    "source": "assets/campaign-art/skyboxes/long-beach-night-2994.png",
+    "sourceSha256": "fb9bf9cf062ca81b5ff6d57f09846ea3373bebb87246eea4ee1f14c23f75b2c0",
+    "documentSha256": "182a5cf161c366c3a99dfcc483e1309470463d1dcd3f45b79757646742507291",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-yas-marina-day-2994": {
+    "source": "assets/campaign-art/skyboxes/yas-marina-day-2994.png",
+    "sourceSha256": "d992caee861eec93bafa828c7d29b6525e60c539dc435d4acaeaa538171c7292",
+    "documentSha256": "c525ce49a44425290e643751bcaf5aefb5bff2cb7ab9d5bf0b264b62d91d20ec",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-sepang-day-2994": {
+    "source": "assets/campaign-art/skyboxes/sepang-day-2994.png",
+    "sourceSha256": "84d94c40f962cd006cae865204f25efb88bf60009c16e59ce57d0e3b400c1f29",
+    "documentSha256": "a00a9352e69ef41775effe2e9d5da581461917628760c504d0e67140889cba99",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-silverstone-day-2994": {
+    "source": "assets/campaign-art/skyboxes/silverstone-day-2994.png",
+    "sourceSha256": "786afc0037b87f90ea8b284284d11eb291a8a0679373a321b011a7b6dbcf4c42",
+    "documentSha256": "cf747f6e3de45765b65359b451c68e6b5c53c66801747128490c951857f0fcd1",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-sonoma-sears-point-day-2994": {
+    "source": "assets/campaign-art/skyboxes/sonoma-sears-point-day-2994.png",
+    "sourceSha256": "ed694f5659db5006cf08d11186301e30d839ddb69f0621ffc454f85ee70a2759",
+    "documentSha256": "f127f3b53f8837ee0748cdb47982079ca3687494af59e384eb18ac8c8383fa85",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-spa-ardenne-day-2994": {
+    "source": "assets/campaign-art/skyboxes/spa-ardenne-day-2994.png",
+    "sourceSha256": "3ac3e24eacc539aa3e96657a9430d7aceca6ca855d9e36378af78108070ab5e0",
+    "documentSha256": "c904a433b3c3b6ea935089354005ed95cd0164c06e2a247f61cfc11785bd4ce3",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-suzuka-mie-day-2994": {
+    "source": "assets/campaign-art/skyboxes/suzuka-mie-day-2994.png",
+    "sourceSha256": "25157c6e86b556c88ce4a35c247ae84daf09289ba7b442b5ac05bd8d079988c2",
+    "documentSha256": "c95cff770b3ae8f2c180086d0f5fae92ba06eded712add6fd3b48ac940963014",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-cota-night-2994": {
+    "source": "assets/campaign-art/skyboxes/cota-night-2994.png",
+    "sourceSha256": "ab7d9c854b85ca4cf7cf145be5644ad4e12cbf4b19d50bc448a622554a2e8d69",
+    "documentSha256": "e483ee9702423863f9dc2a325e5d15d7083f6d12427439a21710547bd930f4e1",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-fuji-speedway-night-2994": {
+    "source": "assets/campaign-art/skyboxes/fuji-speedway-night-2994.png",
+    "sourceSha256": "9fe88fc5b9ed167beb45d73186bc16a79ffa61069105936589d59dc5ff943b11",
+    "documentSha256": "b8ee1898f0e5644949ad2d9cdbd61f185b10560b90014e2023f4bc7407a343aa",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-sepang-night-2994": {
+    "source": "assets/campaign-art/skyboxes/sepang-night-2994.png",
+    "sourceSha256": "9c31599fd95a5574574160d5bc01f242f51e2c3f21f307879d0fde2e716d8d0b",
+    "documentSha256": "e0dfd9564391421c6b8cea924fb982e3417d4210bad7ecc2fec11aaf0d9d2aec",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-spa-ardenne-night-2994": {
+    "source": "assets/campaign-art/skyboxes/spa-ardenne-night-2994.png",
+    "sourceSha256": "bbac0aaa4ee6e569f0812e7cec4d7ad42acdb917610f5ff781c342d691ea2b04",
+    "documentSha256": "8c4bef4c67190905b9208b4d6739fe896917f9c4283fae77b55e514ae781af61",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-suzuka-mie-night-2994": {
+    "source": "assets/campaign-art/skyboxes/suzuka-mie-night-2994.png",
+    "sourceSha256": "27fec75fe07d275570a100f0bb040f3e2d4f03374413529af8b042aa4eaca1f9",
+    "documentSha256": "872d7a80d71da25ecbb0e4f764a228e978bb435019c18d205f370775a46ac206",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-yas-marina-night-2994": {
+    "source": "assets/campaign-art/skyboxes/yas-marina-night-2994.png",
+    "sourceSha256": "7f3828351ba6c01535590ff14c6e74b0dee511516ec17924932510386e006d57",
+    "documentSha256": "4af7c623e28bd354462e4121e8b11594043b9f362985f4065a4b55839435abbb",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-brands-hatch-day-2994": {
+    "source": "assets/campaign-art/skyboxes/brands-hatch-day-2994.png",
+    "sourceSha256": "00db160c8818002fd8421c8724fbbb4c0e0bec6b53ac83bab5b1ade4f8f5ce58",
+    "documentSha256": "6708b2eb2928be785f27ba2b267b0f2e2613e9662348384afbd187bc8553a0b7",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-imola-day-2994": {
+    "source": "assets/campaign-art/skyboxes/imola-day-2994.png",
+    "sourceSha256": "9060ab1777821e2494faa6093431ffe0f93957c2528981ce1dfe3f9a5e558886",
+    "documentSha256": "31ac2a9b7102170dcc68057c0772a8c2b10b22f40c99c21b4118635f1090c19c",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-mont-tremblant-day-2994": {
+    "source": "assets/campaign-art/skyboxes/mont-tremblant-day-2994.png",
+    "sourceSha256": "6047051e40a72ae0a6c2a6088835c1e152bbad69f138e4bb984c8d90a9f93340",
+    "documentSha256": "4afe1736c03914d4b2c256b9f7ffa93571ab2b9d331147b140049ad95ce905eb",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-monza-night-2994": {
+    "source": "assets/campaign-art/skyboxes/monza-night-2994.png",
+    "sourceSha256": "13d956476d68b92bc1193c30b556a7ee586ca36c453b9feece3245e67f0e114a",
+    "documentSha256": "72fbc0bf17a85abb38fa18aa3726fd9558319ed7deeb4273e0f0ef9ba7cc8a48",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-portimao-day-2994": {
+    "source": "assets/campaign-art/skyboxes/portimao-day-2994.png",
+    "sourceSha256": "5d710cbc1aab197e8d8d522de593062887cdec03866e78811ecd0b6f8b5e1754",
+    "documentSha256": "eef02f9b0a77cc2b0f8606f3e297979936160176d8acb3590e73b38689dff2a7",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-red-bull-ring-day-2994": {
+    "source": "assets/campaign-art/skyboxes/red-bull-ring-day-2994.png",
+    "sourceSha256": "07d11b094b8bd0ef1b51ec4aaa66d341f6b547039c0855a5c7d9b7708ed568f5",
+    "documentSha256": "2a941335a0ddf2429446ceb46f8eb32058b2b2bfcd7797c571529ce5c625d8ce",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-interlagos-day-2994": {
+    "source": "assets/campaign-art/skyboxes/interlagos-day-2994.png",
+    "sourceSha256": "cde813b9ec0c3ecbc25f4c9cbea01fc711e4a3743d5fa86936029aaed88e4293",
+    "documentSha256": "44bc31c86219e5516c7254a51955952122395289ff70584f6be6a5d742f0d825",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-lemans-sarthe-day-2994": {
+    "source": "assets/campaign-art/skyboxes/lemans-sarthe-day-2994.png",
+    "sourceSha256": "1a812dd6a318a14e5ba51bb4f4658dba776e667348251c21e44287c39616030f",
+    "documentSha256": "6f07ff3652764cd4fccbda0d8f7f4a40b7018d8e715ee51372f1345454f09761",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-tsukuba-day-2994": {
+    "source": "assets/campaign-art/skyboxes/tsukuba-day-2994.png",
+    "sourceSha256": "90e524196d92307d036305995557966b78c3389c54b7cf8bc05f1d725011c6c2",
+    "documentSha256": "471f106e440dd33f3cc3dfe775e11521bc8644324bbfdf0ff40f411ece9a9401",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-tsukuba-night-2994": {
+    "source": "assets/campaign-art/skyboxes/tsukuba-night-2994.png",
+    "sourceSha256": "9b44ba5bec9ed0de2f9730f274fff754a2d220633686afe2237df0d08831d41f",
+    "documentSha256": "6983ec9ddc4ae3f52502112eca8948351f0d4168c05759ea0c22a14c30180653",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-zandvoort-day-2994": {
+    "source": "assets/campaign-art/skyboxes/zandvoort-day-2994.png",
+    "sourceSha256": "f4169968956ea803b5d705f8202f2c180a7f9ad9ab67bbb6162d45c9f92cee6d",
+    "documentSha256": "1689269f11c78711b824b8979765458a8c45e321343056b871680cf49f4febe1",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-zandvoort-night-2994": {
+    "source": "assets/campaign-art/skyboxes/zandvoort-night-2994.png",
+    "sourceSha256": "4945880c03cdfa8d09a7185b3be8e7b76df1ddd88b9b56896bdf14d225a41722",
+    "documentSha256": "3f87414d0c05995d91072969043bc7651ca5c3686ffb793a9a46f003c965fd90",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-barcelona-national-night-2994": {
+    "source": "assets/campaign-art/skyboxes/skybox-barcelona-national-night-2994.png",
+    "sourceSha256": "533cd1c43ce468ee15d069f65562a13e831400fda687e976ecf9ff0b85a47a18",
+    "documentSha256": "0e0753d464058bfd4a0e620d861808c883a161cb08363d87b01291b91a8fa471",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-dunsfold-evening-2994": {
+    "source": "assets/campaign-art/skyboxes/skybox-dunsfold-evening-2994.png",
+    "sourceSha256": "0885f9c86f651d21feffa6801077067748625742115aba8a92a3efb730336054",
+    "documentSha256": "f3eb913f8119c57676006d5f4c0137ee04d7b3ce5b6d7ac3b14311b6affbaf37",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-goodwood-evening-2994": {
+    "source": "assets/campaign-art/skyboxes/skybox-goodwood-evening-2994.png",
+    "sourceSha256": "b95895818856db7942fd708fa20d87f33f39c3b1c1a16ef40019f0f2af27623b",
+    "documentSha256": "8f1a253f492596a22a62cac2141dbd0d84b588e8244ee56efc52e40d5e35ed5f",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-jarama-night-2994": {
+    "source": "assets/campaign-art/skyboxes/skybox-jarama-night-2994.png",
+    "sourceSha256": "3da791d866cd991cd5a5a0da4936c969f81ef0eb1d2edec8cf348b5925fd3cd4",
+    "documentSha256": "cb87a08d6cce520c5b454ef7e5e0473b2d87c07bbbb26cd4539a73348dbdafaf",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-mont-tremblant-night-2994": {
+    "source": "assets/campaign-art/skyboxes/skybox-mont-tremblant-night-2994.png",
+    "sourceSha256": "ccd0be2b046d48f0c5f70fc9024912f054d02026a0fa393e86173006a8b2c3bd",
+    "documentSha256": "f6101e0d591297052e29a63d0c3c66b72ddf91cbdab41e5a71de01f2ce56108b",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-autopolis-evening-2994": {
+    "source": "assets/campaign-art/skyboxes/skybox-autopolis-evening-2994.png",
+    "sourceSha256": "38f39b353f5fdf3eea40a2eb19f83dbcdbb5eea91b5b688b56bf2a40c9bf2020",
+    "documentSha256": "e9d5f837d533a2a8d26aaf33fdaafb0976e3cef112f06df6d846d9b16982acf8",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-autopolis-morning-2994": {
+    "source": "assets/campaign-art/skyboxes/skybox-autopolis-morning-2994.png",
+    "sourceSha256": "f9e2d3c826365793c6d774b1e718fa19f6e4b86a68f09ca9ed6c6b364edf06c0",
+    "documentSha256": "00e82b49f40b64ffcd08d783fcfbb998f770f5f6ecef8a9304f2775bdf7bbec1",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-barcelona-gp-morning-2994": {
+    "source": "assets/campaign-art/skyboxes/skybox-barcelona-gp-morning-2994.png",
+    "sourceSha256": "6eea38ea2fa87dbdcb296f191bc5287d86e4be8891339e35ae5d9a4ef22d20e6",
+    "documentSha256": "9944c37225455f3499a3947c8479d642513c2f99b35f31b969fc81f3f06f0577",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-donington-evening-2994": {
+    "source": "assets/campaign-art/skyboxes/skybox-donington-evening-2994.png",
+    "sourceSha256": "231f5a2057344a0bb1f8d845e82c9d65a77dedc77e212057238ccb9fff089316",
+    "documentSha256": "cad8825bfc91cd7b4ab77738fc9dfff92a4bb2c97fddec8342e82bae519705e9",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-hockenheim-morning-2994": {
+    "source": "assets/campaign-art/skyboxes/skybox-hockenheim-morning-2994.png",
+    "sourceSha256": "caf1e9314d2148aef89beba22d1845bd5289cb334d7c5526f4c9fd63d4255c7f",
+    "documentSha256": "9ad412ac03dc62355204e6bb604505ee34a33f0409e1d2a6abeeef27df5299e6",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-hockenheim-noon-2994": {
+    "source": "assets/campaign-art/skyboxes/skybox-hockenheim-noon-2994.png",
+    "sourceSha256": "547237c5b6d946d3a09b8c342e3817092e06da36b805db3118b52bdb21fe44d8",
+    "documentSha256": "e67e3c295c876de91bb0d51e555cb92a7e057867dfb3edcfefc99b96dbd9c570",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-istanbul-evening-2994": {
+    "source": "assets/campaign-art/skyboxes/skybox-istanbul-evening-2994.png",
+    "sourceSha256": "49e48c1baffe4bcb5c443adea10f98495aca89f7b270a2db3147b43cdc49d3a8",
+    "documentSha256": "49dc875343c2d1eeccc18521583eb0710dae484547c851ad79d343cab73d1438",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-gilles-villeneuve-morning-2994": {
+    "source": "assets/campaign-art/skyboxes/skybox-gilles-villeneuve-morning-2994.png",
+    "sourceSha256": "7adbd63b49fd01e9474c5e7c5806db3ef0275932f2de4987c4afe250a34afdf1",
+    "documentSha256": "067b28e85af4f235ad5a1317a5d5c6c148b8c290fd0d1d6c53c5802f2c07f7e4",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-hungaroring-morning-2994": {
+    "source": "assets/campaign-art/skyboxes/skybox-hungaroring-morning-2994.png",
+    "sourceSha256": "b048a74cea65954e42b336438318ebe1aee3bc63f700fb201fed56ef00593306",
+    "documentSha256": "485e368d81c1e377d143645c369c7e0585098ddd85c6b2e9f20d9523dfc85f42",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-mount-panorama-noon-2994": {
+    "source": "assets/campaign-art/skyboxes/skybox-mount-panorama-noon-2994.png",
+    "sourceSha256": "721f38841f02a65b7c4939a980bb2613ff3183eee56f33eac609a611a171701c",
+    "documentSha256": "2556ee613fdfe5d316f6ab776f5760deb1e0746af7dfc73cb67470b67cb2ca88",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-mugello-evening-2994": {
+    "source": "assets/campaign-art/skyboxes/skybox-mugello-evening-2994.png",
+    "sourceSha256": "d490d74c9e6fd8d70bbd2fd30d2d48c604f0b4014ff7e52a77161276e5288a13",
+    "documentSha256": "71f9c310b1ee21120b0c22125c9877ab6a6c070110abd5703e5cd1fb82d386ab",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-phillip-island-evening-2994": {
+    "source": "assets/campaign-art/skyboxes/skybox-phillip-island-evening-2994.png",
+    "sourceSha256": "a6c3e8f7b035e09f117d05ce8d0b2a71f2856f2cf3ed1b5d6cfcd36fae3b7368",
+    "documentSha256": "0aaec8c42a58f93593c0060dacb833ea125ad570f6eeee15904fa663c9387e8e",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-rally-bauxites-evening-v1": {
+    "source": "assets/campaign-art/skyboxes/environment-rally-bauxites-evening-v1.png",
+    "sourceSha256": "9daecb4b267b179283a85655c98045af02651e725d74ddb456d078320beb475f",
+    "documentSha256": "47725dad6045bca032422f70b96483366c2c3943c6eb7670f8f93659c39f239f",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-rally-borregos-noon-v1": {
+    "source": "assets/campaign-art/skyboxes/environment-rally-borregos-noon-v1.png",
+    "sourceSha256": "aaa293480bcd949c6d2029f0d8fab58298903a7a86fffd1346435914aebd1bb8",
+    "documentSha256": "8969b606e75ae23a355e1b5510c0f0b3a926b7949ee8c5e03dfc70b2a1bd74da",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-rally-dafni-evening-v1": {
+    "source": "assets/campaign-art/skyboxes/environment-rally-dafni-evening-v1.png",
+    "sourceSha256": "99d7db8c44c41743bbd2ea38e39c25effdbedf779aa40511fa973f47fa21c48f",
+    "documentSha256": "fcf92e404b0e8fc748280b12bbaf7ea13d9c7cbbe0d797d5e7be354f94c4271c",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-rally-pavliani-morning-v1": {
+    "source": "assets/campaign-art/skyboxes/environment-rally-pavliani-morning-v1.png",
+    "sourceSha256": "1ba0bdac2533181f75abe16df97e540816e7d9fcd7dabe2dbd9dd966ebe7446d",
+    "documentSha256": "099ca66ee0b9ce17d8a721f218238c8ab0d90ae06c8e313e70e80d1f8e080de3",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-rally-platak-evening-v1": {
+    "source": "assets/campaign-art/skyboxes/environment-rally-platak-evening-v1.png",
+    "sourceSha256": "b63026b7c50a2a63ea972117bca50a5e657071c554c5783021272cd7a6c10268",
+    "documentSha256": "9aeb453a1baeb0a81800caf80f9a59e5bf3e81be07d7712e5801413ea52ca3cd",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-rally-pozos-noon-v1": {
+    "source": "assets/campaign-art/skyboxes/environment-rally-pozos-noon-v1.png",
+    "sourceSha256": "0754bc7d2f1e99f05657699c31eefb1c265f4eb7966bef51efe3678eaee8c53a",
+    "documentSha256": "14a73ff6f7f34b3c47476496c86a1197460590114b6326221aa2ae1586d356a7",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-rally-valenciana-evening-v1": {
+    "source": "assets/campaign-art/skyboxes/environment-rally-valenciana-evening-v1.png",
+    "sourceSha256": "d2a6c9e2b5ef9485af0fdd1dc4f5cca1a9bf4f043a956b2be71222c539b06413",
+    "documentSha256": "acad2afee0401326ed9e251a633c34f8a943c9a4751300a7f6ecf5a55eb0d2d0",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-rally-baumholder-noon-v1": {
+    "source": "assets/campaign-art/skyboxes/environment-rally-baumholder-noon-v1.png",
+    "sourceSha256": "563c6bf4f19cd915926e7cc17f4c2917e79d11b259d12fc73556ea216e62579f",
+    "documentSha256": "402f9706c21dbe4cdf2e130aa6b8988f9b0e3b9e6cddaff73c43dcffdf4d7ba0",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-rally-coldwater-noon-v1": {
+    "source": "assets/campaign-art/skyboxes/environment-rally-coldwater-noon-v1.png",
+    "sourceSha256": "21a9ecb792a85b13d331e9668194125f9b6f80b9728c4e90e302a00e1a660227",
+    "documentSha256": "2cf233fedc042c46b47f2afd703e6040405b79f1907bbb2862c986c3e7eec238",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-rally-kemmelberg-evening-v1": {
+    "source": "assets/campaign-art/skyboxes/environment-rally-kemmelberg-evening-v1.png",
+    "sourceSha256": "c956e460eaa49bcaa685641c5515e5d1d89665b2bd4d693a7cbfd8f968e343a6",
+    "documentSha256": "2551e80c5ffaad75ba84d00dd036b3d807305ae45c0724f10fd7a8c4f86169b2",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-rally-panzerplatte-noon-v1": {
+    "source": "assets/campaign-art/skyboxes/environment-rally-panzerplatte-noon-v1.png",
+    "sourceSha256": "88cd5a54248fe93d1a3002ce8f48b987b159ca6f4c4d7f8b32f66cba06fd59bd",
+    "documentSha256": "f4ee54b1b7fcb8688be37a1d4215e9151490255bc5a17be1d6ac5470afc7a6a8",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-rally-sherwood-morning-v1": {
+    "source": "assets/campaign-art/skyboxes/environment-rally-sherwood-morning-v1.png",
+    "sourceSha256": "ce1f6b35a3d2f8d3742f03e67e803a3fd04c0ef08447d4fdee624fab075c569e",
+    "documentSha256": "f01474d880c8025e9dca11c11f39f14ed90fd8a5540da147a5a4e16d29d7f6c8",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-rally-strasinska-morning-v1": {
+    "source": "assets/campaign-art/skyboxes/environment-rally-strasinska-morning-v1.png",
+    "sourceSha256": "89a37e20a839bde9234358476fb0c79927fccbc729803bac9a334a17a2bd4a04",
+    "documentSha256": "7fec29c83533723be03ccfead0c8303a33d59612be67032dbcbced8059311cff",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-rally-swietajno-evening-v1": {
+    "source": "assets/campaign-art/skyboxes/environment-rally-swietajno-evening-v1.png",
+    "sourceSha256": "223ab135b76db63d5c0d924ae00ac78ecac02200894ab02ef557ba9051502b84",
+    "documentSha256": "da6dd30909054fe6ca8a5ab5f1d84182fd0bbdd29974c0ca561fe7cd1dc7b544",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-rally-agren-snow-morning-v1": {
+    "source": "assets/campaign-art/skyboxes/environment-rally-agren-snow-morning-v1.png",
+    "sourceSha256": "bbe3fd866e330463d877ac509f7559be86e72e54a78e24c330465ab9a80ff520",
+    "documentSha256": "13da21c95a7e2930f0ff2c761220d034a80bcd8c7d42f68c81fe6f76b0dfde05",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-rally-concord-pond-morning-v1": {
+    "source": "assets/campaign-art/skyboxes/environment-rally-concord-pond-morning-v1.png",
+    "sourceSha256": "9c9620465e22ada35a2e114d768a0a4b80f17a35441e9731f2e47b79fe4d35ee",
+    "documentSha256": "05ca6792275dad338ae360939353f1d6fd2af7e48633b891979f6738ae599cdf",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-rally-likenas-snow-evening-v1": {
+    "source": "assets/campaign-art/skyboxes/environment-rally-likenas-snow-evening-v1.png",
+    "sourceSha256": "032ceb31ad63365c1e845c2a7ba3915ded101f383d2f65c9181d078a124f4d46",
+    "documentSha256": "3ff10cb5d44eb19ce0f7cefbe7ef4b869f4570119fbbf00e11622f5cbc27ea27",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-rally-morton-cutoff-evening-v1": {
+    "source": "assets/campaign-art/skyboxes/environment-rally-morton-cutoff-evening-v1.png",
+    "sourceSha256": "449bfcd7e5806908809271369efd80c87d6e99dec714f4ef8ba545d2ef81fb84",
+    "documentSha256": "b0417b0ca61e5731d5cb87f5f2ac87c4d92630bc91ab42a9444886abefeb8749",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-rally-north-road-evening-v1": {
+    "source": "assets/campaign-art/skyboxes/environment-rally-north-road-evening-v1.png",
+    "sourceSha256": "e42f64c435a514ed4ae668c202bb619f6fdde3de039d19b80f0b8cb0b8bbf927",
+    "documentSha256": "598c70345d8984b33cfc43702d6fbd445760289f9e7ab1f535fa5ba51018b8cd",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-rally-shoreline-snow-noon-v1": {
+    "source": "assets/campaign-art/skyboxes/environment-rally-shoreline-snow-noon-v1.png",
+    "sourceSha256": "a2a5e3f5f3e1064b50c2fb0e28ecd775fb1a553547f093356605cf24ac87297e",
+    "documentSha256": "9afcf50f59467a69365768748948600e137a2909ab45b1442e617b3d65d30f3d",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-rally-svullrya-snow-morning-v1": {
+    "source": "assets/campaign-art/skyboxes/environment-rally-svullrya-snow-morning-v1.png",
+    "sourceSha256": "55c6dbebd97369db02bbf59ab3f1ea6a2fee619c0f7b7e227cd61a7c2ec53246",
+    "documentSha256": "e7ef4755ee9360fbf76117d951bb3c5e166629dd47b6c91e45afeee5fb708563",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-nz-whaanga-tasman-morning-qav1b": {
+    "source": "assets/campaign-art/skyboxes/nz-whaanga-tasman-morning-qav1b.png",
+    "sourceSha256": "a0e68d01eb92bf4dad1a80d91303912ab2bdc6fdca6a07f9e65988d431dbd803",
+    "documentSha256": "7f343c816d9bcb2f19ba36fd44320c540c002a2421bf910550c64d71a8cb4c1e",
+    "width": 1024,
+    "height": 341
   }
 }
