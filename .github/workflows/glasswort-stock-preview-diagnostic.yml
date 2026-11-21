@@ -1,0 +1,66 @@
+name: Glasswort stock preview diagnostic
+on:
+  push:
+    branches: [dot/diagnostic-glasswort-stock-preview]
+permissions:
+  contents: read
+jobs:
+  render:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 3ea1d1b86d76b60a02402f860d6893f37a12813a
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Verify exact offline-prepared diagnostic tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 3ea1d1b86d76b60a02402f860d6893f37a12813a
+          test "$(git rev-parse HEAD^)" = 29a5f3f9abbcdb0e3e512455971aba18384450f5
+          test "$(git rev-parse HEAD^{tree})" = 3dbb5d4d49dca899290f6fbda75747a877821cae
+          test "$(git rev-parse HEAD:.github)" = 9acb7dae8496ff32e0f8ce6e6b4f1a216bc74980
+          test -z "$(git status --porcelain)"
+          printf '%s  %s\n' 'aeb84324316ffcad74d711a829c3ac9490c8b2ea80aa89e539bf3b756740d938' 'data/server-storage/files/art/catalog-glasswort-181-1973-body/document.json' | sha256sum --check --strict
+          printf '%s  %s\n' '441cc6d244f6acf6260d8974799afa0193670bd6e31c1ac1a0f466b15b861cbd' 'data/server-storage/files/art/catalog-glasswort-181-1973-dashboard/document.json' | sha256sum --check --strict
+          printf '%s  %s\n' 'c0167453aa537de595e0ea53baf98ab690d24b5554938cd39bca8a57f0e74071' 'data/server-storage/files/art/catalog-glasswort-181-1973-tires/document.json' | sha256sum --check --strict
+          printf '%s  %s\n' 'd9976f639d7aca029aded6c54d30f744cb9d274928bfc30061712cb1a76e3a4c' 'data/server-storage/files/cars/Glasswort 181 1973/document.json' | sha256sum --check --strict
+          printf '%s  %s\n' 'f965789d1aecf8220da1bcea7310daee72652606eaac0d7360e429b799e06569' 'playwright.stock-matrix.config.mjs' | sha256sum --check --strict
+          printf '%s  %s\n' 'dd2719cc5d32f12157f64a00e2d537a551492e0e0ec34abe74c95af6ddcfbd48' 'tests/playwright/matrix.json' | sha256sum --check --strict
+          printf '%s  %s\n' '3a979da4912cffa8c362438396a5deed66cc8394e505ca85ade2fff19dfb6fe1' 'tests/playwright/stock-render-matrix.spec.js' | sha256sum --check --strict
+          printf '%s  %s\n' '3f2f3cb249f379f73f76e6d6ea1240ec989ff6e76863c7c82512c12dae66290f' 'tests/playwright/stock-verify.mjs' | sha256sum --check --strict
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - name: Preflight protected Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --no-install playwright install --with-deps chromium
+          node --input-type=module <<'JS'
+          import {chromium} from '@playwright/test';
+          const browser=await chromium.launch({headless:true,chromiumSandbox:true});
+          try {
+            const page=await browser.newPage();
+            await page.goto('data:text/html,<title>Protected preview batch browser</title>');
+            if(await page.title()!=='Protected preview batch browser')throw Error('Protected browser preflight failed');
+          } finally { await browser.close(); }
+          JS
+      - name: Render Glasswort stock atlas and Load Save poster
+        run: npx --no-install playwright test -c playwright.stock-matrix.config.mjs --workers=1 --reporter=line
+        env:
+          CI: 'true'
+          CAR_PREVIEW_LANE: glasswort
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: stock-preview-glasswort
+          path: |
+            test-results/**/*-preview-row.json
+            test-results/**/*-render-receipt.json
+            test-results/**/*.webp
+          retention-days: 3
+          if-no-files-found: ignore
