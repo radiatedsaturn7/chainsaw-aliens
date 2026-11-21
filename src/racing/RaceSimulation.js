@@ -2708,7 +2708,10 @@ export function updateRaceSimulation({
     ? 0
     : clamp(previousWheelContactCount / RACE_WHEEL_IDS.length, 0, 1);
   if (!controlsLockedByRollover && tireContactScale <= 0.001) controlLockReason = 'airborne-contact';
-  const isAutomatic = editor.raceInput.autoShift && tuning.shiftMode !== 'manual';
+  // Automatic driving is the player's control preference, even when the
+  // installed transmission is a manual gearbox. Match the authoritative
+  // powertrain assist so brake-to-reverse works on manual-only saved cars.
+  const isAutomatic = editor.raceInput.autoShift !== false;
   if (isAutomatic && gear <= 0 && throttle > RACE_PEDAL_INPUT.activeThreshold && absSpeedBefore < 1.1) {
     gear = 1;
     editor.raceInput.gear = 1;
