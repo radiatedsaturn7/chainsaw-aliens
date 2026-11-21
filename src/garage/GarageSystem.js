@@ -2,14 +2,26 @@ import {savedGarageTireRef} from './GarageSavedTires.js';
 import {normalizeMechanicalConfig} from '../racing/simulation/MechanicalModel.js';
 import {saveCarCondition,repairCar,repairRows} from './GarageRepairs.js';
 import {unlockBestUpgrades} from './GarageCheats.js';
+import {RACE_CAR_SHELL_FRAME_SLOTS} from '../racing/raceData.js';
 import {applyTireDefinition} from '../racing/raceTires.js';
 import {buildGarageCar,garageTuningRanges,normalizeCarPart,partFits,safeGarageKey,isGarageUpgrade} from './CarPart.js';
 import {normalizeItemDocument} from '../items/ItemDocument.js';
 import {normalizeItemProgress,syncItemGrantsToPlayer} from '../items/ItemEffects.js';
 import {loadSavedTire} from '../ui/TireLibrary.js';
 
+// Complete catalog wheels were fitted with this body's existing placement.
+function hasFittedStockWheelArt(car){
+ const id=car?.id,art=car?.art;
+ if(typeof id!=='string'||!id||!car.catalogProvenance)return false;
+ const configured=car.setup?.tireDefinition?.ref;
+ if(configured&&savedGarageTireRef(configured)!=='Stock')return false;
+ const stem='catalog-'+id,body=stem+'-body',wheel=art?.tireSurfaces?.wheel?.artRef;
+ return (wheel===stem+'-wheels'||wheel===stem+'-tires')&&art.tireSurfaces.tread?.artRef===wheel&&
+  RACE_CAR_SHELL_FRAME_SLOTS.every(slot=>art.angleLayers?.[slot]?.body?.artRef===body&&art.angleLayers?.[slot]?.tires?.artRef===wheel);
+}
+
 export class GarageSystem {
- constructor(items,{loadTire=ref=>loadSavedTire(savedGarageTireRef(ref))}={}){this.items=items;this.loadTire=loadTire;this.revision=0;}
+ constructor(items,{loadTire=(ref,options)=>loadSavedTire(savedGarageTireRef(ref),options)}={}){this.items=items;this.loadTire=loadTire;this.revision=0;}
  get progress(){return this.items.progress.garage;}
  async load(){await this.items.load();return this;}
  configuration(ref,progress=this.items.progress){return progress.garage.cars[ref]||{installed:{},tune:{}};}
@@ -112,10 +124,11 @@ export class GarageSystem {
  repairRows(ref,car){return repairRows(this,ref,car);}
  async stockBaseline(stock){
   const baseline=structuredClone(stock);
-  const tire=await this.loadTire('Stock');
+  const keepArt=hasFittedStockWheelArt(stock);
+  const tire=keepArt?await this.loadTire('Stock',{hydrateArtwork:false}):await this.loadTire('Stock');
   const pressure=baseline.setup?.tirePressurePsi,size=structuredClone(baseline.setup?.tireSize);
   const axleSizes=structuredClone(baseline.setup?.tireSizeByAxle);
-  applyTireDefinition(baseline,tire,'Stock');
+  applyTireDefinition(baseline,tire,'Stock',{keepArt});
   if(axleSizes)baseline.setup.tireSizeByAxle=axleSizes;
   if(pressure)baseline.setup.tirePressurePsi=pressure;
   if(size)baseline.setup.tireSize=size;

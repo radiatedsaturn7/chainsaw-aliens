@@ -143,7 +143,8 @@ test('showroom entry prepares the visible page instead of decoding the entire ca
   resources.exteriorArtRefs=()=>[];resources.carPreview.drawSprite=()=>true;resources.carPreview.draw=()=>true;
   const doc=normalizeMenuDocument({screens:[{id:'cars',elements:[{id:'showroom',type:'car-showroom',binding:'carRef',maxVisible:4}]}]});
   await resources.prepareScreen(doc,doc.screens[0],{carRef:'Car 9'});
-  assert.deepEqual([...requested].sort(),['Car 10','Car 11','Car 8','Car 9']);
+  assert.deepEqual([...requested],[],'thumbnail browsing does not hydrate any full vehicle');
+  assert.equal(resources.cars.size,0);
  }finally{globalThis.document=previous;}
 });
 
@@ -192,7 +193,8 @@ test('static showroom fetches only its four cars, without cockpit or smoke depen
   const doc=normalizeMenuDocument({screens:[{id:'cars',elements:[{id:'showroom',type:'car-showroom',binding:'carRef',maxVisible:4}]}]});
   const before=resources.choices('cars').map(c=>c.value);
   await resources.prepareScreen(doc,doc.screens[0],{carRef:'Car 09'});
-  assert.deepEqual(downloads.sort(),['Car 08','Car 09','Car 10','Car 11']);
+  assert.deepEqual(downloads,[],'thumbnail browsing never downloads full car or art documents');
+  assert.equal(resources.cars.size,0);
   assert.equal(resources.errors.size,0);
   assert.deepEqual(resources.choices('cars').map(c=>c.value),before,'downloads must not reshuffle the carousel');
  }finally{globalThis.document=previousDocument;globalThis.fetch=previousFetch;resetProjectFilesForTests();}

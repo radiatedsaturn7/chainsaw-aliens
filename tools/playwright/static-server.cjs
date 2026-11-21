@@ -8,6 +8,7 @@ const port = Number(process.env.PORT || 4173);
 const storageRoot = path.join(rootDir, 'data/server-storage/files');
 const storageFolders = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'tires', 'models', 'menus', 'doodads', 'items', 'fonts', 'settings'];
 const storageOverlay = new Map();
+const changedStock = new Set();
 const COMPACT_STORAGE_MARKER = '__chainsawStorage';
 const COMPACT_STORAGE_VERSION = 'compact-v1';
 const COMPACT_STORAGE_ENCODING = 'json-gzip-base64';
@@ -18,6 +19,7 @@ const contentTypes = {
   '.css': 'text/css; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
   '.png': 'image/png',
+  '.webp':'image/webp',
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
   '.svg': 'image/svg+xml',
@@ -135,7 +137,62 @@ function readRequestBody(req) {
   });
 }
 
+let previewCatalog,previewCatalogKey;
+function previewSources(revision,id,name,carId){
+  if(typeof id!=='string'||!(/^[a-z0-9][a-z0-9_-]{0,127}$/i).test(id))return null;
+  if(typeof name!=='string'||typeof carId!=='string')return null;
+  const manifest=path.join(rootDir,'assets/car-previews/manifest.json');
+  try{
+    const status=fs.lstatSync(manifest);
+    if(!status.isFile()||status.size>8*1024*1024)return null;
+    const key=`${status.mtimeMs}:${status.size}`;
+    if(previewCatalogKey!==key){previewCatalog=JSON.parse(fs.readFileSync(manifest,'utf8'));previewCatalogKey=key;}
+    if(previewCatalog?.schemaVersion!==1||previewCatalog?.releaseRevision!==revision)return null;
+    const names=previewCatalog.carsByName||{};
+    if(!Object.hasOwn(names,name)||names[name]!==id||Object.values(names).filter(k=>k===id).length!==1)return null;
+    if(!Object.hasOwn(previewCatalog.previews||{},id))return null;
+    const row=previewCatalog.previews[id];
+    if((row.carId??id)!==carId)return null;
+    const cars=Array.isArray(row.stockSources)?row.stockSources.filter(s=>s?.folder==='cars').map(s=>s.name):[];
+    return cars.length===1&&cars[0]===name?row.stockSources:null;
+  }catch{return null;}
+}
+
+function isStockPreview(revision,sources){
+  if(typeof revision!=='string'||!(/^[0-9a-f]{64}$/).test(revision)||!Array.isArray(sources)||sources.length<1||sources.length>32)return false;
+  const seen=new Set();let cars=0;
+  for(const row of sources){
+    const {folder,name,sha256}=row||{};
+    if(!['cars','art','tires','models'].includes(folder)||typeof name!=='string'||name.length<1||
+      name.length>128||name!==normalizeName(name)||name==='.'||name==='..'||!(/^[0-9a-f]{64}$/).test(sha256||''))return false;
+    const key=storageKey(folder,name);
+    if(seen.has(key)||changedStock.has(key)||storageOverlay.has(key))return false;
+    seen.add(key);if(folder==='cars')cars++;
+    const document=getStoredFilePath(folder,name),directory=path.dirname(document);
+    const sidecar=path.join(directory,'metadata.json');
+    try{
+      if(fs.lstatSync(directory).isSymbolicLink()||fs.lstatSync(path.dirname(directory)).isSymbolicLink()||
+        !fs.lstatSync(sidecar).isFile()||fs.statSync(sidecar).size>8192||!fs.lstatSync(document).isFile())return false;
+      const metadata=JSON.parse(fs.readFileSync(sidecar,'utf8'));
+      if(metadata?.deleted||metadata?.folder!==folder||metadata?.name!==name||
+        metadata?.stockPreviewReleaseRevision!==revision||metadata?.stockPreviewSha256!==sha256||
+        metadata?.stockPreviewBytes!==fs.statSync(document).size)return false;
+    }catch{return false;}
+  }
+  return cars===1;
+}
+
 async function handleStorageRequest(req, res, url) {
+  if(url.pathname==='/__storage/preview-stock'&&req.method==='POST'){
+    try{
+      const length=Number(req.headers['content-length']);
+      if(!Number.isSafeInteger(length)||length<1||length>8192){sendJson(res,400,{ok:false,verified:false});return true;}
+      const {revision,id,name,carId}=JSON.parse(await readRequestBody(req));
+      sendJson(res,200,{ok:true,revision,id,name,carId,verified:isStockPreview(revision,previewSources(revision,id,name,carId))});
+    }catch{sendJson(res,400,{ok:false,verified:false});}
+    return true;
+  }
+
   if (url.pathname === '/__storage/index' && req.method === 'GET') {
     const folder = url.searchParams.get('folder');
     sendJson(res, 200, { ok: true, index: listStorageIndex(folder) });
@@ -170,6 +227,7 @@ async function handleStorageRequest(req, res, url) {
         savedAt: Number(payload.savedAt || Date.now()),
         data: payload.data
       };
+      changedStock.add(storageKey(folder,name));
       storageOverlay.set(storageKey(folder, name), file);
       sendJson(res, 200, { ok: true, file });
     } catch (error) {
@@ -181,6 +239,7 @@ async function handleStorageRequest(req, res, url) {
   if (url.pathname === '/__storage/file' && req.method === 'DELETE') {
     const folder = url.searchParams.get('folder');
     const name = normalizeName(url.searchParams.get('name'));
+    changedStock.add(storageKey(folder,name));
     storageOverlay.delete(storageKey(folder, name));
     sendJson(res, 200, { ok: true });
     return true;
@@ -198,6 +257,7 @@ async function handleStorageRequest(req, res, url) {
         return true;
       }
       const renamed = { ...file, name: newName, savedAt: Date.now() };
+      changedStock.add(storageKey(folder,oldName));changedStock.add(storageKey(folder,newName));
       storageOverlay.delete(storageKey(folder, oldName));
       storageOverlay.set(storageKey(folder, newName), renamed);
       sendJson(res, 200, { ok: true, file: renamed });

@@ -16,11 +16,11 @@ function modal(title) {
   document.body.appendChild(dialog);dialog.showModal();
   return {dialog,el,close};
 }
-export async function loadSavedTire(name) {
-  const payload=await hydrateProjectFilePayload('tires',name);
+export async function loadSavedTire(name,{hydrateArtwork=true}={}) {
+  const payload=await hydrateProjectFilePayload('tires',name,{hydrateDependencies:hydrateArtwork});
   if(!payload?.data)throw new Error('Could not load tire');
   const tire=normalizeTireDefinition(payload.data);
-  await Promise.all(getTireArtRefs(tire).map(async ref=>{
+  if(hydrateArtwork)await Promise.all(getTireArtRefs(tire).map(async ref=>{
     const art=await hydrateProjectFilePayload('art',ref);
     if(!art?.data)throw new Error(`Could not load tire artwork: ${ref}`);
   }));

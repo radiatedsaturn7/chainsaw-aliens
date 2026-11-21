@@ -146,6 +146,7 @@ jobs:
           ASSET_REPOSITORY: ${{ github.repository }}
           ASSET_COMMIT: ${{ github.sha }}
         run: >-
+          GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=safe.directory GIT_CONFIG_VALUE_0="$GITHUB_WORKSPACE"
           python3 tools/build_static_site.py --output _site
           --remote-repository "$ASSET_REPOSITORY"
           --remote-commit "$ASSET_COMMIT"
