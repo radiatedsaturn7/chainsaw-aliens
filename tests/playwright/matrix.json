@@ -1,0 +1,32 @@
+[
+  {
+    "id": "bellheather-2005",
+    "name": "Bellheather 2005",
+    "expected": {
+      "car": "7b3b4cc2f335e27775e3cb656796bbe11923dcf27a1801b1de63801ed4551c41",
+      "body": "4828ff9953f909d789e49773816584dddba17e4c536276208c65b1f086b48a0e",
+      "dashboard": "acbea4470c6894b7e9ee43bea1de628bf19e49643dc64ec84dc1af1c6543ee1b",
+      "tires": "977e93379f0609b4b6738934604f6cdb695bf0b8902df2b7ad5fc087b5e00fad"
+    }
+  },
+  {
+    "id": "bogbean-2020",
+    "name": "Bogbean 2020",
+    "expected": {
+      "car": "4774e990a3240213911283699790f573e2973c482060d016b2077b0db318a834",
+      "body": "93830546b73baa679adb311396813edd5951007560a3ec07ebf8cb556ee65642",
+      "dashboard": "0c40fa83569c641e8ca1ed4ed9711492a6b321f6c65006d42611dc4d6c460d57",
+      "tires": "4096587ec6e1bed9036ecc4f959f5d8634e7952241f9aefe542003fb72a38214"
+    }
+  },
+  {
+    "id": "fumitory-1983",
+    "name": "Fumitory 1983",
+    "expected": {
+      "car": "052c7bc62b5d63ca1b977728236163581cccfe9a1b43c0089ad4907a843c4dd8",
+      "body": "df794d2eea1f84e5415ee72bd700a2d7333f031fe99bbe032365b43d55018b8f",
+      "dashboard": "d1525defd0e74c909c6221eca34f8bb670256a84c1635053e59df5eddc0f680e",
+      "tires": "e5844d28be2b63c3da4da8c023e5705de55f4c1242e715be50f008903e6ab7a1"
+    }
+  }
+]
