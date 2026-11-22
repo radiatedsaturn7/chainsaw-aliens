@@ -73,7 +73,7 @@ test('regional map drawing and selected previews work in portrait and landscape 
   const labels=[],ctx=new Proxy({globalAlpha:1,measureText:t=>({width:String(t).length*5}),fillText:t=>labels.push(t)},{get:(o,k)=>k in o?o[k]:(()=>{})});
   drawMenuScreen(ctx,bounds,menu,screen,{raceRef:r.mainPath[0]},{editing:true,resources:{art:()=>null,race:()=>assert.fail('map should not load race')}});
   assert.ok(labels.join(' ').includes('Tower Hill'));
-  assert.ok(labels.includes('Boston'));
+  assert.ok(!labels.includes('Boston'),'region map place-name overlays are hidden');
   const map=screen.elements.find(e=>e.type==='world-map'),b=menuElementBounds(map,bounds);
   assert.ok(b.h>bounds.h*(bounds.w>bounds.h?.80:.36));
   for(const n of map.nodes){const p=worldMapNodePoint(n,b,map),radius=worldMapNodeRadius(b,map)+5;assert.ok(p.x-radius>=b.x&&p.x+radius<=b.x+b.w);}
@@ -138,4 +138,43 @@ test('every installed boss is a terminal sixth stop, after five main races',()=>
   assert.deepEqual(new Set(path.map(s=>map.nodes.find(n=>n.id===s.previous).raceRef)),new Set(r.mainPath));
   assert.equal(map.mapEntrance,'auto');
  }
+});
+test('all regional roads leave clearance around unconnected destinations in portrait and landscape',async()=>{
+ const {validateTopology,DESTINATION_ROAD_CLEARANCE,ROAD_ROAD_CLEARANCE}=await import('../../tools/campaigns/author_campaign_road_topology.mjs');
+ assert.ok(DESTINATION_ROAD_CLEARANCE>=.08);assert.ok(ROAD_ROAD_CLEARANCE>=.05);
+ for(const r of config.regions){const map=menu.screens.find(s=>s.id===`campaign-hub-${r.stage}`).elements.find(e=>e.property==='campaign-path');validateTopology(map);}
+});
+
+test('requested regional journeys and Data Center detour spacing are retained',()=>{
+ for(const [stage,ids] of [[5,['stop-0','stop-3','stop-2','stop-4','stop-1']],[11,['stop-4','stop-3','stop-0','stop-2','stop-1']]]){
+  const map=menu.screens.find(s=>s.id===`campaign-hub-${stage}`).elements.find(e=>e.property==='campaign-path');
+  const boss=map.nodes.find(n=>n.label==='Boss');
+  const route=mapRoadRoute(map.nodes,map.connections,ids[0],boss.id);
+  assert.deepEqual(route.map(s=>s.previous),ids);
+  assert.deepEqual(ids.map(id=>map.nodes.find(n=>n.id===id).label),['1','2','3','4','5']);
+ }
+ const map=menu.screens.find(s=>s.id==='campaign-hub-6').elements.find(e=>e.property==='campaign-path');
+ const detour=map.nodes.find(n=>n.id==='stop-7');
+ for(const n of map.nodes)if(n!==detour)assert.ok(Math.hypot(n.x-detour.x,n.y-detour.y)>.18,'detour has breathing room');
+});
+
+test('Oak Creek swaps its fifth stop and nearby detour, with the detour branching from five',()=>{
+ const map=menu.screens.find(s=>s.id==='campaign-hub-10').elements.find(e=>e.property==='campaign-path');
+ const expected=['stop-0','stop-4','stop-1','stop-2','stop-3'];
+ assert.deepEqual(mapRoadRoute(map.nodes,map.connections,expected[0],'stop-5').map(s=>s.previous),expected);
+ assert.deepEqual(expected.map(id=>map.nodes.find(n=>n.id===id).label),['1','2','3','4','5']);
+ const fifth=map.nodes.find(n=>n.id==='stop-3'),detour=map.nodes.find(n=>n.id==='stop-7');
+ assert.deepEqual([fifth.x,fifth.y],[.673117,.87]);
+ assert.deepEqual([detour.x,detour.y],[.9,.401419]);
+ const branches=map.connections.filter(e=>e.from===detour.id||e.to===detour.id);
+ assert.equal(branches.length,1);assert.ok(branches[0].from===fifth.id||branches[0].to===fifth.id);
+});
+test('Oak Creek left detour branches from two and Angeles four exits right past the nudged detour',()=>{
+ const oak=menu.screens.find(s=>s.id==='campaign-hub-10').elements.find(e=>e.property==='campaign-path');
+ const two=oak.nodes.find(n=>n.label==='2');const branch=oak.connections.find(e=>e.to==='stop-6');
+ assert.equal(branch.from,two.id);
+ const angeles=menu.screens.find(s=>s.id==='campaign-hub-11').elements.find(e=>e.property==='campaign-path');
+ const four=angeles.nodes.find(n=>n.label==='4'),five=angeles.nodes.find(n=>n.label==='5');
+ assert.equal(angeles.connections.find(e=>e.from===four.id&&e.to===five.id).fromPort,'right');
+ const detour=angeles.nodes.find(n=>n.id==='stop-6');assert.ok(Math.abs(detour.x-.350642)<1e-12);assert.equal(detour.y,.14);
 });

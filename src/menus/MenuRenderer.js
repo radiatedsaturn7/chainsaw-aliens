@@ -99,6 +99,11 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
       const name=element.assetRef||parameters[element.binding];
       if(carThumbnailNeedsFallback(name,element.angle))nativeEntries.push({value:name});
     }
+    for(const element of screen.elements)if(element.type==='world-map'&&element.mapStyle?.cursor==='car'&&menuElementVisible(element,screen.elements)){
+      const name=parameters.carRef||resources?.game?.menuProgress?.selectedGameCar;
+      const angle=widgetStates.get(`map-car:${element.id}`)?.angle??135;
+      if(name&&carThumbnailNeedsFallback(name,angle,true))nativeEntries.push({value:name});
+    }
     resources?.retainShowroomPage?.(nativeEntries);
   }
   ctx.save();ctx.beginPath();ctx.rect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.clip();
@@ -118,7 +123,9 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
     if(!buttonOnly&&drawCachedButton(ctx,bounds,document,screen,element,parameters,{time,resources,focus,selected,editing,worldMapEditingId,videos,widgetStates}))continue;
     const drawText=(text,...args)=>drawMenuText(ctx,element,['text','button','choice','toggle','keybind','property-display'].includes(element.type)?menuTypedText(element,text,time,editing):text,...args);
     ctx.save();ctx.translate(b.x+b.w/2,b.y+b.h/2);ctx.rotate(pose.rotation*Math.PI/180);ctx.scale(pose.scale,pose.scale);ctx.translate(-b.x-b.w/2,-b.y-b.h/2);ctx.globalAlpha=pose.opacity;
-    ctx.beginPath();ctx.rect(b.x,b.y,b.w,b.h);ctx.clip();
+    const worldCar=element.type==='world-map'&&element.property!=='campaign-path'&&element.mapStyle?.cursor==='car';
+    const clipBounds=worldCar?bounds:b;
+    ctx.beginPath();ctx.rect(clipBounds.x,clipBounds.y,clipBounds.w,clipBounds.h);ctx.clip();
     const interactive=menuElementInteractive(element);
     if(interactive&&(element.disabled||['button','choice','slider','toggle','keybind'].includes(element.type)))ctx.filter=menuControlFilter(editing||element.id===focus,!element.disabled);
     if(interactive&&element.type!=='world-map'&&!element.transparentBackground){ctx.fillStyle=element.background;ctx.fillRect(b.x,b.y,b.w,b.h);}
@@ -171,9 +178,9 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
       }
 
     }
-    else if(element.type==='world-map'){const mapBackground=element.artRef?resources?.art(element.artRef,Math.floor(time*8)):null;if(mapBackground){const mapBounds=element.property==='campaign-path'?{...b,h:Math.max(1,b.h-36)}:b;ctx.imageSmoothingEnabled=element.property!=='campaign-path';drawMenuImage(ctx,mapBackground,mapBounds,element.imageFit);}drawWorldMap(ctx,b,element,resources,document,parameters,value,{drawText,fontFamily,time,widgetStates,editing,mapBackground,campaignOverview:campaignWorldOverview(screen,document)===element,drawCar:(bounds,angle)=>{
+    else if(element.type==='world-map'){const mapBackground=element.artRef?resources?.art(element.artRef,Math.floor(time*8)):null;if(mapBackground){const mapBounds=element.property==='campaign-path'?{...b,h:Math.max(1,b.h-36)}:b;ctx.imageSmoothingEnabled=element.property!=='campaign-path';drawMenuImage(ctx,mapBackground,mapBounds,element.imageFit);}drawWorldMap(ctx,b,element,resources,document,parameters,value,{drawText,fontFamily,time,widgetStates,editing,mapBackground,carViewport:bounds,campaignOverview:campaignWorldOverview(screen,document)===element,drawCar:(bounds,angle)=>{
  const name=parameters.carRef||resources?.game?.menuProgress?.selectedGameCar;if(!name)return;
- if(carThumbnailNeedsFallback(name,angle))drawCarComponent(ctx,bounds,{type:'car-preview',showroomPreview:true,animation:'none',angle},resources?.stockCar?.(name),resources,time,parameters,fontFamily);
+ if(carThumbnailNeedsFallback(name,angle,true))drawCarComponent(ctx,bounds,{type:'car-preview',showroomPreview:true,animation:'none',angle},resources?.stockCar?.(name),resources,time,parameters,fontFamily);
  else paintCarThumbnail(ctx,bounds,name,angle,undefined,undefined,true);
  }});}
     else if(element.type==='garage-browser')drawUpgradeGrid(ctx,b,element,resources,parameters,widgetStates.get(element.id),fontFamily);

@@ -85,13 +85,16 @@ function verifyVisible(id,entry,name,whenReady,usable){
   const now=Date.now();
   const previous=verified.get(id);
   if(previous?.token===token&&previous.expires>now)return previous.ok;
-  if(previous?.pending||verificationActive>=MAX_LOADING)return false;
-  const state={token,expires:0,ok:false,pending:true,rejected:previous?.token===token&&previous.rejected===true};verified.set(id,state);verificationActive++;
+  // A periodic check must not blank an already verified preview. A changed
+  // source token still invalidates it immediately.
+  const reusable=previous?.token===token&&previous.ok===true;
+  if(previous?.pending||verificationActive>=MAX_LOADING)return reusable;
+  const state={token,expires:0,ok:reusable,pending:true,rejected:previous?.token===token&&previous.rejected===true};verified.set(id,state);verificationActive++;
   void verifyProjectCarPreviewStock(preparedCatalog.revision,id,name,entry.carId,entry.sources).then(ok=>{
     state.ok=ok;state.rejected=!ok;state.expires=Date.now()+(isProjectStorageReadOnly()?60000:5000);state.pending=false;verificationActive--;
     if(usable?.()!==false)whenReady?.();
   });
-  return false;
+  return reusable;
 }
 function requestPreview(name,frame,preferAtlas,whenReady,usable){
   if(locallyChanged.has(name))return null;

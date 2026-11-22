@@ -26114,8 +26114,8 @@
               "kind": "race",
               "label": "Providence, Rhode Island",
               "raceRef": "Providence, RI — Landmark Run",
-              "x": 0.9379354549113803,
-              "y": 0.2706290366696776,
+              "x": 0.96,
+              "y": 0.27,
               "completedParameter": "raceCompleted.Providence__RI___Landmark_Run"
             },
             {
@@ -26123,7 +26123,7 @@
               "kind": "race",
               "label": "Mount Washington Auto Road",
               "raceRef": "Mount Washington Auto Road — point-to-point",
-              "x": 0.94,
+              "x": 0.88,
               "y": 0.08,
               "unlockParameter": "raceCompleted.Providence__RI___Landmark_Run",
               "unlockValue": true,
@@ -26134,8 +26134,8 @@
               "kind": "race",
               "label": "Laurel Highlands Scenic Byway",
               "raceRef": "Laurel Highlands Scenic Byway",
-              "x": 0.785507923058218,
-              "y": 0.4249508218314143,
+              "x": 0.8,
+              "y": 0.31,
               "unlockParameter": "raceCompleted.Mount_Washington_Auto_Road___point-to-point",
               "unlockValue": true,
               "completedParameter": "raceCompleted.Laurel_Highlands_Scenic_Byway"
@@ -26145,8 +26145,8 @@
               "kind": "race",
               "label": "Ohio River Crossing",
               "raceRef": "Ohio River Crossing",
-              "x": 0.7512237507468629,
-              "y": 0.4558773564932377,
+              "x": 0.72,
+              "y": 0.46,
               "unlockParameter": "raceCompleted.Laurel_Highlands_Scenic_Byway",
               "unlockValue": true,
               "completedParameter": "raceCompleted.Ohio_River_Crossing"
@@ -26156,8 +26156,8 @@
               "kind": "race",
               "label": "Data Center City",
               "raceRef": "Data Center City",
-              "x": 0.584435100356145,
-              "y": 0.5113420783161281,
+              "x": 0.64,
+              "y": 0.43,
               "unlockParameter": "raceCompleted.Ohio_River_Crossing",
               "unlockValue": true,
               "completedParameter": "raceCompleted.Data_Center_City"
@@ -26167,8 +26167,8 @@
               "kind": "race",
               "label": "Ozark Backroads",
               "raceRef": "Ozark Backroads",
-              "x": 0.5618746466399696,
-              "y": 0.6223675220280677,
+              "x": 0.51,
+              "y": 0.7,
               "unlockParameter": "raceCompleted.Data_Center_City",
               "unlockValue": true,
               "completedParameter": "raceCompleted.Ozark_Backroads"
@@ -26178,8 +26178,8 @@
               "kind": "race",
               "label": "Historic Route 66",
               "raceRef": "Historic Route 66",
-              "x": 0.40050835281922603,
-              "y": 0.785142431249411,
+              "x": 0.43,
+              "y": 0.78,
               "unlockParameter": "raceCompleted.Ozark_Backroads",
               "unlockValue": true,
               "completedParameter": "raceCompleted.Historic_Route_66"
@@ -26189,8 +26189,8 @@
               "kind": "race",
               "label": "Pikes Peak Highway",
               "raceRef": "Pikes Peak Highway",
-              "x": 0.30521783960197835,
-              "y": 0.5009962657818574,
+              "x": 0.35,
+              "y": 0.48,
               "unlockParameter": "raceCompleted.Historic_Route_66",
               "unlockValue": true,
               "completedParameter": "raceCompleted.Pikes_Peak_Highway"
@@ -26200,7 +26200,7 @@
               "kind": "race",
               "label": "Moki Dugway",
               "raceRef": "Moki Dugway",
-              "x": 0.2135750447471409,
+              "x": 0.28,
               "y": 0.6251358342498772,
               "unlockParameter": "raceCompleted.Pikes_Peak_Highway",
               "unlockValue": true,
@@ -26211,8 +26211,8 @@
               "kind": "race",
               "label": "Oak Creek Canyon",
               "raceRef": "Oak Creek Canyon",
-              "x": 0.1797438200902281,
-              "y": 0.8004103525072125,
+              "x": 0.21,
+              "y": 0.72,
               "unlockParameter": "raceCompleted.Moki_Dugway",
               "unlockValue": true,
               "completedParameter": "raceCompleted.Oak_Creek_Canyon"
@@ -26222,8 +26222,8 @@
               "kind": "race",
               "label": "Angeles Crest Highway",
               "raceRef": "Angeles Crest Highway",
-              "x": 0.06,
-              "y": 0.86,
+              "x": 0.11987191004511405,
+              "y": 0.6251358342498772,
               "unlockParameter": "raceCompleted.Oak_Creek_Canyon",
               "unlockValue": true,
               "completedParameter": "raceCompleted.Angeles_Crest_Highway"
@@ -26236,82 +26236,132 @@
               "from": "city-ri",
               "to": "osm-cf573fba73e0",
               "color": "#efc36b",
-              "width": 3
+              "width": 5,
+              "curve": "bezier",
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 0.72,
+              "pattern": "solid"
             },
             {
               "id": "middle-america-middle-laurel",
               "from": "osm-cf573fba73e0",
               "to": "america-middle-laurel",
               "color": "#efc36b",
-              "width": 3
+              "width": 5,
+              "curve": "bezier",
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 0.72,
+              "pattern": "solid"
             },
             {
               "id": "middle-america-middle-ohio",
               "from": "america-middle-laurel",
               "to": "america-middle-ohio",
               "color": "#efc36b",
-              "width": 3
+              "width": 5,
+              "curve": "bezier",
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 0.72,
+              "pattern": "solid"
             },
             {
               "id": "middle-america-middle-city",
               "from": "america-middle-ohio",
               "to": "america-middle-city",
               "color": "#efc36b",
-              "width": 3
+              "width": 5,
+              "curve": "bezier",
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 0.72,
+              "pattern": "solid"
             },
             {
               "id": "middle-america-middle-ozark",
               "from": "america-middle-city",
               "to": "america-middle-ozark",
               "color": "#efc36b",
-              "width": 3
+              "width": 5,
+              "curve": "bezier",
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 0.72,
+              "pattern": "solid"
             },
             {
               "id": "middle-america-middle-route66",
               "from": "america-middle-ozark",
               "to": "america-middle-route66",
               "color": "#efc36b",
-              "width": 3
+              "width": 5,
+              "curve": "bezier",
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 0.72,
+              "pattern": "solid"
             },
             {
               "id": "middle-america-middle-pikes",
               "from": "america-middle-route66",
               "to": "america-middle-pikes",
               "color": "#efc36b",
-              "width": 3
+              "width": 5,
+              "curve": "bezier",
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 0.72,
+              "pattern": "solid"
             },
             {
               "id": "middle-america-middle-moki",
               "from": "america-middle-pikes",
               "to": "america-middle-moki",
               "color": "#efc36b",
-              "width": 3
+              "width": 5,
+              "curve": "bezier",
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 0.72,
+              "pattern": "solid"
             },
             {
               "id": "middle-america-middle-oak",
               "from": "america-middle-moki",
               "to": "america-middle-oak",
               "color": "#efc36b",
-              "width": 3
+              "width": 5,
+              "curve": "bezier",
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 0.72,
+              "pattern": "solid"
             },
             {
               "id": "middle-america-middle-angeles",
               "from": "america-middle-oak",
               "to": "america-middle-angeles",
               "color": "#efc36b",
-              "width": 3
+              "width": 5,
+              "curve": "bezier",
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 0.72,
+              "pattern": "solid"
             }
           ],
           "mapStyle": {
             "labels": "selected",
             "nodeScale": 0.35,
-            "lineWidth": 3,
+            "lineWidth": 5,
             "selectedColor": "#fff0a8",
             "unselectedColor": "#e2b454",
             "disabledColor": "#728797",
             "unselectedOpacity": 0.9,
             "disabledOpacity": 0.75,
-            "cursor": "ring",
+            "cursor": "car",
             "cursorColor": "#ffffff"
           },
           "maxVisible": 4,
@@ -35397,7 +35447,7 @@
               "to": "stop-1",
               "curve": "bezier",
               "fromPort": "up",
-              "toPort": "down",
+              "toPort": "left",
               "portBend": 1
             },
             {
@@ -49527,7 +49577,7 @@
             },
             {
               "id": "stop-1",
-              "label": "3",
+              "label": "5",
               "raceRef": "MO 106 — Alley Spring approach",
               "kind": "race",
               "disabled": false,
@@ -49542,7 +49592,7 @@
             },
             {
               "id": "stop-2",
-              "label": "4",
+              "label": "3",
               "raceRef": "MO H NN — Roberts Field access",
               "kind": "race",
               "disabled": false,
@@ -49572,7 +49622,7 @@
             },
             {
               "id": "stop-4",
-              "label": "5",
+              "label": "4",
               "raceRef": "Pig Trail — Arkansas 23",
               "kind": "race",
               "disabled": false,
@@ -49645,15 +49695,6 @@
             {
               "id": "road-2",
               "from": "stop-3",
-              "to": "stop-1",
-              "curve": "bezier",
-              "fromPort": "down",
-              "toPort": "right",
-              "portBend": 1
-            },
-            {
-              "id": "road-3",
-              "from": "stop-1",
               "to": "stop-2",
               "curve": "bezier",
               "fromPort": "down",
@@ -49661,7 +49702,7 @@
               "portBend": 1
             },
             {
-              "id": "road-4",
+              "id": "road-3",
               "from": "stop-2",
               "to": "stop-4",
               "curve": "bezier",
@@ -49670,12 +49711,21 @@
               "portBend": 1
             },
             {
-              "id": "road-5",
+              "id": "road-4",
               "from": "stop-4",
-              "to": "stop-5",
+              "to": "stop-1",
               "curve": "bezier",
               "fromPort": "up",
               "toPort": "left",
+              "portBend": 1
+            },
+            {
+              "id": "road-5",
+              "from": "stop-1",
+              "to": "stop-5",
+              "curve": "bezier",
+              "fromPort": "up",
+              "toPort": "down",
               "portBend": 1
             },
             {
@@ -57094,8 +57144,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.63856,
-              "y": 0.747196,
+              "x": 0.8,
+              "y": 0.82,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -75115,7 +75165,7 @@
             },
             {
               "id": "stop-1",
-              "label": "3",
+              "label": "5",
               "raceRef": "Valley of the Gods Road — San Juan CR 242",
               "kind": "race",
               "disabled": false,
@@ -75130,7 +75180,7 @@
             },
             {
               "id": "stop-2",
-              "label": "5",
+              "label": "4",
               "raceRef": "UT 95 — Comb Ridge Cedar Mesa",
               "kind": "race",
               "disabled": false,
@@ -75160,7 +75210,7 @@
             },
             {
               "id": "stop-4",
-              "label": "4",
+              "label": "3",
               "raceRef": "Burr Trail switchbacks — Capitol Reef",
               "kind": "race",
               "disabled": false,
@@ -75233,37 +75283,37 @@
             {
               "id": "road-2",
               "from": "stop-3",
-              "to": "stop-1",
+              "to": "stop-4",
               "curve": "bezier",
               "fromPort": "up",
-              "toPort": "left",
+              "toPort": "down",
               "portBend": 1
             },
             {
               "id": "road-3",
-              "from": "stop-1",
-              "to": "stop-4",
-              "curve": "bezier",
-              "fromPort": "up",
-              "toPort": "right",
-              "portBend": 1
-            },
-            {
-              "id": "road-4",
               "from": "stop-4",
               "to": "stop-2",
               "curve": "bezier",
-              "fromPort": "up",
+              "fromPort": "right",
               "toPort": "left",
               "portBend": 1
             },
             {
-              "id": "road-5",
+              "id": "road-4",
               "from": "stop-2",
-              "to": "stop-5",
+              "to": "stop-1",
               "curve": "bezier",
               "fromPort": "down",
-              "toPort": "down",
+              "toPort": "right",
+              "portBend": 1
+            },
+            {
+              "id": "road-5",
+              "from": "stop-1",
+              "to": "stop-5",
+              "curve": "bezier",
+              "fromPort": "left",
+              "toPort": "right",
               "portBend": 1
             },
             {
@@ -79568,8 +79618,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.78687,
-              "y": 0.509931,
+              "x": 0.4,
+              "y": 0.82,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -79591,7 +79641,7 @@
             },
             {
               "id": "stop-2",
-              "label": "2",
+              "label": "4",
               "raceRef": "Upper Lower Red Rock Loop Road",
               "kind": "race",
               "disabled": false,
@@ -79613,15 +79663,15 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.9,
-              "y": 0.401419,
+              "x": 0.673117,
+              "y": 0.87,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
             },
             {
               "id": "stop-4",
-              "label": "4",
+              "label": "2",
               "raceRef": "SR 89A — Mingus Mountain Jerome",
               "kind": "race",
               "disabled": false,
@@ -79673,8 +79723,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.673117,
-              "y": 0.87,
+              "x": 0.9,
+              "y": 0.401419,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -79685,37 +79735,37 @@
             {
               "id": "road-1",
               "from": "stop-0",
-              "to": "stop-2",
+              "to": "stop-4",
               "curve": "bezier",
-              "fromPort": "left",
-              "toPort": "right",
+              "fromPort": "right",
+              "toPort": "down",
               "portBend": 1
             },
             {
               "id": "road-2",
-              "from": "stop-2",
+              "from": "stop-4",
               "to": "stop-1",
               "curve": "bezier",
-              "fromPort": "left",
-              "toPort": "right",
+              "fromPort": "right",
+              "toPort": "down",
               "portBend": 1
             },
             {
               "id": "road-3",
               "from": "stop-1",
-              "to": "stop-4",
+              "to": "stop-2",
               "curve": "bezier",
-              "fromPort": "down",
-              "toPort": "up",
+              "fromPort": "right",
+              "toPort": "down",
               "portBend": 1
             },
             {
               "id": "road-4",
-              "from": "stop-4",
+              "from": "stop-2",
               "to": "stop-3",
               "curve": "bezier",
-              "fromPort": "down",
-              "toPort": "down",
+              "fromPort": "right",
+              "toPort": "left",
               "portBend": 1
             },
             {
@@ -79723,17 +79773,17 @@
               "from": "stop-3",
               "to": "stop-5",
               "curve": "bezier",
-              "fromPort": "up",
-              "toPort": "down",
+              "fromPort": "right",
+              "toPort": "left",
               "portBend": 1
             },
             {
               "id": "road-6",
-              "from": "stop-1",
+              "from": "stop-4",
               "to": "stop-6",
               "curve": "bezier",
               "fromPort": "left",
-              "toPort": "right",
+              "toPort": "down",
               "portBend": 1,
               "pattern": "dotted"
             },
@@ -79742,9 +79792,9 @@
               "from": "stop-3",
               "to": "stop-7",
               "curve": "bezier",
-              "fromPort": "right",
-              "toPort": "up",
-              "portBend": 1,
+              "fromPort": "down",
+              "toPort": "right",
+              "portBend": 1.35,
               "pattern": "dotted"
             }
           ],
@@ -83371,7 +83421,7 @@
             },
             {
               "id": "stop-0",
-              "label": "4",
+              "label": "3",
               "raceRef": "Los Angeles, CA — Landmark Run",
               "kind": "race",
               "disabled": false,
@@ -83386,7 +83436,7 @@
             },
             {
               "id": "stop-1",
-              "label": "3",
+              "label": "5",
               "raceRef": "Big Tujunga Canyon Road",
               "kind": "race",
               "disabled": false,
@@ -83401,7 +83451,7 @@
             },
             {
               "id": "stop-2",
-              "label": "5",
+              "label": "4",
               "raceRef": "Willow Springs — Horse Thief Mile",
               "kind": "race",
               "disabled": false,
@@ -83438,7 +83488,7 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.320642,
+              "x": 0.350642,
               "y": 0.14,
               "unlockParameter": "",
               "unlockValue": true,
@@ -83474,7 +83524,7 @@
             {
               "id": "road-2",
               "from": "stop-3",
-              "to": "stop-1",
+              "to": "stop-0",
               "curve": "bezier",
               "fromPort": "left",
               "toPort": "right",
@@ -83482,38 +83532,38 @@
             },
             {
               "id": "road-3",
-              "from": "stop-1",
-              "to": "stop-0",
-              "curve": "bezier",
-              "fromPort": "down",
-              "toPort": "up",
-              "portBend": 1
-            },
-            {
-              "id": "road-4",
               "from": "stop-0",
               "to": "stop-2",
               "curve": "bezier",
-              "fromPort": "left",
+              "fromPort": "up",
               "toPort": "down",
               "portBend": 1
             },
             {
-              "id": "road-5",
+              "id": "road-4",
               "from": "stop-2",
+              "to": "stop-1",
+              "curve": "bezier",
+              "fromPort": "right",
+              "toPort": "left",
+              "portBend": 0.35
+            },
+            {
+              "id": "road-5",
+              "from": "stop-1",
               "to": "stop-5",
               "curve": "bezier",
-              "fromPort": "up",
-              "toPort": "up",
+              "fromPort": "right",
+              "toPort": "left",
               "portBend": 1
             },
             {
               "id": "road-6",
-              "from": "stop-2",
+              "from": "stop-1",
               "to": "stop-6",
               "curve": "bezier",
-              "fromPort": "right",
-              "toPort": "left",
+              "fromPort": "up",
+              "toPort": "down",
               "portBend": 1,
               "pattern": "dotted"
             },

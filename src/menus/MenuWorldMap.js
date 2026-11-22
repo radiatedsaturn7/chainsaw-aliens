@@ -17,6 +17,7 @@ export function worldMapNodes(element,resources,document,parameters){
  });
 }
 export const worldMapNodeRadius=(b,element=null)=>Math.max(8,Math.min(b.w,b.h)*.035)*(element?.mapStyle?.nodeScale||1);
+export const worldMapCarSize=b=>2*Math.max(28,Math.min(64,b.w*.11));
 export function worldMapNodePoint(node,b,element=null){
  // Include the selected ring and its stroke inside the widget's clipping area.
  const padding=worldMapNodeRadius(b,element)+7,px=Math.min(b.w/2,padding),py=Math.min(b.h/2,padding);

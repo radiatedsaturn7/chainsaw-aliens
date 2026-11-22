@@ -631,9 +631,10 @@
           "place": "Gateway Kartplex — WWT complex",
           "stateCode": "IL",
           "source": "data/server-storage/files/races/Gateway Kartplex %E2%80%94 WWT complex/document.json#race.location",
-          "x": 0.63856,
-          "y": 0.747196,
-          "sharedLocation": true
+          "x": 0.8,
+          "y": 0.82,
+          "sharedLocation": true,
+          "layoutNote": "Schematic detour moved southeast for clearance from stop-2 and stop-3; geographic coordinates unchanged."
         }
       },
       "minimumNormalizedSeparation": 0.1,
@@ -995,8 +996,9 @@
           "place": "SR 179 — Red Rock Scenic Byway",
           "stateCode": "AZ",
           "source": "data/server-storage/files/races/SR 179 %E2%80%94 Red Rock Scenic Byway/document.json#race.location",
-          "x": 0.78687,
-          "y": 0.509931
+          "x": 0.4,
+          "y": 0.82,
+          "layoutNote": "Schematic position adjusted for requested Oak Creek journey and detour swap; geographic coordinates unchanged."
         },
         "Boynton Pass Road FR 525 loop": {
           "id": "stop-1",
@@ -1025,8 +1027,9 @@
           "place": "Schnebly Hill Road — Sedona",
           "stateCode": "AZ",
           "source": "data/server-storage/files/races/Schnebly Hill Road %E2%80%94 Sedona/document.json#race.location",
-          "x": 0.9,
-          "y": 0.401419
+          "x": 0.673117,
+          "y": 0.87,
+          "layoutNote": "Schematic position adjusted for requested Oak Creek journey and detour swap; geographic coordinates unchanged."
         },
         "SR 89A — Mingus Mountain Jerome": {
           "id": "stop-4",
@@ -1065,8 +1068,9 @@
           "place": "Podium Club at Attesa — Casa Grande",
           "stateCode": "AZ",
           "source": "data/server-storage/files/races/Podium Club at Attesa %E2%80%94 Casa Grande/document.json#race.location",
-          "x": 0.673117,
-          "y": 0.87
+          "x": 0.9,
+          "y": 0.401419,
+          "layoutNote": "Schematic position adjusted for requested Oak Creek journey and detour swap; geographic coordinates unchanged."
         }
       },
       "minimumNormalizedSeparation": 0.141269,
@@ -1164,9 +1168,10 @@
           "place": "Willow Springs",
           "stateCode": "CA",
           "source": "data/server-storage/files/races/Willow Springs %E2%80%94 Streets of Willow/document.json#race.location",
-          "x": 0.320642,
+          "x": 0.350642,
           "y": 0.14,
-          "sharedLocation": true
+          "sharedLocation": true,
+          "layoutNote": "Schematic position nudged right by 0.03 map widths to clear the rightward exit from stop four. Geographic coordinates unchanged."
         },
         "Little Tujunga Canyon Road": {
           "id": "stop-7",
