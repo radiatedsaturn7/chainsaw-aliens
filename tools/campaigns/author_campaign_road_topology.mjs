@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {pathToFileURL} from 'node:url';
-import {mapRoadPoint,campaignRoadDirectionalNode} from '../../src/menus/MenuMapRoads.js';
+import {mapRoadPoint,mapRoadRoute,campaignRoadDirectionalNode} from '../../src/menus/MenuMapRoads.js';
 const V={right:[1,0],down:[0,1],left:[-1,0],up:[0,-1]};
 const names=Object.keys(V),near=.045;
 const samples=32;
@@ -94,20 +94,20 @@ function nextParts(map,r){
 function build(map,r){
  const nodes=map.nodes,view=screenPoints(nodes,map),raw=view[0];
  const {start,boss,required,optional,byRef}=nextParts(map,r);
- const phaseOf=n=>required.has(n)?0:optional.has(n)?1:2;
+ const phaseOf=n=>required.has(n)?0:optional.has(n)?2:1;
  let iterations=0,last;
  function search(connected,roads,taken){
   if(++iterations>3500)return null;
   if(connected.size===nodes.length)return roads;
   const phase=Math.min(...nodes.filter(n=>!connected.has(n.id)).map(n=>phaseOf(n.id)));
+  const lastRequired=[...connected].filter(id=>required.has(id)).at(-1);
   const candidates=[];
   for(const aId of connected)for(const b of nodes){
-   if(connected.has(b.id)||phaseOf(b.id)!==phase||aId===boss||phase===2&&(!required.has(aId)||aId===start))continue;
+   if(connected.has(b.id)||phaseOf(b.id)!==phase||aId===boss||((phase===0||phase===1)&&aId!==lastRequired))continue;
    const a=raw.get(aId);
    const dist=distance(a,b);
    const dx=b.x-a.x,dy=b.y-a.y;
-   const force=(r.stage===1&&aId===start&&roads.length<2&&['Blue Hills — Reservation Parkways','RI 116 — North Smithfield Scituate'].includes(b.raceRef))?-.40:0;
-   const base=dist+.04*(taken.get(aId).size)**2+force+(phaseOf(aId)===1?.075:0);
+   const base=dist+.04*(taken.get(aId).size)**2+(optional.has(aId)?.075:0);
    for(const pa of names)for(const pb of names){
     if(taken.get(aId).has(pa)||taken.get(b.id).has(pb))continue;
     const dot=(d,x,y)=>(V[d][0]*x+V[d][1]*y)/dist;
@@ -141,10 +141,14 @@ export function authorCampaignTopology(doc){
  for(const r of regions){
   const screen=doc.screens.find(s=>s.id===`campaign-hub-${r.stage}`);
   const map=screen?.elements.find(e=>e.id==='regional-path'&&e.property==='campaign-path');assert.ok(map,r.bossRef);
+  console.error('Authoring region',r.stage);
   const old=structuredClone(map.nodes); const {connections,iterations,start,boss}=build(map,r);
   map.connections=connections;
   const graph=validateTopology(map);assert.equal(graph.get(boss).length,1,r.bossRef);
   assert.deepEqual(map.nodes,old);
+  const journey=mapRoadRoute(map.nodes,connections,start,boss);assert.equal(journey.length,5,'boss must follow all five main stops');
+  journey.forEach((step,i)=>{map.nodes.find(n=>n.id===step.previous).label=String(i+1);});
+  map.mapEntrance='auto';
   summary.push({stage:r.stage,bossRef:r.bossRef,start,boss,iterations,maxDegree:Math.max(...[...graph.values()].map(v=>v.length)),edges:connections.length});
  }
  return summary;

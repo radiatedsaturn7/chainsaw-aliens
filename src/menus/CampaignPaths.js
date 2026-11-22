@@ -57,7 +57,7 @@ export function campaignPathScreen(region,name) {
  return {id,name,background:'#000000',useDefaultBackground:false,musicMode:'continue',elements:[
   {id:'heading',type:'text',label:name,x:.04,y:.02,w:.92,h:.09,fontSize:26,useDefaultFont:true},
   {id:'regional-path',type:'world-map',property:'campaign-path',assetRef:region.bossRef,binding:'raceRef',x:.025,y:.14,w:.57,h:.68,
-   mapManual:true,nodes,connections,showSelectedLabel:false,color:'#ffffff',mapStyle:{cursor:'car',labels:'selected',lineColor:'#e7c98d',lineWidth:5,unselectedOpacity:1,disabledOpacity:.45},
+   mapEntrance:'auto',mapManual:true,nodes,connections,showSelectedLabel:false,color:'#ffffff',mapStyle:{cursor:'car',labels:'selected',lineColor:'#e7c98d',lineWidth:5,unselectedOpacity:1,disabledOpacity:.45},
    action:{type:'screen',target:'garage'}},
   {id:'route-name',type:'race-description',property:'route-title',binding:'raceRef',x:.62,y:.13,w:.35,h:.13,fontSize:20,useDefaultFont:true,color:'#ffffff'},
   {id:'route-preview',type:'race-description',property:'route-preview',binding:'raceRef',x:.62,y:.28,w:.35,h:.56,useDefaultFont:true,color:'#ffffff'}

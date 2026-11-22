@@ -191,7 +191,8 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
       if(element.property==='route-title'){
         const region=document.parameters?.campaignProgression?.regions?.find(r=>r.bossRef===ref||r.events?.includes(ref));
         const index=region?.mainPath?.indexOf(ref)??-1;
-        const prefix=region?.bossRef===ref?'Boss':index>=0?String(index+1):'Detour';
+        const authoredLabel=screen.elements.find(e=>e.property==='campaign-path')?.nodes?.find(n=>n.raceRef===ref)?.label;
+        const prefix=authoredLabel||(region?.bossRef===ref?'Boss':index>=0?String(index+1):'Detour');
         drawCarDescription(ctx,b,`${prefix} · ${ref}`,fontFamily,element,{time,editing});ctx.restore();continue;
       }
       if(element.property==='region-dialogue'){

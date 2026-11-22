@@ -111,11 +111,12 @@ export class MenuWorldMapDesigner{
    color('lineColor','Default line color',s.lineColor),{id:'lineWidth',label:'Default line width',value:s.lineWidth,min:0,max:20},select('linePattern','Default line pattern',s.linePattern,['solid','dashed','dotted']),
    color('selectedColor','Selected node color',s.selectedColor),color('unselectedColor','Unselected node color',s.unselectedColor),color('disabledColor','Disabled node color',s.disabledColor),
    {id:'nodeScale',label:'Node / icon scale',value:s.nodeScale,min:.25,max:4,step:.05},{id:'unselectedOpacity',label:'Unselected brightness',value:s.unselectedOpacity,min:0,max:1,step:.05},{id:'disabledOpacity',label:'Disabled brightness',value:s.disabledOpacity,min:0,max:1,step:.05},
+   select('mapEntrance','Region entrance',e.mapEntrance||'auto',['auto','left','right','up','down','none']),
    select('cursor','Selection cursor',s.cursor,['ring','text','image','car','none']),color('cursorColor','Cursor color',s.cursorColor),text('cursorText','Cursor text',e.cursorText||'>'),
    select('cursorArtRef','Cursor artwork',e.cursorArtRef||'',[{value:'',label:'Uploaded cursor / text'},...listProjectFiles('art').map(f=>({value:f.name,label:f.name}))]),
    {id:'cursorSize',label:'Cursor size',value:e.cursorSize||24,min:8,max:160}
   ],{description:'Each node can have different selected, unselected and disabled artwork. Existing Layout & Style also supports uploading a cursor image.'});
-  if(!r||this.element!==e)return;this.editor.change(()=>{const {cursorText,cursorArtRef,cursorSize,...style}=r;e.mapStyle=style;Object.assign(e,{cursorText,cursorArtRef,cursorSize});});
+  if(!r||this.element!==e)return;this.editor.change(()=>{const {cursorText,cursorArtRef,cursorSize,mapEntrance,...style}=r;e.mapEntrance=mapEntrance;e.mapStyle=style;Object.assign(e,{cursorText,cursorArtRef,cursorSize});});
  }
  draw(ctx){
   const b=this.bounds;if(!b)return;

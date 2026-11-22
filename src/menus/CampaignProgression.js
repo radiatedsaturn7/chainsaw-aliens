@@ -42,17 +42,6 @@ function authoredAvailability(widget,region,cleared){
   }
   pending.push(...edges.get(id));
  }
- // A selectable race may connect directly to the boss through road junctions.
- // This does not reveal other races or permit crossing another uncleared stop.
- const junctions=new Set();
- for(let i=0;i<frontier.length&&!bossReachable;i++){
-  for(const id of edges.get(frontier[i])){
-   const node=nodes.get(id);
-   if(node.kind==='junction'){
-    if(!junctions.has(id)){junctions.add(id);frontier.push(id);}
-   }else if(node.raceRef===region.bossRef)bossReachable=true;
-  }
- }
  return {available,bossReachable};
 }
 export function campaignRegionState(config,bossRef,parameters={},garage={},document=null) {
@@ -66,7 +55,7 @@ export function campaignRegionState(config,bossRef,parameters={},garage={},docum
  if(graph){
   const {available,bossReachable}=authoredAvailability(graph,region,cleared);
   return {region,open,won,graphBased:true,available:won?events:events.filter(ref=>available.has(ref)),
-   cleared,bossReady:open&&(won||bossReachable)};
+   cleared,bossReady:open&&(won||(bossReachable&&(region.mainPath||[]).every(cleared)))};
  }
  const wins=events.filter(cleared).length;
  if(region.mainPath?.length){
@@ -93,7 +82,7 @@ export function campaignRaceAccess(config,ref,parameters={},garage={},unlocks={}
  const state=campaignRegionState(config,region.bossRef,parameters,garage,document);
  if(!state.open)return {allowed:false,reason:'Win the previous region’s main mission first.',state};
  if(state.graphBased){
-  if(ref===region.bossRef)return {allowed:state.bossReady,reason:'Reach a stop with a road to this region’s main mission.',state};
+  if(ref===region.bossRef)return {allowed:state.bossReady,reason:'Clear the main route to reach this region’s final mission.',state};
   const allowed=state.won||state.cleared(ref)||state.available.includes(ref);
   return {allowed,reason:'Clear a connected stop to reach this race.',state};
  }

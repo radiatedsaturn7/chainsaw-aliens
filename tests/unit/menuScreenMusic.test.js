@@ -23,3 +23,12 @@ test('screen music modes persist and old menus retain their playback behavior',(
  assert.deepEqual(d.screens.map(s=>s.musicMode),['track','silent','continue']);
  assert.deepEqual(normalizeMenuDocument(JSON.parse(JSON.stringify(d))),d);
 });
+test('returning directly from a race to a region restores the configured overview soundtrack',async()=>{
+ const {resolveMenuScreenMusic}=await import('../../src/menus/MenuScreenMusic.js');
+ const calls=[],music=new MenuScreenMusic({setActiveMusicTrack:ref=>calls.push(ref)},async()=>({data:{}}));
+ const overview={...track('map'),elements:[{type:'world-map'}]},region={musicMode:'continue',elements:[{type:'world-map',property:'campaign-path'}]},doc={screens:[overview,region]};
+ await music.enter(overview);await music.enter(resolveMenuScreenMusic(region,doc));assert.deepEqual(calls,['map']);
+ music.stop();await music.enter(resolveMenuScreenMusic(region,doc));assert.deepEqual(calls,['map',null,'map']);
+ assert.equal(resolveMenuScreenMusic({...region,musicMode:'silent'},doc).musicMode,'silent');
+ assert.equal(resolveMenuScreenMusic({...region,...track('custom')},doc).musicRef,'custom');
+});

@@ -26954,7 +26954,7 @@
             },
             {
               "id": "road-2",
-              "from": "stop-0",
+              "from": "stop-2",
               "to": "stop-1",
               "curve": "bezier",
               "fromPort": "down",
@@ -26981,6 +26981,15 @@
             },
             {
               "id": "road-5",
+              "from": "stop-3",
+              "to": "stop-5",
+              "curve": "bezier",
+              "fromPort": "right",
+              "toPort": "left",
+              "portBend": 1
+            },
+            {
+              "id": "road-6",
               "from": "stop-2",
               "to": "stop-7",
               "curve": "bezier",
@@ -26990,7 +26999,7 @@
               "pattern": "dotted"
             },
             {
-              "id": "road-6",
+              "id": "road-7",
               "from": "stop-4",
               "to": "stop-6",
               "curve": "bezier",
@@ -26998,15 +27007,6 @@
               "toPort": "right",
               "portBend": 1,
               "pattern": "dotted"
-            },
-            {
-              "id": "road-7",
-              "from": "stop-1",
-              "to": "stop-5",
-              "curve": "bezier",
-              "fromPort": "right",
-              "toPort": "left",
-              "portBend": 1
             }
           ],
           "mapStyle": {
@@ -27037,7 +27037,8 @@
           "visible": true,
           "disabled": false,
           "loop": true,
-          "keyframes": []
+          "keyframes": [],
+          "mapEntrance": "auto"
         },
         {
           "id": "route-name",
@@ -31640,6 +31641,15 @@
             {
               "id": "road-5",
               "from": "stop-1",
+              "to": "stop-5",
+              "curve": "bezier",
+              "fromPort": "right",
+              "toPort": "left",
+              "portBend": 1
+            },
+            {
+              "id": "road-6",
+              "from": "stop-1",
               "to": "stop-7",
               "curve": "bezier",
               "fromPort": "left",
@@ -31648,7 +31658,7 @@
               "pattern": "dotted"
             },
             {
-              "id": "road-6",
+              "id": "road-7",
               "from": "stop-3",
               "to": "stop-6",
               "curve": "bezier",
@@ -31656,15 +31666,6 @@
               "toPort": "up",
               "portBend": 1,
               "pattern": "dotted"
-            },
-            {
-              "id": "road-7",
-              "from": "stop-4",
-              "to": "stop-5",
-              "curve": "bezier",
-              "fromPort": "up",
-              "toPort": "down",
-              "portBend": 1
             }
           ],
           "mapStyle": {
@@ -31695,7 +31696,8 @@
           "visible": true,
           "disabled": false,
           "loop": true,
-          "keyframes": []
+          "keyframes": [],
+          "mapEntrance": "auto"
         },
         {
           "id": "route-name",
@@ -35274,7 +35276,7 @@
             },
             {
               "id": "stop-2",
-              "label": "2",
+              "label": "5",
               "raceRef": "Forbes State Forest — designated gravel roads",
               "kind": "race",
               "disabled": false,
@@ -35289,7 +35291,7 @@
             },
             {
               "id": "stop-4",
-              "label": "3",
+              "label": "4",
               "raceRef": "County Line Road — Seven Springs",
               "kind": "race",
               "disabled": false,
@@ -35304,7 +35306,7 @@
             },
             {
               "id": "stop-1",
-              "label": "4",
+              "label": "3",
               "raceRef": "PA 711 — Normalville Champion",
               "kind": "race",
               "disabled": false,
@@ -35319,7 +35321,7 @@
             },
             {
               "id": "stop-3",
-              "label": "5",
+              "label": "2",
               "raceRef": "US 40 — Chalk Hill Summit",
               "kind": "race",
               "disabled": false,
@@ -35418,6 +35420,15 @@
             },
             {
               "id": "road-5",
+              "from": "stop-2",
+              "to": "stop-5",
+              "curve": "bezier",
+              "fromPort": "right",
+              "toPort": "right",
+              "portBend": 1
+            },
+            {
+              "id": "road-6",
               "from": "stop-0",
               "to": "stop-7",
               "curve": "bezier",
@@ -35427,23 +35438,14 @@
               "pattern": "dotted"
             },
             {
-              "id": "road-6",
-              "from": "stop-2",
+              "id": "road-7",
+              "from": "stop-1",
               "to": "stop-6",
               "curve": "bezier",
-              "fromPort": "left",
-              "toPort": "right",
+              "fromPort": "up",
+              "toPort": "down",
               "portBend": 1,
               "pattern": "dotted"
-            },
-            {
-              "id": "road-7",
-              "from": "stop-4",
-              "to": "stop-5",
-              "curve": "bezier",
-              "fromPort": "down",
-              "toPort": "right",
-              "portBend": 1
             }
           ],
           "mapStyle": {
@@ -35474,7 +35476,8 @@
           "visible": true,
           "disabled": false,
           "loop": true,
-          "keyframes": []
+          "keyframes": [],
+          "mapEntrance": "auto"
         },
         {
           "id": "route-name",
@@ -41491,7 +41494,7 @@
             },
             {
               "id": "stop-0",
-              "label": "3",
+              "label": "5",
               "raceRef": "OH 550 — Barlow approach",
               "kind": "race",
               "disabled": false,
@@ -41506,7 +41509,7 @@
             },
             {
               "id": "stop-1",
-              "label": "4",
+              "label": "3",
               "raceRef": "Washington County western covered-bridge gravel loop",
               "kind": "race",
               "disabled": false,
@@ -41521,7 +41524,7 @@
             },
             {
               "id": "stop-4",
-              "label": "5",
+              "label": "4",
               "raceRef": "OH 555 — Triple Nickel",
               "kind": "race",
               "disabled": false,
@@ -41621,6 +41624,15 @@
             {
               "id": "road-5",
               "from": "stop-0",
+              "to": "stop-5",
+              "curve": "bezier",
+              "fromPort": "right",
+              "toPort": "left",
+              "portBend": 1
+            },
+            {
+              "id": "road-6",
+              "from": "stop-0",
               "to": "stop-7",
               "curve": "bezier",
               "fromPort": "down",
@@ -41629,7 +41641,7 @@
               "pattern": "dotted"
             },
             {
-              "id": "road-6",
+              "id": "road-7",
               "from": "stop-1",
               "to": "stop-6",
               "curve": "bezier",
@@ -41637,15 +41649,6 @@
               "toPort": "down",
               "portBend": 1,
               "pattern": "dotted"
-            },
-            {
-              "id": "road-7",
-              "from": "stop-2",
-              "to": "stop-5",
-              "curve": "bezier",
-              "fromPort": "down",
-              "toPort": "up",
-              "portBend": 1
             }
           ],
           "mapStyle": {
@@ -41676,7 +41679,8 @@
           "visible": true,
           "disabled": false,
           "loop": true,
-          "keyframes": []
+          "keyframes": [],
+          "mapEntrance": "auto"
         },
         {
           "id": "route-name",
@@ -49523,7 +49527,7 @@
             },
             {
               "id": "stop-1",
-              "label": "2",
+              "label": "3",
               "raceRef": "MO 106 — Alley Spring approach",
               "kind": "race",
               "disabled": false,
@@ -49538,7 +49542,7 @@
             },
             {
               "id": "stop-2",
-              "label": "3",
+              "label": "4",
               "raceRef": "MO H NN — Roberts Field access",
               "kind": "race",
               "disabled": false,
@@ -49553,7 +49557,7 @@
             },
             {
               "id": "stop-3",
-              "label": "4",
+              "label": "2",
               "raceRef": "Jerktail Landing gravel road",
               "kind": "race",
               "disabled": false,
@@ -49658,22 +49662,21 @@
             },
             {
               "id": "road-4",
-              "from": "stop-1",
+              "from": "stop-2",
               "to": "stop-4",
               "curve": "bezier",
-              "fromPort": "left",
+              "fromPort": "down",
               "toPort": "right",
               "portBend": 1
             },
             {
               "id": "road-5",
-              "from": "stop-2",
-              "to": "stop-7",
+              "from": "stop-4",
+              "to": "stop-5",
               "curve": "bezier",
               "fromPort": "up",
-              "toPort": "down",
-              "portBend": 1,
-              "pattern": "dotted"
+              "toPort": "left",
+              "portBend": 1
             },
             {
               "id": "road-6",
@@ -49687,12 +49690,13 @@
             },
             {
               "id": "road-7",
-              "from": "stop-1",
-              "to": "stop-5",
+              "from": "stop-3",
+              "to": "stop-7",
               "curve": "bezier",
-              "fromPort": "up",
-              "toPort": "down",
-              "portBend": 1
+              "fromPort": "right",
+              "toPort": "left",
+              "portBend": 1,
+              "pattern": "dotted"
             }
           ],
           "mapStyle": {
@@ -49723,7 +49727,8 @@
           "visible": true,
           "disabled": false,
           "loop": true,
-          "keyframes": []
+          "keyframes": [],
+          "mapEntrance": "auto"
         },
         {
           "id": "route-name",
@@ -57007,7 +57012,7 @@
             },
             {
               "id": "stop-2",
-              "label": "3",
+              "label": "5",
               "raceRef": "World Wide Technology Raceway — road course",
               "kind": "race",
               "disabled": false,
@@ -57037,7 +57042,7 @@
             },
             {
               "id": "stop-4",
-              "label": "5",
+              "label": "3",
               "raceRef": "St. Louis, MO — Landmark Run",
               "kind": "race",
               "disabled": false,
@@ -57137,6 +57142,15 @@
             {
               "id": "road-5",
               "from": "stop-2",
+              "to": "stop-5",
+              "curve": "bezier",
+              "fromPort": "up",
+              "toPort": "right",
+              "portBend": 1
+            },
+            {
+              "id": "road-6",
+              "from": "stop-2",
               "to": "stop-7",
               "curve": "bezier",
               "fromPort": "down",
@@ -57145,7 +57159,7 @@
               "pattern": "dotted"
             },
             {
-              "id": "road-6",
+              "id": "road-7",
               "from": "stop-0",
               "to": "stop-6",
               "curve": "bezier",
@@ -57153,15 +57167,6 @@
               "toPort": "left",
               "portBend": 1,
               "pattern": "dotted"
-            },
-            {
-              "id": "road-7",
-              "from": "stop-3",
-              "to": "stop-5",
-              "curve": "bezier",
-              "fromPort": "left",
-              "toPort": "right",
-              "portBend": 1
             }
           ],
           "mapStyle": {
@@ -57192,7 +57197,8 @@
           "visible": true,
           "disabled": false,
           "loop": true,
-          "keyframes": []
+          "keyframes": [],
+          "mapEntrance": "auto"
         },
         {
           "id": "route-name",
@@ -65529,7 +65535,7 @@
             },
             {
               "id": "stop-3",
-              "label": "3",
+              "label": "5",
               "raceRef": "Palo Duro Canyon — Park Road 5",
               "kind": "race",
               "disabled": false,
@@ -65544,7 +65550,7 @@
             },
             {
               "id": "stop-2",
-              "label": "4",
+              "label": "3",
               "raceRef": "Amarillo — Historic 6th Avenue alignment",
               "kind": "race",
               "disabled": false,
@@ -65559,7 +65565,7 @@
             },
             {
               "id": "stop-4",
-              "label": "5",
+              "label": "4",
               "raceRef": "Old Route 66 — Adrian Glenrio",
               "kind": "race",
               "disabled": false,
@@ -65658,6 +65664,15 @@
             },
             {
               "id": "road-5",
+              "from": "stop-3",
+              "to": "stop-5",
+              "curve": "bezier",
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1
+            },
+            {
+              "id": "road-6",
               "from": "stop-0",
               "to": "stop-6",
               "curve": "bezier",
@@ -65667,7 +65682,7 @@
               "pattern": "dotted"
             },
             {
-              "id": "road-6",
+              "id": "road-7",
               "from": "stop-2",
               "to": "stop-7",
               "curve": "bezier",
@@ -65675,15 +65690,6 @@
               "toPort": "down",
               "portBend": 1,
               "pattern": "dotted"
-            },
-            {
-              "id": "road-7",
-              "from": "stop-1",
-              "to": "stop-5",
-              "curve": "bezier",
-              "fromPort": "down",
-              "toPort": "left",
-              "portBend": 1
             }
           ],
           "mapStyle": {
@@ -65714,7 +65720,8 @@
           "visible": true,
           "disabled": false,
           "loop": true,
-          "keyframes": []
+          "keyframes": [],
+          "mapEntrance": "auto"
         },
         {
           "id": "route-name",
@@ -69194,7 +69201,7 @@
             },
             {
               "id": "stop-1",
-              "label": "2",
+              "label": "3",
               "raceRef": "Gold Camp Road — Colorado Springs",
               "kind": "race",
               "disabled": false,
@@ -69209,7 +69216,7 @@
             },
             {
               "id": "stop-2",
-              "label": "3",
+              "label": "2",
               "raceRef": "US 24 — Ute Pass Woodland Park",
               "kind": "race",
               "disabled": false,
@@ -69311,7 +69318,7 @@
             },
             {
               "id": "road-2",
-              "from": "stop-0",
+              "from": "stop-2",
               "to": "stop-1",
               "curve": "bezier",
               "fromPort": "down",
@@ -69338,18 +69345,17 @@
             },
             {
               "id": "road-5",
-              "from": "stop-2",
-              "to": "stop-6",
+              "from": "stop-4",
+              "to": "stop-5",
               "curve": "bezier",
-              "fromPort": "up",
+              "fromPort": "right",
               "toPort": "left",
-              "portBend": 1,
-              "pattern": "dotted"
+              "portBend": 1
             },
             {
               "id": "road-6",
-              "from": "stop-6",
-              "to": "stop-7",
+              "from": "stop-0",
+              "to": "stop-6",
               "curve": "bezier",
               "fromPort": "up",
               "toPort": "down",
@@ -69358,12 +69364,13 @@
             },
             {
               "id": "road-7",
-              "from": "stop-4",
-              "to": "stop-5",
+              "from": "stop-6",
+              "to": "stop-7",
               "curve": "bezier",
-              "fromPort": "right",
-              "toPort": "left",
-              "portBend": 1
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1,
+              "pattern": "dotted"
             }
           ],
           "mapStyle": {
@@ -69394,7 +69401,8 @@
           "visible": true,
           "disabled": false,
           "loop": true,
-          "keyframes": []
+          "keyframes": [],
+          "mapEntrance": "auto"
         },
         {
           "id": "route-name",
@@ -75107,7 +75115,7 @@
             },
             {
               "id": "stop-1",
-              "label": "2",
+              "label": "3",
               "raceRef": "Valley of the Gods Road — San Juan CR 242",
               "kind": "race",
               "disabled": false,
@@ -75122,7 +75130,7 @@
             },
             {
               "id": "stop-2",
-              "label": "3",
+              "label": "5",
               "raceRef": "UT 95 — Comb Ridge Cedar Mesa",
               "kind": "race",
               "disabled": false,
@@ -75137,7 +75145,7 @@
             },
             {
               "id": "stop-3",
-              "label": "4",
+              "label": "2",
               "raceRef": "Muley Point Road — CR 241",
               "kind": "race",
               "disabled": false,
@@ -75152,7 +75160,7 @@
             },
             {
               "id": "stop-4",
-              "label": "5",
+              "label": "4",
               "raceRef": "Burr Trail switchbacks — Capitol Reef",
               "kind": "race",
               "disabled": false,
@@ -75224,40 +75232,39 @@
             },
             {
               "id": "road-2",
-              "from": "stop-0",
+              "from": "stop-3",
               "to": "stop-1",
               "curve": "bezier",
               "fromPort": "up",
-              "toPort": "down",
+              "toPort": "left",
               "portBend": 1
             },
             {
               "id": "road-3",
               "from": "stop-1",
-              "to": "stop-2",
+              "to": "stop-4",
               "curve": "bezier",
-              "fromPort": "right",
-              "toPort": "left",
+              "fromPort": "up",
+              "toPort": "right",
               "portBend": 1
             },
             {
               "id": "road-4",
-              "from": "stop-3",
-              "to": "stop-4",
+              "from": "stop-4",
+              "to": "stop-2",
               "curve": "bezier",
               "fromPort": "up",
-              "toPort": "down",
+              "toPort": "left",
               "portBend": 1
             },
             {
               "id": "road-5",
               "from": "stop-2",
-              "to": "stop-6",
+              "to": "stop-5",
               "curve": "bezier",
-              "fromPort": "up",
+              "fromPort": "down",
               "toPort": "down",
-              "portBend": 1,
-              "pattern": "dotted"
+              "portBend": 1
             },
             {
               "id": "road-6",
@@ -75271,12 +75278,13 @@
             },
             {
               "id": "road-7",
-              "from": "stop-1",
-              "to": "stop-5",
+              "from": "stop-2",
+              "to": "stop-6",
               "curve": "bezier",
-              "fromPort": "left",
-              "toPort": "right",
-              "portBend": 1
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1,
+              "pattern": "dotted"
             }
           ],
           "mapStyle": {
@@ -75307,7 +75315,8 @@
           "visible": true,
           "disabled": false,
           "loop": true,
-          "keyframes": []
+          "keyframes": [],
+          "mapEntrance": "auto"
         },
         {
           "id": "route-name",
@@ -79567,7 +79576,7 @@
             },
             {
               "id": "stop-1",
-              "label": "2",
+              "label": "3",
               "raceRef": "Boynton Pass Road FR 525 loop",
               "kind": "race",
               "disabled": false,
@@ -79582,7 +79591,7 @@
             },
             {
               "id": "stop-2",
-              "label": "3",
+              "label": "2",
               "raceRef": "Upper Lower Red Rock Loop Road",
               "kind": "race",
               "disabled": false,
@@ -79597,7 +79606,7 @@
             },
             {
               "id": "stop-3",
-              "label": "4",
+              "label": "5",
               "raceRef": "Schnebly Hill Road — Sedona",
               "kind": "race",
               "disabled": false,
@@ -79612,7 +79621,7 @@
             },
             {
               "id": "stop-4",
-              "label": "5",
+              "label": "4",
               "raceRef": "SR 89A — Mingus Mountain Jerome",
               "kind": "race",
               "disabled": false,
@@ -79693,15 +79702,6 @@
             },
             {
               "id": "road-3",
-              "from": "stop-0",
-              "to": "stop-3",
-              "curve": "bezier",
-              "fromPort": "right",
-              "toPort": "left",
-              "portBend": 1
-            },
-            {
-              "id": "road-4",
               "from": "stop-1",
               "to": "stop-4",
               "curve": "bezier",
@@ -79710,14 +79710,22 @@
               "portBend": 1
             },
             {
-              "id": "road-5",
+              "id": "road-4",
               "from": "stop-4",
-              "to": "stop-7",
+              "to": "stop-3",
               "curve": "bezier",
-              "fromPort": "right",
-              "toPort": "left",
-              "portBend": 1,
-              "pattern": "dotted"
+              "fromPort": "down",
+              "toPort": "down",
+              "portBend": 1
+            },
+            {
+              "id": "road-5",
+              "from": "stop-3",
+              "to": "stop-5",
+              "curve": "bezier",
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1
             },
             {
               "id": "road-6",
@@ -79732,11 +79740,12 @@
             {
               "id": "road-7",
               "from": "stop-3",
-              "to": "stop-5",
+              "to": "stop-7",
               "curve": "bezier",
-              "fromPort": "up",
-              "toPort": "down",
-              "portBend": 1
+              "fromPort": "right",
+              "toPort": "up",
+              "portBend": 1,
+              "pattern": "dotted"
             }
           ],
           "mapStyle": {
@@ -79767,7 +79776,8 @@
           "visible": true,
           "disabled": false,
           "loop": true,
-          "keyframes": []
+          "keyframes": [],
+          "mapEntrance": "auto"
         },
         {
           "id": "route-name",
@@ -83361,7 +83371,7 @@
             },
             {
               "id": "stop-0",
-              "label": "3",
+              "label": "4",
               "raceRef": "Los Angeles, CA — Landmark Run",
               "kind": "race",
               "disabled": false,
@@ -83376,7 +83386,7 @@
             },
             {
               "id": "stop-1",
-              "label": "4",
+              "label": "3",
               "raceRef": "Big Tujunga Canyon Road",
               "kind": "race",
               "disabled": false,
@@ -83481,15 +83491,24 @@
             },
             {
               "id": "road-4",
-              "from": "stop-1",
+              "from": "stop-0",
               "to": "stop-2",
               "curve": "bezier",
-              "fromPort": "up",
+              "fromPort": "left",
               "toPort": "down",
               "portBend": 1
             },
             {
               "id": "road-5",
+              "from": "stop-2",
+              "to": "stop-5",
+              "curve": "bezier",
+              "fromPort": "up",
+              "toPort": "up",
+              "portBend": 1
+            },
+            {
+              "id": "road-6",
               "from": "stop-2",
               "to": "stop-6",
               "curve": "bezier",
@@ -83499,7 +83518,7 @@
               "pattern": "dotted"
             },
             {
-              "id": "road-6",
+              "id": "road-7",
               "from": "stop-2",
               "to": "stop-7",
               "curve": "bezier",
@@ -83507,15 +83526,6 @@
               "toPort": "up",
               "portBend": 1,
               "pattern": "dotted"
-            },
-            {
-              "id": "road-7",
-              "from": "stop-2",
-              "to": "stop-5",
-              "curve": "bezier",
-              "fromPort": "up",
-              "toPort": "up",
-              "portBend": 1
             }
           ],
           "mapStyle": {
@@ -83546,7 +83556,8 @@
           "visible": true,
           "disabled": false,
           "loop": true,
-          "keyframes": []
+          "keyframes": [],
+          "mapEntrance": "auto"
         },
         {
           "id": "route-name",

@@ -1,3 +1,10 @@
+// Regional maps inherit the overview soundtrack even when entered directly
+// after a race, when there is no currently playing menu track to continue.
+export function resolveMenuScreenMusic(screen,document){
+ if(screen?.musicMode!=='continue'||!screen.elements?.some(e=>e.property==='campaign-path'))return screen;
+ const overview=document?.screens?.find(s=>s.elements?.some(e=>e.type==='world-map'&&e.property!=='campaign-path')&&s.musicRef&&s.musicMode!=='silent');
+ return overview?{...screen,...Object.fromEntries(Object.entries(overview).filter(([key])=>key.startsWith('music'))),musicMode:'track'}:screen;
+}
 // Keep music loads alive across screens that continue the current track.
 export class MenuScreenMusic {
   constructor(game, hydrate) { this.game=game; this.hydrate=hydrate; this.generation=0; this.ref=null; this.fadeOut=.4; }

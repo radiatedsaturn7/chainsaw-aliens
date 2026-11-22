@@ -1,3 +1,4 @@
+import {campaignMapEntrance} from './CampaignMapEntrance.js';
 import {campaignWorldOverview,campaignWorldRevealKey,WORLD_ROAD_REVEAL_SECONDS,WORLD_PIN_POP_SECONDS} from './CampaignWorldReveal.js';
 import {campaignRoadDirectionalNode,mapRoadRoute,queueCampaignRoadMove} from './MenuMapRoads.js';
 import {MotorsportMenu,installMotorsportNavigation} from './MotorsportMenu.js';
@@ -9,7 +10,7 @@ import {loadCampaignSaves} from './CampaignSaves.js';
 import {GarageEnginePreview} from './GarageEnginePreview.js';
 import {drawDisplayModeInBounds} from '../ui/shared/displayModes.js';
 import {openWheelSettings} from '../hardware/wheels/WheelSettings.js';
-import {MenuScreenMusic} from './MenuScreenMusic.js';
+import {MenuScreenMusic,resolveMenuScreenMusic} from './MenuScreenMusic.js';
 import {selectableIndex,nextSelectableIndex,selectableGridIndex} from './MenuSelection.js';
 import {GarageDialogueState,garageDialogueContext} from '../garage/GarageDialogue.js';
 import {MenuScreenTransition} from './MenuScreenTransition.js';
@@ -337,7 +338,7 @@ export default class MenuPlayer {
       }
     }
     this.garageDialogue.enter(screen,flow.parameters,this.dialogueContext());
-    void this.screenMusic.enter(screen).catch(error=>{flow.error=error.message});
+    void this.screenMusic.enter(resolveMenuScreenMusic(screen,flow.document)).catch(error=>{flow.error=error.message});
     if(this.tuner?.readyTask&&!this.tuner.ready){
       const entryGeneration=this.screenEntryGeneration;
       this.pendingScreenEntry=true;this.screenEntryTask=this.tuner.readyTask;
@@ -418,6 +419,15 @@ export default class MenuPlayer {
       if(element.property==='campaign-path'){
         if(value!==selected.raceRef){this.flow.setParameter(element.binding,selected.raceRef);return;}
         const links=worldMapConnections(element,nodes);
+        const entrance=campaignMapEntrance(element,nodes,links),moveDirection=mapDirection||(direction<0?'left':'right');
+        const car=this.widgetStates?.get(`map-car:${element.id}`);
+        if(car?.campaignExiting)return;
+        if(entrance&&selected.id===entrance.first.id&&moveDirection===entrance.direction){
+          if(car?.moving)return;
+          const state=car||{node:selected.id,x:selected.x,y:selected.y,time:this.flow.time,angle:135};
+          state.campaignExiting=true;state.moving=true;this.widgetStates.set(`map-car:${element.id}`,state);return;
+        }
+
         const node=campaignRoadDirectionalNode(nodes,links,selected,mapDirection||(direction<0?'left':'right'),n=>worldMapNodePoint(n,bounds,element));
         if(node===selected)return;
         if(element.mapStyle?.cursor==='car'&&this.widgetStates){
@@ -566,6 +576,15 @@ export default class MenuPlayer {
       return;
     }
     if(this.pendingScreenEntry){this.prepareScreenEntry();return;}
+    const regionMap=flow.screen.elements.find(e=>e.property==='campaign-path');
+    const mapCar=regionMap&&this.widgetStates.get(`map-car:${regionMap.id}`);
+    if(mapCar?.campaignExiting){
+      if(!mapCar.moving&&mapCar.node==='map-exit'){
+        const overview=flow.document.screens.find(s=>s.elements.some(e=>e.type==='world-map'&&e.property!=='campaign-path'));
+        if(overview)void flow.goTo(overview.id);else flow.back();
+      }
+      return;
+    }
     if(this.advanceCampaignWorldReveal(dt))return;
     if(this.capturing)return;
     if(this.choicePopup){const popup=this.choicePopup;if(pressed('Escape')||pad('cancel')){this.choicePopup=null;return;}if(pressed('ArrowDown')||navigation==='down')popup.index=(popup.index+1)%popup.choices.length;if(pressed('ArrowUp')||navigation==='up')popup.index=(popup.index-1+popup.choices.length)%popup.choices.length;if(pressed('Space')||pressed('Enter')||pad('gamepadStart')||pad('jump'))this.choosePopupItem(popup.index);return;}

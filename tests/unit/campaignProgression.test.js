@@ -47,7 +47,7 @@ function graphFixture(){
  const document={screens:[{id:'campaign-hub-1',elements:[graph]}]};
  return {config,document,graph};
 }
-test('authored widget roads govern reachable stops and boss access without a win quota',()=>{
+test('authored widget roads govern reachable stops and boss access after completing the main path',()=>{
  const {config,document}=graphFixture(),p={};
  const state=()=>campaignRegionState(config,'Boss',p,{},document);
  const access=ref=>campaignRaceAccess(config,ref,p,{},{},document);
@@ -59,8 +59,9 @@ test('authored widget roads govern reachable stops and boss access without a win
  clear(p,'Entry');
  assert.deepEqual(state().available,['Entry','Other','Branch']);
  assert.equal(state().cleared('Branch'),false);
- assert.equal(access('Boss').allowed,true,'available branch reaches boss by a junction without a race win');
- assert.equal(access('Beyond').allowed,false,'boss shortcut does not unlock normal neighbors');
+ assert.equal(access('Boss').allowed,false,'a merely available frontier cannot unlock the boss');
+ clear(p,'Other');clear(p,'Branch');assert.equal(access('Boss').allowed,true);
+ assert.equal(access('Beyond').allowed,true,'cleared branch opens its normal neighbor');
  assert.equal(access('Off-map').allowed,false,'no open by optional win tally');
  clear(p,'Boss');assert.ok(access('Next First').allowed);assert.ok(access('Off-map').allowed);
 });
@@ -72,7 +73,7 @@ test('authored graph edits remove old routes and never connect a boss across an 
  clear(p,'Entry');
  assert.equal(access('Boss').allowed,false);
  assert.equal(access('Branch').allowed,true);
- clear(p,'Branch');assert.equal(access('Boss').allowed,true);
+ clear(p,'Branch');assert.equal(access('Boss').allowed,false);clear(p,'Other');clear(p,'Beyond');assert.equal(access('Boss').allowed,true);
  graph.connections=graph.connections.filter(c=>c.to!=='final');
  assert.equal(access('Boss').allowed,false,'boss availability follows live road edits');
  graph.connections.push({from:'off-right',to:'final'});
@@ -100,8 +101,8 @@ test('locked buttons remain focusable and explain progress; race launch also enf
  const screen=structuredClone(menu.screens.find(s=>s.id==='campaign-hub-1-events'));
  refreshCampaignScreen(screen,config,{}, {},{},menu);assert.equal(screen.elements.find(e=>e.action?.value===first.bossRef).label,'Main Mission (Locked)');
  const player=Object.create(MenuPlayer.prototype);player.flow={document:menu,parameters:{},busy:false,run:()=>assert.fail('locked action ran')};player.resources={};
- await player.activate(screen.elements.find(e=>e.action?.value===first.bossRef));assert.match(player.flow.error,/road to this region’s main mission/);
- await assert.rejects(()=>player.launchRace(first.bossRef,{}),/road to this region’s main mission/);
+ await player.activate(screen.elements.find(e=>e.action?.value===first.bossRef));assert.match(player.flow.error,/main route/);
+ await assert.rejects(()=>player.launchRace(first.bossRef,{}),/main route/);
 });
 test('world-map pins represent open regions, not whether their boss is ready',()=>{
  const map=menu.screens.find(s=>s.id==='world-map').elements.find(e=>e.type==='world-map');

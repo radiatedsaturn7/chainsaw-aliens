@@ -51,6 +51,8 @@ test('regional nodes use the authored links, not a count or a fixed list',()=>{
  // Availability is driven by connectivity: stop at the first accessible
  // parent of the boss, without clearing that frontier race itself.
  for(const race of races.slice(0,-1))p[raceCompletionKey(race.raceRef)]=true;
+ assert.equal(campaignRaceAccess(config,r.bossRef,p,{}, {},menu).allowed,false);
+ for(const ref of r.mainPath)p[raceCompletionKey(ref)]=true;
  assert.equal(campaignRaceAccess(config,r.bossRef,p,{}, {},menu).allowed,true);
  assert.ok(draw().find(n=>n.id===boss.id&&!n.locked));
  p[raceCompletionKey(r.bossRef)]=true;
@@ -125,5 +127,15 @@ test('pavement and dirt paint the exact animation curve with visible road surfac
   assert.deepEqual(paths,[pixel(a),[...pixel(link.control1),...pixel(link.control2),...pixel(c)]]);
   assert.equal(strokes[2][0],surface);
   assert.ok(strokes[3][2].length>0);
+ }
+});
+test('every installed boss is a terminal sixth stop, after five main races',()=>{
+ for(const r of config.regions){
+  const map=menu.screens.find(s=>s.id===`campaign-hub-${r.stage}`).elements.find(e=>e.property==='campaign-path');
+  const start=map.nodes.find(n=>n.raceRef===r.mainPath[0]),boss=map.nodes.find(n=>n.raceRef===r.bossRef);
+  const path=mapRoadRoute(map.nodes,map.connections,start.id,boss.id);
+  assert.equal(path.length,5,r.bossRef);assert.equal(map.connections.filter(e=>e.from===boss.id||e.to===boss.id).length,1);
+  assert.deepEqual(new Set(path.map(s=>map.nodes.find(n=>n.id===s.previous).raceRef)),new Set(r.mainPath));
+  assert.equal(map.mapEntrance,'auto');
  }
 });

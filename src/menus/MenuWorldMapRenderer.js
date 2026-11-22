@@ -1,3 +1,4 @@
+import {campaignMapEntrance} from './CampaignMapEntrance.js';
 import {drawCampaignMapPlaces} from './CampaignMapPlaces.js';
 import {campaignWorldPresentation,campaignWorldRevealKey,WORLD_ROAD_REVEAL_SECONDS,WORLD_PIN_POP_SECONDS} from './CampaignWorldReveal.js';
 import {drawMapRoad,advanceMapCar,mapRoadPixels,mapRoadPoint} from './MenuMapRoads.js';
@@ -34,6 +35,8 @@ export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{
  const positions=new Map(nodes.map(n=>[n.id,worldMapNodePoint(n,b,element)]));
  const roadById=new Map(roadNodes.map(n=>[n.id,n]));
  const links=worldMapConnections(element,nodes);
+ const entrance=campaignMapEntrance(element,roadNodes,links);
+ if(entrance){ctx.save();ctx.beginPath();ctx.rect(b.x,b.y,b.w,b.h);ctx.clip();drawRegionalMapRoad(ctx,entrance.link,entrance.first,entrance.end,b,style.lineWidth,style.linePattern);ctx.restore();}
  const reveal=campaignOverview&&!editing?widgetStates.get(campaignWorldRevealKey(element.id)):null;
  const presentation=campaignOverview&&!editing?campaignWorldPresentation(nodes,links,reveal):{visible:nodes,links,paving:false};
  for(const link of presentation.links){
@@ -91,9 +94,11 @@ export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{
   }
  }
  if(style.cursor==='car'&&selected){
-  const key=`map-car:${element.id}`,previous=editing?null:widgetStates.get(key);
-  const state=advanceMapCar(previous,roadNodes,links,selected,time);
-  if(state){widgetStates.set(key,state);const p=mapRoadPixels(state,b),size=Math.max(28,Math.min(64,b.w*.11));
+  const key=`map-car:${element.id}`;let previous=editing?null:widgetStates.get(key);
+  if(!editing&&!previous&&entrance&&selected===entrance.first.raceRef)previous={node:entrance.end.id,x:entrance.end.x,y:entrance.end.y,angle:135,time,moving:true};
+  const travelNodes=entrance?[...roadNodes,entrance.end]:roadNodes,travelLinks=entrance?[...links,entrance.link]:links;
+  const state=advanceMapCar(previous,travelNodes,travelLinks,previous?.campaignExiting?entrance?.end.raceRef:selected,time);
+  if(state){widgetStates.set(key,state);const p=mapRoadPixels(state,b),size=2*Math.max(28,Math.min(64,b.w*.11));
    ctx.save();ctx.beginPath();ctx.rect(b.x,b.y,b.w,b.h);ctx.clip();
    drawCar?.({x:p.x-size/2,y:p.y-size*.55,w:size,h:size*.7},state.angle);ctx.restore();}
  }

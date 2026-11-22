@@ -670,15 +670,22 @@ export function calculateAuthoritativeRouteAdvance({ velocityWorld = {}, roadYaw
 // Reconcile small route-measurement errors with the authoritative world pose.
 // The bound rejects jumps to nearby hairpins/crossings; this never moves the car.
 export function reconcileRaceRouteAdvance({ previousDistance, predictedAdvance, projectedDistance,
-  routeLength, circuit = false, travelM, onRoad = false } = {}) {
-  if (!onRoad || !Number.isFinite(projectedDistance)) return predictedAdvance;
+  routeLength, circuit = false, travelM, onRoad = false, routeOffsetM = 0, roadHalfWidthM = 0 } = {}) {
+  const offset = Math.max(0, Number(routeOffsetM) || 0);
+  const nearRoad = roadHalfWidthM > 0 && offset <= roadHalfWidthM + 3;
+  if (!(onRoad || nearRoad) || !Number.isFinite(projectedDistance)) return predictedAdvance;
   let measuredAdvance = projectedDistance - previousDistance;
   if (circuit && routeLength > 0) {
     measuredAdvance = ((measuredAdvance + routeLength / 2) % routeLength + routeLength) % routeLength - routeLength / 2;
   }
   // Nearest-point projection can move across a corner between samples even
   // when the chassis travels only centimetres. Allow that local corner span.
-  const maximumAdvance = Math.max(3, Math.max(0, Number(travelM) || 0) * 2 + 0.05);
+  // An offset driving line traverses a tight corner's centerline arc in less
+  // physical distance. Permit that local arc, including the road shoulder,
+  // rather than permanently integrating against a stale pre-corner heading.
+  // Keep the correction inside the projection's local continuity window.
+  const cornerSpan = roadHalfWidthM > 0 ? Math.PI * Math.min(offset, roadHalfWidthM + 3) : 0;
+  const maximumAdvance = Math.max(3, Math.min(40, Math.max(0, Number(travelM) || 0) * 2 + 0.05 + cornerSpan));
   return Math.abs(measuredAdvance) <= maximumAdvance ? measuredAdvance : predictedAdvance;
 }
 
@@ -4122,7 +4129,8 @@ export function updateRaceSimulation({
     routeLength,
     circuit: routeRuntimeType === 'circuit',
     travelM: Math.hypot(Number(authoritativeVelocity.x || 0), Number(authoritativeVelocity.z || 0)) * seconds,
-    onRoad: Number(projection.distanceToRoute) <= projectedRoadHalfWidth
+    onRoad: Number(projection.distanceToRoute) <= projectedRoadHalfWidth,
+    routeOffsetM: projection.distanceToRoute, roadHalfWidthM: projectedRoadHalfWidth
   });
   if(editor.selectedRace?.campaign?.scoring==='drift'){
     editor.playtestSession.driftScore=advanceRaceDriftScore(editor.playtestSession.driftScore,{
