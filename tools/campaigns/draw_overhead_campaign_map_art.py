@@ -1,4 +1,4 @@
-"""Draw the native overhead regional campaign art and its full-size sources."""
+"""Draw all eleven frozen regional campaign landscapes and native Art files."""
 from draw_regional_map_art import W,H,P,Image,ImageDraw,math,random,mix,rgb
 import draw_regional_map_art as prior
 import json
@@ -19,7 +19,14 @@ G={
 }
 def overhead(name):
  cfg=G[name]; rng=random.Random(name+'overhead2')
- _,_,far,mid,near,earth,frost,light,ink=map(rgb,P[name]); ground=rgb(cfg['tone'])
+ _,_,far,mid,near,earth,frost,light,ink=map(rgb,P[name]); original=rgb(cfg['tone'])
+ dry=bool(cfg.get('cliffs') or cfg.get('scrub'))
+ urban=bool(cfg.get('industrial'))
+ ground=mix((170,197,220) if not dry else (161,179,203),original,.12 if not dry else .26)
+ if urban:ground=(143,166,194)
+ frost=(224,240,249);light=(239,246,250);ink=(33,48,85)
+ near=mix((77,107,160),near,.2 if not dry else .35);mid=mix((107,135,177),mid,.2 if not dry else .34)
+ far=(81,105,154);earth=mix((95,110,149),earth,.3 if dry else .10)
  im=Image.new('RGB',(W,H),ground);d=ImageDraw.Draw(im)
  def mix2(c,t):return mix(c,light if t>=0 else ink,abs(t))
  def oval(cx,cy,a,b,profile,phase):
@@ -28,18 +35,18 @@ def overhead(name):
  for j in range(65):
   x=rng.randrange(W);y=rng.randrange(H)
   q=oval(x,y,rng.randrange(8,49),rng.randrange(5,25),.10,rng.random()*3)
-  d.polygon(q,fill=mix2(ground,rng.uniform(-.095,.105)))
+  d.polygon(q,fill=mix2(ground,rng.uniform(-.12,.31)))
  for peakno,(x,y,a,b) in enumerate(cfg.get('peaks',[])):
   phase=rng.random()*6
   for level,f in enumerate([1,.84,.67,.50,.35,.22]):
    cx=x-(1-f)*12;cy=y-(1-f)*9
-   change=.03+.041*level
+   change=.05+.052*level
    c=mix(ground, frost if cfg.get('ice') else light, change*(1.65 if cfg.get('ice') else 1))
    q=oval(cx,cy,a*f,b*f,.16 if not cfg.get('cliffs') else .075,phase)
    if cfg.get('cliffs'):
     q=[(xx//4*4,yy//3*3) for xx,yy in q]
     d.polygon([(xx+3,yy+5) for xx,yy in q],fill=mix2(c,-.33))
-   else:d.polygon([(xx+2,yy+3) for xx,yy in q],fill=mix2(c,-.18))
+   else:d.polygon([(xx+2,yy+3) for xx,yy in q],fill=mix2(c,-.24))
    d.polygon(q,fill=c);td.polygon(q,fill=min(255,40+level*32))
    d.line(q[-10:]+q[:6],fill=mix2(c,.18 if cfg.get('cliffs') else .13),width=2)
    d.line(q[9:21],fill=mix2(c,-.19),width=1)
@@ -60,7 +67,7 @@ def overhead(name):
  mask=Image.new('L',(W,H),0);md=ImageDraw.Draw(mask)
  if cfg.get('water'):
   q=spline(cfg['water']);width=cfg.get('wide',19)
-  water=mix((54,98,117),near,.30)
+  water=(39,70,137)
   if name=='moki-dugway':water=(87,80,85)
   if name=='providence':
    shore=[(268,175),(265,188),(269,201),(262,215),(251,231),(225,254),(223,271),(384,271),(384,193),(369,194),(352,207),(338,211),(315,199),(304,201),(291,190),(281,185),(277,173)]
@@ -77,11 +84,27 @@ def overhead(name):
    q=[]
   if q:
    d.line(q,fill=mix(earth,ink,.6),width=width+12)
-   d.line(q,fill=mix(near,frost,.72),width=width+6)
+   d.line(q,fill=(210,235,246),width=width+6)
    d.line(q,fill=water,width=width,joint='curve')
   if q:md.line(q,fill=255,width=width+5)
   for x,y in q[::6]:
    if 0<=x<W-2 and 0<=y<H and mask.getpixel((x,y)):d.line((x-2,y,x+2,y),fill=mix(water,frost,.45))
+ if name=='providence':
+  # Massachusetts Bay bites into the upper/east edge beside the Boston stop;
+  # place the node on the Boston peninsula, not in the harbor.
+  shore=[(371,-8),(372,5),(366,11),(370,18),(359,28),(361,35),(352,43),(361,50),(356,61),(376,70),(390,85),(399,-8)]
+  d.polygon(shore,fill=(31,63,132));d.line(shore[:-1],fill=(218,238,249),width=2);md.polygon(shore,fill=255)
+ # Cracked plates, ice seams and chipped floes only inside broad frozen water.
+ for i in range(650):
+  x=rng.randrange(3,W-10);y=rng.randrange(3,H-6)
+  if not mask.getpixel((x,y)):continue
+  col=im.getpixel((x,y))
+  if not (col[0]<86 and col[2]>col[0]+50):continue
+  r=rng.choice([1,2,3,5,7])
+  pts=[(x-r,y+1),(x-r//2,y-r//2),(x+r-2,y-r//2-1),(x+r,y),(x+1,y+r//2+1)]
+  if all(0<=xx<W and 0<=yy<H and mask.getpixel((xx,yy)) for xx,yy in pts):
+   d.polygon(pts,fill=rng.choice([(96,148,203),(121,173,220),(149,196,229),(174,217,238)]))
+   d.line(pts[1:3],fill=(210,234,246),width=1)
  for x,y in cfg.get('fields',[]):
   for j in range(3):
    xx=x+j*6;yy=y+j*8; w=rng.randrange(21,44)
@@ -97,7 +120,7 @@ def overhead(name):
    else:
     d.rectangle((xx-1,yy,xx+size,yy+1),fill=mix2(col,-.28))
     d.polygon([(xx,yy-size),(xx-size,yy+1),(xx+size-1,yy+1)],fill=mix(ink,col,.35))
-    if rng.random()<(.8 if cfg.get('ice') else .33):d.line((xx-1,yy-size+1,xx-size,yy),fill=mix(col,frost,.72))
+    if rng.random()<(.94 if cfg.get('ice') else .75):d.line((xx-1,yy-size+1,xx-size,yy),fill=mix(col,frost,.72))
  for x,y,count in cfg.get('town',[]):
   for i in range(count):
    if cfg.get('industrial'):
@@ -109,6 +132,16 @@ def overhead(name):
    d.rectangle((xx,yy,xx+w,yy+h),fill=mix(near,far,.46))
    d.line((xx,yy,xx+w,yy),fill=mix(frost,far,.42))
    if w>=4 and rng.random()<.4:d.point((xx+w//2,yy+h),fill=light)
+ if name=='providence':
+  # Boston: deliberately distinct waterfront skyline, piers, and dense icy
+  # blue roofs centered at normalized GPS (0.9, 0.1) = (346,26).
+  for x,y,w,h,side in [(331,17,5,10,3),(338,11,7,15,3),(348,14,6,13,3),(357,10,5,11,2),(325,29,5,8,3),(334,30,7,10,3),(344,32,6,9,3),(353,30,5,10,2),(362,22,4,6,2),(332,43,5,6,2),(344,44,7,6,2)]:
+   d.polygon([(x,y),(x+w,y),(x+w+side,y+side),(x+side,y+side)],fill=(216,233,245))
+   d.polygon([(x,y),(x+side,y+side),(x+side,y+h+side),(x,y+h)],fill=(56,70,115))
+   d.polygon([(x+side,y+side),(x+w+side,y+side),(x+w+side,y+h+side),(x+side,y+h+side)],fill=(89,113,155))
+   d.line((x+side+1,y+side+3,x+w+side-1,y+side+3),fill=(166,201,225))
+  d.line((344,10,344,5),fill=(61,85,129));d.line((361,38,375,38),fill=(136,161,189),width=2)
+  d.line((362,42,374,42),fill=(143,177,199),width=2)
  if cfg.get('bridge'):
   # Sculptural silhouette in river; not a connection or route line.
   x,y,s=cfg['bridge'];d.line((x-s,y-s,x+s,y+s),fill=ink,width=3);d.line((x-s,y-s-2,x+s,y+s-2),fill=frost)
@@ -127,5 +160,5 @@ if __name__=='__main__':
  prior.render=overhead
  prior.emit()
  for meta in (prior.OUT/'data/server-storage/files/art').glob('campaign-map-*/metadata.json'):
-  value=json.loads(meta.read_text());value['savedAt']=1795318140000
+  value=json.loads(meta.read_text());value['savedAt']=1795319520000
   meta.write_text(json.dumps(value,indent=2)+'\n')

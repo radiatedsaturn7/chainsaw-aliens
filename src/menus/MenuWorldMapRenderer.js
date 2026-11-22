@@ -1,4 +1,6 @@
-import {drawMapRoad,advanceMapCar,mapRoadPixels} from './MenuMapRoads.js';
+import {drawCampaignMapPlaces} from './CampaignMapPlaces.js';
+import {campaignWorldPresentation,campaignWorldRevealKey,WORLD_ROAD_REVEAL_SECONDS,WORLD_PIN_POP_SECONDS} from './CampaignWorldReveal.js';
+import {drawMapRoad,advanceMapCar,mapRoadPixels,mapRoadPoint} from './MenuMapRoads.js';
 import {drawCampaignMapLandscape} from './CampaignMapLandscape.js';
 import {worldMapNodes,worldMapConnections,worldMapRaceNodes,worldMapNodePoint,worldMapNodeRadius,normalizeWorldMapStyle,worldMapSelection} from './MenuWorldMap.js';
 // Road shoulders, surface, and lane marks share one path with the simulated
@@ -23,7 +25,7 @@ export function drawRegionalMapRoad(ctx,link,a,c,b,width,pattern) {
  ctx.restore();
 }
 
-export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{drawText,fontFamily='system-ui',time=0,widgetStates=new Map(),drawCar=null,editing=false,mapBackground=null}={}){
+export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{drawText,fontFamily='system-ui',time=0,widgetStates=new Map(),drawCar=null,editing=false,mapBackground=null,campaignOverview=false}={}){
  const nodes=worldMapNodes(element,resources,document,parameters),style=normalizeWorldMapStyle(element.mapStyle);
  const regional=element.property==='campaign-path';
  if(regional&&!mapBackground){const region=document?.parameters?.campaignProgression?.regions?.find(r=>r.bossRef===element.assetRef);drawCampaignMapLandscape(ctx,{...b,h:Math.max(1,b.h-36)},region?.stage||1);}
@@ -32,7 +34,9 @@ export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{
  const positions=new Map(nodes.map(n=>[n.id,worldMapNodePoint(n,b,element)]));
  const roadById=new Map(roadNodes.map(n=>[n.id,n]));
  const links=worldMapConnections(element,nodes);
- for(const link of links){
+ const reveal=campaignOverview&&!editing?widgetStates.get(campaignWorldRevealKey(element.id)):null;
+ const presentation=campaignOverview&&!editing?campaignWorldPresentation(nodes,links,reveal):{visible:nodes,links,paving:false};
+ for(const link of presentation.links){
   const width=link.width??style.lineWidth,pattern=link.pattern||style.linePattern;
   if(!width)continue;
   const a=roadById.get(link.from),c=roadById.get(link.to);
@@ -42,8 +46,14 @@ export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{
   drawMapRoad(ctx,link,a,c,b);
   ctx.stroke();ctx.restore();
  }
+ if(presentation.paving&&reveal.elapsed>0){
+  const a=roadById.get(reveal.from),c=roadById.get(reveal.to);
+  const link=links.find(l=>l.from===a?.id&&l.to===c?.id||l.to===a?.id&&l.from===c?.id);
+  if(a&&c&&link)drawPavingRoad(ctx,b,link,a,c,reveal.elapsed/WORLD_ROAD_REVEAL_SECONDS);
+ }
+ if(regional)drawCampaignMapPlaces(ctx,b,nodes,positions,element,fontFamily);
  let raceIndex=0;
- for(const node of nodes){
+ for(const node of presentation.visible){
   const junction=node.kind==='junction',p=positions.get(node.id),active=!junction&&!node.locked&&node.raceRef===selected;
   if(!junction)raceIndex++;
   const radius=worldMapNodeRadius(b,element)*(junction?.55:1);
@@ -63,6 +73,11 @@ export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{
    ctx.fillStyle=element.color;drawText(node.label,labelX,p.y+radius+17,labelWidth);
   }
   ctx.restore();
+  if(reveal&&node.id===reveal.to&&!presentation.paving){
+   const pop=Math.min(1,(reveal.elapsed-WORLD_ROAD_REVEAL_SECONDS)/WORLD_PIN_POP_SECONDS);
+   ctx.save();ctx.globalAlpha*=1-pop;ctx.strokeStyle='#fff0a8';ctx.lineWidth=2;
+   ctx.beginPath();ctx.arc(p.x,p.y,radius+7+pop*12,0,Math.PI*2);ctx.stroke();ctx.restore();
+  }
   if(active&&style.cursor!=='none'&&style.cursor!=='car'){
    ctx.save();ctx.strokeStyle=ctx.fillStyle=style.cursorColor;ctx.lineWidth=3;
    if(style.cursor==='ring'){ctx.beginPath();ctx.arc(p.x,p.y,radius+5,0,Math.PI*2);ctx.stroke();}
@@ -85,4 +100,18 @@ export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{
  const highlighted=worldMapSelection(nodes,selected);
  if(highlighted&&element.showSelectedLabel!==false){ctx.fillStyle=element.color;drawText(`${highlighted.label} · ${highlighted.locked?'Locked':highlighted.completed?'Completed':'Ready'}`,b.x+b.w/2,b.y+b.h-14,b.w-20);}
  if(!nodes.length)drawText('No races configured',b.x+b.w/2,b.y+b.h/2,b.w-12);
+}
+
+function drawPavingRoad(ctx,b,link,from,to,progress){
+ const reverse=link.from!==from.id;
+ const t=progress*progress*(3-2*progress);
+ const point=s=>mapRoadPixels(mapRoadPoint(link,reverse?to:from,reverse?from:to,reverse?1-s:s),b);
+ const a=point(0),head=point(t);
+ ctx.save();ctx.lineCap='round';ctx.lineJoin='round';ctx.setLineDash?.([]);
+ ctx.beginPath();ctx.moveTo(a.x,a.y);
+ const steps=Math.max(1,Math.ceil(t*32));
+ for(let i=1;i<=steps;i++){const p=point(t*i/steps);ctx.lineTo(p.x,p.y);}
+ ctx.strokeStyle='#1b2732';ctx.lineWidth=(link.width||3)+3;ctx.stroke();
+ ctx.strokeStyle=link.color||'#efc36b';ctx.lineWidth=link.width||3;ctx.stroke();
+ ctx.fillStyle='#fff0a8';ctx.beginPath();ctx.arc(head.x,head.y,3,0,Math.PI*2);ctx.fill();ctx.restore();
 }

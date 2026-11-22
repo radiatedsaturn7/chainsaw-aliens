@@ -2,16 +2,42 @@
 export function mapRoadControls(link,a,b){
  return link.curve==='bezier'?[link.control1||{x:a.x,y:(a.y+b.y)/2},link.control2||{x:b.x,y:(a.y+b.y)/2}]:null;
 }
-export function mapRoadPoint(link,a,b,t){
- const controls=mapRoadControls(link,a,b);if(!controls)return {x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t};
- const [c,d]=controls,u=1-t;
+const ROAD_PORTS={left:[-1,0],right:[1,0],up:[0,-1],down:[0,1]};
+const offsetPort=(p,dir,length)=>({x:p.x+dir[0]*length,y:p.y+dir[1]*length});
+const lerp=(a,b,t)=>({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});
+const cubic=(a,c,d,b,t)=>{const u=1-t;
  return {x:u*u*u*a.x+3*u*u*t*c.x+3*u*t*t*d.x+t*t*t*b.x,y:u*u*u*a.y+3*u*u*t*c.y+3*u*t*t*d.y+t*t*t*b.y};
+};
+function portRoad(link,a,b){
+ const from=ROAD_PORTS[link.fromPort],to=ROAD_PORTS[link.toPort];
+ if(!from||!to)return null;
+ const length=Math.hypot(b.x-a.x,b.y-a.y);
+ const lead=Math.min(.034,length*.27);
+ const handle=Math.min(.13,Math.max(.013,length*.24))*(link.portBend??1);
+ const start=offsetPort(a,from,lead),end=offsetPort(b,to,lead);
+ return {start,end,c:offsetPort(start,from,handle),d:offsetPort(end,to,handle)};
+}
+export function mapRoadPoint(link,a,b,t){
+ const p=portRoad(link,a,b);
+ if(p){
+  if(t<.14)return lerp(a,p.start,t/.14);
+  if(t>.86)return lerp(p.end,b,(t-.86)/.14);
+  return cubic(p.start,p.c,p.d,p.end,(t-.14)/.72);
+ }
+ const controls=mapRoadControls(link,a,b);
+ return controls?cubic(a,...controls,b,t):lerp(a,b,t);
 }
 export function mapRoadPixels(point,b){return {x:b.x+point.x*b.w,y:b.y+point.y*Math.max(1,b.h-36)};}
 export function drawMapRoad(ctx,link,a,b,bounds){
  const start=mapRoadPixels(a,bounds),end=mapRoadPixels(b,bounds),controls=mapRoadControls(link,a,b);
  ctx.beginPath();ctx.moveTo(start.x,start.y);
- if(controls){const [c,d]=controls.map(p=>mapRoadPixels(p,bounds));ctx.bezierCurveTo(c.x,c.y,d.x,d.y,end.x,end.y);}else ctx.lineTo(end.x,end.y);
+ const p=portRoad(link,a,b);
+ if(p){
+  const [straight,c,d,turn]=[p.start,p.c,p.d,p.end].map(v=>mapRoadPixels(v,bounds));
+  ctx.lineTo(straight.x,straight.y);
+  ctx.bezierCurveTo(c.x,c.y,d.x,d.y,turn.x,turn.y);
+  ctx.lineTo(end.x,end.y);
+ }else if(controls){const [c,d]=controls.map(p=>mapRoadPixels(p,bounds));ctx.bezierCurveTo(c.x,c.y,d.x,d.y,end.x,end.y);}else ctx.lineTo(end.x,end.y);
 }
 export function mapRoadHit(link,a,b,point,bounds,tolerance=10){
  let previous=mapRoadPixels(a,bounds);
@@ -61,7 +87,13 @@ export function campaignRoadDirectionalNode(nodes,links,current,direction,pointF
  if(!current)return null;
  const axis={left:[-1,0],right:[1,0],up:[0,-1],down:[0,1]}[direction];
  if(!axis)return current;
- const from=pointFor(current),neighbors=campaignRoadNeighbors(nodes,links,current.id);
+ const neighbors=campaignRoadNeighbors(nodes,links,current.id);
+ const departing=path=>path[0]?.link?.[path[0]?.reverse?'toPort':'fromPort'];
+ // Port-map directions are authored, not guessed by a distant endpoint.
+ // An absent/locked port cannot fall through to another route in the same direction.
+ const usesPorts=links.some(l=>l.from===current.id&&l.fromPort||l.to===current.id&&l.toPort);
+ if(usesPorts)return nodes.find(n=>departing(neighbors.get(n.id)||[])===direction)||current;
+ const from=pointFor(current);
  let best=current,bestScore=Infinity;
  // Score in displayed pixels, not normalized map units; that also handles
  // portrait maps and endpoint positions clamped inside the viewport.

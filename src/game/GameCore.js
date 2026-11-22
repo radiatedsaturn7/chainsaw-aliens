@@ -7,6 +7,7 @@ import AudioMusicPlayer from '../audio/AudioMusicPlayer.js';
 import {isAudioMusic} from '../audio/MusicAsset.js';
 import {musicMediaVolume} from '../audio/musicVolume.js';
 import {setMenuProgress} from '../menus/MenuProgress.js';
+import {captureCampaignWorldReturn} from '../menus/CampaignWorldReveal.js';
 import {raceCompletionKey} from '../menus/MenuWorldMap.js';
 import { isSystemCarDocument } from '../racing/CarPresets.js';
 import {itemLibrary} from '../items/ItemLibrary.js';
@@ -1954,6 +1955,8 @@ export default class Game {
       travelSession.menuFlow = params.menuFlow || null;
       travelSession.menuConfiguration = structuredClone(params.menuConfiguration || {});
     }
+    travelSession.campaignWorldReturn=!this.menuPlayer?.preview&&params.menuFlow?.active
+      ? captureCampaignWorldReturn(params.menuFlow.document,raceName,this.menuPlayer?.resources,params.menuFlow.parameters) : null;
     this.raceEditor.beginRaceTravelLoading?.(raceName, car.id, {car:runtimeCar});
     this.transitionTo('race-editor', { forceCleanup: true });
     this.setRevAudio(false);
@@ -2177,12 +2180,16 @@ export default class Game {
     return true;
   }
 
-  async openMenuDestination({menuRef='',menuScreen='world-map',variables={}}={}) {
+  async openMenuDestination({menuRef='',menuScreen='world-map',variables={},campaignWorldReturn=null}={}) {
     await setMenuProgress(this,variables);
     const player=this.menuPlayer,session=this.raceTravelSession;
     const previous=player?.flow?.active?{...player.flow.parameters}:{};
     if(!menuRef&&player?.flow?.active&&player.flow.document.screens.some(s=>s.id===menuScreen)){
       this.raceTravelSession=null;this.raceEditorPlaytestReturn=false;this.playtestActive=false;
+      if(campaignWorldReturn){
+        player.flow.setParameter(campaignWorldReturn.binding,campaignWorldReturn.bossRef);
+        player.pendingCampaignWorldReveal=campaignWorldReturn.reveal;
+      }
       player.flow.busy=false;player.flow.history=[];player.flow.goTo(menuScreen,{remember:false});this.transitionTo('menu-player',{forceCleanup:true});return true;
     }
     let doc;
@@ -2225,6 +2232,10 @@ export default class Game {
     }
     const completedRef=raceDocumentName||raceId;
     const variables={...(completedRef?{[raceCompletionKey(completedRef)]:finishBehavior.mechanicalMissionSuccess!==false,lastCompletedRace:completedRef,garageReturnCount:Number(this.menuProgress?.garageReturnCount||0)+(finishBehavior.progressSaved?0:1),garageDialogueEvent:''}:{}),...finishBehavior.variables};
+    const campaignWorldReturn=finishBehavior.mechanicalMissionSuccess!==false
+      && session.menuFlow===this.menuPlayer?.flow&&session.menuFlow?.active
+      && session.campaignWorldReturn?.bossRef===completedRef ? session.campaignWorldReturn : null;
+    if(campaignWorldReturn)finishBehavior={...finishBehavior,type:'menu',menuRef:'',menuScreen:'world-map',campaignWorldReturn};
     if(finishBehavior.type==='menu'){
       // Keep the race presentation alive until progress and menu assets are ready.
       if(finishBehavior.cutsceneRef)return this.playRaceFinishCutscene({...finishBehavior,variables});

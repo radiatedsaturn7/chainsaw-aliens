@@ -7,10 +7,10 @@ export function worldMapNodes(element,resources,document,parameters){
  const travel=!!resources?.garage?.items?.progress?.unlocks?.['cheat.travel'];
  return nodes.map((node,i)=>{
   if(element.property==='campaign-path'){
-   const access=campaignRaceAccess(document?.parameters?.campaignProgression,node.raceRef,parameters,resources?.garage?.progress,resources?.garage?.items?.progress?.unlocks);
+   const access=campaignRaceAccess(document?.parameters?.campaignProgression,node.raceRef,parameters,resources?.garage?.progress,resources?.garage?.items?.progress?.unlocks,document);
    return {...node,locked:node.disabled===true||!access.allowed,completed:access.state?.cleared(node.raceRef)||false};
   }
-  const region=campaignRegionState(document?.parameters?.campaignProgression,node.raceRef,parameters,resources?.garage?.progress);
+  const region=campaignRegionState(document?.parameters?.campaignProgression,node.raceRef,parameters,resources?.garage?.progress,document);
   return {...node,x:node.x??(.14+i%4*.24),y:(element.mapManual||element.nodes?.length)?node.y:(Math.floor(i/4)+.5)/rows,
    locked:node.disabled===true||(!travel&&(region?!region.open:!!node.unlockParameter&&JSON.stringify(parameters[node.unlockParameter])!==JSON.stringify(node.unlockValue??true))),
    completed:region?region.won:!!parameters[node.completedParameter||raceCompletionKey(node.raceRef)]};
@@ -40,6 +40,8 @@ export function normalizeWorldMapConnections(connections){
  if(!Array.isArray(connections))return null;
  return connections.slice(0,300).map((c,i)=>({id:String(c.id||`link-${i+1}`),from:String(c.from||''),to:String(c.to||''),
   curve:c.curve==='bezier'?'bezier':'straight',
+  ...(['left','right','up','down'].includes(c.fromPort)&&['left','right','up','down'].includes(c.toPort)
+   ?{fromPort:c.fromPort,toPort:c.toPort,portBend:num(c.portBend,1,.35,1.35)}:{}),
   ...(c.control1?{control1:{x:num(c.control1.x,.5,0,1),y:num(c.control1.y,.5,0,1)}}:{}),
   ...(c.control2?{control2:{x:num(c.control2.x,.5,0,1),y:num(c.control2.y,.5,0,1)}}:{}),
   color:color(c.color,''),width:c.width==null?null:num(c.width,2,0,20),pattern:['solid','dashed','dotted'].includes(c.pattern)?c.pattern:''})).filter(c=>c.from&&c.to&&c.from!==c.to);

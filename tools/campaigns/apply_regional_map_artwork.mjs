@@ -1,6 +1,7 @@
 // Overlay the authored regional illustration and route geometry on the current
 // Game Menu. Run from repository root; unrelated screens and saves are retained.
 import fs from 'node:fs';
+import {authorCampaignTopology} from './author_campaign_road_topology.mjs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {campaignTravelOrder,CAMPAIGN_REGION_ART} from '../../src/menus/CampaignItinerary.js';
@@ -16,14 +17,6 @@ if(itinerary.length!==11)throw new Error('Expected 11 campaign regions');
 itinerary.sort((a,b)=>campaignTravelOrder(a.stage)-campaignTravelOrder(b.stage));
 
 const improvedOrder=new Set([1,2,3,4,7,11]);
-const shortcuts=new Set([1,4,5,7,9,10]);
-const clamp=n=>Math.max(.035,Math.min(.965,n));
-const round=n=>Number(clamp(n).toFixed(5));
-const controls=(a,b,twist)=>{
- const dx=b.x-a.x,dy=b.y-a.y;
- return {control1:{x:round(a.x+dx*.32-dy*twist),y:round(a.y+dy*.32+dx*twist)},
-         control2:{x:round(a.x+dx*.72-dy*twist),y:round(a.y+dy*.72+dx*twist)}};
-};
 for(const region of itinerary){
  const {stage,bossRef}=region,positions=gps[bossRef];
  const screen=menu.screens.find(s=>s.id===`campaign-hub-${stage}`);
@@ -46,24 +39,9 @@ for(const region of itinerary){
   if(!n||!p)throw new Error(`Missing matching race/node ${ref}`);
   return {...n,x:p.x,y:p.y,label:i===5?'Boss':i>5?'Detour':String(i+1)};
  });
- const nodes=new Map(widget.nodes.map(n=>[n.raceRef,n]));
- const roads=[];
- const add=(from,to,id,opts={},twist=0)=>{
-  const a=nodes.get(from),b=nodes.get(to);
-  if(!a||!b)throw new Error(`Bad road: ${from} / ${to}`);
-  roads.push({id,from:a.id,to:b.id,curve:'bezier',...controls(a,b,twist),...opts});
- };
- for(let i=1;i<=5;i++)add(refs[i-1],refs[i],`regional-road-${i}`,{},(i%2?1:-1)*.13);
- for(const [i,branch] of region.branches.entries())add(branch.after,branch.raceRef,`regional-detour-${i+1}`,{pattern:'dotted',color:'#a9d1c9',width:3},i?.17:-.17);
- // Dirt cut-throughs are travel-only alternatives. Neither end becomes
- // selectable early, and the boss still requires all five main-path clears.
- if(shortcuts.has(stage)) {
-  const options=[0,1,2].map(i=>({i,a:nodes.get(refs[i]),b:nodes.get(refs[i+2])}));
-  const best=options.sort((u,v)=>Math.hypot(u.a.x-u.b.x,u.a.y-u.b.y)-Math.hypot(v.a.x-v.b.x,v.a.y-v.b.y))[0];
-  add(refs[best.i],refs[best.i+2],'regional-dirt-cut',{pattern:'dashed',color:'#c68f64',width:3},.25);
- }
- widget.connections=roads;
+
 }
+authorCampaignTopology(menu);
 const world=menu.screens.find(s=>s.id==='world-map')?.elements.find(e=>e.type==='world-map');
 if(world?.nodes.length!==11)throw new Error('Unexpected world-map pin count');
 const byRef=new Map(world.nodes.map(n=>[n.raceRef,n]));

@@ -2,6 +2,7 @@ import {campaignCompletionMark,selectedCampaignPreview,drawCampaignRoutePreview}
 import {campaignRegionDialogue} from './CampaignRegionDialogue.js';
 import {raceRewardQuote} from '../garage/CampaignEconomy.js';
 import {loadingFact} from './MenuLoadingScreen.js';
+import {campaignWorldOverview} from './CampaignWorldReveal.js';
 import {drawWorldMap} from './MenuWorldMapRenderer.js';
 import {menuTypedText} from './MenuTypewriter.js';
 import {garageDialogueContext,garageDialogueText} from '../garage/GarageDialogue.js';
@@ -170,7 +171,7 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
       }
 
     }
-    else if(element.type==='world-map'){const mapBackground=element.artRef?resources?.art(element.artRef,Math.floor(time*8)):null;if(mapBackground){const mapBounds=element.property==='campaign-path'?{...b,h:Math.max(1,b.h-36)}:b;ctx.imageSmoothingEnabled=element.property!=='campaign-path';drawMenuImage(ctx,mapBackground,mapBounds,element.imageFit);}drawWorldMap(ctx,b,element,resources,document,parameters,value,{drawText,fontFamily,time,widgetStates,editing,mapBackground,drawCar:(bounds,angle)=>{
+    else if(element.type==='world-map'){const mapBackground=element.artRef?resources?.art(element.artRef,Math.floor(time*8)):null;if(mapBackground){const mapBounds=element.property==='campaign-path'?{...b,h:Math.max(1,b.h-36)}:b;ctx.imageSmoothingEnabled=element.property!=='campaign-path';drawMenuImage(ctx,mapBackground,mapBounds,element.imageFit);}drawWorldMap(ctx,b,element,resources,document,parameters,value,{drawText,fontFamily,time,widgetStates,editing,mapBackground,campaignOverview:campaignWorldOverview(screen,document)===element,drawCar:(bounds,angle)=>{
  const name=parameters.carRef||resources?.game?.menuProgress?.selectedGameCar;if(!name)return;
  if(carThumbnailNeedsFallback(name,angle))drawCarComponent(ctx,bounds,{type:'car-preview',showroomPreview:true,animation:'none',angle},resources?.stockCar?.(name),resources,time,parameters,fontFamily);
  else paintCarThumbnail(ctx,bounds,name,angle,undefined,undefined,true);

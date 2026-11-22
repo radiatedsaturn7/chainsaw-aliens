@@ -1,3 +1,4 @@
+import {campaignWorldOverview,campaignWorldRevealKey,WORLD_ROAD_REVEAL_SECONDS,WORLD_PIN_POP_SECONDS} from './CampaignWorldReveal.js';
 import {campaignRoadDirectionalNode,mapRoadRoute,queueCampaignRoadMove} from './MenuMapRoads.js';
 import {MotorsportMenu,installMotorsportNavigation} from './MotorsportMenu.js';
 import {raceIndexEntries,raceIndexScreen} from './RaceIndex.js';
@@ -298,10 +299,28 @@ export default class MenuPlayer {
       if(isCurrent()){this.finishEnterScreen();flow.error=`Menu artwork could not load: ${error.message}`;}
     });
   }
+  campaignWorldReveal(){
+    const overview=campaignWorldOverview(this.flow?.screen,this.flow?.document);
+    const key=overview&&campaignWorldRevealKey(overview.id);
+    const reveal=key&&this.widgetStates?.get(key);
+    return reveal?{key,overview,reveal}:null;
+  }
+  advanceCampaignWorldReveal(dt){
+    const active=this.campaignWorldReveal();
+    if(!active)return false;
+    const {key,overview,reveal}=active,previous=reveal.elapsed;
+    reveal.elapsed+=Math.max(0,dt||0);
+    if(previous<WORLD_ROAD_REVEAL_SECONDS&&reveal.elapsed>=WORLD_ROAD_REVEAL_SECONDS)
+      this.flow.setParameter(overview.binding,reveal.toRef);
+    if(reveal.elapsed>=WORLD_ROAD_REVEAL_SECONDS+WORLD_PIN_POP_SECONDS)this.widgetStates.delete(key);
+    return true; // no accidental repeat/confirm while the road is being shown
+  }
   finishEnterScreen(){
     this.pendingScreenEntry=false;this.flow.time=0;
+    const reveal=this.pendingCampaignWorldReveal;
+    this.pendingCampaignWorldReveal=null;
     this.cleanupScreen({keepMusic:true});this.widgetStates.clear();this.focus=0;this.message='';const flow=this.flow,screen=flow.screen,generation=this.mediaGeneration;
-    if(screen.id!=='race-index')refreshCampaignScreen(screen,flow.document.parameters.campaignProgression,flow.parameters,this.resources.garage?.progress,this.resources.garage?.items?.progress?.unlocks);
+    if(screen.id!=='race-index')refreshCampaignScreen(screen,flow.document.parameters.campaignProgression,flow.parameters,this.resources.garage?.progress,this.resources.garage?.items?.progress?.unlocks,flow.document);
     for(const e of screen.elements){if(['choice','car-showroom'].includes(e.type)&&e.binding){const choices=e.type==='car-showroom'?this.resources.choices('cars',flow.document,flow.parameters):e.source?this.resources.choices(e.source,flow.document,flow.parameters):e.options;if(choices.length&&!choices.some(o=>JSON.stringify(o.value)===JSON.stringify(flow.parameters[e.binding])))flow.setParameter(e.binding,choices[0].value);}
       if(e.type==='world-map'){const hub=e.property!=='campaign-path'&&flow.document.parameters.campaignEventHubs?.[flow.parameters[e.binding]];if(hub)flow.setParameter(e.binding,hub);const node=(e.property==='campaign-path'?campaignPathEntrySelection:worldMapSelection)(worldMapNodes(e,this.resources,flow.document,flow.parameters),flow.parameters[e.binding]);flow.setParameter(e.binding,node?.raceRef||'');}
       if(e.type==='car-showroom')this.widgetStates.set(e.id,{value:flow.parameters[e.binding],selectedAt:flow.time});
@@ -309,6 +328,14 @@ export default class MenuPlayer {
     }
     const tuner=screen.elements.find(e=>e.type==='garage-tuner');if(tuner){this.openTuner(flow.parameters[tuner.binding]);this.widgetStates.set(tuner.id,{tuner:this.tuner});}
     this.focus=Math.max(0,this.interactive().findIndex(e=>e.id===this.screenFocus.get(screen.id)));
+    const overview=campaignWorldOverview(screen,flow.document);
+    if(reveal&&overview){
+      const nodes=worldMapNodes(overview,this.resources,flow.document,flow.parameters);
+      if(nodes.some(n=>n.id===reveal.from&&!n.locked)&&nodes.some(n=>n.id===reveal.to&&!n.locked)){
+        this.widgetStates.set(campaignWorldRevealKey(overview.id),{...reveal});
+        this.focus=Math.max(0,this.interactive().indexOf(overview));
+      }
+    }
     this.garageDialogue.enter(screen,flow.parameters,this.dialogueContext());
     void this.screenMusic.enter(screen).catch(error=>{flow.error=error.message});
     if(this.tuner?.readyTask&&!this.tuner.ready){
@@ -539,6 +566,7 @@ export default class MenuPlayer {
       return;
     }
     if(this.pendingScreenEntry){this.prepareScreenEntry();return;}
+    if(this.advanceCampaignWorldReveal(dt))return;
     if(this.capturing)return;
     if(this.choicePopup){const popup=this.choicePopup;if(pressed('Escape')||pad('cancel')){this.choicePopup=null;return;}if(pressed('ArrowDown')||navigation==='down')popup.index=(popup.index+1)%popup.choices.length;if(pressed('ArrowUp')||navigation==='up')popup.index=(popup.index-1+popup.choices.length)%popup.choices.length;if(pressed('Space')||pressed('Enter')||pad('gamepadStart')||pad('jump'))this.choosePopupItem(popup.index);return;}
     if(this.tuner&&!this.movie&&!this.cutscene.active&&!flow.busy){
@@ -647,7 +675,7 @@ export default class MenuPlayer {
       this.surface.down(point);return;
     }
     if(!this.flow||!this.bounds)return;if(this.preview&&this.playPauseBounds&&menuHit(point,this.playPauseBounds)){this.flow.stop();return;}if(this.preview&&point.x>=(this.viewportBounds?.w||this.bounds.w)-130&&point.y<36){this.flow.stop();return;}
-    if(this.screenTransition.active||this.pendingScreenEntry)return;
+    if(this.screenTransition.active||this.pendingScreenEntry||this.campaignWorldReveal())return;
     if(!menuHit(point,this.bounds)&&this.surface.down(point))return;
     if(this.paused)return;
     if(this.choicePopup){const row=this.choiceRows?.find(row=>menuHit(point,row));if(row){if(row.page){this.choicePopup.index=Math.max(0,Math.min(this.choicePopup.choices.length-1,this.choicePopup.index+row.page));}else this.choosePopupItem(row.index);}else this.choicePopup=null;return;}
@@ -664,7 +692,7 @@ export default class MenuPlayer {
         const index=Number(e.id.slice('index-race-'.length));
         if(this.raceIndexState.index!==index){this.scrollRaceIndex(index-this.raceIndexState.index);return;}
       }
-      this.focus=this.interactive().indexOf(e);if(e.type==='code-entry'){const b=menuElementBounds(e,this.bounds,menuElementPose(e,this.flow.time));if(point.y>b.y+b.h*.75){this.widgetStates.set(e.id,{index:e.codeLength});void this.activate(e,1,{choose:true});return;}this.widgetStates.set(e.id,{index:Math.max(0,Math.min(e.codeLength-1,Math.floor((point.x-b.x)/b.w*e.codeLength)))});if(point.y<b.y+b.h*.24)this.cycleCode(e,1);else if(point.y>b.y+b.h*.48)this.cycleCode(e,-1);return;}if(e.type==='world-map'){const b=menuElementBounds(e,this.bounds,menuElementPose(e,this.flow.time)),nodes=worldMapRaceNodes(worldMapNodes(e,this.resources,this.flow.document,this.flow.parameters));const node=nodes.map(n=>{const p=worldMapNodePoint(n,b,e);return {node:n,distance:Math.hypot(point.x-p.x,point.y-p.y)}}).filter(n=>n.distance<Math.max(22,Math.min(b.w,b.h)*.07)).sort((a,b)=>a.distance-b.distance)[0]?.node;if(node&&!node.locked&&!node.disabled){const all=worldMapNodes(e,this.resources,this.flow.document,this.flow.parameters),current=worldMapSelection(all,this.flow.parameters[e.binding]);if(e.mapStyle?.cursor==='car'&&current&&!mapRoadRoute(all,worldMapConnections(e,all),current.id,node.id))return;const selected=this.flow.parameters[e.binding]===node.raceRef;if(!selected&&e.property==='campaign-path'){const car=this.widgetStates.get(`map-car:${e.id}`);if(car){delete car.campaignRoadMoves;delete car.campaignRoadBlocked;}}this.flow.setParameter(e.binding,node.raceRef);if(selected)void this.activate(e,1,{choose:true});}return;}if(['car-showroom','garage-browser'].includes(e.type)){this.pointerGarageWidget(e,point);return;}if(e.type==='slider'){this.slider={id:point.id,element:e};this.handlePointerMove(point);}else void this.activate(e,1,{choose:true});}else if(this.flow.screen.startAction)void this.flow.start();
+      this.focus=this.interactive().indexOf(e);if(e.type==='code-entry'){const b=menuElementBounds(e,this.bounds,menuElementPose(e,this.flow.time));if(point.y>b.y+b.h*.75){this.widgetStates.set(e.id,{index:e.codeLength});void this.activate(e,1,{choose:true});return;}this.widgetStates.set(e.id,{index:Math.max(0,Math.min(e.codeLength-1,Math.floor((point.x-b.x)/b.w*e.codeLength)))});if(point.y<b.y+b.h*.24)this.cycleCode(e,1);else if(point.y>b.y+b.h*.48)this.cycleCode(e,-1);return;}if(e.type==='world-map'){const b=menuElementBounds(e,this.bounds,menuElementPose(e,this.flow.time)),nodes=worldMapRaceNodes(worldMapNodes(e,this.resources,this.flow.document,this.flow.parameters));const overview=campaignWorldOverview(this.flow.screen,this.flow.document)===e;const node=nodes.filter(n=>!overview||!n.locked).map(n=>{const p=worldMapNodePoint(n,b,e);return {node:n,distance:Math.hypot(point.x-p.x,point.y-p.y)}}).filter(n=>n.distance<Math.max(22,Math.min(b.w,b.h)*.07)).sort((a,b)=>a.distance-b.distance)[0]?.node;if(node&&!node.locked&&!node.disabled){const all=worldMapNodes(e,this.resources,this.flow.document,this.flow.parameters),current=worldMapSelection(all,this.flow.parameters[e.binding]);if(e.mapStyle?.cursor==='car'&&current&&!mapRoadRoute(all,worldMapConnections(e,all),current.id,node.id))return;const selected=this.flow.parameters[e.binding]===node.raceRef;if(!selected&&e.property==='campaign-path'){const car=this.widgetStates.get(`map-car:${e.id}`);if(car){delete car.campaignRoadMoves;delete car.campaignRoadBlocked;}}this.flow.setParameter(e.binding,node.raceRef);if(selected)void this.activate(e,1,{choose:true});}return;}if(['car-showroom','garage-browser'].includes(e.type)){this.pointerGarageWidget(e,point);return;}if(e.type==='slider'){this.slider={id:point.id,element:e};this.handlePointerMove(point);}else void this.activate(e,1,{choose:true});}else if(this.flow.screen.startAction)void this.flow.start();
   }
   pointerGarageWidget(element,point){
     const b=menuElementBounds(element,this.bounds,menuElementPose(element,this.flow.time));
@@ -727,7 +755,7 @@ this.flow.setParameter(popup.element.binding,popup.choices[index].value);this.ch
     return new Promise((resolve,reject)=>{this.rejectMovie=reject;this.cutscene.play(payload.data,{onDone:()=>{this.rejectMovie=null;if(restoreScreen&&flow.active&&generation===flow.generation)this.enterScreen();resolve()},skippable:true})});
   }
   async resumeMovie(){try{await this.movie?.play();this.message=''}catch{this.message='Tap / press Space to play movie'}}
-  campaignAccess(ref){return campaignRaceAccess(this.flow?.document?.parameters?.campaignProgression,ref,this.flow?.parameters,this.resources?.garage?.progress,this.resources?.garage?.items?.progress?.unlocks);}
+  campaignAccess(ref){return campaignRaceAccess(this.flow?.document?.parameters?.campaignProgression,ref,this.flow?.parameters,this.resources?.garage?.progress,this.resources?.garage?.items?.progress?.unlocks,this.flow?.document);}
   async launchRace(ref,parameters){
     const access=this.campaignAccess(ref);if(!access.allowed)throw Error(access.reason);
     const flow=this.flow;

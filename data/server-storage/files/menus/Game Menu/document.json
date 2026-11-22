@@ -26944,125 +26944,69 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "regional-road-1",
+              "id": "road-1",
               "from": "stop-0",
               "to": "stop-2",
               "curve": "bezier",
-              "control1": {
-                "x": 0.6473,
-                "y": 0.32068
-              },
-              "control2": {
-                "x": 0.7525,
-                "y": 0.26807
-              }
+              "fromPort": "right",
+              "toPort": "left",
+              "portBend": 1
             },
             {
-              "id": "regional-road-2",
-              "from": "stop-2",
-              "to": "stop-1",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.73945,
-                "y": 0.38403
-              },
-              "control2": {
-                "x": 0.58328,
-                "y": 0.55431
-              }
-            },
-            {
-              "id": "regional-road-3",
-              "from": "stop-1",
-              "to": "stop-4",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.39409,
-                "y": 0.57858
-              },
-              "control2": {
-                "x": 0.34852,
-                "y": 0.5419
-              }
-            },
-            {
-              "id": "regional-road-4",
-              "from": "stop-4",
-              "to": "stop-3",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.28326,
-                "y": 0.66611
-              },
-              "control2": {
-                "x": 0.20138,
-                "y": 0.8017
-              }
-            },
-            {
-              "id": "regional-road-5",
-              "from": "stop-3",
-              "to": "stop-5",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.29017,
-                "y": 0.89616
-              },
-              "control2": {
-                "x": 0.50561,
-                "y": 0.84134
-              }
-            },
-            {
-              "id": "regional-detour-1",
-              "from": "stop-1",
-              "to": "stop-6",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.31024,
-                "y": 0.59562
-              },
-              "control2": {
-                "x": 0.21863,
-                "y": 0.51305
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
-            },
-            {
-              "id": "regional-detour-2",
-              "from": "stop-3",
-              "to": "stop-7",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.4869,
-                "y": 0.7596
-              },
-              "control2": {
-                "x": 0.8069,
-                "y": 0.4516
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
-            },
-            {
-              "id": "regional-dirt-cut",
+              "id": "road-2",
               "from": "stop-0",
               "to": "stop-1",
               "curve": "bezier",
-              "control1": {
-                "x": 0.43173,
-                "y": 0.39086
-              },
-              "control2": {
-                "x": 0.38076,
-                "y": 0.50852
-              },
-              "pattern": "dashed",
-              "color": "#c68f64",
-              "width": 3
+              "fromPort": "down",
+              "toPort": "up",
+              "portBend": 1
+            },
+            {
+              "id": "road-3",
+              "from": "stop-1",
+              "to": "stop-4",
+              "curve": "bezier",
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1
+            },
+            {
+              "id": "road-4",
+              "from": "stop-4",
+              "to": "stop-3",
+              "curve": "bezier",
+              "fromPort": "down",
+              "toPort": "up",
+              "portBend": 1
+            },
+            {
+              "id": "road-5",
+              "from": "stop-2",
+              "to": "stop-7",
+              "curve": "bezier",
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1,
+              "pattern": "dotted"
+            },
+            {
+              "id": "road-6",
+              "from": "stop-4",
+              "to": "stop-6",
+              "curve": "bezier",
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1,
+              "pattern": "dotted"
+            },
+            {
+              "id": "road-7",
+              "from": "stop-1",
+              "to": "stop-5",
+              "curve": "bezier",
+              "fromPort": "right",
+              "toPort": "left",
+              "portBend": 1
             }
           ],
           "mapStyle": {
@@ -31658,108 +31602,69 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "regional-road-1",
+              "id": "road-1",
               "from": "stop-3",
               "to": "stop-4",
               "curve": "bezier",
-              "control1": {
-                "x": 0.82075,
-                "y": 0.46567
-              },
-              "control2": {
-                "x": 0.69981,
-                "y": 0.41183
-              }
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1
             },
             {
-              "id": "regional-road-2",
+              "id": "road-2",
               "from": "stop-4",
               "to": "stop-2",
               "curve": "bezier",
-              "control1": {
-                "x": 0.60805,
-                "y": 0.52311
-              },
-              "control2": {
-                "x": 0.57141,
-                "y": 0.64531
-              }
+              "fromPort": "down",
+              "toPort": "up",
+              "portBend": 1
             },
             {
-              "id": "regional-road-3",
+              "id": "road-3",
               "from": "stop-2",
               "to": "stop-0",
               "curve": "bezier",
-              "control1": {
-                "x": 0.47203,
-                "y": 0.67436
-              },
-              "control2": {
-                "x": 0.41611,
-                "y": 0.64136
-              }
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1
             },
             {
-              "id": "regional-road-4",
+              "id": "road-4",
               "from": "stop-0",
               "to": "stop-1",
               "curve": "bezier",
-              "control1": {
-                "x": 0.27416,
-                "y": 0.51658
-              },
-              "control2": {
-                "x": 0.22761,
-                "y": 0.34786
-              }
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1
             },
             {
-              "id": "regional-road-5",
+              "id": "road-5",
               "from": "stop-1",
-              "to": "stop-5",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.37559,
-                "y": 0.30367
-              },
-              "control2": {
-                "x": 0.54931,
-                "y": 0.3444
-              }
-            },
-            {
-              "id": "regional-detour-1",
-              "from": "stop-1",
-              "to": "stop-6",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.52739,
-                "y": 0.3361
-              },
-              "control2": {
-                "x": 0.73503,
-                "y": 0.59825
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
-            },
-            {
-              "id": "regional-detour-2",
-              "from": "stop-3",
               "to": "stop-7",
               "curve": "bezier",
-              "control1": {
-                "x": 0.72017,
-                "y": 0.26867
-              },
-              "control2": {
-                "x": 0.40017,
-                "y": 0.08945
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1,
+              "pattern": "dotted"
+            },
+            {
+              "id": "road-6",
+              "from": "stop-3",
+              "to": "stop-6",
+              "curve": "bezier",
+              "fromPort": "down",
+              "toPort": "up",
+              "portBend": 1,
+              "pattern": "dotted"
+            },
+            {
+              "id": "road-7",
+              "from": "stop-4",
+              "to": "stop-5",
+              "curve": "bezier",
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1
             }
           ],
           "mapStyle": {
@@ -35476,108 +35381,69 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "regional-road-1",
+              "id": "road-1",
               "from": "stop-0",
-              "to": "stop-2",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.82635,
-                "y": 0.64953
-              },
-              "control2": {
-                "x": 0.74675,
-                "y": 0.40629
-              }
-            },
-            {
-              "id": "regional-road-2",
-              "from": "stop-2",
-              "to": "stop-4",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.59434,
-                "y": 0.30727
-              },
-              "control2": {
-                "x": 0.55565,
-                "y": 0.34828
-              }
-            },
-            {
-              "id": "regional-road-3",
-              "from": "stop-4",
-              "to": "stop-1",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.47184,
-                "y": 0.38137
-              },
-              "control2": {
-                "x": 0.43268,
-                "y": 0.41849
-              }
-            },
-            {
-              "id": "regional-road-4",
-              "from": "stop-1",
               "to": "stop-3",
               "curve": "bezier",
-              "control1": {
-                "x": 0.39729,
-                "y": 0.58379
-              },
-              "control2": {
-                "x": 0.32061,
-                "y": 0.71087
-              }
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1
             },
             {
-              "id": "regional-road-5",
+              "id": "road-2",
               "from": "stop-3",
-              "to": "stop-5",
+              "to": "stop-1",
               "curve": "bezier",
-              "control1": {
-                "x": 0.26836,
-                "y": 0.75787
-              },
-              "control2": {
-                "x": 0.30678,
-                "y": 0.72095
-              }
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1
             },
             {
-              "id": "regional-detour-1",
+              "id": "road-3",
               "from": "stop-1",
-              "to": "stop-6",
+              "to": "stop-4",
               "curve": "bezier",
-              "control1": {
-                "x": 0.25506,
-                "y": 0.39684
-              },
-              "control2": {
-                "x": 0.12813,
-                "y": 0.25396
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
+              "fromPort": "right",
+              "toPort": "left",
+              "portBend": 1
             },
             {
-              "id": "regional-detour-2",
-              "from": "stop-3",
+              "id": "road-4",
+              "from": "stop-4",
+              "to": "stop-2",
+              "curve": "bezier",
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1
+            },
+            {
+              "id": "road-5",
+              "from": "stop-0",
               "to": "stop-7",
               "curve": "bezier",
-              "control1": {
-                "x": 0.47662,
-                "y": 0.82332
-              },
-              "control2": {
-                "x": 0.74636,
-                "y": 0.74053
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1,
+              "pattern": "dotted"
+            },
+            {
+              "id": "road-6",
+              "from": "stop-2",
+              "to": "stop-6",
+              "curve": "bezier",
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1,
+              "pattern": "dotted"
+            },
+            {
+              "id": "road-7",
+              "from": "stop-4",
+              "to": "stop-5",
+              "curve": "bezier",
+              "fromPort": "down",
+              "toPort": "right",
+              "portBend": 1
             }
           ],
           "mapStyle": {
@@ -41717,125 +41583,69 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "regional-road-1",
+              "id": "road-1",
               "from": "stop-3",
               "to": "stop-2",
               "curve": "bezier",
-              "control1": {
-                "x": 0.85865,
-                "y": 0.2755
-              },
-              "control2": {
-                "x": 0.8231,
-                "y": 0.31521
-              }
+              "fromPort": "down",
+              "toPort": "up",
+              "portBend": 1
             },
             {
-              "id": "regional-road-2",
+              "id": "road-2",
               "from": "stop-2",
-              "to": "stop-0",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.74263,
-                "y": 0.48107
-              },
-              "control2": {
-                "x": 0.614,
-                "y": 0.58694
-              }
-            },
-            {
-              "id": "regional-road-3",
-              "from": "stop-0",
               "to": "stop-1",
               "curve": "bezier",
-              "control1": {
-                "x": 0.4771,
-                "y": 0.55149
-              },
-              "control2": {
-                "x": 0.43419,
-                "y": 0.48421
-              }
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1
             },
             {
-              "id": "regional-road-4",
+              "id": "road-3",
               "from": "stop-1",
               "to": "stop-4",
               "curve": "bezier",
-              "control1": {
-                "x": 0.37568,
-                "y": 0.49563
-              },
-              "control2": {
-                "x": 0.34916,
-                "y": 0.54057
-              }
+              "fromPort": "down",
+              "toPort": "up",
+              "portBend": 1
             },
             {
-              "id": "regional-road-5",
+              "id": "road-4",
               "from": "stop-4",
-              "to": "stop-5",
+              "to": "stop-0",
               "curve": "bezier",
-              "control1": {
-                "x": 0.44438,
-                "y": 0.59677
-              },
-              "control2": {
-                "x": 0.59667,
-                "y": 0.57659
-              }
+              "fromPort": "right",
+              "toPort": "left",
+              "portBend": 1
             },
             {
-              "id": "regional-detour-1",
+              "id": "road-5",
+              "from": "stop-0",
+              "to": "stop-7",
+              "curve": "bezier",
+              "fromPort": "down",
+              "toPort": "up",
+              "portBend": 1,
+              "pattern": "dotted"
+            },
+            {
+              "id": "road-6",
               "from": "stop-1",
               "to": "stop-6",
               "curve": "bezier",
-              "control1": {
-                "x": 0.23227,
-                "y": 0.38671
-              },
-              "control2": {
-                "x": 0.11936,
-                "y": 0.24629
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1,
+              "pattern": "dotted"
             },
             {
-              "id": "regional-detour-2",
-              "from": "stop-3",
-              "to": "stop-7",
+              "id": "road-7",
+              "from": "stop-2",
+              "to": "stop-5",
               "curve": "bezier",
-              "control1": {
-                "x": 0.6831,
-                "y": 0.39228
-              },
-              "control2": {
-                "x": 0.5426,
-                "y": 0.63817
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
-            },
-            {
-              "id": "regional-dirt-cut",
-              "from": "stop-0",
-              "to": "stop-4",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.44798,
-                "y": 0.558
-              },
-              "control2": {
-                "x": 0.37855,
-                "y": 0.53566
-              },
-              "pattern": "dashed",
-              "color": "#c68f64",
-              "width": 3
+              "fromPort": "down",
+              "toPort": "up",
+              "portBend": 1
             }
           ],
           "mapStyle": {
@@ -49820,125 +49630,69 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "regional-road-1",
+              "id": "road-1",
               "from": "stop-0",
-              "to": "stop-1",
+              "to": "stop-3",
               "curve": "bezier",
-              "control1": {
-                "x": 0.40706,
-                "y": 0.36324
-              },
-              "control2": {
-                "x": 0.44194,
-                "y": 0.49944
-              }
+              "fromPort": "right",
+              "toPort": "left",
+              "portBend": 1
             },
             {
-              "id": "regional-road-2",
+              "id": "road-2",
+              "from": "stop-3",
+              "to": "stop-1",
+              "curve": "bezier",
+              "fromPort": "down",
+              "toPort": "right",
+              "portBend": 1
+            },
+            {
+              "id": "road-3",
               "from": "stop-1",
               "to": "stop-2",
               "curve": "bezier",
-              "control1": {
-                "x": 0.64741,
-                "y": 0.56281
-              },
-              "control2": {
-                "x": 0.80316,
-                "y": 0.60029
-              }
+              "fromPort": "down",
+              "toPort": "left",
+              "portBend": 1
             },
             {
-              "id": "regional-road-3",
-              "from": "stop-2",
-              "to": "stop-3",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.87343,
-                "y": 0.55439
-              },
-              "control2": {
-                "x": 0.79141,
-                "y": 0.43425
-              }
-            },
-            {
-              "id": "regional-road-4",
-              "from": "stop-3",
+              "id": "road-4",
+              "from": "stop-1",
               "to": "stop-4",
               "curve": "bezier",
-              "control1": {
-                "x": 0.56868,
-                "y": 0.61198
-              },
-              "control2": {
-                "x": 0.3307,
-                "y": 0.80925
-              }
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1
             },
             {
-              "id": "regional-road-5",
-              "from": "stop-4",
-              "to": "stop-5",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.31439,
-                "y": 0.81094
-              },
-              "control2": {
-                "x": 0.51866,
-                "y": 0.65413
-              }
-            },
-            {
-              "id": "regional-detour-1",
-              "from": "stop-1",
-              "to": "stop-6",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.3289,
-                "y": 0.48162
-              },
-              "control2": {
-                "x": 0.20448,
-                "y": 0.28824
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
-            },
-            {
-              "id": "regional-detour-2",
-              "from": "stop-3",
+              "id": "road-5",
+              "from": "stop-2",
               "to": "stop-7",
               "curve": "bezier",
-              "control1": {
-                "x": 0.71338,
-                "y": 0.42811
-              },
-              "control2": {
-                "x": 0.75792,
-                "y": 0.46858
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1,
+              "pattern": "dotted"
             },
             {
-              "id": "regional-dirt-cut",
-              "from": "stop-1",
-              "to": "stop-3",
+              "id": "road-6",
+              "from": "stop-0",
+              "to": "stop-6",
               "curve": "bezier",
-              "control1": {
-                "x": 0.62127,
-                "y": 0.5634
-              },
-              "control2": {
-                "x": 0.695,
-                "y": 0.48075
-              },
-              "pattern": "dashed",
-              "color": "#c68f64",
-              "width": 3
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1,
+              "pattern": "dotted"
+            },
+            {
+              "id": "road-7",
+              "from": "stop-1",
+              "to": "stop-5",
+              "curve": "bezier",
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1
             }
           ],
           "mapStyle": {
@@ -57345,108 +57099,69 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "regional-road-1",
+              "id": "road-1",
               "from": "stop-0",
               "to": "stop-1",
               "curve": "bezier",
-              "control1": {
-                "x": 0.164,
-                "y": 0.4909
-              },
-              "control2": {
-                "x": 0.09569,
-                "y": 0.65127
-              }
+              "fromPort": "down",
+              "toPort": "up",
+              "portBend": 1
             },
             {
-              "id": "regional-road-2",
+              "id": "road-2",
               "from": "stop-1",
-              "to": "stop-2",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.25433,
-                "y": 0.67138
-              },
-              "control2": {
-                "x": 0.46975,
-                "y": 0.61597
-              }
-            },
-            {
-              "id": "regional-road-3",
-              "from": "stop-2",
-              "to": "stop-3",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.60238,
-                "y": 0.65114
-              },
-              "control2": {
-                "x": 0.56529,
-                "y": 0.67114
-              }
-            },
-            {
-              "id": "regional-road-4",
-              "from": "stop-3",
               "to": "stop-4",
               "curve": "bezier",
-              "control1": {
-                "x": 0.53948,
-                "y": 0.76419
-              },
-              "control2": {
-                "x": 0.50348,
-                "y": 0.83332
-              }
+              "fromPort": "right",
+              "toPort": "left",
+              "portBend": 1
             },
             {
-              "id": "regional-road-5",
+              "id": "road-3",
               "from": "stop-4",
-              "to": "stop-5",
+              "to": "stop-3",
               "curve": "bezier",
-              "control1": {
-                "x": 0.47181,
-                "y": 0.76425
-              },
-              "control2": {
-                "x": 0.44287,
-                "y": 0.64382
-              }
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1
             },
             {
-              "id": "regional-detour-1",
-              "from": "stop-1",
-              "to": "stop-6",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.23943,
-                "y": 0.43029
-              },
-              "control2": {
-                "x": 0.55943,
-                "y": 0.156
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
-            },
-            {
-              "id": "regional-detour-2",
+              "id": "road-4",
               "from": "stop-3",
+              "to": "stop-2",
+              "curve": "bezier",
+              "fromPort": "right",
+              "toPort": "left",
+              "portBend": 1
+            },
+            {
+              "id": "road-5",
+              "from": "stop-2",
               "to": "stop-7",
               "curve": "bezier",
-              "control1": {
-                "x": 0.567,
-                "y": 0.72896
-              },
-              "control2": {
-                "x": 0.60409,
-                "y": 0.74896
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
+              "fromPort": "down",
+              "toPort": "up",
+              "portBend": 1,
+              "pattern": "dotted"
+            },
+            {
+              "id": "road-6",
+              "from": "stop-0",
+              "to": "stop-6",
+              "curve": "bezier",
+              "fromPort": "right",
+              "toPort": "left",
+              "portBend": 1,
+              "pattern": "dotted"
+            },
+            {
+              "id": "road-7",
+              "from": "stop-3",
+              "to": "stop-5",
+              "curve": "bezier",
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1
             }
           ],
           "mapStyle": {
@@ -65906,125 +65621,69 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "regional-road-1",
+              "id": "road-1",
               "from": "stop-0",
               "to": "stop-1",
               "curve": "bezier",
-              "control1": {
-                "x": 0.65519,
-                "y": 0.26529
-              },
-              "control2": {
-                "x": 0.55262,
-                "y": 0.36486
-              }
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1
             },
             {
-              "id": "regional-road-2",
+              "id": "road-2",
               "from": "stop-1",
-              "to": "stop-3",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.52125,
-                "y": 0.61453
-              },
-              "control2": {
-                "x": 0.466,
-                "y": 0.77537
-              }
-            },
-            {
-              "id": "regional-road-3",
-              "from": "stop-3",
               "to": "stop-2",
               "curve": "bezier",
-              "control1": {
-                "x": 0.37986,
-                "y": 0.78243
-              },
-              "control2": {
-                "x": 0.34685,
-                "y": 0.68637
-              }
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1
             },
             {
-              "id": "regional-road-4",
+              "id": "road-3",
               "from": "stop-2",
               "to": "stop-4",
               "curve": "bezier",
-              "control1": {
-                "x": 0.24359,
-                "y": 0.68609
-              },
-              "control2": {
-                "x": 0.16658,
-                "y": 0.72509
-              }
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1
             },
             {
-              "id": "regional-road-5",
+              "id": "road-4",
               "from": "stop-4",
-              "to": "stop-5",
+              "to": "stop-3",
               "curve": "bezier",
-              "control1": {
-                "x": 0.28816,
-                "y": 0.73727
-              },
-              "control2": {
-                "x": 0.49436,
-                "y": 0.66587
-              }
+              "fromPort": "down",
+              "toPort": "left",
+              "portBend": 1
             },
             {
-              "id": "regional-detour-1",
-              "from": "stop-1",
+              "id": "road-5",
+              "from": "stop-0",
               "to": "stop-6",
               "curve": "bezier",
-              "control1": {
-                "x": 0.57442,
-                "y": 0.28441
-              },
-              "control2": {
-                "x": 0.72915,
-                "y": 0.13725
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
+              "fromPort": "right",
+              "toPort": "left",
+              "portBend": 1,
+              "pattern": "dotted"
             },
             {
-              "id": "regional-detour-2",
-              "from": "stop-3",
+              "id": "road-6",
+              "from": "stop-2",
               "to": "stop-7",
               "curve": "bezier",
-              "control1": {
-                "x": 0.39976,
-                "y": 0.67814
-              },
-              "control2": {
-                "x": 0.32448,
-                "y": 0.47829
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1,
+              "pattern": "dotted"
             },
             {
-              "id": "regional-dirt-cut",
+              "id": "road-7",
               "from": "stop-1",
-              "to": "stop-2",
+              "to": "stop-5",
               "curve": "bezier",
-              "control1": {
-                "x": 0.40208,
-                "y": 0.46456
-              },
-              "control2": {
-                "x": 0.31382,
-                "y": 0.52935
-              },
-              "pattern": "dashed",
-              "color": "#c68f64",
-              "width": 3
+              "fromPort": "down",
+              "toPort": "left",
+              "portBend": 1
             }
           ],
           "mapStyle": {
@@ -69642,108 +69301,69 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "regional-road-1",
+              "id": "road-1",
+              "from": "stop-0",
+              "to": "stop-2",
+              "curve": "bezier",
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1
+            },
+            {
+              "id": "road-2",
               "from": "stop-0",
               "to": "stop-1",
               "curve": "bezier",
-              "control1": {
-                "x": 0.51802,
-                "y": 0.56101
-              },
-              "control2": {
-                "x": 0.48212,
-                "y": 0.6687
-              }
+              "fromPort": "down",
+              "toPort": "up",
+              "portBend": 1
             },
             {
-              "id": "regional-road-2",
+              "id": "road-3",
               "from": "stop-1",
-              "to": "stop-2",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.41179,
-                "y": 0.65451
-              },
-              "control2": {
-                "x": 0.36986,
-                "y": 0.51094
-              }
-            },
-            {
-              "id": "regional-road-3",
-              "from": "stop-2",
               "to": "stop-3",
               "curve": "bezier",
-              "control1": {
-                "x": 0.26197,
-                "y": 0.52235
-              },
-              "control2": {
-                "x": 0.18236,
-                "y": 0.71163
-              }
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1
             },
             {
-              "id": "regional-road-4",
+              "id": "road-4",
               "from": "stop-3",
               "to": "stop-4",
               "curve": "bezier",
-              "control1": {
-                "x": 0.13311,
-                "y": 0.81543
-              },
-              "control2": {
-                "x": 0.09786,
-                "y": 0.73289
-              }
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1
             },
             {
-              "id": "regional-road-5",
+              "id": "road-5",
+              "from": "stop-2",
+              "to": "stop-6",
+              "curve": "bezier",
+              "fromPort": "up",
+              "toPort": "left",
+              "portBend": 1,
+              "pattern": "dotted"
+            },
+            {
+              "id": "road-6",
+              "from": "stop-6",
+              "to": "stop-7",
+              "curve": "bezier",
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1,
+              "pattern": "dotted"
+            },
+            {
+              "id": "road-7",
               "from": "stop-4",
               "to": "stop-5",
               "curve": "bezier",
-              "control1": {
-                "x": 0.17209,
-                "y": 0.6594
-              },
-              "control2": {
-                "x": 0.24759,
-                "y": 0.62341
-              }
-            },
-            {
-              "id": "regional-detour-1",
-              "from": "stop-1",
-              "to": "stop-6",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.49867,
-                "y": 0.52039
-              },
-              "control2": {
-                "x": 0.62706,
-                "y": 0.29441
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
-            },
-            {
-              "id": "regional-detour-2",
-              "from": "stop-3",
-              "to": "stop-7",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.54684,
-                "y": 0.74462
-              },
-              "control2": {
-                "x": 0.83158,
-                "y": 0.43662
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
+              "fromPort": "right",
+              "toPort": "left",
+              "portBend": 1
             }
           ],
           "mapStyle": {
@@ -75594,125 +75214,69 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "regional-road-1",
+              "id": "road-1",
+              "from": "stop-0",
+              "to": "stop-3",
+              "curve": "bezier",
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1
+            },
+            {
+              "id": "road-2",
               "from": "stop-0",
               "to": "stop-1",
               "curve": "bezier",
-              "control1": {
-                "x": 0.66351,
-                "y": 0.70494
-              },
-              "control2": {
-                "x": 0.71437,
-                "y": 0.60125
-              }
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1
             },
             {
-              "id": "regional-road-2",
+              "id": "road-3",
               "from": "stop-1",
               "to": "stop-2",
               "curve": "bezier",
-              "control1": {
-                "x": 0.75435,
-                "y": 0.43724
-              },
-              "control2": {
-                "x": 0.82784,
-                "y": 0.3735
-              }
+              "fromPort": "right",
+              "toPort": "left",
+              "portBend": 1
             },
             {
-              "id": "regional-road-3",
-              "from": "stop-2",
-              "to": "stop-3",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.70007,
-                "y": 0.3902
-              },
-              "control2": {
-                "x": 0.50188,
-                "y": 0.51752
-              }
-            },
-            {
-              "id": "regional-road-4",
+              "id": "road-4",
               "from": "stop-3",
               "to": "stop-4",
               "curve": "bezier",
-              "control1": {
-                "x": 0.24928,
-                "y": 0.56838
-              },
-              "control2": {
-                "x": 0.12747,
-                "y": 0.39056
-              }
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1
             },
             {
-              "id": "regional-road-5",
-              "from": "stop-4",
-              "to": "stop-5",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.18168,
-                "y": 0.39478
-              },
-              "control2": {
-                "x": 0.34266,
-                "y": 0.53973
-              }
-            },
-            {
-              "id": "regional-detour-1",
-              "from": "stop-1",
+              "id": "road-5",
+              "from": "stop-2",
               "to": "stop-6",
               "curve": "bezier",
-              "control1": {
-                "x": 0.67388,
-                "y": 0.36555
-              },
-              "control2": {
-                "x": 0.70846,
-                "y": 0.2007
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1,
+              "pattern": "dotted"
             },
             {
-              "id": "regional-detour-2",
+              "id": "road-6",
               "from": "stop-3",
               "to": "stop-7",
               "curve": "bezier",
-              "control1": {
-                "x": 0.34538,
-                "y": 0.72127
-              },
-              "control2": {
-                "x": 0.31374,
-                "y": 0.80085
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
+              "fromPort": "down",
+              "toPort": "up",
+              "portBend": 1,
+              "pattern": "dotted"
             },
             {
-              "id": "regional-dirt-cut",
+              "id": "road-7",
               "from": "stop-1",
-              "to": "stop-3",
+              "to": "stop-5",
               "curve": "bezier",
-              "control1": {
-                "x": 0.57678,
-                "y": 0.48505
-              },
-              "control2": {
-                "x": 0.45208,
-                "y": 0.54862
-              },
-              "pattern": "dashed",
-              "color": "#c68f64",
-              "width": 3
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1
             }
           ],
           "mapStyle": {
@@ -80110,125 +79674,69 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "regional-road-1",
+              "id": "road-1",
               "from": "stop-0",
-              "to": "stop-1",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.71995,
-                "y": 0.42605
-              },
-              "control2": {
-                "x": 0.61159,
-                "y": 0.36523
-              }
-            },
-            {
-              "id": "regional-road-2",
-              "from": "stop-1",
               "to": "stop-2",
               "curve": "bezier",
-              "control1": {
-                "x": 0.5669,
-                "y": 0.37487
-              },
-              "control2": {
-                "x": 0.61413,
-                "y": 0.41531
-              }
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1
             },
             {
-              "id": "regional-road-3",
+              "id": "road-2",
               "from": "stop-2",
+              "to": "stop-1",
+              "curve": "bezier",
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1
+            },
+            {
+              "id": "road-3",
+              "from": "stop-0",
               "to": "stop-3",
               "curve": "bezier",
-              "control1": {
-                "x": 0.72663,
-                "y": 0.47512
-              },
-              "control2": {
-                "x": 0.83301,
-                "y": 0.45211
-              }
+              "fromPort": "right",
+              "toPort": "left",
+              "portBend": 1
             },
             {
-              "id": "regional-road-4",
-              "from": "stop-3",
+              "id": "road-4",
+              "from": "stop-1",
               "to": "stop-4",
               "curve": "bezier",
-              "control1": {
-                "x": 0.74581,
-                "y": 0.53964
-              },
-              "control2": {
-                "x": 0.52013,
-                "y": 0.62073
-              }
+              "fromPort": "down",
+              "toPort": "up",
+              "portBend": 1
             },
             {
-              "id": "regional-road-5",
+              "id": "road-5",
               "from": "stop-4",
-              "to": "stop-5",
+              "to": "stop-7",
               "curve": "bezier",
-              "control1": {
-                "x": 0.54383,
-                "y": 0.56384
-              },
-              "control2": {
-                "x": 0.74946,
-                "y": 0.42992
-              }
+              "fromPort": "right",
+              "toPort": "left",
+              "portBend": 1,
+              "pattern": "dotted"
             },
             {
-              "id": "regional-detour-1",
+              "id": "road-6",
               "from": "stop-1",
               "to": "stop-6",
               "curve": "bezier",
-              "control1": {
-                "x": 0.33903,
-                "y": 0.34607
-              },
-              "control2": {
-                "x": 0.17264,
-                "y": 0.24292
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1,
+              "pattern": "dotted"
             },
             {
-              "id": "regional-detour-2",
+              "id": "road-7",
               "from": "stop-3",
-              "to": "stop-7",
+              "to": "stop-5",
               "curve": "bezier",
-              "control1": {
-                "x": 0.74774,
-                "y": 0.51279
-              },
-              "control2": {
-                "x": 0.65699,
-                "y": 0.70023
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
-            },
-            {
-              "id": "regional-dirt-cut",
-              "from": "stop-0",
-              "to": "stop-2",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.75071,
-                "y": 0.45541
-              },
-              "control2": {
-                "x": 0.68958,
-                "y": 0.43503
-              },
-              "pattern": "dashed",
-              "color": "#c68f64",
-              "width": 3
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1
             }
           ],
           "mapStyle": {
@@ -83945,108 +83453,69 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "regional-road-1",
+              "id": "road-1",
               "from": "stop-4",
               "to": "stop-3",
               "curve": "bezier",
-              "control1": {
-                "x": 0.85876,
-                "y": 0.61139
-              },
-              "control2": {
-                "x": 0.82473,
-                "y": 0.65452
-              }
+              "fromPort": "down",
+              "toPort": "up",
+              "portBend": 1
             },
             {
-              "id": "regional-road-2",
+              "id": "road-2",
               "from": "stop-3",
-              "to": "stop-0",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.68329,
-                "y": 0.8142
-              },
-              "control2": {
-                "x": 0.49043,
-                "y": 0.88389
-              }
-            },
-            {
-              "id": "regional-road-3",
-              "from": "stop-0",
               "to": "stop-1",
               "curve": "bezier",
-              "control1": {
-                "x": 0.41016,
-                "y": 0.74819
-              },
-              "control2": {
-                "x": 0.44008,
-                "y": 0.58377
-              }
+              "fromPort": "left",
+              "toPort": "right",
+              "portBend": 1
             },
             {
-              "id": "regional-road-4",
+              "id": "road-3",
+              "from": "stop-1",
+              "to": "stop-0",
+              "curve": "bezier",
+              "fromPort": "down",
+              "toPort": "up",
+              "portBend": 1
+            },
+            {
+              "id": "road-4",
               "from": "stop-1",
               "to": "stop-2",
               "curve": "bezier",
-              "control1": {
-                "x": 0.29275,
-                "y": 0.36619
-              },
-              "control2": {
-                "x": 0.20997,
-                "y": 0.21661
-              }
+              "fromPort": "up",
+              "toPort": "down",
+              "portBend": 1
             },
             {
-              "id": "regional-road-5",
+              "id": "road-5",
+              "from": "stop-2",
+              "to": "stop-6",
+              "curve": "bezier",
+              "fromPort": "right",
+              "toPort": "left",
+              "portBend": 1,
+              "pattern": "dotted"
+            },
+            {
+              "id": "road-6",
+              "from": "stop-2",
+              "to": "stop-7",
+              "curve": "bezier",
+              "fromPort": "left",
+              "toPort": "up",
+              "portBend": 1,
+              "pattern": "dotted"
+            },
+            {
+              "id": "road-7",
               "from": "stop-2",
               "to": "stop-5",
               "curve": "bezier",
-              "control1": {
-                "x": 0.29264,
-                "y": 0.26179
-              },
-              "control2": {
-                "x": 0.4684,
-                "y": 0.41137
-              }
-            },
-            {
-              "id": "regional-detour-1",
-              "from": "stop-1",
-              "to": "stop-6",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.32554,
-                "y": 0.37167
-              },
-              "control2": {
-                "x": 0.29076,
-                "y": 0.24409
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
-            },
-            {
-              "id": "regional-detour-2",
-              "from": "stop-3",
-              "to": "stop-7",
-              "curve": "bezier",
-              "control1": {
-                "x": 0.64318,
-                "y": 0.46688
-              },
-              "control2": {
-                "x": 0.3572,
-                "y": 0.33271
-              },
-              "pattern": "dotted",
-              "color": "#a9d1c9",
-              "width": 3
+              "fromPort": "up",
+              "toPort": "up",
+              "portBend": 1
             }
           ],
           "mapStyle": {
