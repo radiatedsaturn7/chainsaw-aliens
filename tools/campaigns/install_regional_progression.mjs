@@ -29,7 +29,7 @@ menu.screens=menu.screens.filter(s=>!s.id.startsWith('campaign-hub-')).concat(sc
 Object.assign(menu.parameters,{campaignOpeningRace:'Tower Hill Road',campaignHubs:hubs,campaignSideGates:sideGates,campaignProgression:progression,
  campaignEventHubs:Object.fromEntries(events.filter(e=>e.status==='installed'&&e.raceRef!==PROVIDENCE_BOSS).map(e=>[e.raceRef,e.hubRaceRef]))});
 if(menu.parameters.raceRef==='Tower Hill Road')menu.parameters.raceRef=PROVIDENCE_BOSS;
-const map=createAmericaWorldMap(catalog);for(const screen of menu.screens)for(const e of screen.elements)if(e.type==='world-map')Object.assign(e,map);
+const map=createAmericaWorldMap(catalog);for(const screen of menu.screens)for(const e of screen.elements)if(e.type==='world-map'&&e.property!=='campaign-path')Object.assign(e,map);
 configureCampaignRegionMap(menu);attachCampaignRoutePreviews(menu);write(menuPath,menu);write(menuPath.replace(/document.json$/,'metadata.json'),{...read(menuPath.replace(/document.json$/,'metadata.json')),savedAt:Date.now()});
 write(base+'catalog.json',catalog);write(base+'side-races/catalog.json',sides);write(base+'raceways/catalog.json',extra);
 console.log(progression.regions.map(r=>({boss:r.bossRef,events:r.events.length,first:r.events.slice(0,4),required:r.bossClears})));

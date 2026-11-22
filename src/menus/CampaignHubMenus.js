@@ -1,3 +1,4 @@
+import {authorCampaignPath,campaignPathScreen} from './CampaignPaths.js';
 import {normalizeMenuDocument} from './MenuDocument.js';
 
 // Surface comes from the installed course, not the old core/wildcard priority.
@@ -13,7 +14,7 @@ export function campaignEventCategory(event) {
 
 export function createCampaignHubMenus(catalog, research, installed = []) {
  const ready = new Map(installed.filter(e => e.status === 'installed').map(e => [e.id,e]));
- const screens=[], hubs={},sideGates={},progression={version:1,regions:[]};
+ const screens=[], hubs={},sideGates={},progression={version:2,regions:[]};
  const select=ref=>({type:'set-param',parameter:'raceRef',value:ref,then:{type:'screen',target:'garage'}});
  const back={label:'Back',action:{type:'back'}};
  const link=(label,target)=>({label,action:{type:'screen',target}});
@@ -54,8 +55,10 @@ export function createCampaignHubMenus(catalog, research, installed = []) {
   while(pool.length)for(const category of ['roads','detours','cities','raceways']){
    const i=pool.findIndex(e=>campaignEventCategory(e)===category);if(i>=0)ordered.push(pool.splice(i,1)[0].raceRef);
   }
-  progression.regions.push({bossRef:boss.name,stage:boss.stage,events:[...new Set(ordered)],batchSize:4,clearsPerBatch:3,bossClears:Math.min(9,ordered.length)});
-  screens.push(screen(id,boss.label||boss.name,[
+  const region=authorCampaignPath({bossRef:boss.name,stage:boss.stage,events:[...new Set(ordered)],batchSize:4,clearsPerBatch:3,bossClears:Math.min(9,ordered.length)});
+  progression.regions.push(region);
+  if(region.mainPath)screens.push(campaignPathScreen(region,boss.label||boss.name));
+  screens.push(screen(region.mainPath?`${id}-events`:id,boss.label||boss.name,[
    {label:'Main Mission',action:select(boss.name)},
    link('Road Runs',`${id}-roads`),link('City Runs',`${id}-cities`),link('Detours',`${id}-detours`),link('Raceways',`${id}-raceways`),back
   ]));

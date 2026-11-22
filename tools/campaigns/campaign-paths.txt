@@ -1,0 +1,39 @@
+Regional campaign paths — 2026-11-21
+
+Authoring: src/menus/CampaignPaths.js holds five ordered race references and
+ two featured optional branches per region. CampaignHubMenus builds existing
+ editable world-map widgets and retains all category/venue pages in the document (the More Races button is hidden).
+ Rebuild saved menu with node tools/campaigns/refresh_route_menus.mjs.
+ Partial/custom catalogs without all authored references retain their old menus.
+ Production validation requires all eleven complete authored paths.
+
+Progression: finish the five main races to open the boss. A main stop requires
+ all earlier main stops; each featured branch requires its connecting stop.
+ Other optional events open after two main completions. Optional victories do
+ not replace main victories. Winning a boss opens the next region and all local
+ events. Existing completed events remain replayable; beaten bosses preserve
+ region access. Saves still store completions rather than unlock counters.
+ Tower Hill remains the mandatory opening race, credited as the first stop.
+
+Selection: six main nodes plus two optional nodes, with a car cursor, curved
+ connectors, dotted branches, region-themed canvas landscape and route preview.
+ The More Races button is hidden. Back returns to the parent map, not the title prompt.
+ The main US overview still uses geographic region positions. Regional drawing
+ coordinates are authored presentation positions; source GPS remains unchanged.
+
+Design: local learning -> snowy mountains -> rolling forest roads -> river hills
+ -> mixed Ozarks -> industrial roads/city -> open highway -> mountain approaches
+ -> loose exposed switchbacks -> alternating gravel/pavement -> paved finale.
+ Long expeditions and multiple circuit layouts are optional; no races deleted.
+
+Limitations: selections use existing road and surface data, not timed player
+ playthroughs of all 66 campaign events. Weather, terrain, tire physics and race
+ objectives are unchanged. Do not claim the new itinerary is fully pace-balanced.
+ Map landscapes are lightweight original procedural illustrations, not bespoke
+ region landmark paintings. artRef on each editable map can supply artwork later.
+
+Map editing: Screens -> regional screen -> map -> Edit nodes. Connect nodes,
+then select a road and open Connection style. Choose bezier and drag its two
+gold bend handles, or enter their percentages. Undo/redo and save preserve them.
+Choose car under Map style / cursor to animate the selected vehicle thumbnail.
+Car travel follows connected unlocked roads, including junctions and branches.

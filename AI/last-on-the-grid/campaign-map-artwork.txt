@@ -1,0 +1,44 @@
+REGIONAL CAMPAIGN MAP ARTWORK — DOT handoff
+
+Create eleven DKC-inspired illustrated landscape backgrounds, keeping the game's
+frozen post-apocalyptic setting. These are local journey maps, not satellite maps.
+Use readable landforms and recognizable regional silhouettes with uncluttered
+areas for the editable route overlay. Match the game's existing pixel artwork.
+
+Regions / screen IDs:
+1 campaign-hub-1: Providence / New England woods, lab outskirts, small city.
+2 campaign-hub-2: Mount Washington, snow-covered mountains and alpine forest.
+3 campaign-hub-3: Laurel Highlands, rolling forested ridges and old farmland.
+4 campaign-hub-4: Ohio River, winding river valley, bridges and wooded hills.
+5 campaign-hub-5: Ozarks, rugged wooded hollows, rocky clearings and dirt roads.
+6 campaign-hub-6: Data Center City, abandoned automated industrial St. Louis.
+7 campaign-hub-7: Route 66, open plains, mesas and abandoned roadside buildings.
+8 campaign-hub-8: Pikes Peak, foothills rising to a dramatic snowy summit.
+9 campaign-hub-9: Moki Dugway, desert mesas, canyon shelves and exposed cliffs.
+10 campaign-hub-10: Oak Creek Canyon, red rock, wooded canyon and high plateau.
+11 campaign-hub-11: Angeles Crest, Los Angeles outskirts rising into dry mountains.
+
+Do NOT bake in roads, race nodes, labels, flags, cars or other UI. They are drawn
+by the editable map widget. Backgrounds should work behind the existing nodes;
+move nodes and curve handles in the Screens editor if composition needs it.
+Suggested source: 1536 x 1024 PNG, with important scenery away from outer edges.
+Check both portrait and landscape; the widget aspect changes with the screen.
+Use the existing image-fit controls to choose the best framing.
+
+Integration:
+Save each image as an Art asset, e.g. campaign-map-providence.
+Open Screens -> Game Menu -> campaign-hub-N -> regional-path world-map widget.
+Set Widget background image (artRef), keeping the rest of the map intact.
+The saved document is data/server-storage/files/menus/Game Menu/document.json.
+Retain property=campaign-path, raceRef bindings, nodes, links and garage action.
+Do not overwrite the whole menu from an older copy, regenerate the route menu,
+or alter race files, unlock rules, car art or the geographic US overview.
+
+Map authoring:
+Edit nodes supports dragging races and junctions; Connect nodes makes roads.
+Select a connection -> Connection style -> Road shape=bezier. Drag the two gold
+handles, or set Bend 1/2 X/Y percentages. Paths use normalized map coordinates.
+The existing miniature selected car follows those same curves. Branches can be
+dotted. No separate car sprites or road-overlay bitmap is needed.
+
+Current fallback backgrounds are procedural; each region's artRef replaces them.

@@ -158,19 +158,29 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
       }
 
     }
-    else if(element.type==='world-map'){const mapBackground=element.artRef?resources?.art(element.artRef,Math.floor(time*8)):null;if(mapBackground)drawMenuImage(ctx,mapBackground,b,element.imageFit);drawWorldMap(ctx,b,element,resources,document,parameters,value,{drawText,fontFamily});}
+    else if(element.type==='world-map'){const mapBackground=element.artRef?resources?.art(element.artRef,Math.floor(time*8)):null;if(mapBackground)drawMenuImage(ctx,mapBackground,b,element.imageFit);drawWorldMap(ctx,b,element,resources,document,parameters,value,{drawText,fontFamily,time,widgetStates,editing,drawCar:(bounds,angle)=>{
+ const name=parameters.carRef||resources?.game?.menuProgress?.selectedGameCar;if(!name)return;
+ if(carThumbnailNeedsFallback(name,angle))drawCarComponent(ctx,bounds,{type:'car-preview',showroomPreview:true,animation:'none',angle},resources?.stockCar?.(name),resources,time,parameters,fontFamily);
+ else paintCarThumbnail(ctx,bounds,name,angle,undefined,undefined,true);
+ }});}
     else if(element.type==='garage-browser')drawUpgradeGrid(ctx,b,element,resources,parameters,widgetStates.get(element.id),fontFamily);
     else if(element.type==='garage-tuner')drawGarageTuner(ctx,b,widgetStates.get(element.id)?.tuner,fontFamily,element,resources);
     else if(element.type==='code-entry')drawCodeEntry(ctx,b,element,value,widgetStates.get(element.id),element.id===focus);
     else if(element.type==='garage-dialogue')drawGarageDialogueText(ctx,b,widgetStates.get(element.id)?.text??garageDialogueText(garageDialogueContext(screen,resources,parameters,widgetStates,focus||selected)),fontFamily,element,{time,editing});
     else if(element.type==='race-description'){
       if(element.property==='route-preview'){
-        const ref=element.assetRef||selectedCampaignPreview(screen,focus,widgetStates);
+        const ref=element.assetRef||(screen.elements.some(e=>e.property==='campaign-path')?parameters[element.binding||'raceRef']:selectedCampaignPreview(screen,focus,widgetStates));
         drawCampaignRoutePreview(ctx,b,document.parameters?.campaignRoutePreviews?.[ref],ref,resources,drawText,fontFamily);
         ctx.restore();continue;
       }
       const map=screen.elements.find(e=>e.type==='world-map'&&e.binding===element.binding);
       const ref=element.assetRef||value||(map?worldMapSelection(worldMapNodes(map,resources,document,parameters),parameters[map.binding])?.raceRef:'');
+      if(element.property==='route-title'){
+        const region=document.parameters?.campaignProgression?.regions?.find(r=>r.bossRef===ref||r.events?.includes(ref));
+        const index=region?.mainPath?.indexOf(ref)??-1;
+        const prefix=region?.bossRef===ref?'Boss':index>=0?String(index+1):'Detour';
+        drawCarDescription(ctx,b,`${prefix} · ${ref}`,fontFamily,element,{time,editing});ctx.restore();continue;
+      }
       if(element.property==='region-dialogue'){
         drawCarDescription(ctx,b,campaignRegionDialogue(ref),fontFamily,element,{time,editing});
         ctx.restore();continue;

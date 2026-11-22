@@ -1,3 +1,4 @@
+import {mapRoadControls,mapRoadPixels,drawMapRoad,mapRoadHit} from '../menus/MenuMapRoads.js';
 import {worldMapNodes,worldMapConnections,worldMapNodePoint,worldMapLocalPoint,materializeWorldMap,normalizeWorldMapStyle,worldMapNodeRadius} from '../menus/MenuWorldMap.js';
 import {menuElementBounds,menuHit} from '../menus/MenuRenderer.js';
 import {openEditorForm} from './shared/editorForm.js';
@@ -13,6 +14,7 @@ export class MenuWorldMapDesigner{
  reset(){this.elementId=null;this.nodeId=null;this.linkId=null;this.mode='move';this.from=null;this.drag=null;}
  get element(){const e=this.editor.element;return e?.type==='world-map'&&e.id===this.elementId?e:null;}
  get nodes(){const e=this.element;return e?worldMapNodes(e,this.editor.resources,this.editor.menu,this.editor.menu.parameters):[];}
+ roadNodes(nodes=this.nodes){const b=this.bounds;return nodes.map(n=>{const p=worldMapNodePoint(n,b,this.element);return {...n,x:(p.x-b.x)/b.w,y:(p.y-b.y)/Math.max(1,b.h-36)};});}
  get bounds(){return this.element&&this.editor.menuBounds?menuElementBounds(this.element,this.editor.menuBounds):null;}
  start(){if(this.editor.element?.type!=='world-map')return;if(this.elementId!==this.editor.element.id)this.reset();this.elementId=this.editor.element.id;this.editor.worldMapLayoutId=null;this.editor.status='Editing map nodes over the menu background. Drag nodes; Properties edits selection. Tap empty map space then Properties for map tools.';}
  materialize(){const e=this.element;materializeWorldMap(e,this.editor.resources,this.editor.menu,this.editor.menu.parameters);e.mapManual=true;return e;}
@@ -40,6 +42,12 @@ export class MenuWorldMapDesigner{
  pointerDown(p){
   const b=this.bounds;if(!b||!menuHit(p,b))return false;
   const nodes=this.nodes,hit=this.hitNode(p);
+  const roads=this.roadNodes(nodes),selected=worldMapConnections(this.element,nodes).find(l=>l.id===this.linkId);
+  if(this.mode==='move'&&selected?.curve==='bezier'){
+   const controls=mapRoadControls(selected,roads.find(n=>n.id===selected.from),roads.find(n=>n.id===selected.to));
+   const index=controls.findIndex(c=>{const q=mapRoadPixels(c,b);return Math.hypot(p.x-q.x,p.y-q.y)<12;});
+   if(index>=0){this.drag={id:p.id,linkId:selected.id,control:`control${index+1}`,x:p.x,y:p.y,position:controls[index],before:this.editor.snapshot()};return true;}
+  }
   if(this.mode.startsWith('add-')){
    const kind=this.mode.slice(4);this.editor.change(()=>{
     const e=this.materialize();if(e.nodes.length>=100)throw Error('A map supports up to 100 nodes');
@@ -55,16 +63,12 @@ export class MenuWorldMapDesigner{
    }else this.drag={id:p.id,nodeId:hit.id,x:p.x,y:p.y,position:{x:hit.x,y:hit.y},before:this.editor.snapshot()};
    return true;
   }
-  const link=worldMapConnections(this.element,nodes).find(link=>{
-   const a=worldMapNodePoint(nodes.find(n=>n.id===link.from),b,this.element),c=worldMapNodePoint(nodes.find(n=>n.id===link.to),b,this.element),dx=c.x-a.x,dy=c.y-a.y;
-   const t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/(dx*dx+dy*dy||1)));
-   return Math.hypot(p.x-a.x-t*dx,p.y-a.y-t*dy)<10;
-  });this.linkId=link?.id||null;this.nodeId=null;return true;
+  const link=worldMapConnections(this.element,nodes).find(link=>mapRoadHit(link,roads.find(n=>n.id===link.from),roads.find(n=>n.id===link.to),p,b));this.linkId=link?.id||null;this.nodeId=null;return true;
  }
  pointerMove(p){
   const d=this.drag,b=this.bounds;if(!d||!b)return false;if(d.id!==undefined&&p.id!==undefined&&d.id!==p.id)return true;
   if(Math.hypot(p.x-d.x,p.y-d.y)<3&&!d.moved)return true;
-  d.moved=true;const e=this.materialize(),node=e.nodes.find(n=>n.id===d.nodeId);if(!node)return true;
+  d.moved=true;const e=this.materialize(),node=d.control?(e.connections.find(l=>l.id===d.linkId)[d.control]??={...d.position}):e.nodes.find(n=>n.id===d.nodeId);if(!node)return true;
   node.x=Math.max(0,Math.min(1,d.position.x+(p.x-d.x)/b.w));node.y=Math.max(0,Math.min(1,d.position.y+(p.y-d.y)/Math.max(1,b.h-36)));return true;
  }
  pointerUp(p){const d=this.drag;if(!d)return false;if(d.id!==undefined&&p.id!==undefined&&d.id!==p.id)return true;this.drag=null;this.editor.record(d.before);return true;}
@@ -91,12 +95,15 @@ export class MenuWorldMapDesigner{
  }
  async editLink(showForm=openEditorForm){
   const e=this.element,link=e&&worldMapConnections(e,this.nodes).find(c=>c.id===this.linkId);if(!link)return;
+  const a=this.nodes.find(n=>n.id===link.from),b=this.nodes.find(n=>n.id===link.to),controls=mapRoadControls({...link,curve:'bezier'},a,b);
   const style=normalizeWorldMapStyle(e.mapStyle),r=await showForm('Connection Style',[
    select('from','From',link.from,this.nodes.map(n=>({value:n.id,label:n.label}))),select('to','To',link.to,this.nodes.map(n=>({value:n.id,label:n.label}))),
+   select('curve','Road shape',link.curve||'straight',['straight','bezier']),
+   ...controls.flatMap((p,i)=>['x','y'].map(axis=>({id:`control${i+1}${axis}`,label:`Bend ${i+1} ${axis.toUpperCase()} (%)`,value:p[axis]*100,min:0,max:100}))),
    {id:'inherit',label:'Use map default style',type:'checkbox',value:!link.color&&link.width==null&&!link.pattern},
    color('color','Line color',link.color||style.lineColor),{id:'width',label:'Line width',value:link.width??style.lineWidth,min:0,max:20},select('pattern','Line pattern',link.pattern||style.linePattern,['solid','dashed','dotted'])]);
   if(!r||this.element!==e)return;if(r.from===r.to)throw Error('Choose two different nodes');
-  this.editor.change(()=>{const target=this.materialize().connections.find(c=>c.id===link.id);Object.assign(target,{from:r.from,to:r.to,color:r.inherit?'':r.color,width:r.inherit?null:r.width,pattern:r.inherit?'':r.pattern});});
+  this.editor.change(()=>{const target=this.materialize().connections.find(c=>c.id===link.id);Object.assign(target,{from:r.from,to:r.to,curve:r.curve||link.curve,control1:{x:(r.control1x??controls[0].x*100)/100,y:(r.control1y??controls[0].y*100)/100},control2:{x:(r.control2x??controls[1].x*100)/100,y:(r.control2y??controls[1].y*100)/100},color:r.inherit?'':r.color,width:r.inherit?null:r.width,pattern:r.inherit?'':r.pattern});});
  }
  async editStyle(showForm=openEditorForm){
   const e=this.element;if(!e)return;const s=normalizeWorldMapStyle(e.mapStyle);
@@ -104,7 +111,7 @@ export class MenuWorldMapDesigner{
    color('lineColor','Default line color',s.lineColor),{id:'lineWidth',label:'Default line width',value:s.lineWidth,min:0,max:20},select('linePattern','Default line pattern',s.linePattern,['solid','dashed','dotted']),
    color('selectedColor','Selected node color',s.selectedColor),color('unselectedColor','Unselected node color',s.unselectedColor),color('disabledColor','Disabled node color',s.disabledColor),
    {id:'nodeScale',label:'Node / icon scale',value:s.nodeScale,min:.25,max:4,step:.05},{id:'unselectedOpacity',label:'Unselected brightness',value:s.unselectedOpacity,min:0,max:1,step:.05},{id:'disabledOpacity',label:'Disabled brightness',value:s.disabledOpacity,min:0,max:1,step:.05},
-   select('cursor','Selection cursor',s.cursor,['ring','text','image','none']),color('cursorColor','Cursor color',s.cursorColor),text('cursorText','Cursor text',e.cursorText||'>'),
+   select('cursor','Selection cursor',s.cursor,['ring','text','image','car','none']),color('cursorColor','Cursor color',s.cursorColor),text('cursorText','Cursor text',e.cursorText||'>'),
    select('cursorArtRef','Cursor artwork',e.cursorArtRef||'',[{value:'',label:'Uploaded cursor / text'},...listProjectFiles('art').map(f=>({value:f.name,label:f.name}))]),
    {id:'cursorSize',label:'Cursor size',value:e.cursorSize||24,min:8,max:160}
   ],{description:'Each node can have different selected, unselected and disabled artwork. Existing Layout & Style also supports uploading a cursor image.'});
@@ -117,7 +124,11 @@ export class MenuWorldMapDesigner{
   ctx.globalAlpha=1;ctx.filter='none';ctx.setLineDash([]);
   const nodes=this.nodes,points=new Map(nodes.map(n=>[n.id,worldMapNodePoint(n,b,this.element)]));
   const link=worldMapConnections(this.element,nodes).find(c=>c.id===this.linkId);
-  if(link){const a=points.get(link.from),c=points.get(link.to);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(c.x,c.y);ctx.strokeStyle='#101923';ctx.lineWidth=7;ctx.stroke();ctx.strokeStyle='#ffce51';ctx.lineWidth=3;ctx.stroke();}
+  if(link){const roads=this.roadNodes(nodes),a=roads.find(n=>n.id===link.from),c=roads.find(n=>n.id===link.to);
+   drawMapRoad(ctx,link,a,c,b);ctx.strokeStyle='#101923';ctx.lineWidth=7;ctx.stroke();ctx.strokeStyle='#ffce51';ctx.lineWidth=3;ctx.stroke();
+   const controls=mapRoadControls(link,a,c);
+   if(controls)controls.forEach((control,i)=>{const p=mapRoadPixels(control,b),end=mapRoadPixels(i?c:a,b);ctx.beginPath();ctx.moveTo(end.x,end.y);ctx.lineTo(p.x,p.y);ctx.lineWidth=1;ctx.stroke();ctx.beginPath();ctx.arc(p.x,p.y,7,0,Math.PI*2);ctx.fillStyle='#ffce51';ctx.fill();});
+  }
   for(const n of nodes){
    const p=points.get(n.id),selected=n.id===this.nodeId||n.id===this.from;
    const radius=worldMapNodeRadius(b,this.element)*(n.kind==='junction'?.55:1)+4;

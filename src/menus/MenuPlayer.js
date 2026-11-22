@@ -1,3 +1,4 @@
+import {mapRoadRoute} from './MenuMapRoads.js';
 import {MotorsportMenu,installMotorsportNavigation} from './MotorsportMenu.js';
 import {raceIndexEntries,raceIndexScreen} from './RaceIndex.js';
 import {campaignRaceAccess,refreshCampaignScreen,migrateCampaignProgress} from './CampaignProgression.js';
@@ -17,7 +18,7 @@ import {drawGarageTuner} from './MenuTuningRenderer.js';
 import {menuCodeValue,cycleCodeLetter} from './MenuCodeEntry.js';
 import {redeemGarageCheat,GARAGE_CHEAT_CODES} from '../garage/GarageCheats.js';
 import {loadMenuProgress,commitMenuCar,setMenuProgress} from './MenuProgress.js';
-import {raceCompletionKey,worldMapNodes,worldMapNodePoint,worldMapRaceNodes,worldMapSelection,worldMapDirectionalNode} from './MenuWorldMap.js';
+import {raceCompletionKey,worldMapConnections,campaignPathEntrySelection,worldMapNodes,worldMapNodePoint,worldMapRaceNodes,worldMapSelection,worldMapDirectionalNode} from './MenuWorldMap.js';
 import {showroomPage,garageBrowserRows,garageCardBounds,garageGridBounds,upgradeGridArea} from './MenuGarageWidgets.js';
 import {createMenuRepeatState,resetMenuRepeatState,getMenuRepeatDirection} from '../ui/shared/menuRepeat.js';
 import {ItemSystem} from '../items/ItemSystem.js';
@@ -138,7 +139,7 @@ export default class MenuPlayer {
     this.showOptionsScreen(`fleet-${action}`,shop?'Buy Cars':'Owned Cars',rows,{remember:!this.flow.screenId.startsWith(`fleet-${action}`)});
   }
   confirmWorldMapQuit(){
-    if(!this.flow?.screen?.elements.some(e=>e.type==='world-map'))return false;
+    if(!this.flow?.screen?.elements.some(e=>e.type==='world-map'&&e.property!=='campaign-path'))return false;
     this.showOptionsScreen('world-map-quit','Quit to title?',[
       {label:'Cancel',action:{type:'back'}},
       {label:'Quit',action:{type:'quit'}}
@@ -302,7 +303,7 @@ export default class MenuPlayer {
     this.cleanupScreen({keepMusic:true});this.widgetStates.clear();this.focus=0;this.message='';const flow=this.flow,screen=flow.screen,generation=this.mediaGeneration;
     if(screen.id!=='race-index')refreshCampaignScreen(screen,flow.document.parameters.campaignProgression,flow.parameters,this.resources.garage?.progress,this.resources.garage?.items?.progress?.unlocks);
     for(const e of screen.elements){if(['choice','car-showroom'].includes(e.type)&&e.binding){const choices=e.type==='car-showroom'?this.resources.choices('cars',flow.document,flow.parameters):e.source?this.resources.choices(e.source,flow.document,flow.parameters):e.options;if(choices.length&&!choices.some(o=>JSON.stringify(o.value)===JSON.stringify(flow.parameters[e.binding])))flow.setParameter(e.binding,choices[0].value);}
-      if(e.type==='world-map'){const hub=flow.document.parameters.campaignEventHubs?.[flow.parameters[e.binding]];if(hub)flow.setParameter(e.binding,hub);const node=worldMapSelection(worldMapNodes(e,this.resources,flow.document,flow.parameters),flow.parameters[e.binding]);flow.setParameter(e.binding,node?.raceRef||'');}
+      if(e.type==='world-map'){const hub=e.property!=='campaign-path'&&flow.document.parameters.campaignEventHubs?.[flow.parameters[e.binding]];if(hub)flow.setParameter(e.binding,hub);const node=(e.property==='campaign-path'?campaignPathEntrySelection:worldMapSelection)(worldMapNodes(e,this.resources,flow.document,flow.parameters),flow.parameters[e.binding]);flow.setParameter(e.binding,node?.raceRef||'');}
       if(e.type==='car-showroom')this.widgetStates.set(e.id,{value:flow.parameters[e.binding],selectedAt:flow.time});
       if(e.type==='video'&&e.videoUrl&&typeof document!=='undefined'){const video=document.createElement('video');video.src=e.videoUrl;video.loop=e.loop;video.playsInline=true;video.muted=true;video.onerror=()=>{flow.error=`Video could not load: ${e.videoUrl}`};this.videos.set(e.id,video);void video.play().catch(()=>{this.message='Tap to play video'});}
     }
@@ -377,10 +378,12 @@ export default class MenuPlayer {
       const selected=worldMapSelection(nodes,value);
       if(!selected){this.flow.setParameter(element.binding,'');return;}
       if(choose){
+        const carState=this.widgetStates?.get(`map-car:${element.id}`);
+        if(element.mapStyle?.cursor==='car'&&carState&&(carState.moving||carState.node!==selected.id))return;
         this.flow.setParameter(element.binding,selected.raceRef);
         // A stale disabled selection must not launch a different race on Confirm.
         if(value&&selected.raceRef!==value)return;
-        const hub=this.flow.document.parameters.campaignHubs?.[selected.raceRef];
+        const hub=element.property!=='campaign-path'&&this.flow.document.parameters.campaignHubs?.[selected.raceRef];
         if(hub)return this.flow.goTo(hub);
         return this.flow.run(element.action);
       }
@@ -647,7 +650,7 @@ export default class MenuPlayer {
         const index=Number(e.id.slice('index-race-'.length));
         if(this.raceIndexState.index!==index){this.scrollRaceIndex(index-this.raceIndexState.index);return;}
       }
-      this.focus=this.interactive().indexOf(e);if(e.type==='code-entry'){const b=menuElementBounds(e,this.bounds,menuElementPose(e,this.flow.time));if(point.y>b.y+b.h*.75){this.widgetStates.set(e.id,{index:e.codeLength});void this.activate(e,1,{choose:true});return;}this.widgetStates.set(e.id,{index:Math.max(0,Math.min(e.codeLength-1,Math.floor((point.x-b.x)/b.w*e.codeLength)))});if(point.y<b.y+b.h*.24)this.cycleCode(e,1);else if(point.y>b.y+b.h*.48)this.cycleCode(e,-1);return;}if(e.type==='world-map'){const b=menuElementBounds(e,this.bounds,menuElementPose(e,this.flow.time)),nodes=worldMapRaceNodes(worldMapNodes(e,this.resources,this.flow.document,this.flow.parameters));const node=nodes.map(n=>{const p=worldMapNodePoint(n,b,e);return {node:n,distance:Math.hypot(point.x-p.x,point.y-p.y)}}).filter(n=>n.distance<Math.max(22,Math.min(b.w,b.h)*.07)).sort((a,b)=>a.distance-b.distance)[0]?.node;if(node&&!node.locked&&!node.disabled){const selected=this.flow.parameters[e.binding]===node.raceRef;this.flow.setParameter(e.binding,node.raceRef);if(selected)void this.activate(e,1,{choose:true});}return;}if(['car-showroom','garage-browser'].includes(e.type)){this.pointerGarageWidget(e,point);return;}if(e.type==='slider'){this.slider={id:point.id,element:e};this.handlePointerMove(point);}else void this.activate(e,1,{choose:true});}else if(this.flow.screen.startAction)void this.flow.start();
+      this.focus=this.interactive().indexOf(e);if(e.type==='code-entry'){const b=menuElementBounds(e,this.bounds,menuElementPose(e,this.flow.time));if(point.y>b.y+b.h*.75){this.widgetStates.set(e.id,{index:e.codeLength});void this.activate(e,1,{choose:true});return;}this.widgetStates.set(e.id,{index:Math.max(0,Math.min(e.codeLength-1,Math.floor((point.x-b.x)/b.w*e.codeLength)))});if(point.y<b.y+b.h*.24)this.cycleCode(e,1);else if(point.y>b.y+b.h*.48)this.cycleCode(e,-1);return;}if(e.type==='world-map'){const b=menuElementBounds(e,this.bounds,menuElementPose(e,this.flow.time)),nodes=worldMapRaceNodes(worldMapNodes(e,this.resources,this.flow.document,this.flow.parameters));const node=nodes.map(n=>{const p=worldMapNodePoint(n,b,e);return {node:n,distance:Math.hypot(point.x-p.x,point.y-p.y)}}).filter(n=>n.distance<Math.max(22,Math.min(b.w,b.h)*.07)).sort((a,b)=>a.distance-b.distance)[0]?.node;if(node&&!node.locked&&!node.disabled){const all=worldMapNodes(e,this.resources,this.flow.document,this.flow.parameters),current=worldMapSelection(all,this.flow.parameters[e.binding]);if(e.mapStyle?.cursor==='car'&&current&&!mapRoadRoute(all,worldMapConnections(e,all),current.id,node.id))return;const selected=this.flow.parameters[e.binding]===node.raceRef;this.flow.setParameter(e.binding,node.raceRef);if(selected)void this.activate(e,1,{choose:true});}return;}if(['car-showroom','garage-browser'].includes(e.type)){this.pointerGarageWidget(e,point);return;}if(e.type==='slider'){this.slider={id:point.id,element:e};this.handlePointerMove(point);}else void this.activate(e,1,{choose:true});}else if(this.flow.screen.startAction)void this.flow.start();
   }
   pointerGarageWidget(element,point){
     const b=menuElementBounds(element,this.bounds,menuElementPose(element,this.flow.time));

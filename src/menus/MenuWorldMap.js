@@ -1,10 +1,15 @@
-import {campaignRegionState} from './CampaignProgression.js';
+import {mapRoadRoute} from './MenuMapRoads.js';
+import {campaignRegionState,campaignRaceAccess} from './CampaignProgression.js';
 export const raceCompletionKey=ref=>'raceCompleted.'+String(ref).replace(/[^a-zA-Z0-9_-]/g,'_');
 export function worldMapNodes(element,resources,document,parameters){
  const nodes=(element.mapManual||element.nodes?.length)?element.nodes:(resources?.choices('races',document,parameters)||[]).map((race,i,races)=>({id:race.value,label:race.label,raceRef:race.value,x:.14+(i%4)*.24,y:.22+Math.floor(i/4)*.28,unlockParameter:i?raceCompletionKey(races[i-1].value):'',unlockValue:true,completedParameter:raceCompletionKey(race.value)}));
  const rows=Math.max(1,Math.ceil(nodes.length/4));
  const travel=!!resources?.garage?.items?.progress?.unlocks?.['cheat.travel'];
  return nodes.map((node,i)=>{
+  if(element.property==='campaign-path'){
+   const access=campaignRaceAccess(document?.parameters?.campaignProgression,node.raceRef,parameters,resources?.garage?.progress,resources?.garage?.items?.progress?.unlocks);
+   return {...node,locked:node.disabled===true||!access.allowed,completed:access.state?.cleared(node.raceRef)||false};
+  }
   const region=campaignRegionState(document?.parameters?.campaignProgression,node.raceRef,parameters,resources?.garage?.progress);
   return {...node,x:node.x??(.14+i%4*.24),y:(element.mapManual||element.nodes?.length)?node.y:(Math.floor(i/4)+.5)/rows,
    locked:node.disabled===true||(!travel&&(region?!region.open:!!node.unlockParameter&&JSON.stringify(parameters[node.unlockParameter])!==JSON.stringify(node.unlockValue??true))),
@@ -25,7 +30,7 @@ export function normalizeWorldMapStyle(s={}){
  return {labels:s.labels==='selected'?'selected':'auto',lineColor:color(s.lineColor,'#7893a1'),lineWidth:num(s.lineWidth,2,0,20),linePattern:['solid','dashed','dotted'].includes(s.linePattern)?s.linePattern:'solid',
   selectedColor:color(s.selectedColor,'#e2b454'),unselectedColor:color(s.unselectedColor,'#e2b454'),disabledColor:color(s.disabledColor,'#52616b'),
   unselectedOpacity:num(s.unselectedOpacity,.55,0,1),disabledOpacity:num(s.disabledOpacity,.5,0,1),nodeScale:num(s.nodeScale,1,.25,4),
-  cursor:['ring','text','image','none'].includes(s.cursor)?s.cursor:'ring',cursorColor:color(s.cursorColor,'#ffffff')};
+  cursor:['ring','text','image','car','none'].includes(s.cursor)?s.cursor:'ring',cursorColor:color(s.cursorColor,'#ffffff')};
 }
 export function worldMapConnections(element,nodes){
  if(Array.isArray(element.connections))return element.connections.filter(c=>nodes.some(n=>n.id===c.from)&&nodes.some(n=>n.id===c.to)&&c.from!==c.to);
@@ -34,6 +39,9 @@ export function worldMapConnections(element,nodes){
 export function normalizeWorldMapConnections(connections){
  if(!Array.isArray(connections))return null;
  return connections.slice(0,300).map((c,i)=>({id:String(c.id||`link-${i+1}`),from:String(c.from||''),to:String(c.to||''),
+  curve:c.curve==='bezier'?'bezier':'straight',
+  ...(c.control1?{control1:{x:num(c.control1.x,.5,0,1),y:num(c.control1.y,.5,0,1)}}:{}),
+  ...(c.control2?{control2:{x:num(c.control2.x,.5,0,1),y:num(c.control2.y,.5,0,1)}}:{}),
   color:color(c.color,''),width:c.width==null?null:num(c.width,2,0,20),pattern:['solid','dashed','dotted'].includes(c.pattern)?c.pattern:''})).filter(c=>c.from&&c.to&&c.from!==c.to);
 }
 export const worldMapRaceNodes=nodes=>nodes.filter(n=>n.kind!=='junction'&&n.raceRef);
@@ -55,6 +63,7 @@ export function worldMapDirectionalNode(nodes,value,direction,bounds,element){
  const origin=worldMapNodePoint(current,bounds,element);let best=current,score=Infinity;
  for(const node of worldMapSelectableNodes(nodes)){
   if(node.id===current.id)continue;
+  if(element?.mapStyle?.cursor==='car'&&!mapRoadRoute(nodes,worldMapConnections(element,nodes),current.id,node.id))continue;
   const point=worldMapNodePoint(node,bounds,element),dx=point.x-origin.x,dy=point.y-origin.y;
   const forward=dx*axis[0]+dy*axis[1],side=Math.abs(dx*axis[1]-dy*axis[0]);
   if(forward<=.01)continue;
@@ -62,4 +71,10 @@ export function worldMapDirectionalNode(nodes,value,direction,bounds,element){
   if(distance<score){score=distance;best=node;}
  }
  return best;
+}
+
+export function campaignPathEntrySelection(nodes,value){
+ const current=worldMapSelection(nodes,value);
+ if(current?.raceRef===value&&!current.completed)return current;
+ return worldMapSelectableNodes(nodes).find(n=>!n.completed)||current;
 }

@@ -16,6 +16,17 @@ export function campaignRegionState(config,bossRef,parameters={},garage={}) {
  const region=regions[index],cleared=ref=>parameters[completionKey(ref)]===true||Number(garage.rewards?.[ref]?.clears)>0;
  const won=cleared(bossRef),open=index===0||cleared(regions[index-1].bossRef)||regions.slice(index).some(r=>cleared(r.bossRef));
  const events=[...new Set(region.events||[])],wins=events.filter(cleared).length;
+ if(region.mainPath?.length){
+  const path=region.mainPath,mainWins=path.filter(cleared).length;
+  const available=won?events:events.filter(ref=>{
+   if(cleared(ref))return true;
+   const i=path.indexOf(ref);
+   if(i>=0)return i===0||path.slice(0,i).every(cleared);
+   const branch=region.branches?.find(b=>b.raceRef===ref);
+   return branch?cleared(branch.after):mainWins>=2;
+  });
+  return {region,open,won,wins:mainWins,required:path.length,available,cleared,bossReady:open&&(won||mainWins===path.length)};
+ }
  const required=Math.min(region.bossClears??9,events.length),batch=Math.max(1,region.batchSize||4),step=Math.max(1,region.clearsPerBatch||3);
  const count=won?events.length:Math.min(events.length,batch*(1+Math.floor(Math.min(wins,Math.max(0,required-step))/step)));
  return {region,open,won,wins,required,available:events.slice(0,count),cleared,bossReady:open&&(won||wins>=required)};
@@ -26,6 +37,10 @@ export function campaignRaceAccess(config,ref,parameters={},garage={},unlocks={}
  if(!region)return {allowed:true}; // Custom races/editor content remain independent.
  const state=campaignRegionState(config,region.bossRef,parameters,garage);
  if(!state.open)return {allowed:false,reason:'Win the previous region’s main mission first.',state};
+ if(region.mainPath?.length){
+  const allowed=ref===region.bossRef?state.bossReady:state.won||state.cleared(ref)||state.available.includes(ref);
+  return {allowed,reason:ref===region.bossRef?`Complete the five main-path races (${state.wins}/${state.required}).`:'Follow the connected main path to open this race.',state};
+ }
  if(ref===region.bossRef)return {allowed:state.bossReady,reason:`Complete ${state.required} different events in this region (${state.wins}/${state.required}).`,state};
  const allowed=state.won||state.cleared(ref)||state.available.includes(ref);
  const index=region.events.indexOf(ref),needed=Math.floor(index/(region.batchSize||4))*(region.clearsPerBatch||3);

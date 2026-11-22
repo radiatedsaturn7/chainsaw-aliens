@@ -1,14 +1,19 @@
+import {drawMapRoad,advanceMapCar,mapRoadPixels} from './MenuMapRoads.js';
+import {drawCampaignMapLandscape} from './CampaignMapLandscape.js';
 import {worldMapNodes,worldMapConnections,worldMapRaceNodes,worldMapNodePoint,worldMapNodeRadius,normalizeWorldMapStyle,worldMapSelection} from './MenuWorldMap.js';
-export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{drawText,fontFamily='system-ui'}={}){
+export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{drawText,fontFamily='system-ui',time=0,widgetStates=new Map(),drawCar=null,editing=false}={}){
  const nodes=worldMapNodes(element,resources,document,parameters),style=normalizeWorldMapStyle(element.mapStyle);
+ const regional=element.property==='campaign-path';
+ if(regional&&!element.artRef){const region=document?.parameters?.campaignProgression?.regions?.find(r=>r.bossRef===element.assetRef);drawCampaignMapLandscape(ctx,b,region?.stage||1);}
  const selected=worldMapSelection(nodes,value)?.raceRef;
+ const roadNodes=nodes.map(n=>{const p=worldMapNodePoint(n,b,element);return {...n,x:(p.x-b.x)/b.w,y:(p.y-b.y)/Math.max(1,b.h-36)};});
  const positions=new Map(nodes.map(n=>[n.id,worldMapNodePoint(n,b,element)]));
  for(const link of worldMapConnections(element,nodes)){
   const a=positions.get(link.from),c=positions.get(link.to),width=link.width??style.lineWidth,pattern=link.pattern||style.linePattern;
   if(!width)continue;
   ctx.save();ctx.strokeStyle=link.color||style.lineColor;ctx.lineWidth=width;ctx.lineCap='round';
   ctx.setLineDash?.(pattern==='dashed'?[width*4,width*3]:pattern==='dotted'?[width,width*2]:[]);
-  ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(c.x,c.y);ctx.stroke();ctx.restore();
+  drawMapRoad(ctx,link,roadNodes.find(n=>n.id===link.from),roadNodes.find(n=>n.id===link.to),b);ctx.stroke();ctx.restore();
  }
  let raceIndex=0;
  for(const node of nodes){
@@ -23,7 +28,7 @@ export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{
   else{
    ctx.fillStyle=node.locked?style.disabledColor:node.completed?'#4fb985':active?style.selectedColor:style.unselectedColor;
    ctx.beginPath();ctx.arc(p.x,p.y,radius,0,Math.PI*2);ctx.fill();
-   if(!junction){ctx.fillStyle='#10212b';drawText(node.completed?'✓':String(raceIndex),p.x,p.y,radius*1.6);}
+   if(!junction){ctx.fillStyle='#10212b';drawText(node.completed?'✓':regional?(node.label==='Boss'?'⚑':node.label==='Detour'?'+':node.label):String(raceIndex),p.x,p.y,radius*1.6);}
   }
   if(junction||(style.labels!=='selected'&&b.w>=600&&nodes.length<=16)){
    const labelWidth=junction?Math.min(100,b.w*.18):b.w/4-8;
@@ -31,7 +36,7 @@ export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{
    ctx.fillStyle=element.color;drawText(node.label,labelX,p.y+radius+17,labelWidth);
   }
   ctx.restore();
-  if(active&&style.cursor!=='none'){
+  if(active&&style.cursor!=='none'&&style.cursor!=='car'){
    ctx.save();ctx.strokeStyle=ctx.fillStyle=style.cursorColor;ctx.lineWidth=3;
    if(style.cursor==='ring'){ctx.beginPath();ctx.arc(p.x,p.y,radius+5,0,Math.PI*2);ctx.stroke();}
    else{
@@ -39,8 +44,16 @@ export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{
     const image=style.cursor==='image'?resources?.cursor?.(element):null;
     if(image){const scale=size/Math.max(image.width,image.height);ctx.drawImage(image,x,y,image.width*scale,image.height*scale);}
     else{ctx.font=`${size}px ${fontFamily}`;ctx.textAlign='left';ctx.textBaseline='middle';drawText(element.cursorText||'>',x,y+size/2,size);}
-   }ctx.restore();
+   }
+   ctx.restore();
   }
+ }
+ if(style.cursor==='car'&&selected){
+  const key=`map-car:${element.id}`,previous=editing?null:widgetStates.get(key);
+  const state=advanceMapCar(previous,roadNodes,worldMapConnections(element,nodes),selected,time);
+  if(state){widgetStates.set(key,state);const p=mapRoadPixels(state,b),size=Math.max(28,Math.min(64,b.w*.11));
+   ctx.save();ctx.beginPath();ctx.rect(b.x,b.y,b.w,b.h);ctx.clip();
+   drawCar?.({x:p.x-size/2,y:p.y-size*.55,w:size,h:size*.7},state.angle);ctx.restore();}
  }
  const highlighted=worldMapSelection(nodes,selected);
  if(highlighted&&element.showSelectedLabel!==false){ctx.fillStyle=element.color;drawText(`${highlighted.label} · ${highlighted.locked?'Locked':highlighted.completed?'Completed':'Ready'}`,b.x+b.w/2,b.y+b.h-14,b.w-20);}
