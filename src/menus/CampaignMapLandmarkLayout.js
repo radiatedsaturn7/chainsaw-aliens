@@ -5,49 +5,97 @@ export const CAMPAIGN_LANDMARKS = {
    "Tower Hill Road",
    0,
    "raised",
-   1
+   1,
+   [
+    35,
+    39,
+    158,
+    118
+   ]
   ],
   "stop-1": [
    "RI 116 — North Smithfield Scituate",
    1,
    "raised",
-   1
+   1,
+   [
+    35,
+    50,
+    158,
+    118
+   ]
   ],
   "stop-2": [
    "Blue Hills — Reservation Parkways",
    2,
    "ground",
-   1
+   1,
+   [
+    35,
+    39,
+    158,
+    118
+   ]
   ],
   "stop-3": [
    "Pachaug State Forest — public gravel access roads",
    3,
    "ground",
-   1
+   1,
+   [
+    35,
+    34,
+    158,
+    118
+   ]
   ],
   "stop-4": [
    "RI 44 — Putnam Pike Glocester",
    4,
    "raised",
-   1
+   1,
+   [
+    35,
+    49,
+    158,
+    118
+   ]
   ],
   "stop-5": [
    "Providence, RI — Landmark Run",
    5,
    "raised",
-   1.12
+   1.12,
+   [
+    28,
+    14,
+    168,
+    126
+   ]
   ],
   "stop-6": [
    "Thompson Speedway — 1.7-mile road course",
    6,
    "ground",
-   1
+   1,
+   [
+    35,
+    39,
+    158,
+    118
+   ]
   ],
   "stop-7": [
    "Boston, MA — Landmark Run",
    7,
    "raised",
-   1.12
+   1.12,
+   [
+    28,
+    18,
+    168,
+    126
+   ]
   ]
  },
  "campaign-map-mount-washington": {
@@ -55,49 +103,97 @@ export const CAMPAIGN_LANDMARKS = {
    "Kancamagus Highway — NH 112",
    0,
    "ground",
-   1
+   1,
+   [
+    35,
+    30,
+    158,
+    118
+   ]
   ],
   "stop-1": [
    "Team O’Neil-inspired Rally Stage (2994)",
    1,
    "raised",
-   1
+   1,
+   [
+    40,
+    30,
+    153,
+    118
+   ]
   ],
   "stop-2": [
    "Bear Notch Road — Bartlett",
    2,
    "ground",
-   1
+   1,
+   [
+    35,
+    42,
+    158,
+    118
+   ]
   ],
   "stop-3": [
    "Hurricane Mountain Road — Conway",
    3,
    "raised",
-   1
+   1,
+   [
+    35,
+    31,
+    158,
+    118
+   ]
   ],
   "stop-4": [
    "Pinkham Notch — NH 16",
    4,
    "raised",
-   1
+   1,
+   [
+    37,
+    30,
+    155,
+    118
+   ]
   ],
   "stop-5": [
    "Mount Washington Auto Road — point-to-point",
    5,
    "raised",
-   1.12
+   1.12,
+   [
+    28,
+    16,
+    168,
+    126
+   ]
   ],
   "stop-6": [
    "Club Motorsports — Tamworth",
    6,
    "ground",
-   1
+   1,
+   [
+    35,
+    56,
+    158,
+    118
+   ]
   ],
   "stop-7": [
    "Smugglers Notch — Vermont 108",
    7,
    "underpass",
-   1
+   1,
+   [
+    54,
+    30,
+    138,
+    118
+   ]
   ]
  },
  "campaign-map-laurel-highlands": {
@@ -105,49 +201,97 @@ export const CAMPAIGN_LANDMARKS = {
    "Brandywine Valley — Montchanin Road",
    0,
    "raised",
-   1
+   1,
+   [
+    53,
+    30,
+    139,
+    118
+   ]
   ],
   "stop-1": [
    "PA 711 — Normalville Champion",
    1,
    "raised",
-   1
+   1,
+   [
+    54,
+    30,
+    138,
+    118
+   ]
   ],
   "stop-2": [
    "Forbes State Forest — designated gravel roads",
    2,
    "ground",
-   1
+   1,
+   [
+    50,
+    30,
+    143,
+    118
+   ]
   ],
   "stop-3": [
    "US 40 — Chalk Hill Summit",
    3,
    "ground",
-   1
+   1,
+   [
+    43,
+    30,
+    150,
+    118
+   ]
   ],
   "stop-4": [
    "County Line Road — Seven Springs",
    4,
    "raised",
-   1
+   1,
+   [
+    62,
+    30,
+    130,
+    118
+   ]
   ],
   "stop-5": [
    "Laurel Highlands Scenic Byway",
    5,
    "raised",
-   1
+   1,
+   [
+    28,
+    54,
+    168,
+    126
+   ]
   ],
   "stop-6": [
    "Pittsburgh International Race Complex — Wampum",
    6,
    "ground",
-   1
+   1,
+   [
+    35,
+    37,
+    158,
+    118
+   ]
   ],
   "stop-7": [
    "Philadelphia, PA — Landmark Run",
    7,
    "raised",
-   1
+   1,
+   [
+    54,
+    30,
+    138,
+    118
+   ]
   ]
  },
  "campaign-map-ohio-river": {
@@ -155,49 +299,97 @@ export const CAMPAIGN_LANDMARKS = {
    "OH 550 — Barlow approach",
    0,
    "ground",
-   1
+   1,
+   [
+    35,
+    30,
+    158,
+    118
+   ]
   ],
   "stop-1": [
    "Washington County western covered-bridge gravel loop",
    1,
    "underpass",
-   1
+   1,
+   [
+    39,
+    30,
+    154,
+    118
+   ]
   ],
   "stop-2": [
    "OH 26 — Covered Bridge Scenic Byway",
    2,
    "underpass",
-   1
+   1,
+   [
+    44,
+    30,
+    148,
+    118
+   ]
   ],
   "stop-3": [
    "OH 536 — Ohio River hills",
    3,
    "ground",
-   1
+   1,
+   [
+    49,
+    30,
+    144,
+    118
+   ]
   ],
   "stop-4": [
    "OH 555 — Triple Nickel",
    4,
    "ground",
-   1
+   1,
+   [
+    35,
+    48,
+    158,
+    118
+   ]
   ],
   "stop-5": [
    "Ohio River Crossing",
    5,
    "raised",
-   1
+   1,
+   [
+    28,
+    42,
+    168,
+    126
+   ]
   ],
   "stop-6": [
    "Mid-Ohio Sports Car Course — Lexington",
    6,
    "ground",
-   1
+   1,
+   [
+    35,
+    40,
+    158,
+    118
+   ]
   ],
   "stop-7": [
    "Charleston, WV — Landmark Run",
    7,
    "raised",
-   1
+   1,
+   [
+    47,
+    30,
+    146,
+    118
+   ]
   ]
  },
  "campaign-map-ozarks": {
@@ -205,49 +397,97 @@ export const CAMPAIGN_LANDMARKS = {
    "MO 19 — Eminence Current River",
    0,
    "ground",
-   1
+   1,
+   [
+    32,
+    72,
+    164,
+    152
+   ]
   ],
   "stop-1": [
    "MO 106 — Alley Spring approach",
    1,
    "raised",
-   1
+   1,
+   [
+    24,
+    32,
+    164,
+    152
+   ]
   ],
   "stop-2": [
    "MO H NN — Roberts Field access",
    2,
    "ground",
-   1
+   1,
+   [
+    36,
+    88,
+    164,
+    152
+   ]
   ],
   "stop-3": [
    "Jerktail Landing gravel road",
    3,
    "ground",
-   1
+   1,
+   [
+    28,
+    68,
+    164,
+    156
+   ]
   ],
   "stop-4": [
    "Pig Trail — Arkansas 23",
    4,
    "ground",
-   1
+   1,
+   [
+    36,
+    64,
+    164,
+    152
+   ]
   ],
   "stop-5": [
    "Ozark Backroads",
    5,
    "raised",
-   1
+   1,
+   [
+    28,
+    68,
+    164,
+    152
+   ]
   ],
   "stop-6": [
    "Ozarks International Raceway — Gravois Mills",
    6,
    "ground",
-   1
+   1,
+   [
+    32,
+    52,
+    184,
+    152
+   ]
   ],
   "stop-7": [
    "MO V — Two Rivers access",
    7,
    "ground",
-   1
+   1,
+   [
+    36,
+    64,
+    164,
+    152
+   ]
   ]
  },
  "campaign-map-data-center-city": {
@@ -255,49 +495,97 @@ export const CAMPAIGN_LANDMARKS = {
    "IL 100 — Great River Road bluffs",
    0,
    "ground",
-   1
+   1,
+   [
+    28,
+    68,
+    164,
+    156
+   ]
   ],
   "stop-1": [
    "MO 94 — Defiance Augusta",
    1,
    "ground",
-   1
+   1,
+   [
+    4,
+    32,
+    164,
+    152
+   ]
   ],
   "stop-2": [
    "World Wide Technology Raceway — road course",
    2,
    "ground",
-   1
+   1,
+   [
+    32,
+    12,
+    184,
+    152
+   ]
   ],
   "stop-3": [
    "I-70 — Stan Musial Veterans Memorial Bridge",
    3,
    "ground",
-   1
+   1,
+   [
+    28,
+    24,
+    168,
+    152
+   ]
   ],
   "stop-4": [
    "St. Louis, MO — Landmark Run",
    4,
    "raised",
-   1.12
+   1.12,
+   [
+    24,
+    28,
+    164,
+    152
+   ]
   ],
   "stop-5": [
    "Data Center City",
    5,
    "raised",
-   1.12
+   1.12,
+   [
+    36,
+    12,
+    164,
+    156
+   ]
   ],
   "stop-6": [
    "Chicago, IL — Landmark Run",
    6,
    "raised",
-   1
+   1,
+   [
+    32,
+    8,
+    164,
+    152
+   ]
   ],
   "stop-7": [
    "Gateway Kartplex — WWT complex",
    7,
    "ground",
-   1
+   1,
+   [
+    28,
+    52,
+    184,
+    152
+   ]
   ]
  },
  "campaign-map-route-66": {
@@ -305,49 +593,97 @@ export const CAMPAIGN_LANDMARKS = {
    "Route 66 — Bridgeport Pony Bridge, Oklahoma",
    0,
    "ground",
-   1
+   1,
+   [
+    32,
+    68,
+    164,
+    152
+   ]
   ],
   "stop-1": [
    "Old Route 66 — Shamrock McLean",
    1,
    "raised",
-   1
+   1,
+   [
+    24,
+    12,
+    164,
+    156
+   ]
   ],
   "stop-2": [
    "Amarillo — Historic 6th Avenue alignment",
    2,
    "raised",
-   1
+   1,
+   [
+    36,
+    76,
+    164,
+    152
+   ]
   ],
   "stop-3": [
    "Palo Duro Canyon — Park Road 5",
    3,
    "ground",
-   1
+   1,
+   [
+    36,
+    44,
+    164,
+    152
+   ]
   ],
   "stop-4": [
    "Old Route 66 — Adrian Glenrio",
    4,
    "raised",
-   1
+   1,
+   [
+    28,
+    48,
+    168,
+    156
+   ]
   ],
   "stop-5": [
    "Historic Route 66",
    5,
    "raised",
-   1
+   1,
+   [
+    36,
+    56,
+    164,
+    152
+   ]
   ],
   "stop-6": [
    "Hallett Motor Racing Circuit — Jennings, Oklahoma",
    6,
    "ground",
-   1
+   1,
+   [
+    32,
+    36,
+    184,
+    152
+   ]
   ],
   "stop-7": [
    "Old Route 66 — Vega Adrian",
    7,
    "raised",
-   1
+   1,
+   [
+    16,
+    48,
+    164,
+    156
+   ]
   ]
  },
  "campaign-map-pikes-peak": {
@@ -355,49 +691,97 @@ export const CAMPAIGN_LANDMARKS = {
    "Garden of the Gods — paved park road",
    0,
    "ground",
-   1
+   1,
+   [
+    28,
+    32,
+    164,
+    152
+   ]
   ],
   "stop-1": [
    "Gold Camp Road — Colorado Springs",
    1,
    "underpass",
-   1
+   1,
+   [
+    36,
+    56,
+    164,
+    152
+   ]
   ],
   "stop-2": [
    "US 24 — Ute Pass Woodland Park",
    2,
    "ground",
-   1
+   1,
+   [
+    24,
+    60,
+    172,
+    152
+   ]
   ],
   "stop-3": [
    "Phantom Canyon Road — Gold Belt Tour",
    3,
    "underpass",
-   1
+   1,
+   [
+    28,
+    68,
+    168,
+    156
+   ]
   ],
   "stop-4": [
    "CO 67 — Woodland Park Cripple Creek",
    4,
    "raised",
-   1
+   1,
+   [
+    24,
+    40,
+    164,
+    152
+   ]
   ],
   "stop-5": [
    "Pikes Peak Highway",
    5,
    "raised",
-   1
+   1,
+   [
+    36,
+    56,
+    164,
+    152
+   ]
   ],
   "stop-6": [
    "Bayard — Road 77 to City Park",
    6,
    "ground",
-   1
+   1,
+   [
+    36,
+    28,
+    164,
+    152
+   ]
   ],
   "stop-7": [
    "Squaw Creek — Highland Center",
    7,
    "ground",
-   1
+   1,
+   [
+    36,
+    64,
+    164,
+    152
+   ]
   ]
  },
  "campaign-map-moki-dugway": {
@@ -405,49 +789,97 @@ export const CAMPAIGN_LANDMARKS = {
    "UT 316 — Goosenecks State Park Road",
    0,
    "ground",
-   1
+   1,
+   [
+    29,
+    48,
+    165,
+    123
+   ]
   ],
   "stop-1": [
    "Valley of the Gods Road — San Juan CR 242",
    1,
    "raised",
-   1
+   1,
+   [
+    29,
+    18,
+    165,
+    123
+   ]
   ],
   "stop-2": [
    "UT 95 — Comb Ridge Cedar Mesa",
    2,
    "ground",
-   1
+   1,
+   [
+    29,
+    18,
+    165,
+    123
+   ]
   ],
   "stop-3": [
    "Muley Point Road — CR 241",
    3,
    "ground",
-   1
+   1,
+   [
+    29,
+    18,
+    165,
+    123
+   ]
   ],
   "stop-4": [
    "Burr Trail switchbacks — Capitol Reef",
    4,
    "ground",
-   1
+   1,
+   [
+    29,
+    18,
+    165,
+    123
+   ]
   ],
   "stop-5": [
    "Moki Dugway",
    5,
    "ground",
-   1
+   1,
+   [
+    24,
+    26,
+    168,
+    123
+   ]
   ],
   "stop-6": [
    "Shafer Trail — Canyonlands National Park",
    6,
    "ground",
-   1
+   1,
+   [
+    34,
+    18,
+    160,
+    123
+   ]
   ],
   "stop-7": [
    "US 163 — Mexican Hat Monument Valley approach",
    7,
    "raised",
-   1
+   1,
+   [
+    43,
+    18,
+    151,
+    123
+   ]
   ]
  },
  "campaign-map-oak-creek-canyon": {
@@ -455,49 +887,97 @@ export const CAMPAIGN_LANDMARKS = {
    "SR 179 — Red Rock Scenic Byway",
    0,
    "raised",
-   1
+   1,
+   [
+    29,
+    18,
+    165,
+    123
+   ]
   ],
   "stop-1": [
    "Boynton Pass Road FR 525 loop",
    1,
    "ground",
-   1
+   1,
+   [
+    37,
+    18,
+    157,
+    123
+   ]
   ],
   "stop-2": [
    "Upper Lower Red Rock Loop Road",
    2,
    "ground",
-   1
+   1,
+   [
+    29,
+    31,
+    165,
+    123
+   ]
   ],
   "stop-3": [
    "Schnebly Hill Road — Sedona",
    3,
    "ground",
-   1
+   1,
+   [
+    29,
+    19,
+    165,
+    123
+   ]
   ],
   "stop-4": [
    "SR 89A — Mingus Mountain Jerome",
    4,
    "raised",
-   1
+   1,
+   [
+    29,
+    18,
+    165,
+    123
+   ]
   ],
   "stop-5": [
    "Oak Creek Canyon",
    5,
    "raised",
-   1
+   1,
+   [
+    25,
+    8,
+    167,
+    123
+   ]
   ],
   "stop-6": [
    "Grand Canyon — Diamond Creek Descent",
    6,
    "ground",
-   1
+   1,
+   [
+    29,
+    18,
+    165,
+    123
+   ]
   ],
   "stop-7": [
    "Podium Club at Attesa — Casa Grande",
    7,
    "ground",
-   1
+   1,
+   [
+    39,
+    18,
+    155,
+    123
+   ]
   ]
  },
  "campaign-map-angeles-crest": {
@@ -505,49 +985,98 @@ export const CAMPAIGN_LANDMARKS = {
    "Los Angeles, CA — Landmark Run",
    0,
    "raised",
-   1.12
+   1.12,
+   [
+    29,
+    42,
+    165,
+    123
+   ]
   ],
   "stop-1": [
    "Big Tujunga Canyon Road",
    1,
    "ground",
-   1
+   1,
+   [
+    29,
+    22,
+    165,
+    123
+   ]
   ],
   "stop-2": [
    "Willow Springs — Horse Thief Mile",
    2,
    "ground",
-   1
+   1,
+   [
+    30,
+    18,
+    164,
+    123
+   ]
   ],
   "stop-3": [
    "Glendora Mountain Road",
    3,
    "ground",
-   1
+   1,
+   [
+    29,
+    38,
+    165,
+    123
+   ]
   ],
   "stop-4": [
    "Glendora Ridge Road",
    4,
    "ground",
-   1
+   1,
+   [
+    29,
+    18,
+    165,
+    123
+   ]
   ],
   "stop-5": [
    "Angeles Crest Highway",
    5,
    "raised",
-   1.12
+   1.12,
+   [
+    27,
+    8,
+    166,
+    123
+   ]
   ],
   "stop-6": [
    "Willow Springs — Streets of Willow",
    6,
    "ground",
-   1
+   1,
+   [
+    29,
+    18,
+    165,
+    123
+   ]
   ],
   "stop-7": [
    "Little Tujunga Canyon Road",
    7,
    "ground",
-   1
+   1,
+   [
+    29,
+    18,
+    165,
+    123
+   ]
   ]
  }
 };
+export const CAMPAIGN_LANDMARK_BY_STAGE = {"1": "campaign-map-providence", "2": "campaign-map-mount-washington", "3": "campaign-map-laurel-highlands", "4": "campaign-map-ohio-river", "5": "campaign-map-ozarks", "6": "campaign-map-data-center-city", "7": "campaign-map-route-66", "8": "campaign-map-pikes-peak", "9": "campaign-map-moki-dugway", "10": "campaign-map-oak-creek-canyon", "11": "campaign-map-angeles-crest"};

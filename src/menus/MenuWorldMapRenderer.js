@@ -39,7 +39,7 @@ export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{
  const roadById=new Map(roadNodes.map(n=>[n.id,n]));
  const links=worldMapConnections(element,nodes);
  const entrance=campaignMapEntrance(element,roadNodes,links);
- const landmarks=regional?mapLandmarkPlacements(element,nodes,positions,b):[];
+ const landmarks=regional?mapLandmarkPlacements(element,nodes,positions,b,undefined,document?.parameters?.campaignProgression):[];
  if(regional)drawMapLandmarkLayer(ctx,landmarks,false);
  if(entrance){ctx.save();ctx.beginPath();ctx.rect(b.x,b.y,b.w,b.h);ctx.clip();drawRegionalMapRoad(ctx,entrance.link,entrance.first,entrance.end,b,style.lineWidth,style.linePattern);ctx.restore();}
  const reveal=campaignOverview&&!editing?widgetStates.get(campaignWorldRevealKey(element.id)):null;

@@ -31,14 +31,21 @@ test('road depth passes use exact node anchors and fit both layout shapes',()=>{
   const p=mapLandmarkPlacements(el,el.nodes,positions,b,{});
   assert.equal(p.length,8);
   for(const x of p){
-   assert(x.x>=b.x && x.y>=b.y && x.x+x.width<=b.x+b.w+.001 && x.y+x.height<=b.y+b.h-36+.001);
+   const [l,t,r,bt]=x.ink,scale=x.width/192;
+   assert(x.x+l*scale>=b.x-.001 && x.y+t*scale>=b.y-.001 &&
+    x.x+r*scale<=b.x+b.w+.001 && x.y+bt*scale<=b.y+b.h-36+.001);
+   const node=el.nodes.find(n=>CAMPAIGN_LANDMARKS[el.artRef][n.id][1]===x.index),pin=positions.get(node.id);
+   const separation=Math.min(...[...positions.values()].filter(p=>p!==pin).map(p=>Math.hypot(p.x-pin.x,p.y-pin.y)));
+   const previous=Math.min(b.w*.188,(b.h-36)*.255,144), weight=CAMPAIGN_LANDMARKS[el.artRef][node.id][3];
+   const oldWidth=Math.min(previous*weight,Math.max(previous*.69,separation*1.45));
+   assert(x.width>=oldWidth*2);
    depths.add(x.depth);
   }
-  const painted=[],ctx={save(){},restore(){},drawImage(...a){painted.push(a[1]/192+4*a[2]/160);}};
+  const painted=[],ctx={save(){},restore(){},beginPath(){},rect(){},clip(){},drawImage(...a){painted.push(a[1]/192+4*a[2]/160);}};
   drawMapLandmarkLayer(ctx,p,false);
-  assert.deepEqual(painted,p.filter(x=>x.depth==='ground').map(x=>x.index));
+  assert.deepEqual(painted,p.map(x=>x.index));
   drawMapLandmarkLayer(ctx,p,true);
-  assert.deepEqual(painted,[...p.filter(x=>x.depth==='ground'),...p.filter(x=>x.depth!=='ground')].map(x=>x.index));
+  assert.deepEqual(painted,[...p,...p.filter(x=>x.depth!=='ground')].map(x=>x.index));
  }
  assert.deepEqual([...depths].sort(),['ground','raised','underpass']);
 });
@@ -48,4 +55,19 @@ test('world overview, pending assets and remapped races never show unrelated min
  assert.deepEqual(mapLandmarkPlacements({...el,property:''},[n],points,box,{}),[]);
  assert.deepEqual(mapLandmarkPlacements(el,[n],points,box,null),[]);
  assert.deepEqual(mapLandmarkPlacements(el,[{...n,raceRef:'independent race'}],points,box,{}),[]);
+});
+
+
+test('swapping terrain keeps the canonical regional miniatures even when stage order is swapped',()=>{
+ const progression=menu.parameters.campaignProgression, box={x:0,y:0,w:380,h:420};
+ for(const el of widgets){
+  const p=new Map(el.nodes.map(n=>[n.id,worldMapNodePoint(n,box,el)]));
+  for(const artRef of ['custom-terrain','']){
+   const swapped={...el,artRef};
+   const m=mapLandmarkPlacements(swapped,el.nodes,p,box,{},progression);
+   assert.equal(m.length,8,el.assetRef);
+   const wrong=el.nodes.map(n=>({...n,raceRef:n.raceRef+' test'}));
+   assert.deepEqual(mapLandmarkPlacements(swapped,wrong,p,box,{},progression),[]);
+  }
+ }
 });

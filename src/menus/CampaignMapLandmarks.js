@@ -1,7 +1,8 @@
-import {CAMPAIGN_LANDMARKS} from './CampaignMapLandmarkLayout.js';
+import {CAMPAIGN_LANDMARKS,CAMPAIGN_LANDMARK_BY_STAGE} from './CampaignMapLandmarkLayout.js';
 
 const TILE_W=192,TILE_H=160,ANCHOR_X=96,ANCHOR_Y=112;
 const atlases=new Map();
+const HERO_MULTIPLIER=1.15;
 function atlasFor(ref){
  if(typeof Image==='undefined')return null;
  let atlas=atlases.get(ref);
@@ -15,43 +16,62 @@ function atlasFor(ref){
 
 // Race refs protect custom maps and editor reassignments from inheriting the
 // wrong miniature. Node IDs remain stable when the authored travel order changes.
-export function mapLandmarkPlacements(element,nodes,positions,b,atlas=undefined){
- const layout=element.property==='campaign-path'?CAMPAIGN_LANDMARKS[element.artRef]:null;
- if(!layout)return [];
- const image=atlas===undefined?atlasFor(element.artRef):atlas;
+export function mapLandmarkPlacements(element,nodes,positions,b,atlas=undefined,progression=null){
+ if(element.property!=='campaign-path')return [];
+ // A different terrain backplate does not move or replace the region's sights.
+ // assetRef is the exact authored boss race, independent of world travel order.
+ const authored=progression?.regions?.find(r=>r.bossRef===element.assetRef);
+ const ref=(authored&&CAMPAIGN_LANDMARK_BY_STAGE[authored.stage])||element.artRef;
+ if(!Object.hasOwn(CAMPAIGN_LANDMARKS,ref))return [];
+ const layout=CAMPAIGN_LANDMARKS[ref];
+ const image=atlas===undefined?atlasFor(ref):atlas;
  if(!image)return [];
  const areaHeight=Math.max(1,b.h-36);
- const nominal=Math.min(b.w*.188,areaHeight*.255,144);
+ const nominal=Math.min(b.w*.415,areaHeight*.54,285);
+ const previousNominal=Math.min(b.w*.188,areaHeight*.255,144);
  const ordered=[];
  for(const node of nodes){
   const entry=layout[node.id],p=positions.get(node.id);
   if(!entry||!p||entry[0]!==node.raceRef)continue;
-  const [,index,depth,weight=1]=entry;
+  const [,index,depth,weight=1,ink=[0,0,TILE_W,TILE_H]]=entry;
   let separation=Infinity;
   for(const other of positions.values()){
    if(other!==p)separation=Math.min(separation,Math.hypot(p.x-other.x,p.y-other.y));
   }
-  const width=Math.min(nominal*weight,Math.max(nominal*.69,separation*1.45));
+  const previousWidth=Math.min(previousNominal*weight,Math.max(previousNominal*.69,separation*1.45));
+  const width=Math.max(previousWidth*2,
+   Math.min(nominal*weight*(weight>1?HERO_MULTIPLIER:1),Math.max(nominal*.83,separation*2.75)));
   const scale=width/TILE_W;
-  // Flip neither mini nor road. Near the top of the frame, move the painted
-  // object just far enough down to retain its recognizable skyline silhouette.
-  const lift=depth==='ground'?0:depth==='underpass'?0:Math.min(width*.10,9);
-  const x=Math.max(b.x,Math.min(b.x+b.w-width,p.x-ANCHOR_X*scale));
-  const y=Math.max(b.y,Math.min(b.y+areaHeight-TILE_H*scale,p.y-ANCHOR_Y*scale-lift));
-  ordered.push({image,index,depth,width,height:TILE_H*scale,x,y,sortY:p.y,locked:node.locked});
+  // Clamp actual pixels, not the padded source cell. Preserve each ground
+  // contact as closely as possible at the edges of the artwork.
+  const lift=depth==='raised'?Math.min(width*.045,7):0;
+  const [l,t,r,bt]=ink;
+  const x=Math.max(b.x-l*scale,Math.min(b.x+b.w-r*scale,p.x-ANCHOR_X*scale));
+  const y=Math.max(b.y-t*scale,Math.min(b.y+areaHeight-bt*scale,p.y-ANCHOR_Y*scale-lift));
+  ordered.push({image,index,depth,width,height:TILE_H*scale,x,y,ink,sortY:p.y,pinY:p.y,locked:node.locked});
  }
  return ordered.sort((a,c)=>a.sortY-c.sortY);
 }
 
 export function drawMapLandmarkLayer(ctx,placements,foreground){
- if(!placements.some(p=>(p.depth!=='ground')===foreground))return;
+ if(!placements.length)return;
  ctx.save();
  ctx.imageSmoothingEnabled=false;
  for(const p of placements){
-  if((p.depth!=='ground')!==foreground)continue;
-  ctx.globalAlpha=p.locked?.84:1;
+  // All art belongs in the plate. Repaint only the occluding portion above
+  // the road, so a large tower does not bury the player's node or approach.
+  if(foreground&&p.depth==='ground')continue;
+  ctx.globalAlpha=p.locked?.83:1;
+  if(foreground){
+   ctx.save();
+   ctx.beginPath();
+   const cut=p.pinY-(p.depth==='underpass'?2:Math.min(15,p.height*.13));
+   ctx.rect(p.x,p.y,p.width,Math.max(0,cut-p.y));
+   ctx.clip();
+  }
   ctx.drawImage(p.image,p.index%4*TILE_W,Math.floor(p.index/4)*TILE_H,TILE_W,TILE_H,
    Math.round(p.x),Math.round(p.y),Math.round(p.width),Math.round(p.height));
+  if(foreground)ctx.restore();
  }
  ctx.restore();
 }
