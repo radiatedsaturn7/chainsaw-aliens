@@ -2,6 +2,11 @@ import * as THREE from '../vendorBridge/three.js';
 import {mergeGeometries} from '../../vendor/three-addons/utils/BufferGeometryUtils.js';
 
 export const isDedicatedModelWheelCar=car=>Boolean(car?.art?.bodyModel?.ref&&car.art.threeModelWheels!==false&&!car.art.wheelModel?.ref);
+// Race presentation includes both generated wheels and fully authored sets,
+// but not sprite bodies with independently bound wheel models.
+export const isNativeModelWheelCar=car=>Boolean(isDedicatedModelWheelCar(car)||car?.art?.bodyModel?.ref&&car.art.wheelModel?.ref);
+export const hasAuthoritativeModelWheelPose=pose=>['x','y','z','w'].every(k=>Number.isFinite(pose?.orientation?.[k]));
+
 
 // Axle is X, local origin is the actual hub; both faces are drawn so a
 // mirrored vehicle does not need separate left/right model assets.

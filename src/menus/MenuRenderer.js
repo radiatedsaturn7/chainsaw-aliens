@@ -172,7 +172,7 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
         const preview={x:card.x+card.w*(1-scale)/2,y:card.y+card.h*(1-scale)/2,w:card.w*scale,h:card.h*.85*scale};
         const angle=element.angle+(selected&&!editing?elapsed/element.duration*360:0);
         const fallback=editing||carThumbnailNeedsFallback(entry.value,angle,selected);
-        const modelHint=carThumbnailHasModelSource(entry.value);
+        const modelHint=carThumbnailHasModelSource(entry.value)||resources?.hasActiveCarVersion?.(entry.value);
         const car=fallback?resources?.car(entry.value):modelHint?resources?.car(entry.value,{prepareExterior:false}):null;
         if(car?.art?.bodyModel?.ref){
           // A native body uses one clear front-quarter image, no elapsed-time
@@ -190,6 +190,7 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
     }
     else if(element.type==='world-map'){const mapBackground=element.artRef?resources?.art(element.artRef,Math.floor(time*8)):null;if(mapBackground){const mapBounds=element.property==='campaign-path'?{...b,h:Math.max(1,b.h-36)}:b;ctx.imageSmoothingEnabled=element.property!=='campaign-path';drawMenuImage(ctx,mapBackground,mapBounds,element.imageFit);}drawWorldMap(ctx,b,element,resources,document,parameters,value,{drawText,fontFamily,time,widgetStates,editing,mapBackground,carViewport:bounds,campaignOverview:campaignWorldOverview(screen,document)===element,drawCar:(bounds,angle)=>{
  const name=parameters.carRef||resources?.game?.menuProgress?.selectedGameCar;if(!name)return;
+ if(resources?.hasActiveCarVersion?.(name)&&paintMenuModelStill(ctx,bounds,resources.stockCar(name),resources.carPreview))return;
  if(carThumbnailNeedsFallback(name,angle,true))drawCarComponent(ctx,bounds,{type:'car-preview',showroomPreview:true,animation:'none',angle},resources?.stockCar?.(name),resources,time,parameters,fontFamily);
  else paintCarThumbnail(ctx,bounds,name,angle,undefined,undefined,true);
  }});}
@@ -232,7 +233,7 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
     }
     else if(element.type==='car-preview'&&element.catalogThumbnail&&!editing){
       const name=element.assetRef||value;
-      if(carThumbnailNeedsFallback(name,element.angle)){
+      if(resources?.hasActiveCarVersion?.(name)||carThumbnailNeedsFallback(name,element.angle)){
         drawCarComponent(ctx,b,{...element,showroomPreview:true},resources?.stockCar(name),resources,time,parameters,fontFamily);
       }else paintCarThumbnail(ctx,b,name,element.angle);
     }

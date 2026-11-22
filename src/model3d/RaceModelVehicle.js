@@ -1,5 +1,6 @@
 import * as THREE from '../vendorBridge/three.js';
-import {normalizeModelBinding} from './ModelBinding.js';
+import {normalizeModelBinding,modelWheelBindingForAxle} from './ModelBinding.js';
+import {isNativeModelWheelCar,hasAuthoritativeModelWheelPose} from './ModelWheel.js';
 import {jointMatrices} from './ModelRig.js';
 import {ModelAssetInstance,modelAssets} from './ModelAssets.js';
 
@@ -20,6 +21,7 @@ export function updateRaceModelParts(group,car,session,{library=modelAssets}={})
       const spin=new THREE.Group();spin.add(instance.object);replacement.add(spin);replacement.userData.spin=spin;
       group.add(replacement);part=replacement;
     }
+    if(wheelId)binding=modelWheelBindingForAxle(binding,wheelId);
     const bindingKey=JSON.stringify(binding);
     if(instance.model!==model||instance.raceBindingKey!==bindingKey){
       instance.setModel(model,binding);
@@ -29,7 +31,13 @@ export function updateRaceModelParts(group,car,session,{library=modelAssets}={})
       instance.time=Math.max(0,Number(session?.elapsedMs)||0)/1000*instance.binding.speed;
       instance.update(0);
     }
-    if(wheelId)part.userData.spin.rotation.x=Number(session?.vehicleRenderState?.wheelPoses?.[wheelId]?.spinAngleRad)||0;
+    if(wheelId){
+      const pose=session?.vehicleRenderState?.wheelPoses?.[wheelId];
+      // A native body uses the canonical world wheel orientation (which
+      // already includes spin). Do not apply spin a second time here.
+      part.userData.spin.rotation.x=isNativeModelWheelCar(car)&&hasAuthoritativeModelWheelPose(pose)
+        ?0:Number(pose?.spinAngleRad)||0;
+    }
     return part;
   };
   parts.body=install(parts.body,car.art?.bodyModel);

@@ -179,7 +179,8 @@ export function openProjectBrowser({
   onImport = null,
   onExportZip = null,
   onCancel = null,
-  onPick = null
+  onPick = null,
+  filterEntries = null
 } = {}) {
   activePreviewTrackId = null;
   ensureProjectFileIndex();
@@ -517,7 +518,7 @@ export function openProjectBrowser({
     function renderFolder() {
       const folder = state.folder;
       const query = state.query.trim().toLowerCase();
-      const allEntries = listEntries(folder);
+      const allEntries = filterEntries ? filterEntries(folder,listEntries(folder)) : listEntries(folder);
       folderNameCache.set(folder, new Set(allEntries.map((entry) => String(entry.name || '').toLowerCase())));
       const entries = sortProjectBrowserEntries(
         allEntries.filter((entry) => !query || entry.name.toLowerCase().includes(query)),

@@ -1,3 +1,5 @@
+import {canonicalCarVersionRef} from '../racing/CarVersions.js';
+import {hydrateRaceCarVersions} from '../ui/RaceCarVersionFiles.js';
 import {campaignMapEntrance} from './CampaignMapEntrance.js';
 import {campaignWorldOverview,campaignWorldRevealKey,WORLD_ROAD_REVEAL_SECONDS,WORLD_PIN_POP_SECONDS} from './CampaignWorldReveal.js';
 import {campaignRoadDirectionalNode,mapRoadRoute,queueCampaignRoadMove} from './MenuMapRoads.js';
@@ -98,13 +100,17 @@ export default class MenuPlayer {
   async campaignGarage(action='owned',value={}){
     // Saved menu actions normalize omitted payloads to null, not undefined.
     value ||= {};
-    const garage=this.resources.garage,current=this.preview?this.flow.parameters.carRef:(this.game.menuProgress?.selectedGameCar||this.flow.parameters.carRef);
+    const garage=this.resources.garage,selected=this.preview?this.flow.parameters.carRef:(this.game.menuProgress?.selectedGameCar||this.flow.parameters.carRef);
+    const versions=await hydrateRaceCarVersions(),canonical=ref=>canonicalCarVersionRef(versions,ref);
+    const current=canonical(selected);
     await garage.load();
-    const owned=ownedCampaignCars(garage.progress,current);
+    const ownedOf=progress=>[...new Set(ownedCampaignCars(progress,selected).map(canonical))];
+    const owned=ownedOf(garage.progress);
+    if(value.ref)value={...value,ref:canonical(value.ref)};
     const command=(target,value)=>({type:'campaign-garage',target,value});
     if(action==='select'){
       if(!owned.includes(value.ref))throw Error('You do not own this car');
-      await garage.transaction(next=>{next.garage.ownedCars=owned;});
+      await garage.transaction(next=>{next.garage.ownedCars=ownedCampaignCars(next.garage,selected);});
       const ref=this.preview?value.ref:await commitMenuCar(this.game,value.ref,{allowSwitch:true});
       this.flow.lockedCarRef=ref;this.flow.setParameter('carRef',ref);this.flow.parameters.selectedGameCar=ref;
       this.resources.garageCars.clear();this.resources.cancelAutoUpgradeQuotes();
@@ -112,15 +118,15 @@ export default class MenuPlayer {
       if(this.flow.history.at(-1)==='garage')this.flow.history.pop();
       this.flow.goTo('garage',{remember:false});return;
     }
-    const all=this.resources.choices('cars',this.flow.document,this.flow.parameters);
+    const all=this.resources.choices('cars',this.flow.document,{...this.flow.parameters,includeDisabledCars:action==='owned'||action==='inspect'&&owned.includes(value.ref)});
     if(action==='inspect'||action==='buy'){
       if(!all.some(c=>c.value===value.ref))throw Error('Car unavailable');
       const selected=await this.game.resolveRaceTravelCarAsync(value.ref);if(!selected?.car)throw Error('Car unavailable');
       const price=campaignCarPrice(this.resources.performance(selected.car).points);
       if(action==='buy'){
         await garage.transaction(next=>{
-          if(ownedCampaignCars(next.garage,current).includes(value.ref))return {debit:0};
-          next.garage.ownedCars=[...ownedCampaignCars(next.garage,current),value.ref];
+          if(ownedOf(next.garage).includes(value.ref))return {debit:0};
+          next.garage.ownedCars=[...ownedCampaignCars(next.garage,selected),value.ref];
           return {debit:price};
         });
         this.flow.history=this.flow.history.filter(id=>!id.startsWith('fleet-'));

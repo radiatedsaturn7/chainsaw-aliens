@@ -1,3 +1,5 @@
+import {filterPlayableCarVersions,canonicalCarVersionRef,activeCarVersionRef} from '../racing/CarVersions.js';
+import {getRaceCarVersions,hydrateRaceCarVersions,resolveRaceCarVersionFile,hydrateRaceCarVersionFile} from '../ui/RaceCarVersionFiles.js';
 import {applyMotorsportRace} from '../menus/MotorsportEvents.js';
 import {WheelService} from '../hardware/wheels/WheelService.js';
 import {openWheelSettings} from '../hardware/wheels/WheelSettings.js';
@@ -1758,9 +1760,11 @@ export default class Game {
   }
 
   resolveRaceTravelCar(carRef = '') {
-    const ref = sanitizeProjectFileName(carRef);
-    if (!ref || !this.raceEditor) return null;
-    const liveCar = this.getLiveRaceTravelCarDocument(ref);
+    const requested = sanitizeProjectFileName(carRef);
+    if (!requested || !this.raceEditor) return null;
+    const versions=getRaceCarVersions();
+    const ref=canonicalCarVersionRef(versions,requested);
+    const liveCar = activeCarVersionRef(versions,ref)===ref?this.getLiveRaceTravelCarDocument(ref):null;
     if (liveCar) {
       return this.registerRaceTravelCarDocument({
         schemaVersion: 2,
@@ -1772,9 +1776,9 @@ export default class Game {
         liveRevision: JSON.stringify(liveCar)
       });
     }
-    const payload = loadProjectFile('cars', ref);
+    const {ref:resolvedRef,payload}=resolveRaceCarVersionFile(requested,{versions});
     if (!payload?.data) return null;
-    return this.registerRaceTravelCarDocument(payload.data, ref, {
+    return this.registerRaceTravelCarDocument(payload.data, resolvedRef, {
       source: String(payload.storageSource || 'cache'),
       savedAt: Number(payload.savedAt || payload.data?.savedAt || 0)
     });
@@ -1818,9 +1822,11 @@ export default class Game {
   }
 
   async resolveRaceTravelCarAsync(carRef = '') {
-    const ref = sanitizeProjectFileName(carRef);
-    if (!ref) return null;
-    const liveCar = this.getLiveRaceTravelCarDocument(ref);
+    const requested = sanitizeProjectFileName(carRef);
+    if (!requested) return null;
+    const versions=await hydrateRaceCarVersions();
+    const ref=canonicalCarVersionRef(versions,requested);
+    const liveCar = activeCarVersionRef(versions,ref)===ref?this.getLiveRaceTravelCarDocument(ref):null;
     if (liveCar) {
       return this.registerRaceTravelCarDocument({
         schemaVersion: 2,
@@ -1832,33 +1838,28 @@ export default class Game {
         liveRevision: JSON.stringify(liveCar)
       });
     }
-    const payload = await hydrateProjectFilePayload('cars', ref, {
-      freshness: 'newest'
-    });
+    const {ref:resolvedRef,payload}=await hydrateRaceCarVersionFile(requested,{versions,freshness:'newest'});
     if (!payload?.data) return null;
-    return this.registerRaceTravelCarDocument(payload.data, ref, {
+    return this.registerRaceTravelCarDocument(payload.data, resolvedRef, {
       source: String(payload.storageSource || 'server'),
       savedAt: Number(payload.savedAt || payload.data?.savedAt || 0)
     });
   }
 
   async chooseRaceTravelCar() {
+    const versions=await hydrateRaceCarVersions();
     if (typeof document === 'undefined') {
-      const first = listProjectFiles('cars')[0]?.name || '';
-      return this.resolveRaceTravelCar(first);
+      const first = filterPlayableCarVersions(listProjectFiles('cars'),versions)[0]?.name || '';
+      return this.resolveRaceTravelCarAsync(first);
     }
-    let selected = null;
     const picked = await openProjectBrowser({
       mode: 'open',
       fixedFolder: 'cars',
       initialFolder: 'cars',
       title: 'Choose Race Car',
-      onOpen: ({ name }) => {
-        selected = this.resolveRaceTravelCar(name);
-      }
+      filterEntries: (folder,entries)=>folder==='cars'?filterPlayableCarVersions(entries,versions):entries
     });
-    if (!selected && picked?.action === 'open') selected = this.resolveRaceTravelCar(picked.name);
-    return selected;
+    return picked?.action==='open'?this.resolveRaceTravelCarAsync(picked.name):null;
   }
 
   createRaceTravelSession({ originState = this.state, car = null } = {}) {
@@ -1938,7 +1939,15 @@ export default class Game {
     let runtimeCar = car.car || car;
     try {
       const garage=params.garage||continuation?.garage||this.items?.garage;
-      if(garage)runtimeCar=await garage.build(car.documentName||car.name||params.carRef,runtimeCar);
+      if(garage){
+        const canonical=car.documentName||car.name||params.carRef;
+        const previous=sanitizeProjectFileName(params.carRef);
+        // Only old saves that still explicitly select their alternate key
+        // use that existing setup; canonical and alternate saves stay intact.
+        const key=previous&&previous!==canonical&&canonicalCarVersionRef(getRaceCarVersions(),previous)===canonical
+          &&garage.progress?.cars?.[previous]?previous:canonical;
+        runtimeCar=await garage.build(key,runtimeCar);
+      }
     }catch(error){return fail(`Garage could not prepare car: ${error.message}`);}
     if (params.menuFlow && (!params.menuFlow.active || params.menuFlow !== this.menuPlayer?.flow)) return false;
     if(params.motorsportEvent)runtimeCar={...runtimeCar,condition:structuredClone(params.motorsportEvent.condition)};
@@ -1987,12 +1996,20 @@ export default class Game {
           && !competition.aiDrivers.some(driver => driver.enabled !== false);
       } catch { /* Let the existing worker/fallback path report loading errors. */ }
       let savedCars = (soloWithoutTraffic || params.motorsportEvent) ? []
-        : await this.raceEditor.hydrateSavedRaceCarsForTravel?.() || [];
+        : await this.raceEditor.hydrateSavedRaceCarsForTravel?.({deferModels:true,preserveCarId:car.id}) || [];
       if (this.raceTravelSession !== travelSession) return false;
       if (gridRace && this.raceEditor.selectRaceTravelGridCars) {
         preparedAiCarIds = params.motorsportEvent
           ? gridRace.competition.aiDrivers.map(()=>car.id)
           : this.raceEditor.selectRaceTravelGridCars(gridRace, car.id);
+        // The roster prepass downloads only original car data; native models
+        // are needed for the selected player and the already-chosen grid only.
+        if(!params.motorsportEvent){
+          const nativeGrid=await this.raceEditor.prepareRaceTravelGridCarVersions?.(preparedAiCarIds)||[];
+          if(this.raceTravelSession!==travelSession)return false;
+          const byID=new Map(nativeGrid.map(candidate=>[this.raceEditor.getRaceCarProjectIdentity(candidate),candidate]));
+          savedCars=savedCars.map(candidate=>byID.get(this.raceEditor.getRaceCarProjectIdentity(candidate))||candidate);
+        }
         // Select once, then use this exact grid when the runtime starts. Random
         // selection must not pick different cars after their artwork was packed.
         if (gridRace.competition?.trafficEnabled === false) {

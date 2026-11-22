@@ -1,3 +1,5 @@
+import {activeCarVersionRef,canonicalCarVersionRef,filterPlayableCarVersions} from '../racing/CarVersions.js';
+import {getRaceCarVersions,hydrateRaceCarVersions,hydrateRaceCarVersionFile,resolveRaceCarVersionFile} from '../ui/RaceCarVersionFiles.js';
 import {calculateCarPerformance} from '../racing/CarPerformance.js';
 import {raceRewardQuote} from '../garage/CampaignEconomy.js';
 import {hydrateServerStorage,readShowroomArt,showroomArtVersion} from '../ui/serverStorage.js';
@@ -15,7 +17,12 @@ import {getRaceArtSpriteCanvasShared,hydrateRaceArtSpriteShared,hasShowroomArtFr
 
 export class MenuResources {
   constructor(game){this.appearance=new MenuAppearanceResources();this.game=game;this.carPreview=new MenuCarPreview(game.carEditor);this.showroomFrames=new WeakMap();this.cars=new Map();this.carSources=new Map();this.artCache=new Map();this.tunings=new WeakMap();this.garageCars=new Map();this.partCatalog=[];this.autoQuotes=new Map();this.pending=new Map();this.errors=new Map();this.missingRaces=new Set();}
-  prepareScreen(document,screen,parameters,options){return prepareMenuScreen(this,document,screen,parameters,options);}
+  async prepareScreen(document,screen,parameters,options){
+    this.carVersionsReady ||= hydrateRaceCarVersions();
+    await this.carVersionsReady;
+    if(options?.isCurrent?.()===false)return;
+    return prepareMenuScreen(this,document,screen,parameters,options);
+  }
   exteriorArtRefs(car){return this.game.carEditor.collectRaceCarArtRefs({...car,art:{...car.art,gauges:{},interior:{},smoke:{}}});}
   font(element){return this.appearance.font(element);}
   cursor(element){return element.cursorArtRef?this.art(element.cursorArtRef):this.appearance.cursor(element);}
@@ -79,15 +86,24 @@ export class MenuResources {
       return this.garageCatalog().filter(({item})=>item.carPart.forSale||this.garage?.items.progress.bags.items[item.id]>0).map(({ref,item})=>({value:ref,label:item.name}));
     }
     const folder={cars:'cars',races:'races',levels:'levels',movies:'cutscenes',actors:'actors',doodads:'doodads'}[source];
-    const entries=folder?listProjectFiles(folder,{allowSyncFetch:false}):[];
+    const listed=folder?listProjectFiles(folder,{allowSyncFetch:false}):[];
+    const entries=source==='cars'?filterPlayableCarVersions(listed,getRaceCarVersions(),{includeDisabled:parameters.includeDisabledCars===true}):listed;
     // Static manifest entries acquire timestamps as they load. Keep carousel
     // order stable while fetching only one page.
     if(source==='cars')entries.sort((a,b)=>a.name.localeCompare(b.name));
     return entries.map(f=>({label:f.name,value:f.name}));
   }
+  hasActiveCarVersion(ref){
+    const versions=getRaceCarVersions(),name=canonicalCarVersionRef(versions,ref),active=activeCarVersionRef(versions,name);
+    return Boolean(active&&active!==name);
+  }
   request(key,fn){if(this.pending.has(key))return this.pending.get(key);if(this.errors.has(key))return Promise.resolve();const task=Promise.resolve().then(fn).catch(e=>this.errors.set(key,String(e?.message||e))).finally(()=>{this.pending.delete(key);this.showroomFrames=new WeakMap();});this.pending.set(key,task);return task;}
   car(ref,{prepareExterior=true}={}){
     const stock=this.stockCar(ref,{prepareExterior}),garage=this.garage;
+    // A historical save may still contain the old alternate key. Use its
+    // own existing setup if asked directly, without ever moving/deleting it.
+    const canonical=canonicalCarVersionRef(getRaceCarVersions(),ref);
+    if(ref!==canonical&&!garage?.progress?.cars?.[ref])ref=canonical;
     if(!stock||!garage?.items.ready)return stock;
     const key=`${ref}:${garage.revision}:${garage.items.revision}`;
     const cached=this.garageCars.get(key);if(cached?.stock===stock){
@@ -151,6 +167,8 @@ export class MenuResources {
   }
   stockCar(ref,{prepareExterior=true}={}){
     if(!ref)return null;
+    const versions=getRaceCarVersions();
+    ref=canonicalCarVersionRef(versions,ref);
     const showroom=this.showroomNames?.has(ref),generation=this.showroomGeneration;
     const storageVersion=showroom?showroomArtVersion():null;
     const loadArt=car=>{
@@ -164,7 +182,15 @@ export class MenuResources {
       }
       for(const art of this.exteriorArtRefs(car))this.requestExteriorArt(ref,art,{showroom,generation});
     };
-    const cached=loadProjectFile('cars',ref,{allowSyncFetch:false})?.data;
+    const cached=resolveRaceCarVersionFile(ref,{versions,allowSyncFetch:false}).payload?.data;
+    const active=activeCarVersionRef(versions,ref);
+    this.carVersionWarmups ||= new WeakMap();
+    let warmed=this.carVersionWarmups.get(versions);
+    if(!warmed){warmed=new Set();this.carVersionWarmups.set(versions,warmed);}
+    if(active&&active!==ref&&!warmed.has(ref)){
+      warmed.add(ref);
+      this.request('car-version:'+ref+':'+active,()=>hydrateRaceCarVersionFile(ref,{versions,hydrateDependencies:false}));
+    }
     if(this.cars.has(ref)&&(!cached||this.carSources.get(ref)===cached)){
       const car=this.cars.get(ref);loadArt(car);return car;
     }
@@ -178,7 +204,7 @@ export class MenuResources {
     this.request(showroom?`showroom-car:${generation}:${storageVersion}:${ref}`:`car:${ref}`,async()=>{
       if(!isCurrent())return;
       let payload;
-      try{payload=await hydrateProjectFilePayload('cars',ref,{hydrateDependencies:false});}
+      try{payload=(await hydrateRaceCarVersionFile(ref,{versions,hydrateDependencies:false})).payload;}
       catch(error){if(!isCurrent())return;throw error;}
       if(isCurrent())install(payload?.data);
     });return null;

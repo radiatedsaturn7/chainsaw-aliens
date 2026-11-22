@@ -219,6 +219,8 @@ Pixel Editor and MIDI Editor are the design references for new and revised portr
 
 - File → Car Description edits a short multiline description saved in the car document. The default Choose Your Car screen displays the highlighted car’s wrapped description in place of the HP/torque graph and class/specification panel; the Menu Editor exposes a Car Description widget bound to the selected car.
 
+- File → Car Availability shows Enabled or Disabled for the current saved version. Switching versions keeps the original identity and requires another saved version to remain playable. A 3D alternate must have matching handling, dimensions, tires, and transmission settings, valid saved body geometry, and the four named wheel and four named lamp sockets. One shared property dialog works across editor layouts. A disabled file remains accessible under File → Open for editing and re-enabling; the originals are not deleted. The registry change takes effect only after project storage confirms the save.
+
 - Root: File, Edit, View, Art, Drivetrain, Tuning, Aero, Suspension, Drive.
 - File → Load Preset offers AWD, RWD, and FWD. These native car documents live in system storage, outside the project manifest. Loading creates an independent unsaved editor copy; its first Save uses Save As. System templates and unsaved preset copies never appear in race car selections or AI settings. Saved user copies behave like ordinary cars. Legacy exported WRX/BRZ/Civic starter records are also excluded from file and vehicle lists; separately named user copies remain available.
 - Edit: undo, redo.
@@ -996,3 +998,4 @@ Campaign saves retain raceDrivingLine, racePaceMode (Off/Voice/Icons/Both), and 
 - Repeated touch or keyboard service-brake presses remain service braking; they no longer trigger a hidden timed handbrake. Dedicated gamepad handbrake input retains its behavior.
 - Stability-control wheel selection must produce yaw in the direction of the requested correction, including countersteer. Its target turn rate is bounded by supported tire force divided by vehicle mass and speed, so saturated turns do not request impossible extra rotation.
 - RTG-001 and the built-in WRX baseline use 70% front brake balance, calibrated against stock-tire corner-braking tests. This is game tuning, not a claimed factory hydraulic ratio; player-authored tuning remains authoritative.
+

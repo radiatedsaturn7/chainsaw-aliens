@@ -1,3 +1,5 @@
+import {activeCarVersionRef,canonicalCarVersionRef,filterPlayableCarVersions,legacyAlternateCarRef} from '../racing/CarVersions.js';
+import {getRaceCarVersions,hydrateRaceCarVersions,resolveRaceCarVersionFile,hydrateRaceCarVersionFile} from './RaceCarVersionFiles.js';
 import {US_STATES,normalizeRaceLocation} from '../racing/RaceLocation.js';
 import {carChaseClearanceLift} from '../racing/CarChaseFraming.js';
 import {startCampaignChallenge,updateCampaignSectors} from '../garage/CampaignChallenges.js';
@@ -116,6 +118,8 @@ import { RaceCarDepthSprites } from '../racing/RaceCarDepthSprites.js';
 import { createRaceTireTrackBuffer, appendRaceTireTrackBuffer, trimRaceTireTrackBuffer, raceTireTrackSessionToken } from '../racing/RaceTireTrackBuffers.js';
 import { CAR_CATEGORIES, CAR_PERFORMANCE_CLASSES, carCategory, calculateCarPerformance, normalizeAiCarSelection, selectEligibleRaceAiCars } from '../racing/CarPerformance.js';
 import { openEditorForm } from './shared/editorForm.js';
+import {carAvailabilityLabel,openCarAvailability} from './CarAvailabilityEditor.js';
+import {hydrateRaceCarVersions as refreshEditorRaceCarVersions} from './RaceCarVersionFiles.js';
 import { applyCarImportPlacementDefaults } from '../racing/CarImportPlacementDefaults.js';
 import {syncRaceModelTiles} from '../model3d/RaceModelTiles.js';
 import {ensureModelSceneLighting} from '../model3d/ModelRender.js';
@@ -123,7 +127,7 @@ import {modelAssets,ModelAssetInstance} from '../model3d/ModelAssets.js';
 import {pickModelBinding} from './ModelPicker.js';
 import {normalizeModelBinding} from '../model3d/ModelBinding.js';
 import {updateRaceModelParts,syncRaceModelLamps,hasRaceModelLampMounts,getRaceModelLampWorldFrames} from '../model3d/RaceModelVehicle.js';
-import {createModelWheel,isDedicatedModelWheelCar,setModelWheelPose} from '../model3d/ModelWheel.js';
+import {createModelWheel,isDedicatedModelWheelCar,isNativeModelWheelCar,hasAuthoritativeModelWheelPose,setModelWheelPose} from '../model3d/ModelWheel.js';
 import { openTireLibrary } from './TireLibrary.js';
 import { applyTireDefinition, normalizeTireDefinition, resolveTireCompound, getTireArtRefs } from '../racing/raceTires.js';
 import { getArtDocumentFrames } from './shared/artDocumentPixels.js';
@@ -1395,10 +1399,13 @@ export default class RaceEditor {
     if (!this.project || !Array.isArray(this.project.cars)) return 0;
     let loaded = 0;
     try {
-      listProjectFiles('cars').forEach((entry) => {
+      const versions=getRaceCarVersions();
+      const all=listProjectFiles('cars');
+      const entries=this.mode==='car'?all:filterPlayableCarVersions(all,versions,{includeDisabled:true});
+      entries.forEach((entry) => {
         const name = sanitizeProjectFileName(entry?.name || '');
         if (!name) return;
-        const payload = loadProjectFile('cars', name);
+        const payload=loadProjectFile('cars',name); // Index originals without loading a second vehicle's native assets.
         if (!payload?.data || isSystemCarDocument(payload.data, name)) return;
         const car = this.withSavedRaceCarRuntimeIdentity(
           this.normalizeLoadedCarDocument(payload?.data || payload, name, { preserveExistingArt: true }),
@@ -1414,21 +1421,61 @@ export default class RaceEditor {
     return loaded;
   }
 
-  async hydrateSavedRaceCarsForTravel() {
+  async hydrateSavedRaceCarsForTravel({deferModels=false,preserveCarId=''}={}) {
     // Pages lists documents without downloading them. Populate the catalog before
     // constructing the grid, even when no car browser has warmed the index.
     await hydrateServerStorage({ folder: 'cars' });
-    const entries = listProjectFiles('cars', { includeSystem: true });
+    const versions=await hydrateRaceCarVersions();
+    const entries=filterPlayableCarVersions(listProjectFiles('cars',{includeSystem:true}),versions,{includeDisabled:true});
+    const names=new Set(entries.map(entry=>entry.name));
+    const namesByRawID=new Map();
+    let completeRoster=true;
+    this.raceCarVersionRawIDs=null;
     const loaded = await Promise.all(entries.map(async ({name}) => {
-      const payload = await hydrateProjectFilePayload('cars', name);
-      if (!payload?.data || isSystemCarDocument(payload.data, name)) return null;
+      const payload=(await hydrateRaceCarVersionFile(name,{versions,originalOnly:deferModels,hydrateDependencies:!deferModels})).payload;
+      if (!payload?.data) {completeRoster=false;return null;}
+      if (isSystemCarDocument(payload.data,name))return null;
       const car = this.withSavedRaceCarRuntimeIdentity(
         this.normalizeLoadedCarDocument(payload.data, name, {preserveExistingArt:true}), name
       );
-      this.upsertRaceProjectCar(car);
+      if(!car?.id){completeRoster=false;return null;}
+      let rawNames=namesByRawID.get(car.id);
+      if(!rawNames)namesByRawID.set(car.id,rawNames=new Set());
+      rawNames.add(name);
+      if(this.getRaceCarProjectIdentity(car)!==preserveCarId)this.upsertRaceProjectCar(car);
       return car;
     }));
+    if(this.mode!=='car'){
+      this.raceCarVersions=versions;
+      // A partial catalog cannot establish uniqueness of a legacy bare ID.
+      this.raceCarVersionRawIDs=completeRoster?namesByRawID:null;
+      this.project.cars=this.project.cars.filter(car=>{
+        const ref=car.__playtestDocumentName;
+        return !ref||!names.has(canonicalCarVersionRef(versions,ref))||canonicalCarVersionRef(versions,ref)===ref;
+      });
+    }
     return loaded.filter(Boolean);
+  }
+
+  async prepareRaceTravelGridCarVersions(ids=[]){
+    const versions=this.raceCarVersions||await hydrateRaceCarVersions();
+    const byName=new Map();
+    for(const id of ids){
+      const original=this.findRaceProjectCarById(id),name=original?.__playtestDocumentName;
+      if(!name)continue;
+      const active=activeCarVersionRef(versions,name);
+      if(active&&active!==name&&!byName.has(name))byName.set(name,original);
+    }
+    return (await Promise.all([...byName].map(async([name,original])=>{
+      try{
+        const {payload}=await hydrateRaceCarVersionFile(name,{versions,hydrateDependencies:false});
+        if(!payload?.data)return original;
+        const car=this.withSavedRaceCarRuntimeIdentity(
+          this.normalizeLoadedCarDocument(payload.data,name,{preserveExistingArt:true}),name);
+        if(!car?.id)return original;
+        this.upsertRaceProjectCar(car);return car;
+      }catch{return original;}
+    }))).filter(Boolean);
   }
 
   get selectedRace() {
@@ -1511,16 +1558,34 @@ export default class RaceEditor {
   }
 
   findRaceProjectCarById(carId = '') {
-    const id = String(carId || '');
+    let id = String(carId || '');
     if (!id || !Array.isArray(this.project?.cars)) return null;
-    let fallback = null;
-    const cars = this.project.cars;
-    for (let index = 0; index < cars.length; index++) {
-      const car = cars[index];
-      if (this.getRaceCarProjectIdentity(car) === id) return car;
-      if (!fallback && car?.id === id) fallback = car;
+    const versions=this.mode!=='car'?(this.raceCarVersions||getRaceCarVersions()):null;
+    const cars=this.project.cars;
+    if(versions&&id.startsWith(SAVED_RACE_CAR_PLAYTEST_ID_PREFIX)){
+      const ref=id.slice(SAVED_RACE_CAR_PLAYTEST_ID_PREFIX.length);
+      const canonical=canonicalCarVersionRef(versions,ref);
+      const next=SAVED_RACE_CAR_PLAYTEST_ID_PREFIX+canonical;
+      if(cars.some(car=>this.getRaceCarProjectIdentity(car)===next))id=next;
+    }else if(versions){
+      const names=this.raceCarVersionRawIDs?.get(id);
+      if(names?.size===1){
+        const [ref]=names,active=activeCarVersionRef(versions,ref);
+        if(active&&active!==ref){
+          const replacement=cars.find(car=>car.__playtestDocumentName===ref&&car.art?.bodyModel?.ref);
+          if(replacement)return replacement;
+        }
+      }
     }
-    return fallback;
+    let fallback=null;
+    for (let index = 0; index < cars.length; index++) {
+      const car=cars[index];
+      if (this.getRaceCarProjectIdentity(car) === id) return car;
+      if (!fallback && car?.id === id) fallback=car;
+    }
+    if(fallback||!versions||!this.raceCarVersionRawIDs)return fallback;
+    const legacy=legacyAlternateCarRef(versions,id);
+    return legacy?cars.find(car=>car.__playtestDocumentName===legacy)||null:null;
   }
 
   upsertRaceProjectCar(car = null) {
@@ -6945,7 +7010,7 @@ export default class RaceEditor {
       const section = spec?.sections?.file;
       return [...(section?.actions || [])].map((id) => ({
         id,
-        label: id === 'exit-main' ? 'Exit' : (spec.actions?.[id]?.label || this.getRaceActionLabel(id)),
+        label: id === 'exit-main' ? 'Exit' : id === 'car-availability' ? carAvailabilityLabel(this) : (spec.actions?.[id]?.label || this.getRaceActionLabel(id)),
         disabled: !this.isActionAvailable(id),
         onSelect: this.isActionAvailable(id) ? () => this.handleMenuAction(id) : null
       }));
@@ -8811,6 +8876,7 @@ export default class RaceEditor {
   }
 
   isActionAvailable(action) {
+    if (action === 'car-availability') return this.mode === 'car' && Boolean(this.currentCarDocumentName) && !this.carAvailabilityBusy;
     if (action === 'undo') return this.raceHistory.length > 0;
     if (action === 'redo') return this.raceRedoStack.length > 0;
     if (NETWORK_ACTIONS[action]) return this.mode === 'race';
@@ -9333,6 +9399,7 @@ export default class RaceEditor {
     // Saved variants share the stock car id. The opened filename, not stale
     // runtime metadata from Save As, identifies the document being replaced.
     this.currentCarDocumentName = sanitizeProjectFileName(name || car.name || car.id);
+    if(this.mode==='car')void refreshEditorRaceCarVersions().catch(()=>{});
     this.withSavedRaceCarRuntimeIdentity(car, this.currentCarDocumentName);
     this.upsertRaceProjectCar(car);
     this.project.selectedCarId = this.getRaceCarProjectIdentity(car);
@@ -9961,6 +10028,7 @@ export default class RaceEditor {
     if (action === 'race-scale') { void this.openRaceScale(); return; }
     if (action === 'race-description') { void this.openRaceDescription(); return; }
     if (action === 'car-description') { void this.openCarDescription(); return; }
+    if (action === 'car-availability') { void openCarAvailability(this).catch(error=>{this.status=error.message;this.game.showSystemToast?.(error.message);}); return; }
     if (action === 'car-category') { void this.openCarCategorySettings(); return; }
     if (action === 'race-ai-cars') { void this.openRaceAiCarSettings(); return; }
     if (action === 'test-drive') {
@@ -10687,23 +10755,26 @@ export default class RaceEditor {
       this.openPlaytestPicker();
       return null;
     }
+    const versions=await hydrateRaceCarVersions();
     const picked = await openProjectBrowser({
       mode: 'open',
       fixedFolder: 'cars',
       initialFolder: 'cars',
-      title: 'Choose Race Car'
+      title: 'Choose Race Car',
+      filterEntries: (folder,entries)=>folder==='cars'?filterPlayableCarVersions(entries,versions):entries
     });
     if (picked?.action === 'open' && picked.name) {
+      const {ref:name,payload}=await hydrateRaceCarVersionFile(picked.name,{versions});
       const car = this.withSavedRaceCarRuntimeIdentity(
-        this.normalizeLoadedCarDocument(picked.payload?.data || picked.payload, picked.name, { preserveExistingArt: true }),
-        picked.name
+        this.normalizeLoadedCarDocument(payload?.data, name, { preserveExistingArt: true }),
+        name
       );
       if (!car?.id) {
         this.status = 'Car load failed';
         return null;
       }
       const playtestId = this.getRaceCarProjectIdentity(car);
-      this.selectPlaytestCarEntry({ id: playtestId, name: picked.name, car }, { silent: true });
+      this.selectPlaytestCarEntry({ id: playtestId, name, car }, { silent: true });
       await this.startSavedRacePlaytest(playtestId);
       return car;
     }
@@ -10715,10 +10786,11 @@ export default class RaceEditor {
     const seen = new Set();
     const cars = [];
     try {
-      listProjectFiles('cars').forEach((entry) => {
+      const versions=getRaceCarVersions();
+      filterPlayableCarVersions(listProjectFiles('cars'),versions).forEach((entry) => {
         const name = sanitizeProjectFileName(entry?.name || '');
         if (!name) return;
-        const payload = loadProjectFile('cars', name);
+        const payload = resolveRaceCarVersionFile(name,{versions}).payload;
         if (!payload?.data || isSystemCarDocument(payload.data, name)) return;
         const car = this.withSavedRaceCarRuntimeIdentity(
           this.normalizeLoadedCarDocument(payload?.data || payload, name, { preserveExistingArt: true }),
@@ -18827,7 +18899,7 @@ export default class RaceEditor {
       && Math.abs(normalizeAngle(preliminaryVelocityYaw - carYaw)) < 0.2
       && Number.isFinite(session?.startYaw)) return Number(session.startYaw);
     const car = this.getRaceSessionCar(session);
-    const discreteCamera=this.getCarCameraTrackingMode(car)==='dynamic-fixed'&&!isDedicatedModelWheelCar(car);
+    const discreteCamera=this.getCarCameraTrackingMode(car)==='dynamic-fixed'&&!isNativeModelWheelCar(car);
     if (this.raceInput.lookStickActive && discreteCamera) {
       // Manual view selection follows the requested direction immediately.
       // Drift hysteresis must not hold it on the previous side/rear view.
@@ -20569,7 +20641,7 @@ export default class RaceEditor {
     this.raceInput.cameraView = this.raceInput.cameraView === 'first-person' ? 'third-person' : 'first-person';
     if (this.playtestSession) {
       this.playtestSession.cameraView = this.raceInput.cameraView;
-      if (isDedicatedModelWheelCar(this.getRaceSessionCar(this.playtestSession))) {
+      if (isNativeModelWheelCar(this.getRaceSessionCar(this.playtestSession))) {
         delete this.playtestSession.thirdPersonCameraAnchor;
         delete this.playtestSession.thirdPersonCameraPlacement;
         delete this.playtestSession.thirdPersonCameraChaseDistanceM;
@@ -23091,7 +23163,7 @@ export default class RaceEditor {
       this.getAverageDamage(damage.tires)
     );
     const frontTireAngle = renderPose.frontTireAngle;
-    const dedicatedModelDrawn=isDedicatedModelWheelCar(car)&&Boolean(this.lastRaceRenderStats?.threeProceduralCar);
+    const dedicatedModelDrawn=isNativeModelWheelCar(car)&&Boolean(this.lastRaceRenderStats?.threeProceduralCar);
     const hasAuthoredTireArt = !dedicatedModelDrawn&&this.hasCarTireArtOverride(car);
     const hasCustomShadowArt = Boolean(String(car?.art?.shadowArtRef || '').trim());
     const hasBrakeArt = !dedicatedModelDrawn&&Boolean(car.art?.brakeLightArtRef || car.art?.fx?.length);
@@ -24329,7 +24401,7 @@ export default class RaceEditor {
   } = {}) {
     if (!session || cameraView !== 'third-person') return null;
     const renderPose = this.getRacePlayerRenderPose(session, car, { fallbackElevation });
-    if(!isDedicatedModelWheelCar(car)&&!hasRaceModelLampMounts(car))car = resolveCarAngleLayers(car, getCarViewSlot(renderPose.yaw, cameraYaw));
+    if(!isNativeModelWheelCar(car)&&!hasRaceModelLampMounts(car))car = resolveCarAngleLayers(car, getCarViewSlot(renderPose.yaw, cameraYaw));
     const artChoice = this.getRaceCarProjectedArtRef(car, renderPose.yaw, cameraYaw, {
       reversing: Number(session.speedMps || 0) < -0.3 || Number(this.raceInput?.gear || 0) < 0,
       steering: Number(this.raceInput?.steeringWheel || 0)
@@ -36783,7 +36855,7 @@ export default class RaceEditor {
     if (this.playtestSession && cameraView !== 'first-person') {
       const car = this.getRaceSessionCar(this.playtestSession);
       const pose = this.getRacePlayerRenderPose(this.playtestSession, car);
-      if(!(isDedicatedModelWheelCar(car)&&stats?.threeProceduralCar))submit(this.playtestSession, car, pose, ctx => this.drawRaceThirdPersonCar(ctx, bounds));
+      if(!(isNativeModelWheelCar(car)&&stats?.threeProceduralCar))submit(this.playtestSession, car, pose, ctx => this.drawRaceThirdPersonCar(ctx, bounds));
     }
     batch.end();
     // Car painters publish diagnostics by replacing lastRaceRenderStats. Merge
@@ -36819,7 +36891,7 @@ export default class RaceEditor {
         carYaw: Number(ai.carYaw ?? road.yaw ?? 0),
         tireSlip: { ...ai.tireSlip, frontTireAngle: Number(ai.tireSlip?.frontTireAngle || 0) } };
       const pose = this.getRacePlayerRenderPose(session, car, { fallbackElevation: road.elevation });
-      if(!isDedicatedModelWheelCar(car)&&!hasRaceModelLampMounts(car))car = resolveCarAngleLayers(car, getCarViewSlot(pose.yaw, cameraYaw));
+      if(!isNativeModelWheelCar(car)&&!hasRaceModelLampMounts(car))car = resolveCarAngleLayers(car, getCarViewSlot(pose.yaw, cameraYaw));
       const hasBodyArt = Boolean(this.getRaceCarProjectedArtRef(car, pose.yaw, cameraYaw).artRef);
       let holder = holders.get(ai);
       if (!holder) { holder = { scene: renderer.scene, solidMaterialCache: renderer.solidMaterialCache ||= new Map() }; holders.set(ai, holder); }
@@ -36839,8 +36911,8 @@ export default class RaceEditor {
     if (dynamicCar) {
       this.addRaceThreeProceduralCar(renderer, { ...dynamicCar, stats });
       if(renderer.dynamicCarGroup)renderer.dynamicCarGroup.visible=true;
-    } else if(cameraView==='first-person'&&renderer.dynamicCarGroup?.userData?.dedicatedModelWheels
-      &&isDedicatedModelWheelCar(this.getRaceSessionCar(this.playtestSession))){
+    } else if(cameraView==='first-person'&&renderer.dynamicCarGroup?.userData?.nativeModelWheels
+      &&isNativeModelWheelCar(this.getRaceSessionCar(this.playtestSession))){
       // Keep the exterior buffered across camera changes, never inside view.
       renderer.dynamicCarGroup.visible=false;
     } else this.clearRaceThreeDynamicCar(renderer);
@@ -38044,6 +38116,7 @@ export default class RaceEditor {
     drawWheels = drawWheels && visibility.tires;
     drawLights = drawLights && visibility.brakes;
     const dedicatedModelWheels=isDedicatedModelWheelCar(car);
+    const nativeModelWheels=isNativeModelWheelCar(car);
     const hasMountedLamps=hasRaceModelLampMounts(car);
     const mountedLights=hasMountedLamps&&drawLights;
     if(hasMountedLamps)drawLights=false;
@@ -38125,12 +38198,13 @@ export default class RaceEditor {
       if (drawWheels && parts.wheels) {
         RACE_WHEEL_IDS.forEach((wheelId) => {
           if (!this.isCarWheelVisible(visibility, wheelId)) return;
-          if(dedicatedModelWheels&&parts.wheels[wheelId]){syncModelWheel(parts.wheels[wheelId],wheelId);return;}
+          const canonicalWheel=hasAuthoritativeModelWheelPose(session?.vehicleRenderState?.wheelPoses?.[wheelId]);
+          if((dedicatedModelWheels||nativeModelWheels&&canonicalWheel)&&parts.wheels[wheelId]){syncModelWheel(parts.wheels[wheelId],wheelId);return;}
           const wheel = wheelCenters[wheelId] || {};
           setBoxPose(parts.wheels[wheelId], {
-            x: Number(wheel.x || x),
+            x: Number(wheel.x ?? x),
             y: Number(wheel.elevation ?? elevation) * RACE_THREE_ELEVATION_M,
-            z: Number(wheel.z || z)
+            z: Number(wheel.z ?? z)
           }, {
             yaw: wheelId === 'fl' || wheelId === 'fr' ? frontYaw : yaw,
             pitch: threePitch,
@@ -38178,7 +38252,7 @@ export default class RaceEditor {
     const group = new THREE.Group();
     group.name = 'raceDynamicProceduralCar';
     group.userData.structureKey = structureKey;
-    group.userData.dedicatedModelWheels=dedicatedModelWheels;
+    group.userData.nativeModelWheels=nativeModelWheels;
     group.userData.parts = {
       body: null,
       wheels: {},
@@ -38228,14 +38302,16 @@ export default class RaceEditor {
           y: tireRadiusM * 1.7,
           z: tireLengthM
         }, wheelMaterial, {
-          x: Number(wheel.x || x),
+          x: Number(wheel.x ?? x),
           y: Number(wheel.elevation ?? elevation) * RACE_THREE_ELEVATION_M,
-          z: Number(wheel.z || z)
+          z: Number(wheel.z ?? z)
         }, {
           yaw: wheelId === 'fl' || wheelId === 'fr' ? frontYaw : yaw,
           pitch: threePitch,
           roll: wheelVisualRoll
         });
+        if(nativeModelWheels&&hasAuthoritativeModelWheelPose(session?.vehicleRenderState?.wheelPoses?.[wheelId]))
+          syncModelWheel(group.userData.parts.wheels[wheelId],wheelId);
       });
     }
     if (drawLights) {
@@ -40066,7 +40142,7 @@ export default class RaceEditor {
     const routeRuntimeType = session?.routeRuntimeType || this.getSelectedRaceRuntimeType();
     const visualTravel = this.getRaceVisualTravelDistance(session);
     const routeCamera = this.getRaceWorldPoseAtDistance(visualTravel, { runtimeType: routeRuntimeType });
-    const modelIntroFraming=isDedicatedModelWheelCar(car);
+    const modelIntroFraming=isNativeModelWheelCar(car);
     const introShot = raceIntroShot(session,{modelFraming:modelIntroFraming});
     const cameraView = introShot ? 'third-person' : session?.cameraView || this.raceInput.cameraView;
     const carYaw = Number.isFinite(session?.carYaw) ? session.carYaw : routeCamera.yaw;
