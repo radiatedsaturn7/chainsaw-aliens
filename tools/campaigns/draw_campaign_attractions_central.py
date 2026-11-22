@@ -235,23 +235,24 @@ def route66():
 boards={'ozarks':ozarks,'data-center-city':data_center,'route-66':route66}
 def sha(b):return hashlib.sha256(b).hexdigest()
 def oid(b):return hashlib.sha1(f'blob {len(b)}\0'.encode()+b).hexdigest()
-record={}
-for name,fn in boards.items():
- im=fn(); ref='campaign-map-'+name
- path=Path('assets/campaign-art/maps')/(ref+'.png')
- native=Path('data/server-storage/files/art')/ref/'document.json'
- png=R/'overlay'/path; np=R/'overlay'/native
- png.parent.mkdir(exist_ok=True,parents=True);np.parent.mkdir(exist_ok=True,parents=True)
- im.resize((1536,1024),Image.Resampling.NEAREST).save(png,optimize=True)
- pb=png.read_bytes()
- out={'kind':'actor-state-animation','width':W,'height':H,'fps':1,'frames':[['#%02x%02x%02xff'%c for c in im.getdata()]],'importSource':{'path':path.as_posix(),'sha256':sha(pb),'width':1536,'height':1024,'sampling':'nearest-neighbor','maxEdge':384}}
- compact=json.dumps(out,separators=(',',':')).encode()
- raw=(json.dumps({'__chainsawStorage':'compact-v1','encoding':'json-gzip-base64','data':base64.b64encode(gzip.compress(compact,mtime=0)).decode()},indent=2)+'\n').encode()
- np.write_bytes(raw);im.save(R/f'{name}-native.png')
- record[ref]={'sourcePath':path.as_posix(),'sourceSHA256':sha(pb),'sourceGitBlob':oid(pb),'nativePath':native.as_posix(),'nativeSHA256':sha(raw),'nativeGitBlob':oid(raw),'pngBytes':len(pb),'nativeBytes':len(raw)}
-(R/'inventory.json').write_text(json.dumps(record,indent=2)+'\n')
-sheet=Image.new('RGB',(1152,278),'#111c2a');d=ImageDraw.Draw(sheet)
-for i,k in enumerate(boards):
- sheet.paste(Image.open(R/f'{k}-native.png'),(384*i,0))
- d.text((384*i+12,260),k,fill='#efd3b2')
-sheet.save(R/'contact.png')
+if __name__ == "__main__":
+ record={}
+ for name,fn in boards.items():
+  im=fn(); ref='campaign-map-'+name
+  path=Path('assets/campaign-art/maps')/(ref+'.png')
+  native=Path('data/server-storage/files/art')/ref/'document.json'
+  png=R/'overlay'/path; np=R/'overlay'/native
+  png.parent.mkdir(exist_ok=True,parents=True);np.parent.mkdir(exist_ok=True,parents=True)
+  im.resize((1536,1024),Image.Resampling.NEAREST).save(png,optimize=True)
+  pb=png.read_bytes()
+  out={'kind':'actor-state-animation','width':W,'height':H,'fps':1,'frames':[['#%02x%02x%02xff'%c for c in im.getdata()]],'importSource':{'path':path.as_posix(),'sha256':sha(pb),'width':1536,'height':1024,'sampling':'nearest-neighbor','maxEdge':384}}
+  compact=json.dumps(out,separators=(',',':')).encode()
+  raw=(json.dumps({'__chainsawStorage':'compact-v1','encoding':'json-gzip-base64','data':base64.b64encode(gzip.compress(compact,mtime=0)).decode()},indent=2)+'\n').encode()
+  np.write_bytes(raw);im.save(R/f'{name}-native.png')
+  record[ref]={'sourcePath':path.as_posix(),'sourceSHA256':sha(pb),'sourceGitBlob':oid(pb),'nativePath':native.as_posix(),'nativeSHA256':sha(raw),'nativeGitBlob':oid(raw),'pngBytes':len(pb),'nativeBytes':len(raw)}
+ (R/'inventory.json').write_text(json.dumps(record,indent=2)+'\n')
+ sheet=Image.new('RGB',(1152,278),'#111c2a');d=ImageDraw.Draw(sheet)
+ for i,k in enumerate(boards):
+  sheet.paste(Image.open(R/f'{k}-native.png'),(384*i,0))
+  d.text((384*i+12,260),k,fill='#efd3b2')
+ sheet.save(R/'contact.png')
