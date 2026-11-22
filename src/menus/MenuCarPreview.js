@@ -1,5 +1,6 @@
 import * as THREE from '../vendorBridge/three.js';
 import {RACE_THREE_ELEVATION_M} from '../racing/simulation/RaceSimulationConfig.js';
+import {GarageModelPreview} from './GarageModelPreview.js';
 import {resolveCarAngleLayers} from '../racing/CarDirectionalArt.js';
 
 const opaqueBoundsCache=new WeakMap();
@@ -63,6 +64,10 @@ export class MenuCarPreview {
     const framing=menuSpriteFraming(bounds,canvas,opaqueBounds(canvas),this.editor.getCarArtScale(resolved),this.editor.getCarArtOffsets(resolved),resolved.art||{},choice.mirrored);
     return this.editor.drawRaceCarBillboardLayers(ctx,{car,session:null,...framing,artChoice:choice,drawShadowLayer:false,showroomArt});
   }
+  drawGarageModel(ctx,bounds,car){
+    this.garageModel??=new GarageModelPreview();
+    return this.garageModel.draw(ctx,bounds,car);
+  }
   draw(ctx,bounds,car,yaw,time){
     if(typeof document==='undefined')return false;
     if(!this.renderer){this.renderer=new THREE.WebGLRenderer({alpha:true,antialias:true});this.renderer.setPixelRatio(1);this.holder={scene:new THREE.Scene()};}
@@ -77,5 +82,5 @@ export class MenuCarPreview {
     const distance=radius/Math.sin(halfFov)*1.08;
     const camera=new THREE.PerspectiveCamera(40,width/height,0.01,1000);camera.position.set(center.x+Math.sin(yaw)*distance,center.y+distance*0.35,center.z+Math.cos(yaw)*distance);camera.lookAt(center);camera.updateProjectionMatrix();centerMenuCarCamera(camera,this.holder.dynamicCarGroup,width,height);this.renderer.render(this.holder.scene,camera);ctx.drawImage(this.renderer.domElement,bounds.x,bounds.y,bounds.w,bounds.h);return true;
   }
-  dispose(){if(this.holder){this.editor.clearRaceThreeDynamicCar(this.holder);for(const material of this.holder.solidMaterialCache?.values()||[])material.dispose();}this.renderer?.dispose();this.holder=null;this.renderer=null;}
+  dispose(){this.garageModel?.dispose();this.garageModel=null;if(this.holder){this.editor.clearRaceThreeDynamicCar(this.holder);for(const material of this.holder.solidMaterialCache?.values()||[])material.dispose();}this.renderer?.dispose();this.holder=null;this.renderer=null;}
 }

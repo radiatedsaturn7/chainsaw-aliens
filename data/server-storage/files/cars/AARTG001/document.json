@@ -11211,7 +11211,7 @@
       }
     },
     "camera": {
-      "trackingMode": "fixed-rear"
+      "trackingMode": "dynamic-fixed"
     },
     "dimensions": {
       "lengthM": 4.67,

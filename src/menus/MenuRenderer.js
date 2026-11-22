@@ -17,6 +17,7 @@ import {showroomPage,garageBrowserRows,garageCardBounds} from './MenuGarageWidge
 import {menuPaintOrder,menuElementVisible} from './MenuLayout.js';
 import {menuElementPose,resolveMenuBackground} from './MenuDocument.js';
 import {drawCarComponent} from './MenuCarStats.js';
+import {MENU_MODEL_STILL_ANGLE,menuModelStillBounds,paintMenuModelStill} from './MenuModelStill.js';
 
 export function menuElementBounds(element,bounds,pose=element,regionalScreen=false){
   const {x,y,w,h}=bounds;
@@ -30,7 +31,7 @@ export function menuElementBounds(element,bounds,pose=element,regionalScreen=fal
   }
   return {x:x+pose.x*w,y:y+pose.y*h,w:element.w*w,h:element.h*h};
 }
-import {paintCarThumbnail,carThumbnailNeedsFallback} from '../ui/shared/carPreviewThumbnails.js';
+import {paintCarThumbnail,carThumbnailNeedsFallback,carThumbnailHasModelSource} from '../ui/shared/carPreviewThumbnails.js';
 
 export const menuElementInteractive=e=>['garage-tuner','code-entry','world-map','car-showroom','garage-browser','button','choice','slider','toggle','keybind'].includes(e.type);
 export const menuHit=(point,b)=>point.x>=b.x&&point.x<=b.x+b.w&&point.y>=b.y&&point.y<=b.y+b.h;
@@ -170,10 +171,19 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
         ctx.fillStyle='#34434a';ctx.beginPath();ctx.ellipse(card.x+card.w/2,card.y+card.h*.8,card.w*.43,card.h*.09,0,0,Math.PI*2);ctx.fill();
         const preview={x:card.x+card.w*(1-scale)/2,y:card.y+card.h*(1-scale)/2,w:card.w*scale,h:card.h*.85*scale};
         const angle=element.angle+(selected&&!editing?elapsed/element.duration*360:0);
-        if(editing||carThumbnailNeedsFallback(entry.value,angle,selected)){
-          const car=resources?.car(entry.value),view={...element,type:'car-preview',showroomPreview:true,animation:'none',angleBinding:'',angle};
+        const fallback=editing||carThumbnailNeedsFallback(entry.value,angle,selected);
+        const modelHint=carThumbnailHasModelSource(entry.value);
+        const car=fallback?resources?.car(entry.value):modelHint?resources?.car(entry.value,{prepareExterior:false}):null;
+        if(car?.art?.bodyModel?.ref){
+          // A native body uses one clear front-quarter image, no elapsed-time
+          // angle or selected zoom. Do not shrink ordinary sprite cars.
+          const still=menuModelStillBounds({...card,h:card.h*.85});
+          if(!paintMenuModelStill(ctx,still,car,resources?.carPreview)&&modelHint)
+            paintCarThumbnail(ctx,still,entry.value,MENU_MODEL_STILL_ANGLE);
+        }else if(fallback){
+          const view={...element,type:'car-preview',showroomPreview:true,animation:'none',angleBinding:'',angle};
           drawCarComponent(ctx,preview,view,car,resources,time,parameters,fontFamily);
-        }else paintCarThumbnail(ctx,preview,entry.value,angle,undefined,undefined,selected);
+        }else if(!modelHint||car)paintCarThumbnail(ctx,preview,entry.value,angle,undefined,undefined,selected);
         ctx.fillStyle=element.color;drawText(entry.label,card.x+card.w/2,card.y+card.h-4,card.w-8);ctx.restore();
       }
 

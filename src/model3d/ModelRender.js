@@ -2,9 +2,9 @@ import * as THREE from '../vendorBridge/three.js';
 import {faceNormal} from './ModelDocument.js';
 import {sampleAnimation,skinVertices} from './ModelRig.js';
 
-export function triangulateFace(model, face) {
-  const normal=faceNormal(model,face),components=[Math.abs(normal.x),Math.abs(normal.y),Math.abs(normal.z)],drop=components.indexOf(Math.max(...components));
-  const points=face.vertices.map(id=>model.vertices.find(v=>v.id===id).position.filter((_,i)=>i!==drop));
+export function triangulateFace(model, face, vertexForId = id => model.vertices.find(v => v.id === id)) {
+  const normal=faceNormal(model,face,vertexForId),components=[Math.abs(normal.x),Math.abs(normal.y),Math.abs(normal.z)],drop=components.indexOf(Math.max(...components));
+  const points=face.vertices.map(id=>vertexForId(id).position.filter((_,i)=>i!==drop));
   return THREE.ShapeUtils.triangulateShape(points.map(p=>new THREE.Vector2(...p)),[]);
 }
 function materialTexture(source){
@@ -20,12 +20,18 @@ function materialTexture(source){
   texture.needsUpdate=true;return texture;
 }
 export function buildModelObject(model){
+  const verticesById = new Map();
+  // Match Array.find on duplicate IDs and strict equality (which never matches NaN).
+  for (const vertex of model.vertices) {
+    if (!Number.isNaN(vertex.id) && !verticesById.has(vertex.id)) verticesById.set(vertex.id, vertex);
+  }
+  const vertexForId = id => verticesById.get(id);
   const root=new THREE.Group();root.name=model.name;root.userData.modelDocument=model;
   const materials=new Map(model.materials.map(m=>[m.id,new THREE.MeshStandardMaterial({color:m.color||'#ffffff',map:materialTexture(m.texture),side:THREE.DoubleSide,roughness:0.8,transparent:true,alphaTest:0.01})]));
   for(const material of model.materials){
     const vertices=[],uvs=[],vertexIds=[],faceIds=[];
-    for(const face of model.faces.filter(f=>f.material===material.id))for(const triangle of triangulateFace(model,face))for(const index of triangle){
-      const vertex=model.vertices.find(v=>v.id===face.vertices[index]);vertices.push(...vertex.position);uvs.push(...face.uv[index]);vertexIds.push(vertex.id);faceIds.push(face.id);
+    for(const face of model.faces.filter(f=>f.material===material.id))for(const triangle of triangulateFace(model,face,vertexForId))for(const index of triangle){
+      const vertex=vertexForId(face.vertices[index]);vertices.push(...vertex.position);uvs.push(...face.uv[index]);vertexIds.push(vertex.id);faceIds.push(face.id);
     }
     if(!vertices.length)continue;
     const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));geometry.computeVertexNormals();geometry.computeBoundingSphere();

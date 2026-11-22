@@ -121,6 +121,11 @@ function requestPreview(name,frame,preferAtlas,whenReady,usable){
   pump();
   return record.status==='ready'?record:null;
 }
+// A source hint is not a body-model verdict: a sprite car can have model wheels.
+export function carThumbnailHasModelSource(name){
+  const id=preparedCatalog?.names.get(name);
+  return Boolean(id&&preparedCatalog.previews.get(id)?.sources?.some(source=>source.folder==='models'));
+}
 // Only fall back after a definite rejection/missing asset, never while a stock
 // preview is still loading. This keeps normal catalog browsing lightweight.
 export function carThumbnailNeedsFallback(name,angle=135,preferAtlas=false){

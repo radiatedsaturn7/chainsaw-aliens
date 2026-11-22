@@ -122,7 +122,8 @@ import {ensureModelSceneLighting} from '../model3d/ModelRender.js';
 import {modelAssets,ModelAssetInstance} from '../model3d/ModelAssets.js';
 import {pickModelBinding} from './ModelPicker.js';
 import {normalizeModelBinding} from '../model3d/ModelBinding.js';
-import {updateRaceModelParts} from '../model3d/RaceModelVehicle.js';
+import {updateRaceModelParts,syncRaceModelLamps,hasRaceModelLampMounts,getRaceModelLampWorldFrames} from '../model3d/RaceModelVehicle.js';
+import {createModelWheel,isDedicatedModelWheelCar,setModelWheelPose} from '../model3d/ModelWheel.js';
 import { openTireLibrary } from './TireLibrary.js';
 import { applyTireDefinition, normalizeTireDefinition, resolveTireCompound, getTireArtRefs } from '../racing/raceTires.js';
 import { getArtDocumentFrames } from './shared/artDocumentPixels.js';
@@ -18826,7 +18827,8 @@ export default class RaceEditor {
       && Math.abs(normalizeAngle(preliminaryVelocityYaw - carYaw)) < 0.2
       && Number.isFinite(session?.startYaw)) return Number(session.startYaw);
     const car = this.getRaceSessionCar(session);
-    if (this.raceInput.lookStickActive && this.getCarCameraTrackingMode(car) === 'dynamic-fixed') {
+    const discreteCamera=this.getCarCameraTrackingMode(car)==='dynamic-fixed'&&!isDedicatedModelWheelCar(car);
+    if (this.raceInput.lookStickActive && discreteCamera) {
       // Manual view selection follows the requested direction immediately.
       // Drift hysteresis must not hold it on the previous side/rear view.
       const requested = getRaceStickLook(this.raceInput.lookIntentX, this.raceInput.lookIntentY);
@@ -18839,7 +18841,7 @@ export default class RaceEditor {
       return normalizeAngle(carYaw + bearing);
     }
     if (this.getCarCameraTrackingMode(car) === 'fixed-rear'
-      || (this.raceInput.lookStickActive && this.getCarCameraTrackingMode(car) !== 'dynamic-fixed')) {
+      || (this.raceInput.lookStickActive && !discreteCamera)) {
       return normalizeAngle(carYaw + lookAngle);
     }
     const velocityYaw = preliminaryVelocityYaw;
@@ -18866,7 +18868,7 @@ export default class RaceEditor {
     );
     const travelYaw = carYaw + normalizeAngle(velocityYaw - carYaw) * velocityBlend;
     const targetYaw = (this.raceInput.lookStickActive ? carYaw : travelYaw) + lookAngle;
-    if (this.getCarCameraTrackingMode(car) === 'dynamic-fixed') {
+    if (discreteCamera) {
       // Follow travel while keeping the whole car projection on an authored
       // 45-degree bearing. Hysteresis avoids flickering between two frames.
       const step = Math.PI / 4;
@@ -20565,7 +20567,14 @@ export default class RaceEditor {
 
   toggleRaceCameraView() {
     this.raceInput.cameraView = this.raceInput.cameraView === 'first-person' ? 'third-person' : 'first-person';
-    if (this.playtestSession) this.playtestSession.cameraView = this.raceInput.cameraView;
+    if (this.playtestSession) {
+      this.playtestSession.cameraView = this.raceInput.cameraView;
+      if (isDedicatedModelWheelCar(this.getRaceSessionCar(this.playtestSession))) {
+        delete this.playtestSession.thirdPersonCameraAnchor;
+        delete this.playtestSession.thirdPersonCameraPlacement;
+        delete this.playtestSession.thirdPersonCameraChaseDistanceM;
+      }
+    }
     void this.saveDrivingPreference({});
   }
 
@@ -23082,9 +23091,10 @@ export default class RaceEditor {
       this.getAverageDamage(damage.tires)
     );
     const frontTireAngle = renderPose.frontTireAngle;
-    const hasAuthoredTireArt = this.hasCarTireArtOverride(car);
+    const dedicatedModelDrawn=isDedicatedModelWheelCar(car)&&Boolean(this.lastRaceRenderStats?.threeProceduralCar);
+    const hasAuthoredTireArt = !dedicatedModelDrawn&&this.hasCarTireArtOverride(car);
     const hasCustomShadowArt = Boolean(String(car?.art?.shadowArtRef || '').trim());
-    const hasBrakeArt = Boolean(car.art?.brakeLightArtRef || car.art?.fx?.length);
+    const hasBrakeArt = !dedicatedModelDrawn&&Boolean(car.art?.brakeLightArtRef || car.art?.fx?.length);
     const hasLayerArt = hasAuthoredTireArt || hasCustomShadowArt || hasBrakeArt;
     let proceduralCarShadowDrawn = false;
     if (!hasBodyArt && !hasLayerArt && this.lastRaceRenderStats?.threeProceduralCar) {
@@ -24319,13 +24329,14 @@ export default class RaceEditor {
   } = {}) {
     if (!session || cameraView !== 'third-person') return null;
     const renderPose = this.getRacePlayerRenderPose(session, car, { fallbackElevation });
-    car = resolveCarAngleLayers(car, getCarViewSlot(renderPose.yaw, cameraYaw));
+    if(!isDedicatedModelWheelCar(car)&&!hasRaceModelLampMounts(car))car = resolveCarAngleLayers(car, getCarViewSlot(renderPose.yaw, cameraYaw));
     const artChoice = this.getRaceCarProjectedArtRef(car, renderPose.yaw, cameraYaw, {
       reversing: Number(session.speedMps || 0) < -0.3 || Number(this.raceInput?.gear || 0) < 0,
       steering: Number(this.raceInput?.steeringWheel || 0)
     });
     const hasBodyArt = Boolean(String(artChoice?.artRef || '').trim());
-    const hasTireArt = this.hasCarTireArtOverride(car);
+    const modelWheels=isDedicatedModelWheelCar(car);
+    const hasTireArt = !modelWheels && this.hasCarTireArtOverride(car);
     const hasCustomShadowArt = Boolean(String(car?.art?.shadowArtRef || '').trim());
     const visibility = this.getCarArtLayerVisibility(car);
     const damage = this.getRaceSessionDamage();
@@ -24336,7 +24347,7 @@ export default class RaceEditor {
         || this.playtestSession?.authoritativeHandbrakeActive),
       drawBody: !hasBodyArt && visibility.body,
       drawWheels: !hasTireArt && visibility.tires,
-      drawLights: !hasBodyArt && !car.art?.brakeLightArtRef && !car.art?.fx?.length && visibility.brakes,
+      drawLights: (modelWheels||hasRaceModelLampMounts(car)) ? visibility.brakes : !hasBodyArt && !car.art?.brakeLightArtRef && !car.art?.fx?.length && visibility.brakes,
       drawShadow: !hasCustomShadowArt && visibility.shadow,
       color: this.getDamageColor(Math.max(
         this.getMaxDamage(damage.panels),
@@ -36772,7 +36783,7 @@ export default class RaceEditor {
     if (this.playtestSession && cameraView !== 'first-person') {
       const car = this.getRaceSessionCar(this.playtestSession);
       const pose = this.getRacePlayerRenderPose(this.playtestSession, car);
-      submit(this.playtestSession, car, pose, ctx => this.drawRaceThirdPersonCar(ctx, bounds));
+      if(!(isDedicatedModelWheelCar(car)&&stats?.threeProceduralCar))submit(this.playtestSession, car, pose, ctx => this.drawRaceThirdPersonCar(ctx, bounds));
     }
     batch.end();
     // Car painters publish diagnostics by replacing lastRaceRenderStats. Merge
@@ -36808,19 +36819,31 @@ export default class RaceEditor {
         carYaw: Number(ai.carYaw ?? road.yaw ?? 0),
         tireSlip: { ...ai.tireSlip, frontTireAngle: Number(ai.tireSlip?.frontTireAngle || 0) } };
       const pose = this.getRacePlayerRenderPose(session, car, { fallbackElevation: road.elevation });
-      car = resolveCarAngleLayers(car, getCarViewSlot(pose.yaw, cameraYaw));
+      if(!isDedicatedModelWheelCar(car)&&!hasRaceModelLampMounts(car))car = resolveCarAngleLayers(car, getCarViewSlot(pose.yaw, cameraYaw));
       const hasBodyArt = Boolean(this.getRaceCarProjectedArtRef(car, pose.yaw, cameraYaw).artRef);
       let holder = holders.get(ai);
       if (!holder) { holder = { scene: renderer.scene, solidMaterialCache: renderer.solidMaterialCache ||= new Map() }; holders.set(ai, holder); }
-      this.addRaceThreeProceduralCar(holder, { ...pose, car, session,
-        drawBody: !hasBodyArt, drawWheels: !this.hasCarTireArtOverride(car),
-        drawLights: !hasBodyArt && !car.art?.brakeLightArtRef && !car.art?.fx?.length,
+      const modelWheels=isDedicatedModelWheelCar(car);
+      this.addRaceThreeProceduralCar(holder, { ...pose, car, session, braking:Boolean(ai.braking||ai.brake),
+        drawBody: !hasBodyArt, drawWheels: modelWheels || !this.hasCarTireArtOverride(car),
+        drawLights: modelWheels || hasRaceModelLampMounts(car) || !hasBodyArt && !car.art?.brakeLightArtRef && !car.art?.fx?.length,
         drawShadow: !car.art?.shadowArtRef,
         color: ai.difficulty === 'expert' ? '#ff5f57' : ai.difficulty === 'hard' ? '#f2d45c' : ai.difficulty === 'medium' ? '#7ed957' : '#58d6ff' });
     }
     for (const [ai, holder] of holders) if (!active.has(ai)) {
       this.clearRaceThreeDynamicCar(holder); holders.delete(ai);
     }
+  }
+
+  syncRaceThreePlayerModel(renderer,dynamicCar,cameraView,stats) {
+    if (dynamicCar) {
+      this.addRaceThreeProceduralCar(renderer, { ...dynamicCar, stats });
+      if(renderer.dynamicCarGroup)renderer.dynamicCarGroup.visible=true;
+    } else if(cameraView==='first-person'&&renderer.dynamicCarGroup?.userData?.dedicatedModelWheels
+      &&isDedicatedModelWheelCar(this.getRaceSessionCar(this.playtestSession))){
+      // Keep the exterior buffered across camera changes, never inside view.
+      renderer.dynamicCarGroup.visible=false;
+    } else this.clearRaceThreeDynamicCar(renderer);
   }
 
   clearRaceThreeDynamicCar(renderer = null) {
@@ -38020,6 +38043,10 @@ export default class RaceEditor {
     drawBody = drawBody && visibility.body;
     drawWheels = drawWheels && visibility.tires;
     drawLights = drawLights && visibility.brakes;
+    const dedicatedModelWheels=isDedicatedModelWheelCar(car);
+    const hasMountedLamps=hasRaceModelLampMounts(car);
+    const mountedLights=hasMountedLamps&&drawLights;
+    if(hasMountedLamps)drawLights=false;
     drawShadow = drawShadow && visibility.shadow;
     const dimensions = this.getRaceCarDimensions(car);
     const threePitch = this.getRaceThreeVehiclePitch(pitchRad, session);
@@ -38036,6 +38063,8 @@ export default class RaceEditor {
       drawWheels ? 1 : 0,
       drawLights ? 1 : 0,
       drawShadow ? 1 : 0,
+      dedicatedModelWheels ? 1 : 0,
+      hasMountedLamps ? 1 : 0,
       Math.round(Number(dimensions.widthM || 1.8) * 1000),
       Math.round(Number(dimensions.lengthM || 4.6) * 1000),
       Math.round(bodyHeightM * 1000),
@@ -38075,6 +38104,17 @@ export default class RaceEditor {
     });
     const frontYaw = Number(yaw || 0) - Number(frontTireAngle || 0);
     const wheelVisualRoll = Number(rollRad || 0);
+    const syncModelWheel=(mesh,wheelId)=>{
+      const wheel=wheelCenters[wheelId]||{};
+      setModelWheelPose(mesh,{x:wheel.x??x,y:Number(wheel.elevation??elevation)*RACE_THREE_ELEVATION_M,z:wheel.z??z},
+        {yaw:wheelId==='fl'||wheelId==='fr'?frontYaw:yaw,pitch:threePitch,roll:wheelVisualRoll},
+        session?.vehicleRenderState?.wheelPoses?.[wheelId]);
+    };
+    const syncModelParts=group=>{
+      updateRaceModelParts(group,car,session);
+      if(hasMountedLamps)syncRaceModelLamps(group.userData.parts.body,session,
+        {enabled:mountedLights,braking,defaultHeadlights:raceStartsWithHeadlights(this.selectedRace)});
+    };
     const updateExisting = renderer.dynamicCarGroup
       && renderer.dynamicCarGroup.userData?.structureKey === structureKey
       && renderer.dynamicCarGroup.userData?.parts;
@@ -38085,6 +38125,7 @@ export default class RaceEditor {
       if (drawWheels && parts.wheels) {
         RACE_WHEEL_IDS.forEach((wheelId) => {
           if (!this.isCarWheelVisible(visibility, wheelId)) return;
+          if(dedicatedModelWheels&&parts.wheels[wheelId]){syncModelWheel(parts.wheels[wheelId],wheelId);return;}
           const wheel = wheelCenters[wheelId] || {};
           setBoxPose(parts.wheels[wheelId], {
             x: Number(wheel.x || x),
@@ -38123,7 +38164,7 @@ export default class RaceEditor {
           session
         });
       }
-      updateRaceModelParts(group,car,session);
+      syncModelParts(group);
       if (stats) {
         stats.threeProceduralCar = 1;
         stats.threeDynamicCarMeshes = group.children.length;
@@ -38137,6 +38178,7 @@ export default class RaceEditor {
     const group = new THREE.Group();
     group.name = 'raceDynamicProceduralCar';
     group.userData.structureKey = structureKey;
+    group.userData.dedicatedModelWheels=dedicatedModelWheels;
     group.userData.parts = {
       body: null,
       wheels: {},
@@ -38173,6 +38215,13 @@ export default class RaceEditor {
     if (drawWheels) {
       RACE_WHEEL_IDS.forEach((wheelId) => {
         if (!this.isCarWheelVisible(visibility, wheelId)) return;
+        if(dedicatedModelWheels){
+          const radius=Number(session?.vehicleRenderState?.wheels?.[wheelId]?.radiusM)||tireRadiusM;
+          const width=Number(car.tuning?.wheelWidthByWheelM?.[wheelId])||tireWidthM;
+          const wheel=createModelWheel(radius,width);
+          wheel.name='raceWheel-'+wheelId;group.add(wheel);group.userData.parts.wheels[wheelId]=wheel;
+          syncModelWheel(wheel,wheelId);return;
+        }
         const wheel = wheelCenters[wheelId] || {};
         group.userData.parts.wheels[wheelId] = makeBox(`raceWheel-${wheelId}`, {
           x: tireWidthM,
@@ -38221,7 +38270,7 @@ export default class RaceEditor {
       group.add(shadow);
       group.userData.parts.shadow = shadow;
     }
-    updateRaceModelParts(group,car,session);
+    syncModelParts(group);
     renderer.scene.add(group);
     renderer.dynamicCarGroup = group;
     if (stats) {
@@ -38728,8 +38777,7 @@ export default class RaceEditor {
     if(camera.firstPersonFrame)applyFirstPersonCameraFrame(renderer.camera,camera.firstPersonFrame);
     renderer.camera.updateProjectionMatrix();
     this.alignRaceThreeCameraHorizon(renderer.camera, camera, cameraYaw, bounds);
-    if (dynamicCar) this.addRaceThreeProceduralCar(renderer, { ...dynamicCar, stats });
-    else this.clearRaceThreeDynamicCar(renderer);
+    this.syncRaceThreePlayerModel(renderer,dynamicCar,cameraView,stats);
     this.syncRaceThreeAiModels(renderer, cameraYaw);
     this.addRaceThreeDoodads(renderer, { stats });
     this.syncRaceThreeDecals(renderer, { stats });
@@ -38754,10 +38802,13 @@ export default class RaceEditor {
     this.syncRaceThreeCarSprites(renderer, bounds, { camera, cameraYaw, cameraView, stats });
     const lightCar=this.getRaceSessionCar(this.playtestSession)||this.selectedCar;
     const lightPose=this.playtestSession?this.getRacePlayerRenderPose(this.playtestSession,lightCar):null;
+    const mountedLamps=lightPose?getRaceModelLampWorldFrames(lightCar,{x:lightPose.x,y:lightPose.elevation*RACE_THREE_ELEVATION_M,
+      z:lightPose.z,yaw:lightPose.yaw,pitch:this.getRaceThreeVehiclePitch(lightPose.pitchRad,this.playtestSession),
+      roll:lightPose.rollRad}):null;
     const lightDimensions=this.getRaceCarDimensions(lightCar);
     const brightness=this.playtestSession?this.getRaceLightingBrightness():1;
     const rearLights=carFxDrivingState(this.playtestSession,this.raceInput);
-    updateRaceLighting(renderer,{brightness,night:Boolean(this.playtestSession&&this.selectedRace?.timeOfDay==='night'),braking:rearLights.braking,reverse:rearLights.reverse,lampPower:this.playtestSession?.mechanical?.effects?.lights??1,highBeams:this.playtestSession?.mechanical?.highBeams===true,auxIntensity:this.playtestSession?.mechanical?.auxLights?(this.playtestSession?.mechanical?.effects?.lights??1):0,visibilityDistanceM:weatherState.visibilityDistanceM,cameraPosition:{x:Number(camera.x||0),y:cameraY,z:Number(camera.z||0)},headlightIntensity:this.raceHeadlightsEnabled()?(this.playtestSession?.mechanical?.effects?.lights??1):0,pose:lightPose?{...lightPose,y:lightPose.elevation*RACE_THREE_ELEVATION_M}:null,dimensions:{width:lightDimensions.widthM,length:lightDimensions.lengthM}});
+    updateRaceLighting(renderer,{mountedLamps,brightness,night:Boolean(this.playtestSession&&this.selectedRace?.timeOfDay==='night'),braking:rearLights.braking,reverse:rearLights.reverse,lampPower:this.playtestSession?.mechanical?.effects?.lights??1,highBeams:this.playtestSession?.mechanical?.highBeams===true,auxIntensity:this.playtestSession?.mechanical?.auxLights?(this.playtestSession?.mechanical?.effects?.lights??1):0,visibilityDistanceM:weatherState.visibilityDistanceM,cameraPosition:{x:Number(camera.x||0),y:cameraY,z:Number(camera.z||0)},headlightIntensity:this.raceHeadlightsEnabled()?(this.playtestSession?.mechanical?.effects?.lights??1):0,pose:lightPose?{...lightPose,y:lightPose.elevation*RACE_THREE_ELEVATION_M}:null,dimensions:{width:lightDimensions.widthM,length:lightDimensions.lengthM}});
     renderer.threeRenderer.clear(true, true, true);
     syncRaceThreeDrivingLine(this, renderer);
     const renderStartMs = this.getNowMs();
@@ -40015,7 +40066,8 @@ export default class RaceEditor {
     const routeRuntimeType = session?.routeRuntimeType || this.getSelectedRaceRuntimeType();
     const visualTravel = this.getRaceVisualTravelDistance(session);
     const routeCamera = this.getRaceWorldPoseAtDistance(visualTravel, { runtimeType: routeRuntimeType });
-    const introShot = raceIntroShot(session);
+    const modelIntroFraming=isDedicatedModelWheelCar(car);
+    const introShot = raceIntroShot(session,{modelFraming:modelIntroFraming});
     const cameraView = introShot ? 'third-person' : session?.cameraView || this.raceInput.cameraView;
     const carYaw = Number.isFinite(session?.carYaw) ? session.carYaw : routeCamera.yaw;
     const desiredChaseDistance = cameraView === 'third-person'
@@ -40125,7 +40177,7 @@ export default class RaceEditor {
         lookAheadDistanceM: 0, routeCamera, cameraView: 'third-person', car
       });
       Object.assign(camera, placement.camera);
-      camera.cinematicTarget = { x: carWorldX, y: localCarGroundElevation * RACE_THREE_ELEVATION_M + .8, z: carWorldZ };
+      camera.cinematicTarget = { x: carWorldX, y: localCarGroundElevation * RACE_THREE_ELEVATION_M + (modelIntroFraming?1.05:.8), z: carWorldZ };
       camera.cinematicFov = introShot.fov;
       cameraYaw = Math.atan2(carWorldX - camera.x, carWorldZ - camera.z);
     }

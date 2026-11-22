@@ -88,3 +88,27 @@ test('welding imported skinned vertices preserves their inverse bind transforms'
   assert.deepEqual(skinVertices(model,{[joint]:{position:[0,2,0]}})[0].position,[4,2,0]);
   assert.deepEqual(model.vertices[0].weights[0].bindMatrix,bindMatrix);
 });
+
+test('renderer vertex index preserves first matches, concave face order, and UVs', async () => {
+  const {buildModelObject, disposeModelObject, triangulateFace} = await import('../../src/model3d/ModelRender.js');
+  const model = createModelDocument();
+  const positions = [['__proto__',0,0], ['a',2,0], ['b',2,2], ['c',1,1], ['d',0,2], ['a',99,99], ['constructor',3,1]];
+  model.vertices = positions.map(([id,x,y]) => ({id,position:[x,y,0]}));
+  const polygon = {id:'concave',material:'material-0',vertices:['__proto__','a','b','c','d'],uv:[[0,0],[1,0],[1,1],[0.5,0.5],[0,1]]};
+  const triangle = {id:'triangle',material:'second',vertices:['a','constructor','b'],uv:[[0,0],[1,0],[1,1]]};
+  model.materials.push({id:'second',color:'#778899'});
+  model.faces = [polygon,triangle];
+  const root = buildModelObject(model);
+  try {
+    assert.equal(root.children.length, 2);
+    for (const [i, face] of model.faces.entries()) {
+      const expected = triangulateFace(model, face).flat();
+      const mesh = root.children[i];
+      assert.deepEqual(mesh.userData.vertexIds, expected.map(j => face.vertices[j]));
+      assert.deepEqual(Array.from(mesh.geometry.getAttribute('position').array), expected.flatMap(j => model.vertices.find(v => v.id === face.vertices[j]).position));
+      assert.deepEqual(Array.from(mesh.geometry.getAttribute('uv').array), expected.flatMap(j => face.uv[j]));
+    }
+  } finally {
+    disposeModelObject(root);
+  }
+});

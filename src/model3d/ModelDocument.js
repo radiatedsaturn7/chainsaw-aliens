@@ -15,8 +15,8 @@ export function addVertex(model, position) {
   const vertex = { id: modelId(model, 'v'), position: [...position], weights: [] };
   model.vertices.push(vertex); return vertex.id;
 }
-export function faceNormal(model, face) {
-  const points = face.vertices.map(id => vector(model.vertices.find(v => v.id === id)?.position));
+export function faceNormal(model, face, vertexForId = id => model.vertices.find(v => v.id === id)) {
+  const points = face.vertices.map(id => vector(vertexForId(id)?.position));
   const n = new THREE.Vector3();
   for (let i = 0; i < points.length; i++) {
     const a = points[i], b = points[(i + 1) % points.length];
