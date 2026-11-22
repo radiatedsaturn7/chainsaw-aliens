@@ -2,18 +2,49 @@
 from pathlib import Path
 from PIL import Image,ImageDraw
 import random,math,json,hashlib
+import numpy as np
 W,H=384,256
 def rgb(c):return tuple(bytes.fromhex(c))
 def blend(a,b,t):return tuple(round(i+(j-i)*t) for i,j in zip(a,b))
 def art(name):
  r=random.Random('west terrain 2994:'+name)
  cfg={
- 'moki-dugway':('633d41','925042','bc7755','eeb477','402d3f','55717b'),
- 'oak-creek-canyon':('523e45','9f4c40','c97a59','efb78b','3b303c','326278'),
- 'angeles-crest':('293758','344d71','89afd0','e7f2fc','152340','122e61'),
+ 'moki-dugway':('433443','a15945','bd744d','efe4ce','26253c','22637e'),
+ 'oak-creek-canyon':('494052','aa5443','bc7256','efccaf','24263d','244e74'),
+ 'angeles-crest':('26324e','344d80','91b7df','f4f9ff','0f1941','071b48'),
  }
  dirt,face,cap,light,ink,water=(rgb(a) for a in cfg[name])
  im=Image.new('RGB',(W,H),dirt);d=ImageDraw.Draw(im)
+ frozen=name=='angeles-crest'
+ nr=np.random.default_rng(sum(ord(a) for a in name)*786+99)
+ def field(w,h):
+  vals=nr.integers(5,252,(h,w),dtype=np.uint8)
+  return np.asarray(Image.fromarray(vals).resize((W,H),Image.Resampling.BILINEAR),dtype=np.float32)/255
+ n0,n1,n2,n3=[field(x,y) for x,y in [(11,9),(27,23),(71,49),(151,91)]]
+ dust=nr.random((H,W))
+ terrain=n0*.44+n1*.30+n2*.16+n3*.10
+ erosion=n0*.22+n1*.40+n2*.27+n3*.11
+ bank=erosion+.14*np.sin((np.arange(H)[:,None]+np.arange(W)[None,:]*.29)/3.9)
+ def texture(mask,tones,scalar):
+  arr=np.asarray(mask).astype(bool)
+  colors=np.asarray(tones,dtype=np.uint8)
+  levels=np.digitize(scalar,[.26,.36,.46,.56,.65,.73])
+  idx=np.where(arr)
+  mixed=np.asarray(im).copy()
+  mixed[idx]=colors[levels[idx]]
+  im.paste(Image.fromarray(mixed))
+ base=Image.new('1',(W,H),1)
+ if frozen:tones=[rgb(c) for c in ['101c43','202e55','30416a','43577b','57749b','7993b4','a3bcd5']]
+ else:tones=[blend(dirt,c,t) for c,t in [(ink,.70),(ink,.41),(ink,.12),(cap,.11),(cap,.29),(cap,.46),(light,.48)]]
+ texture(base,tones,terrain*.89+dust*.11)
+ def corrugate(q):
+  result=[]
+  for (x,y),(u,v) in zip(q,q[1:]+q[:1]):
+   sl=math.hypot(u-x,v-y);n=math.ceil(sl/5)
+   for j in range(n):
+    t=j/n;dist=0 if j==0 else r.choice([-2,-1,0,0,1,1,2,3])
+    result.append((round(x+(u-x)*t-(v-y)/sl*dist),round(y+(v-y)*t+(u-x)/sl*dist)))
+  return result
  def p(q,c):d.polygon(q,fill=c)
  def L(q,c,w=1):d.line(q,fill=c,width=w)
  def rough(x,y,w,h):
@@ -26,56 +57,59 @@ def art(name):
   L([(x,y),(x+k,y)],blend(im.getpixel((x,y)),light if i%4 else ink,r.uniform(.13,.30)))
  def ledge(q,h,color=None,snow=False):
   ca=cap if color is None else color
-  sh=[(x+6,y+h+8) for x,y in q];p(sh,blend(dirt,ink,.75))
-  # Clipped cliff faces shade away from upper left; hard local strata.
-  for i,((x,y),(u,v)) in enumerate(zip(q,q[1:]+q[:1])):
+  old=q
+  q=corrugate(q)
+  p([(x+6,y+h+8) for x,y in q],blend(dirt,ink,.77))
+  F=Image.new('1',(W,H));fd=ImageDraw.Draw(F)
+  for (x,y),(u,v) in zip(q,q[1:]+q[:1]):
    if u>=x:continue
-   b=blend(face,ink,.17 if (v-y)>-1 else .45)
-   t=((x,y),(u,v),(u-2,v+h),(x-2,y+h));p(t,b)
-   for z in range(4,h,5):
-    c=blend(b,ca,.42) if z%3 else blend(b,ink,.49)
-    L([(x-1,y+z),(u-1,v+z)],c,1 if z%2 else 2)
-   if abs(x-u)>20:
-    fx=int((x+u)/2);fy=int((y+v)/2)
-    L([(fx,fy+3),(fx-3,fy+h-2)],blend(b,ink,.4))
-  p(q,ca);L(q[:len(q)//2+1],blend(ca,light,.72),2)
-  # Edge-parallel broken ice and darker, sharp strata plates. Draw only
-  # inside each cap, preserving its silhouette and giant exposed rock faces.
-  inside=Image.new('1',(W,H));ImageDraw.Draw(inside).polygon(q,fill=1)
-  loX=max(0,min(x for x,y in q));hiX=min(W,max(x for x,y in q)+1)
-  loY=max(0,min(y for x,y in q));hiY=min(H,max(y for x,y in q)+1)
-  frozen=name=='angeles-crest'
-  for k in range((hiX-loX)*(hiY-loY)//72):
-   xx=r.randrange(loX,hiX);yy=r.randrange(loY,hiY)
-   if not inside.getpixel((xx,yy)):continue
-   ll=r.randrange(2,10) if frozen else r.randrange(1,6)
-   firm=rgb('d7effb') if frozen else rgb('c9c7b9')
-   tone=(blend(ca,firm,r.uniform(.24,.78)) if frozen or k%6==1 else blend(ca,ink,r.uniform(.10,.32)))
-   for j in range(ll):
-    dx=xx+j;dy=yy+(j//3 if k%2 else -(j//4))
-    if 0<=dx<W and 0<=dy<H and inside.getpixel((dx,dy)):
-     d.point((dx,dy),fill=tone)
-     if frozen and j%2==0 and dy+1<H and inside.getpixel((dx,dy+1)):d.point((dx,dy+1),fill=blend(ca,ink,.34))
+   poly=((x,y),(u,v),(u-4,v+h),(x-4,y+h));fd.polygon(poly,fill=1)
   if frozen:
-   for k in range(9):
-    a=r.randrange(loX,hiX);b=r.randrange(loY,hiY)
-    for n in range(18):
-     xx=a+n; yy=b+(n//2 if k%3 else -n//3)+r.choice([-1,0,0,0,1])
-     if 0<=xx<W and 0<=yy<H and inside.getpixel((xx,yy)):d.point((xx,yy),fill=rgb('477ba8') if n%4 else rgb('e6f3fb'))
-  for i in range(18):
-   xx=r.randrange(max(0,min(x for x,y in q)),max(1,min(385,max(x for x,y in q)+1)))
-   yy=r.randrange(max(0,min(y for x,y in q)),max(1,min(257,max(y for x,y in q)+1)))
-   if 0<=xx<W-6 and 0<=yy<H and im.getpixel((xx,yy))==ca:
-    c=blend(ca,light if i%2 else ink,.28)
-    for a in range(r.randrange(2,7)):
-     if im.getpixel((xx+a,yy))==ca:d.point((xx+a,yy),fill=c)
-  if snow:
-   a,b,c,e=q[:4];L([a,b,c,e],light,3)
+   ft=[rgb(x) for x in ['10183b','192855','294475','3b5d8e','517eb3','6e9ed2','a4c9e9']]
+  else:ft=[blend(face,x,t) for x,t in [(ink,.82),(ink,.59),(ink,.33),(ink,.12),(ca,.22),(ca,.50),(light,.50)]]
+  texture(F,ft,bank*.96+dust*.04)
+  # Narrow angled discontinuities and brighter lines at the exposed courses.
+  for (x,y),(u,v) in zip(old,old[1:]+old[:1]):
+   if u>=x:continue
+   for z in range(5,h-1,7):
+    pts=[(x-1,y+z),(round(x*.66+u*.34)-1,round(y*.66+v*.34)+z+1),(u-2,v+z)]
+    L(pts,blend(face,light,.22 if frozen else .24))
+    L([(xx,yy+1) for xx,yy in pts],blend(face,ink,.56))
+  P=Image.new('1',(W,H));pd=ImageDraw.Draw(P);pd.polygon(q,fill=1)
+  if frozen:
+   pt=[rgb(x) for x in ['1c3163','365b94','5a83b9','85abdc','adcced','daebf9','f1f8fa']]
+   tex=erosion*.86+dust*.14+.045
+  else:
+   pt=[blend(ca,x,t) for x,t in [(ink,.57),(ink,.41),(face,.36),(ca,0),(light,.23),(light,.54),(light,.85)]]
+   tex=erosion*.90+dust*.10
+  texture(P,pt,tex)
+  # Eroded ice seams: broken hard diagonal strokes and a two-tone cap rim.
+  if frozen:
+   rim=rgb('b5def7')
+   for i,(pt0,pt1) in enumerate(zip(q,q[1:])):
+    if i%5: L([pt0,pt1],rim if pt1[0]>pt0[0] else rgb('6caae2'))
+    if i%4==0 and pt0[1]>0:L([pt0,(pt0[0]-1,pt0[1]+r.randrange(2,7))],rim)
+  else:
+   for i,(pt0,pt1) in enumerate(zip(q,q[1:])):
+    if i%5 in (0,1,2) and pt1[0]>=pt0[0]:L([pt0,pt1],blend(cap,light,.58))
  def contour(q,width,wet=True):
-  L(q,blend(ink,dirt,.25),width+12);L(q,blend(face,cap,.65),width+7)
-  L(q,water if wet else blend(dirt,cap,.55),width)
-  for i,(x,y) in enumerate(q[1:-1]):
-   L([(x-3,y),(x+2,y-1)],blend(water,light,.65) if wet else blend(cap,light,.3))
+  pts=[]
+  for (x,y),(u,v) in zip(q,q[1:]):
+   count=max(1,round(math.hypot(u-x,v-y)/4))
+   for j in range(count):
+    t=j/count;n=0 if j==0 else r.choice([-1,0,0,1])
+    pts.append((round(x+(u-x)*t)+n,round(y+(v-y)*t)))
+  pts.append(q[-1])
+  L(pts,blend(ink,dirt,.12),width+15)
+  for i,(x,y) in enumerate(pts):
+   if i%3: continue
+   for dx in (-width//2-5,width//2+4):
+    L([(x+dx,y),(x+dx-2,y+3)],blend(face,ink,.28),2)
+  L(pts,blend(face,cap,.57),width+7)
+  L([(x+1,y) for x,y in pts],water if wet else blend(dirt,cap,.55),width)
+  for i,(x,y) in enumerate(pts[1:-1]):
+   if i%6==0:L([(x-2,y),(x+2,y-1)],blend(water,light,.55) if wet else blend(cap,light,.3))
+   if i%4==0:d.point((x-2,y+1),fill=blend(water,ink,.5))
  def mesa(x,y,s,h):
   q=[(x-s,y-5),(x-s+9,y-20),(x-10,y-28),(x+14,y-23),(x+s-6,y-14),(x+s+2,y-3),(x+s-15,y+7),(x-3,y+11),(x-s+10,y+9)]
   ledge(q,h)
@@ -83,7 +117,10 @@ def art(name):
   c=ink if ice else rgb('31494b')
   L([(x,y-7*s),(x,y)],rgb('5e4f51'),s)
   p([(x,y-8*s),(x-3*s,y-2*s),(x-4*s,y),(x+4*s,y),(x+3*s,y-2*s)],c)
-  L([(x,y-7*s),(x-2*s,y-3*s),(x-3*s,y-1*s)],light if ice else rgb('82917c'))
+  L([(x,y-7*s),(x-2*s,y-3*s),(x-3*s,y-1*s)],rgb('91c1e4') if ice else rgb('647c69'))
+  if s>1:
+   d.point((x+1,y-7*s+3),fill=rgb('dce9f5') if ice else rgb('647d70'))
+   L([(x+1,y-2*s),(x-1,y-s)],rgb('6389b1') if ice else rgb('3c6660'))
  def structure(x,y,w,h,roof,damage=False):
   roof=rgb(roof);p([(x-1,y+1),(x+w+8,y-3),(x+w+14,y+1),(x+3,y+5)],ink)
   p([(x,y-h),(x+w,y-h),(x+w,y),(x,y)],blend(roof,ink,.37))
@@ -140,7 +177,8 @@ def art(name):
   crane(241,212);bots(263,230)
  else:
   # Pacific left, layered San Gabriel ridges above a partly buried LA basin.
-  coast=[(-12,77),(16,92),(24,111),(33,125),(39,146),(33,170),(49,196),(43,223),(69,240),(76,264)]
+  coast0=[(-12,77),(16,92),(24,111),(33,125),(39,146),(33,170),(49,196),(43,223),(69,240),(76,264)]
+  coast=[(round(a+(c-a)*t)+r.choice([-2,0,0,1]),round(b+(d0-b)*t)) for (a,b),(c,d0) in zip(coast0,coast0[1:]) for t in (0,.17,.34,.51,.68,.85)]+[coast0[-1]]
   p([(-15,66),*coast,(-15,264)],water);L(coast,rgb('216091'),10);L(coast,rgb('36acd5'),6);L(coast,rgb('c8f2f9'),2)
   for i in range(135):
    x=r.randrange(1,61);y=r.randrange(78,254)
@@ -156,7 +194,20 @@ def art(name):
   for xx,yy in [(156,95),(263,189),(311,201),(193,121),(340,133)]:
    for _ in range(22):pine(xx+r.randrange(-22,23),yy+r.randrange(-14,15),r.choice([1,1,1,2]),True)
   for x,y,w,h,dam in [(84,172,20,26,True),(105,171,15,39,False),(127,170,23,22,True),(151,181,24,24,True),(93,193,15,13,False),(122,199,20,19,True),(151,200,19,12,False),(78,217,19,13,True),(112,223,25,18,False),(143,223,14,16,True),(177,221,22,13,False)]:
-   structure(x,y,w,h,'a5aab3',dam)
+   structure(x,y,w,h,'586685',dam)
+  for xx,yy,t in [(67,185,3),(72,195,2),(85,235,3),(106,232,4),(159,219,4),(175,189,3),(175,172,2),(184,202,2),(115,154,3),(151,149,3)]:
+   for i in range(t):
+    x=xx+i*4-r.randrange(0,3);y=yy+r.randrange(-4,7);h=r.randrange(5,15)
+    L([(x,y-h),(x,y)],rgb('182440'),2)
+    L([(x+1,y-h+1),(x+1,y-1)],rgb('3b5279'))
+    if i%3==0:
+     d.point((x,y-4),fill=rgb('f5a255'))
+     d.point((x-1,y),fill=rgb('b05e48'))
+  for q in range(155):
+   xx=r.randrange(64,210);yy=r.randrange(130,245)
+   if (xx-126)**2/3800+(yy-192)**2/2300>=1:continue
+   c0=im.getpixel((xx,yy)); d.point((xx,yy),fill=blend(c0,rgb('f79f5a'),r.choice([.29,.42,.57,.86])))
+   if q%4==0:d.point((xx+1,yy+1),fill=rgb('182242'))
   crane(139,195);crane(176,204);bots(154,233);bots(178,211)
  return im
 def build(D):

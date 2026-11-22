@@ -31,10 +31,10 @@ export const CAMPAIGN_LANDMARKS = {
    "ground",
    1,
    [
-    35,
-    39,
-    158,
-    118
+    26,
+    40,
+    168,
+    126
    ]
   ],
   "stop-3": [
@@ -91,10 +91,10 @@ export const CAMPAIGN_LANDMARKS = {
    "raised",
    1.12,
    [
-    28,
-    18,
-    168,
-    126
+    20,
+    4,
+    174,
+    132
    ]
   ]
  },
@@ -411,10 +411,10 @@ export const CAMPAIGN_LANDMARKS = {
    "raised",
    1,
    [
-    24,
-    32,
-    164,
-    152
+    26,
+    34,
+    162,
+    144
    ]
   ],
   "stop-2": [
@@ -459,10 +459,10 @@ export const CAMPAIGN_LANDMARKS = {
    "raised",
    1,
    [
-    28,
-    68,
-    164,
-    152
+    24,
+    38,
+    174,
+    142
    ]
   ],
   "stop-6": [

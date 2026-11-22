@@ -27000,7 +27000,7 @@
               "curve": "bezier",
               "fromPort": "right",
               "toPort": "left",
-              "portBend": 1
+              "portBend": 0.45
             },
             {
               "id": "road-2",
@@ -31659,7 +31659,7 @@
               "curve": "bezier",
               "fromPort": "left",
               "toPort": "right",
-              "portBend": 1
+              "portBend": 0.7
             },
             {
               "id": "road-2",
@@ -35439,7 +35439,7 @@
               "curve": "bezier",
               "fromPort": "left",
               "toPort": "right",
-              "portBend": 1
+              "portBend": 0.45
             },
             {
               "id": "road-2",
@@ -49708,7 +49708,7 @@
               "curve": "bezier",
               "fromPort": "down",
               "toPort": "right",
-              "portBend": 1
+              "portBend": 1.18
             },
             {
               "id": "road-4",
@@ -69382,7 +69382,7 @@
               "curve": "bezier",
               "fromPort": "left",
               "toPort": "right",
-              "portBend": 1
+              "portBend": 0.45
             },
             {
               "id": "road-4",
@@ -79748,7 +79748,7 @@
               "curve": "bezier",
               "fromPort": "right",
               "toPort": "down",
-              "portBend": 1
+              "portBend": 0.7
             },
             {
               "id": "road-3",
@@ -79766,7 +79766,7 @@
               "curve": "bezier",
               "fromPort": "right",
               "toPort": "left",
-              "portBend": 1
+              "portBend": 0.7
             },
             {
               "id": "road-5",
@@ -83564,7 +83564,7 @@
               "curve": "bezier",
               "fromPort": "up",
               "toPort": "down",
-              "portBend": 1,
+              "portBend": 1.35,
               "pattern": "dotted"
             },
             {

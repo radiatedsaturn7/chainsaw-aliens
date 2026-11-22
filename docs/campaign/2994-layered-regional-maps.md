@@ -2,15 +2,16 @@
 
 Eleven tactical pixel-art plates, 88 individual transparent miniatures. The
 palette follows the game's world map: deep navy and ice-blue, exposed rock,
-and warm lights on ruined or rebuilding infrastructure. Rivers, frost,
+and warm lights on ruined or rebuilding infrastructure. The local art uses clustered facets, broken edges, and restrained texture across all eleven boards. Rivers, frost,
 wrecks and repair crews are environmental storytelling, not navigable icons.
 
 Each miniature is anchored to a saved node by authored region identity, node ID
 and exact race reference. The regional boss reference resolves the stable
 stage, independent of travel order. Changing Background Art in the editor
 does not remove the miniatures from an authored region. An ordinary node move in the map editor moves the miniature too.
-Race order, authored links and ports, entrances, saves, and the world overview
-do not change. A remapped race retains normal node, road and car behavior without picking up unrelated art.
+Race order, link endpoints and ports, entrances, saves, and the world overview
+do not change. Eight bends were adjusted for additional clearance. The same
+curves are used by painting, editor hit testing, and car movement. A remapped race retains normal node, road and car behavior without picking up unrelated art.
 
 Regional draw order:
 
@@ -18,12 +19,13 @@ Regional draw order:
    its reference; the matching PNG and native Art document agree pixel for pixel.
 2. All miniature grounds and silhouettes, on a larger scale than the first
    layered maps. Actual painted bounds, not transparent padding, stay in frame.
-3. Existing drivable road curves and entrance. No gameplay road pixels are
-   baked into art.
-4. Raised and underpass silhouettes re-rendered above the road only in their
-   occluding areas, leaving the approach and pin readable.
-5. Pins and selected car. They remain legible and use their original hit targets
-   and travel geometry, even when landmark art overlaps a road.
+3. Drivable road curves and entrance. Landmark footprints are placed to the
+   side of the swept pavement where the local map allows. Perspective
+   overhangs can still cover a route without taking up its driving space.
+4. Raised and underpass silhouettes, and the moving car, interleaved by their
+   ground depth. A facade hides only the part of the car it overlaps when the
+   car is behind it. Roads and footprints remain separate from the art.
+5. Pins and parked car. UI and route selection remain visible.
 
 The atlas is a small RGBA PNG per region (four columns of 192 × 160 cells). The
 unused transparent margins isolate each sprite and prevent atlas bleed. Only
@@ -42,7 +44,7 @@ for zone in east central west; do
     --menu "$menu" --output "$work/$zone"
 done
 mkdir "$work/minis" "$work/terrain"
-python tools/campaigns/draw_campaign_east_2994.py "$work/terrain"
+python tools/campaigns/draw_campaign_east_polish.py "$work/terrain"
 python tools/campaigns/draw_campaign_pixel_central.py --output "$work/terrain"
 python tools/campaigns/draw_campaign_pixel_west.py --output "$work/west-terrain"
 for slug in moki-dugway oak-creek-canyon angeles-crest; do
@@ -56,6 +58,11 @@ for dir in "$work/central/sprites/"*/; do
 done
 python tools/campaigns/pack_campaign_map_layers.py --minis "$work/minis" \
   --terrain "$work/terrain" --overrides "$work/overrides" \
+  --output "$work/atlas-base" --revision-ms "$(date +%s)000"
+python tools/campaigns/polish_campaign_minis.py \
+  "$work/atlas-base/assets/campaign-map-landmarks" "$work/polished"
+python tools/campaigns/pack_campaign_map_layers.py --minis "$work/minis" \
+  --terrain "$work/terrain" --overrides "$work/polished" \
   --output "$work/ready" --revision-ms "$(date +%s)000"
 ```
 

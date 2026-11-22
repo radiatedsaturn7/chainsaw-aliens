@@ -5,6 +5,7 @@ are atmosphere and landmarks of geography, not substitutes for the race minis.
 """
 import argparse
 from pathlib import Path
+from math import floor, sin, cos
 from random import Random
 
 from PIL import Image, ImageDraw
@@ -63,7 +64,7 @@ class PixelBoard:
             self.line(outer, mid, 2)
             self.line(inner, light)
         dashes = [tuple(bytes.fromhex(c.lstrip('#'))) for c in (dark,mid)]
-        self.specks(dashes,['#285369','#386478','#518695'],470,stripes=2)
+        self.specks(dashes,['#285369','#386478','#518695'],66,stripes=2)
 
     def ice(self, x,y,r):
         # A moving floe with abrupt lit edges and thick deep-blue underside.
@@ -184,7 +185,7 @@ def ozarks():
     m.water([(191,0),(172,0),(165,11),(147,27),(119,31),(102,46),(108,60),(130,70),(133,83),(111,94),(97,113),(99,128),(119,128),(112,114),(124,100),(150,90),(154,78),(143,62),(121,54),(118,47),(133,41),(159,37),(179,19),(191,12)],
       [([(174,3),(163,16),(149,28),(122,32),(109,46),(112,57),(137,68),(145,81),(142,88),(116,102),(103,118),(106,127)],
         [(180,5),(165,20),(152,29),(133,36),(120,41),(114,51),(122,59),(140,67),(147,77),(149,86),(125,98),(111,112),(109,123)])])
-    m.specks([tuple(bytes.fromhex(c[1:])) for c in m.p], ['#304745','#536356','#686655','#7f7059'],2150,stripes=3)
+    m.specks([tuple(bytes.fromhex(c[1:])) for c in m.p], ['#304745','#536356','#686655','#7f7059'],385,stripes=3)
     for pts in [[(0,38),(14,32),(30,34),(55,29),(62,22),(72,21)],[(0,44),(14,37),(30,39),(54,35)],[(126,90),(132,88),(143,89)],[(157,58),(162,52),(175,47),(187,47)],[(0,94),(19,86),(32,84),(42,78)]]:
         m.line(pts,'#9d9b7e')
     for pts in [
@@ -222,7 +223,7 @@ def data_center():
     m.water([(117,0),(145,0),(142,18),(148,31),(134,51),(117,67),(106,81),(111,92),(97,110),(95,128),(67,128),(74,105),(89,88),(81,77),(84,63),(110,44),(123,22),(115,9)],
       [([(125,0),(126,12),(130,22),(124,35),(111,44),(97,55),(88,67),(88,79),(95,89),(81,107),(74,122)],
         [(138,0),(135,14),(141,32),(134,45),(119,58),(102,73),(103,81),(104,91),(91,108),(86,125)])], '#162846','#244879','#508daf')
-    m.specks([tuple(bytes.fromhex(c[1:])) for c in m.p],['#3d455e','#46485b','#625765','#796578'],1820,stripes=3)
+    m.specks([tuple(bytes.fromhex(c[1:])) for c in m.p],['#3d455e','#46485b','#625765','#796578'],315,stripes=3)
     # Jagged, ice-crusted Ohio/Mississippi floodplain, not another road.
     for pts in [
         [(88,57),(94,50),(105,45),(112,38),(119,26),(119,20)],
@@ -274,7 +275,7 @@ def route_66():
     m.soil([(122,0),(167,0),(164,15),(183,26),(191,42),(178,56),(155,62),(137,57),(124,48),(119,34)],4,True)
     for i,pts in enumerate([[(0,42),(19,40),(32,48),(43,51),(49,63),(63,76),(76,81)],[(0,47),(17,45),(30,50),(39,55),(46,68),(64,81),(76,85)],[(0,102),(12,96),(26,100),(24,109),(31,119)],[(124,53),(146,59),(169,58),(189,49)],[(119,62),(140,66),(154,71),(177,66),(191,57)],[(77,95),(75,111),(83,126)]]):
         m.line(pts, '#d4a27c' if i%2==0 else '#513c3d')
-    m.specks([tuple(bytes.fromhex(c[1:])) for c in m.p],['#674843','#b88058','#a17356','#c79770'],2470,stripes=2)
+    m.specks([tuple(bytes.fromhex(c[1:])) for c in m.p],['#674843','#b88058','#a17356','#c79770'],266,stripes=2)
     for pts in [
         [(0,63),(10,62),(19,65),(28,70),(41,78),(49,88),(58,94),(63,106),(59,118)],
         [(104,66),(116,60),(129,63),(146,69),(156,66),(177,63),(190,52)],
@@ -315,8 +316,8 @@ def pikes_peak():
     m.polygon([(131,74),(139,68),(154,65),(158,58),(165,61),(169,67),(161,70),(149,73),(144,78)],'#bf9280')
     for pts in [[(113,84),(129,77),(139,83),(157,79),(170,78),(188,71)],[(141,98),(161,91),(180,88),(191,83)],[(119,76),(129,71),(140,71),(152,61)],[(0,64),(15,52),(27,48),(37,32),(49,25),(59,29)],[(16,92),(28,81),(40,76),(45,66),(53,58)],[(26,113),(37,106),(49,101),(62,84)]]:
         m.line(pts,'#adadb0')
-    m.specks([tuple(bytes.fromhex(c[1:])) for c in m.p[:4]],['#436491','#5575a5','#7096c1','#305077'],1850,stripes=2)
-    m.specks([tuple(bytes.fromhex(c[1:])) for c in m.p[4:]],['#88a9d0','#daedfd','#b0cbea'],730,stripes=2)
+    m.specks([tuple(bytes.fromhex(c[1:])) for c in m.p[:4]],['#436491','#5575a5','#7096c1','#305077'],320,stripes=2)
+    m.specks([tuple(bytes.fromhex(c[1:])) for c in m.p[4:]],['#88a9d0','#daedfd','#b0cbea'],143,stripes=2)
     for pts in [
         [(0,64),(8,62),(16,52),(29,48),(34,35),(45,33),(52,27),(61,30)],
         [(17,99),(24,89),(36,83),(40,80),(43,69),(51,63),(57,52),(70,46)],
@@ -336,6 +337,131 @@ def pikes_peak():
     return m.image
 
 
+def _texture_lamps(im, rng):
+    # Three short clusters of hot pixels, rather than smooth glow.
+    px=im.load()
+    fires=[(x,y) for y in range(7,NATIVE[1]-7) for x in range(7,NATIVE[0]-7)
+           if (x&1)==0 and (y&1)==0 and px[x,y] in ((255,164,81),(255,186,101),(255,197,117))]
+    for x,y in fires:
+        for j in range(11):
+            a,b=x+rng.randrange(-6,8),y+rng.randrange(-6,8)
+            r,g,k=px[a,b]
+            if r<126:
+                n=12+rng.randrange(25)
+                px[a,b]=(min(255,r+n),g+n//3,k)
+        px[x,y]=(255,197,115)
+        if px[x+1,y-2][0] < 190:
+            px[x+1,y-2]=(179,84,51)
+
+
+def render_tactical_relief(im, name):
+    '''High-frequency ink follows longer diagonal relief, with no road lines.'''
+    w,h=NATIVE
+    src=im.resize(NATIVE, Image.Resampling.NEAREST)
+    organic=im.convert('RGB').load()
+    px=src.load()
+    rng=Random('2994-squadron-relief-v3/'+name)
+    step=8
+    # Stable noise knots at three scales; pixels in a slope share the same
+    # shade before the separate bright-short-hatch treatment.
+    grid=[[[rng.uniform(-1,1) for _ in range(size+2)] for _ in range(size+2)]
+          for size in (12,25,64)]
+    def noise(g,u,v):
+        z=len(g)-2
+        u=(u%1)*z;v=(v%1)*z
+        xi,yi=floor(u),floor(v)
+        u-=xi;v-=yi
+        u=u*u*(3-2*u);v=v*v*(3-2*v)
+        return (g[yi][xi]*(1-u)+g[yi][xi+1]*u)*(1-v)+(g[yi+1][xi]*(1-u)+g[yi+1][xi+1]*u)*v
+    def band(base, n, warmth=0):
+        r,g,b=base
+        return tuple(max(0,min(255,k+round(n*d)+warmth*q))
+                     for k,d,q in zip(base,(.92,.90,1.08),(1,0,-1)))
+    for y in range(h):
+        yn=y/h
+        for x in range(w):
+            xn=x/w
+            r,g,b=base=px[x,y]
+            light=(r*2+g*5+b)//8
+            # Keep orange lights, active cyan welding and distinctive small
+            # silhouettes distinct from the geographic brushwork.
+            if r>145 and (r-g>62 or g-b>40) or (g>174 and r<165 and g-r>28):
+                continue
+            ox,oy=x//2,y//2
+            up=organic[max(0,ox-1),max(0,oy-1)]
+            down=organic[min(W-1,ox+1),min(H-1,oy+1)]
+            rim=sum(up)-sum(down)
+            n0=noise(grid[0],xn,yn)*.86
+            n1=noise(grid[1],xn+yn*.045,yn)*.64
+            n2=noise(grid[2],xn+yn*.30,yn)*.79
+            # Become shorter and echelon-like near ridge crests; echo engraved
+            # raw diagonals in the player's world map rather than flat contour lines.
+            diag=(x*.17+y*.29+n0*6+n1*4)
+            lateral=sin(diag)*(.4+abs(n1))+cos(x*.37-y*.1+n1*4)*.38
+            f=floor((n0+n1+n2+lateral)*3.1)
+            weight=3.25+max(0,(light-20))*.025
+            v=f*weight
+            if name=='pikes-peak' and b>r+13 and g>125:
+                v=v*1.45+3
+            bluewater=(b-r>14 and r<72 and g<99 and name in ('ozarks','data-center-city'))
+            if bluewater:
+                # Dark deep-water rocks and long isolated blue shimmer, no
+                # spray effect and no edge-to-edge parallel "road" line.
+                v=v*.80-3
+                if n0>.21 and lateral>.63:
+                    px[x,y]=band(base,v+12,-3)
+                elif n1>.15 and n2<-.07 and (x+y//3)%9<3:
+                    px[x,y]=band(base,v+10,-4)
+                else:
+                    px[x,y]=band(base,v,-2)
+                continue
+            if name=='data-center-city' and abs(r-b)<30 and light>45:
+                # Industrial land is brown-metal grey in the reference.
+                base=(r+6,g-1,b-7)
+            if rim>28 and x%3 != y%3 and n1>-.07:
+                v+= min(24,rim*.13) if light>75 else min(11,rim*.09)
+            elif rim < -24 and n1<.1:
+                v-=min(15,-rim*.07)
+            # Cluster two or three fine staircase pixels on the uphill
+            # point of a relief patch rather than everywhere.
+            if n0+n1>.15 and lateral>.48 and n2>.16 and ((x-y*2)//2)%8<3:
+                v+=14+max(0,(light-60))*.20
+            elif n0+n1<-.19 and lateral<-.48 and ((x-y)//3)%5<3:
+                v-=6
+            px[x,y]=band(base,v,-2 if name=='pikes-peak' else 1)
+    mark_palette={
+        'ozarks':((-14,-13,-6),(27,23,17)),
+        'data-center-city':((-17,-14,-18),(29,27,32)),
+        'route-66':((-19,-18,-18),(32,27,19)),
+        'pikes-peak':((-18,-22,-19),(27,31,32)),
+    }
+    low,high=mark_palette[name]
+    offsets=((0,0),(1,0),(2,1),(3,1),(4,2),(3,2),(5,2),(6,3),(7,3))
+    for _ in range(850):
+        x,y=rng.randrange(1,w-12),rng.randrange(2,h-5)
+        nx,ny=x/w,y/h
+        if not (.07 < noise(grid[1],nx,ny) < .38 and
+                noise(grid[0],nx,ny) > -.22 and noise(grid[2],nx,ny) > -.23):
+            continue
+        a,b,c=anchor=organic[x//2,y//2]
+        if (name in ('ozarks','data-center-city') and c-a>15 and a<72) or a>165 or a-b>58:
+            continue
+        length=rng.randrange(3,10)
+        for j,(u,v) in enumerate(offsets[:length]):
+            xx,yy=x+u,y+v
+            sam=organic[xx//2,yy//2]
+            if sum(abs(k-l) for k,l in zip(anchor,sam))>32:
+                continue
+            color=px[xx,yy]
+            delta=high if j%3 else low
+            px[xx,yy]=tuple(max(0,min(255,q+d)) for q,d in zip(color,delta))
+            if j%2 and yy+1<h:
+                color=px[xx,yy+1]
+                px[xx,yy+1]=tuple(max(0,min(255,q+d)) for q,d in zip(color,low))
+    _texture_lamps(src,rng)
+    return src
+
+
 PAINTERS = dict(zip(REGIONS, (ozarks, data_center, route_66, pikes_peak)))
 
 
@@ -344,12 +470,9 @@ def build(output):
     preview = Image.new('RGB', (NATIVE[0]*2, (NATIVE[1]+18)*2), '#1d2130')
     captions = ImageDraw.Draw(preview)
     for i, (name,painter) in enumerate(PAINTERS.items()):
-        plate = painter().resize(NATIVE, Image.Resampling.NEAREST)
-        # Fewer than 256 authored colors: compact PNG with pixel-exact palette.
-        palette = plate.quantize(colors=256, dither=Image.Dither.NONE)
-        assert plate.tobytes() == palette.convert('RGB').tobytes(), name
+        plate = render_tactical_relief(painter(),name)
         path = output / ('campaign-map-' + name + '.png')
-        palette.save(path, optimize=True)
+        plate.save(path, optimize=True)
         x,y=(i%2)*NATIVE[0],(i//2)*(NATIVE[1]+18)
         preview.paste(plate,(x,y))
         captions.text((x+6,y+NATIVE[1]+3),name,fill='#e2d8c2')

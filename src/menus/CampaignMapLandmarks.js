@@ -1,7 +1,9 @@
+import {placeLandmarksByRoad,regionalRoadCorridors} from './CampaignMapRoadClearance.js';
 import {CAMPAIGN_LANDMARKS,CAMPAIGN_LANDMARK_BY_STAGE} from './CampaignMapLandmarkLayout.js';
 
 const TILE_W=192,TILE_H=160,ANCHOR_X=96,ANCHOR_Y=112;
 const atlases=new Map();
+const regionalPlacementCache=new WeakMap();
 const HERO_MULTIPLIER=1.15;
 function atlasFor(ref){
  if(typeof Image==='undefined')return null;
@@ -48,24 +50,41 @@ export function mapLandmarkPlacements(element,nodes,positions,b,atlas=undefined,
   const [l,t,r,bt]=ink;
   const x=Math.max(b.x-l*scale,Math.min(b.x+b.w-r*scale,p.x-ANCHOR_X*scale));
   const y=Math.max(b.y-t*scale,Math.min(b.y+areaHeight-bt*scale,p.y-ANCHOR_Y*scale-lift));
-  ordered.push({image,index,depth,width,height:TILE_H*scale,x,y,ink,sortY:p.y,pinY:p.y,locked:node.locked});
+  ordered.push({image,index,depth,width,height:TILE_H*scale,x,y,ink,sortY:p.y,pinY:p.y,nodeId:node.id,priority:weight,groundX:x+ANCHOR_X*scale,groundY:y+ANCHOR_Y*scale,locked:node.locked});
  }
  return ordered.sort((a,c)=>a.sortY-c.sortY);
 }
 
-export function drawMapLandmarkLayer(ctx,placements,foreground){
- if(!placements.length)return;
+// Cache stable screen geometry, but don't cache an atlas that is still loading.
+export function regionalLandmarkPlacements(element,nodes,positions,b,progression,roadNodes,links,style,atlas){
+ const signature=JSON.stringify([b.x,b.y,b.w,b.h,element.artRef,element.assetRef,style.lineWidth,style.linePattern,
+  nodes.map(n=>[n.id,n.raceRef,n.locked,positions.get(n.id)?.x,positions.get(n.id)?.y]),links]);
+ const cache=atlas===undefined?regionalPlacementCache.get(element):null;
+ if(cache?.signature===signature)return cache.placements;
+ const base=mapLandmarkPlacements(element,nodes,positions,b,atlas,progression);
+ if(!base.length)return base;
+ const corridors=regionalRoadCorridors(b,roadNodes,links,style);
+ const placements=placeLandmarksByRoad(base,b,corridors,positions);
+ if(atlas===undefined)regionalPlacementCache.set(element,{signature,placements});
+ return placements;
+}
+
+export function drawMapLandmarkLayer(ctx,placements,foreground,car=null){
+ if(!placements.length){if(foreground)car?.draw();return;}
+ let pendingCar=foreground?car:null;
+ const inheritedAlpha=ctx.globalAlpha??1;
  ctx.save();
  ctx.imageSmoothingEnabled=false;
  for(const p of placements){
   // All art belongs in the plate. Repaint only the occluding portion above
   // the road, so a large tower does not bury the player's node or approach.
   if(foreground&&p.depth==='ground')continue;
-  ctx.globalAlpha=p.locked?.83:1;
+  if(pendingCar&&pendingCar.y<p.groundY){ctx.globalAlpha=inheritedAlpha;pendingCar.draw();pendingCar=null;}
+  ctx.globalAlpha=inheritedAlpha*(p.locked?.83:1);
   if(foreground){
    ctx.save();
    ctx.beginPath();
-   const cut=p.pinY-(p.depth==='underpass'?2:Math.min(15,p.height*.13));
+   const cut=p.groundY-(p.depth==='underpass'?1:Math.min(9,p.height*.09));
    ctx.rect(p.x,p.y,p.width,Math.max(0,cut-p.y));
    ctx.clip();
   }
@@ -73,5 +92,7 @@ export function drawMapLandmarkLayer(ctx,placements,foreground){
    Math.round(p.x),Math.round(p.y),Math.round(p.width),Math.round(p.height));
   if(foreground)ctx.restore();
  }
+ ctx.globalAlpha=inheritedAlpha;
+ pendingCar?.draw();
  ctx.restore();
 }

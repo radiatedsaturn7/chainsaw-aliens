@@ -1,4 +1,5 @@
-import {mapLandmarkPlacements,drawMapLandmarkLayer} from './CampaignMapLandmarks.js';
+import {regionalRoadWidth} from './CampaignMapRoadClearance.js';
+import {regionalLandmarkPlacements,drawMapLandmarkLayer} from './CampaignMapLandmarks.js';
 import {campaignMapEntrance} from './CampaignMapEntrance.js';
 import {campaignWorldPresentation,campaignWorldRevealKey,WORLD_ROAD_REVEAL_SECONDS,WORLD_PIN_POP_SECONDS} from './CampaignWorldReveal.js';
 import {drawMapRoad,advanceMapCar,mapRoadPixels,mapRoadPoint} from './MenuMapRoads.js';
@@ -9,7 +10,7 @@ import {worldMapNodes,worldMapConnections,worldMapRaceNodes,worldMapNodePoint,wo
 export function drawRegionalMapRoad(ctx,link,a,c,b,width,pattern) {
  const paved=pattern!=='dashed'&&pattern!=='dotted';
  const open=!a.locked&&!c.locked;
- const w=Math.max(4,Math.min(18,Math.min(b.w,b.h)*(paved ? .033 : .022)*width/(paved ? 5 : 3)));
+ const w=regionalRoadWidth(b,width,pattern);
  ctx.save();
  ctx.globalAlpha*=open?1:.54;
  ctx.lineCap='round';
@@ -39,7 +40,8 @@ export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{
  const roadById=new Map(roadNodes.map(n=>[n.id,n]));
  const links=worldMapConnections(element,nodes);
  const entrance=campaignMapEntrance(element,roadNodes,links);
- const landmarks=regional?mapLandmarkPlacements(element,nodes,positions,b,undefined,document?.parameters?.campaignProgression):[];
+ const travelNodes=entrance?[...roadNodes,entrance.end]:roadNodes,travelLinks=entrance?[...links,entrance.link]:links;
+ const landmarks=regional?regionalLandmarkPlacements(element,nodes,positions,b,document?.parameters?.campaignProgression,travelNodes,travelLinks,style):[];
  if(regional)drawMapLandmarkLayer(ctx,landmarks,false);
  if(entrance){ctx.save();ctx.beginPath();ctx.rect(b.x,b.y,b.w,b.h);ctx.clip();drawRegionalMapRoad(ctx,entrance.link,entrance.first,entrance.end,b,style.lineWidth,style.linePattern);ctx.restore();}
  const reveal=campaignOverview&&!editing?widgetStates.get(campaignWorldRevealKey(element.id)):null;
@@ -59,7 +61,31 @@ export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{
   const link=links.find(l=>l.from===a?.id&&l.to===c?.id||l.to===a?.id&&l.from===c?.id);
   if(a&&c&&link)drawPavingRoad(ctx,b,link,a,c,reveal.elapsed/WORLD_ROAD_REVEAL_SECONDS);
  }
- if(regional)drawMapLandmarkLayer(ctx,landmarks,true);
+ const prepareCar=()=>{
+  if(style.cursor!=='car'||!selected)return null;
+  const key=`map-car:${element.id}`;let previous=editing?null:widgetStates.get(key);
+  if(!editing&&!previous&&entrance&&selected===entrance.first.raceRef)previous={node:entrance.end.id,x:entrance.end.x,y:entrance.end.y,angle:135,time,moving:true};
+  const state=advanceMapCar(previous,travelNodes,travelLinks,previous?.campaignExiting?entrance?.end.raceRef:selected,time);
+  if(state){widgetStates.set(key,state);const p=mapRoadPixels(state,b),size=worldMapCarSize(b);
+   const anchor=(regional||campaignOverview)?.375:.55;
+   const clip=regional?b:carViewport;
+   // The world car may extend beyond its widget into the surrounding screen.
+   // If even the screen edge is too close, fit the sprite around its road
+   // anchor rather than moving the sprite away from the road.
+   const drawSize=regional?size:Math.max(0,Math.min(size,
+    2*(p.x-clip.x),2*(clip.x+clip.w-p.x),
+    (p.y-clip.y)/anchor,(clip.y+clip.h-p.y)/(.7-anchor)));
+   const carBounds={x:p.x-drawSize/2,y:p.y-drawSize*anchor,w:drawSize,h:drawSize*.7};
+   return {y:p.y,moving:state.moving,draw(){
+    ctx.save();ctx.beginPath();ctx.rect(clip.x,clip.y,clip.w,clip.h);ctx.clip();
+    drawCar?.(carBounds,state.angle);ctx.restore();
+   }};
+  }
+  return null;
+ };
+
+ const regionalCar=regional?prepareCar():null;
+ if(regional)drawMapLandmarkLayer(ctx,landmarks,true,regionalCar?.moving?regionalCar:null);
  let raceIndex=0;
  for(const node of presentation.visible){
   const junction=node.kind==='junction',p=positions.get(node.id),active=!junction&&!node.locked&&node.raceRef===selected;
@@ -98,24 +124,8 @@ export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{
    ctx.restore();
   }
  }
- if(style.cursor==='car'&&selected){
-  const key=`map-car:${element.id}`;let previous=editing?null:widgetStates.get(key);
-  if(!editing&&!previous&&entrance&&selected===entrance.first.raceRef)previous={node:entrance.end.id,x:entrance.end.x,y:entrance.end.y,angle:135,time,moving:true};
-  const travelNodes=entrance?[...roadNodes,entrance.end]:roadNodes,travelLinks=entrance?[...links,entrance.link]:links;
-  const state=advanceMapCar(previous,travelNodes,travelLinks,previous?.campaignExiting?entrance?.end.raceRef:selected,time);
-  if(state){widgetStates.set(key,state);const p=mapRoadPixels(state,b),size=worldMapCarSize(b);
-   const anchor=(regional||campaignOverview)?.375:.55;
-   const clip=regional?b:carViewport;
-   // The world car may extend beyond its widget into the surrounding screen.
-   // If even the screen edge is too close, fit the sprite around its road
-   // anchor rather than moving the sprite away from the road.
-   const drawSize=regional?size:Math.max(0,Math.min(size,
-    2*(p.x-clip.x),2*(clip.x+clip.w-p.x),
-    (p.y-clip.y)/anchor,(clip.y+clip.h-p.y)/(.7-anchor)));
-   ctx.save();ctx.beginPath();ctx.rect(clip.x,clip.y,clip.w,clip.h);ctx.clip();
-   const carBounds={x:p.x-drawSize/2,y:p.y-drawSize*anchor,w:drawSize,h:drawSize*.7};
-   drawCar?.(carBounds,state.angle);ctx.restore();}
- }
+ if(!regional)prepareCar()?.draw();
+ else if(regionalCar&&!regionalCar.moving)regionalCar.draw();
  const highlighted=worldMapSelection(nodes,selected);
  if(!regional&&highlighted&&element.showSelectedLabel!==false){ctx.fillStyle=element.color;drawText(`${highlighted.label} · ${highlighted.locked?'Locked':highlighted.completed?'Completed':'Ready'}`,b.x+b.w/2,b.y+b.h-14,b.w-20);}
  if(!nodes.length)drawText('No races configured',b.x+b.w/2,b.y+b.h/2,b.w-12);
