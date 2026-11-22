@@ -26769,9 +26769,9 @@
           "strokeWidth": 0,
           "label": "New item",
           "x": 0.025,
-          "y": 0.14,
-          "w": 0.57,
-          "h": 0.68,
+          "y": 0.112,
+          "w": 0.63,
+          "h": 0.858,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -26830,7 +26830,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.546041,
-              "y": 0.584,
+              "y": 0.328579,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -26845,7 +26845,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.809039,
-              "y": 0.51035,
+              "y": 0.19705,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -26860,7 +26860,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.418624,
-              "y": 0.74874,
+              "y": 0.622746,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -26875,7 +26875,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.304693,
-              "y": 0.69737,
+              "y": 0.531024,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -26890,7 +26890,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.1,
-              "y": 0.8872,
+              "y": 0.87,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -26905,7 +26905,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.638607,
-              "y": 0.81045,
+              "y": 0.732952,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -26920,7 +26920,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.189602,
-              "y": 0.63313,
+              "y": 0.416311,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -26935,7 +26935,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.9,
-              "y": 0.456,
+              "y": 0.1,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -26949,12 +26949,12 @@
               "to": "stop-2",
               "curve": "bezier",
               "control1": {
-                "x": 0.63977,
-                "y": 0.59462
+                "x": 0.6473,
+                "y": 0.32068
               },
               "control2": {
-                "x": 0.74497,
-                "y": 0.56516
+                "x": 0.7525,
+                "y": 0.26807
               }
             },
             {
@@ -26963,12 +26963,12 @@
               "to": "stop-1",
               "curve": "bezier",
               "control1": {
-                "x": 0.7151,
-                "y": 0.63739
+                "x": 0.73945,
+                "y": 0.38403
               },
               "control2": {
-                "x": 0.55893,
-                "y": 0.73274
+                "x": 0.58328,
+                "y": 0.55431
               }
             },
             {
@@ -26977,12 +26977,12 @@
               "to": "stop-4",
               "curve": "bezier",
               "control1": {
-                "x": 0.38884,
-                "y": 0.71749
+                "x": 0.39409,
+                "y": 0.57858
               },
               "control2": {
-                "x": 0.34327,
-                "y": 0.69694
+                "x": 0.34852,
+                "y": 0.5419
               }
             },
             {
@@ -26991,12 +26991,12 @@
               "to": "stop-3",
               "curve": "bezier",
               "control1": {
-                "x": 0.26387,
-                "y": 0.78473
+                "x": 0.28326,
+                "y": 0.66611
               },
               "control2": {
-                "x": 0.18199,
-                "y": 0.86066
+                "x": 0.20138,
+                "y": 0.8017
               }
             },
             {
@@ -27005,12 +27005,12 @@
               "to": "stop-5",
               "curve": "bezier",
               "control1": {
-                "x": 0.28233,
-                "y": 0.93266
+                "x": 0.29017,
+                "y": 0.89616
               },
               "control2": {
-                "x": 0.49777,
-                "y": 0.90196
+                "x": 0.50561,
+                "y": 0.84134
               }
             },
             {
@@ -27019,12 +27019,12 @@
               "to": "stop-6",
               "curve": "bezier",
               "control1": {
-                "x": 0.32568,
-                "y": 0.75068
+                "x": 0.31024,
+                "y": 0.59562
               },
               "control2": {
-                "x": 0.23407,
-                "y": 0.70443
+                "x": 0.21863,
+                "y": 0.51305
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -27036,12 +27036,12 @@
               "to": "stop-7",
               "curve": "bezier",
               "control1": {
-                "x": 0.4293,
-                "y": 0.88522
+                "x": 0.4869,
+                "y": 0.7596
               },
               "control2": {
-                "x": 0.7493,
-                "y": 0.71274
+                "x": 0.8069,
+                "y": 0.4516
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -27053,12 +27053,12 @@
               "to": "stop-1",
               "curve": "bezier",
               "control1": {
-                "x": 0.46408,
-                "y": 0.60486
+                "x": 0.43173,
+                "y": 0.39086
               },
               "control2": {
-                "x": 0.41312,
-                "y": 0.67076
+                "x": 0.38076,
+                "y": 0.50852
               },
               "pattern": "dashed",
               "color": "#c68f64",
@@ -27075,7 +27075,7 @@
             "disabledColor": "#52616b",
             "unselectedOpacity": 1,
             "disabledOpacity": 0.45,
-            "nodeScale": 1,
+            "nodeScale": 0.8,
             "cursor": "car",
             "cursorColor": "#ffffff"
           },
@@ -27104,10 +27104,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.13,
-          "w": 0.35,
-          "h": 0.13,
+          "x": 0.68,
+          "y": 0.145,
+          "w": 0.29,
+          "h": 0.14,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -27192,10 +27192,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.28,
-          "w": 0.35,
-          "h": 0.56,
+          "x": 0.68,
+          "y": 0.29,
+          "w": 0.29,
+          "h": 0.545,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -31483,9 +31483,9 @@
           "strokeWidth": 0,
           "label": "New item",
           "x": 0.025,
-          "y": 0.14,
-          "w": 0.57,
-          "h": 0.68,
+          "y": 0.112,
+          "w": 0.63,
+          "h": 0.858,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -31544,7 +31544,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.9,
-              "y": 0.70691,
+              "y": 0.548048,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -31559,7 +31559,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.597654,
-              "y": 0.63153,
+              "y": 0.413453,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -31574,7 +31574,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.506044,
-              "y": 0.8026,
+              "y": 0.718929,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -31589,7 +31589,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.366244,
-              "y": 0.7564,
+              "y": 0.63643,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -31604,7 +31604,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.249853,
-              "y": 0.52019,
+              "y": 0.214628,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -31619,7 +31619,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.684144,
-              "y": 0.57721,
+              "y": 0.316447,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -31634,7 +31634,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.768975,
-              "y": 0.8872,
+              "y": 0.87,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -31649,7 +31649,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.1,
-              "y": 0.456,
+              "y": 0.1,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -31663,12 +31663,12 @@
               "to": "stop-4",
               "curve": "bezier",
               "control1": {
-                "x": 0.81305,
-                "y": 0.64348
+                "x": 0.82075,
+                "y": 0.46567
               },
               "control2": {
-                "x": 0.69211,
-                "y": 0.61333
+                "x": 0.69981,
+                "y": 0.41183
               }
             },
             {
@@ -31677,12 +31677,12 @@
               "to": "stop-2",
               "curve": "bezier",
               "control1": {
-                "x": 0.59058,
-                "y": 0.69818
+                "x": 0.60805,
+                "y": 0.52311
               },
               "control2": {
-                "x": 0.55393,
-                "y": 0.76661
+                "x": 0.57141,
+                "y": 0.64531
               }
             },
             {
@@ -31691,12 +31691,12 @@
               "to": "stop-0",
               "curve": "bezier",
               "control1": {
-                "x": 0.46731,
-                "y": 0.76964
+                "x": 0.47203,
+                "y": 0.67436
               },
               "control2": {
-                "x": 0.41139,
-                "y": 0.75116
+                "x": 0.41611,
+                "y": 0.64136
               }
             },
             {
@@ -31705,12 +31705,12 @@
               "to": "stop-1",
               "curve": "bezier",
               "control1": {
-                "x": 0.29829,
-                "y": 0.69594
+                "x": 0.27416,
+                "y": 0.51658
               },
               "control2": {
-                "x": 0.25174,
-                "y": 0.60146
+                "x": 0.22761,
+                "y": 0.34786
               }
             },
             {
@@ -31719,12 +31719,12 @@
               "to": "stop-5",
               "curve": "bezier",
               "control1": {
-                "x": 0.38141,
-                "y": 0.59489
+                "x": 0.37559,
+                "y": 0.30367
               },
               "control2": {
-                "x": 0.55513,
-                "y": 0.6177
+                "x": 0.54931,
+                "y": 0.3444
               }
             },
             {
@@ -31733,12 +31733,12 @@
               "to": "stop-6",
               "curve": "bezier",
               "control1": {
-                "x": 0.47836,
-                "y": 0.54938
+                "x": 0.52739,
+                "y": 0.3361
               },
               "control2": {
-                "x": 0.68601,
-                "y": 0.69619
+                "x": 0.73503,
+                "y": 0.59825
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -31750,12 +31750,12 @@
               "to": "stop-7",
               "curve": "bezier",
               "control1": {
-                "x": 0.68665,
-                "y": 0.49062
+                "x": 0.72017,
+                "y": 0.26867
               },
               "control2": {
-                "x": 0.36665,
-                "y": 0.39025
+                "x": 0.40017,
+                "y": 0.08945
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -31772,7 +31772,7 @@
             "disabledColor": "#52616b",
             "unselectedOpacity": 1,
             "disabledOpacity": 0.45,
-            "nodeScale": 1,
+            "nodeScale": 0.8,
             "cursor": "car",
             "cursorColor": "#ffffff"
           },
@@ -31801,10 +31801,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.13,
-          "w": 0.35,
-          "h": 0.13,
+          "x": 0.68,
+          "y": 0.145,
+          "w": 0.29,
+          "h": 0.14,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -31889,10 +31889,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.28,
-          "w": 0.35,
-          "h": 0.56,
+          "x": 0.68,
+          "y": 0.29,
+          "w": 0.29,
+          "h": 0.545,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -35301,9 +35301,9 @@
           "strokeWidth": 0,
           "label": "New item",
           "x": 0.025,
-          "y": 0.14,
-          "w": 0.57,
-          "h": 0.68,
+          "y": 0.112,
+          "w": 0.63,
+          "h": 0.858,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -35362,7 +35362,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.810985,
-              "y": 0.8872,
+              "y": 0.87,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -35377,7 +35377,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.611966,
-              "y": 0.54666,
+              "y": 0.261887,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -35392,7 +35392,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.515237,
-              "y": 0.60407,
+              "y": 0.364408,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -35407,7 +35407,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.417332,
-              "y": 0.65603,
+              "y": 0.457202,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -35422,7 +35422,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.225633,
-              "y": 0.83395,
+              "y": 0.77491,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -35437,7 +35437,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.321672,
-              "y": 0.78227,
+              "y": 0.682631,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -35452,7 +35452,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.1,
-              "y": 0.456,
+              "y": 0.1,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -35467,7 +35467,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.9,
-              "y": 0.71804,
+              "y": 0.56793,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -35481,12 +35481,12 @@
               "to": "stop-2",
               "curve": "bezier",
               "control1": {
-                "x": 0.79157,
-                "y": 0.75235
+                "x": 0.82635,
+                "y": 0.64953
               },
               "control2": {
-                "x": 0.71196,
-                "y": 0.61614
+                "x": 0.74675,
+                "y": 0.40629
               }
             },
             {
@@ -35495,12 +35495,12 @@
               "to": "stop-4",
               "curve": "bezier",
               "control1": {
-                "x": 0.58848,
-                "y": 0.57761
+                "x": 0.59434,
+                "y": 0.30727
               },
               "control2": {
-                "x": 0.54978,
-                "y": 0.60057
+                "x": 0.55565,
+                "y": 0.34828
               }
             },
             {
@@ -35509,12 +35509,12 @@
               "to": "stop-1",
               "curve": "bezier",
               "control1": {
-                "x": 0.47715,
-                "y": 0.60797
+                "x": 0.47184,
+                "y": 0.38137
               },
               "control2": {
-                "x": 0.43799,
-                "y": 0.62875
+                "x": 0.43268,
+                "y": 0.41849
               }
             },
             {
@@ -35523,12 +35523,12 @@
               "to": "stop-3",
               "curve": "bezier",
               "control1": {
-                "x": 0.37912,
-                "y": 0.73789
+                "x": 0.39729,
+                "y": 0.58379
               },
               "control2": {
-                "x": 0.30244,
-                "y": 0.80905
+                "x": 0.32061,
+                "y": 0.71087
               }
             },
             {
@@ -35537,12 +35537,12 @@
               "to": "stop-5",
               "curve": "bezier",
               "control1": {
-                "x": 0.26308,
-                "y": 0.8299
+                "x": 0.26836,
+                "y": 0.75787
               },
               "control2": {
-                "x": 0.3015,
-                "y": 0.80923
+                "x": 0.30678,
+                "y": 0.72095
               }
             },
             {
@@ -35551,12 +35551,12 @@
               "to": "stop-6",
               "curve": "bezier",
               "control1": {
-                "x": 0.28178,
-                "y": 0.64597
+                "x": 0.25506,
+                "y": 0.39684
               },
               "control2": {
-                "x": 0.15485,
-                "y": 0.56595
+                "x": 0.12813,
+                "y": 0.25396
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -35568,12 +35568,12 @@
               "to": "stop-7",
               "curve": "bezier",
               "control1": {
-                "x": 0.46114,
-                "y": 0.9115
+                "x": 0.47662,
+                "y": 0.82332
               },
               "control2": {
-                "x": 0.73088,
-                "y": 0.86514
+                "x": 0.74636,
+                "y": 0.74053
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -35590,7 +35590,7 @@
             "disabledColor": "#52616b",
             "unselectedOpacity": 1,
             "disabledOpacity": 0.45,
-            "nodeScale": 1,
+            "nodeScale": 0.8,
             "cursor": "car",
             "cursorColor": "#ffffff"
           },
@@ -35619,10 +35619,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.13,
-          "w": 0.35,
-          "h": 0.13,
+          "x": 0.68,
+          "y": 0.145,
+          "w": 0.29,
+          "h": 0.14,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -35707,10 +35707,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.28,
-          "w": 0.35,
-          "h": 0.56,
+          "x": 0.68,
+          "y": 0.29,
+          "w": 0.29,
+          "h": 0.545,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -41542,9 +41542,9 @@
           "strokeWidth": 0,
           "label": "New item",
           "x": 0.025,
-          "y": 0.14,
-          "w": 0.57,
-          "h": 0.68,
+          "y": 0.112,
+          "w": 0.63,
+          "h": 0.858,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -41603,7 +41603,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.9,
-              "y": 0.54296,
+              "y": 0.255285,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -41618,7 +41618,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.811123,
-              "y": 0.59856,
+              "y": 0.354566,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -41633,7 +41633,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.489557,
-              "y": 0.74678,
+              "y": 0.619254,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -41648,7 +41648,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.382287,
-              "y": 0.6526,
+              "y": 0.451064,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -41663,7 +41663,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.315998,
-              "y": 0.71551,
+              "y": 0.563413,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -41678,7 +41678,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.696708,
-              "y": 0.68727,
+              "y": 0.512978,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -41693,7 +41693,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.1,
-              "y": 0.456,
+              "y": 0.1,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -41708,7 +41708,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.548755,
-              "y": 0.8872,
+              "y": 0.87,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -41722,12 +41722,12 @@
               "to": "stop-2",
               "curve": "bezier",
               "control1": {
-                "x": 0.86433,
-                "y": 0.5492
+                "x": 0.85865,
+                "y": 0.2755
               },
               "control2": {
-                "x": 0.82878,
-                "y": 0.57144
+                "x": 0.8231,
+                "y": 0.31521
               }
             },
             {
@@ -41736,12 +41736,12 @@
               "to": "stop-0",
               "curve": "bezier",
               "control1": {
-                "x": 0.72749,
-                "y": 0.68779
+                "x": 0.74263,
+                "y": 0.48107
               },
               "control2": {
-                "x": 0.59886,
-                "y": 0.74708
+                "x": 0.614,
+                "y": 0.58694
               }
             },
             {
@@ -41750,12 +41750,12 @@
               "to": "stop-1",
               "curve": "bezier",
               "control1": {
-                "x": 0.46747,
-                "y": 0.7027
+                "x": 0.4771,
+                "y": 0.55149
               },
               "control2": {
-                "x": 0.42457,
-                "y": 0.66503
+                "x": 0.43419,
+                "y": 0.48421
               }
             },
             {
@@ -41764,12 +41764,12 @@
               "to": "stop-4",
               "curve": "bezier",
               "control1": {
-                "x": 0.36925,
-                "y": 0.68135
+                "x": 0.37568,
+                "y": 0.49563
               },
               "control2": {
-                "x": 0.34274,
-                "y": 0.70651
+                "x": 0.34916,
+                "y": 0.54057
               }
             },
             {
@@ -41778,12 +41778,12 @@
               "to": "stop-5",
               "curve": "bezier",
               "control1": {
-                "x": 0.4415,
-                "y": 0.75597
+                "x": 0.44438,
+                "y": 0.59677
               },
               "control2": {
-                "x": 0.59378,
-                "y": 0.74467
+                "x": 0.59667,
+                "y": 0.57659
               }
             },
             {
@@ -41792,12 +41792,12 @@
               "to": "stop-6",
               "curve": "bezier",
               "control1": {
-                "x": 0.25853,
-                "y": 0.63768
+                "x": 0.23227,
+                "y": 0.38671
               },
               "control2": {
-                "x": 0.14562,
-                "y": 0.55904
+                "x": 0.11936,
+                "y": 0.24629
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -41809,12 +41809,12 @@
               "to": "stop-7",
               "curve": "bezier",
               "control1": {
-                "x": 0.72908,
-                "y": 0.59341
+                "x": 0.6831,
+                "y": 0.39228
               },
               "control2": {
-                "x": 0.58858,
-                "y": 0.7311
+                "x": 0.5426,
+                "y": 0.63817
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -41826,12 +41826,12 @@
               "to": "stop-4",
               "curve": "bezier",
               "control1": {
-                "x": 0.44184,
-                "y": 0.69338
+                "x": 0.44798,
+                "y": 0.558
               },
               "control2": {
-                "x": 0.37241,
-                "y": 0.68088
+                "x": 0.37855,
+                "y": 0.53566
               },
               "pattern": "dashed",
               "color": "#c68f64",
@@ -41848,7 +41848,7 @@
             "disabledColor": "#52616b",
             "unselectedOpacity": 1,
             "disabledOpacity": 0.45,
-            "nodeScale": 1,
+            "nodeScale": 0.8,
             "cursor": "car",
             "cursorColor": "#ffffff"
           },
@@ -41877,10 +41877,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.13,
-          "w": 0.35,
-          "h": 0.13,
+          "x": 0.68,
+          "y": 0.145,
+          "w": 0.29,
+          "h": 0.14,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -41965,10 +41965,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.28,
-          "w": 0.35,
-          "h": 0.56,
+          "x": 0.68,
+          "y": 0.29,
+          "w": 0.29,
+          "h": 0.545,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -49645,9 +49645,9 @@
           "strokeWidth": 0,
           "label": "New item",
           "x": 0.025,
-          "y": 0.14,
-          "w": 0.57,
-          "h": 0.68,
+          "y": 0.112,
+          "w": 0.63,
+          "h": 0.858,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -49706,7 +49706,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.423418,
-              "y": 0.53605,
+              "y": 0.242943,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -49721,7 +49721,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.510629,
-              "y": 0.72673,
+              "y": 0.583443,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -49736,7 +49736,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.9,
-              "y": 0.7792,
+              "y": 0.67715,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -49751,7 +49751,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.694953,
-              "y": 0.61102,
+              "y": 0.376817,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -49766,7 +49766,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.1,
-              "y": 0.8872,
+              "y": 0.87,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -49781,7 +49781,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.610694,
-              "y": 0.66766,
+              "y": 0.477971,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -49796,7 +49796,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.199567,
-              "y": 0.456,
+              "y": 0.1,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -49811,7 +49811,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.80629,
-              "y": 0.66766,
+              "y": 0.477971,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -49825,12 +49825,12 @@
               "to": "stop-1",
               "curve": "bezier",
               "control1": {
-                "x": 0.42654,
-                "y": 0.60841
+                "x": 0.40706,
+                "y": 0.36324
               },
               "control2": {
-                "x": 0.46142,
-                "y": 0.68468
+                "x": 0.44194,
+                "y": 0.49944
               }
             },
             {
@@ -49839,12 +49839,12 @@
               "to": "stop-2",
               "curve": "bezier",
               "control1": {
-                "x": 0.64205,
-                "y": 0.6929
+                "x": 0.64741,
+                "y": 0.56281
               },
               "control2": {
-                "x": 0.7978,
-                "y": 0.71389
+                "x": 0.80316,
+                "y": 0.60029
               }
             },
             {
@@ -49853,12 +49853,12 @@
               "to": "stop-3",
               "curve": "bezier",
               "control1": {
-                "x": 0.85625,
-                "y": 0.69873
+                "x": 0.87343,
+                "y": 0.55439
               },
               "control2": {
-                "x": 0.77423,
-                "y": 0.63145
+                "x": 0.79141,
+                "y": 0.43425
               }
             },
             {
@@ -49867,12 +49867,12 @@
               "to": "stop-4",
               "curve": "bezier",
               "control1": {
-                "x": 0.54047,
-                "y": 0.77674
+                "x": 0.56868,
+                "y": 0.61198
               },
               "control2": {
-                "x": 0.30249,
-                "y": 0.88721
+                "x": 0.3307,
+                "y": 0.80925
               }
             },
             {
@@ -49881,12 +49881,12 @@
               "to": "stop-5",
               "curve": "bezier",
               "control1": {
-                "x": 0.29196,
-                "y": 0.88334
+                "x": 0.31439,
+                "y": 0.81094
               },
               "control2": {
-                "x": 0.49624,
-                "y": 0.79552
+                "x": 0.51866,
+                "y": 0.65413
               }
             },
             {
@@ -49895,12 +49895,12 @@
               "to": "stop-6",
               "curve": "bezier",
               "control1": {
-                "x": 0.36507,
-                "y": 0.69298
+                "x": 0.3289,
+                "y": 0.48162
               },
               "control2": {
-                "x": 0.24064,
-                "y": 0.58468
+                "x": 0.20448,
+                "y": 0.28824
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -49912,12 +49912,12 @@
               "to": "stop-7",
               "curve": "bezier",
               "control1": {
-                "x": 0.72095,
-                "y": 0.64807
+                "x": 0.71338,
+                "y": 0.42811
               },
               "control2": {
-                "x": 0.76549,
-                "y": 0.67073
+                "x": 0.75792,
+                "y": 0.46858
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -49929,12 +49929,12 @@
               "to": "stop-3",
               "curve": "bezier",
               "control1": {
-                "x": 0.59854,
-                "y": 0.73578
+                "x": 0.62127,
+                "y": 0.5634
               },
               "control2": {
-                "x": 0.67227,
-                "y": 0.6895
+                "x": 0.695,
+                "y": 0.48075
               },
               "pattern": "dashed",
               "color": "#c68f64",
@@ -49951,7 +49951,7 @@
             "disabledColor": "#52616b",
             "unselectedOpacity": 1,
             "disabledOpacity": 0.45,
-            "nodeScale": 1,
+            "nodeScale": 0.8,
             "cursor": "car",
             "cursorColor": "#ffffff"
           },
@@ -49980,10 +49980,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.13,
-          "w": 0.35,
-          "h": 0.13,
+          "x": 0.68,
+          "y": 0.145,
+          "w": 0.29,
+          "h": 0.14,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -50068,10 +50068,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.28,
-          "w": 0.35,
-          "h": 0.56,
+          "x": 0.68,
+          "y": 0.29,
+          "w": 0.29,
+          "h": 0.545,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -57170,9 +57170,9 @@
           "strokeWidth": 0,
           "label": "New item",
           "x": 0.025,
-          "y": 0.14,
-          "w": 0.57,
-          "h": 0.68,
+          "y": 0.112,
+          "w": 0.63,
+          "h": 0.858,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -57231,7 +57231,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.270756,
-              "y": 0.61549,
+              "y": 0.384811,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -57246,7 +57246,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.1,
-              "y": 0.84,
+              "y": 0.785722,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -57261,7 +57261,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.63856,
-              "y": 0.76243,
+              "y": 0.647196,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -57276,7 +57276,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.545818,
-              "y": 0.79043,
+              "y": 0.697196,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -57291,7 +57291,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.455816,
-              "y": 0.8872,
+              "y": 0.87,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -57306,7 +57306,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.383472,
-              "y": 0.7186,
+              "y": 0.568924,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -57321,7 +57321,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.9,
-              "y": 0.456,
+              "y": 0.1,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -57336,7 +57336,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.63856,
-              "y": 0.81843,
+              "y": 0.747196,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -57350,12 +57350,12 @@
               "to": "stop-1",
               "curve": "bezier",
               "control1": {
-                "x": 0.18693,
-                "y": 0.66513
+                "x": 0.164,
+                "y": 0.4909
               },
               "control2": {
-                "x": 0.11863,
-                "y": 0.75494
+                "x": 0.09569,
+                "y": 0.65127
               }
             },
             {
@@ -57364,12 +57364,12 @@
               "to": "stop-2",
               "curve": "bezier",
               "control1": {
-                "x": 0.26226,
-                "y": 0.74516
+                "x": 0.25433,
+                "y": 0.67138
               },
               "control2": {
-                "x": 0.47768,
-                "y": 0.71414
+                "x": 0.46975,
+                "y": 0.61597
               }
             },
             {
@@ -57378,12 +57378,12 @@
               "to": "stop-3",
               "curve": "bezier",
               "control1": {
-                "x": 0.60524,
-                "y": 0.75933
+                "x": 0.60238,
+                "y": 0.65114
               },
               "control2": {
-                "x": 0.56815,
-                "y": 0.77053
+                "x": 0.56529,
+                "y": 0.67114
               }
             },
             {
@@ -57392,12 +57392,12 @@
               "to": "stop-4",
               "curve": "bezier",
               "control1": {
-                "x": 0.5296,
-                "y": 0.8331
+                "x": 0.53948,
+                "y": 0.76419
               },
               "control2": {
-                "x": 0.4936,
-                "y": 0.8718
+                "x": 0.50348,
+                "y": 0.83332
               }
             },
             {
@@ -57406,12 +57406,12 @@
               "to": "stop-5",
               "curve": "bezier",
               "control1": {
-                "x": 0.45458,
-                "y": 0.82384
+                "x": 0.47181,
+                "y": 0.76425
               },
               "control2": {
-                "x": 0.42565,
-                "y": 0.7564
+                "x": 0.44287,
+                "y": 0.64382
               }
             },
             {
@@ -57420,12 +57420,12 @@
               "to": "stop-6",
               "curve": "bezier",
               "control1": {
-                "x": 0.29072,
-                "y": 0.58112
+                "x": 0.23943,
+                "y": 0.43029
               },
               "control2": {
-                "x": 0.61072,
-                "y": 0.42752
+                "x": 0.55943,
+                "y": 0.156
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -57437,12 +57437,12 @@
               "to": "stop-7",
               "curve": "bezier",
               "control1": {
-                "x": 0.57074,
-                "y": 0.81516
+                "x": 0.567,
+                "y": 0.72896
               },
               "control2": {
-                "x": 0.60783,
-                "y": 0.82636
+                "x": 0.60409,
+                "y": 0.74896
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -57459,7 +57459,7 @@
             "disabledColor": "#52616b",
             "unselectedOpacity": 1,
             "disabledOpacity": 0.45,
-            "nodeScale": 1,
+            "nodeScale": 0.8,
             "cursor": "car",
             "cursorColor": "#ffffff"
           },
@@ -57488,10 +57488,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.13,
-          "w": 0.35,
-          "h": 0.13,
+          "x": 0.68,
+          "y": 0.145,
+          "w": 0.29,
+          "h": 0.14,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -57576,10 +57576,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.28,
-          "w": 0.35,
-          "h": 0.56,
+          "x": 0.68,
+          "y": 0.29,
+          "w": 0.29,
+          "h": 0.545,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -65731,9 +65731,9 @@
           "strokeWidth": 0,
           "label": "New item",
           "x": 0.025,
-          "y": 0.14,
-          "w": 0.57,
-          "h": 0.68,
+          "y": 0.112,
+          "w": 0.63,
+          "h": 0.858,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -65792,7 +65792,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.769603,
-              "y": 0.52262,
+              "y": 0.218969,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -65807,7 +65807,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.513184,
-              "y": 0.66202,
+              "y": 0.4679,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -65822,7 +65822,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.375046,
-              "y": 0.8872,
+              "y": 0.87,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -65837,7 +65837,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.292524,
-              "y": 0.75272,
+              "y": 0.629862,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -65852,7 +65852,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.1,
-              "y": 0.80732,
+              "y": 0.727366,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -65867,7 +65867,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.6155,
-              "y": 0.70737,
+              "y": 0.548881,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -65882,7 +65882,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.9,
-              "y": 0.456,
+              "y": 0.1,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -65897,7 +65897,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.186858,
-              "y": 0.60742,
+              "y": 0.370397,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -65911,12 +65911,12 @@
               "to": "stop-1",
               "curve": "bezier",
               "control1": {
-                "x": 0.66943,
-                "y": 0.53389
+                "x": 0.65519,
+                "y": 0.26529
               },
               "control2": {
-                "x": 0.56686,
-                "y": 0.58965
+                "x": 0.55262,
+                "y": 0.36486
               }
             },
             {
@@ -65925,12 +65925,12 @@
               "to": "stop-3",
               "curve": "bezier",
               "control1": {
-                "x": 0.49825,
-                "y": 0.75204
+                "x": 0.52125,
+                "y": 0.61453
               },
               "control2": {
-                "x": 0.443,
-                "y": 0.84211
+                "x": 0.466,
+                "y": 0.77537
               }
             },
             {
@@ -65939,12 +65939,12 @@
               "to": "stop-2",
               "curve": "bezier",
               "control1": {
-                "x": 0.36612,
-                "y": 0.83344
+                "x": 0.37986,
+                "y": 0.78243
               },
               "control2": {
-                "x": 0.33311,
-                "y": 0.77965
+                "x": 0.34685,
+                "y": 0.68637
               }
             },
             {
@@ -65953,12 +65953,12 @@
               "to": "stop-4",
               "curve": "bezier",
               "control1": {
-                "x": 0.23801,
-                "y": 0.79522
+                "x": 0.24359,
+                "y": 0.68609
               },
               "control2": {
-                "x": 0.161,
-                "y": 0.81706
+                "x": 0.16658,
+                "y": 0.72509
               }
             },
             {
@@ -65967,12 +65967,12 @@
               "to": "stop-5",
               "curve": "bezier",
               "control1": {
-                "x": 0.27795,
-                "y": 0.84235
+                "x": 0.28816,
+                "y": 0.73727
               },
               "control2": {
-                "x": 0.48415,
-                "y": 0.80237
+                "x": 0.49436,
+                "y": 0.66587
               }
             },
             {
@@ -65981,12 +65981,12 @@
               "to": "stop-6",
               "curve": "bezier",
               "control1": {
-                "x": 0.60194,
-                "y": 0.53033
+                "x": 0.57442,
+                "y": 0.28441
               },
               "control2": {
-                "x": 0.75667,
-                "y": 0.44793
+                "x": 0.72915,
+                "y": 0.13725
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -65998,12 +65998,12 @@
               "to": "stop-7",
               "curve": "bezier",
               "control1": {
-                "x": 0.36239,
-                "y": 0.76568
+                "x": 0.39976,
+                "y": 0.67814
               },
               "control2": {
-                "x": 0.28711,
-                "y": 0.65377
+                "x": 0.32448,
+                "y": 0.47829
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -66015,12 +66015,12 @@
               "to": "stop-2",
               "curve": "bezier",
               "control1": {
-                "x": 0.4199,
-                "y": 0.63588
+                "x": 0.40208,
+                "y": 0.46456
               },
               "control2": {
-                "x": 0.33163,
-                "y": 0.67216
+                "x": 0.31382,
+                "y": 0.52935
               },
               "pattern": "dashed",
               "color": "#c68f64",
@@ -66037,7 +66037,7 @@
             "disabledColor": "#52616b",
             "unselectedOpacity": 1,
             "disabledOpacity": 0.45,
-            "nodeScale": 1,
+            "nodeScale": 0.8,
             "cursor": "car",
             "cursorColor": "#ffffff"
           },
@@ -66066,10 +66066,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.13,
-          "w": 0.35,
-          "h": 0.13,
+          "x": 0.68,
+          "y": 0.145,
+          "w": 0.29,
+          "h": 0.14,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -66154,10 +66154,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.28,
-          "w": 0.35,
-          "h": 0.56,
+          "x": 0.68,
+          "y": 0.29,
+          "w": 0.29,
+          "h": 0.545,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -69467,9 +69467,9 @@
           "strokeWidth": 0,
           "label": "New item",
           "x": 0.025,
-          "y": 0.14,
-          "w": 0.57,
-          "h": 0.68,
+          "y": 0.112,
+          "w": 0.63,
+          "h": 0.858,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -69528,7 +69528,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.58173,
-              "y": 0.67246,
+              "y": 0.486529,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -69543,7 +69543,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.491995,
-              "y": 0.82322,
+              "y": 0.75575,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -69558,7 +69558,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.38717,
-              "y": 0.62221,
+              "y": 0.396805,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -69573,7 +69573,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.188146,
-              "y": 0.8872,
+              "y": 0.87,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -69588,7 +69588,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.1,
-              "y": 0.77165,
+              "y": 0.663653,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -69603,7 +69603,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.288737,
-              "y": 0.72126,
+              "y": 0.573676,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -69618,7 +69618,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.812985,
-              "y": 0.50684,
+              "y": 0.190785,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -69633,7 +69633,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.9,
-              "y": 0.456,
+              "y": 0.1,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -69647,12 +69647,12 @@
               "to": "stop-1",
               "curve": "bezier",
               "control1": {
-                "x": 0.53342,
-                "y": 0.70904
+                "x": 0.51802,
+                "y": 0.56101
               },
               "control2": {
-                "x": 0.49752,
-                "y": 0.76934
+                "x": 0.48212,
+                "y": 0.6687
               }
             },
             {
@@ -69661,12 +69661,12 @@
               "to": "stop-2",
               "curve": "bezier",
               "control1": {
-                "x": 0.43232,
-                "y": 0.77252
+                "x": 0.41179,
+                "y": 0.65451
               },
               "control2": {
-                "x": 0.39039,
-                "y": 0.69212
+                "x": 0.36986,
+                "y": 0.51094
               }
             },
             {
@@ -69675,12 +69675,12 @@
               "to": "stop-3",
               "curve": "bezier",
               "control1": {
-                "x": 0.28903,
-                "y": 0.68113
+                "x": 0.26197,
+                "y": 0.52235
               },
               "control2": {
-                "x": 0.20942,
-                "y": 0.78713
+                "x": 0.18236,
+                "y": 0.71163
               }
             },
             {
@@ -69689,12 +69689,12 @@
               "to": "stop-4",
               "curve": "bezier",
               "control1": {
-                "x": 0.14492,
-                "y": 0.86168
+                "x": 0.13311,
+                "y": 0.81543
               },
               "control2": {
-                "x": 0.10966,
-                "y": 0.81546
+                "x": 0.09786,
+                "y": 0.73289
               }
             },
             {
@@ -69703,12 +69703,12 @@
               "to": "stop-5",
               "curve": "bezier",
               "control1": {
-                "x": 0.16695,
-                "y": 0.78006
+                "x": 0.17209,
+                "y": 0.6594
               },
               "control2": {
-                "x": 0.24244,
-                "y": 0.75991
+                "x": 0.24759,
+                "y": 0.62341
               }
             },
             {
@@ -69717,12 +69717,12 @@
               "to": "stop-6",
               "curve": "bezier",
               "control1": {
-                "x": 0.54093,
-                "y": 0.66741
+                "x": 0.49867,
+                "y": 0.52039
               },
               "control2": {
-                "x": 0.66932,
-                "y": 0.54086
+                "x": 0.62706,
+                "y": 0.29441
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -69734,12 +69734,12 @@
               "to": "stop-7",
               "curve": "bezier",
               "control1": {
-                "x": 0.48924,
-                "y": 0.87023
+                "x": 0.54684,
+                "y": 0.74462
               },
               "control2": {
-                "x": 0.77398,
-                "y": 0.69775
+                "x": 0.83158,
+                "y": 0.43662
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -69756,7 +69756,7 @@
             "disabledColor": "#52616b",
             "unselectedOpacity": 1,
             "disabledOpacity": 0.45,
-            "nodeScale": 1,
+            "nodeScale": 0.8,
             "cursor": "car",
             "cursorColor": "#ffffff"
           },
@@ -69785,10 +69785,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.13,
-          "w": 0.35,
-          "h": 0.13,
+          "x": 0.68,
+          "y": 0.145,
+          "w": 0.29,
+          "h": 0.14,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -69873,10 +69873,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.28,
-          "w": 0.35,
-          "h": 0.56,
+          "x": 0.68,
+          "y": 0.29,
+          "w": 0.29,
+          "h": 0.545,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -75419,9 +75419,9 @@
           "strokeWidth": 0,
           "label": "New item",
           "x": 0.025,
-          "y": 0.14,
-          "w": 0.57,
-          "h": 0.68,
+          "y": 0.112,
+          "w": 0.63,
+          "h": 0.858,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -75480,7 +75480,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.589119,
-              "y": 0.83197,
+              "y": 0.771372,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -75495,7 +75495,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.716277,
-              "y": 0.68679,
+              "y": 0.512128,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -75510,7 +75510,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.9,
-              "y": 0.59754,
+              "y": 0.352755,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -75525,7 +75525,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.404521,
-              "y": 0.77579,
+              "y": 0.671058,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -75540,7 +75540,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.1,
-              "y": 0.52683,
+              "y": 0.226488,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -75555,7 +75555,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.502467,
-              "y": 0.72978,
+              "y": 0.588884,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -75570,7 +75570,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.802733,
-              "y": 0.456,
+              "y": 0.1,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -75585,7 +75585,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.325405,
-              "y": 0.8872,
+              "y": 0.87,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -75599,12 +75599,12 @@
               "to": "stop-1",
               "curve": "bezier",
               "control1": {
-                "x": 0.64868,
-                "y": 0.80204
+                "x": 0.66351,
+                "y": 0.70494
               },
               "control2": {
-                "x": 0.69955,
-                "y": 0.74397
+                "x": 0.71437,
+                "y": 0.60125
               }
             },
             {
@@ -75613,12 +75613,12 @@
               "to": "stop-2",
               "curve": "bezier",
               "control1": {
-                "x": 0.76347,
-                "y": 0.63435
+                "x": 0.75435,
+                "y": 0.43724
               },
               "control2": {
-                "x": 0.83696,
-                "y": 0.59865
+                "x": 0.82784,
+                "y": 0.3735
               }
             },
             {
@@ -75627,12 +75627,12 @@
               "to": "stop-3",
               "curve": "bezier",
               "control1": {
-                "x": 0.71827,
-                "y": 0.59017
+                "x": 0.70007,
+                "y": 0.3902
               },
               "control2": {
-                "x": 0.52008,
-                "y": 0.66147
+                "x": 0.50188,
+                "y": 0.51752
               }
             },
             {
@@ -75641,12 +75641,12 @@
               "to": "stop-4",
               "curve": "bezier",
               "control1": {
-                "x": 0.27471,
-                "y": 0.73571
+                "x": 0.24928,
+                "y": 0.56838
               },
               "control2": {
-                "x": 0.1529,
-                "y": 0.63613
+                "x": 0.12747,
+                "y": 0.39056
               }
             },
             {
@@ -75655,12 +75655,12 @@
               "to": "stop-5",
               "curve": "bezier",
               "control1": {
-                "x": 0.20241,
-                "y": 0.64409
+                "x": 0.18168,
+                "y": 0.39478
               },
               "control2": {
-                "x": 0.36339,
-                "y": 0.72527
+                "x": 0.34266,
+                "y": 0.53973
               }
             },
             {
@@ -75669,12 +75669,12 @@
               "to": "stop-6",
               "curve": "bezier",
               "control1": {
-                "x": 0.70471,
-                "y": 0.59824
+                "x": 0.67388,
+                "y": 0.36555
               },
               "control2": {
-                "x": 0.73929,
-                "y": 0.50592
+                "x": 0.70846,
+                "y": 0.2007
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -75686,12 +75686,12 @@
               "to": "stop-7",
               "curve": "bezier",
               "control1": {
-                "x": 0.36026,
-                "y": 0.79799
+                "x": 0.34538,
+                "y": 0.72127
               },
               "control2": {
-                "x": 0.32862,
-                "y": 0.84256
+                "x": 0.31374,
+                "y": 0.80085
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -75703,12 +75703,12 @@
               "to": "stop-3",
               "curve": "bezier",
               "control1": {
-                "x": 0.59427,
-                "y": 0.63733
+                "x": 0.57678,
+                "y": 0.48505
               },
               "control2": {
-                "x": 0.46956,
-                "y": 0.67293
+                "x": 0.45208,
+                "y": 0.54862
               },
               "pattern": "dashed",
               "color": "#c68f64",
@@ -75725,7 +75725,7 @@
             "disabledColor": "#52616b",
             "unselectedOpacity": 1,
             "disabledOpacity": 0.45,
-            "nodeScale": 1,
+            "nodeScale": 0.8,
             "cursor": "car",
             "cursorColor": "#ffffff"
           },
@@ -75754,10 +75754,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.13,
-          "w": 0.35,
-          "h": 0.13,
+          "x": 0.68,
+          "y": 0.145,
+          "w": 0.29,
+          "h": 0.14,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -75842,10 +75842,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.28,
-          "w": 0.35,
-          "h": 0.56,
+          "x": 0.68,
+          "y": 0.29,
+          "w": 0.29,
+          "h": 0.545,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -79935,9 +79935,9 @@
           "strokeWidth": 0,
           "label": "New item",
           "x": 0.025,
-          "y": 0.14,
-          "w": 0.57,
-          "h": 0.68,
+          "y": 0.112,
+          "w": 0.63,
+          "h": 0.858,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -79996,7 +79996,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.78687,
-              "y": 0.68556,
+              "y": 0.509931,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -80011,7 +80011,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.515976,
-              "y": 0.60041,
+              "y": 0.357867,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -80026,7 +80026,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.634042,
-              "y": 0.65702,
+              "y": 0.458961,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -80041,7 +80041,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.9,
-              "y": 0.62479,
+              "y": 0.401419,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -80056,7 +80056,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.335804,
-              "y": 0.73832,
+              "y": 0.60415,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -80071,7 +80071,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.849876,
-              "y": 0.55083,
+              "y": 0.269342,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -80086,7 +80086,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.1,
-              "y": 0.456,
+              "y": 0.1,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -80101,7 +80101,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.673117,
-              "y": 0.8872,
+              "y": 0.87,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -80115,12 +80115,12 @@
               "to": "stop-1",
               "curve": "bezier",
               "control1": {
-                "x": 0.71125,
-                "y": 0.6231
+                "x": 0.71995,
+                "y": 0.42605
               },
               "control2": {
-                "x": 0.6029,
-                "y": 0.58904
+                "x": 0.61159,
+                "y": 0.36523
               }
             },
             {
@@ -80129,12 +80129,12 @@
               "to": "stop-2",
               "curve": "bezier",
               "control1": {
-                "x": 0.56112,
-                "y": 0.60318
+                "x": 0.5669,
+                "y": 0.37487
               },
               "control2": {
-                "x": 0.60834,
-                "y": 0.62582
+                "x": 0.61413,
+                "y": 0.41531
               }
             },
             {
@@ -80143,12 +80143,12 @@
               "to": "stop-3",
               "curve": "bezier",
               "control1": {
-                "x": 0.72334,
-                "y": 0.68128
+                "x": 0.72663,
+                "y": 0.47512
               },
               "control2": {
-                "x": 0.82972,
-                "y": 0.66839
+                "x": 0.83301,
+                "y": 0.45211
               }
             },
             {
@@ -80157,12 +80157,12 @@
               "to": "stop-4",
               "curve": "bezier",
               "control1": {
-                "x": 0.73422,
-                "y": 0.73447
+                "x": 0.74581,
+                "y": 0.53964
               },
               "control2": {
-                "x": 0.50854,
-                "y": 0.77988
+                "x": 0.52013,
+                "y": 0.62073
               }
             },
             {
@@ -80171,12 +80171,12 @@
               "to": "stop-5",
               "curve": "bezier",
               "control1": {
-                "x": 0.52468,
-                "y": 0.74515
+                "x": 0.54383,
+                "y": 0.56384
               },
               "control2": {
-                "x": 0.73031,
-                "y": 0.67016
+                "x": 0.74946,
+                "y": 0.42992
               }
             },
             {
@@ -80185,12 +80185,12 @@
               "to": "stop-6",
               "curve": "bezier",
               "control1": {
-                "x": 0.35831,
-                "y": 0.62491
+                "x": 0.33903,
+                "y": 0.34607
               },
               "control2": {
-                "x": 0.19192,
-                "y": 0.56715
+                "x": 0.17264,
+                "y": 0.24292
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -80202,12 +80202,12 @@
               "to": "stop-7",
               "curve": "bezier",
               "control1": {
-                "x": 0.78279,
-                "y": 0.67019
+                "x": 0.74774,
+                "y": 0.51279
               },
               "control2": {
-                "x": 0.69203,
-                "y": 0.77516
+                "x": 0.65699,
+                "y": 0.70023
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -80219,12 +80219,12 @@
               "to": "stop-2",
               "curve": "bezier",
               "control1": {
-                "x": 0.7451,
-                "y": 0.63822
+                "x": 0.75071,
+                "y": 0.45541
               },
               "control2": {
-                "x": 0.68397,
-                "y": 0.6268
+                "x": 0.68958,
+                "y": 0.43503
               },
               "pattern": "dashed",
               "color": "#c68f64",
@@ -80241,7 +80241,7 @@
             "disabledColor": "#52616b",
             "unselectedOpacity": 1,
             "disabledOpacity": 0.45,
-            "nodeScale": 1,
+            "nodeScale": 0.8,
             "cursor": "car",
             "cursorColor": "#ffffff"
           },
@@ -80270,10 +80270,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.13,
-          "w": 0.35,
-          "h": 0.13,
+          "x": 0.68,
+          "y": 0.145,
+          "w": 0.29,
+          "h": 0.14,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -80358,10 +80358,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.28,
-          "w": 0.35,
-          "h": 0.56,
+          "x": 0.68,
+          "y": 0.29,
+          "w": 0.29,
+          "h": 0.545,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -83770,9 +83770,9 @@
           "strokeWidth": 0,
           "label": "New item",
           "x": 0.025,
-          "y": 0.14,
-          "w": 0.57,
-          "h": 0.68,
+          "y": 0.112,
+          "w": 0.63,
+          "h": 0.858,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -83831,7 +83831,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.9,
-              "y": 0.72925,
+              "y": 0.58795,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -83846,7 +83846,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.814927,
-              "y": 0.78963,
+              "y": 0.695763,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -83861,7 +83861,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.332782,
-              "y": 0.8872,
+              "y": 0.87,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -83876,7 +83876,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.407586,
-              "y": 0.65701,
+              "y": 0.458954,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -83891,7 +83891,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.200642,
-              "y": 0.4476,
+              "y": 0.085,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -83906,7 +83906,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.640042,
-              "y": 0.65701,
+              "y": 0.458954,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -83921,7 +83921,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.320642,
-              "y": 0.4784,
+              "y": 0.14,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -83936,7 +83936,7 @@
               "selectedArtRef": "",
               "disabledArtRef": "",
               "x": 0.1,
-              "y": 0.60178,
+              "y": 0.360322,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -83950,12 +83950,12 @@
               "to": "stop-3",
               "curve": "bezier",
               "control1": {
-                "x": 0.86493,
-                "y": 0.73751
+                "x": 0.85876,
+                "y": 0.61139
               },
               "control2": {
-                "x": 0.8309,
-                "y": 0.76166
+                "x": 0.82473,
+                "y": 0.65452
               }
             },
             {
@@ -83964,12 +83964,12 @@
               "to": "stop-0",
               "curve": "bezier",
               "control1": {
-                "x": 0.67332,
-                "y": 0.88353
+                "x": 0.68329,
+                "y": 0.8142
               },
               "control2": {
-                "x": 0.48047,
-                "y": 0.92256
+                "x": 0.49043,
+                "y": 0.88389
               }
             },
             {
@@ -83978,12 +83978,12 @@
               "to": "stop-1",
               "curve": "bezier",
               "control1": {
-                "x": 0.38664,
-                "y": 0.82326
+                "x": 0.41016,
+                "y": 0.74819
               },
               "control2": {
-                "x": 0.41657,
-                "y": 0.73119
+                "x": 0.44008,
+                "y": 0.58377
               }
             },
             {
@@ -83992,12 +83992,12 @@
               "to": "stop-2",
               "curve": "bezier",
               "control1": {
-                "x": 0.31414,
-                "y": 0.6169
+                "x": 0.29275,
+                "y": 0.36619
               },
               "control2": {
-                "x": 0.23136,
-                "y": 0.53314
+                "x": 0.20997,
+                "y": 0.21661
               }
             },
             {
@@ -84006,12 +84006,12 @@
               "to": "stop-5",
               "curve": "bezier",
               "control1": {
-                "x": 0.31403,
-                "y": 0.57173
+                "x": 0.29264,
+                "y": 0.26179
               },
               "control2": {
-                "x": 0.48979,
-                "y": 0.6555
+                "x": 0.4684,
+                "y": 0.41137
               }
             },
             {
@@ -84020,12 +84020,12 @@
               "to": "stop-6",
               "curve": "bezier",
               "control1": {
-                "x": 0.3494,
-                "y": 0.61464
+                "x": 0.32554,
+                "y": 0.37167
               },
               "control2": {
-                "x": 0.31462,
-                "y": 0.54319
+                "x": 0.29076,
+                "y": 0.24409
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -84037,12 +84037,12 @@
               "to": "stop-7",
               "curve": "bezier",
               "control1": {
-                "x": 0.61808,
-                "y": 0.60798
+                "x": 0.64318,
+                "y": 0.46688
               },
               "control2": {
-                "x": 0.33211,
-                "y": 0.53284
+                "x": 0.3572,
+                "y": 0.33271
               },
               "pattern": "dotted",
               "color": "#a9d1c9",
@@ -84059,7 +84059,7 @@
             "disabledColor": "#52616b",
             "unselectedOpacity": 1,
             "disabledOpacity": 0.45,
-            "nodeScale": 1,
+            "nodeScale": 0.8,
             "cursor": "car",
             "cursorColor": "#ffffff"
           },
@@ -84088,10 +84088,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.13,
-          "w": 0.35,
-          "h": 0.13,
+          "x": 0.68,
+          "y": 0.145,
+          "w": 0.29,
+          "h": 0.14,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",
@@ -84176,10 +84176,10 @@
           "stroke": "#ffffff",
           "strokeWidth": 0,
           "label": "New item",
-          "x": 0.62,
-          "y": 0.28,
-          "w": 0.35,
-          "h": 0.56,
+          "x": 0.68,
+          "y": 0.29,
+          "w": 0.29,
+          "h": 0.545,
           "tabOrder": 0,
           "color": "#ffffff",
           "background": "#253c49",

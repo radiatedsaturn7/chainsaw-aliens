@@ -31,7 +31,10 @@ for(const region of itinerary){
  if(!positions||!widget||widget.assetRef!==bossRef)throw new Error(`Missing matching screen/geography for ${bossRef}`);
  const artRef=`campaign-map-${CAMPAIGN_REGION_ART[stage-1]}`;
  if(!fs.existsSync(path.join(root,'art',artRef,'document.json')))throw new Error(`Missing native art ${artRef}`);
- Object.assign(widget,{artRef,imageFit:'stretch'});
+ Object.assign(widget,{artRef,imageFit:'stretch',x:.025,y:.112,w:.63,h:.858});
+ widget.mapStyle={...widget.mapStyle,nodeScale:.80};
+ Object.assign(screen.elements.find(e=>e.id==='route-name'),{x:.68,y:.145,w:.29,h:.14});
+ Object.assign(screen.elements.find(e=>e.id==='route-preview'),{x:.68,y:.29,w:.29,h:.545});
  const authored=positions.route.authored;
  const main=improvedOrder.has(stage)?positions.route.geographicSuggestion:authored;
  if(main.length!==5||!main.every(ref=>region.events.includes(ref)))throw new Error(`Invalid itinerary for ${bossRef}`);
@@ -41,8 +44,7 @@ for(const region of itinerary){
  widget.nodes=refs.map((ref,i)=>{
   const n=byRef.get(ref),p=positions.nodesByRace[ref];
   if(!n||!p)throw new Error(`Missing matching race/node ${ref}`);
-  // Project north-up GPS into the illustrated ground below the skyline.
-  return {...n,x:p.x,y:Number((.40+.56*p.y).toFixed(5)),label:i===5?'Boss':i>5?'Detour':String(i+1)};
+  return {...n,x:p.x,y:p.y,label:i===5?'Boss':i>5?'Detour':String(i+1)};
  });
  const nodes=new Map(widget.nodes.map(n=>[n.raceRef,n]));
  const roads=[];

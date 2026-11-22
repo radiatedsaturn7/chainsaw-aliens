@@ -5,7 +5,8 @@ import {CAMPAIGN_PATHS,CAMPAIGN_BRANCHES,campaignPathScreen,authorCampaignPath} 
 import {normalizeMenuDocument} from '../../src/menus/MenuDocument.js';
 import {worldMapNodes,campaignPathEntrySelection,raceCompletionKey,worldMapNodePoint,worldMapNodeRadius} from '../../src/menus/MenuWorldMap.js';
 import {campaignRaceAccess} from '../../src/menus/CampaignProgression.js';
-import {mapRoadRoute} from '../../src/menus/MenuMapRoads.js';
+import {drawRegionalMapRoad} from '../../src/menus/MenuWorldMapRenderer.js';
+import {mapRoadPixels,mapRoadRoute} from '../../src/menus/MenuMapRoads.js';
 import {drawMenuScreen,menuElementBounds} from '../../src/menus/MenuRenderer.js';
 import MenuPlayer from '../../src/menus/MenuPlayer.js';
 const menu=JSON.parse(fs.readFileSync('data/server-storage/files/menus/Game Menu/document.json'));
@@ -31,7 +32,7 @@ test('all eleven installed regions have five distinct main races, two branches, 
    const source=geo[r.bossRef].nodesByRace[node.raceRef];
    assert.ok(Number.isFinite(source.lat)&&Number.isFinite(source.lon));
    assert.equal(node.x,source.x);
-   assert.ok(Math.abs(node.y-(.4+.56*source.y))<.000006);
+   assert.equal(node.y,source.y);
   }
   assert.ok(menu.screens.some(s=>s.id===`campaign-hub-${r.stage}-events`));
   assert.deepEqual(normalizeMenuDocument({...menu,screens:menu.screens.map(old=>old.id===s.id?s:old)}).screens.find(e=>e.id===s.id).elements.find(e=>e.id===map.id).nodes,map.nodes);
@@ -65,6 +66,7 @@ test('regional map drawing and selected previews work in portrait and landscape 
   drawMenuScreen(ctx,bounds,menu,screen,{raceRef:r.mainPath[0]},{editing:true,resources:{art:()=>null,race:()=>assert.fail('map should not load race')}});
   assert.ok(labels.join(' ').includes('Tower Hill'));
   const map=screen.elements.find(e=>e.type==='world-map'),b=menuElementBounds(map,bounds);
+  assert.ok(b.h>bounds.h*(bounds.w>bounds.h?.80:.36));
   for(const n of map.nodes){const p=worldMapNodePoint(n,b,map),radius=worldMapNodeRadius(b,map)+5;assert.ok(p.x-radius>=b.x&&p.x+radius<=b.x+b.w);}
  }
 });
@@ -108,4 +110,19 @@ test('the selected car can reach each newly available main race, but dirt links 
   p[raceCompletionKey(r.bossRef)]=true;
  }
  assert.equal(shortcuts,6);
+});
+
+test('pavement and dirt paint the exact animation curve with visible road surfaces',()=>{
+ const a={x:.15,y:.27},c={x:.83,y:.75},bounds={x:31,y:12,w:550,h:310};
+ const link={curve:'bezier',control1:{x:.41,y:.2},control2:{x:.6,y:.9}};
+ const pixel=(p)=>Object.values(mapRoadPixels(p,bounds));
+ for(const [pattern,surface] of [['','#3c434b'],['dashed','#a17b56'],['dotted','#a17b56']]){
+  const paths=[],strokes=[];
+  const ctx={globalAlpha:1,save(){},restore(){},beginPath(){},moveTo(...x){paths.push(x)},
+   bezierCurveTo(...x){paths.push(x)},setLineDash(x){this.dash=x},stroke(){strokes.push([this.strokeStyle,this.lineWidth,this.dash]);}};
+  drawRegionalMapRoad(ctx,link,a,c,bounds,pattern?3:5,pattern);
+  assert.deepEqual(paths,[pixel(a),[...pixel(link.control1),...pixel(link.control2),...pixel(c)]]);
+  assert.equal(strokes[2][0],surface);
+  assert.ok(strokes[3][2].length>0);
+ }
 });

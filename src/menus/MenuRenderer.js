@@ -22,7 +22,7 @@ export function menuElementBounds(element,bounds,pose=element,regionalScreen=fal
   if(w<h&&(regionalScreen||element.property==='campaign-path')){
     // Portrait presents the illustration as a wide map above the preview.
     // Hit testing and rendering both use these same map bounds.
-    const mapTop=h*.13,mapHeight=Math.min(h*.48,w*.68+36),end=mapTop+mapHeight;
+    const mapTop=h*.105,mapHeight=Math.min(h*.53,w*.81+36),end=mapTop+mapHeight;
     if(element.property==='campaign-path')return {x:x+w*.04,y:y+mapTop,w:w*.92,h:mapHeight};
     if(element.id==='route-name')return {x:x+w*.04,y:y+end+h*.012,w:w*.92,h:h*.075};
     if(element.id==='route-preview')return {x:x+w*.04,y:y+end+h*.09,w:w*.92,h:Math.max(0,h*.94-end-h*.09)};

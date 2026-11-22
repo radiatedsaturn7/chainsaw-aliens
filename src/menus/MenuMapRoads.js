@@ -39,6 +39,55 @@ export function mapRoadRoute(nodes,links,from,to){
  }
  return null;
 }
+// A directional move may take intervening junctions, never another race stop.
+export function campaignRoadNeighbors(nodes,links,from){
+ const permitted=new Map(nodes.filter(n=>!n.disabled&&!n.locked).map(n=>[n.id,n]));
+ const reaches=new Map();
+ if(!permitted.has(from))return reaches;
+ const queue=[from],paths=new Map([[from,[]]]);
+ for(let i=0;i<queue.length;i++)for(const link of links){
+  const previous=queue[i],next=link.from===previous?link.to:link.to===previous?link.from:null;
+  const node=permitted.get(next);
+  if(!node||paths.has(next))continue;
+  const path=[...paths.get(previous),{previous,link,reverse:link.to===previous}];
+  paths.set(next,path);
+  if(node.kind==='junction')queue.push(next);
+  else if(node.raceRef)reaches.set(next,path);
+ }
+ return reaches;
+}
+
+export function campaignRoadDirectionalNode(nodes,links,current,direction,pointFor){
+ if(!current)return null;
+ const axis={left:[-1,0],right:[1,0],up:[0,-1],down:[0,1]}[direction];
+ if(!axis)return current;
+ const from=pointFor(current),neighbors=campaignRoadNeighbors(nodes,links,current.id);
+ let best=current,bestScore=Infinity;
+ // Score in displayed pixels, not normalized map units; that also handles
+ // portrait maps and endpoint positions clamped inside the viewport.
+ for(const n of nodes){
+  if(!neighbors.has(n.id))continue;
+  const p=pointFor(n),dx=p.x-from.x,dy=p.y-from.y;
+  const ahead=axis[0]*dx+axis[1]*dy,cross=Math.abs(axis[1]*dx-axis[0]*dy);
+  if(ahead<=.01)continue;
+  const score=Math.hypot(dx,dy)+cross*2;
+  if(score<bestScore){best=n;bestScore=score;}
+ }
+ return best;
+}
+
+// Preserve each selected edge when input arrives faster than the marker can
+// drive it. Ignore excessive held-input backlog instead of snapping the car.
+export function queueCampaignRoadMove(state,from,to){
+ if(!state||from===to)return false;
+ const steps=state.campaignRoadMoves||=[];
+ if(steps.length>=8)return false;
+ if(steps.length&&steps.at(-1).to!==from)steps.length=0;
+ delete state.campaignRoadBlocked;
+ steps.push({from,to});
+ state.moving=true;
+ return true;
+}
 function sampleRoute(nodes,path){
  const byId=new Map(nodes.map(n=>[n.id,n])),samples=[];
  for(const {link,reverse} of path){
@@ -52,10 +101,30 @@ function sampleRoute(nodes,path){
 export function advanceMapCar(state,nodes,links,target,time){
  const destination=nodes.find(n=>n.raceRef===target&&!n.locked&&!n.disabled);if(!destination)return null;
  if(!state)return {node:destination.id,target:destination.id,x:destination.x,y:destination.y,angle:135,time,moving:false};
+ if(state.node==null){
+  // If input arrived before the first draw, seed from the route's origin
+  // using the renderer's road nodes (not unprojected saved coordinates).
+  const from=state.campaignRoadMoves?.[0]?.from;
+  const origin=nodes.find(n=>n.id===from&&!n.locked&&!n.disabled)||destination;
+  Object.assign(state,{node:origin.id,x:origin.x,y:origin.y,angle:135,time,moving:false});
+ }
  const dt=Math.max(0,Math.min(.1,time-state.time));state.time=time;state.target=destination.id;
- if(!state.samples&&state.node!==state.target){
-  const path=mapRoadRoute(nodes,links,state.node,state.target);
-  if(path?.length){state.samples=sampleRoute(nodes,path);state.segment=0;state.offset=0;state.end=state.target;}
+ if(state.campaignRoadBlocked===state.target)return state;
+ if(!state.samples){
+  const steps=state.campaignRoadMoves;
+  if(steps?.length&&steps.at(-1).to!==state.target)steps.length=0;
+  while(steps?.length&&state.node===steps[0].to)steps.shift();
+  const step=steps?.[0];
+  let end=step?.from||state.target,path=null;
+  if(step&&state.node===step.from){
+   end=step.to;
+   path=campaignRoadNeighbors(nodes,links,step.from).get(step.to);
+   steps.shift();
+   // Topology/unlock changes invalidate this path. Do not use a shortcut
+   // through another race in place of the requested junction chain.
+   if(!path){steps.length=0;state.campaignRoadBlocked=state.target;state.moving=false;return state;}
+  }else if(state.node!==end)path=mapRoadRoute(nodes,links,state.node,end);
+  if(path?.length){state.samples=sampleRoute(nodes,path);state.segment=0;state.offset=0;state.end=end;}
  }
  let distance=dt*.5;
  while(state.samples&&distance>0){
@@ -68,6 +137,6 @@ export function advanceMapCar(state,nodes,links,target,time){
   if(length>0)state.angle=(Math.atan2(b.x-a.x,-(b.y-a.y))*180/Math.PI+360)%360;
   if(t>=1-1e-9){state.segment++;state.offset=0;}else break;
  }
- state.moving=!!state.samples||state.node!==state.target;
+ state.moving=!!state.samples||!!state.campaignRoadMoves?.length||state.node!==state.target;
  return state;
 }

@@ -1,6 +1,28 @@
 import {drawMapRoad,advanceMapCar,mapRoadPixels} from './MenuMapRoads.js';
 import {drawCampaignMapLandscape} from './CampaignMapLandscape.js';
 import {worldMapNodes,worldMapConnections,worldMapRaceNodes,worldMapNodePoint,worldMapNodeRadius,normalizeWorldMapStyle,worldMapSelection} from './MenuWorldMap.js';
+// Road shoulders, surface, and lane marks share one path with the simulated
+// car: never approximate the route with a second set of artwork coordinates.
+export function drawRegionalMapRoad(ctx,link,a,c,b,width,pattern) {
+ const paved=pattern!=='dashed'&&pattern!=='dotted';
+ const open=!a.locked&&!c.locked;
+ const w=Math.max(4,Math.min(18,Math.min(b.w,b.h)*(paved ? .033 : .022)*width/(paved ? 5 : 3)));
+ ctx.save();
+ ctx.globalAlpha*=open?1:.54;
+ ctx.lineCap='round';
+ ctx.lineJoin='round';
+ drawMapRoad(ctx,link,a,c,b);
+ const stroke=(color,weight,dash=[])=>{
+  ctx.strokeStyle=color;ctx.lineWidth=weight;ctx.setLineDash?.(dash);ctx.stroke();
+ };
+ stroke('#17202b',w+4);
+ stroke(paved?'#b9c7bd':'#786452',w+1.6);
+ stroke(paved?'#3c434b':'#a17b56',w-1.2);
+ if(paved)stroke('#e0c684',Math.max(1,w*.105),[w*.55,w*.44]);
+ else stroke('#c29f75',Math.max(.85,w*.11),[w*.36,w*.37]);
+ ctx.restore();
+}
+
 export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{drawText,fontFamily='system-ui',time=0,widgetStates=new Map(),drawCar=null,editing=false,mapBackground=null}={}){
  const nodes=worldMapNodes(element,resources,document,parameters),style=normalizeWorldMapStyle(element.mapStyle);
  const regional=element.property==='campaign-path';
@@ -8,13 +30,16 @@ export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{
  const selected=worldMapSelection(nodes,value)?.raceRef;
  const roadNodes=nodes.map(n=>{const p=worldMapNodePoint(n,b,element);return {...n,x:(p.x-b.x)/b.w,y:(p.y-b.y)/Math.max(1,b.h-36)};});
  const positions=new Map(nodes.map(n=>[n.id,worldMapNodePoint(n,b,element)]));
- for(const link of worldMapConnections(element,nodes)){
+ const roadById=new Map(roadNodes.map(n=>[n.id,n]));
+ const links=worldMapConnections(element,nodes);
+ for(const link of links){
   const width=link.width??style.lineWidth,pattern=link.pattern||style.linePattern;
   if(!width)continue;
+  const a=roadById.get(link.from),c=roadById.get(link.to);
+  if(regional){drawRegionalMapRoad(ctx,link,a,c,b,width,pattern);continue;}
   ctx.save();ctx.strokeStyle=link.color||style.lineColor;ctx.lineWidth=width;ctx.lineCap='round';
   ctx.setLineDash?.(pattern==='dashed'?[width*4,width*3]:pattern==='dotted'?[width,width*2]:[]);
-  drawMapRoad(ctx,link,roadNodes.find(n=>n.id===link.from),roadNodes.find(n=>n.id===link.to),b);
-  if(regional){const line=ctx.strokeStyle;ctx.strokeStyle='#121d25';ctx.lineWidth=width+3;ctx.stroke();ctx.strokeStyle=line;ctx.lineWidth=width;}
+  drawMapRoad(ctx,link,a,c,b);
   ctx.stroke();ctx.restore();
  }
  let raceIndex=0;
@@ -52,7 +77,7 @@ export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{
  }
  if(style.cursor==='car'&&selected){
   const key=`map-car:${element.id}`,previous=editing?null:widgetStates.get(key);
-  const state=advanceMapCar(previous,roadNodes,worldMapConnections(element,nodes),selected,time);
+  const state=advanceMapCar(previous,roadNodes,links,selected,time);
   if(state){widgetStates.set(key,state);const p=mapRoadPixels(state,b),size=Math.max(28,Math.min(64,b.w*.11));
    ctx.save();ctx.beginPath();ctx.rect(b.x,b.y,b.w,b.h);ctx.clip();
    drawCar?.({x:p.x-size/2,y:p.y-size*.55,w:size,h:size*.7},state.angle);ctx.restore();}
