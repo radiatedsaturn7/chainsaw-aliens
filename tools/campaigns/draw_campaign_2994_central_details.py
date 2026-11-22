@@ -27,13 +27,9 @@ MOTIFS={
  ],
 }
 
-def decorate(name, im, nodes):
-    """Add eight place-specific visual landmarks, reserving clear space for UI pins."""
-    nkey=str(name).removeprefix('campaign-map-').lower()
-    region=ALIAS.get(nkey)
-    if not region:
-        return im
-    w,h=im.size; draw=ImageDraw.Draw(im)
+def draw_motif(im, region, icon, x, y, is_sprite=False):
+    """Draw one place-specific diorama at its ground contact point."""
+    draw=ImageDraw.Draw(im)
     colors={
         'ozarks':('#142329','#526657','#84936a','#c19873','#ffe2a2'),
         'data-center-city':('#151b37','#31536d','#5a92a5','#8caaaf','#b9f3ed'),
@@ -42,6 +38,262 @@ def decorate(name, im, nodes):
     }
     dark,shade,mid,top,hi=colors[region]
     amber='#ffc175'; cyan='#68e3ed'
+    def pt(a,b,z=0):
+        return (round(x+a-b),round(y+(a+b)*.44-z))
+    def pl(p,c):
+        draw.polygon(p,fill=c)
+    def ln(p,c,k=1):
+        draw.line(p,fill=c,width=k)
+    def lamp(a,b,c=amber):
+        draw.point((a-2,b),fill=shade);draw.point((a+2,b),fill=shade)
+        draw.line((a-1,b,a+1,b),fill=c);draw.point((a,b-1),fill=hi)
+    def block(u,v,ww,ll,z,roof=top,left=mid,right=shade,bottom=0):
+        A,B,C,D=[pt(a,b,bottom+z) for a,b in ((u,v),(u+ww,v),(u+ww,v+ll),(u,v+ll))]
+        a,b,c,d=[pt(a,b,bottom) for a,b in ((u,v),(u+ww,v),(u+ww,v+ll),(u,v+ll))]
+        pl([D,C,c,d],left);pl([B,C,c,b],right);pl([A,B,C,D],roof)
+        ln([D,A,B],hi);ln([D,C,B],dark)
+    def roof(u,v,ww,ll,z,rise,c1,c2):
+        a,b,c,d=[pt(a,b,z) for a,b in ((u,v),(u+ww,v),(u+ww,v+ll),(u,v+ll))]
+        e,f=pt(u+ww/2,v,z+rise),pt(u+ww/2,v+ll,z+rise)
+        pl([a,d,f,e],c1);pl([e,f,c,b],c2);ln([a,e,f],hi)
+    def pine(xx,yy,s=4,snow=False):
+        pl([(xx,yy-s*2),(xx-s,yy),(xx+s,yy)],shade)
+        ln([(xx,yy-s*2),(xx-s+1,yy-1)],hi if snow else mid)
+        draw.point((xx,yy+1),fill=dark)
+    def crag(xx,yy,ww,hh,t=top,side=mid):
+        pl([(xx-ww,yy),(xx-ww+3,yy-hh//2),(xx-1,yy-hh),(xx+4,yy-hh),(xx+ww,yy)],t)
+        pl([(xx-1,yy-hh),(xx+4,yy-hh),(xx+ww,yy),(xx+1,yy)],side)
+        for k in range(4,hh-2,4):
+            ln([(xx-k//3-1,yy-hh+k),(xx+4+k//4,yy-hh+k+1)],shade)
+    def trusses(full=False):
+        ln([(x-15,y+5),(x+15,y-3)],shade,4)
+        for j in range(4):
+            a=x-16+8*j;b=y+5-2*j
+            ln([(a,b),(a+2,b-7),(a+7,b-10),(a+8,b-2),(a,b)],hi if full else top)
+            ln([(a+2,b-7),(a+7,b-2)],mid)
+    draw.ellipse((x-15,y-4,x+16,y+9),fill=dark)
+    if icon in {'canoes','confluence','field','bluff','cave','switchback','limestone','pass','prairie'}:
+        if icon=='canoes':
+            draw.ellipse((x-14,y-6,x+13,y+8),fill='#26636d',outline='#6da89e')
+            for j, c in enumerate(('#d5604e','#f4b466','#8cbfba')):
+                xx=x-9+5*j;yy=y+3-3*j
+                ln([(xx,yy),(xx+7,yy-1)],c,2);ln([(xx+1,yy),(xx+6,yy)],dark)
+            pine(x-12,y-2);pine(x+11,y)
+        elif icon=='confluence':
+            ln([(x-13,y-9),(x-4,y),(x+4,y),(x+13,y+6)],'#1f5863',5)
+            ln([(x+10,y-11),(x+3,y-4),(x+4,y)],'#458f8e',5)
+            ln([(x-12,y-8),(x-3,y+1),(x+10,y+5)],hi)
+            pine(x-8,y+3);pine(x+11,y-2)
+        elif icon=='field':
+            for j in range(4):ln([pt(-10,j*3-4),pt(12,j*3-4)],mid if j%2 else top,2)
+            block(2,4,7,6,6,top);roof(1,3,9,8,6,3,mid,shade)
+            lamp(x+2,y-1)
+        elif icon in {'bluff','limestone','cave'}:
+            crag(x-5,y+4,12,15);crag(x+8,y+1,8,10,mid,shade)
+            if icon=='cave':
+                draw.ellipse((x-8,y-6,x+6,y+5),fill=dark);draw.arc((x-9,y-10,x+8,y+6),175,348,fill=hi,width=2)
+                lamp(x-11,y+3);lamp(x+8,y+4,cyan)
+            else:
+                ln([(x-14,y+6),(x-5,y+9),(x+14,y+7)],'#54959b',2);pine(x+8,y-3)
+                if icon=='limestone':
+                    # Small recolored cliff mural hint, not a fabricated inscription.
+                    ln([(x-9,y-7),(x-6,y-9),(x-3,y-7),(x,y-9)],'#b67b69',2)
+        elif icon=='switchback':
+            pine(x-9,y,5);pine(x+8,y+2,5);pine(x+2,y-4,4)
+            ln([(x-5,y+5),(x-1,y+1),(x+2,y+2),(x+5,y-4)],top,2)
+            lamp(x-5,y+4)
+        elif icon=='pass':
+            crag(x-9,y+5,9,18);crag(x+9,y+5,9,17)
+            pine(x-8,y+5,4,True);pine(x+10,y+4,4,True);lamp(x,y+5)
+        else:
+            for xx,yy in [(x-12,y),(x-3,y+3),(x+6,y-3),(x+12,y+3)]:
+                ln([(xx,yy),(xx+2,yy-3),(xx+4,yy)],top)
+            ln([(x-14,y+4),(x-4,y+1),(x+12,y+5)],mid)
+            lamp(x+6,y+3)
+    elif icon in {'mill','winery','motel','midpoint','deco'}:
+        cols={'mill':('#a14d48','#703d40','#bfa685'),'winery':('#957164','#605366','#bd9b83'),
+              'motel':('#b37865','#604b53','#d7b188'),'midpoint':('#aa715b','#6b5050','#cfae84'),
+              'deco':('#d19565','#7e554f','#e7b67d')}
+        a,b,rr=cols[icon]
+        block(-7,-5,16,10,11,rr,a,b)
+        if icon in {'mill','winery'}:
+            roof(-8,-6,18,12,11,7,rr,b)
+            if icon=='winery':
+                for j in range(3):ln([pt(-10,7+j*3),pt(8,7+j*3)],'#84945a')
+        else:
+            block(-7,5,20,5,7,rr,a,b)
+            if icon=='deco':block(4,-6,5,5,20,rr,a,b)
+            if icon in {'midpoint','motel'}:
+                ln([(x+10,y+1),(x+10,y-12),(x+15,y-12)],hi)
+                lamp(x+14,y-12,'#f18471')
+        for j in range(-4,10,4):lamp(*pt(j,5,5))
+    elif icon in {'pits','pitsteel','kartpits'}:
+        # Stands/garages only, no painted representation of the route graph.
+        block(-10,-8,23,14,3,shade,mid,dark)
+        for j in range(4):block(-9+j*6,-6,5,6,8,top,mid,shade)
+        ln([pt(-10,6,3),pt(14,6,3)],hi,2)
+        for j in range(4):lamp(*pt(-7+j*6,3,2),[amber,cyan][j%2])
+        if icon=='kartpits':
+            for j in range(4):draw.point(pt(-8+j*5,8),fill='#ee7769')
+    elif icon in {'cablebridge','truss','minetrestle'}:
+        trusses(icon=='truss')
+        if icon=='cablebridge':
+            for xx,yy in [(x-7,y-1),(x+9,y-5)]:
+                ln([(xx,yy+4),(xx,yy-16)],hi,2)
+                for j in (-10,-5,3,8):ln([(xx,yy-15),(xx+j,yy+2)],mid)
+                lamp(xx,yy-16)
+        if icon=='minetrestle':
+            for j in range(-10,14,5):ln([(x+j,y+1),(x+j,y+10)],mid)
+    elif icon in {'arch','chicago','reactor'}:
+        if icon=='arch':
+            q=[(x+i,y-2-round(18*(1-(i/11)**2))) for i in range(-11,12)]
+            ln([(a+1,b) for a,b in q],shade,3);ln(q,hi,2);lamp(x-10,y)
+            block(6,-4,5,4,6,top,mid,shade)
+        elif icon=='chicago':
+            for a,b,t in [(-9,-6,11),(-3,-5,19),(3,-2,16),(8,1,12)]:
+                block(a,b,5,5,t,top,mid,shade)
+                px,py=pt(a+2,b+2,t);ln([(px,py),(px,py-4)],hi);lamp(px,py-4)
+        else:
+            for a,b,t in [(-7,-5,13),(0,-4,19),(7,-2,14)]:
+                block(a,b,6,7,t,'#76afbd','#34779d','#234362')
+                for j in (3,7,11):
+                    ln([pt(a+1,b+7,j),pt(a+5,b+7,j)],cyan)
+            for j in [-9,0,9]:lamp(x+j,y+5,cyan)
+    elif icon in {'hoodoo','redfins','chimney','summit'}:
+        if icon=='hoodoo':
+            crag(x,y+4,11,18,'#d29565','#9a6150')
+            draw.ellipse((x-7,y-17,x+5,y-12),fill='#edaa78',outline=hi)
+        elif icon=='redfins':
+            for xx,yy,ww,hh in [(x-9,y,8,13),(x+1,y+1,7,21),(x+9,y-2,5,12)]:
+                crag(xx,yy,ww,hh,'#bd7565','#714c5b')
+            draw.ellipse((x+6,y+3,x+13,y+9),fill='#d0916d')
+        elif icon=='chimney':
+            crag(x,y+5,13,12,top,mid)
+            pl([(x-2,y-7),(x-2,y-19),(x+1,y-21),(x+4,y-19),(x+4,y-7)],top)
+            ln([(x+3,y-19),(x+3,y-7)],shade)
+            lamp(x-13,y+6)
+        else:
+            crag(x,y+6,14,16,'#dce5e5','#6e84a0')
+            block(-4,-5,10,7,4,'#b9cccc','#526983','#405771')
+            for j in range(-4,7,3):lamp(x+j,y-1)
+    elif icon in {'tunnel','mineshaft'}:
+        if icon=='tunnel':
+            crag(x,y+3,13,17)
+            draw.ellipse((x-6,y-8,x+7,y+5),fill=dark);draw.arc((x-7,y-11,x+8,y+5),180,351,fill=hi,width=2)
+            for a in (-10,10):lamp(x+a,y+4)
+        else:
+            block(-10,0,11,8,8,top,mid,shade)
+            ln([(x-8,y+1),(x-2,y-18),(x+5,y-18),(x+12,y+4)],top,2)
+            ln([(x-5,y-8),(x+8,y-7),(x-3,y-14),(x+6,y-14)],mid)
+            lamp(x+3,y-17)
+    elif icon in {'shield','cadillac'}:
+        if icon=='shield':
+            ln([(x,y-9),(x,y+8)],top,2)
+            p=[(x-9,y-11),(x-4,y-14),(x,y-12),(x+4,y-14),(x+9,y-11),(x+7,y-4),(x,y+1),(x-7,y-4)]
+            pl(p,shade);ln(p+[p[0]],amber)
+            draw.text((x-6,y-12),'66',fill=hi,stroke_width=0)
+        else:
+            # Half-buried cars, three large upright tail fins, not a driving lane.
+            for j,col in enumerate(('#67aeb5','#ca7468','#cba167','#9567a2')):
+                a=x-11+j*7;b=y+4-j%2
+                pl([(a-2,b),(a+3,b-12),(a+6,b-11),(a+3,b)],col);ln([(a+3,b-12),(a+6,b-11)],hi)
+                draw.point((a+3,b-7),fill=dark)
+
+    # The larger independent sprite has room for a few signature details previously
+    # lost beside adjacent pins. No road from the playable graph is painted here.
+    if is_sprite:
+        if icon == 'mill':
+            # Alley Spring's red mill has a prominent overshot wheel at the water.
+            ln([(x-18,y+6),(x-12,y+8),(x-4,y+8),(x+4,y+6)],'#58adb9',2)
+            draw.ellipse((x-15,y-4,x-5,y+6),fill='#533d43',outline='#e7a96a',width=1)
+            for a,b in [((-10,-4),(-10,6)),((-15,1),(-5,1)),((-14,-2),(-6,4)),((-14,4),(-6,-2))]:
+                ln([(x+a[0],y+a[1]),(x+b[0],y+b[1])],'#a4755f')
+            lamp(x-10,y+1)
+        elif icon == 'arch':
+            # Riverfront ruin and the tapering Arch (not the fictional server city).
+            ln([(x-18,y+8),(x-10,y+9),(x+7,y+8),(x+15,y+7)],'#4b9cac')
+            lamp(x+10,y+2)
+        elif icon == 'chicago':
+            # Willis twin aerials, stepped roofs, and lakefront reflections.
+            ln([(x-2,y-16),(x-2,y-23)],hi)
+            ln([(x+2,y-16),(x+2,y-24)],'#8ed9ea')
+            ln([(x-16,y+7),(x-9,y+9),(x+10,y+8)],'#4a87a7')
+        elif icon == 'reactor':
+            # Distinctive glowing coolant lines, broken perimeter and lightning mast.
+            ln([(x-12,y+8),(x-9,y+9),(x+6,y+9),(x+14,y+6)],'#428da7',2)
+            ln([(x-9,y+9),(x+6,y+9)],cyan)
+            ln([(x,y-17),(x,y-24)],hi)
+            draw.point((x,y-25),fill='#e8ffff')
+        elif icon == 'deco':
+            # U-Drop Inn's tall Art Deco crown and turquoise neon trim.
+            ln([(x+9,y-18),(x+9,y-25),(x+11,y-25),(x+11,y-18)],'#f1ce90',2)
+            px,py=pt(2,10,6)
+            ln([(px-10,py-2),(px+4,py-2),(px+9,py-5)],'#79d5cf',2)
+            for xx in range(-12,0,4): draw.point((x+xx,y-1),fill='#f8ba77')
+        elif icon == 'summit':
+            # Summit house, emergency beacons, and stepped snow shoulders.
+            ln([(x-14,y+5),(x-9,y-1),(x-6,y),(x-4,y-6)],'#ebf6f2',2)
+            ln([(x+6,y+3),(x+11,y),(x+15,y+4)],'#adc6dc')
+            ln([(x+5,y-4),(x+5,y-13)],'#ddebeb')
+            draw.point((x+5,y-14),fill='#ff985f')
+        elif icon == 'minetrestle':
+            ln([(x-17,y+9),(x-7,y+8),(x+5,y+9),(x+17,y+6)],'#728774',2)
+            ln([(x-12,y+5),(x-3,y-1),(x+5,y+6),(x+11,y-2)],mid)
+        elif icon == 'pitsteel':
+            # WWT's much taller steel timing/control tower and floodlight gantry.
+            block(-2,-5,6,5,16,'#9bc9cc','#568599','#31536d')
+            for zz in (9,12): ln([pt(-1,0,zz),pt(3,0,zz)],cyan)
+            px,py=pt(1,-3,16)
+            ln([(px,py),(px,py-7),(px+4,py-7)],hi)
+            lamp(px+4,py-7)
+        elif icon == 'kartpits':
+            # Tight red/white curb and tiny paired karts distinguish the junior complex.
+            pl([(x-17,y+6),(x-11,y+9),(x-2,y+9),(x-4,y+6),(x-9,y+6)],'#323649')
+            for a,b in [(-14,7),(-9,8),(-4,8)]:
+                draw.point((x+a,y+b),fill='#e5806d')
+                draw.point((x+a+1,y+b),fill='#fff3d8')
+            for a,b,c in [(-10,4,'#ee9858'),(-4,5,'#6cdde3')]:
+                ln([(x+a-1,y+b),(x+a+1,y+b)],c,2)
+                draw.point((x+a,y+b-1),fill=hi)
+        elif icon == 'pits' and region == 'route-66':
+            # Hallett's hilltop scoring tower and checker bits at the frontage.
+            block(-9,-5,5,6,13,'#ddd1ac','#a27562','#6e5266')
+            for a,b in [(-5,-10),(-2,-9),(1,-8),(-3,-8),(0,-7)]:
+                draw.point((x+a,y+b),fill=hi)
+        elif icon == 'motel':
+            # Glenrio's leaning vacancy sign, dark courtyard, and partial roof loss.
+            ln([(x+13,y+3),(x+10,y-12)],hi,2)
+            pl([(x+7,y-13),(x+17,y-12),(x+16,y-8),(x+8,y-9)],'#754757')
+            ln([(x+8,y-12),(x+12,y-11)],'#df8e70')
+            ln([(x-9,y-13),(x-4,y-15),(x+2,y-14),(x+5,y-10)],dark,2)
+        elif icon == 'midpoint':
+            # Low café awning and road-trip pie neon instead of a vacancy pole.
+            px,py=pt(0,10,7)
+            ln([(px-10,py-1),(px+7,py+1)],'#63b6ae',3)
+            for a in (-8,-4,0,4): draw.point((px+a,py),fill=hi)
+            ln([(x+12,y-14),(x+16,y-13),(x+15,y-11),(x+11,y-11),(x+12,y-14)],'#f5a56c')
+        elif icon == 'prairie':
+            # Iowa pasture silos, a storehouse and the cold trailhead marsh.
+            block(-5,-5,8,7,5,'#a8a398','#788789','#516077')
+            roof(-6,-6,10,9,5,4,'#bbb1a4','#6d6f86')
+            for ax in (6,9):
+                pl([(x+ax,y+3),(x+ax,y-4),(x+ax+2,y-6),(x+ax+3,y-4),(x+ax+3,y+3)],'#b5a79b')
+                ln([(x+ax+2,y-5),(x+ax+2,y+2)],shade)
+            ln([(x-15,y+6),(x-7,y+8),(x+5,y+7),(x+13,y+4)],'#6d8c9b')
+        elif icon == 'hoodoo':
+            ln([(x-14,y+7),(x-7,y+8),(x-2,y+5),(x+7,y+7),(x+16,y+4)],'#ad7159',2)
+            ln([(x-6,y-8),(x+5,y-8)],'#edaa78')
+        elif icon == 'redfins':
+            ln([(x-16,y+5),(x-12,y+7),(x-5,y+6),(x+3,y+9),(x+14,y+7)],'#bd816f')
+
+
+def decorate(name, im, nodes):
+    """Add eight place-specific visual landmarks, reserving clear space for UI pins."""
+    nkey=str(name).removeprefix('campaign-map-').lower()
+    region=ALIAS.get(nkey)
+    if not region:
+        return im
+    w,h=im.size
     centers=[]
     for n in nodes:
         if n.get('kind')=='junction' or not n.get('raceRef'):
@@ -66,164 +318,6 @@ def decorate(name, im, nodes):
         if score((x,y))<0:
             continue
         occupied.append((x,y))
-        def pt(a,b,z=0):
-            return (round(x+a-b),round(y+(a+b)*.44-z))
-        def pl(p,c):
-            draw.polygon(p,fill=c)
-        def ln(p,c,k=1):
-            draw.line(p,fill=c,width=k)
-        def lamp(a,b,c=amber):
-            draw.point((a-2,b),fill=shade);draw.point((a+2,b),fill=shade)
-            draw.line((a-1,b,a+1,b),fill=c);draw.point((a,b-1),fill=hi)
-        def block(u,v,ww,ll,z,roof=top,left=mid,right=shade,bottom=0):
-            A,B,C,D=[pt(a,b,bottom+z) for a,b in ((u,v),(u+ww,v),(u+ww,v+ll),(u,v+ll))]
-            a,b,c,d=[pt(a,b,bottom) for a,b in ((u,v),(u+ww,v),(u+ww,v+ll),(u,v+ll))]
-            pl([D,C,c,d],left);pl([B,C,c,b],right);pl([A,B,C,D],roof)
-            ln([D,A,B],hi);ln([D,C,B],dark)
-        def roof(u,v,ww,ll,z,rise,c1,c2):
-            a,b,c,d=[pt(a,b,z) for a,b in ((u,v),(u+ww,v),(u+ww,v+ll),(u,v+ll))]
-            e,f=pt(u+ww/2,v,z+rise),pt(u+ww/2,v+ll,z+rise)
-            pl([a,d,f,e],c1);pl([e,f,c,b],c2);ln([a,e,f],hi)
-        def pine(xx,yy,s=4,snow=False):
-            pl([(xx,yy-s*2),(xx-s,yy),(xx+s,yy)],shade)
-            ln([(xx,yy-s*2),(xx-s+1,yy-1)],hi if snow else mid)
-            draw.point((xx,yy+1),fill=dark)
-        def crag(xx,yy,ww,hh,t=top,side=mid):
-            pl([(xx-ww,yy),(xx-ww+3,yy-hh//2),(xx-1,yy-hh),(xx+4,yy-hh),(xx+ww,yy)],t)
-            pl([(xx-1,yy-hh),(xx+4,yy-hh),(xx+ww,yy),(xx+1,yy)],side)
-            for k in range(4,hh-2,4):
-                ln([(xx-k//3-1,yy-hh+k),(xx+4+k//4,yy-hh+k+1)],shade)
-        def trusses(full=False):
-            ln([(x-15,y+5),(x+15,y-3)],shade,4)
-            for j in range(4):
-                a=x-16+8*j;b=y+5-2*j
-                ln([(a,b),(a+2,b-7),(a+7,b-10),(a+8,b-2),(a,b)],hi if full else top)
-                ln([(a+2,b-7),(a+7,b-2)],mid)
-        draw.ellipse((x-15,y-4,x+16,y+9),fill=dark)
-        if icon in {'canoes','confluence','field','bluff','cave','switchback','limestone','pass','prairie'}:
-            if icon=='canoes':
-                draw.ellipse((x-14,y-6,x+13,y+8),fill='#26636d',outline='#6da89e')
-                for j, c in enumerate(('#d5604e','#f4b466','#8cbfba')):
-                    xx=x-9+5*j;yy=y+3-3*j
-                    ln([(xx,yy),(xx+7,yy-1)],c,2);ln([(xx+1,yy),(xx+6,yy)],dark)
-                pine(x-12,y-2);pine(x+11,y)
-            elif icon=='confluence':
-                ln([(x-13,y-9),(x-4,y),(x+4,y),(x+13,y+6)],'#1f5863',5)
-                ln([(x+10,y-11),(x+3,y-4),(x+4,y)],'#458f8e',5)
-                ln([(x-12,y-8),(x-3,y+1),(x+10,y+5)],hi)
-                pine(x-8,y+3);pine(x+11,y-2)
-            elif icon=='field':
-                for j in range(4):ln([pt(-10,j*3-4),pt(12,j*3-4)],mid if j%2 else top,2)
-                block(2,4,7,6,6,top);roof(1,3,9,8,6,3,mid,shade)
-                lamp(x+2,y-1)
-            elif icon in {'bluff','limestone','cave'}:
-                crag(x-5,y+4,12,15);crag(x+8,y+1,8,10,mid,shade)
-                if icon=='cave':
-                    draw.ellipse((x-8,y-6,x+6,y+5),fill=dark);draw.arc((x-9,y-10,x+8,y+6),175,348,fill=hi,width=2)
-                    lamp(x-11,y+3);lamp(x+8,y+4,cyan)
-                else:
-                    ln([(x-14,y+6),(x-5,y+9),(x+14,y+7)],'#54959b',2);pine(x+8,y-3)
-                    if icon=='limestone':
-                        # Small recolored cliff mural hint, not a fabricated inscription.
-                        ln([(x-9,y-7),(x-6,y-9),(x-3,y-7),(x,y-9)],'#b67b69',2)
-            elif icon=='switchback':
-                pine(x-9,y,5);pine(x+8,y+2,5);pine(x+2,y-4,4)
-                ln([(x-5,y+5),(x-1,y+1),(x+2,y+2),(x+5,y-4)],top,2)
-                lamp(x-5,y+4)
-            elif icon=='pass':
-                crag(x-9,y+5,9,18);crag(x+9,y+5,9,17)
-                pine(x-8,y+5,4,True);pine(x+10,y+4,4,True);lamp(x,y+5)
-            else:
-                for xx,yy in [(x-12,y),(x-3,y+3),(x+6,y-3),(x+12,y+3)]:
-                    ln([(xx,yy),(xx+2,yy-3),(xx+4,yy)],top)
-                ln([(x-14,y+4),(x-4,y+1),(x+12,y+5)],mid)
-                lamp(x+6,y+3)
-        elif icon in {'mill','winery','motel','midpoint','deco'}:
-            cols={'mill':('#a14d48','#703d40','#bfa685'),'winery':('#957164','#605366','#bd9b83'),
-                  'motel':('#b37865','#604b53','#d7b188'),'midpoint':('#aa715b','#6b5050','#cfae84'),
-                  'deco':('#d19565','#7e554f','#e7b67d')}
-            a,b,rr=cols[icon]
-            block(-7,-5,16,10,11,rr,a,b)
-            if icon in {'mill','winery'}:
-                roof(-8,-6,18,12,11,7,rr,b)
-                if icon=='winery':
-                    for j in range(3):ln([pt(-10,7+j*3),pt(8,7+j*3)],'#84945a')
-            else:
-                block(-7,5,20,5,7,rr,a,b)
-                if icon=='deco':block(4,-6,5,5,20,rr,a,b)
-                if icon in {'midpoint','motel'}:
-                    ln([(x+10,y+1),(x+10,y-12),(x+15,y-12)],hi)
-                    lamp(x+14,y-12,'#f18471')
-            for j in range(-4,10,4):lamp(*pt(j,5,5))
-        elif icon in {'pits','pitsteel','kartpits'}:
-            # Stands/garages only, no painted representation of the route graph.
-            block(-10,-8,23,14,3,shade,mid,dark)
-            for j in range(4):block(-9+j*6,-6,5,6,8,top,mid,shade)
-            ln([pt(-10,6,3),pt(14,6,3)],hi,2)
-            for j in range(4):lamp(*pt(-7+j*6,3,2),[amber,cyan][j%2])
-            if icon=='kartpits':
-                for j in range(4):draw.point(pt(-8+j*5,8),fill='#ee7769')
-        elif icon in {'cablebridge','truss','minetrestle'}:
-            trusses(icon=='truss')
-            if icon=='cablebridge':
-                for xx,yy in [(x-7,y-1),(x+9,y-5)]:
-                    ln([(xx,yy+4),(xx,yy-16)],hi,2)
-                    for j in (-10,-5,3,8):ln([(xx,yy-15),(xx+j,yy+2)],mid)
-                    lamp(xx,yy-16)
-            if icon=='minetrestle':
-                for j in range(-10,14,5):ln([(x+j,y+1),(x+j,y+10)],mid)
-        elif icon in {'arch','chicago','reactor'}:
-            if icon=='arch':
-                q=[(x+i,y-2-round(18*(1-(i/11)**2))) for i in range(-11,12)]
-                ln([(a+1,b) for a,b in q],shade,3);ln(q,hi,2);lamp(x-10,y)
-                block(6,-4,5,4,6,top,mid,shade)
-            elif icon=='chicago':
-                for a,b,t in [(-9,-6,11),(-3,-5,19),(3,-2,16),(8,1,12)]:
-                    block(a,b,5,5,t,top,mid,shade)
-                    px,py=pt(a+2,b+2,t);ln([(px,py),(px,py-4)],hi);lamp(px,py-4)
-            else:
-                for a,b,t in [(-7,-5,13),(0,-4,19),(7,-2,14)]:
-                    block(a,b,6,7,t,'#76afbd','#34779d','#234362')
-                    for j in (3,7,11):
-                        ln([pt(a+1,b+7,j),pt(a+5,b+7,j)],cyan)
-                for j in [-9,0,9]:lamp(x+j,y+5,cyan)
-        elif icon in {'hoodoo','redfins','chimney','summit'}:
-            if icon=='hoodoo':
-                crag(x,y+4,11,18,'#d29565','#9a6150')
-                draw.ellipse((x-7,y-17,x+5,y-12),fill='#edaa78',outline=hi)
-            elif icon=='redfins':
-                for xx,yy,ww,hh in [(x-9,y,8,13),(x+1,y+1,7,21),(x+9,y-2,5,12)]:
-                    crag(xx,yy,ww,hh,'#bd7565','#714c5b')
-                draw.ellipse((x+6,y+3,x+13,y+9),fill='#d0916d')
-            elif icon=='chimney':
-                crag(x,y+5,13,12,top,mid)
-                pl([(x-2,y-7),(x-2,y-19),(x+1,y-21),(x+4,y-19),(x+4,y-7)],top)
-                ln([(x+3,y-19),(x+3,y-7)],shade)
-                lamp(x-13,y+6)
-            else:
-                crag(x,y+6,14,16,'#dce5e5','#6e84a0')
-                block(-4,-5,10,7,4,'#b9cccc','#526983','#405771')
-                for j in range(-4,7,3):lamp(x+j,y-1)
-        elif icon in {'tunnel','mineshaft'}:
-            if icon=='tunnel':
-                crag(x,y+3,13,17)
-                draw.ellipse((x-6,y-8,x+7,y+5),fill=dark);draw.arc((x-7,y-11,x+8,y+5),180,351,fill=hi,width=2)
-                for a in (-10,10):lamp(x+a,y+4)
-            else:
-                block(-10,0,11,8,8,top,mid,shade)
-                ln([(x-8,y+1),(x-2,y-18),(x+5,y-18),(x+12,y+4)],top,2)
-                ln([(x-5,y-8),(x+8,y-7),(x-3,y-14),(x+6,y-14)],mid)
-                lamp(x+3,y-17)
-        elif icon in {'shield','cadillac'}:
-            if icon=='shield':
-                ln([(x,y-9),(x,y+8)],top,2)
-                p=[(x-9,y-11),(x-4,y-14),(x,y-12),(x+4,y-14),(x+9,y-11),(x+7,y-4),(x,y+1),(x-7,y-4)]
-                pl(p,shade);ln(p+[p[0]],amber)
-                draw.text((x-6,y-12),'66',fill=hi,stroke_width=0)
-            else:
-                # Half-buried cars, three large upright tail fins, not a driving lane.
-                for j,col in enumerate(('#67aeb5','#ca7468','#cba167','#9567a2')):
-                    a=x-11+j*7;b=y+4-j%2
-                    pl([(a-2,b),(a+3,b-12),(a+6,b-11),(a+3,b)],col);ln([(a+3,b-12),(a+6,b-11)],hi)
-                    draw.point((a+3,b-7),fill=dark)
+        draw_motif(im, region, icon, x, y)
     return im
+

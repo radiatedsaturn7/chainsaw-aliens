@@ -1,3 +1,4 @@
+import {mapLandmarkPlacements,drawMapLandmarkLayer} from './CampaignMapLandmarks.js';
 import {campaignMapEntrance} from './CampaignMapEntrance.js';
 import {campaignWorldPresentation,campaignWorldRevealKey,WORLD_ROAD_REVEAL_SECONDS,WORLD_PIN_POP_SECONDS} from './CampaignWorldReveal.js';
 import {drawMapRoad,advanceMapCar,mapRoadPixels,mapRoadPoint} from './MenuMapRoads.js';
@@ -38,6 +39,8 @@ export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{
  const roadById=new Map(roadNodes.map(n=>[n.id,n]));
  const links=worldMapConnections(element,nodes);
  const entrance=campaignMapEntrance(element,roadNodes,links);
+ const landmarks=regional?mapLandmarkPlacements(element,nodes,positions,b):[];
+ if(regional)drawMapLandmarkLayer(ctx,landmarks,false);
  if(entrance){ctx.save();ctx.beginPath();ctx.rect(b.x,b.y,b.w,b.h);ctx.clip();drawRegionalMapRoad(ctx,entrance.link,entrance.first,entrance.end,b,style.lineWidth,style.linePattern);ctx.restore();}
  const reveal=campaignOverview&&!editing?widgetStates.get(campaignWorldRevealKey(element.id)):null;
  const presentation=campaignOverview&&!editing?campaignWorldPresentation(nodes,links,reveal):{visible:nodes,links,paving:false};
@@ -56,6 +59,7 @@ export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{
   const link=links.find(l=>l.from===a?.id&&l.to===c?.id||l.to===a?.id&&l.from===c?.id);
   if(a&&c&&link)drawPavingRoad(ctx,b,link,a,c,reveal.elapsed/WORLD_ROAD_REVEAL_SECONDS);
  }
+ if(regional)drawMapLandmarkLayer(ctx,landmarks,true);
  let raceIndex=0;
  for(const node of presentation.visible){
   const junction=node.kind==='junction',p=positions.get(node.id),active=!junction&&!node.locked&&node.raceRef===selected;
