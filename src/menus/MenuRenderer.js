@@ -17,7 +17,18 @@ import {menuPaintOrder,menuElementVisible} from './MenuLayout.js';
 import {menuElementPose,resolveMenuBackground} from './MenuDocument.js';
 import {drawCarComponent} from './MenuCarStats.js';
 
-export const menuElementBounds=(element,bounds,pose=element)=>({x:bounds.x+pose.x*bounds.w,y:bounds.y+pose.y*bounds.h,w:element.w*bounds.w,h:element.h*bounds.h});
+export function menuElementBounds(element,bounds,pose=element,regionalScreen=false){
+  const {x,y,w,h}=bounds;
+  if(w<h&&(regionalScreen||element.property==='campaign-path')){
+    // Portrait presents the illustration as a wide map above the preview.
+    // Hit testing and rendering both use these same map bounds.
+    const mapTop=h*.13,mapHeight=Math.min(h*.48,w*.68+36),end=mapTop+mapHeight;
+    if(element.property==='campaign-path')return {x:x+w*.04,y:y+mapTop,w:w*.92,h:mapHeight};
+    if(element.id==='route-name')return {x:x+w*.04,y:y+end+h*.012,w:w*.92,h:h*.075};
+    if(element.id==='route-preview')return {x:x+w*.04,y:y+end+h*.09,w:w*.92,h:Math.max(0,h*.94-end-h*.09)};
+  }
+  return {x:x+pose.x*w,y:y+pose.y*h,w:element.w*w,h:element.h*h};
+}
 import {paintCarThumbnail,carThumbnailNeedsFallback} from '../ui/shared/carPreviewThumbnails.js';
 
 export const menuElementInteractive=e=>['garage-tuner','code-entry','world-map','car-showroom','garage-browser','button','choice','slider','toggle','keybind'].includes(e.type);
@@ -100,8 +111,9 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
     }ctx.restore();
   }
   }
+  const regionalScreen=screen.elements.some(e=>e.property==='campaign-path');
   for(const element of menuPaintOrder(screen.elements)){
-    if(!menuElementVisible(element,screen.elements))continue;const pose=editing?{x:element.x,y:element.y,opacity:1,scale:1,rotation:0}:menuElementPose(element,time),b=menuElementBounds(element,bounds,pose);
+    if(!menuElementVisible(element,screen.elements))continue;const pose=editing?{x:element.x,y:element.y,opacity:1,scale:1,rotation:0}:menuElementPose(element,time),b=menuElementBounds(element,bounds,pose,regionalScreen);
     if(!buttonOnly&&drawCachedButton(ctx,bounds,document,screen,element,parameters,{time,resources,focus,selected,editing,worldMapEditingId,videos,widgetStates}))continue;
     const drawText=(text,...args)=>drawMenuText(ctx,element,['text','button','choice','toggle','keybind','property-display'].includes(element.type)?menuTypedText(element,text,time,editing):text,...args);
     ctx.save();ctx.translate(b.x+b.w/2,b.y+b.h/2);ctx.rotate(pose.rotation*Math.PI/180);ctx.scale(pose.scale,pose.scale);ctx.translate(-b.x-b.w/2,-b.y-b.h/2);ctx.globalAlpha=pose.opacity;
@@ -158,7 +170,7 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
       }
 
     }
-    else if(element.type==='world-map'){const mapBackground=element.artRef?resources?.art(element.artRef,Math.floor(time*8)):null;if(mapBackground)drawMenuImage(ctx,mapBackground,b,element.imageFit);drawWorldMap(ctx,b,element,resources,document,parameters,value,{drawText,fontFamily,time,widgetStates,editing,drawCar:(bounds,angle)=>{
+    else if(element.type==='world-map'){const mapBackground=element.artRef?resources?.art(element.artRef,Math.floor(time*8)):null;if(mapBackground){const mapBounds=element.property==='campaign-path'?{...b,h:Math.max(1,b.h-36)}:b;ctx.imageSmoothingEnabled=element.property!=='campaign-path';drawMenuImage(ctx,mapBackground,mapBounds,element.imageFit);}drawWorldMap(ctx,b,element,resources,document,parameters,value,{drawText,fontFamily,time,widgetStates,editing,mapBackground,drawCar:(bounds,angle)=>{
  const name=parameters.carRef||resources?.game?.menuProgress?.selectedGameCar;if(!name)return;
  if(carThumbnailNeedsFallback(name,angle))drawCarComponent(ctx,bounds,{type:'car-preview',showroomPreview:true,animation:'none',angle},resources?.stockCar?.(name),resources,time,parameters,fontFamily);
  else paintCarThumbnail(ctx,bounds,name,angle,undefined,undefined,true);

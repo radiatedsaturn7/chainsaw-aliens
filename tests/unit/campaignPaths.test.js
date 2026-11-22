@@ -5,10 +5,13 @@ import {CAMPAIGN_PATHS,CAMPAIGN_BRANCHES,campaignPathScreen,authorCampaignPath} 
 import {normalizeMenuDocument} from '../../src/menus/MenuDocument.js';
 import {worldMapNodes,campaignPathEntrySelection,raceCompletionKey,worldMapNodePoint,worldMapNodeRadius} from '../../src/menus/MenuWorldMap.js';
 import {campaignRaceAccess} from '../../src/menus/CampaignProgression.js';
-import {drawMenuScreen} from '../../src/menus/MenuRenderer.js';
+import {mapRoadRoute} from '../../src/menus/MenuMapRoads.js';
+import {drawMenuScreen,menuElementBounds} from '../../src/menus/MenuRenderer.js';
 import MenuPlayer from '../../src/menus/MenuPlayer.js';
 const menu=JSON.parse(fs.readFileSync('data/server-storage/files/menus/Game Menu/document.json'));
 const config=menu.parameters.campaignProgression;
+const geo=JSON.parse(fs.readFileSync('tools/campaigns/regional-map-gps.json')).regions;
+const art=JSON.parse(fs.readFileSync('data/server-storage/files/manifest.json')).folders.art;
 test('all eleven installed regions have five distinct main races, two branches, a boss, and retained extra events',()=>{
  assert.equal(config.version,2);
  const manifest=JSON.parse(fs.readFileSync('data/server-storage/files/manifest.json')).folders.races;
@@ -17,7 +20,19 @@ test('all eleven installed regions have five distinct main races, two branches, 
   assert.deepEqual(r.branches.map(b=>b.raceRef),CAMPAIGN_BRANCHES[r.stage-1]);
   for(const ref of [...r.events,r.bossRef])assert.ok(manifest[ref],ref);
   const s=menu.screens.find(s=>s.id===`campaign-hub-${r.stage}`),map=s.elements.find(e=>e.property==='campaign-path');
-  assert.equal(map.nodes.length,8);assert.equal(map.connections.length,7);
+  assert.equal(map.nodes.length,8);
+  assert.equal(map.connections.filter(c=>!c.pattern).length,5);
+  assert.equal(map.connections.filter(c=>c.pattern==='dotted').length,2);
+  assert.ok(art[map.artRef],map.artRef);
+  assert.equal(map.imageFit,'stretch');
+  assert.equal(map.action.target,'garage');
+  assert.deepEqual(map.nodes.map(n=>n.raceRef),[...r.mainPath,r.bossRef,...r.branches.map(b=>b.raceRef)]);
+  for(const node of map.nodes){
+   const source=geo[r.bossRef].nodesByRace[node.raceRef];
+   assert.ok(Number.isFinite(source.lat)&&Number.isFinite(source.lon));
+   assert.equal(node.x,source.x);
+   assert.ok(Math.abs(node.y-(.4+.56*source.y))<.000006);
+  }
   assert.ok(menu.screens.some(s=>s.id===`campaign-hub-${r.stage}-events`));
   assert.deepEqual(normalizeMenuDocument({...menu,screens:menu.screens.map(old=>old.id===s.id?s:old)}).screens.find(e=>e.id===s.id).elements.find(e=>e.id===map.id).nodes,map.nodes);
  }
@@ -25,11 +40,12 @@ test('all eleven installed regions have five distinct main races, two branches, 
 test('regional nodes respect race gates while overview represents region access; branch clears cannot open boss',()=>{
  const r=config.regions[0],screen=campaignPathScreen(r,'Providence'),map=screen.elements.find(e=>e.type==='world-map'),p={};
  let nodes=worldMapNodes(map,{},menu,p);assert.equal(nodes.filter(n=>!n.locked).length,1);
- for(const ref of r.mainPath.slice(0,2))p[raceCompletionKey(ref)]=true;
+ const firstDetour=r.mainPath.indexOf(r.branches[0].after)+1;
+ for(const ref of r.mainPath.slice(0,firstDetour))p[raceCompletionKey(ref)]=true;
  nodes=worldMapNodes(map,{},menu,p);
  assert.equal(nodes.find(n=>n.raceRef===r.branches[0].raceRef).locked,false);
  assert.equal(nodes.find(n=>n.raceRef===r.branches[1].raceRef).locked,true);
- assert.equal(campaignPathEntrySelection(nodes,r.bossRef).raceRef,r.mainPath[2]);
+ assert.equal(campaignPathEntrySelection(nodes,r.bossRef).raceRef,r.mainPath[firstDetour]);
  p[raceCompletionKey(r.bossRef)]=true;
  assert.ok(worldMapNodes(map,{},menu,p).every(n=>!n.locked));
  assert.ok(campaignRaceAccess(config,config.regions[1].mainPath[0],p).allowed);
@@ -48,8 +64,8 @@ test('regional map drawing and selected previews work in portrait and landscape 
   const labels=[],ctx=new Proxy({globalAlpha:1,measureText:t=>({width:String(t).length*5}),fillText:t=>labels.push(t)},{get:(o,k)=>k in o?o[k]:(()=>{})});
   drawMenuScreen(ctx,bounds,menu,screen,{raceRef:r.mainPath[0]},{editing:true,resources:{art:()=>null,race:()=>assert.fail('map should not load race')}});
   assert.ok(labels.join(' ').includes('Tower Hill'));
-  const map=screen.elements.find(e=>e.type==='world-map'),b={x:0,y:0,w:bounds.w*.57,h:bounds.h*.68};
-  for(const n of map.nodes){const p=worldMapNodePoint(n,b,map),radius=worldMapNodeRadius(b,map)+5;assert.ok(p.x-radius>=0&&p.x+radius<=b.w);}
+  const map=screen.elements.find(e=>e.type==='world-map'),b=menuElementBounds(map,bounds);
+  for(const n of map.nodes){const p=worldMapNodePoint(n,b,map),radius=worldMapNodeRadius(b,map)+5;assert.ok(p.x-radius>=b.x&&p.x+radius<=b.x+b.w);}
  }
 });
 test('partial or custom catalogs retain their existing progression',()=>{
@@ -57,4 +73,39 @@ test('partial or custom catalogs retain their existing progression',()=>{
 });
 test('regional maps use the car cursor and omit More Races',()=>{
  for(const r of config.regions){const screen=campaignPathScreen(r,'Region');assert.ok(!screen.elements.some(e=>e.id==='more-races'));const map=screen.elements.find(e=>e.type==='world-map');assert.equal(map.mapStyle.cursor,'car');assert.ok(map.connections.every(c=>c.curve==='bezier'));}
+});
+
+test('world pins keep real geography and gate Ohio → St. Louis → Ozarks → Route 66',()=>{
+ const world=menu.screens.find(s=>s.id==='world-map').elements.find(e=>e.type==='world-map');
+ assert.deepEqual(config.regions.map(r=>r.stage),[1,2,3,4,6,5,7,8,9,10,11]);
+ assert.deepEqual(world.nodes.map(n=>n.raceRef),config.regions.map(r=>r.bossRef));
+ assert.ok(world.nodes[1].y<world.nodes[0].y,'Mount Washington north of Providence');
+ for(let i=1;i<world.nodes.length;i++){
+  const prev=world.nodes[i-1],curr=world.nodes[i];
+  assert.equal(curr.unlockParameter,raceCompletionKey(prev.raceRef));
+  assert.ok(world.connections.some(link=>link.from===prev.id&&link.to===curr.id));
+  if(i>1)assert.ok(curr.x<prev.x,curr.label);
+ }
+ const p={[raceCompletionKey(config.regions[3].bossRef)]:true};
+ const ready=()=>worldMapNodes(world,{},menu,p);
+ assert.equal(ready()[4].locked,false);assert.equal(ready()[5].locked,true);
+ p[raceCompletionKey(config.regions[4].bossRef)]=true;
+ assert.equal(ready()[5].locked,false);assert.equal(ready()[6].locked,true);
+});
+test('the selected car can reach each newly available main race, but dirt links cannot skip unlocks',()=>{
+ const p={};let shortcuts=0;
+ for(const r of config.regions){
+  const map=menu.screens.find(s=>s.id===`campaign-hub-${r.stage}`).elements.find(e=>e.property==='campaign-path');
+  shortcuts+=map.connections.filter(c=>c.pattern==='dashed').length;
+  const refs=[...r.mainPath,r.bossRef];
+  for(let i=0;i<refs.length-1;i++){
+   let nodes=worldMapNodes(map,{},menu,p);
+   assert.equal(mapRoadRoute(nodes,map.connections,nodes[i].id,nodes[i+1].id),null);
+   p[raceCompletionKey(refs[i])]=true;
+   nodes=worldMapNodes(map,{},menu,p);
+   assert.ok(mapRoadRoute(nodes,map.connections,nodes[i].id,nodes[i+1].id)?.length);
+  }
+  p[raceCompletionKey(r.bossRef)]=true;
+ }
+ assert.equal(shortcuts,6);
 });

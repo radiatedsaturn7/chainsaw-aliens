@@ -58,11 +58,22 @@ test('installed expansion events have native terrain, scenery, textures and land
 });
 test('new events appear exactly once under campaign hubs and never exceed eight menu buttons',()=>{
  const all=[...read(root+'side-races/catalog.json'),...read(root+'raceways/catalog.json')];
- const {screens}=createCampaignHubMenus(read(root+'catalog.json'),read('AI/last-on-the-grid/last_on_the_grid_99_side_races.json'),all);
+ const {screens,progression}=createCampaignHubMenus(read(root+'catalog.json'),read('AI/last-on-the-grid/last_on_the_grid_99_side_races.json'),all);
  for(const s of screens)assert.ok(s.elements.filter(e=>e.type==='button').length<=8,s.id);
  const selected=screens.flatMap(s=>s.elements).filter(e=>e.action?.parameter==='raceRef');
  for(const e of extras())assert.equal(selected.filter(s=>s.action.value===e.raceRef).length,1,e.id);
- for(const screen of screens.filter(s=>/^campaign-hub-\d+$/.test(s.id)))assert.ok(screen.elements.some(e=>e.label==='City Runs'));
+ for(const region of progression.regions){
+  const hubId=`campaign-hub-${region.stage}`;
+  const hub=screens.find(s=>s.id===hubId);
+  assert.ok(hub,hubId);
+  if(region.mainPath)assert.ok(hub.elements.some(e=>e.type==='world-map'&&e.property==='campaign-path'),hubId);
+  const eventScreenId=region.mainPath?`${hubId}-events`:hubId;
+  const eventScreen=screens.find(s=>s.id===eventScreenId);
+  assert.ok(eventScreen,eventScreenId);
+  const citiesId=`${hubId}-cities`;
+  assert.ok(eventScreen.elements.some(e=>e.label==='City Runs'&&e.action?.type==='screen'&&e.action.target===citiesId),eventScreenId);
+  assert.ok(screens.some(s=>s.id===citiesId),citiesId);
+ }
 });
 
 test('the complete saved campaign menu retains every linked page beyond 100 screens',()=>{

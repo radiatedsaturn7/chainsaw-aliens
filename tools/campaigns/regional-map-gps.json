@@ -1,0 +1,1204 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "3da7c7d34ff7669f4ec552b86df89fe697f0440c",
+  "projection": "north-up west-left local monotonic asinh axes, rank detail compensation; schematic not metric",
+  "regions": {
+    "Providence, RI — Landmark Run": {
+      "currentStage": 1,
+      "screenId": "campaign-hub-1",
+      "bossRef": "Providence, RI — Landmark Run",
+      "bossNodeId": "stop-5",
+      "nodesByRace": {
+        "Tower Hill Road": {
+          "id": "stop-0",
+          "lat": 41.9964,
+          "lon": -71.437,
+          "place": "Tower Hill Road, Cumberland, RI",
+          "stateCode": "RI",
+          "source": "data/server-storage/files/races/Tower Hill Road/document.json#race.location",
+          "x": 0.546041,
+          "y": 0.328579
+        },
+        "RI 116 — North Smithfield Scituate": {
+          "id": "stop-1",
+          "lat": 41.89,
+          "lon": -71.58,
+          "place": "RI 116 — North Smithfield / Scituate",
+          "stateCode": "RI",
+          "source": "data/server-storage/files/races/RI 116 %E2%80%94 North Smithfield Scituate/document.json#race.location",
+          "x": 0.418624,
+          "y": 0.622746
+        },
+        "Blue Hills — Reservation Parkways": {
+          "id": "stop-2",
+          "lat": 42.222,
+          "lon": -71.091,
+          "place": "Blue Hills — Reservation Parkways",
+          "stateCode": "MA",
+          "source": "data/server-storage/files/races/Blue Hills %E2%80%94 Reservation Parkways/document.json#race.location",
+          "x": 0.809039,
+          "y": 0.19705
+        },
+        "Pachaug State Forest — public gravel access roads": {
+          "id": "stop-3",
+          "lat": 41.56,
+          "lon": -71.85,
+          "place": "Pachaug State Forest — public gravel access roads",
+          "stateCode": "CT",
+          "source": "data/server-storage/files/races/Pachaug State Forest %E2%80%94 public gravel access roads/document.json#race.location",
+          "x": 0.1,
+          "y": 0.87
+        },
+        "RI 44 — Putnam Pike Glocester": {
+          "id": "stop-4",
+          "lat": 41.91,
+          "lon": -71.69,
+          "place": "RI 44 — Putnam Pike / Glocester",
+          "stateCode": "RI",
+          "source": "data/server-storage/files/races/RI 44 %E2%80%94 Putnam Pike Glocester/document.json#race.location",
+          "x": 0.304693,
+          "y": 0.531024
+        },
+        "Providence, RI — Landmark Run": {
+          "id": "stop-5",
+          "lat": 41.825,
+          "lon": -71.411,
+          "place": "Providence",
+          "stateCode": "RI",
+          "source": "data/server-storage/files/races/Providence%2C RI %E2%80%94 Landmark Run/document.json#race.location",
+          "x": 0.638607,
+          "y": 0.732952
+        },
+        "Thompson Speedway — 1.7-mile road course": {
+          "id": "stop-6",
+          "lat": 41.98,
+          "lon": -71.825,
+          "place": "Thompson Speedway — 1.7-mile road course",
+          "stateCode": "CT",
+          "source": "data/server-storage/files/races/Thompson Speedway %E2%80%94 1.7-mile road course/document.json#race.location",
+          "x": 0.189602,
+          "y": 0.416311
+        },
+        "Boston, MA — Landmark Run": {
+          "id": "stop-7",
+          "lat": 42.356,
+          "lon": -71.061,
+          "place": "Boston",
+          "stateCode": "MA",
+          "source": "data/server-storage/files/races/Boston%2C MA %E2%80%94 Landmark Run/document.json#race.location",
+          "x": 0.9,
+          "y": 0.1
+        }
+      },
+      "minimumNormalizedSeparation": 0.133014,
+      "axisDetailMix": 0.74,
+      "route": {
+        "authored": [
+          "Tower Hill Road",
+          "RI 116 — North Smithfield Scituate",
+          "Blue Hills — Reservation Parkways",
+          "Pachaug State Forest — public gravel access roads",
+          "RI 44 — Putnam Pike Glocester"
+        ],
+        "geographicSuggestion": [
+          "Tower Hill Road",
+          "Blue Hills — Reservation Parkways",
+          "RI 116 — North Smithfield Scituate",
+          "RI 44 — Putnam Pike Glocester",
+          "Pachaug State Forest — public gravel access roads"
+        ],
+        "relativeDistancePenaltyReduction": 0.176561,
+        "note": "Route suggestion, not applied. Keep boss last and Tower Hill first. Same race set; sequencing changes which race is available next. Existing branch prerequisites remain raceRef keyed."
+      }
+    },
+    "Mount Washington Auto Road — point-to-point": {
+      "currentStage": 2,
+      "screenId": "campaign-hub-2",
+      "bossRef": "Mount Washington Auto Road — point-to-point",
+      "bossNodeId": "stop-5",
+      "nodesByRace": {
+        "Kancamagus Highway — NH 112": {
+          "id": "stop-0",
+          "lat": 44.05,
+          "lon": -71.49,
+          "place": "Kancamagus Highway — NH 112",
+          "stateCode": "NH",
+          "source": "data/server-storage/files/races/Kancamagus Highway %E2%80%94 NH 112/document.json#race.location",
+          "x": 0.366244,
+          "y": 0.63643
+        },
+        "Team O’Neil-inspired Rally Stage (2994)": {
+          "id": "stop-1",
+          "lat": 44.36779,
+          "lon": -71.709566,
+          "place": "Team O’Neil Rally School — Dalton",
+          "stateCode": "NH",
+          "source": "data/server-storage/files/races/Team O%E2%80%99Neil-inspired Rally Stage (2994)/document.json#race.location",
+          "approximation": "Fictional 2994 event: proxy is the real Team O’Neil rally-school locality in Dalton, NH; no claimed actual event.",
+          "x": 0.249853,
+          "y": 0.214628
+        },
+        "Bear Notch Road — Bartlett": {
+          "id": "stop-2",
+          "lat": 44.047,
+          "lon": -71.274,
+          "place": "Bear Notch Road — Bartlett",
+          "stateCode": "NH",
+          "source": "data/server-storage/files/races/Bear Notch Road %E2%80%94 Bartlett/document.json#race.location",
+          "x": 0.506044,
+          "y": 0.718929
+        },
+        "Hurricane Mountain Road — Conway": {
+          "id": "stop-3",
+          "lat": 44.069,
+          "lon": -71.08,
+          "place": "Hurricane Mountain Road — Conway",
+          "stateCode": "NH",
+          "source": "data/server-storage/files/races/Hurricane Mountain Road %E2%80%94 Conway/document.json#race.location",
+          "x": 0.9,
+          "y": 0.548048
+        },
+        "Pinkham Notch — NH 16": {
+          "id": "stop-4",
+          "lat": 44.225,
+          "lon": -71.252,
+          "place": "Pinkham Notch — NH 16",
+          "stateCode": "NH",
+          "source": "data/server-storage/files/races/Pinkham Notch %E2%80%94 NH 16/document.json#race.location",
+          "x": 0.597654,
+          "y": 0.413453
+        },
+        "Mount Washington Auto Road — point-to-point": {
+          "id": "stop-5",
+          "lat": 44.2811197,
+          "lon": -71.246017,
+          "place": "Mount Washington Auto Road, Sargent's Purchase, Coös County, New Hampshire, 03589, United States",
+          "stateCode": "NH",
+          "source": "data/server-storage/files/races/Mount Washington Auto Road %E2%80%94 point-to-point/document.json#race.location",
+          "x": 0.684144,
+          "y": 0.316447
+        },
+        "Club Motorsports — Tamworth": {
+          "id": "stop-6",
+          "lat": 43.8210049,
+          "lon": -71.2452097,
+          "place": "Club Motorsports — Tamworth",
+          "stateCode": "NH",
+          "source": "data/server-storage/files/races/Club Motorsports %E2%80%94 Tamworth/document.json#race.location",
+          "x": 0.768975,
+          "y": 0.87
+        },
+        "Smugglers Notch — Vermont 108": {
+          "id": "stop-7",
+          "lat": 44.556,
+          "lon": -72.792,
+          "place": "Smugglers Notch — Vermont 108",
+          "stateCode": "VT",
+          "source": "data/server-storage/files/races/Smugglers Notch %E2%80%94 Vermont 108/document.json#race.location",
+          "x": 0.1,
+          "y": 0.1
+        }
+      },
+      "minimumNormalizedSeparation": 0.129964,
+      "axisDetailMix": 0.74,
+      "route": {
+        "authored": [
+          "Kancamagus Highway — NH 112",
+          "Team O’Neil-inspired Rally Stage (2994)",
+          "Bear Notch Road — Bartlett",
+          "Hurricane Mountain Road — Conway",
+          "Pinkham Notch — NH 16"
+        ],
+        "geographicSuggestion": [
+          "Hurricane Mountain Road — Conway",
+          "Pinkham Notch — NH 16",
+          "Bear Notch Road — Bartlett",
+          "Kancamagus Highway — NH 112",
+          "Team O’Neil-inspired Rally Stage (2994)"
+        ],
+        "relativeDistancePenaltyReduction": 0.087818,
+        "note": "Route suggestion, not applied. Keep boss last and Tower Hill first. Same race set; sequencing changes which race is available next. Existing branch prerequisites remain raceRef keyed."
+      }
+    },
+    "Laurel Highlands Scenic Byway": {
+      "currentStage": 3,
+      "screenId": "campaign-hub-3",
+      "bossRef": "Laurel Highlands Scenic Byway",
+      "bossNodeId": "stop-5",
+      "nodesByRace": {
+        "Brandywine Valley — Montchanin Road": {
+          "id": "stop-0",
+          "lat": 39.805,
+          "lon": -75.591,
+          "place": "Brandywine Valley — Montchanin Road",
+          "stateCode": "DE",
+          "source": "data/server-storage/files/races/Brandywine Valley %E2%80%94 Montchanin Road/document.json#race.location",
+          "x": 0.810985,
+          "y": 0.87
+        },
+        "PA 711 — Normalville Champion": {
+          "id": "stop-1",
+          "lat": 40.02,
+          "lon": -79.39,
+          "place": "PA 711 — Normalville / Champion",
+          "stateCode": "PA",
+          "source": "data/server-storage/files/races/PA 711 %E2%80%94 Normalville Champion/document.json#race.location",
+          "x": 0.417332,
+          "y": 0.457202
+        },
+        "Forbes State Forest — designated gravel roads": {
+          "id": "stop-2",
+          "lat": 40.12,
+          "lon": -79.18,
+          "place": "Forbes State Forest — designated gravel roads",
+          "stateCode": "PA",
+          "source": "data/server-storage/files/races/Forbes State Forest %E2%80%94 designated gravel roads/document.json#race.location",
+          "x": 0.611966,
+          "y": 0.261887
+        },
+        "US 40 — Chalk Hill Summit": {
+          "id": "stop-3",
+          "lat": 39.85,
+          "lon": -79.61,
+          "place": "US 40 — Chalk Hill / Summit",
+          "stateCode": "PA",
+          "source": "data/server-storage/files/races/US 40 %E2%80%94 Chalk Hill Summit/document.json#race.location",
+          "x": 0.225633,
+          "y": 0.77491
+        },
+        "County Line Road — Seven Springs": {
+          "id": "stop-4",
+          "lat": 40.05,
+          "lon": -79.28,
+          "place": "County Line Road — Seven Springs",
+          "stateCode": "PA",
+          "source": "data/server-storage/files/races/County Line Road %E2%80%94 Seven Springs/document.json#race.location",
+          "x": 0.515237,
+          "y": 0.364408
+        },
+        "Laurel Highlands Scenic Byway": {
+          "id": "stop-5",
+          "lat": 39.88,
+          "lon": -79.49,
+          "place": "Laurel Highlands Scenic Byway",
+          "stateCode": "PA",
+          "source": "data/server-storage/files/races/Laurel Highlands Scenic Byway/document.json#race.location",
+          "x": 0.321672,
+          "y": 0.682631
+        },
+        "Pittsburgh International Race Complex — Wampum": {
+          "id": "stop-6",
+          "lat": 40.85,
+          "lon": -80.347,
+          "place": "Pittsburgh International Race Complex — Wampum",
+          "stateCode": "PA",
+          "source": "data/server-storage/files/races/Pittsburgh International Race Complex %E2%80%94 Wampum/document.json#race.location",
+          "x": 0.1,
+          "y": 0.1
+        },
+        "Philadelphia, PA — Landmark Run": {
+          "id": "stop-7",
+          "lat": 39.955,
+          "lon": -75.164,
+          "place": "Philadelphia",
+          "stateCode": "PA",
+          "source": "data/server-storage/files/races/Philadelphia%2C PA %E2%80%94 Landmark Run/document.json#race.location",
+          "x": 0.9,
+          "y": 0.56793
+        }
+      },
+      "minimumNormalizedSeparation": 0.133188,
+      "axisDetailMix": 0.74,
+      "route": {
+        "authored": [
+          "Brandywine Valley — Montchanin Road",
+          "PA 711 — Normalville Champion",
+          "Forbes State Forest — designated gravel roads",
+          "US 40 — Chalk Hill Summit",
+          "County Line Road — Seven Springs"
+        ],
+        "geographicSuggestion": [
+          "Brandywine Valley — Montchanin Road",
+          "Forbes State Forest — designated gravel roads",
+          "County Line Road — Seven Springs",
+          "PA 711 — Normalville Champion",
+          "US 40 — Chalk Hill Summit"
+        ],
+        "relativeDistancePenaltyReduction": 0.277405,
+        "note": "Route suggestion, not applied. Keep boss last and Tower Hill first. Same race set; sequencing changes which race is available next. Existing branch prerequisites remain raceRef keyed."
+      }
+    },
+    "Ohio River Crossing": {
+      "currentStage": 4,
+      "screenId": "campaign-hub-4",
+      "bossRef": "Ohio River Crossing",
+      "bossNodeId": "stop-5",
+      "nodesByRace": {
+        "OH 550 — Barlow approach": {
+          "id": "stop-0",
+          "lat": 39.4,
+          "lon": -81.65,
+          "place": "OH 550 — Barlow approach",
+          "stateCode": "OH",
+          "source": "data/server-storage/files/races/OH 550 %E2%80%94 Barlow approach/document.json#race.location",
+          "x": 0.489557,
+          "y": 0.619254
+        },
+        "Washington County western covered-bridge gravel loop": {
+          "id": "stop-1",
+          "lat": 39.459395,
+          "lon": -81.768753,
+          "place": "Washington County western covered-bridge gravel loop",
+          "stateCode": "OH",
+          "source": "data/server-storage/files/races/Washington County western covered-bridge gravel loop/document.json#race.location",
+          "x": 0.382287,
+          "y": 0.451064
+        },
+        "OH 26 — Covered Bridge Scenic Byway": {
+          "id": "stop-2",
+          "lat": 39.56,
+          "lon": -81.2,
+          "place": "OH 26 — Covered Bridge Scenic Byway",
+          "stateCode": "OH",
+          "source": "data/server-storage/files/races/OH 26 %E2%80%94 Covered Bridge Scenic Byway/document.json#race.location",
+          "x": 0.811123,
+          "y": 0.354566
+        },
+        "OH 536 — Ohio River hills": {
+          "id": "stop-3",
+          "lat": 39.73,
+          "lon": -80.99,
+          "place": "OH 536 — Ohio River hills",
+          "stateCode": "OH",
+          "source": "data/server-storage/files/races/OH 536 %E2%80%94 Ohio River hills/document.json#race.location",
+          "x": 0.9,
+          "y": 0.255285
+        },
+        "OH 555 — Triple Nickel": {
+          "id": "stop-4",
+          "lat": 39.4195178,
+          "lon": -81.8156907,
+          "place": "OH 555 — Triple Nickel",
+          "stateCode": "OH",
+          "source": "data/server-storage/files/races/OH 555 %E2%80%94 Triple Nickel/document.json#race.location",
+          "x": 0.315998,
+          "y": 0.563413
+        },
+        "Ohio River Crossing": {
+          "id": "stop-5",
+          "lat": 39.43,
+          "lon": -81.42,
+          "place": "Ohio River Crossing",
+          "stateCode": "OH",
+          "source": "data/server-storage/files/races/Ohio River Crossing/document.json#race.location",
+          "approximation": "Campaign mission title and representative Ohio River route pin; not a named real-world venue.",
+          "x": 0.696708,
+          "y": 0.512978
+        },
+        "Mid-Ohio Sports Car Course — Lexington": {
+          "id": "stop-6",
+          "lat": 40.689,
+          "lon": -82.635,
+          "place": "Mid-Ohio Sports Car Course",
+          "stateCode": "OH",
+          "source": "data/server-storage/files/races/Mid-Ohio Sports Car Course %E2%80%94 Lexington/document.json#race.location",
+          "x": 0.1,
+          "y": 0.1
+        },
+        "Charleston, WV — Landmark Run": {
+          "id": "stop-7",
+          "lat": 38.347,
+          "lon": -81.626,
+          "place": "Charleston",
+          "stateCode": "WV",
+          "source": "data/server-storage/files/races/Charleston%2C WV %E2%80%94 Landmark Run/document.json#race.location",
+          "x": 0.548755,
+          "y": 0.87
+        }
+      },
+      "minimumNormalizedSeparation": 0.130447,
+      "axisDetailMix": 0.4,
+      "route": {
+        "authored": [
+          "OH 550 — Barlow approach",
+          "Washington County western covered-bridge gravel loop",
+          "OH 26 — Covered Bridge Scenic Byway",
+          "OH 536 — Ohio River hills",
+          "OH 555 — Triple Nickel"
+        ],
+        "geographicSuggestion": [
+          "OH 536 — Ohio River hills",
+          "OH 26 — Covered Bridge Scenic Byway",
+          "OH 550 — Barlow approach",
+          "Washington County western covered-bridge gravel loop",
+          "OH 555 — Triple Nickel"
+        ],
+        "relativeDistancePenaltyReduction": 0.518912,
+        "note": "Route suggestion, not applied. Keep boss last and Tower Hill first. Same race set; sequencing changes which race is available next. Existing branch prerequisites remain raceRef keyed."
+      }
+    },
+    "Ozark Backroads": {
+      "currentStage": 5,
+      "screenId": "campaign-hub-5",
+      "bossRef": "Ozark Backroads",
+      "bossNodeId": "stop-5",
+      "nodesByRace": {
+        "MO 19 — Eminence Current River": {
+          "id": "stop-0",
+          "lat": 37.43,
+          "lon": -91.43,
+          "place": "MO 19 — Eminence / Current River",
+          "stateCode": "MO",
+          "source": "data/server-storage/files/races/MO 19 %E2%80%94 Eminence Current River/document.json#race.location",
+          "x": 0.423418,
+          "y": 0.242943
+        },
+        "MO 106 — Alley Spring approach": {
+          "id": "stop-1",
+          "lat": 37.15,
+          "lon": -91.4,
+          "place": "MO 106 — Alley Spring approach",
+          "stateCode": "MO",
+          "source": "data/server-storage/files/races/MO 106 %E2%80%94 Alley Spring approach/document.json#race.location",
+          "x": 0.510629,
+          "y": 0.583443
+        },
+        "MO H NN — Roberts Field access": {
+          "id": "stop-2",
+          "lat": 37.12,
+          "lon": -91.19,
+          "place": "MO H / NN — Roberts Field access",
+          "stateCode": "MO",
+          "source": "data/server-storage/files/races/MO H NN %E2%80%94 Roberts Field access/document.json#race.location",
+          "x": 0.9,
+          "y": 0.67715
+        },
+        "Jerktail Landing gravel road": {
+          "id": "stop-3",
+          "lat": 37.24,
+          "lon": -91.33,
+          "place": "Jerktail Landing gravel road",
+          "stateCode": "MO",
+          "source": "data/server-storage/files/races/Jerktail Landing gravel road/document.json#race.location",
+          "x": 0.694953,
+          "y": 0.376817
+        },
+        "Pig Trail — Arkansas 23": {
+          "id": "stop-4",
+          "lat": 35.672,
+          "lon": -93.816,
+          "place": "Pig Trail — Arkansas 23",
+          "stateCode": "AR",
+          "source": "data/server-storage/files/races/Pig Trail %E2%80%94 Arkansas 23/document.json#race.location",
+          "x": 0.1,
+          "y": 0.87
+        },
+        "Ozark Backroads": {
+          "id": "stop-5",
+          "lat": 37.2,
+          "lon": -91.35,
+          "place": "Ozark Backroads",
+          "stateCode": "MO",
+          "source": "data/server-storage/files/races/Ozark Backroads/document.json#race.location",
+          "approximation": "Campaign composite backroads mission: saved Missouri Ozarks area pin, not a single named venue.",
+          "x": 0.610694,
+          "y": 0.477971
+        },
+        "Ozarks International Raceway — Gravois Mills": {
+          "id": "stop-6",
+          "lat": 38.2758834,
+          "lon": -92.8867072,
+          "place": "Ozarks International Raceway — Gravois Mills",
+          "stateCode": "MO",
+          "source": "data/server-storage/files/races/Ozarks International Raceway %E2%80%94 Gravois Mills/document.json#race.location",
+          "x": 0.199567,
+          "y": 0.1
+        },
+        "MO V — Two Rivers access": {
+          "id": "stop-7",
+          "lat": 37.2,
+          "lon": -91.25,
+          "place": "MO V — Two Rivers access",
+          "stateCode": "MO",
+          "source": "data/server-storage/files/races/MO V %E2%80%94 Two Rivers access/document.json#race.location",
+          "x": 0.80629,
+          "y": 0.477971
+        }
+      },
+      "minimumNormalizedSeparation": 0.13165,
+      "axisDetailMix": 0.64,
+      "route": {
+        "authored": [
+          "MO 19 — Eminence Current River",
+          "MO 106 — Alley Spring approach",
+          "MO H NN — Roberts Field access",
+          "Jerktail Landing gravel road",
+          "Pig Trail — Arkansas 23"
+        ],
+        "geographicSuggestion": [
+          "MO H NN — Roberts Field access",
+          "Jerktail Landing gravel road",
+          "MO 19 — Eminence Current River",
+          "MO 106 — Alley Spring approach",
+          "Pig Trail — Arkansas 23"
+        ],
+        "relativeDistancePenaltyReduction": 0.036931,
+        "note": "Route suggestion, not applied. Keep boss last and Tower Hill first. Same race set; sequencing changes which race is available next. Existing branch prerequisites remain raceRef keyed."
+      }
+    },
+    "Data Center City": {
+      "currentStage": 6,
+      "screenId": "campaign-hub-6",
+      "bossRef": "Data Center City",
+      "bossNodeId": "stop-5",
+      "nodesByRace": {
+        "IL 100 — Great River Road bluffs": {
+          "id": "stop-0",
+          "lat": 38.94,
+          "lon": -90.3,
+          "place": "IL 100 — Great River Road bluffs",
+          "stateCode": "IL",
+          "source": "data/server-storage/files/races/IL 100 %E2%80%94 Great River Road bluffs/document.json#race.location",
+          "x": 0.270756,
+          "y": 0.384811
+        },
+        "MO 94 — Defiance Augusta": {
+          "id": "stop-1",
+          "lat": 38.64,
+          "lon": -90.8,
+          "place": "MO 94 — Defiance / Augusta",
+          "stateCode": "MO",
+          "source": "data/server-storage/files/races/MO 94 %E2%80%94 Defiance Augusta/document.json#race.location",
+          "x": 0.1,
+          "y": 0.785722
+        },
+        "World Wide Technology Raceway — road course": {
+          "id": "stop-2",
+          "lat": 38.65,
+          "lon": -90.135,
+          "place": "World Wide Technology Raceway — road course",
+          "stateCode": "IL",
+          "source": "data/server-storage/files/races/World Wide Technology Raceway %E2%80%94 road course/document.json#race.location",
+          "x": 0.63856,
+          "y": 0.647196,
+          "sharedLocation": true
+        },
+        "I-70 — Stan Musial Veterans Memorial Bridge": {
+          "id": "stop-3",
+          "lat": 38.65,
+          "lon": -90.18,
+          "place": "I-70 — Stan Musial Veterans Memorial Bridge",
+          "stateCode": "IL",
+          "source": "data/server-storage/files/races/I-70 %E2%80%94 Stan Musial Veterans Memorial Bridge/document.json#race.location",
+          "x": 0.545818,
+          "y": 0.697196
+        },
+        "St. Louis, MO — Landmark Run": {
+          "id": "stop-4",
+          "lat": 38.635,
+          "lon": -90.215,
+          "place": "St. Louis",
+          "stateCode": "MO",
+          "source": "data/server-storage/files/races/St. Louis%2C MO %E2%80%94 Landmark Run/document.json#race.location",
+          "x": 0.455816,
+          "y": 0.87
+        },
+        "Data Center City": {
+          "id": "stop-5",
+          "lat": 38.71,
+          "lon": -90.22,
+          "place": "Data Center City",
+          "stateCode": "MO",
+          "source": "data/server-storage/files/races/Data Center City/document.json#race.location",
+          "approximation": "Fictional Data Center City: saved north St. Louis-area proxy; not a real venue.",
+          "x": 0.383472,
+          "y": 0.568924
+        },
+        "Chicago, IL — Landmark Run": {
+          "id": "stop-6",
+          "lat": 41.885,
+          "lon": -87.628,
+          "place": "Chicago",
+          "stateCode": "IL",
+          "source": "data/server-storage/files/races/Chicago%2C IL %E2%80%94 Landmark Run/document.json#race.location",
+          "x": 0.9,
+          "y": 0.1
+        },
+        "Gateway Kartplex — WWT complex": {
+          "id": "stop-7",
+          "lat": 38.65,
+          "lon": -90.135,
+          "place": "Gateway Kartplex — WWT complex",
+          "stateCode": "IL",
+          "source": "data/server-storage/files/races/Gateway Kartplex %E2%80%94 WWT complex/document.json#race.location",
+          "x": 0.63856,
+          "y": 0.747196,
+          "sharedLocation": true
+        }
+      },
+      "minimumNormalizedSeparation": 0.1,
+      "axisDetailMix": 0.52,
+      "route": {
+        "authored": [
+          "IL 100 — Great River Road bluffs",
+          "MO 94 — Defiance Augusta",
+          "World Wide Technology Raceway — road course",
+          "I-70 — Stan Musial Veterans Memorial Bridge",
+          "St. Louis, MO — Landmark Run"
+        ],
+        "geographicSuggestion": [
+          "World Wide Technology Raceway — road course",
+          "I-70 — Stan Musial Veterans Memorial Bridge",
+          "St. Louis, MO — Landmark Run",
+          "IL 100 — Great River Road bluffs",
+          "MO 94 — Defiance Augusta"
+        ],
+        "relativeDistancePenaltyReduction": -0.033127,
+        "note": "Route suggestion, not applied. Keep boss last and Tower Hill first. Same race set; sequencing changes which race is available next. Existing branch prerequisites remain raceRef keyed."
+      }
+    },
+    "Historic Route 66": {
+      "currentStage": 7,
+      "screenId": "campaign-hub-7",
+      "bossRef": "Historic Route 66",
+      "bossNodeId": "stop-5",
+      "nodesByRace": {
+        "Route 66 — Bridgeport Pony Bridge, Oklahoma": {
+          "id": "stop-0",
+          "lat": 35.54,
+          "lon": -98.32,
+          "place": "Route 66 — Bridgeport Pony Bridge, Oklahoma",
+          "stateCode": "OK",
+          "source": "data/server-storage/files/races/Route 66 %E2%80%94 Bridgeport Pony Bridge%2C Oklahoma/document.json#race.location",
+          "x": 0.769603,
+          "y": 0.218969
+        },
+        "Old Route 66 — Shamrock McLean": {
+          "id": "stop-1",
+          "lat": 35.23,
+          "lon": -100.5,
+          "place": "Old Route 66 — Shamrock / McLean",
+          "stateCode": "TX",
+          "source": "data/server-storage/files/races/Old Route 66 %E2%80%94 Shamrock McLean/document.json#race.location",
+          "x": 0.513184,
+          "y": 0.4679
+        },
+        "Amarillo — Historic 6th Avenue alignment": {
+          "id": "stop-2",
+          "lat": 35.21,
+          "lon": -101.87,
+          "place": "Amarillo — Historic 6th Avenue alignment",
+          "stateCode": "TX",
+          "source": "data/server-storage/files/races/Amarillo %E2%80%94 Historic 6th Avenue alignment/document.json#race.location",
+          "x": 0.292524,
+          "y": 0.629862
+        },
+        "Palo Duro Canyon — Park Road 5": {
+          "id": "stop-3",
+          "lat": 34.96,
+          "lon": -101.68,
+          "place": "Palo Duro Canyon — Park Road 5",
+          "stateCode": "TX",
+          "source": "data/server-storage/files/races/Palo Duro Canyon %E2%80%94 Park Road 5/document.json#race.location",
+          "x": 0.375046,
+          "y": 0.87
+        },
+        "Old Route 66 — Adrian Glenrio": {
+          "id": "stop-4",
+          "lat": 35.18,
+          "lon": -102.95,
+          "place": "Old Route 66 — Adrian / Glenrio",
+          "stateCode": "TX",
+          "source": "data/server-storage/files/races/Old Route 66 %E2%80%94 Adrian Glenrio/document.json#race.location",
+          "x": 0.1,
+          "y": 0.727366
+        },
+        "Historic Route 66": {
+          "id": "stop-5",
+          "lat": 35.22,
+          "lon": -99.99,
+          "place": "Historic Route 66",
+          "stateCode": "OK",
+          "source": "data/server-storage/files/races/Historic Route 66/document.json#race.location",
+          "x": 0.6155,
+          "y": 0.548881
+        },
+        "Hallett Motor Racing Circuit — Jennings, Oklahoma": {
+          "id": "stop-6",
+          "lat": 36.22,
+          "lon": -96.59,
+          "place": "Hallett Motor Racing Circuit — Jennings, Oklahoma",
+          "stateCode": "OK",
+          "source": "data/server-storage/files/races/Hallett Motor Racing Circuit %E2%80%94 Jennings%2C Oklahoma/document.json#race.location",
+          "x": 0.9,
+          "y": 0.1
+        },
+        "Old Route 66 — Vega Adrian": {
+          "id": "stop-7",
+          "lat": 35.26,
+          "lon": -102.6,
+          "place": "Old Route 66 — Vega / Adrian",
+          "stateCode": "TX",
+          "source": "data/server-storage/files/races/Old Route 66 %E2%80%94 Vega Adrian/document.json#race.location",
+          "x": 0.186858,
+          "y": 0.370397
+        }
+      },
+      "minimumNormalizedSeparation": 0.130485,
+      "axisDetailMix": 0.64,
+      "route": {
+        "authored": [
+          "Route 66 — Bridgeport Pony Bridge, Oklahoma",
+          "Old Route 66 — Shamrock McLean",
+          "Amarillo — Historic 6th Avenue alignment",
+          "Palo Duro Canyon — Park Road 5",
+          "Old Route 66 — Adrian Glenrio"
+        ],
+        "geographicSuggestion": [
+          "Route 66 — Bridgeport Pony Bridge, Oklahoma",
+          "Old Route 66 — Shamrock McLean",
+          "Palo Duro Canyon — Park Road 5",
+          "Amarillo — Historic 6th Avenue alignment",
+          "Old Route 66 — Adrian Glenrio"
+        ],
+        "relativeDistancePenaltyReduction": 0.050444,
+        "note": "Route suggestion, not applied. Keep boss last and Tower Hill first. Same race set; sequencing changes which race is available next. Existing branch prerequisites remain raceRef keyed."
+      }
+    },
+    "Pikes Peak Highway": {
+      "currentStage": 8,
+      "screenId": "campaign-hub-8",
+      "bossRef": "Pikes Peak Highway",
+      "bossNodeId": "stop-5",
+      "nodesByRace": {
+        "Garden of the Gods — paved park road": {
+          "id": "stop-0",
+          "lat": 38.88,
+          "lon": -104.88,
+          "place": "Garden of the Gods — paved park road",
+          "stateCode": "CO",
+          "source": "data/server-storage/files/races/Garden of the Gods %E2%80%94 paved park road/document.json#race.location",
+          "x": 0.58173,
+          "y": 0.486529
+        },
+        "Gold Camp Road — Colorado Springs": {
+          "id": "stop-1",
+          "lat": 38.79,
+          "lon": -104.9,
+          "place": "Gold Camp Road — Colorado Springs",
+          "stateCode": "CO",
+          "source": "data/server-storage/files/races/Gold Camp Road %E2%80%94 Colorado Springs/document.json#race.location",
+          "x": 0.491995,
+          "y": 0.75575
+        },
+        "US 24 — Ute Pass Woodland Park": {
+          "id": "stop-2",
+          "lat": 38.91,
+          "lon": -104.98,
+          "place": "US 24 — Ute Pass / Woodland Park",
+          "stateCode": "CO",
+          "source": "data/server-storage/files/races/US 24 %E2%80%94 Ute Pass Woodland Park/document.json#race.location",
+          "x": 0.38717,
+          "y": 0.396805
+        },
+        "Phantom Canyon Road — Gold Belt Tour": {
+          "id": "stop-3",
+          "lat": 38.61,
+          "lon": -105.12,
+          "place": "Phantom Canyon Road — Gold Belt Tour",
+          "stateCode": "CO",
+          "source": "data/server-storage/files/races/Phantom Canyon Road %E2%80%94 Gold Belt Tour/document.json#race.location",
+          "x": 0.188146,
+          "y": 0.87
+        },
+        "CO 67 — Woodland Park Cripple Creek": {
+          "id": "stop-4",
+          "lat": 38.83,
+          "lon": -105.14,
+          "place": "CO 67 — Woodland Park / Cripple Creek",
+          "stateCode": "CO",
+          "source": "data/server-storage/files/races/CO 67 %E2%80%94 Woodland Park Cripple Creek/document.json#race.location",
+          "x": 0.1,
+          "y": 0.663653
+        },
+        "Pikes Peak Highway": {
+          "id": "stop-5",
+          "lat": 38.86,
+          "lon": -105.04,
+          "place": "Pikes Peak Highway",
+          "stateCode": "CO",
+          "source": "data/server-storage/files/races/Pikes Peak Highway/document.json#race.location",
+          "x": 0.288737,
+          "y": 0.573676
+        },
+        "Bayard — Road 77 to City Park": {
+          "id": "stop-6",
+          "lat": 41.76,
+          "lon": -103.32,
+          "place": "Bayard — Road 77 to City Park",
+          "stateCode": "NE",
+          "source": "data/server-storage/files/races/Bayard %E2%80%94 Road 77 to City Park/document.json#race.location",
+          "x": 0.812985,
+          "y": 0.190785
+        },
+        "Squaw Creek — Highland Center": {
+          "id": "stop-7",
+          "lat": 42.62,
+          "lon": -103.25,
+          "place": "Squaw Creek — Highland Center",
+          "stateCode": "NE",
+          "source": "data/server-storage/files/races/Squaw Creek %E2%80%94 Highland Center/document.json#race.location",
+          "approximation": "Use authored northwest Nebraska regional proxy; this placement does not authenticate individual road endpoints.",
+          "x": 0.9,
+          "y": 0.1
+        }
+      },
+      "minimumNormalizedSeparation": 0.125751,
+      "axisDetailMix": 0.74,
+      "route": {
+        "authored": [
+          "Garden of the Gods — paved park road",
+          "Gold Camp Road — Colorado Springs",
+          "US 24 — Ute Pass Woodland Park",
+          "Phantom Canyon Road — Gold Belt Tour",
+          "CO 67 — Woodland Park Cripple Creek"
+        ],
+        "geographicSuggestion": [
+          "Garden of the Gods — paved park road",
+          "Gold Camp Road — Colorado Springs",
+          "US 24 — Ute Pass Woodland Park",
+          "Phantom Canyon Road — Gold Belt Tour",
+          "CO 67 — Woodland Park Cripple Creek"
+        ],
+        "relativeDistancePenaltyReduction": 0,
+        "note": "Route suggestion, not applied. Keep boss last and Tower Hill first. Same race set; sequencing changes which race is available next. Existing branch prerequisites remain raceRef keyed."
+      }
+    },
+    "Moki Dugway": {
+      "currentStage": 9,
+      "screenId": "campaign-hub-9",
+      "bossRef": "Moki Dugway",
+      "bossNodeId": "stop-5",
+      "nodesByRace": {
+        "UT 316 — Goosenecks State Park Road": {
+          "id": "stop-0",
+          "lat": 37.18,
+          "lon": -109.92,
+          "place": "UT 316 — Goosenecks State Park Road",
+          "stateCode": "UT",
+          "source": "data/server-storage/files/races/UT 316 %E2%80%94 Goosenecks State Park Road/document.json#race.location",
+          "x": 0.589119,
+          "y": 0.771372
+        },
+        "Valley of the Gods Road — San Juan CR 242": {
+          "id": "stop-1",
+          "lat": 37.29,
+          "lon": -109.83,
+          "place": "Valley of the Gods Road — San Juan CR 242",
+          "stateCode": "UT",
+          "source": "data/server-storage/files/races/Valley of the Gods Road %E2%80%94 San Juan CR 242/document.json#race.location",
+          "x": 0.716277,
+          "y": 0.512128
+        },
+        "UT 95 — Comb Ridge Cedar Mesa": {
+          "id": "stop-2",
+          "lat": 37.54,
+          "lon": -109.73,
+          "place": "UT 95 — Comb Ridge / Cedar Mesa",
+          "stateCode": "UT",
+          "source": "data/server-storage/files/races/UT 95 %E2%80%94 Comb Ridge Cedar Mesa/document.json#race.location",
+          "x": 0.9,
+          "y": 0.352755
+        },
+        "Muley Point Road — CR 241": {
+          "id": "stop-3",
+          "lat": 37.25,
+          "lon": -109.98,
+          "place": "Muley Point Road — CR 241",
+          "stateCode": "UT",
+          "source": "data/server-storage/files/races/Muley Point Road %E2%80%94 CR 241/document.json#race.location",
+          "x": 0.404521,
+          "y": 0.671058
+        },
+        "Burr Trail switchbacks — Capitol Reef": {
+          "id": "stop-4",
+          "lat": 37.85,
+          "lon": -111.03,
+          "place": "Burr Trail switchbacks — Capitol Reef",
+          "stateCode": "UT",
+          "source": "data/server-storage/files/races/Burr Trail switchbacks %E2%80%94 Capitol Reef/document.json#race.location",
+          "x": 0.1,
+          "y": 0.226488
+        },
+        "Moki Dugway": {
+          "id": "stop-5",
+          "lat": 37.276,
+          "lon": -109.94,
+          "place": "Moki Dugway",
+          "stateCode": "UT",
+          "source": "data/server-storage/files/races/Moki Dugway/document.json#race.location",
+          "x": 0.502467,
+          "y": 0.588884
+        },
+        "Shafer Trail — Canyonlands National Park": {
+          "id": "stop-6",
+          "lat": 38.46,
+          "lon": -109.8,
+          "place": "Shafer Trail — Canyonlands National Park",
+          "stateCode": "UT",
+          "source": "data/server-storage/files/races/Shafer Trail %E2%80%94 Canyonlands National Park/document.json#race.location",
+          "x": 0.802733,
+          "y": 0.1
+        },
+        "US 163 — Mexican Hat Monument Valley approach": {
+          "id": "stop-7",
+          "lat": 37.1014683,
+          "lon": -109.9908441,
+          "place": "US 163 — Mexican Hat / Monument Valley approach",
+          "stateCode": "UT",
+          "source": "data/server-storage/files/races/US 163 %E2%80%94 Mexican Hat Monument Valley approach/document.json#race.location",
+          "x": 0.325405,
+          "y": 0.87
+        }
+      },
+      "minimumNormalizedSeparation": 0.127851,
+      "axisDetailMix": 0.64,
+      "route": {
+        "authored": [
+          "UT 316 — Goosenecks State Park Road",
+          "Valley of the Gods Road — San Juan CR 242",
+          "UT 95 — Comb Ridge Cedar Mesa",
+          "Muley Point Road — CR 241",
+          "Burr Trail switchbacks — Capitol Reef"
+        ],
+        "geographicSuggestion": [
+          "UT 95 — Comb Ridge Cedar Mesa",
+          "Valley of the Gods Road — San Juan CR 242",
+          "UT 316 — Goosenecks State Park Road",
+          "Muley Point Road — CR 241",
+          "Burr Trail switchbacks — Capitol Reef"
+        ],
+        "relativeDistancePenaltyReduction": 0.114894,
+        "note": "Route suggestion, not applied. Keep boss last and Tower Hill first. Same race set; sequencing changes which race is available next. Existing branch prerequisites remain raceRef keyed."
+      }
+    },
+    "Oak Creek Canyon": {
+      "currentStage": 10,
+      "screenId": "campaign-hub-10",
+      "bossRef": "Oak Creek Canyon",
+      "bossNodeId": "stop-5",
+      "nodesByRace": {
+        "SR 179 — Red Rock Scenic Byway": {
+          "id": "stop-0",
+          "lat": 34.8,
+          "lon": -111.77,
+          "place": "SR 179 — Red Rock Scenic Byway",
+          "stateCode": "AZ",
+          "source": "data/server-storage/files/races/SR 179 %E2%80%94 Red Rock Scenic Byway/document.json#race.location",
+          "x": 0.78687,
+          "y": 0.509931
+        },
+        "Boynton Pass Road FR 525 loop": {
+          "id": "stop-1",
+          "lat": 34.89,
+          "lon": -111.91,
+          "place": "Boynton Pass Road / FR 525 loop",
+          "stateCode": "AZ",
+          "source": "data/server-storage/files/races/Boynton Pass Road FR 525 loop/document.json#race.location",
+          "x": 0.515976,
+          "y": 0.357867
+        },
+        "Upper Lower Red Rock Loop Road": {
+          "id": "stop-2",
+          "lat": 34.83,
+          "lon": -111.84,
+          "place": "Upper / Lower Red Rock Loop Road",
+          "stateCode": "AZ",
+          "source": "data/server-storage/files/races/Upper Lower Red Rock Loop Road/document.json#race.location",
+          "x": 0.634042,
+          "y": 0.458961
+        },
+        "Schnebly Hill Road — Sedona": {
+          "id": "stop-3",
+          "lat": 34.87,
+          "lon": -111.72,
+          "place": "Schnebly Hill Road — Sedona",
+          "stateCode": "AZ",
+          "source": "data/server-storage/files/races/Schnebly Hill Road %E2%80%94 Sedona/document.json#race.location",
+          "x": 0.9,
+          "y": 0.401419
+        },
+        "SR 89A — Mingus Mountain Jerome": {
+          "id": "stop-4",
+          "lat": 34.69,
+          "lon": -112.14,
+          "place": "SR 89A — Mingus Mountain / Jerome",
+          "stateCode": "AZ",
+          "source": "data/server-storage/files/races/SR 89A %E2%80%94 Mingus Mountain Jerome/document.json#race.location",
+          "x": 0.335804,
+          "y": 0.60415
+        },
+        "Oak Creek Canyon": {
+          "id": "stop-5",
+          "lat": 35,
+          "lon": -111.74,
+          "place": "Oak Creek Canyon",
+          "stateCode": "AZ",
+          "source": "data/server-storage/files/races/Oak Creek Canyon/document.json#race.location",
+          "x": 0.849876,
+          "y": 0.269342
+        },
+        "Grand Canyon — Diamond Creek Descent": {
+          "id": "stop-6",
+          "lat": 35.665,
+          "lon": -113.37,
+          "place": "Grand Canyon — Diamond Creek Descent",
+          "stateCode": "AZ",
+          "source": "data/server-storage/files/races/Grand Canyon %E2%80%94 Diamond Creek Descent/document.json#race.location",
+          "x": 0.1,
+          "y": 0.1
+        },
+        "Podium Club at Attesa — Casa Grande": {
+          "id": "stop-7",
+          "lat": 32.8176383,
+          "lon": -111.8347568,
+          "place": "Podium Club at Attesa — Casa Grande",
+          "stateCode": "AZ",
+          "source": "data/server-storage/files/races/Podium Club at Attesa %E2%80%94 Casa Grande/document.json#race.location",
+          "x": 0.673117,
+          "y": 0.87
+        }
+      },
+      "minimumNormalizedSeparation": 0.141269,
+      "axisDetailMix": 0.28,
+      "route": {
+        "authored": [
+          "SR 179 — Red Rock Scenic Byway",
+          "Boynton Pass Road FR 525 loop",
+          "Upper Lower Red Rock Loop Road",
+          "Schnebly Hill Road — Sedona",
+          "SR 89A — Mingus Mountain Jerome"
+        ],
+        "geographicSuggestion": [
+          "Schnebly Hill Road — Sedona",
+          "SR 179 — Red Rock Scenic Byway",
+          "Upper Lower Red Rock Loop Road",
+          "Boynton Pass Road FR 525 loop",
+          "SR 89A — Mingus Mountain Jerome"
+        ],
+        "relativeDistancePenaltyReduction": 0.241626,
+        "note": "Route suggestion, not applied. Keep boss last and Tower Hill first. Same race set; sequencing changes which race is available next. Existing branch prerequisites remain raceRef keyed."
+      }
+    },
+    "Angeles Crest Highway": {
+      "currentStage": 11,
+      "screenId": "campaign-hub-11",
+      "bossRef": "Angeles Crest Highway",
+      "bossNodeId": "stop-5",
+      "nodesByRace": {
+        "Los Angeles, CA — Landmark Run": {
+          "id": "stop-0",
+          "lat": 34.052,
+          "lon": -118.248,
+          "place": "Los Angeles",
+          "stateCode": "CA",
+          "source": "data/server-storage/files/races/Los Angeles%2C CA %E2%80%94 Landmark Run/document.json#race.location",
+          "x": 0.332782,
+          "y": 0.87
+        },
+        "Big Tujunga Canyon Road": {
+          "id": "stop-1",
+          "lat": 34.29,
+          "lon": -118.23,
+          "place": "Big Tujunga Canyon Road",
+          "stateCode": "CA",
+          "source": "data/server-storage/files/races/Big Tujunga Canyon Road/document.json#race.location",
+          "x": 0.407586,
+          "y": 0.458954
+        },
+        "Willow Springs — Horse Thief Mile": {
+          "id": "stop-2",
+          "lat": 34.872,
+          "lon": -118.264,
+          "place": "Willow Springs",
+          "stateCode": "CA",
+          "source": "data/server-storage/files/races/Willow Springs %E2%80%94 Horse Thief Mile/document.json#race.location",
+          "x": 0.200642,
+          "y": 0.085,
+          "sharedLocation": true
+        },
+        "Glendora Mountain Road": {
+          "id": "stop-3",
+          "lat": 34.19,
+          "lon": -117.82,
+          "place": "Glendora Mountain Road",
+          "stateCode": "CA",
+          "source": "data/server-storage/files/races/Glendora Mountain Road/document.json#race.location",
+          "x": 0.814927,
+          "y": 0.695763
+        },
+        "Glendora Ridge Road": {
+          "id": "stop-4",
+          "lat": 34.23,
+          "lon": -117.73,
+          "place": "Glendora Ridge Road",
+          "stateCode": "CA",
+          "source": "data/server-storage/files/races/Glendora Ridge Road/document.json#race.location",
+          "x": 0.9,
+          "y": 0.58795
+        },
+        "Angeles Crest Highway": {
+          "id": "stop-5",
+          "lat": 34.29,
+          "lon": -118.05,
+          "place": "Angeles Crest Highway",
+          "stateCode": "CA",
+          "source": "data/server-storage/files/races/Angeles Crest Highway/document.json#race.location",
+          "x": 0.640042,
+          "y": 0.458954
+        },
+        "Willow Springs — Streets of Willow": {
+          "id": "stop-6",
+          "lat": 34.872,
+          "lon": -118.264,
+          "place": "Willow Springs",
+          "stateCode": "CA",
+          "source": "data/server-storage/files/races/Willow Springs %E2%80%94 Streets of Willow/document.json#race.location",
+          "x": 0.320642,
+          "y": 0.14,
+          "sharedLocation": true
+        },
+        "Little Tujunga Canyon Road": {
+          "id": "stop-7",
+          "lat": 34.33,
+          "lon": -118.37,
+          "place": "Little Tujunga Canyon Road",
+          "stateCode": "CA",
+          "source": "data/server-storage/files/races/Little Tujunga Canyon Road/document.json#race.location",
+          "x": 0.1,
+          "y": 0.360322
+        }
+      },
+      "minimumNormalizedSeparation": 0.132004,
+      "axisDetailMix": 0.4,
+      "route": {
+        "authored": [
+          "Los Angeles, CA — Landmark Run",
+          "Big Tujunga Canyon Road",
+          "Willow Springs — Horse Thief Mile",
+          "Glendora Mountain Road",
+          "Glendora Ridge Road"
+        ],
+        "geographicSuggestion": [
+          "Glendora Ridge Road",
+          "Glendora Mountain Road",
+          "Los Angeles, CA — Landmark Run",
+          "Big Tujunga Canyon Road",
+          "Willow Springs — Horse Thief Mile"
+        ],
+        "relativeDistancePenaltyReduction": 0.182678,
+        "note": "Route suggestion, not applied. Keep boss last and Tower Hill first. Same race set; sequencing changes which race is available next. Existing branch prerequisites remain raceRef keyed."
+      }
+    }
+  }
+}

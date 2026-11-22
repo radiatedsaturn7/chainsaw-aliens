@@ -1,3 +1,4 @@
+import {campaignTravelOrder} from './CampaignItinerary.js';
 import {raceCompletionKey} from './MenuWorldMap.js';
 
 export const AMERICA_OPENING_RACE = 'Providence, RI — Landmark Run';
@@ -5,7 +6,7 @@ export const AMERICA_ROUTE_NAME = 'Middle Route';
 // Geographic positions, with explicit ordered connections/unlocks. The catalog
 // owns the itinerary; no fixed stage count or synthetic endpoint is required.
 export function createAmericaWorldMap(catalog) {
- const stages=catalog.filter(s=>s.branch==='middle').sort((a,b)=>a.stage-b.stage);
+ const stages=catalog.filter(s=>s.branch==='middle').sort((a,b)=>campaignTravelOrder(a.stage)-campaignTravelOrder(b.stage));
  const lons=stages.map(s=>s.location.lon),lats=stages.map(s=>s.location.lat);
  const west=Math.min(...lons),east=Math.max(...lons),south=Math.min(...lats),north=Math.max(...lats);
  const nodes=stages.map((stage,i)=>({id:stage.id,kind:'race',label:stage.label||stage.name,raceRef:stage.name,

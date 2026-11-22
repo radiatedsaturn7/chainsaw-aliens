@@ -13,14 +13,15 @@ for(const viewport of [{width:844,height:390},{width:390,height:844}]){
    const screen=doc.screens.find(s=>s.id==='campaign-hub-1'),map=screen.elements.find(e=>e.type==='world-map');
    const region=doc.parameters.campaignProgression.regions[0],parameters={raceRef:region.mainPath[2]};
    for(const ref of region.mainPath.slice(0,2))parameters[raceCompletionKey(ref)]=true;
+   const art=new Image();art.src=`/assets/campaign-art/maps/${map.artRef}.png`;await art.decode();
    const canvas=document.querySelector('canvas');canvas.width=innerWidth;canvas.height=innerHeight;
-   drawMenuScreen(canvas.getContext('2d'),{x:0,y:0,w:innerWidth,h:innerHeight},doc,screen,parameters,{resources:{art:()=>null},editing:true});
+   drawMenuScreen(canvas.getContext('2d'),{x:0,y:0,w:innerWidth,h:innerHeight},doc,screen,parameters,{resources:{art:ref=>ref===map.artRef?art:null},editing:true});
    let target;const player=Object.create(MenuPlayer.prototype);
    player.resources={};player.flow={busy:false,screen,document:doc,parameters,setParameter(k,v){parameters[k]=v},run:a=>{target=a.target}};
    await player.activate(map,1,{choose:true});
    return {target,count:map.nodes.length,unlocked:worldMapNodes(map,{},doc,parameters).filter(n=>!n.locked).length,quit:player.confirmWorldMapQuit()};
   });
-  expect(result).toEqual({target:'garage',count:8,unlocked:4,quit:false});
+  expect(result).toEqual({target:'garage',count:8,unlocked:3,quit:false});
   await page.screenshot({path:info.outputPath('campaign-path.png')});
  });
 }

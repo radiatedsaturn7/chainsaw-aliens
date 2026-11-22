@@ -2523,7 +2523,18 @@
       "environment-rally-north-road-evening-v1": "art/environment-rally-north-road-evening-v1/document.json",
       "environment-rally-shoreline-snow-noon-v1": "art/environment-rally-shoreline-snow-noon-v1/document.json",
       "environment-rally-svullrya-snow-morning-v1": "art/environment-rally-svullrya-snow-morning-v1/document.json",
-      "environment-nz-whaanga-tasman-morning-qav1b": "art/environment-nz-whaanga-tasman-morning-qav1b/document.json"
+      "environment-nz-whaanga-tasman-morning-qav1b": "art/environment-nz-whaanga-tasman-morning-qav1b/document.json",
+      "campaign-map-angeles-crest": "art/campaign-map-angeles-crest/document.json",
+      "campaign-map-data-center-city": "art/campaign-map-data-center-city/document.json",
+      "campaign-map-laurel-highlands": "art/campaign-map-laurel-highlands/document.json",
+      "campaign-map-moki-dugway": "art/campaign-map-moki-dugway/document.json",
+      "campaign-map-mount-washington": "art/campaign-map-mount-washington/document.json",
+      "campaign-map-oak-creek-canyon": "art/campaign-map-oak-creek-canyon/document.json",
+      "campaign-map-ohio-river": "art/campaign-map-ohio-river/document.json",
+      "campaign-map-ozarks": "art/campaign-map-ozarks/document.json",
+      "campaign-map-pikes-peak": "art/campaign-map-pikes-peak/document.json",
+      "campaign-map-providence": "art/campaign-map-providence/document.json",
+      "campaign-map-route-66": "art/campaign-map-route-66/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

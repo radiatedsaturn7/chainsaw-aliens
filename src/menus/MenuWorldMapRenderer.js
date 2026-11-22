@@ -1,19 +1,21 @@
 import {drawMapRoad,advanceMapCar,mapRoadPixels} from './MenuMapRoads.js';
 import {drawCampaignMapLandscape} from './CampaignMapLandscape.js';
 import {worldMapNodes,worldMapConnections,worldMapRaceNodes,worldMapNodePoint,worldMapNodeRadius,normalizeWorldMapStyle,worldMapSelection} from './MenuWorldMap.js';
-export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{drawText,fontFamily='system-ui',time=0,widgetStates=new Map(),drawCar=null,editing=false}={}){
+export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{drawText,fontFamily='system-ui',time=0,widgetStates=new Map(),drawCar=null,editing=false,mapBackground=null}={}){
  const nodes=worldMapNodes(element,resources,document,parameters),style=normalizeWorldMapStyle(element.mapStyle);
  const regional=element.property==='campaign-path';
- if(regional&&!element.artRef){const region=document?.parameters?.campaignProgression?.regions?.find(r=>r.bossRef===element.assetRef);drawCampaignMapLandscape(ctx,b,region?.stage||1);}
+ if(regional&&!mapBackground){const region=document?.parameters?.campaignProgression?.regions?.find(r=>r.bossRef===element.assetRef);drawCampaignMapLandscape(ctx,{...b,h:Math.max(1,b.h-36)},region?.stage||1);}
  const selected=worldMapSelection(nodes,value)?.raceRef;
  const roadNodes=nodes.map(n=>{const p=worldMapNodePoint(n,b,element);return {...n,x:(p.x-b.x)/b.w,y:(p.y-b.y)/Math.max(1,b.h-36)};});
  const positions=new Map(nodes.map(n=>[n.id,worldMapNodePoint(n,b,element)]));
  for(const link of worldMapConnections(element,nodes)){
-  const a=positions.get(link.from),c=positions.get(link.to),width=link.width??style.lineWidth,pattern=link.pattern||style.linePattern;
+  const width=link.width??style.lineWidth,pattern=link.pattern||style.linePattern;
   if(!width)continue;
   ctx.save();ctx.strokeStyle=link.color||style.lineColor;ctx.lineWidth=width;ctx.lineCap='round';
   ctx.setLineDash?.(pattern==='dashed'?[width*4,width*3]:pattern==='dotted'?[width,width*2]:[]);
-  drawMapRoad(ctx,link,roadNodes.find(n=>n.id===link.from),roadNodes.find(n=>n.id===link.to),b);ctx.stroke();ctx.restore();
+  drawMapRoad(ctx,link,roadNodes.find(n=>n.id===link.from),roadNodes.find(n=>n.id===link.to),b);
+  if(regional){const line=ctx.strokeStyle;ctx.strokeStyle='#121d25';ctx.lineWidth=width+3;ctx.stroke();ctx.strokeStyle=line;ctx.lineWidth=width;}
+  ctx.stroke();ctx.restore();
  }
  let raceIndex=0;
  for(const node of nodes){

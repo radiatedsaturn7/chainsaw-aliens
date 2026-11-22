@@ -1,3 +1,4 @@
+import {campaignTravelOrder} from './CampaignItinerary.js';
 import {authorCampaignPath,campaignPathScreen} from './CampaignPaths.js';
 import {normalizeMenuDocument} from './MenuDocument.js';
 
@@ -77,5 +78,6 @@ export function createCampaignHubMenus(catalog, research, installed = []) {
    pages(`${id}-${category}`,`${boss.label||boss.name} · ${label}`,rows,gate);
   }
  }
+ progression.regions.sort((a,b)=>campaignTravelOrder(a.stage)-campaignTravelOrder(b.stage));
  return {screens:normalizeMenuDocument({screens:[...screens,{id:'garage',elements:[]}]}).screens.filter(s=>s.id!=='garage'),hubs,sideGates,progression};
 }

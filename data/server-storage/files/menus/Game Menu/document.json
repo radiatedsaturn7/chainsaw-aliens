@@ -282,10 +282,10 @@
           "bossClears": 5,
           "mainPath": [
             "Tower Hill Road",
-            "RI 116 — North Smithfield Scituate",
             "Blue Hills — Reservation Parkways",
-            "Pachaug State Forest — public gravel access roads",
-            "RI 44 — Putnam Pike Glocester"
+            "RI 116 — North Smithfield Scituate",
+            "RI 44 — Putnam Pike Glocester",
+            "Pachaug State Forest — public gravel access roads"
           ],
           "branches": [
             {
@@ -320,11 +320,11 @@
           "clearsPerBatch": 3,
           "bossClears": 5,
           "mainPath": [
-            "Kancamagus Highway — NH 112",
-            "Team O’Neil-inspired Rally Stage (2994)",
-            "Bear Notch Road — Bartlett",
             "Hurricane Mountain Road — Conway",
-            "Pinkham Notch — NH 16"
+            "Pinkham Notch — NH 16",
+            "Bear Notch Road — Bartlett",
+            "Kancamagus Highway — NH 112",
+            "Team O’Neil-inspired Rally Stage (2994)"
           ],
           "branches": [
             {
@@ -368,10 +368,10 @@
           "bossClears": 5,
           "mainPath": [
             "Brandywine Valley — Montchanin Road",
-            "PA 711 — Normalville Champion",
             "Forbes State Forest — designated gravel roads",
-            "US 40 — Chalk Hill Summit",
-            "County Line Road — Seven Springs"
+            "County Line Road — Seven Springs",
+            "PA 711 — Normalville Champion",
+            "US 40 — Chalk Hill Summit"
           ],
           "branches": [
             {
@@ -421,10 +421,10 @@
           "clearsPerBatch": 3,
           "bossClears": 5,
           "mainPath": [
+            "OH 536 — Ohio River hills",
+            "OH 26 — Covered Bridge Scenic Byway",
             "OH 550 — Barlow approach",
             "Washington County western covered-bridge gravel loop",
-            "OH 26 — Covered Bridge Scenic Byway",
-            "OH 536 — Ohio River hills",
             "OH 555 — Triple Nickel"
           ],
           "branches": [
@@ -435,59 +435,6 @@
             {
               "raceRef": "Charleston, WV — Landmark Run",
               "after": "OH 536 — Ohio River hills"
-            }
-          ]
-        },
-        {
-          "bossRef": "Ozark Backroads",
-          "stage": 5,
-          "events": [
-            "MO 19 — Eminence Current River",
-            "MO H NN — Roberts Field access",
-            "Birmingham, AL — Landmark Run",
-            "Ozarks International Raceway — Gravois Mills",
-            "MO 106 — Alley Spring approach",
-            "Jerktail Landing gravel road",
-            "Little Rock, AR — Landmark Run",
-            "Sebring International Raceway — Full Circuit",
-            "MO 106 — Powder Mill approach",
-            "Glade Top Trail — Mark Twain National Forest",
-            "New Orleans, LA — Landmark Run",
-            "Sebring International Raceway — Short Circuit",
-            "MO V — Two Rivers access",
-            "Jackson, MS — Landmark Run",
-            "Sebring International Raceway — Club Circuit",
-            "US 60 — Winona Van Buren",
-            "Homestead-Miami Speedway — Oval",
-            "Pig Trail — Arkansas 23",
-            "Homestead-Miami Speedway — Road Course",
-            "Natchez Trace — Tishomingo",
-            "Homestead-Miami Speedway — Modified Road Course",
-            "Daytona Tri-Oval",
-            "Daytona International Speedway — Sports Car Course",
-            "Daytona International Speedway — Stock Car Road Course",
-            "Barber Motorsports Park",
-            "Heartland Motorsports Park",
-            "NOLA Motorsports Park"
-          ],
-          "batchSize": 4,
-          "clearsPerBatch": 3,
-          "bossClears": 5,
-          "mainPath": [
-            "MO 19 — Eminence Current River",
-            "MO 106 — Alley Spring approach",
-            "MO H NN — Roberts Field access",
-            "Jerktail Landing gravel road",
-            "Pig Trail — Arkansas 23"
-          ],
-          "branches": [
-            {
-              "raceRef": "Ozarks International Raceway — Gravois Mills",
-              "after": "MO 106 — Alley Spring approach"
-            },
-            {
-              "raceRef": "MO V — Two Rivers access",
-              "after": "Jerktail Landing gravel road"
             }
           ]
         },
@@ -545,6 +492,59 @@
           ]
         },
         {
+          "bossRef": "Ozark Backroads",
+          "stage": 5,
+          "events": [
+            "MO 19 — Eminence Current River",
+            "MO H NN — Roberts Field access",
+            "Birmingham, AL — Landmark Run",
+            "Ozarks International Raceway — Gravois Mills",
+            "MO 106 — Alley Spring approach",
+            "Jerktail Landing gravel road",
+            "Little Rock, AR — Landmark Run",
+            "Sebring International Raceway — Full Circuit",
+            "MO 106 — Powder Mill approach",
+            "Glade Top Trail — Mark Twain National Forest",
+            "New Orleans, LA — Landmark Run",
+            "Sebring International Raceway — Short Circuit",
+            "MO V — Two Rivers access",
+            "Jackson, MS — Landmark Run",
+            "Sebring International Raceway — Club Circuit",
+            "US 60 — Winona Van Buren",
+            "Homestead-Miami Speedway — Oval",
+            "Pig Trail — Arkansas 23",
+            "Homestead-Miami Speedway — Road Course",
+            "Natchez Trace — Tishomingo",
+            "Homestead-Miami Speedway — Modified Road Course",
+            "Daytona Tri-Oval",
+            "Daytona International Speedway — Sports Car Course",
+            "Daytona International Speedway — Stock Car Road Course",
+            "Barber Motorsports Park",
+            "Heartland Motorsports Park",
+            "NOLA Motorsports Park"
+          ],
+          "batchSize": 4,
+          "clearsPerBatch": 3,
+          "bossClears": 5,
+          "mainPath": [
+            "MO 19 — Eminence Current River",
+            "MO 106 — Alley Spring approach",
+            "MO H NN — Roberts Field access",
+            "Jerktail Landing gravel road",
+            "Pig Trail — Arkansas 23"
+          ],
+          "branches": [
+            {
+              "raceRef": "Ozarks International Raceway — Gravois Mills",
+              "after": "MO 106 — Alley Spring approach"
+            },
+            {
+              "raceRef": "MO V — Two Rivers access",
+              "after": "Jerktail Landing gravel road"
+            }
+          ]
+        },
+        {
           "bossRef": "Historic Route 66",
           "stage": 7,
           "events": [
@@ -567,8 +567,8 @@
           "mainPath": [
             "Route 66 — Bridgeport Pony Bridge, Oklahoma",
             "Old Route 66 — Shamrock McLean",
-            "Amarillo — Historic 6th Avenue alignment",
             "Palo Duro Canyon — Park Road 5",
+            "Amarillo — Historic 6th Avenue alignment",
             "Old Route 66 — Adrian Glenrio"
           ],
           "branches": [
@@ -747,11 +747,11 @@
           "clearsPerBatch": 3,
           "bossClears": 5,
           "mainPath": [
+            "Glendora Ridge Road",
+            "Glendora Mountain Road",
             "Los Angeles, CA — Landmark Run",
             "Big Tujunga Canyon Road",
-            "Willow Springs — Horse Thief Mile",
-            "Glendora Mountain Road",
-            "Glendora Ridge Road"
+            "Willow Springs — Horse Thief Mile"
           ],
           "branches": [
             {
@@ -26152,26 +26152,26 @@
               "completedParameter": "raceCompleted.Ohio_River_Crossing"
             },
             {
-              "id": "america-middle-ozark",
-              "kind": "race",
-              "label": "Ozark Backroads",
-              "raceRef": "Ozark Backroads",
-              "x": 0.5618746466399696,
-              "y": 0.6223675220280677,
-              "unlockParameter": "raceCompleted.Ohio_River_Crossing",
-              "unlockValue": true,
-              "completedParameter": "raceCompleted.Ozark_Backroads"
-            },
-            {
               "id": "america-middle-city",
               "kind": "race",
               "label": "Data Center City",
               "raceRef": "Data Center City",
               "x": 0.584435100356145,
               "y": 0.5113420783161281,
-              "unlockParameter": "raceCompleted.Ozark_Backroads",
+              "unlockParameter": "raceCompleted.Ohio_River_Crossing",
               "unlockValue": true,
               "completedParameter": "raceCompleted.Data_Center_City"
+            },
+            {
+              "id": "america-middle-ozark",
+              "kind": "race",
+              "label": "Ozark Backroads",
+              "raceRef": "Ozark Backroads",
+              "x": 0.5618746466399696,
+              "y": 0.6223675220280677,
+              "unlockParameter": "raceCompleted.Data_Center_City",
+              "unlockValue": true,
+              "completedParameter": "raceCompleted.Ozark_Backroads"
             },
             {
               "id": "america-middle-route66",
@@ -26180,7 +26180,7 @@
               "raceRef": "Historic Route 66",
               "x": 0.40050835281922603,
               "y": 0.785142431249411,
-              "unlockParameter": "raceCompleted.Data_Center_City",
+              "unlockParameter": "raceCompleted.Ozark_Backroads",
               "unlockValue": true,
               "completedParameter": "raceCompleted.Historic_Route_66"
             },
@@ -26253,22 +26253,22 @@
               "width": 3
             },
             {
-              "id": "middle-america-middle-ozark",
-              "from": "america-middle-ohio",
-              "to": "america-middle-ozark",
-              "color": "#efc36b",
-              "width": 3
-            },
-            {
               "id": "middle-america-middle-city",
-              "from": "america-middle-ozark",
+              "from": "america-middle-ohio",
               "to": "america-middle-city",
               "color": "#efc36b",
               "width": 3
             },
             {
-              "id": "middle-america-middle-route66",
+              "id": "middle-america-middle-ozark",
               "from": "america-middle-city",
+              "to": "america-middle-ozark",
+              "color": "#efc36b",
+              "width": 3
+            },
+            {
+              "id": "middle-america-middle-route66",
+              "from": "america-middle-ozark",
               "to": "america-middle-route66",
               "color": "#efc36b",
               "width": 3
@@ -26798,7 +26798,7 @@
           "catalogThumbnail": false,
           "angleBinding": "",
           "angle": 180,
-          "imageFit": "contain",
+          "imageFit": "stretch",
           "textOutlineWidth": 0,
           "textOutlineColor": "#000000",
           "textFill": "solid",
@@ -26806,7 +26806,7 @@
           "textGradientStart": "#70baff",
           "textGradientMiddle": "#ffffff",
           "textGradientEnd": "#70baff",
-          "artRef": "",
+          "artRef": "campaign-map-providence",
           "videoUrl": "",
           "binding": "raceRef",
           "source": "",
@@ -26829,68 +26829,68 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.12,
-              "y": 0.77,
-              "unlockParameter": "",
-              "unlockValue": true,
-              "completedParameter": ""
-            },
-            {
-              "id": "stop-1",
-              "label": "2",
-              "raceRef": "RI 116 — North Smithfield Scituate",
-              "kind": "race",
-              "disabled": false,
-              "artRef": "",
-              "selectedArtRef": "",
-              "disabledArtRef": "",
-              "x": 0.34,
-              "y": 0.63,
+              "x": 0.546041,
+              "y": 0.584,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
             },
             {
               "id": "stop-2",
-              "label": "3",
+              "label": "2",
               "raceRef": "Blue Hills — Reservation Parkways",
               "kind": "race",
               "disabled": false,
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.18,
-              "y": 0.39,
+              "x": 0.809039,
+              "y": 0.51035,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
             },
             {
-              "id": "stop-3",
-              "label": "4",
-              "raceRef": "Pachaug State Forest — public gravel access roads",
+              "id": "stop-1",
+              "label": "3",
+              "raceRef": "RI 116 — North Smithfield Scituate",
               "kind": "race",
               "disabled": false,
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.46,
-              "y": 0.25,
+              "x": 0.418624,
+              "y": 0.74874,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
             },
             {
               "id": "stop-4",
-              "label": "5",
+              "label": "4",
               "raceRef": "RI 44 — Putnam Pike Glocester",
               "kind": "race",
               "disabled": false,
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.72,
-              "y": 0.39,
+              "x": 0.304693,
+              "y": 0.69737,
+              "unlockParameter": "",
+              "unlockValue": true,
+              "completedParameter": ""
+            },
+            {
+              "id": "stop-3",
+              "label": "5",
+              "raceRef": "Pachaug State Forest — public gravel access roads",
+              "kind": "race",
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.1,
+              "y": 0.8872,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -26904,8 +26904,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.87,
-              "y": 0.16,
+              "x": 0.638607,
+              "y": 0.81045,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -26919,8 +26919,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.6,
-              "y": 0.78,
+              "x": 0.189602,
+              "y": 0.63313,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -26934,8 +26934,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.73,
-              "y": 0.64,
+              "x": 0.9,
+              "y": 0.456,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -26944,67 +26944,125 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "link-1",
+              "id": "regional-road-1",
               "from": "stop-0",
-              "to": "stop-1",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
-            },
-            {
-              "id": "link-2",
-              "from": "stop-1",
               "to": "stop-2",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.63977,
+                "y": 0.59462
+              },
+              "control2": {
+                "x": 0.74497,
+                "y": 0.56516
+              }
             },
             {
-              "id": "link-3",
+              "id": "regional-road-2",
               "from": "stop-2",
-              "to": "stop-3",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "to": "stop-1",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.7151,
+                "y": 0.63739
+              },
+              "control2": {
+                "x": 0.55893,
+                "y": 0.73274
+              }
             },
             {
-              "id": "link-4",
-              "from": "stop-3",
+              "id": "regional-road-3",
+              "from": "stop-1",
               "to": "stop-4",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.38884,
+                "y": 0.71749
+              },
+              "control2": {
+                "x": 0.34327,
+                "y": 0.69694
+              }
             },
             {
-              "id": "link-5",
+              "id": "regional-road-4",
               "from": "stop-4",
-              "to": "stop-5",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "to": "stop-3",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.26387,
+                "y": 0.78473
+              },
+              "control2": {
+                "x": 0.18199,
+                "y": 0.86066
+              }
             },
             {
-              "id": "link-6",
+              "id": "regional-road-5",
+              "from": "stop-3",
+              "to": "stop-5",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.28233,
+                "y": 0.93266
+              },
+              "control2": {
+                "x": 0.49777,
+                "y": 0.90196
+              }
+            },
+            {
+              "id": "regional-detour-1",
               "from": "stop-1",
               "to": "stop-6",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.32568,
+                "y": 0.75068
+              },
+              "control2": {
+                "x": 0.23407,
+                "y": 0.70443
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
             },
             {
-              "id": "link-7",
+              "id": "regional-detour-2",
               "from": "stop-3",
               "to": "stop-7",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.4293,
+                "y": 0.88522
+              },
+              "control2": {
+                "x": 0.7493,
+                "y": 0.71274
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
+            },
+            {
+              "id": "regional-dirt-cut",
+              "from": "stop-0",
+              "to": "stop-1",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.46408,
+                "y": 0.60486
+              },
+              "control2": {
+                "x": 0.41312,
+                "y": 0.67076
+              },
+              "pattern": "dashed",
+              "color": "#c68f64",
+              "width": 3
             }
           ],
           "mapStyle": {
@@ -31454,7 +31512,7 @@
           "catalogThumbnail": false,
           "angleBinding": "",
           "angle": 180,
-          "imageFit": "contain",
+          "imageFit": "stretch",
           "textOutlineWidth": 0,
           "textOutlineColor": "#000000",
           "textFill": "solid",
@@ -31462,7 +31520,7 @@
           "textGradientStart": "#70baff",
           "textGradientMiddle": "#ffffff",
           "textGradientEnd": "#70baff",
-          "artRef": "",
+          "artRef": "campaign-map-mount-washington",
           "videoUrl": "",
           "binding": "raceRef",
           "source": "",
@@ -31477,31 +31535,31 @@
           "duration": 2,
           "nodes": [
             {
-              "id": "stop-0",
+              "id": "stop-3",
               "label": "1",
-              "raceRef": "Kancamagus Highway — NH 112",
+              "raceRef": "Hurricane Mountain Road — Conway",
               "kind": "race",
               "disabled": false,
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.12,
-              "y": 0.77,
+              "x": 0.9,
+              "y": 0.70691,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
             },
             {
-              "id": "stop-1",
+              "id": "stop-4",
               "label": "2",
-              "raceRef": "Team O’Neil-inspired Rally Stage (2994)",
+              "raceRef": "Pinkham Notch — NH 16",
               "kind": "race",
               "disabled": false,
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.34,
-              "y": 0.63,
+              "x": 0.597654,
+              "y": 0.63153,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -31515,38 +31573,38 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.18,
-              "y": 0.39,
+              "x": 0.506044,
+              "y": 0.8026,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
             },
             {
-              "id": "stop-3",
+              "id": "stop-0",
               "label": "4",
-              "raceRef": "Hurricane Mountain Road — Conway",
+              "raceRef": "Kancamagus Highway — NH 112",
               "kind": "race",
               "disabled": false,
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.46,
-              "y": 0.25,
+              "x": 0.366244,
+              "y": 0.7564,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
             },
             {
-              "id": "stop-4",
+              "id": "stop-1",
               "label": "5",
-              "raceRef": "Pinkham Notch — NH 16",
+              "raceRef": "Team O’Neil-inspired Rally Stage (2994)",
               "kind": "race",
               "disabled": false,
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.72,
-              "y": 0.39,
+              "x": 0.249853,
+              "y": 0.52019,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -31560,8 +31618,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.87,
-              "y": 0.16,
+              "x": 0.684144,
+              "y": 0.57721,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -31575,8 +31633,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.6,
-              "y": 0.78,
+              "x": 0.768975,
+              "y": 0.8872,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -31590,8 +31648,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.73,
-              "y": 0.64,
+              "x": 0.1,
+              "y": 0.456,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -31600,67 +31658,108 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "link-1",
-              "from": "stop-0",
-              "to": "stop-1",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
-            },
-            {
-              "id": "link-2",
-              "from": "stop-1",
-              "to": "stop-2",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
-            },
-            {
-              "id": "link-3",
-              "from": "stop-2",
-              "to": "stop-3",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
-            },
-            {
-              "id": "link-4",
+              "id": "regional-road-1",
               "from": "stop-3",
               "to": "stop-4",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.81305,
+                "y": 0.64348
+              },
+              "control2": {
+                "x": 0.69211,
+                "y": 0.61333
+              }
             },
             {
-              "id": "link-5",
+              "id": "regional-road-2",
               "from": "stop-4",
-              "to": "stop-5",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "to": "stop-2",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.59058,
+                "y": 0.69818
+              },
+              "control2": {
+                "x": 0.55393,
+                "y": 0.76661
+              }
             },
             {
-              "id": "link-6",
+              "id": "regional-road-3",
+              "from": "stop-2",
+              "to": "stop-0",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.46731,
+                "y": 0.76964
+              },
+              "control2": {
+                "x": 0.41139,
+                "y": 0.75116
+              }
+            },
+            {
+              "id": "regional-road-4",
+              "from": "stop-0",
+              "to": "stop-1",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.29829,
+                "y": 0.69594
+              },
+              "control2": {
+                "x": 0.25174,
+                "y": 0.60146
+              }
+            },
+            {
+              "id": "regional-road-5",
+              "from": "stop-1",
+              "to": "stop-5",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.38141,
+                "y": 0.59489
+              },
+              "control2": {
+                "x": 0.55513,
+                "y": 0.6177
+              }
+            },
+            {
+              "id": "regional-detour-1",
               "from": "stop-1",
               "to": "stop-6",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.47836,
+                "y": 0.54938
+              },
+              "control2": {
+                "x": 0.68601,
+                "y": 0.69619
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
             },
             {
-              "id": "link-7",
+              "id": "regional-detour-2",
               "from": "stop-3",
               "to": "stop-7",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.68665,
+                "y": 0.49062
+              },
+              "control2": {
+                "x": 0.36665,
+                "y": 0.39025
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
             }
           ],
           "mapStyle": {
@@ -35231,7 +35330,7 @@
           "catalogThumbnail": false,
           "angleBinding": "",
           "angle": 180,
-          "imageFit": "contain",
+          "imageFit": "stretch",
           "textOutlineWidth": 0,
           "textOutlineColor": "#000000",
           "textFill": "solid",
@@ -35239,7 +35338,7 @@
           "textGradientStart": "#70baff",
           "textGradientMiddle": "#ffffff",
           "textGradientEnd": "#70baff",
-          "artRef": "",
+          "artRef": "campaign-map-laurel-highlands",
           "videoUrl": "",
           "binding": "raceRef",
           "source": "",
@@ -35262,68 +35361,68 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.12,
-              "y": 0.77,
-              "unlockParameter": "",
-              "unlockValue": true,
-              "completedParameter": ""
-            },
-            {
-              "id": "stop-1",
-              "label": "2",
-              "raceRef": "PA 711 — Normalville Champion",
-              "kind": "race",
-              "disabled": false,
-              "artRef": "",
-              "selectedArtRef": "",
-              "disabledArtRef": "",
-              "x": 0.34,
-              "y": 0.63,
+              "x": 0.810985,
+              "y": 0.8872,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
             },
             {
               "id": "stop-2",
-              "label": "3",
+              "label": "2",
               "raceRef": "Forbes State Forest — designated gravel roads",
               "kind": "race",
               "disabled": false,
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.18,
-              "y": 0.39,
-              "unlockParameter": "",
-              "unlockValue": true,
-              "completedParameter": ""
-            },
-            {
-              "id": "stop-3",
-              "label": "4",
-              "raceRef": "US 40 — Chalk Hill Summit",
-              "kind": "race",
-              "disabled": false,
-              "artRef": "",
-              "selectedArtRef": "",
-              "disabledArtRef": "",
-              "x": 0.46,
-              "y": 0.25,
+              "x": 0.611966,
+              "y": 0.54666,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
             },
             {
               "id": "stop-4",
-              "label": "5",
+              "label": "3",
               "raceRef": "County Line Road — Seven Springs",
               "kind": "race",
               "disabled": false,
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.72,
-              "y": 0.39,
+              "x": 0.515237,
+              "y": 0.60407,
+              "unlockParameter": "",
+              "unlockValue": true,
+              "completedParameter": ""
+            },
+            {
+              "id": "stop-1",
+              "label": "4",
+              "raceRef": "PA 711 — Normalville Champion",
+              "kind": "race",
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.417332,
+              "y": 0.65603,
+              "unlockParameter": "",
+              "unlockValue": true,
+              "completedParameter": ""
+            },
+            {
+              "id": "stop-3",
+              "label": "5",
+              "raceRef": "US 40 — Chalk Hill Summit",
+              "kind": "race",
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.225633,
+              "y": 0.83395,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -35337,8 +35436,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.87,
-              "y": 0.16,
+              "x": 0.321672,
+              "y": 0.78227,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -35352,8 +35451,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.6,
-              "y": 0.78,
+              "x": 0.1,
+              "y": 0.456,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -35367,8 +35466,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.73,
-              "y": 0.64,
+              "x": 0.9,
+              "y": 0.71804,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -35377,67 +35476,108 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "link-1",
+              "id": "regional-road-1",
               "from": "stop-0",
-              "to": "stop-1",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
-            },
-            {
-              "id": "link-2",
-              "from": "stop-1",
               "to": "stop-2",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.79157,
+                "y": 0.75235
+              },
+              "control2": {
+                "x": 0.71196,
+                "y": 0.61614
+              }
             },
             {
-              "id": "link-3",
+              "id": "regional-road-2",
               "from": "stop-2",
-              "to": "stop-3",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
-            },
-            {
-              "id": "link-4",
-              "from": "stop-3",
               "to": "stop-4",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.58848,
+                "y": 0.57761
+              },
+              "control2": {
+                "x": 0.54978,
+                "y": 0.60057
+              }
             },
             {
-              "id": "link-5",
+              "id": "regional-road-3",
               "from": "stop-4",
-              "to": "stop-5",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "to": "stop-1",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.47715,
+                "y": 0.60797
+              },
+              "control2": {
+                "x": 0.43799,
+                "y": 0.62875
+              }
             },
             {
-              "id": "link-6",
+              "id": "regional-road-4",
+              "from": "stop-1",
+              "to": "stop-3",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.37912,
+                "y": 0.73789
+              },
+              "control2": {
+                "x": 0.30244,
+                "y": 0.80905
+              }
+            },
+            {
+              "id": "regional-road-5",
+              "from": "stop-3",
+              "to": "stop-5",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.26308,
+                "y": 0.8299
+              },
+              "control2": {
+                "x": 0.3015,
+                "y": 0.80923
+              }
+            },
+            {
+              "id": "regional-detour-1",
               "from": "stop-1",
               "to": "stop-6",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.28178,
+                "y": 0.64597
+              },
+              "control2": {
+                "x": 0.15485,
+                "y": 0.56595
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
             },
             {
-              "id": "link-7",
+              "id": "regional-detour-2",
               "from": "stop-3",
               "to": "stop-7",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.46114,
+                "y": 0.9115
+              },
+              "control2": {
+                "x": 0.73088,
+                "y": 0.86514
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
             }
           ],
           "mapStyle": {
@@ -41431,7 +41571,7 @@
           "catalogThumbnail": false,
           "angleBinding": "",
           "angle": 180,
-          "imageFit": "contain",
+          "imageFit": "stretch",
           "textOutlineWidth": 0,
           "textOutlineColor": "#000000",
           "textFill": "solid",
@@ -41439,7 +41579,7 @@
           "textGradientStart": "#70baff",
           "textGradientMiddle": "#ffffff",
           "textGradientEnd": "#70baff",
-          "artRef": "",
+          "artRef": "campaign-map-ohio-river",
           "videoUrl": "",
           "binding": "raceRef",
           "source": "",
@@ -41454,61 +41594,61 @@
           "duration": 2,
           "nodes": [
             {
-              "id": "stop-0",
-              "label": "1",
-              "raceRef": "OH 550 — Barlow approach",
-              "kind": "race",
-              "disabled": false,
-              "artRef": "",
-              "selectedArtRef": "",
-              "disabledArtRef": "",
-              "x": 0.12,
-              "y": 0.77,
-              "unlockParameter": "",
-              "unlockValue": true,
-              "completedParameter": ""
-            },
-            {
-              "id": "stop-1",
-              "label": "2",
-              "raceRef": "Washington County western covered-bridge gravel loop",
-              "kind": "race",
-              "disabled": false,
-              "artRef": "",
-              "selectedArtRef": "",
-              "disabledArtRef": "",
-              "x": 0.34,
-              "y": 0.63,
-              "unlockParameter": "",
-              "unlockValue": true,
-              "completedParameter": ""
-            },
-            {
-              "id": "stop-2",
-              "label": "3",
-              "raceRef": "OH 26 — Covered Bridge Scenic Byway",
-              "kind": "race",
-              "disabled": false,
-              "artRef": "",
-              "selectedArtRef": "",
-              "disabledArtRef": "",
-              "x": 0.18,
-              "y": 0.39,
-              "unlockParameter": "",
-              "unlockValue": true,
-              "completedParameter": ""
-            },
-            {
               "id": "stop-3",
-              "label": "4",
+              "label": "1",
               "raceRef": "OH 536 — Ohio River hills",
               "kind": "race",
               "disabled": false,
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.46,
-              "y": 0.25,
+              "x": 0.9,
+              "y": 0.54296,
+              "unlockParameter": "",
+              "unlockValue": true,
+              "completedParameter": ""
+            },
+            {
+              "id": "stop-2",
+              "label": "2",
+              "raceRef": "OH 26 — Covered Bridge Scenic Byway",
+              "kind": "race",
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.811123,
+              "y": 0.59856,
+              "unlockParameter": "",
+              "unlockValue": true,
+              "completedParameter": ""
+            },
+            {
+              "id": "stop-0",
+              "label": "3",
+              "raceRef": "OH 550 — Barlow approach",
+              "kind": "race",
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.489557,
+              "y": 0.74678,
+              "unlockParameter": "",
+              "unlockValue": true,
+              "completedParameter": ""
+            },
+            {
+              "id": "stop-1",
+              "label": "4",
+              "raceRef": "Washington County western covered-bridge gravel loop",
+              "kind": "race",
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.382287,
+              "y": 0.6526,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -41522,8 +41662,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.72,
-              "y": 0.39,
+              "x": 0.315998,
+              "y": 0.71551,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -41537,8 +41677,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.87,
-              "y": 0.16,
+              "x": 0.696708,
+              "y": 0.68727,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -41552,8 +41692,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.6,
-              "y": 0.78,
+              "x": 0.1,
+              "y": 0.456,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -41567,8 +41707,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.73,
-              "y": 0.64,
+              "x": 0.548755,
+              "y": 0.8872,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -41577,67 +41717,125 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "link-1",
+              "id": "regional-road-1",
+              "from": "stop-3",
+              "to": "stop-2",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.86433,
+                "y": 0.5492
+              },
+              "control2": {
+                "x": 0.82878,
+                "y": 0.57144
+              }
+            },
+            {
+              "id": "regional-road-2",
+              "from": "stop-2",
+              "to": "stop-0",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.72749,
+                "y": 0.68779
+              },
+              "control2": {
+                "x": 0.59886,
+                "y": 0.74708
+              }
+            },
+            {
+              "id": "regional-road-3",
               "from": "stop-0",
               "to": "stop-1",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.46747,
+                "y": 0.7027
+              },
+              "control2": {
+                "x": 0.42457,
+                "y": 0.66503
+              }
             },
             {
-              "id": "link-2",
+              "id": "regional-road-4",
               "from": "stop-1",
-              "to": "stop-2",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
-            },
-            {
-              "id": "link-3",
-              "from": "stop-2",
-              "to": "stop-3",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
-            },
-            {
-              "id": "link-4",
-              "from": "stop-3",
               "to": "stop-4",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.36925,
+                "y": 0.68135
+              },
+              "control2": {
+                "x": 0.34274,
+                "y": 0.70651
+              }
             },
             {
-              "id": "link-5",
+              "id": "regional-road-5",
               "from": "stop-4",
               "to": "stop-5",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.4415,
+                "y": 0.75597
+              },
+              "control2": {
+                "x": 0.59378,
+                "y": 0.74467
+              }
             },
             {
-              "id": "link-6",
+              "id": "regional-detour-1",
               "from": "stop-1",
               "to": "stop-6",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.25853,
+                "y": 0.63768
+              },
+              "control2": {
+                "x": 0.14562,
+                "y": 0.55904
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
             },
             {
-              "id": "link-7",
+              "id": "regional-detour-2",
               "from": "stop-3",
               "to": "stop-7",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.72908,
+                "y": 0.59341
+              },
+              "control2": {
+                "x": 0.58858,
+                "y": 0.7311
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
+            },
+            {
+              "id": "regional-dirt-cut",
+              "from": "stop-0",
+              "to": "stop-4",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.44184,
+                "y": 0.69338
+              },
+              "control2": {
+                "x": 0.37241,
+                "y": 0.68088
+              },
+              "pattern": "dashed",
+              "color": "#c68f64",
+              "width": 3
             }
           ],
           "mapStyle": {
@@ -49476,7 +49674,7 @@
           "catalogThumbnail": false,
           "angleBinding": "",
           "angle": 180,
-          "imageFit": "contain",
+          "imageFit": "stretch",
           "textOutlineWidth": 0,
           "textOutlineColor": "#000000",
           "textFill": "solid",
@@ -49484,7 +49682,7 @@
           "textGradientStart": "#70baff",
           "textGradientMiddle": "#ffffff",
           "textGradientEnd": "#70baff",
-          "artRef": "",
+          "artRef": "campaign-map-ozarks",
           "videoUrl": "",
           "binding": "raceRef",
           "source": "",
@@ -49507,8 +49705,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.12,
-              "y": 0.77,
+              "x": 0.423418,
+              "y": 0.53605,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -49522,8 +49720,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.34,
-              "y": 0.63,
+              "x": 0.510629,
+              "y": 0.72673,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -49537,8 +49735,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.18,
-              "y": 0.39,
+              "x": 0.9,
+              "y": 0.7792,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -49552,8 +49750,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.46,
-              "y": 0.25,
+              "x": 0.694953,
+              "y": 0.61102,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -49567,8 +49765,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.72,
-              "y": 0.39,
+              "x": 0.1,
+              "y": 0.8872,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -49582,8 +49780,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.87,
-              "y": 0.16,
+              "x": 0.610694,
+              "y": 0.66766,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -49597,8 +49795,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.6,
-              "y": 0.78,
+              "x": 0.199567,
+              "y": 0.456,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -49612,8 +49810,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.73,
-              "y": 0.64,
+              "x": 0.80629,
+              "y": 0.66766,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -49622,67 +49820,125 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "link-1",
+              "id": "regional-road-1",
               "from": "stop-0",
               "to": "stop-1",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.42654,
+                "y": 0.60841
+              },
+              "control2": {
+                "x": 0.46142,
+                "y": 0.68468
+              }
             },
             {
-              "id": "link-2",
+              "id": "regional-road-2",
               "from": "stop-1",
               "to": "stop-2",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.64205,
+                "y": 0.6929
+              },
+              "control2": {
+                "x": 0.7978,
+                "y": 0.71389
+              }
             },
             {
-              "id": "link-3",
+              "id": "regional-road-3",
               "from": "stop-2",
               "to": "stop-3",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.85625,
+                "y": 0.69873
+              },
+              "control2": {
+                "x": 0.77423,
+                "y": 0.63145
+              }
             },
             {
-              "id": "link-4",
+              "id": "regional-road-4",
               "from": "stop-3",
               "to": "stop-4",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.54047,
+                "y": 0.77674
+              },
+              "control2": {
+                "x": 0.30249,
+                "y": 0.88721
+              }
             },
             {
-              "id": "link-5",
+              "id": "regional-road-5",
               "from": "stop-4",
               "to": "stop-5",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.29196,
+                "y": 0.88334
+              },
+              "control2": {
+                "x": 0.49624,
+                "y": 0.79552
+              }
             },
             {
-              "id": "link-6",
+              "id": "regional-detour-1",
               "from": "stop-1",
               "to": "stop-6",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.36507,
+                "y": 0.69298
+              },
+              "control2": {
+                "x": 0.24064,
+                "y": 0.58468
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
             },
             {
-              "id": "link-7",
+              "id": "regional-detour-2",
               "from": "stop-3",
               "to": "stop-7",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.72095,
+                "y": 0.64807
+              },
+              "control2": {
+                "x": 0.76549,
+                "y": 0.67073
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
+            },
+            {
+              "id": "regional-dirt-cut",
+              "from": "stop-1",
+              "to": "stop-3",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.59854,
+                "y": 0.73578
+              },
+              "control2": {
+                "x": 0.67227,
+                "y": 0.6895
+              },
+              "pattern": "dashed",
+              "color": "#c68f64",
+              "width": 3
             }
           ],
           "mapStyle": {
@@ -56943,7 +57199,7 @@
           "catalogThumbnail": false,
           "angleBinding": "",
           "angle": 180,
-          "imageFit": "contain",
+          "imageFit": "stretch",
           "textOutlineWidth": 0,
           "textOutlineColor": "#000000",
           "textFill": "solid",
@@ -56951,7 +57207,7 @@
           "textGradientStart": "#70baff",
           "textGradientMiddle": "#ffffff",
           "textGradientEnd": "#70baff",
-          "artRef": "",
+          "artRef": "campaign-map-data-center-city",
           "videoUrl": "",
           "binding": "raceRef",
           "source": "",
@@ -56974,8 +57230,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.12,
-              "y": 0.77,
+              "x": 0.270756,
+              "y": 0.61549,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -56989,8 +57245,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.34,
-              "y": 0.63,
+              "x": 0.1,
+              "y": 0.84,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -57004,8 +57260,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.18,
-              "y": 0.39,
+              "x": 0.63856,
+              "y": 0.76243,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -57019,8 +57275,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.46,
-              "y": 0.25,
+              "x": 0.545818,
+              "y": 0.79043,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -57034,8 +57290,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.72,
-              "y": 0.39,
+              "x": 0.455816,
+              "y": 0.8872,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -57049,8 +57305,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.87,
-              "y": 0.16,
+              "x": 0.383472,
+              "y": 0.7186,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -57064,8 +57320,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.6,
-              "y": 0.78,
+              "x": 0.9,
+              "y": 0.456,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -57079,8 +57335,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.73,
-              "y": 0.64,
+              "x": 0.63856,
+              "y": 0.81843,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -57089,67 +57345,108 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "link-1",
+              "id": "regional-road-1",
               "from": "stop-0",
               "to": "stop-1",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.18693,
+                "y": 0.66513
+              },
+              "control2": {
+                "x": 0.11863,
+                "y": 0.75494
+              }
             },
             {
-              "id": "link-2",
+              "id": "regional-road-2",
               "from": "stop-1",
               "to": "stop-2",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.26226,
+                "y": 0.74516
+              },
+              "control2": {
+                "x": 0.47768,
+                "y": 0.71414
+              }
             },
             {
-              "id": "link-3",
+              "id": "regional-road-3",
               "from": "stop-2",
               "to": "stop-3",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.60524,
+                "y": 0.75933
+              },
+              "control2": {
+                "x": 0.56815,
+                "y": 0.77053
+              }
             },
             {
-              "id": "link-4",
+              "id": "regional-road-4",
               "from": "stop-3",
               "to": "stop-4",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.5296,
+                "y": 0.8331
+              },
+              "control2": {
+                "x": 0.4936,
+                "y": 0.8718
+              }
             },
             {
-              "id": "link-5",
+              "id": "regional-road-5",
               "from": "stop-4",
               "to": "stop-5",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.45458,
+                "y": 0.82384
+              },
+              "control2": {
+                "x": 0.42565,
+                "y": 0.7564
+              }
             },
             {
-              "id": "link-6",
+              "id": "regional-detour-1",
               "from": "stop-1",
               "to": "stop-6",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.29072,
+                "y": 0.58112
+              },
+              "control2": {
+                "x": 0.61072,
+                "y": 0.42752
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
             },
             {
-              "id": "link-7",
+              "id": "regional-detour-2",
               "from": "stop-3",
               "to": "stop-7",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.57074,
+                "y": 0.81516
+              },
+              "control2": {
+                "x": 0.60783,
+                "y": 0.82636
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
             }
           ],
           "mapStyle": {
@@ -65463,7 +65760,7 @@
           "catalogThumbnail": false,
           "angleBinding": "",
           "angle": 180,
-          "imageFit": "contain",
+          "imageFit": "stretch",
           "textOutlineWidth": 0,
           "textOutlineColor": "#000000",
           "textFill": "solid",
@@ -65471,7 +65768,7 @@
           "textGradientStart": "#70baff",
           "textGradientMiddle": "#ffffff",
           "textGradientEnd": "#70baff",
-          "artRef": "",
+          "artRef": "campaign-map-route-66",
           "videoUrl": "",
           "binding": "raceRef",
           "source": "",
@@ -65494,8 +65791,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.12,
-              "y": 0.77,
+              "x": 0.769603,
+              "y": 0.52262,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -65509,38 +65806,38 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.34,
-              "y": 0.63,
-              "unlockParameter": "",
-              "unlockValue": true,
-              "completedParameter": ""
-            },
-            {
-              "id": "stop-2",
-              "label": "3",
-              "raceRef": "Amarillo — Historic 6th Avenue alignment",
-              "kind": "race",
-              "disabled": false,
-              "artRef": "",
-              "selectedArtRef": "",
-              "disabledArtRef": "",
-              "x": 0.18,
-              "y": 0.39,
+              "x": 0.513184,
+              "y": 0.66202,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
             },
             {
               "id": "stop-3",
-              "label": "4",
+              "label": "3",
               "raceRef": "Palo Duro Canyon — Park Road 5",
               "kind": "race",
               "disabled": false,
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.46,
-              "y": 0.25,
+              "x": 0.375046,
+              "y": 0.8872,
+              "unlockParameter": "",
+              "unlockValue": true,
+              "completedParameter": ""
+            },
+            {
+              "id": "stop-2",
+              "label": "4",
+              "raceRef": "Amarillo — Historic 6th Avenue alignment",
+              "kind": "race",
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.292524,
+              "y": 0.75272,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -65554,8 +65851,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.72,
-              "y": 0.39,
+              "x": 0.1,
+              "y": 0.80732,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -65569,8 +65866,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.87,
-              "y": 0.16,
+              "x": 0.6155,
+              "y": 0.70737,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -65584,8 +65881,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.6,
-              "y": 0.78,
+              "x": 0.9,
+              "y": 0.456,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -65599,8 +65896,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.73,
-              "y": 0.64,
+              "x": 0.186858,
+              "y": 0.60742,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -65609,67 +65906,125 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "link-1",
+              "id": "regional-road-1",
               "from": "stop-0",
               "to": "stop-1",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.66943,
+                "y": 0.53389
+              },
+              "control2": {
+                "x": 0.56686,
+                "y": 0.58965
+              }
             },
             {
-              "id": "link-2",
+              "id": "regional-road-2",
               "from": "stop-1",
-              "to": "stop-2",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
-            },
-            {
-              "id": "link-3",
-              "from": "stop-2",
               "to": "stop-3",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.49825,
+                "y": 0.75204
+              },
+              "control2": {
+                "x": 0.443,
+                "y": 0.84211
+              }
             },
             {
-              "id": "link-4",
+              "id": "regional-road-3",
               "from": "stop-3",
-              "to": "stop-4",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "to": "stop-2",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.36612,
+                "y": 0.83344
+              },
+              "control2": {
+                "x": 0.33311,
+                "y": 0.77965
+              }
             },
             {
-              "id": "link-5",
+              "id": "regional-road-4",
+              "from": "stop-2",
+              "to": "stop-4",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.23801,
+                "y": 0.79522
+              },
+              "control2": {
+                "x": 0.161,
+                "y": 0.81706
+              }
+            },
+            {
+              "id": "regional-road-5",
               "from": "stop-4",
               "to": "stop-5",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.27795,
+                "y": 0.84235
+              },
+              "control2": {
+                "x": 0.48415,
+                "y": 0.80237
+              }
             },
             {
-              "id": "link-6",
+              "id": "regional-detour-1",
               "from": "stop-1",
               "to": "stop-6",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.60194,
+                "y": 0.53033
+              },
+              "control2": {
+                "x": 0.75667,
+                "y": 0.44793
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
             },
             {
-              "id": "link-7",
+              "id": "regional-detour-2",
               "from": "stop-3",
               "to": "stop-7",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.36239,
+                "y": 0.76568
+              },
+              "control2": {
+                "x": 0.28711,
+                "y": 0.65377
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
+            },
+            {
+              "id": "regional-dirt-cut",
+              "from": "stop-1",
+              "to": "stop-2",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.4199,
+                "y": 0.63588
+              },
+              "control2": {
+                "x": 0.33163,
+                "y": 0.67216
+              },
+              "pattern": "dashed",
+              "color": "#c68f64",
+              "width": 3
             }
           ],
           "mapStyle": {
@@ -69141,7 +69496,7 @@
           "catalogThumbnail": false,
           "angleBinding": "",
           "angle": 180,
-          "imageFit": "contain",
+          "imageFit": "stretch",
           "textOutlineWidth": 0,
           "textOutlineColor": "#000000",
           "textFill": "solid",
@@ -69149,7 +69504,7 @@
           "textGradientStart": "#70baff",
           "textGradientMiddle": "#ffffff",
           "textGradientEnd": "#70baff",
-          "artRef": "",
+          "artRef": "campaign-map-pikes-peak",
           "videoUrl": "",
           "binding": "raceRef",
           "source": "",
@@ -69172,8 +69527,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.12,
-              "y": 0.77,
+              "x": 0.58173,
+              "y": 0.67246,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -69187,8 +69542,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.34,
-              "y": 0.63,
+              "x": 0.491995,
+              "y": 0.82322,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -69202,8 +69557,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.18,
-              "y": 0.39,
+              "x": 0.38717,
+              "y": 0.62221,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -69217,8 +69572,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.46,
-              "y": 0.25,
+              "x": 0.188146,
+              "y": 0.8872,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -69232,8 +69587,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.72,
-              "y": 0.39,
+              "x": 0.1,
+              "y": 0.77165,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -69247,8 +69602,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.87,
-              "y": 0.16,
+              "x": 0.288737,
+              "y": 0.72126,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -69262,8 +69617,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.6,
-              "y": 0.78,
+              "x": 0.812985,
+              "y": 0.50684,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -69277,8 +69632,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.73,
-              "y": 0.64,
+              "x": 0.9,
+              "y": 0.456,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -69287,67 +69642,108 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "link-1",
+              "id": "regional-road-1",
               "from": "stop-0",
               "to": "stop-1",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.53342,
+                "y": 0.70904
+              },
+              "control2": {
+                "x": 0.49752,
+                "y": 0.76934
+              }
             },
             {
-              "id": "link-2",
+              "id": "regional-road-2",
               "from": "stop-1",
               "to": "stop-2",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.43232,
+                "y": 0.77252
+              },
+              "control2": {
+                "x": 0.39039,
+                "y": 0.69212
+              }
             },
             {
-              "id": "link-3",
+              "id": "regional-road-3",
               "from": "stop-2",
               "to": "stop-3",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.28903,
+                "y": 0.68113
+              },
+              "control2": {
+                "x": 0.20942,
+                "y": 0.78713
+              }
             },
             {
-              "id": "link-4",
+              "id": "regional-road-4",
               "from": "stop-3",
               "to": "stop-4",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.14492,
+                "y": 0.86168
+              },
+              "control2": {
+                "x": 0.10966,
+                "y": 0.81546
+              }
             },
             {
-              "id": "link-5",
+              "id": "regional-road-5",
               "from": "stop-4",
               "to": "stop-5",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.16695,
+                "y": 0.78006
+              },
+              "control2": {
+                "x": 0.24244,
+                "y": 0.75991
+              }
             },
             {
-              "id": "link-6",
+              "id": "regional-detour-1",
               "from": "stop-1",
               "to": "stop-6",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.54093,
+                "y": 0.66741
+              },
+              "control2": {
+                "x": 0.66932,
+                "y": 0.54086
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
             },
             {
-              "id": "link-7",
+              "id": "regional-detour-2",
               "from": "stop-3",
               "to": "stop-7",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.48924,
+                "y": 0.87023
+              },
+              "control2": {
+                "x": 0.77398,
+                "y": 0.69775
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
             }
           ],
           "mapStyle": {
@@ -75052,7 +75448,7 @@
           "catalogThumbnail": false,
           "angleBinding": "",
           "angle": 180,
-          "imageFit": "contain",
+          "imageFit": "stretch",
           "textOutlineWidth": 0,
           "textOutlineColor": "#000000",
           "textFill": "solid",
@@ -75060,7 +75456,7 @@
           "textGradientStart": "#70baff",
           "textGradientMiddle": "#ffffff",
           "textGradientEnd": "#70baff",
-          "artRef": "",
+          "artRef": "campaign-map-moki-dugway",
           "videoUrl": "",
           "binding": "raceRef",
           "source": "",
@@ -75083,8 +75479,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.12,
-              "y": 0.77,
+              "x": 0.589119,
+              "y": 0.83197,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -75098,8 +75494,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.34,
-              "y": 0.63,
+              "x": 0.716277,
+              "y": 0.68679,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -75113,8 +75509,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.18,
-              "y": 0.39,
+              "x": 0.9,
+              "y": 0.59754,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -75128,8 +75524,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.46,
-              "y": 0.25,
+              "x": 0.404521,
+              "y": 0.77579,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -75143,8 +75539,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.72,
-              "y": 0.39,
+              "x": 0.1,
+              "y": 0.52683,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -75158,8 +75554,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.87,
-              "y": 0.16,
+              "x": 0.502467,
+              "y": 0.72978,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -75173,8 +75569,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.6,
-              "y": 0.78,
+              "x": 0.802733,
+              "y": 0.456,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -75188,8 +75584,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.73,
-              "y": 0.64,
+              "x": 0.325405,
+              "y": 0.8872,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -75198,67 +75594,125 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "link-1",
+              "id": "regional-road-1",
               "from": "stop-0",
               "to": "stop-1",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.64868,
+                "y": 0.80204
+              },
+              "control2": {
+                "x": 0.69955,
+                "y": 0.74397
+              }
             },
             {
-              "id": "link-2",
+              "id": "regional-road-2",
               "from": "stop-1",
               "to": "stop-2",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.76347,
+                "y": 0.63435
+              },
+              "control2": {
+                "x": 0.83696,
+                "y": 0.59865
+              }
             },
             {
-              "id": "link-3",
+              "id": "regional-road-3",
               "from": "stop-2",
               "to": "stop-3",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.71827,
+                "y": 0.59017
+              },
+              "control2": {
+                "x": 0.52008,
+                "y": 0.66147
+              }
             },
             {
-              "id": "link-4",
+              "id": "regional-road-4",
               "from": "stop-3",
               "to": "stop-4",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.27471,
+                "y": 0.73571
+              },
+              "control2": {
+                "x": 0.1529,
+                "y": 0.63613
+              }
             },
             {
-              "id": "link-5",
+              "id": "regional-road-5",
               "from": "stop-4",
               "to": "stop-5",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.20241,
+                "y": 0.64409
+              },
+              "control2": {
+                "x": 0.36339,
+                "y": 0.72527
+              }
             },
             {
-              "id": "link-6",
+              "id": "regional-detour-1",
               "from": "stop-1",
               "to": "stop-6",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.70471,
+                "y": 0.59824
+              },
+              "control2": {
+                "x": 0.73929,
+                "y": 0.50592
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
             },
             {
-              "id": "link-7",
+              "id": "regional-detour-2",
               "from": "stop-3",
               "to": "stop-7",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.36026,
+                "y": 0.79799
+              },
+              "control2": {
+                "x": 0.32862,
+                "y": 0.84256
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
+            },
+            {
+              "id": "regional-dirt-cut",
+              "from": "stop-1",
+              "to": "stop-3",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.59427,
+                "y": 0.63733
+              },
+              "control2": {
+                "x": 0.46956,
+                "y": 0.67293
+              },
+              "pattern": "dashed",
+              "color": "#c68f64",
+              "width": 3
             }
           ],
           "mapStyle": {
@@ -79510,7 +79964,7 @@
           "catalogThumbnail": false,
           "angleBinding": "",
           "angle": 180,
-          "imageFit": "contain",
+          "imageFit": "stretch",
           "textOutlineWidth": 0,
           "textOutlineColor": "#000000",
           "textFill": "solid",
@@ -79518,7 +79972,7 @@
           "textGradientStart": "#70baff",
           "textGradientMiddle": "#ffffff",
           "textGradientEnd": "#70baff",
-          "artRef": "",
+          "artRef": "campaign-map-oak-creek-canyon",
           "videoUrl": "",
           "binding": "raceRef",
           "source": "",
@@ -79541,8 +79995,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.12,
-              "y": 0.77,
+              "x": 0.78687,
+              "y": 0.68556,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -79556,8 +80010,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.34,
-              "y": 0.63,
+              "x": 0.515976,
+              "y": 0.60041,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -79571,8 +80025,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.18,
-              "y": 0.39,
+              "x": 0.634042,
+              "y": 0.65702,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -79586,8 +80040,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.46,
-              "y": 0.25,
+              "x": 0.9,
+              "y": 0.62479,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -79601,8 +80055,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.72,
-              "y": 0.39,
+              "x": 0.335804,
+              "y": 0.73832,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -79616,8 +80070,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.87,
-              "y": 0.16,
+              "x": 0.849876,
+              "y": 0.55083,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -79631,8 +80085,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.6,
-              "y": 0.78,
+              "x": 0.1,
+              "y": 0.456,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -79646,8 +80100,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.73,
-              "y": 0.64,
+              "x": 0.673117,
+              "y": 0.8872,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -79656,67 +80110,125 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "link-1",
+              "id": "regional-road-1",
               "from": "stop-0",
               "to": "stop-1",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.71125,
+                "y": 0.6231
+              },
+              "control2": {
+                "x": 0.6029,
+                "y": 0.58904
+              }
             },
             {
-              "id": "link-2",
+              "id": "regional-road-2",
               "from": "stop-1",
               "to": "stop-2",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.56112,
+                "y": 0.60318
+              },
+              "control2": {
+                "x": 0.60834,
+                "y": 0.62582
+              }
             },
             {
-              "id": "link-3",
+              "id": "regional-road-3",
               "from": "stop-2",
               "to": "stop-3",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.72334,
+                "y": 0.68128
+              },
+              "control2": {
+                "x": 0.82972,
+                "y": 0.66839
+              }
             },
             {
-              "id": "link-4",
+              "id": "regional-road-4",
               "from": "stop-3",
               "to": "stop-4",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.73422,
+                "y": 0.73447
+              },
+              "control2": {
+                "x": 0.50854,
+                "y": 0.77988
+              }
             },
             {
-              "id": "link-5",
+              "id": "regional-road-5",
               "from": "stop-4",
               "to": "stop-5",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.52468,
+                "y": 0.74515
+              },
+              "control2": {
+                "x": 0.73031,
+                "y": 0.67016
+              }
             },
             {
-              "id": "link-6",
+              "id": "regional-detour-1",
               "from": "stop-1",
               "to": "stop-6",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.35831,
+                "y": 0.62491
+              },
+              "control2": {
+                "x": 0.19192,
+                "y": 0.56715
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
             },
             {
-              "id": "link-7",
+              "id": "regional-detour-2",
               "from": "stop-3",
               "to": "stop-7",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.78279,
+                "y": 0.67019
+              },
+              "control2": {
+                "x": 0.69203,
+                "y": 0.77516
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
+            },
+            {
+              "id": "regional-dirt-cut",
+              "from": "stop-0",
+              "to": "stop-2",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.7451,
+                "y": 0.63822
+              },
+              "control2": {
+                "x": 0.68397,
+                "y": 0.6268
+              },
+              "pattern": "dashed",
+              "color": "#c68f64",
+              "width": 3
             }
           ],
           "mapStyle": {
@@ -83287,7 +83799,7 @@
           "catalogThumbnail": false,
           "angleBinding": "",
           "angle": 180,
-          "imageFit": "contain",
+          "imageFit": "stretch",
           "textOutlineWidth": 0,
           "textOutlineColor": "#000000",
           "textFill": "solid",
@@ -83295,7 +83807,7 @@
           "textGradientStart": "#70baff",
           "textGradientMiddle": "#ffffff",
           "textGradientEnd": "#70baff",
-          "artRef": "",
+          "artRef": "campaign-map-angeles-crest",
           "videoUrl": "",
           "binding": "raceRef",
           "source": "",
@@ -83310,76 +83822,76 @@
           "duration": 2,
           "nodes": [
             {
-              "id": "stop-0",
-              "label": "1",
-              "raceRef": "Los Angeles, CA — Landmark Run",
-              "kind": "race",
-              "disabled": false,
-              "artRef": "",
-              "selectedArtRef": "",
-              "disabledArtRef": "",
-              "x": 0.12,
-              "y": 0.77,
-              "unlockParameter": "",
-              "unlockValue": true,
-              "completedParameter": ""
-            },
-            {
-              "id": "stop-1",
-              "label": "2",
-              "raceRef": "Big Tujunga Canyon Road",
-              "kind": "race",
-              "disabled": false,
-              "artRef": "",
-              "selectedArtRef": "",
-              "disabledArtRef": "",
-              "x": 0.34,
-              "y": 0.63,
-              "unlockParameter": "",
-              "unlockValue": true,
-              "completedParameter": ""
-            },
-            {
-              "id": "stop-2",
-              "label": "3",
-              "raceRef": "Willow Springs — Horse Thief Mile",
-              "kind": "race",
-              "disabled": false,
-              "artRef": "",
-              "selectedArtRef": "",
-              "disabledArtRef": "",
-              "x": 0.18,
-              "y": 0.39,
-              "unlockParameter": "",
-              "unlockValue": true,
-              "completedParameter": ""
-            },
-            {
-              "id": "stop-3",
-              "label": "4",
-              "raceRef": "Glendora Mountain Road",
-              "kind": "race",
-              "disabled": false,
-              "artRef": "",
-              "selectedArtRef": "",
-              "disabledArtRef": "",
-              "x": 0.46,
-              "y": 0.25,
-              "unlockParameter": "",
-              "unlockValue": true,
-              "completedParameter": ""
-            },
-            {
               "id": "stop-4",
-              "label": "5",
+              "label": "1",
               "raceRef": "Glendora Ridge Road",
               "kind": "race",
               "disabled": false,
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.72,
-              "y": 0.39,
+              "x": 0.9,
+              "y": 0.72925,
+              "unlockParameter": "",
+              "unlockValue": true,
+              "completedParameter": ""
+            },
+            {
+              "id": "stop-3",
+              "label": "2",
+              "raceRef": "Glendora Mountain Road",
+              "kind": "race",
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.814927,
+              "y": 0.78963,
+              "unlockParameter": "",
+              "unlockValue": true,
+              "completedParameter": ""
+            },
+            {
+              "id": "stop-0",
+              "label": "3",
+              "raceRef": "Los Angeles, CA — Landmark Run",
+              "kind": "race",
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.332782,
+              "y": 0.8872,
+              "unlockParameter": "",
+              "unlockValue": true,
+              "completedParameter": ""
+            },
+            {
+              "id": "stop-1",
+              "label": "4",
+              "raceRef": "Big Tujunga Canyon Road",
+              "kind": "race",
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.407586,
+              "y": 0.65701,
+              "unlockParameter": "",
+              "unlockValue": true,
+              "completedParameter": ""
+            },
+            {
+              "id": "stop-2",
+              "label": "5",
+              "raceRef": "Willow Springs — Horse Thief Mile",
+              "kind": "race",
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.200642,
+              "y": 0.4476,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -83393,8 +83905,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.87,
-              "y": 0.16,
+              "x": 0.640042,
+              "y": 0.65701,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -83408,8 +83920,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.6,
-              "y": 0.78,
+              "x": 0.320642,
+              "y": 0.4784,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -83423,8 +83935,8 @@
               "artRef": "",
               "selectedArtRef": "",
               "disabledArtRef": "",
-              "x": 0.73,
-              "y": 0.64,
+              "x": 0.1,
+              "y": 0.60178,
               "unlockParameter": "",
               "unlockValue": true,
               "completedParameter": ""
@@ -83433,67 +83945,108 @@
           "mapManual": true,
           "connections": [
             {
-              "id": "link-1",
+              "id": "regional-road-1",
+              "from": "stop-4",
+              "to": "stop-3",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.86493,
+                "y": 0.73751
+              },
+              "control2": {
+                "x": 0.8309,
+                "y": 0.76166
+              }
+            },
+            {
+              "id": "regional-road-2",
+              "from": "stop-3",
+              "to": "stop-0",
+              "curve": "bezier",
+              "control1": {
+                "x": 0.67332,
+                "y": 0.88353
+              },
+              "control2": {
+                "x": 0.48047,
+                "y": 0.92256
+              }
+            },
+            {
+              "id": "regional-road-3",
               "from": "stop-0",
               "to": "stop-1",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.38664,
+                "y": 0.82326
+              },
+              "control2": {
+                "x": 0.41657,
+                "y": 0.73119
+              }
             },
             {
-              "id": "link-2",
+              "id": "regional-road-4",
               "from": "stop-1",
               "to": "stop-2",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.31414,
+                "y": 0.6169
+              },
+              "control2": {
+                "x": 0.23136,
+                "y": 0.53314
+              }
             },
             {
-              "id": "link-3",
+              "id": "regional-road-5",
               "from": "stop-2",
-              "to": "stop-3",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
-            },
-            {
-              "id": "link-4",
-              "from": "stop-3",
-              "to": "stop-4",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
-            },
-            {
-              "id": "link-5",
-              "from": "stop-4",
               "to": "stop-5",
-              "color": "",
-              "width": null,
-              "pattern": "",
-              "curve": "bezier"
+              "curve": "bezier",
+              "control1": {
+                "x": 0.31403,
+                "y": 0.57173
+              },
+              "control2": {
+                "x": 0.48979,
+                "y": 0.6555
+              }
             },
             {
-              "id": "link-6",
+              "id": "regional-detour-1",
               "from": "stop-1",
               "to": "stop-6",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.3494,
+                "y": 0.61464
+              },
+              "control2": {
+                "x": 0.31462,
+                "y": 0.54319
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
             },
             {
-              "id": "link-7",
+              "id": "regional-detour-2",
               "from": "stop-3",
               "to": "stop-7",
-              "color": "",
-              "width": null,
+              "curve": "bezier",
+              "control1": {
+                "x": 0.61808,
+                "y": 0.60798
+              },
+              "control2": {
+                "x": 0.33211,
+                "y": 0.53284
+              },
               "pattern": "dotted",
-              "curve": "bezier"
+              "color": "#a9d1c9",
+              "width": 3
             }
           ],
           "mapStyle": {
