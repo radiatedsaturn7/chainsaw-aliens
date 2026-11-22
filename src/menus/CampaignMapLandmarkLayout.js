@@ -8,7 +8,7 @@ export const CAMPAIGN_LANDMARKS = {
    1,
    [
     35,
-    39,
+    47,
     158,
     118
    ]
@@ -19,9 +19,9 @@ export const CAMPAIGN_LANDMARKS = {
    "raised",
    1,
    [
-    35,
+    47,
     50,
-    158,
+    146,
     118
    ]
   ],
@@ -31,9 +31,9 @@ export const CAMPAIGN_LANDMARKS = {
    "ground",
    1,
    [
-    26,
+    42,
     40,
-    168,
+    153,
     126
    ]
   ],
@@ -43,7 +43,7 @@ export const CAMPAIGN_LANDMARKS = {
    "ground",
    1,
    [
-    35,
+    36,
     34,
     158,
     118
@@ -55,9 +55,9 @@ export const CAMPAIGN_LANDMARKS = {
    "raised",
    1,
    [
-    35,
+    44,
     49,
-    158,
+    150,
     118
    ]
   ],
@@ -67,9 +67,9 @@ export const CAMPAIGN_LANDMARKS = {
    "raised",
    1.12,
    [
-    28,
+    32,
     14,
-    168,
+    165,
     126
    ]
   ],
@@ -79,9 +79,9 @@ export const CAMPAIGN_LANDMARKS = {
    "ground",
    1,
    [
-    35,
+    36,
     39,
-    158,
+    156,
     118
    ]
   ],
@@ -92,7 +92,7 @@ export const CAMPAIGN_LANDMARKS = {
    1.12,
    [
     20,
-    4,
+    5,
     174,
     132
    ]
