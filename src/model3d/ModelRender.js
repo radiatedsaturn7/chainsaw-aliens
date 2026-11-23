@@ -35,7 +35,7 @@ export function buildModelObject(model){
     }
     if(!vertices.length)continue;
     const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));geometry.computeVertexNormals();geometry.computeBoundingSphere();
-    const mesh=new THREE.Mesh(geometry,materials.get(material.id));mesh.userData.vertexIds=vertexIds;mesh.userData.faceIds=faceIds;mesh.castShadow=true;mesh.receiveShadow=true;root.add(mesh);
+    const mesh=new THREE.Mesh(geometry,materials.get(material.id));mesh.material.name=material.name||'';mesh.userData.vertexIds=vertexIds;mesh.userData.faceIds=faceIds;mesh.castShadow=true;mesh.receiveShadow=true;root.add(mesh);
   }
   root.userData.materials=[...materials.values()];return root;
 }

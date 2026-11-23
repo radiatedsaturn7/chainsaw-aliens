@@ -67,7 +67,17 @@ export function syncRaceModelLamps(part,session,{braking=false,enabled=true,defa
  if(instance.raceLampRoot!==root){
   for(const lamp of lights?.values()||[]){instance.object.remove(lamp);lamp.geometry.dispose();lamp.material.dispose();}
   lights=new Map();
-  for(const [name,pose] of mountedLampLocalFrames(instance.model)){
+  const frames=mountedLampLocalFrames(instance.model);
+  // Use the original lens as the glow surface only when the artist has explicitly
+  // marked a single rear light-bar material. Standard lamp meshes remain the default.
+  const rearBars=new Set(root.children.filter(
+    mesh=>mesh.isMesh && /^\[race-lamp:tail-bar\] /.test(mesh.material?.name)
+  ).map(mesh=>mesh.material));
+  const rearBar=rearBars.size===1&&frames.has('TaillightMount_L')&&frames.has('TaillightMount_R')
+    ?rearBars.values().next().value:null;
+  instance.raceRearBarMaterial=rearBar;
+  if(rearBar)rearBar.emissive.set(0xa61117);
+  for(const [name,pose] of frames){
     const isTail=name.startsWith('Tail');
     const lamp=new THREE.Mesh(new THREE.SphereGeometry(1,10,6),
       new THREE.MeshStandardMaterial({color:isTail?0xa01719:0xfff1d2,
@@ -85,9 +95,11 @@ export function syncRaceModelLamps(part,session,{braking=false,enabled=true,defa
   instance.raceMountedLamps=lights;instance.raceLampRoot=root;
  }
  const headlights=Boolean(session?.mechanical?.headlights??defaultHeadlights);
+ const rearBar=instance.raceRearBarMaterial;
+ if(rearBar)rearBar.emissiveIntensity=enabled?(braking?4:headlights?2:0):0;
  for(const [name,lamp] of lights){
   const tail=name.startsWith('Tail');
-  lamp.visible=enabled&&(headlights||tail&&braking);
+  lamp.visible=enabled&&(headlights||tail&&braking)&&!(tail&&rearBar);
   lamp.material.emissiveIntensity=tail?(braking?3.1:1.05):(session?.mechanical?.highBeams?2.9:1.95);
  }
  return lights.size>0;
