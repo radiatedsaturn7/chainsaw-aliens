@@ -173,6 +173,10 @@ export function* solveStaticVehicleSupportStateIncrementally({
   let status = 'failed';
   let error = null;
   let consecutiveConvergedIterations = 0;
+  const maxStaticRollCorrectionRad = 0.5 * Math.PI / 180;
+  let priorSaturatedRollSign = 0;
+  let saturatedRollReversals = 0;
+  let dampedStaticRoll = false;
   for (let iteration = 0; iteration < maximumIterations; iteration += 1) {
     yield;
     const environment = createEnvironment(candidate, false, iteration) || {};
@@ -229,10 +233,23 @@ export function* solveStaticVehicleSupportStateIncrementally({
       -0.5 * Math.PI / 180,
       0.5 * Math.PI / 180
     );
+    const rawRollCorrectionRad = bodyMomentResidual.z / rollRateNmRad * 0.45;
+    // High-load chassis can alternate at opposite roll limits on a cambered
+    // start. Only after a sustained two-cycle, relax the static iteration.
+    // The four-wheel, clearance, force and moment acceptance checks still apply.
+    if (!placementOnly && !dampedStaticRoll) {
+      const saturatedSign = Math.abs(rawRollCorrectionRad) >= maxStaticRollCorrectionRad
+        && Math.abs(bodyMomentResidual.z) > momentToleranceNm
+        ? Math.sign(rawRollCorrectionRad) : 0;
+      saturatedRollReversals = saturatedSign && saturatedSign === -priorSaturatedRollSign
+        ? saturatedRollReversals + 1 : 0;
+      priorSaturatedRollSign = saturatedSign;
+      dampedStaticRoll = saturatedRollReversals >= 4;
+    }
     const rollCorrectionRad = clamp(
-      bodyMomentResidual.z / rollRateNmRad * 0.45,
-      -0.5 * Math.PI / 180,
-      0.5 * Math.PI / 180
+      dampedStaticRoll ? rawRollCorrectionRad * (0.07 / 0.45) : rawRollCorrectionRad,
+      -maxStaticRollCorrectionRad,
+      maxStaticRollCorrectionRad
     );
     trace.push({
       iteration: iteration + 1,
@@ -255,7 +272,8 @@ export function* solveStaticVehicleSupportStateIncrementally({
       maximumPenetrationM: penetration.maximumPenetrationM,
       heaveCorrectionM,
       pitchCorrectionRad,
-      rollCorrectionRad
+      rollCorrectionRad,
+      ...(dampedStaticRoll ? { staticRollCycleDamped: true } : {})
     });
     const penetrationResolved = penetration.maximumPenetrationM !== null
       && finite(penetration.invalidTerrainSampleCount) === 0

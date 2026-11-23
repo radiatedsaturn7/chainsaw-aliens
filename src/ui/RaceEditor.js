@@ -14,7 +14,7 @@ import {routeProjectionScore,isRaceRouteLoopClosed} from '../racing/RaceRoutePro
 import {restoreRaceDrivingPreferences,captureRaceDrivingPreferences} from '../racing/RaceDrivingPreferences.js';
 import {joinRaceAtGradeCrossings} from '../racing/RaceAtGradeJunctions.js';
 import { raceLineGraphic, distantRaceLineGraphic, RACE_LINE_DEPTH_M } from '../racing/RaceLineGraphics.js';
-import { axleTireGeometry, tireSizeForWheel } from '../racing/TireSizes.js';
+import { authoredStockAxleGeometry, axleTireGeometry, tireSizeForWheel } from '../racing/TireSizes.js';
 import {stopCodriver,updateCodriverEvents} from '../racing/RaceCodriver.js';
 import {cockpitDashboardRect,cockpitWheelLayout,cockpitGaugeBounds} from '../racing/CarCockpitLayout.js';
 import { normalizeCvtTuning, validateCvt } from '../racing/simulation/CvtTransmissionModel.js';
@@ -18513,6 +18513,7 @@ export default class RaceEditor {
       reverseRatio: Math.max(0.1, Number(merged.reverseRatio) || 3.33),
       finalDrive: Math.max(0.5, Number(merged.gearFinalDrive) || 4.11),
       wheelRadiusM: Math.max(0.18, Number(merged.wheelRadiusM) || 0.337),
+      ...authoredStockAxleGeometry(merged),
       ...axleTireGeometry(car?.setup, merged),
       wheelInertiaKgM2: merged.wheelInertiaKgM2,
       unsprungMassKg: merged.unsprungMassKg,
