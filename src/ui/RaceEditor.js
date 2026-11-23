@@ -15959,8 +15959,12 @@ export default class RaceEditor {
       0,
       Number(bodyElevation || 0)
         - Number(roadElevation || 0)
-        + (RACE_THIRD_PERSON_CAMERA_HEIGHT_ABOVE_BODY_M
-          + carChaseClearanceLift(this.getRaceSessionCar(session))) / RACE_THREE_ELEVATION_M
+        + (this.getRaceSessionCar(session)?.art?.bodyModel?.ref
+          // Native bodies have physical dimensions: use a low chase view and
+          // do not inherit clearance compensation from their legacy sprites.
+          ? 1.6
+          : RACE_THIRD_PERSON_CAMERA_HEIGHT_ABOVE_BODY_M
+            + carChaseClearanceLift(this.getRaceSessionCar(session))) / RACE_THREE_ELEVATION_M
     );
   }
 
@@ -37195,6 +37199,20 @@ export default class RaceEditor {
     if (!Number.isFinite(currentNdcY)) return;
     const delta = clamp(desiredNdcY - currentNdcY, -1.5, 1.5);
     threeCamera.projectionMatrix.elements[9] -= delta;
+    const session = this.playtestSession;
+    const car = session && this.getRaceSessionCar(session);
+    if (car?.art?.bodyModel?.ref && session.cameraView !== 'first-person') {
+      // A low chase eye needs its own composition. Shift the projection rather
+      // than raising the camera or moving the physical car to fit the viewport.
+      const pose = this.getRacePlayerRenderPose(session, car);
+      const body = new THREE.Vector3(pose.x, pose.elevation * RACE_THREE_ELEVATION_M, pose.z);
+      const depth = body.clone().applyMatrix4(threeCamera.matrixWorldInverse);
+      body.project(threeCamera);
+      if (depth.z < -threeCamera.near && Number.isFinite(body.y)) {
+        const bodyTargetNdcY = 1 - .72 * 2;
+        threeCamera.projectionMatrix.elements[9] -= clamp(bodyTargetNdcY - body.y, -.6, .6);
+      }
+    }
     threeCamera.projectionMatrixInverse?.copy?.(threeCamera.projectionMatrix)?.invert?.();
   }
 

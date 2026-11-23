@@ -49,3 +49,14 @@ test('does not generate a 3D body still for 2D cars or cars with only model whee
   for(const art of [{},{wheelModel:{ref:'Wheel'}}])assert.equal(paintMenuModelStill(ctx,slot,{art},preview,options),false);
   assert.equal(draws.length,0);
 });
+
+
+test('map model follows heading, reuses its canvas and stays cached while parked',()=>{
+ const {ctx,preview,options,assets,draws,painted}=rig();
+ assets.set('Chassis',{});assets.set('Wheel',{});
+ for(const angle of [0,90,180,270,360,360])
+  assert(paintMenuModelStill(ctx,slot,car,preview,{...options,angle}));
+ assert.equal(draws.length,5);
+ assert.deepEqual(draws.map(d=>d[3]),[180,270,360,450,180].map(a=>a*Math.PI/180));
+ assert(painted.every(p=>p[0]===painted[0][0]),'heading changes reuse the offscreen canvas');
+});

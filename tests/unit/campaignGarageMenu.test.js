@@ -19,7 +19,7 @@ test('Drive, Tune, Upgrade and Garage share one row, and repeated installation d
  const screen=player.flow.screen,buttons=screen.elements.filter(e=>e.type==='button');
  assert.deepEqual(buttons.map(e=>e.label),['Drive','Tune','Upgrade','Garage']);assert.equal(new Set(buttons.map(e=>e.w)).size,1);
  for(let i=1;i<buttons.length;i++)assert.ok(buttons[i].x>=buttons[i-1].x+buttons[i-1].w);
- assert.ok(buttons.at(-1).x+buttons.at(-1).w<=1);assert.equal(screen.elements.filter(e=>e.id==='race-rewards').length,1);
+ assert.ok(buttons.at(-1).x+buttons.at(-1).w<=1);assert.equal(screen.elements.filter(e=>e.type==='race-description').length,0);
  assert.doesNotThrow(()=>normalizeMenuDocument(player.flow.document));
 });
 test('owned list excludes shop cars; paginated shop stays within eight choices; purchase and switch retain route and build',async()=>{

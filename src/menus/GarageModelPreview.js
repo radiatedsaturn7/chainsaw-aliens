@@ -10,8 +10,8 @@ export const usesGarageModelPreview=(element,car)=>GARAGE_WIDGETS.has(element?.i
 const HUBS=['FL','FR','RL','RR'];
 const FOREGROUND_SHIFT=.12;
 const CHASSIS_PITCH=-.014;
-const CAMERA_YAW=-Math.PI/4;
-const CAMERA_ELEVATION=.16;
+const CAMERA_YAW=-Math.PI*.43;
+const CAMERA_ELEVATION=.10;
 
 // Read exact pivots from native DCC exports, without importing/animating race
 // suspension. Legacy sprite graphics don't enter this preview pipeline.

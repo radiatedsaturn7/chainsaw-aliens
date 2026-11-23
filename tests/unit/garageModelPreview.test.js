@@ -31,6 +31,8 @@ test('fixed garage angle dynamically contains all visual bounds at desktop and p
   const projected=points.map(p=>p.clone().project(camera));
   assert(projected.every(p=>Math.abs(p.x)<.98&&Math.abs(p.y)<.98),'clipping');
   const d=camera.getWorldDirection(new THREE.Vector3());
+  assert(Math.abs(d.y)<.12,'garage view should be nearly level');
+  assert(Math.abs(d.x)>Math.abs(d.z)*3,'garage should show a broad side profile');
   if(dir.length())assert(d.distanceTo(dir)<1e-10,'camera changed park bearing');else dir.copy(d);
  }
 });
