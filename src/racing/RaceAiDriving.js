@@ -69,7 +69,9 @@ export function planRaceAiDriving(editor, ai, tuning, {
   const samplePose = (ahead) => editor.getRaceWorldPoseAtDistance(distance + ahead, { runtimeType, allowVisualExtension: true });
   const safety = roadSafety || getRaceAiRoadSafety(editor, ai, tuning);
   const nominalLookahead = clamp(5 + speed * (0.65 - safety.risk * .25), 6, 30 - safety.risk * 14);
-  const nearFinish = runtimeType !== 'circuit' && distance + 320 >= routeLength;
+  // Keep the optimized line through the final corners. Only targets beyond
+  // the timing line need the authored continuation instead of the race plan.
+  const nearFinish = runtimeType !== 'circuit' && distance + nominalLookahead >= routeLength;
   const roadPlan=nearFinish ? null : getRaceAiRoadPlan(editor);
   // Long straight-line lookahead cuts inside an apex. Bound the chord's
   // sagitta on bends to keep the driven body near the optimized path.
@@ -186,7 +188,8 @@ export function planRaceAiDriving(editor, ai, tuning, {
     if(roadPlan)targetSpeedMps=Math.min(targetSpeedMps,
       getRaceAiPlannedSpeed(roadPlan,distance,speed,lateralAcceleration,deceleration));
     let a = null;
-    for (let ahead = 0; !roadPlan && ahead <= horizon; ahead += 8) {
+    for (let ahead = 0; ahead <= horizon; ahead += 8) {
+      if (roadPlan && (runtimeType === 'circuit' || distance + ahead < routeLength)) continue;
       let curvature = getRaceAiSharedCurvature(editor,distance+ahead);
       if(curvature===null) {
         a ||= samplePose(0);

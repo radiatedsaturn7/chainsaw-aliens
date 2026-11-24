@@ -39,6 +39,10 @@ test('every reviewed raceway layout resolves to dense mapped geometry and distin
    assert.deepEqual(race.source.osmWayIds,short[1],event.raceRef);
    assert.ok(race.road.segments.every(s=>s.length<=50.01),event.raceRef);
    fujiShort.delete(event.id);
+  }else if(event.id==='raceway-ebisu-school'){
+   // The 405 m school loop is densely sampled despite its small node count.
+   assert.equal(race.road.nodes.length,35);
+   assert.ok(race.road.segments.every(s=>s.length<=20),event.raceRef);
   }else assert.ok(race.road.nodes.length>35,event.raceRef);
   const source=race.source;
   if(event.id.startsWith('rally-')){
@@ -58,7 +62,9 @@ test('every reviewed raceway layout resolves to dense mapped geometry and distin
   }else{
    assert.ok(source.osmWayIds.length>0,event.raceRef);assert.match(source.provider,/OpenStreetMap/,event.raceRef);
    assert.match(source.layoutGeometrySha256,/^[0-9a-f]{64}$/,event.raceRef);
-   assert.ok(!shapes.has(source.layoutGeometrySha256),event.raceRef);shapes.add(source.layoutGeometrySha256);
+   // Reverse layouts legitimately share their source trace, but not driving direction.
+   const layoutKey=`${source.layoutGeometrySha256}:${Boolean(source.reversed)}`;
+   assert.ok(!shapes.has(layoutKey),event.raceRef);shapes.add(layoutKey);
   }
   assert.equal(race.road.autoExtend,false);assert.equal(race.road.nodes.length,race.road.segments.length+1);
   const [a,b]=[race.road.nodes[0],race.road.nodes.at(-1)];if(race.type==='circuit')assert.ok(Math.hypot(a.x-b.x,a.y-b.y)<.01,event.raceRef);
