@@ -90,13 +90,13 @@ Notice that two of these causes are **Cait's preferences**, not a robot plot. To
 
 ### 5. The house: memory without an answer
 
-**Textual evidence:** Rob initially wants to avoid RI 116. When Cait offers him an alternate road, he chooses to go anyway. Outside the old house, he tells a ridiculous flashlight story, recalls an illuminated window, says “She went to Heaven,” and wonders if she thinks of him. Cait does not answer on the absent woman's behalf.
+**Textual evidence:** Rob initially wants to avoid RI 116. When Cait offers him an alternate road, he chooses to go anyway. Outside the old house, he tells a ridiculous flashlight story, recalls an illuminated window, says “She went to Heaven,” and remembers ordinary, funny moments at the house. Cait does not speculate about the woman’s present experience.
 
 **First reading:** A man revisits a place connected with a deceased former lover. “Heaven” is heard in its familiar afterlife sense. His grief may be complicated by a relationship that ended before death.
 
 **Second reading after Data Center City:** Heaven is a digital existence into which people voluntarily entered. The phrase can mean she left the physical world and perhaps chose a life without him. The script **must not** seed any hint that he could call, visit, or recover her before the reveal.
 
-**Counterreading:** One cannot infer that he was abandoned, that she was unkind, that they had a tragic last conversation, or that she still remembers him. Rob admits only that he loved her and thinks of her sometimes.
+**Counterreading:** One cannot infer that he was abandoned, that she was unkind, that they had a tragic last conversation, or that she still remembers him. Rob admits only that he loved her and that he remembers their time together.
 
 **Important relationship move:** Cait initially pushes for her road, but then offers him another. This matters more than a triumphant declaration that “my trip means my rules.” She wants freedom, not the pleasure of disregarding his boundaries. Rob's choice to take the painful road is his own.
 
