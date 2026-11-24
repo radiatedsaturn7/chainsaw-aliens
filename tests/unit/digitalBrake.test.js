@@ -142,3 +142,12 @@ test('ABS permits a prompt smooth brake application without speeding the non-ABS
   assert.equal(advanceDigitalBrake(abs,{enabled:true,raw:0,absEnabled:true,dt}).output,0);
  }
 });
+
+test('ABS reapplication keeps its prompt ramp instead of inheriting the slow non-ABS correction rate',()=>{
+ for(const hz of [30,60,120]){
+  const dt=1/hz;let s={output:.4,pedalPosition:.4,wasPressed:true};
+  s=advanceDigitalBrake(s,{enabled:true,absEnabled:true,raw:0,dt});assert.equal(s.output,0);
+  for(let i=0;i<Math.ceil(.22*hz);i++)s=advanceDigitalBrake(s,{enabled:true,absEnabled:true,raw:1,dt});
+  assert.equal(s.output,1);
+ }
+});

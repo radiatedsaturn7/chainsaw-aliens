@@ -1,3 +1,4 @@
+import {queueVehicleFleetCollisions} from './simulation/VehiclePairCollision.js';
 import { tireSizeForWheel } from './TireSizes.js';
 import {advanceRaceDriftScore,driftContactCount} from './RaceDriftScore.js';
 import { advanceRaceSimulationClock } from './RaceFrameBudget.js';
@@ -821,13 +822,22 @@ function ensureVehicleDynamicsAuthority(editor, tuning, controls) {
 }
 
 // Seed the rendered car from the same grounded chassis state used by the first
-// physics step. Do this behind loading, without advancing clocks or AI.
+// physics step. Do this behind loading, without advancing simulation clocks.
 export function initializeRaceVehiclePresentation(editor) {
   const session=editor?.playtestSession;
-  if(!session?.running || session.vehicleRenderState)return;
-  const tuning=editor.getRaceCarTuning(editor.getRaceSessionCar(session));
-  const authority=ensureVehicleDynamicsAuthority(editor,tuning,{});
-  syncVehicleDynamicsCompatibilityOutputs(authority.runner,session);
+  if(!session?.running)return;
+  if(!session.vehicleRenderState){
+    const tuning=editor.getRaceCarTuning(editor.getRaceSessionCar(session));
+    const authority=ensureVehicleDynamicsAuthority(editor,tuning,{});
+    syncVehicleDynamicsCompatibilityOutputs(authority.runner,session);
+  }
+  // The showcase does not run simulation. Seed each rival's wheel/body pose
+  // against its own grid location before rendering, without advancing time.
+  for(const ai of session.aiRuntime || []){
+    if(ai.vehicleRenderState)continue;
+    const car=ai.runtimeCar || editor.findRaceProjectCarById(ai.carId) || editor.selectedCar;
+    editor.updateRaceAiVehiclePhysics(ai,{car,tuning:editor.getRaceCarTuning(car),seconds:0});
+  }
 }
 
 // Build immutable collision data while loading still covers the race. Do not
@@ -2762,7 +2772,11 @@ export function updateRaceSimulation({
   editor.raceInput.steeringWheel = launchSteeringLocked ? 0 : digitalInput
     ? systems.handlingAssist.stepDigitalSteering({
       intent, currentOutput: editor.raceInput.steeringWheel,
-      speedMps: steeringSafetySpeedMps, seconds
+      speedMps: steeringSafetySpeedMps, seconds,
+      state: getAuthoritativeChassisState(editor.playtestSession),
+      vehicleConfig: editor.playtestSession.vehicleDynamicsRunner?.config || tuning,
+      // Menu/button steering is inverted when submitted to vehicle physics.
+      physicalIntent: -intent
     })
     : systems.handlingAssist.stepControllerToRackInput({
       mode: controllerInputMode, intent,
@@ -4014,6 +4028,13 @@ export function updateRaceSimulation({
     0.24
   );
   if (!countdownActive) editor.updateRaceSceneryCollisions(seconds);
+  // Resolve swept pairs before either side advances, including long frames.
+  // Worker races do this inside the owner clock instead.
+  if(!countdownActive && !editor.vehicleDynamicsAuthority?.workerBridge){
+    const session=editor.playtestSession;
+    const runners=[session.vehicleDynamicsRunner,...(session.aiRuntime||[]).map(ai=>ai.vehicleDynamicsRunner)].filter(Boolean);
+    session.vehiclePairContacts=queueVehicleFleetCollisions(runners,seconds);
+  }
   advanceVehicleDynamicsAuthority(editor, {
     car,
     systems,

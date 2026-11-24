@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {getRaceAiDirector} from '../../src/racing/RaceAiDirector.js';
 import {getRaceAiRouteMotion} from '../../src/racing/RaceAiRouteMotion.js';
 const pose=s=>({x:280-80*Math.cos(s/80),z:80*Math.sin(s/80),yaw:s/80,segment:{}});
 function fixture(){
- const editor={playtestSession:{worldX:0,worldZ:0,routeLength:1000,routeRuntimeType:'destination'},
+ const editor={playtestSession:{debugAiNoRoadPlan:true,worldX:0,worldZ:0,routeLength:1000,routeRuntimeType:'destination'},
  getRaceWorldPoseAtDistance:pose,getRaceRoadHalfWidthWorld:()=>6};
  const ai={worldX:200,worldZ:0,carYaw:0,distance:0,lineOffset:0};
  return {editor,ai,options:{tuning:{widthM:2},averageSpeed:15,seconds:.05}};
@@ -59,4 +60,29 @@ test('crawl launch cannot rotate in place toward a lane and sweep into a clear f
  assert.ok(moved);
  assert.ok(Math.abs(moved.yaw-ai.carYaw)<.001,'1 mm of travel cannot rotate a car by degrees');
  assert.ok(moved.z>ai.worldZ);
+});
+
+test('deferring a merge holds lateral position along the bend instead of driving straight off it',()=>{
+ const {editor,ai,options}=fixture();ai.worldX=202;ai.lineOffset=.5;
+ const moved=getRaceAiRouteMotion(editor,ai,{...options,holdLane:true});
+ const next=pose(.75);
+ const lateral=-(moved.x-next.x)*Math.cos(next.yaw)+(moved.z-next.z)*Math.sin(next.yaw);
+ assert.ok(Math.abs(lateral+2)<1e-8);
+ assert.ok(moved.z>ai.worldZ);
+});
+
+test('distant motion follows the same offset racing line as detailed steering',()=>{
+ const {editor,ai,options}=fixture();
+ editor.getRaceWorldPoseAtDistance=d=>({x:200,z:d,yaw:0,segment:{}});
+ const points=[0,1000].map(z=>({x:202,z,yaw:0,offset:2,elevation:0}));
+ editor.playtestSession.debugAiNoRoadPlan=false;
+ getRaceAiDirector(editor).planPrepared=true;
+ getRaceAiDirector(editor).plan={count:2,step:1000,length:1000,circuit:false,
+  halfWidth:[6,6],racingLine:{points,centers:points.map(p=>({...p,x:200}))}};
+ const result=getRaceAiRouteMotion(editor,ai,options);
+ assert.ok(result.x>200,'move toward optimized line, not center');
+ assert.ok(result.x<=200.04+1e-8,'retain bounded lateral motion');
+ ai.worldX=202;
+ const settled=getRaceAiRouteMotion(editor,ai,options);
+ assert.ok(Math.abs(settled.x-202)<1e-8,'do not pull a car off its racing line before promotion');
 });

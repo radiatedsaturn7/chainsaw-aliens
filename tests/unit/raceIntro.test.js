@@ -84,3 +84,29 @@ test('countdown HUD hides five/four and the showcase, then draws three through G
  editor.playtestSession={countdownRemainingMs:4000,raceIntro:{active:true}};
  editor.drawRaceCountdown(ctx,{x:0,y:0,w:800,h:600});assert.equal(labels.length,4);
 });
+
+test('showcase initializes every opponent wheel pose before countdown without stepping physics',async()=>{
+ const {default:RaceEditor}=await import('../../src/ui/RaceEditor.js');
+ const {initializeRaceVehiclePresentation}=await import('../../src/racing/RaceSimulation.js');
+ const e=new RaceEditor({});e.preloadSelectedRaceArtRefs=()=>{};e.prewarmRacePlaytestRenderResources=()=>{};
+ const id=e.selectedCar.id;
+ e.selectedRace.competition={aiDrivers:[0,1,2].map(i=>({id:`intro-${i}`,carId:id,enabled:true,difficulty:'hard'}))};
+ e.startPlaytest(id,{hydrateCars:false,preparedAiCarIds:[id,id,id]});
+ const s=e.playtestSession,before=s.aiRuntime.map(ai=>({x:ai.worldX,z:ai.worldZ,d:ai.distance}));
+ initializeRaceVehiclePresentation(e);
+ const runners=s.aiRuntime.map(ai=>ai.vehicleDynamicsRunner);
+ for(const [i,ai] of s.aiRuntime.entries()){
+  assert.equal(ai.vehicleDynamicsRunner.stepIndex,0);
+  assert.ok(ai.vehicleRenderState.wheelPoses.fl);
+  assert.ok(Math.hypot(ai.worldX-before[i].x,ai.worldZ-before[i].z)<1e-9);
+  assert.equal(ai.distance,before[i].d);
+  for(const wheel of ['fl','fr','rl','rr']){
+   const hub=ai.vehicleRenderState.wheelPoses[wheel].position;
+   assert.ok(Number.isFinite(hub.y));
+   assert.ok(hub.y>ai.heightM+.15,'wheel hub should be above the road, not at road height');
+  }
+ }
+ initializeRaceVehiclePresentation(e);
+ assert.deepEqual(s.aiRuntime.map(ai=>ai.vehicleDynamicsRunner),runners);
+ assert.equal(s.elapsedMs,0);
+});

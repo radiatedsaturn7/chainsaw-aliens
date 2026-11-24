@@ -1,3 +1,4 @@
+import {getCountersteeringRange} from './ContactPatchTireModel.js';
 import { getGamepadSpeedSteeringScale } from './RaceSimulationConfig.js';
 import { clamp } from './SimulationMath.js';
 import {rotateVectorByQuaternion} from './RigidBodyMath.js';
@@ -149,13 +150,19 @@ export class HandlingAssist {
   // Button intent is a wheel movement command, not an analog position.
   // Integrate each phase exactly so a reversal crossing zero is independent
   // of the render frame partition. Unwind quickly, then build opposite lock
-  // at the normal rate; never carry the unwind rate into the next turn.
+  // at the selected turn/recovery rate; do not reuse the unwind rate.
   stepDigitalSteering({ intent = 0, currentOutput = 0, speedMps = 0,
-    seconds = 0, calibration = this.steering.digitalCalibration } = {}) {
+    seconds = 0, calibration = this.steering.digitalCalibration,
+    state = null, vehicleConfig = {}, physicalIntent = intent } = {}) {
     const profile = calibration || {};
     const blend = clamp(Math.abs(Number(speedMps) || 0) / 60, 0, 1);
-    const press = (profile.pressRateLowSpeed ?? 2.8)
+    const ordinaryPress = (profile.pressRateLowSpeed ?? 2.8)
       + ((profile.pressRateHighSpeed ?? 1.4) - (profile.pressRateLowSpeed ?? 2.8)) * blend;
+    // Current motion opens faster input travel only in the driver's chosen
+    // recovery direction. No retained permission: ordinary turn-in resumes
+    // as soon as the slide resolves. The tire model still bounds useful lock.
+    const recovery = state ? getCountersteeringRange(state, vehicleConfig, Math.sign(physicalIntent)) : 0;
+    const press = ordinaryPress + recovery * Math.max(0, (profile.recoveryPressRate ?? 5) - ordinaryPress);
     const unwind = profile.unwindRate ?? 7;
     const release = profile.releaseRate ?? 3.5;
     const direction = Math.sign(Number(intent) || 0);

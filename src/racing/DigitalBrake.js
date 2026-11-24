@@ -49,7 +49,7 @@ export function advanceDigitalBrake(previous = {}, {
     } else if (!nearLock && !reapplying) {
       // ABS can accept demand promptly and meter each wheel itself. Keep
       // the gentler unassisted ramp and remembered-pressure corrections.
-      const rate = correction ? 1 : 1 / (absEnabled ? .2 : .35);
+      const rate = absEnabled ? 5 : correction ? 1 : 1 / .35;
       // Recover promptly as slip clears, without a fixed recovery timeout.
       pedalPosition += seconds * rate * (1 - clamp(filteredLock / .12));
     }
@@ -60,5 +60,5 @@ export function advanceDigitalBrake(previous = {}, {
   return {output,pedalPosition,releaseSeconds,holdSeconds,reapplying,
     correction,
     wasPressed:target>0,bypassed:false,feathering,nearLock,filteredLock,filteredRearLock,lock,brakeLock,frontBrakeLock,rearBrakeLock,rearPairLock,axleLock,
-    responseProfile:'brake-abs-ramp-v6'};
+    responseProfile:'brake-abs-reapply-v7'};
 }

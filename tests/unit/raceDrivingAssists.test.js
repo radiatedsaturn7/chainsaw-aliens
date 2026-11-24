@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {analyzeRaceDrivingRoute, nextRacePaceNote, racePaceNotes, updateWrongWay, drivingSpeedAdvice, updateRaceDrivingAssists} from '../../src/racing/RaceDrivingAssists.js';
+import {analyzeRaceDrivingRoute, nextRacePaceNote, racePaceNotes, updateWrongWay, drivingSpeedAdvice, updateRaceDrivingAssists, drivingGuidePreview} from '../../src/racing/RaceDrivingAssists.js';
 import {buildRaceAiRoadPlan} from '../../src/racing/RaceAiRoadPlan.js';
 import {drawRaceDrivingAssistHud, drawRaceDrivingLine} from '../../src/racing/RaceDrivingGuideRenderer.js';
 
@@ -158,4 +158,44 @@ test('nearby calls speak once without units and each icon remains until its mark
   s.distance=301;tick();assert.deepEqual(s.drivingAssists.notes.map(n=>n.at),[320]);
   s.distance=321;tick();assert.equal(s.drivingAssists.note,null);
  }finally{globalThis.speechSynthesis=speech;globalThis.SpeechSynthesisUtterance=utterance;}
+});
+
+test('live worker tire grip and brake damage reach the player guide without a local physics runner',()=>{
+ const patches=Object.fromEntries(['fl','fr','rl','rr'].map(id=>[id,{validTreadContact:true,normalLoadN:3500,gripCoefficient:.4}]));
+ const editor={...bend,selectedRace:{codriver:{enabled:false}},raceInput:{paused:false,absEnabled:true,brakeAssistEnabled:true},selectedCar:{},
+  getRaceCarTuning:()=>({weightKg:1500,brakeForceN:15000,tireGrip:2}),getRaceSessionCar:()=>null,
+  vehicleDynamicsAuthority:{workerBridge:{}},
+  playtestSession:{routeLength:400,routeRuntimeType:'destination',distance:100,speedMps:20,worldX:0,worldZ:100,
+   vehicleDynamicsPresentationState:{contactPatches:patches},mechanical:{effects:{brakes:{fl:0,fr:0,rl:1,rr:1}}}}};
+ updateRaceDrivingAssists(editor,.016);
+ const guide=editor.playtestSession.drivingAssists;
+ assert.equal(guide.capabilities.live,true);assert.equal(guide.grip,.4);assert.equal(guide.brakeCondition,0);
+ assert.ok(guide.capabilities.braking>0&&guide.capabilities.braking<2);
+ assert.equal(guide.capabilities.responseSeconds,.35);
+});
+
+
+test('guide preview locates braking on the approach and holds yellow at the apex after slowing',()=>{
+ const count=101,plan={length:400,step:4,count,circuit:false,
+  curvature:Float64Array.from({length:count},(_,i)=>i>=50&&i<=65?.05:0),
+  grade:new Float64Array(count),risk:new Float64Array(count)};
+ const capabilities={lateral:6,braking:6,responseSeconds:.4};
+ const stations=Array.from({length:35},(_,i)=>8+i*8);
+ const preview=drivingGuidePreview(plan,0,30,stations,1,{},1,capabilities);
+ assert.equal(preview[0].action,'ACCELERATE','far-away red corners must not say brake now');
+ const start=preview.findIndex(p=>p.action==='BRAKE');
+ assert.ok(start>10&&start<25,`braking station ${stations[start]}`);
+ assert.equal(preview[stations.indexOf(232)].action,'COAST','braked arrival at steady apex is not still overspeed');
+ assert.equal(preview.at(-1).action,'ACCELERATE','exit opens up');
+ assert.equal(drivingGuidePreview(plan,220,5,[228,236],1,{},1,capabilities)[0].action,'ACCELERATE','slow cars can correctly see green within a turn');
+ const wet=drivingGuidePreview(plan,0,30,stations,1,{},1,{...capabilities,lateral:3,braking:3});
+ assert.ok(wet.findIndex(p=>p.action==='BRAKE')<start,'lower grip needs earlier braking');
+});
+
+test('guide remains red when following a decreasing speed envelope at the correct speed',()=>{
+ const plan=buildRaceAiRoadPlan(bend,{routeLength:400,runtimeType:'destination'});
+ const cap={lateral:6,braking:5,responseSeconds:0};
+ const target=drivingSpeedAdvice(plan,110,25,1,{},1,cap).target;
+ const p=drivingGuidePreview(plan,110,target,[118,126],1,{},1,cap);
+ assert.equal(p[0].action,'BRAKE');assert.equal(p[1].action,'BRAKE');
 });

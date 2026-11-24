@@ -45,6 +45,7 @@ test('road grade, tire grip and corner demand constrain aggregate force',()=>{
  assert.ok(uphill.acceleration<baseline.acceleration-1);
  editor.getRaceRoadSurfaceProfileAtDistance=grade;
  options.contactState.averageSurfaceGrip=.25;
+ for(const contact of Object.values(options.contactState.contacts.contacts))contact.friction=.25;
  const lowGrip=stepRaceAiRemotePowertrain(editor,ai,options);
  assert.ok(lowGrip.acceleration<baseline.acceleration);
  ai.drivingPlan.steeringAngleRad=.5;
@@ -55,7 +56,8 @@ test('road grade, tire grip and corner demand constrain aggregate force',()=>{
 test('remote powertrain uses authored torque and power rather than a fixed acceleration',()=>{
  const {editor,ai,options}=fixture();
  const baseline=stepRaceAiRemotePowertrain(editor,ai,options);
- editor.getRaceTorqueNmAtRpm=()=>1;
+ options.tuning.engineCurve={torquePoints:[{rpm:500,torqueLbFt:1},{rpm:10000,torqueLbFt:1}]};
+ options.tuning.peakTorqueNm=1;
  const weak=stepRaceAiRemotePowertrain(editor,ai,options);
  assert.ok(weak.acceleration<baseline.acceleration);
 });
@@ -83,4 +85,55 @@ test('budgeted cheap powertrain respects engine shutdown and failed brakes',()=>
  const failed=stepRaceAiRemotePowertrain(editor,ai,options);
  assert.equal(ai.engineDrive.brakeState.force,0);
  assert.ok(failed.acceleration>working.acceleration);
+});
+
+test('road-following AI does not spend straight-road traction on an unapplied steering correction',()=>{
+ const {editor,ai,options}=fixture();
+ Object.assign(ai,{carYaw:0,physicsBudgetDetail:'cheap',lineOffset:0,speedMps:27,gear:4});
+ editor.getRaceWorldPoseAtDistance=d=>({x:0,z:d,yaw:0,segment:{}});
+ editor.getRaceRoadHalfWidthWorld=()=>6;
+ options.targetMps=47;
+ ai.drivingPlan.steeringAngleRad=.12;
+ const corrected=stepRaceAiRemotePowertrain(editor,ai,options);
+ assert.ok(corrected.acceleration>0,`full throttle on a straight must accelerate: ${corrected.acceleration}`);
+ assert.ok(ai.engineDrive.driveForceN>0);
+ editor.playtestSession.debugAiBicycleOnly=true;
+ const bicycle=stepRaceAiRemotePowertrain(editor,ai,options);
+ assert.ok(bicycle.acceleration<corrected.acceleration,'a chassis actually applying that turn must reserve lateral grip');
+});
+
+test('AI supplies road-load throttle at cruising speed instead of slowing on an uphill straight',()=>{
+ const {editor,ai,options}=fixture();ai.speedMps=12;ai.gear=2;options.targetMps=12;
+ editor.getRaceRoadSurfaceProfileAtDistance=()=>({grade:.08});
+ // Allow the shared engine RPM/shift state to settle, rather than assuming
+ // instantaneous torque on the first frame of an injected moving car.
+ for(let i=0;i<200;i++)ai.speedMps=stepRaceAiRemotePowertrain(editor,ai,options).speedMps;
+ assert.ok(ai.engineDrive.throttle>0);
+ assert.ok(ai.speedMps>11.5,`uphill target hold ${ai.speedMps}`);
+});
+
+test('road-following still reserves real corner grip even with zero corrective steering',()=>{
+ const {editor,ai,options}=fixture();
+ Object.assign(ai,{worldX:200,worldZ:0,carYaw:0,distance:0,physicsBudgetDetail:'cheap',lineOffset:0,speedMps:27,gear:4});
+ editor.getRaceWorldPoseAtDistance=d=>({x:200,z:d,yaw:0,segment:{}});
+ editor.getRaceRoadHalfWidthWorld=()=>6;options.targetMps=47;
+ const straight=stepRaceAiRemotePowertrain(editor,ai,options);
+ editor.getRaceWorldPoseAtDistance=d=>({x:200+40*(1-Math.cos(d/40)),z:40*Math.sin(d/40),yaw:d/40,segment:{}});
+ const corner=stepRaceAiRemotePowertrain(editor,ai,options);
+ assert.ok(corner.acceleration<straight.acceleration);
+ assert.equal(ai.engineDrive.driveForceN,0,'a turn beyond available grip has no spare longitudinal capacity');
+});
+
+test('remote launch preserves physical clutch and RPM state instead of instantaneous wheel RPM',()=>{
+ const {editor,ai,options}=fixture();
+ options.tuning.torqueConverterSlip=0;
+ ai.speedMps=0;ai.rpm=options.tuning.idleRpm;ai.gear=1;options.targetMps=40;
+ const first=stepRaceAiRemotePowertrain(editor,ai,options);
+ const state=ai.remotePowertrainState.powertrainState;
+ assert.ok(state.clutchCoupling<1);
+ assert.ok(state.engineRpm>=options.tuning.idleRpm);
+ for(let i=0;i<60;i++)ai.speedMps=stepRaceAiRemotePowertrain(editor,ai,options).speedMps;
+ assert.ok(ai.speedMps>first.speedMps);
+ assert.ok(ai.remotePowertrainState.powertrainState.clutchCoupling>state.clutchCoupling);
+ assert.ok(ai.rpm>options.tuning.idleRpm);
 });

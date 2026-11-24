@@ -1,3 +1,6 @@
+import {raceAiPassingOffset,clearRaceAiOvertakePlan} from './RaceAiOvertaking.js';
+import {raceAiLaunchLaneOffset} from './RaceAiLaunchLane.js';
+import {raceAiGroundSpeed} from './RaceAiControls.js';
 import {sampleRaceRacingLine} from './RaceRacingLine.js';
 import {createRaceAiTrafficProbe} from './RaceAiTrafficBounds.js';
 import { raceAiRoadPlanIndex, getRaceAiPlannedSpeed } from './RaceAiRoadPlan.js';
@@ -23,6 +26,7 @@ export function selectRaceAiCars(cars = [], count = 0, random = Math.random) {
 }
 
 const advisoryPlans = new WeakMap();
+export function clearRaceAiDrivingPlan(ai){advisoryPlans.delete(ai);clearRaceAiOvertakePlan(ai);}
 
 const angleDifference = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
 
@@ -60,7 +64,7 @@ export function planRaceAiDriving(editor, ai, tuning, {
   const runtimeType = session.routeRuntimeType || editor.getSelectedRaceRuntimeType();
   const routeLength = Math.max(1, Number(session.routeLength || editor.getRaceRouteLength()));
   const distance = Number(ai.projectedDistance ?? ai.distance ?? 0);
-  const speed = Math.abs(Number(ai.speedMps || 0));
+  const speed = raceAiGroundSpeed(ai);
   const samplePose = (ahead) => editor.getRaceWorldPoseAtDistance(distance + ahead, { runtimeType, allowVisualExtension: true });
   const safety = roadSafety || getRaceAiRoadSafety(editor, ai, tuning);
   const nominalLookahead = clamp(5 + speed * (0.65 - safety.risk * .25), 6, 30 - safety.risk * 14);
@@ -77,17 +81,60 @@ export function planRaceAiDriving(editor, ai, tuning, {
   // Stored path offsets use +X at yaw zero; the engine's lateral convention
   // uses its own right vector. Project the actual path, never assume a sign.
   const lineOffset=racingTarget ? (racingTarget.x-targetPose.x)*right.x+(racingTarget.z-(targetPose.z??targetPose.y))*right.z : 0;
-  const offset = clamp(lineOffset+clamp(Number(ai.lineOffset || 0), -safety.maxLineOffset, safety.maxLineOffset) * halfWidth, -laneLimit, laneLimit);
+  const desiredOffset = lineOffset+clamp(Number(ai.lineOffset || 0), -safety.maxLineOffset, safety.maxLineOffset) * halfWidth;
+  let offset=clamp(raceAiLaunchLaneOffset(ai,session,ai.awaitingStartLine && speed<2 ? samplePose(0) : null,distance,desiredOffset),-laneLimit,laneLimit);
+  // Keep a clear lane beside another car instead of steering through it to
+  // reach the ideal line. This changes the steering target, never either pose.
+  const ownOffset=(ai.worldX-targetPose.x)*right.x+(ai.worldZ-(targetPose.z??targetPose.y))*right.z;
+  if(runtimeType==='circuit' && ai.physicsBudgetDetail!=='cheap' && distance>30 && !session.debugAiCenterSlow && !ai.awaitingStartLine){
+    offset=raceAiPassingOffset(ai,getRaceAiNearbyTraffic(editor,ai,Math.max(50,speed*2.5)),{
+      desired:offset,ownOffset,right,pose:targetPose,laneLimit,width:Number(tuning.widthM)||1.8,
+      speed,seconds,risk:safety.risk,enabled:upcomingCurvature<.04});
+  }
+  const trafficCars=session.aiRuntime||[];
+  for(let trafficIndex=-1;trafficIndex<trafficCars.length;trafficIndex++){
+    const other=trafficIndex<0?session:trafficCars[trafficIndex];
+    if(other===ai || !Number.isFinite(other.worldX)||!Number.isFinite(other.worldZ))continue;
+    const aY=ai.vehicleDynamicsRunner?.state?.position?.y,bY=other.vehicleDynamicsRunner?.state?.position?.y;
+    if(Number.isFinite(aY)&&Number.isFinite(bY)&&Math.abs(aY-bY)>2.5)continue;
+    const tx=other.worldX-ai.worldX,tz=other.worldZ-ai.worldZ;
+    const along=tx*Math.sin(ai.carYaw)+tz*Math.cos(ai.carYaw);
+    if(Math.abs(along)>Math.max(5,speed*.35))continue;
+    const otherOffset=(other.worldX-targetPose.x)*right.x+(other.worldZ-(targetPose.z??targetPose.y))*right.z;
+    const separation=(Number(tuning.widthM)||1.8)/2+(Number(other.vehicleDynamicsRunner?.config?.bodyWidthM)||1.8)/2+.35;
+    if(Math.abs(ownOffset-otherOffset)<.1 || Math.abs(ownOffset-otherOffset)>separation+2)continue;
+    offset=ownOffset<otherOffset ? Math.min(offset,otherOffset-separation) : Math.max(offset,otherOffset+separation);
+    offset=clamp(offset,-laneLimit,laneLimit);
+  }
   const dx = Number(targetPose.x || 0) + right.x * offset - Number(ai.worldX || 0);
   const dz = Number(targetPose.z ?? targetPose.y ?? 0) + right.z * offset - Number(ai.worldZ || 0);
   const yaw = Number(ai.carYaw || 0);
   const lateral = dx * Math.cos(yaw) - dz * Math.sin(yaw);
   const headingError = angleDifference(Math.atan2(dx, dz), yaw);
   const maxSteer = Number(ai.vehicleDynamicsRunner?.config?.maxSteerAngleRad || 0.52);
-  const steeringAngleRad = clamp(Math.atan2(
+  let steeringAngleRad = clamp(Math.atan2(
     2 * Number(tuning.wheelbaseM || 2.65) * lateral,
     Math.max(4, dx * dx + dz * dz)
   ), -maxSteer, maxSteer);
+
+  // Pure pursuit sees heading, not the momentum carrying a sliding car away.
+  // Countersteer into that motion and damp excess rotation before the target
+  // ends up behind the car. Only use current detailed state (never stale LOD data).
+  const runner=ai.vehicleDynamicsRunner;
+  const state=runner && !runner.dormant && ai.physicsBudgetDetail!=='cheap' ? runner.state : null;
+  if(state && speed>5 && Number(state.bodyLongitudinalSpeedMps??ai.speedMps)>0){
+    const beta=Math.atan2(Number(state.bodyLateralSpeedMps)||0,Math.max(1,Number(state.bodyLongitudinalSpeedMps??ai.speedMps)));
+    const skid=clamp((Math.abs(beta)-.035)/.12,0,1);
+    const desiredYawRate=speed*Math.tan(steeringAngleRad)/Math.max(1,Number(tuning.wheelbaseM)||2.65);
+    const yawRate=Number(state.angularVelocityWorld?.y??state.yawRateRadps)||0;
+    steeringAngleRad=clamp(steeringAngleRad+skid*(beta*.65-clamp((yawRate-desiredYawRate)*.18,-.2,.2)),-maxSteer,maxSteer);
+  }
+
+  // Pure pursuit loses authority when its target is almost directly behind:
+  // sin(heading error) tends to zero. Once slow, deliberately turn around
+  // rather than creeping backwards along the course with nearly straight wheels.
+  const turningBack=Math.abs(headingError)>Math.PI*.5;
+  if(turningBack && speed<5)steeringAngleRad=Math.sign(headingError)*maxSteer;
 
   const liveGrip=clamp(grip,0.12,1.2)*clamp(Number(tuning.tireGrip)||1,.35,1.4);
   const lateralAcceleration = 9.81 * liveGrip
@@ -167,6 +214,7 @@ export function planRaceAiDriving(editor, ai, tuning, {
   let targetSpeedMps = Math.min(memo.speedLimit, Math.max(0, topSpeedMps)*(1-safety.risk*.35));
   // Slow down while recovering a missed line instead of accelerating off-road.
   targetSpeedMps *= clamp(1 - Math.abs(headingError) / 1.8, 0.12, 1);
+  if(turningBack)targetSpeedMps=Math.min(targetSpeedMps,3);
   if (runtimeType !== 'circuit' && distance >= routeLength) targetSpeedMps = 0;
   // Leave braking room behind slower cars, including the player. Lateral
   // clearance means cars already alongside can continue their pass.
@@ -182,7 +230,9 @@ export function planRaceAiDriving(editor, ai, tuning, {
       const tz = other.worldZ - Number(ai.worldZ || 0);
       const ahead = tx * Math.sin(yaw) + tz * Math.cos(yaw);
       const across = Math.abs(tx * Math.cos(yaw) - tz * Math.sin(yaw));
-      if (ahead <= 0 || ahead > Math.max(15, speed * 2.5) || across > Number(tuning.widthM || 1.8) + 0.5) continue;
+      const corridorWidth=(Number(tuning.widthM)||1.8)*.5
+        +(Number(other.car?.vehicleDynamicsRunner?.config?.bodyWidthM)||1.8)*.5+.25;
+      if (ahead <= 0 || ahead > Math.max(15, speed * 2.5) || across > corridorWidth) continue;
       // On a bend, two physically clear cars alongside can each see the other
       // a few centimetres 'ahead' in their own heading. Following both produces
       // a permanent mutual stop. Only apply following distance to a car alongside
@@ -195,7 +245,12 @@ export function planRaceAiDriving(editor, ai, tuning, {
       }
       const otherSpeed = Math.max(0, Number(other.speedMps || 0))
         * Math.max(0, Math.cos(angleDifference(Number(other.carYaw || 0), yaw)));
-      const room = Math.max(0, ahead - 5 - speed * 0.5);
+      // Following margin is driver reaction distance, on top of the physical
+      // braking envelope below. Skilled drivers can follow more closely;
+      // collision sweeps and the actual brake capability remain unchanged.
+      const reactionSeconds=({easy:.5,medium:.28,hard:.15,expert:.12})[ai.difficulty]??.5;
+      const bodyGap=(ownLength+otherLength)*.5;
+      const room = Math.max(0, ahead - bodyGap - .6 - speed * reactionSeconds);
       trafficLimit = Math.min(trafficLimit, Math.sqrt(otherSpeed * otherSpeed + 2 * deceleration * room));
     }
     memo.trafficLimit = trafficLimit;

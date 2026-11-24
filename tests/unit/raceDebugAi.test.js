@@ -39,3 +39,17 @@ test('debug worker lifecycle and count controls are session-only',()=>{
  s.aiRuntime=[];
  assert.equal(e.getRacePauseMenuRows().find(r=>r.id==='race-debug-ai-remove').disabled,true);
 });
+
+test('debug difficulty changes live opponents and future additions without changing the saved race',async()=>{
+ const {changeRaceDebugAiDifficulty}=await import('../../src/racing/RaceDebugAi.js');
+ const e=new RaceEditor({});e.startPlaytest(e.selectedCar.id,{hydrateCars:false});
+ const s=e.playtestSession;s.aiRuntime=[{id:'rival',difficulty:'hard'}];s.aiDrivers=[{id:'rival',difficulty:'hard'}];
+ const authored=JSON.stringify(e.selectedRace.competition);
+ e.raceInput.pauseMenuMode='debug-ai';
+ const row=()=>e.getRacePauseMenuRows().find(r=>r.id==='race-debug-ai-difficulty');
+ assert.equal(row().value,'hard');row().onClick();assert.equal(row().value,'easy');
+ assert.equal(s.aiRuntime[0].difficulty,'easy');assert.equal(s.aiDrivers[0].skill,.38);
+ row().onAdjust(-1);assert.equal(row().value,'hard');
+ changeRaceDebugAiDifficulty(e,-1);assert.equal(row().value,'medium');
+ assert.equal(JSON.stringify(e.selectedRace.competition),authored);
+});

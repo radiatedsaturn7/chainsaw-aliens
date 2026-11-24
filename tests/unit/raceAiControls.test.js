@@ -119,3 +119,56 @@ test('falling racing-line speed requests braking before overspeed, releasing whe
  ai.speedMps=0;
  assert.equal(planRaceAiControls(editor,ai,tuning,0).brake,1,'traffic hold retains priority');
 });
+
+test('AI demands useful acceleration below target, while still coasting at target and braking above it',()=>{
+ const e={getRaceProjectedEngineRpmForGear:()=>3000,getRaceAutomaticUpshiftRpm:()=>6000,
+  getRaceAutomaticDownshiftRpm:()=>1000,canRaceAutomaticDownshift:()=>false,
+  getRaceRoadSurfaceProfileAtDistance:()=>({grade:0}),getRaceLongitudinalResistanceForces:()=>({totalN:400}),
+  getRaceSetupPhysicsModifiers:()=>({}),getRaceDriveForceComponents:()=>({baseForceN:8000}),
+  getRaceGearRatio:()=>3,getRaceTorqueNmAtRpm:()=>250,getRaceGradeGravityRatio:()=>0};
+ const tuning={gearRatios:[3,2,1],weightKg:1500,idleRpm:800,revLimitRpm:7000,accelerationCalibration:1,brakeForceN:18000};
+ const ai={speedMps:20,gear:2,difficulty:'hard'};
+ const accelerating=planRaceAiControls(e,ai,tuning,24,{pace:.9});
+ assert.ok(accelerating.throttle>=.65,'request torque for acceleration, not only road load');
+ const steady=planRaceAiControls(e,ai,tuning,20,{pace:.9});
+ assert.ok(steady.throttle<.1);
+ const braking=planRaceAiControls(e,ai,tuning,18,{pace:.9});
+ assert.equal(braking.throttle,0);assert.ok(braking.brake>0);
+});
+
+test('recorded sideways Sol must brake instead of accelerating as forward speed collapses',()=>{
+ const e=new RaceEditor({}),tuning=e.getRaceCarTuning(e.selectedCar);
+ const ai={speedMps:1,gear:2,difficulty:'hard',physicsBudgetDetail:'full',
+  vehicleDynamicsRunner:{state:{groundSpeedMps:10.9,bodyLateralSpeedMps:-10.86}}};
+ const input=planRaceAiControls(e,ai,tuning,3);
+ assert.equal(input.throttle,0);
+ assert.ok(input.brake>0);
+ ai.physicsBudgetDetail='cheap';
+ assert.ok(planRaceAiControls(e,ai,tuning,3).throttle>0,'ignore stale detailed velocity after demotion');
+});
+
+test('standing AI stages its real powertrain, stays on grid, then releases launch clutch',()=>{
+ const e=new RaceEditor({});
+ e.selectedRace.road.network=null;
+ e.selectedRace.road.nodes=[];
+ e.selectedRace.road.segments=[{length:1200,curve:0,elevation:0,surface:'asphalt',roadWidthM:12,hazardIds:[]}];
+ e.selectedRace.hazards=[];e.selectedRace.scenery=[];
+ e.startPlaytest(e.selectedCar.id,{hydrateCars:false});
+ const s=e.playtestSession,car=e.selectedCar,tuning=e.getRaceCarTuning(car);
+ const pose=e.getRaceWorldPoseAtDistance(15);
+ const ai={id:'staged-driver',runtimeCar:car,carId:car.id,worldX:pose.x,worldZ:pose.z,carYaw:pose.yaw,
+  distance:15,projectedDistance:15,speedMps:0,gear:1,rpm:tuning.idleRpm,lap:1,currentLapMs:0,difficulty:'hard'};
+ s.aiRuntime=[ai];s.worldX=ai.worldX;s.worldZ=ai.worldZ-20;
+ for(let i=0;i<180;i++)e.updateRaceAiDrivers(1/60,{preStartMode:'standing'});
+ const state=ai.vehicleDynamicsRunner.state;
+ assert.equal(state.powertrainState.launchControl.phase,'armed');
+ assert.ok(Math.abs(state.powertrainState.engineRpm-tuning.launchRpm)<10);
+ assert.ok(ai.speedMps<.1,'staging must not creep across the grid');
+ assert.ok(Math.hypot(ai.worldX-pose.x,ai.worldZ-pose.z)<.1);
+ e.updateRaceAiDrivers(1/60);
+ assert.equal(ai.vehicleDynamicsRunner.state.powertrainState.launchControl.phase,'done');
+ for(let i=0;i<120;i++)e.updateRaceAiDrivers(1/60);
+ assert.ok(ai.speedMps>3,JSON.stringify({speed:ai.speedMps,plan:ai.drivingPlan,drive:ai.engineDrive.throttle}));
+ e.updateRaceAiDrivers(1/60,{preStartMode:'rolling',rollingStartSpeedMps:10});
+ assert.notEqual(ai.vehicleDynamicsRunner.state.powertrainState.launchControl.phase,'armed');
+});

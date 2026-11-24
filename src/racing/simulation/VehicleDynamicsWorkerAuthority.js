@@ -1,3 +1,4 @@
+import {queueVehicleFleetCollisions} from './VehiclePairCollision.js';
 import {applyDebugTirePhysics} from './DebugTireSwap.js';
 import {
   createVehicleRenderSnapshotBuffer,
@@ -204,6 +205,7 @@ export class VehicleDynamicsWorkerAuthority {
         * finite(config.frontalAreaM2, 2.2);
       this.wakeSources.push(source);
     }
+    queueVehicleFleetCollisions([...this.vehicles.values()].filter(v=>v.active).map(v=>v.runner),deltaSeconds);
     for (const vehicle of this.vehicles.values()) {
       if (!vehicle.active) continue;
       vehicle.environmentController?.setWakeSources?.(this.wakeSources, vehicle.id);

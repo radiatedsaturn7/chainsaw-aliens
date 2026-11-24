@@ -576,7 +576,8 @@ export function classifySteeringResponseTelemetry(telemetry = {}) {
 export function resolvePhysicalCenterSteeringAngle(controls = {}, config = {}, state = {}) {
   const maximumAngleRad = Math.max(0.05, Number(config.maxSteerAngleRad) || 0.52);
   const direct = String(config.handlingPreset || 'sport').toLowerCase() === 'simulation'
-    || controls.steeringInputMode === 'simulation-wheel';
+    || controls.steeringInputMode === 'simulation-wheel'
+    || controls.steeringInputMode === 'ai';
   if (direct) {
     return typeof controls.centerSteeringAngleRad === 'number'
       && Number.isFinite(controls.centerSteeringAngleRad)
@@ -1613,6 +1614,10 @@ export class ContactPatchTireModel {
       }
       const overtravelM = initialContactValidity.valid
         ? Math.max(0, Number(rawRequestedCompressionM) - suspensionTravelM) : 0;
+      // Suspension travel limits the hub, not tire/ground penetration. Keep
+      // excess penetration in the tire solve so a bottomed-out wheel can
+      // develop the support needed to lift the chassis out of the ground.
+      const tireContactTargetM = Number(clampedCompressionM) + overtravelM;
       let unsprungVelocityMps = Number(previousSuspension.unsprungVelocityMps || 0);
       let compressionM = previousCompressionM;
       let tireSupportForceN = null;
@@ -1655,7 +1660,7 @@ export class ContactPatchTireModel {
           compressionM = previousCompressionM;
           unsprungVelocityMps = Number(previousSuspension.unsprungVelocityMps || 0);
           verticalCoupledActive = true;
-          const tireErrorM = Number(clampedCompressionM) - compressionM;
+          const tireErrorM = tireContactTargetM - compressionM;
           const normalizedUnsprungSpeed = unsprungVelocityMps / 0.32;
           const normalizedTireError = tireErrorM / 0.018;
           const lowSpeedTireModeBlend = Math.exp(-(normalizedUnsprungSpeed ** 2))
@@ -1671,7 +1676,7 @@ export class ContactPatchTireModel {
                 targetCompressionVelocityMps - unsprungVelocityMps
               ));
         } else {
-          const tireErrorM = Number(clampedCompressionM) - compressionM;
+          const tireErrorM = tireContactTargetM - compressionM;
           const unsprungMassKg = Number(config.unsprungMassByWheelKg?.[wheelId] || config.unsprungMassKg);
           const normalizedUnsprungSpeed = unsprungVelocityMps / 0.32;
           const normalizedTireError = tireErrorM / 0.018;
@@ -1747,8 +1752,14 @@ export class ContactPatchTireModel {
           unsprungVelocityMps = implicitNumerator
             / Math.max(EPSILON, implicitDenominator);
           compressionM = clamp(compressionM + unsprungVelocityMps * dt, 0, suspensionTravelM);
+          // Evaluate support using the constrained wheel velocity, not an
+          // inward velocity that will be discarded after calculating force.
+          if ((compressionM === suspensionTravelM && unsprungVelocityMps > 0)
+            || (compressionM === 0 && unsprungVelocityMps < 0)) {
+            unsprungVelocityMps = 0;
+          }
           tireSupportForceN = Math.max(0,
-            tireStiffnessNpm * (Number(clampedCompressionM) - compressionM)
+            tireStiffnessNpm * (tireContactTargetM - compressionM)
               + effectiveTireVerticalDampingNsM * (
                 targetCompressionVelocityMps - unsprungVelocityMps
               ));
@@ -1758,7 +1769,9 @@ export class ContactPatchTireModel {
             unsprungVelocityMps = 0;
           }
         }
-        if (overtravelM > 0) {
+        if (overtravelM > 0 && tireSupportForceN === null) {
+          // The coupled solve already constrained the hub and evaluated its
+          // tire deflection. Do not snap it to a different pose afterwards.
           compressionM = suspensionTravelM;
           // The bump stop is a unilateral constraint. Retaining inward wheel
           // velocity here reloads the stop on the next substep and can create

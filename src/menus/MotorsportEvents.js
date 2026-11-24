@@ -136,6 +136,11 @@ export function applyMotorsportRace(race,state){
  const next={...race,laps:state.definition.kind!=='rally'?round.laps:1,mechanicalMission:{},raceStart:{...race.raceStart,cutsceneRef:''},
   finishBehavior:{type:'menu',menuScreen:'motorsport-event'},competition:{...race.competition,mode:state.definition.kind==='championship'?'ai-race':'solo',trafficEnabled:false,
    aiDrivers:state.definition.kind==='championship'?SERIES_RIVALS.map((name,i)=>({id:`series-ai-${i}`,name,enabled:true,skill:level.skill+i*.008,aggression:level.aggression,rubberBanding:0,difficulty:state.definition.heat===3?'expert':state.definition.heat===2?'hard':'medium'})):[]}};
+ if(state.definition.kind==='championship') {
+  const previous=state.results?.[state.round-1]?.classification;
+  // Reverse the immediately preceding result, not cumulative points.
+  next.competition.startingGrid=previous?.length ? previous.map(row=>row.id).reverse() : null;
+ }
  if(state.definition.kind==='drift'){
   // Scoring/HUD reuse the existing campaign drift observer, without campaign unlock/reward IDs.
   next.campaign={scoring:'drift'};

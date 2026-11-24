@@ -297,3 +297,13 @@ test('every offered drift track decodes, qualifies as a circuit and retains its 
   assert.ok(race.road.segments.every(s=>s.surface==='asphalt'));
  }
 });
+
+test('next Grand Prix grid reverses the previous result including second to penultimate',()=>{
+ const first=run(),completed=completeMotorsportRound(first,session());
+ const classification=completed.results[0].classification;
+ const next=applyMotorsportRace(circuit,completed);
+ assert.deepEqual(next.competition.startingGrid,classification.map(r=>r.id).reverse());
+ assert.equal(next.competition.startingGrid.indexOf(classification[1].id),4);
+ assert.equal(applyMotorsportRace(circuit,first).competition.startingGrid,null);
+ assert.deepEqual(applyMotorsportRace(circuit,JSON.parse(JSON.stringify(completed))).competition.startingGrid,next.competition.startingGrid);
+});

@@ -578,7 +578,7 @@ for(const opponents of [false,true])test(`race travel ${opponents?'hydrates oppo
  }finally{clearCachedProjectFilesForTests();}
 });
 
-test('championship launch overlays the circuit, matches opponent builds and retains series identity',async()=>{
+test('championship launch prepares a varied matched grid and retains series identity',async()=>{
  clearCachedProjectFilesForTests();
  const {createMotorsportEvent}=await import('../../src/menus/MotorsportEvents.js');
  const race={id:'cup-road',type:'circuit',source:{layoutName:'GP'},road:{width:10,nodes:[{x:0,y:0},{x:500,y:0},{x:500,y:500},{x:0,y:500},{x:0,y:0}]},competition:{aiDrivers:[]}};
@@ -589,13 +589,13 @@ test('championship launch overlays the circuit, matches opponent builds and reta
  game.resolveRaceTravelCarAsync=async()=>({id:'player',name:'Player'});
  game.captureRaceTravelPlayerState=()=>({});game.transitionTo=state=>{game.state=state;};game.setRevAudio=()=>{};game.prepareRacePlaytestAudio=async()=>true;
  let options;
- game.raceEditor={hydrateSavedRaceCarsForTravel:async()=>{throw Error('Must not load catalog');},selectRaceTravelGridCars:()=>[],
+ game.raceEditor={hydrateSavedRaceCarsForTravel:async()=>[],selectRaceTravelGridCars:(race,id,{matchedCar})=>{assert.equal(matchedCar.id,'player');return ['one','two','three','one','two'];},
  loadRaceTravelDocument:async()=>({race}),applyLoadedRaceDocument(){this.selectedRace=structuredClone(race);return true;},
  startPlaytest(id,value){options=value;this.playtestSession={running:true};}};
  try{
   assert.equal(await game.startRaceTravel({raceName:'Cup Road',carSelection:'specific',carRef:'Player',motorsportEvent:state,menuConfiguration:{motorsportId:'event',motorsportRound:0}}),true,game.lastRaceTravelError);
   assert.equal(game.raceEditor.selectedRace.laps,3);assert.equal(game.raceEditor.selectedRace.competition.aiDrivers.length,5);
-  assert.equal(options.matchedAiCar,true);assert.deepEqual(options.preparedAiCarIds,Array(5).fill('player'));
+  assert.equal(options.matchedAiCar,true);assert.deepEqual(options.preparedAiCarIds,['one','two','three','one','two']);
   assert.equal(options.runtimeCarOverrides.condition.mechanical.fuel,.41);assert.equal(options.preserveMechanicalCondition,true);
   assert.equal(game.raceEditor.playtestSession.menuConfiguration.motorsportId,'event');
  }finally{clearCachedProjectFilesForTests();}

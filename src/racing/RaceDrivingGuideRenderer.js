@@ -2,13 +2,16 @@ import {drawPaceNoteIcon} from './RacePaceNoteIcons.js';
 import {sampleRaceRacingLine} from './RaceRacingLine.js';
 import {RACE_THREE_ELEVATION_M} from './simulation/RaceSimulationConfig.js';
 import * as THREE from '../vendorBridge/three.js';
-import {drivingGuideSettings, drivingSpeedAdvice} from './RaceDrivingAssists.js';
+import {drivingGuideSettings, drivingGuidePreview} from './RaceDrivingAssists.js';
 
 // World-space arrows: the WebGL pass uses the road camera and depth buffer.
 // The canvas path is only for the legacy renderer, never over a Three scene.
 export function buildRaceGuideArrows(editor) {
   const session=editor.playtestSession,state=session?.drivingAssists;
-  if(!state?.active||state.wrongWay||!state.plan||!drivingGuideSettings(editor.selectedRace).line)return [];
+  if(!state?.active||state.wrongWay||!state.plan||!drivingGuideSettings(editor.selectedRace).line){
+    if(state)state.guidePreview=null;
+    return [];
+  }
   const distance=session.projectedDistance??session.distance??0,speed=Math.abs(session.speedMps||0);
   const horizon=Math.min(180,Math.max(65,speed*4)),arrows=[];
   const options={runtimeType:session.routeRuntimeType};
@@ -20,12 +23,18 @@ export function buildRaceGuideArrows(editor) {
     const baked=editor.getRaceBakedSurfaceAtWorldPoint?.({x,z,supportHeightM:deck*RACE_THREE_ELEVATION_M});
     return {x,z,elevation:(Number.isFinite(baked?.elevation)?baked.elevation:deck)+.06/RACE_THREE_ELEVATION_M};
   };
+  const stations=[];
   for(let d=Math.ceil((distance+8)/8)*8;d<distance+horizon;d+=8){
     if(session.routeRuntimeType!=='circuit'&&d+2>session.routeLength)break;
+    stations.push(d);
+  }
+  const advice=drivingGuidePreview(state.plan,distance,speed,stations,state.grip,state.tuning,state.brakeCondition,state.capabilities);
+  state.guidePreview=advice.length?{distanceM:stations[0],...advice[0]}:null;
+  for(const [index,d] of stations.entries()){
     const pose=editor.getRaceWorldPoseAtDistance(d,options);
     const width=Math.min(.75,editor.getRaceRoadHalfWidthWorld(pose.segment)*.24);
     arrows.push({points:[point(d,-width),point(d+2,0),point(d,width)],
-      color:drivingSpeedAdvice(state.plan,d,speed,state.grip,state.tuning,state.brakeCondition).color});
+      color:advice[index].color});
   }
   return arrows;
 }

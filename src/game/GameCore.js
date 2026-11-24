@@ -1995,16 +1995,15 @@ export default class Game {
           && Array.isArray(competition.aiDrivers)
           && !competition.aiDrivers.some(driver => driver.enabled !== false);
       } catch { /* Let the existing worker/fallback path report loading errors. */ }
-      let savedCars = (soloWithoutTraffic || params.motorsportEvent) ? []
+      let savedCars = soloWithoutTraffic ? []
         : await this.raceEditor.hydrateSavedRaceCarsForTravel?.({deferModels:true,preserveCarId:car.id}) || [];
       if (this.raceTravelSession !== travelSession) return false;
       if (gridRace && this.raceEditor.selectRaceTravelGridCars) {
-        preparedAiCarIds = params.motorsportEvent
-          ? gridRace.competition.aiDrivers.map(()=>car.id)
-          : this.raceEditor.selectRaceTravelGridCars(gridRace, car.id);
+        preparedAiCarIds = this.raceEditor.selectRaceTravelGridCars(gridRace, car.id,
+          {matchedCar:params.motorsportEvent ? runtimeCar : null});
         // The roster prepass downloads only original car data; native models
         // are needed for the selected player and the already-chosen grid only.
-        if(!params.motorsportEvent){
+        {
           const nativeGrid=await this.raceEditor.prepareRaceTravelGridCarVersions?.(preparedAiCarIds)||[];
           if(this.raceTravelSession!==travelSession)return false;
           const byID=new Map(nativeGrid.map(candidate=>[this.raceEditor.getRaceCarProjectIdentity(candidate),candidate]));

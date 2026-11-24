@@ -555,8 +555,12 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
     steeringInputMode: 'ai',
     throttle: Number(engineDrive.throttle || 0),
     brake: Number(engineDrive.brake || 0),
+    clutch: engineDrive.launchControlStaging ? 1 : 0,
     requestedGear: Number(ai.gear || 1),
-    assists: { stabilityControlEnabled: true }
+    // Use the shared staged RPM hold, then let the ordinary automatic clutch
+    // take up at GO. Launch wheelspin regulation otherwise slows some rivals.
+    assists: { stabilityControlEnabled: true, autoShift: true,
+      launchControlEnabled: engineDrive.launchControlStaging === true, launchControlStaging: engineDrive.launchControlStaging === true }
   };
   const workerBridge = editor.vehicleDynamicsAuthority?.workerBridge;
   const workerSnapshot = workerBridge && ai.workerVehicleId
@@ -1193,9 +1197,12 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
     session.aiRuntime.forEach((ai) => {
       const car = ai.runtimeCar || editor.findRaceProjectCarById?.(ai.carId) || editor.project.cars.find((candidate) => candidate.id === ai.carId) || editor.selectedCar;
       const tuning = getRaceAiRuntimeTuning(editor, ai, car);
-      ai.rpm = tuning.idleRpm;
+      // Stage the engine with the clutch open, just as a player holding launch
+      // control does. Rolling starts must not arm a standing launch.
+      const launchControlStaging = preStartMode === 'standing' && tuning.powertrainType !== 'electric';
       ai.engineDrive = {
-        throttle: 0,
+        launchControlStaging,
+        throttle: launchControlStaging ? 1 : 0,
         brake: 0,
         driveForceN: 0,
         demandedForceN: 0,

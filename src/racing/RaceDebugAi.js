@@ -1,3 +1,4 @@
+import {clearRaceAiDrivingPlan} from './RaceAiDriving.js';
 // Session-only controls: never edit the authored competition or its car pool.
 export function changeRaceDebugAi(editor, delta) {
   const session = editor.playtestSession;
@@ -39,7 +40,7 @@ export function changeRaceDebugAi(editor, delta) {
   }
   session.debugAiSequence = (session.debugAiSequence || 0) + 1;
   const id=`debug-ai-${session.debugAiSequence}`;
-  const driver={id,name:`Debug AI ${session.debugAiSequence}`,carId:editor.getRaceCarProjectIdentity(car),difficulty:'medium',enabled:true};
+  const driver={id,name:`Debug AI ${session.debugAiSequence}`,carId:editor.getRaceCarProjectIdentity(car),difficulty:session.debugAiDifficulty||'medium',enabled:true};
   const ai=editor.createRaceAiRuntime([driver],{routeLength})[0];
   Object.assign(ai,{runtimeCar:editor.materializeRaceRuntimeCar(car),distance:spawn.distance,projectedDistance:spawn.distance,
     worldX:spawn.x,worldZ:spawn.z,carYaw:spawn.yaw,lineOffset:0,lap:session.lap||1});
@@ -50,4 +51,18 @@ export function changeRaceDebugAi(editor, delta) {
   cars.push(ai);
   (session.aiDrivers ||= []).push(driver);
   return true;
+}
+
+export function changeRaceDebugAiDifficulty(editor,direction=1){
+ const s=editor.playtestSession;if(!s)return false;
+ const levels=['easy','medium','hard'];
+ const current=s.debugAiDifficulty||s.aiRuntime?.[0]?.difficulty||'medium';
+ const difficulty=levels[(Math.max(0,levels.indexOf(current))+(direction<0?-1:1)+3)%3];
+ s.debugAiDifficulty=difficulty;
+ for(const driver of [...(s.aiDrivers||[]),...(s.aiRuntime||[])]){
+  Object.assign(driver,{difficulty,skill:{easy:.38,medium:.58,hard:.76}[difficulty],
+   aggression:{easy:.28,medium:.45,hard:.62}[difficulty],rubberBanding:0,shiftMode:'automatic'});
+  clearRaceAiDrivingPlan(driver);
+ }
+ return true;
 }

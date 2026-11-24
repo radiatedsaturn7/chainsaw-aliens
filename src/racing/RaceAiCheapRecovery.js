@@ -2,16 +2,19 @@ import {sampleRaceAiWheelContacts} from './RaceAiRoadContacts.js';
 import {createRaceAiTrafficProbe} from './RaceAiTrafficBounds.js';
 import {quaternionFromEuler} from './simulation/RigidBodyMath.js';
 import {syncVehicleDynamicsCompatibilityOutputs} from './simulation/VehicleState.js';
+const blockedProgress=new WeakMap();
 const recoverable=new Set(['unsupported-pose','terrain-step','off-road','traffic-overlap']);
 
 // No iterative support solver: at most three checked road placements, once
 // per four simulated seconds, and only one car may try during an AI update.
 export function tryRecoverRaceAiCheap(editor,ai,{car,tuning}) {
  const s=editor.playtestSession,r=ai.vehicleDynamicsRunner,state=r?.state;
- if(!state || !recoverable.has(ai.distantPhysicsReason) || (ai.cheapHeldSeconds||0)<4
+ if(!state || !recoverable.has(ai.distantPhysicsReason) || Math.max(ai.cheapHeldSeconds||0,ai.blockedProgressSeconds||0)<4
    || (ai.cheapRecoveryCooldown||0)>0 || s.cheapRecoveryAttempted
    || Math.hypot(ai.worldX-s.worldX,ai.worldZ-s.worldZ)<120)return false;
  s.cheapRecoveryAttempted=true;ai.cheapRecoveryCooldown=4;
+ const mechanical=state.mechanical;
+ if(mechanical?.engineRunning===false || Object.values(mechanical?.components||{}).some(c=>c.failed||c.damage>=70))return false;
  const world=editor.vehicleDynamicsAuthority?.staticColliderWorldCache;
  if(!world || !editor.getRaceWorldPoseAtDistance)return false;
  const distance=Number(ai.projectedDistance??ai.distance);
@@ -40,6 +43,7 @@ export function tryRecoverRaceAiCheap(editor,ai,{car,tuning}) {
   ai.distance=d;ai.projectedDistance=d;ai.lineOffset=0;ai.trackStatePreviousWheelPositions=null;
   ai.distantContactState=contacts;ai.terrainQueryFrameCache=null;
   ai.cheapPhysicsHeld=false;ai.cheapHeldSeconds=0;ai.cheapHoldRetrySeconds=0;
+  blockedProgress.delete(ai);ai.blockedProgressSeconds=0;
   ai.cheapRecoveryCount=(ai.cheapRecoveryCount||0)+1;ai.distantPhysicsReason='recovered-road';
   syncVehicleDynamicsCompatibilityOutputs(r,ai);ai.heightM=contacts.averageHeightM;
   return true;
@@ -48,6 +52,21 @@ export function tryRecoverRaceAiCheap(editor,ai,{car,tuning}) {
 }
 
 export function shouldRetryRaceAiCheap(ai,seconds) {
+ // Measure actual lack of movement across cheap/full promotions. A promotion
+ // clears cheapHeldSeconds, but is not evidence that the car escaped.
+ const position=ai.vehicleDynamicsRunner?.state?.position;
+ if(position && seconds>0 && Number.isFinite(seconds)) {
+  let watch=blockedProgress.get(ai);
+  const moved=watch && Math.hypot(position.x-watch.x,position.z-watch.z)>.75;
+  if(moved || !recoverable.has(ai.distantPhysicsReason)) {
+   blockedProgress.delete(ai);watch=null;
+  }
+  if(!watch && ai.cheapPhysicsHeld && recoverable.has(ai.distantPhysicsReason)) {
+   watch={x:position.x,z:position.z,seconds:0};blockedProgress.set(ai,watch);
+  }
+  if(watch)watch.seconds+=seconds;
+  ai.blockedProgressSeconds=watch?.seconds||0;
+ }
  ai.cheapRecoveryCooldown=Math.max(0,(ai.cheapRecoveryCooldown||0)-seconds);
  if(ai.physicsBudgetDetail!=='cheap'||!ai.cheapPhysicsHeld)return true;
  ai.cheapHoldRetrySeconds=(ai.cheapHoldRetrySeconds||0)+seconds;
