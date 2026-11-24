@@ -789,6 +789,157 @@ They do not notice it.
 
 ---
 
+
+## OPTIONAL ENCOUNTERS — LITTLE GOOD DAYS
+
+These are **optional local stories**, not mandatory race checkpoints and not prerequisites to understand any chapter mystery. They may be encountered before the final regional departure or replayed afterward where the world state allows. They should never imply the machines have suddenly repaired demolished downtown Boston. The point is that Rob and Cait enjoy each other's company even when nothing momentous happens.
+
+### SIDE STORY A — THOMPSON SPEEDWAY: “BRING IT”
+
+**[OPTIONAL — THOMPSON SPEEDWAY ROAD COURSE]**
+
+The old circuit is quiet, but the pavement has survived better than the roads outside. Cait climbs onto the low pit wall and traces a corner with her finger. Rob stands nearby drinking coffee from a dented cup.
+
+**CAIT:** “Oh, we're doing this.”
+
+**ROB:** “Doing what?”
+
+**CAIT:** “Racing.”
+
+**ROB:** “Thought that's what we've been doing all bloody week.”
+
+**CAIT:** “No, I mean properly. You against me.”
+
+Rob looks from her to the empty circuit.
+
+**ROB:** “You're challenging me?”
+
+**CAIT:** “I bet I can kick your arse.”
+
+**ROB:** “Oh, is that right?”
+
+**CAIT:** “You getting scared, old man?”
+
+Rob sets down his coffee carefully.
+
+**ROB:** “Bring it.”
+
+**CAIT:** “Loser buys dinner.”
+
+**ROB:** “There's nobody selling dinner.”
+
+**CAIT:** “Then loser makes dinner.”
+
+**ROB:** “Now there's a bloody incentive to win.”
+
+**[PLAY — OPTIONAL THOMPSON EVENT]**
+
+*Preferred if supported:* Rob and Cait race head to head in separate cars. *Fallback:* a friendly time trial with a believable benchmark attributed to Rob, so the scene works even without a second in-world AI driver. Victory, loss, and retries never alter major plot flags.
+
+**[SCENE — AFTER THE RESULT]**
+
+Rob stops at the edge of the pit lane and starts unfastening his harness. Cait leans into his open window.
+
+**CAIT:** “Rematch?”
+
+**ROB:** “You haven't even let me get out of the car.”
+
+**CAIT:** “Scared, then.”
+
+He reaches for the ignition.
+
+**ROB:** “Start the fucking clock.”
+
+*Optional alternate result barks may acknowledge who won; do not write one fixed outcome that contradicts the score.*
+
+### SIDE STORY B — BOSTON OUTSKIRTS: “GUITAR STRINGS”
+
+**[OPTIONAL — BOSTON LANDMARK RUN / LOCAL DETOUR]**
+
+*Route timing:* This event takes place on a surviving outskirts approach, away from active downtown deconstruction. It may happen before the Blue Hills demolition reveal or afterward **only** if the chosen music shop is shown to be intact and safely accessible. Its purpose is not to retcon the tower's collapse or return them to a magically functioning Boston.
+
+Rob leans over a regional map, looking unusually hopeful about an unnecessary detour.
+
+**ROB:** “Hey, Cait. You busy?”
+
+**CAIT:** “Depends. What have you broken?”
+
+**ROB:** “Nothing.”
+
+**CAIT:** “That's suspicious.”
+
+**ROB:** “Ran out of guitar strings. There's an old music shop up near Boston. Figured I'd see what's left.”
+
+**CAIT:** “You're asking me to drive all the way up there for guitar strings?”
+
+**ROB:** “Well, I was going to ask you to help carry a piano, but I thought I'd start small.”
+
+**CAIT:** “You know I can drive, Rob. You don't need to make up an excuse.”
+
+**ROB:** “It's not an excuse. I actually need strings.”
+
+**CAIT:** “Alright. Let's go.”
+
+**ROB:** “That easy?”
+
+**CAIT:** “Yeah. Why not? Might find something for myself.”
+
+**ROB:** “Like what?”
+
+**CAIT:** “A better guitarist.”
+
+**ROB:** “Fuck off.”
+
+She laughs as they head for the car.
+
+**[PLAY — OPTIONAL BOSTON LOCAL ROAD EVENT]**
+
+*Pleasant road driving and a short stop at the surviving shop; don't require a demolition chase or a collectible hunt. The shop is dormant, dusty, and safe enough for a brief visit. The outing can reward an ordinary cosmetic or campsite-music flag rather than a large power upgrade.*
+
+**[SCENE — THE MUSIC SHOP]**
+
+Dust lies in narrow stripes across the counter where the window admits sunlight. Rob searches a drawer of packets, carefully examining strings that have not been touched for years. Cait moves along a row of guitars and lifts a battered electric from its stand.
+
+**CAIT:** “This one any good?”
+
+**ROB:** “Not bad. Needs work.”
+
+**CAIT:** “Everything you own needs work.”
+
+**ROB:** “That's because everything I own is old.”
+
+**CAIT:** “Including you?”
+
+**ROB:** “Especially me.”
+
+She hands him the guitar.
+
+**CAIT:** “Play something.”
+
+**ROB:** “It's missing two strings.”
+
+**CAIT:** “Then play something with four.”
+
+He sits on an old amplifier and picks out a little tune. He flubs the turn halfway through, tries again, and gets it right the second time.
+
+**CAIT:** “What's that?”
+
+**ROB:** “Something I used to play.”
+
+**CAIT:** “It's nice.”
+
+**ROB:** “You haven't heard the good part.”
+
+**CAIT:** “There is one?”
+
+**ROB:** “You're really determined to ruin this moment, aren't you?”
+
+**CAIT:** “Play it again.”
+
+This time she sits beside him and listens. Nothing interrupts them. For once, they don't need to be anywhere urgently.
+
+*Optional persistent payoff:* After this encounter, later garage/campsite moments may show Rob playing the recovered guitar and Cait learning the melody. The scene is complete even if no follow-up feature is implemented.
+
 ## Campaign implementation handoff — not player-facing
 
 | Story ID | Route / event | Beat | Implementation condition |
