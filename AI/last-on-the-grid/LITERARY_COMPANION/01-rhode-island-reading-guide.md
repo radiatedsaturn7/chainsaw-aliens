@@ -90,7 +90,7 @@ Notice that two of these causes are **Cait's preferences**, not a robot plot. To
 
 ### 5. The house: memory without an answer
 
-**Textual evidence:** Rob initially wants to avoid RI 116. When Cait offers him an alternate road, he chooses to go anyway. Outside the old house, he tells a ridiculous flashlight story, recalls an illuminated window, says “She went to Heaven,” and remembers ordinary, funny moments at the house. Cait does not speculate about the woman’s present experience.
+**Textual evidence:** Rob initially wants to avoid RI 116. When Cait offers him an alternate road, he chooses to go anyway. Outside the old house, he tells a ridiculous flashlight story, recalls an illuminated window, says “She went to Heaven,” and admits he once thought about her every day but sometimes goes a week without doing so now. Cait does not speculate about the woman’s present experience.
 
 **First reading:** A man revisits a place connected with a deceased former lover. “Heaven” is heard in its familiar afterlife sense. His grief may be complicated by a relationship that ended before death.
 
@@ -100,7 +100,7 @@ Notice that two of these causes are **Cait's preferences**, not a robot plot. To
 
 **Important relationship move:** Cait initially pushes for her road, but then offers him another. This matters more than a triumphant declaration that “my trip means my rules.” She wants freedom, not the pleasure of disregarding his boundaries. Rob's choice to take the painful road is his own.
 
-**The joke's function:** The sabotaged-tire story reveals a warm, foolish past self; the final Pulitzer remark releases tension without erasing it. Humor is not garnish on a lesson. Humor is how these two can be near the subject without naming it.
+**The joke's function:** The sabotaged-tire story reveals a warm, foolish past self. The gentle argument joke after his admission about remembering her lets grief and ordinary fondness coexist; the final Pulitzer remark releases tension without erasing it. Humor is not garnish on a lesson. Humor is how these two can be near the subject without naming it.
 
 **Later callback, not written here:** At Heaven, Cait might ask whether there is anyone else Rob wants to see. A quiet refusal can echo the house without explaining whether the former lover remembers him. The callback must occur **after** the audience learns what Heaven is.
 
