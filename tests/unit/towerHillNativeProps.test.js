@@ -114,6 +114,12 @@ test('saved Tower Hill dual visuals preserve original projected art, collision a
       const size = local.getSize(new THREE.Vector3());
       near(holder.position.x,prop.x); near(holder.position.z,prop.z); near(holder.rotation.y,prop.yaw);
       near(holder.position.y,e.getRaceThreeElevationM(qu.points[2]));
+      const billboardRight = new THREE.Vector3(qu.points[1].x-qu.points[0].x,0,qu.points[1].z-qu.points[0].z).normalize();
+      const up = new THREE.Vector3(0,1,0);
+      const nativeYaw=holder.rotation.y+instance.root.rotation.y;
+      const readableFront = new THREE.Vector3().crossVectors(billboardRight,up);
+      near(billboardRight.dot(new THREE.Vector3(1,0,0).applyAxisAngle(up,nativeYaw)),1);
+      near(readableFront.dot(new THREE.Vector3(0,0,1).applyAxisAngle(up,nativeYaw)),1);
       near(size.x,qu.widthM); near(size.y,qu.heightM); near(local.min.y,0);
       assert.ok(instance.root.children[0].material.map?.isDataTexture);
       assert.equal(instance.binding.ref,prop.previewDoodad.model.ref);
