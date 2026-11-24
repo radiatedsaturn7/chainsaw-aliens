@@ -5956,7 +5956,8 @@
       "ohio-river-crossing-riverside-building-3d": "models/ohio-river-crossing-riverside-building-3d/document.json",
       "expanded-abandoned-waste-management-facility-3d": "models/expanded-abandoned-waste-management-facility-3d/document.json",
       "route-66-rusted-pickup-3d": "models/route-66-rusted-pickup-3d/document.json",
-      "expanded-abandoned-farm-tractor-3d": "models/expanded-abandoned-farm-tractor-3d/document.json"
+      "expanded-abandoned-farm-tractor-3d": "models/expanded-abandoned-farm-tractor-3d/document.json",
+      "data-center-city-shipping-container-3d": "models/data-center-city-shipping-container-3d/document.json"
     },
     "music": {
       "1": "music/1/document.json",
