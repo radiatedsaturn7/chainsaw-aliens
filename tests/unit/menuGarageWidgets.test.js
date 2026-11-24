@@ -1,3 +1,4 @@
+// Navigation tests use ready assets; deferred readiness is covered explicitly in menuScreenTransition.test.js.
 import {savedTireForRef} from '../helpers/savedGarageTires.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -12,7 +13,7 @@ import {drawMenuScreen,drawCarDescription} from '../../src/menus/MenuRenderer.js
 const cars=Array.from({length:6},(_,i)=>({label:`Car ${i}`,value:`car-${i}`}));
 async function player(){
  const p=new MenuPlayer({input:{},transitionTo(){},setActiveMusicTrack(){}});
- p.settings.load=async()=>{};p.resources.prepareGarage=async()=>{};
+ p.settings.load=async()=>{};p.resources.prepareScreen=()=>null;p.resources.prepareGarage=async()=>{};
  p.resources.choices=()=>cars;
  await p.open(createMenuDocument(),{preview:true,screenId:'cars'});return p;
 }

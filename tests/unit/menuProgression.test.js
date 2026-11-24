@@ -1,3 +1,4 @@
+// Navigation tests use ready assets; deferred readiness is covered explicitly in menuScreenTransition.test.js.
 import {CampaignSaves} from '../../src/menus/CampaignSaves.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -11,7 +12,7 @@ globalThis.window||={location:{search:''},addEventListener(){},removeEventListen
 const {default:Game}=await import('../../src/game/GameCore.js');
 async function fixture(){
  const game={input:{},world:{tileSize:32},transitionTo(state){this.state=state},setActiveMusicTrack(){},menuProgress:{}};
- const player=new MenuPlayer(game);game.menuPlayer=player;player.settings.load=async()=>{};player.resources.prepareGarage=async()=>{};
+ const player=new MenuPlayer(game);game.menuPlayer=player;player.settings.load=async()=>{};player.resources.prepareScreen=()=>null;player.resources.prepareGarage=async()=>{};
  player.resources.choices=source=>source==='races'?[{label:'First',value:'First'},{label:'Final',value:'Final'}]:[{label:'Car',value:'car'}];
  await player.open(createMenuDocument(),{preview:true,screenId:'world-map'});return {game,player};
 }

@@ -1,3 +1,4 @@
+// Navigation tests use ready assets; deferred readiness is covered explicitly in menuScreenTransition.test.js.
 import {CampaignSaves} from '../../src/menus/CampaignSaves.js';
 import {savedTireForRef} from '../helpers/savedGarageTires.js';
 import test from 'node:test';
