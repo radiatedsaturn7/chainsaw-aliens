@@ -5966,7 +5966,8 @@
       "ozarks-exposed-limestone-3d": "models/ozarks-exposed-limestone-3d/document.json",
       "roadside-rockfall-warning-sign-3d": "models/roadside-rockfall-warning-sign-3d/document.json",
       "angeles-crest-pale-rock-cut-3d": "models/angeles-crest-pale-rock-cut-3d/document.json",
-      "mount-washington-summit-building-silhouette-3d": "models/mount-washington-summit-building-silhouette-3d/document.json"
+      "mount-washington-summit-building-silhouette-3d": "models/mount-washington-summit-building-silhouette-3d/document.json",
+      "moki-dugway-sandstone-outcrop-3d": "models/moki-dugway-sandstone-outcrop-3d/document.json"
     },
     "music": {
       "1": "music/1/document.json",
