@@ -5958,7 +5958,13 @@
       "route-66-rusted-pickup-3d": "models/route-66-rusted-pickup-3d/document.json",
       "expanded-abandoned-farm-tractor-3d": "models/expanded-abandoned-farm-tractor-3d/document.json",
       "data-center-city-shipping-container-3d": "models/data-center-city-shipping-container-3d/document.json",
-      "roadside-streetlight-3d": "models/roadside-streetlight-3d/document.json"
+      "roadside-streetlight-3d": "models/roadside-streetlight-3d/document.json",
+      "expanded-abandoned-business-building-3d": "models/expanded-abandoned-business-building-3d/document.json",
+      "expanded-broken-old-pickup-3d": "models/expanded-broken-old-pickup-3d/document.json",
+      "moki-dugway-warning-sign-3d": "models/moki-dugway-warning-sign-3d/document.json",
+      "oak-creek-red-rock-formation-3d": "models/oak-creek-red-rock-formation-3d/document.json",
+      "ozarks-exposed-limestone-3d": "models/ozarks-exposed-limestone-3d/document.json",
+      "roadside-rockfall-warning-sign-3d": "models/roadside-rockfall-warning-sign-3d/document.json"
     },
     "music": {
       "1": "music/1/document.json",
