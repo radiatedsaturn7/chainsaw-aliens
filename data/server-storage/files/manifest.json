@@ -4369,6 +4369,7 @@
       "Game Menu": "menus/Game Menu/document.json"
     },
     "models": {
+      "data-center-city-loading-dock-3d": "models/data-center-city-loading-dock-3d/document.json",
       "expanded-robot-building-3d": "models/expanded-robot-building-3d/document.json",
       "expanded-unfinished-human-building-3d": "models/expanded-unfinished-human-building-3d/document.json",
       "2005 Flint Coupe Body": "models/2005 Flint Coupe Body/document.json",
@@ -5918,6 +5919,9 @@
       "roadside-steep-grade-warning-sign-3d": "models/roadside-steep-grade-warning-sign-3d/document.json",
       "roadside-traffic-cone-3d": "models/roadside-traffic-cone-3d/document.json",
       "roadside-wooden-utility-pole-3d": "models/roadside-wooden-utility-pole-3d/document.json",
+      "route-66-abandoned-gas-station-3d": "models/route-66-abandoned-gas-station-3d/document.json",
+      "route-66-billboard-3d": "models/route-66-billboard-3d/document.json",
+      "route-66-diner-3d": "models/route-66-diner-3d/document.json",
       "route-66-motel-sign-3d": "models/route-66-motel-sign-3d/document.json",
       "route-66-water-tower-3d": "models/route-66-water-tower-3d/document.json",
       "slender-tare-finished": "models/slender-tare-finished/document.json",
