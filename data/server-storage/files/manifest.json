@@ -5952,7 +5952,8 @@
       "thornapple-acr-wheel": "models/thornapple-acr-wheel/document.json",
       "tower-hill-mailbox-3d": "models/tower-hill-mailbox-3d/document.json",
       "tower-hill-short-stone-wall-3d": "models/tower-hill-short-stone-wall-3d/document.json",
-      "tower-hill-small-shed-3d": "models/tower-hill-small-shed-3d/document.json"
+      "tower-hill-small-shed-3d": "models/tower-hill-small-shed-3d/document.json",
+      "ohio-river-crossing-riverside-building-3d": "models/ohio-river-crossing-riverside-building-3d/document.json"
     },
     "music": {
       "1": "music/1/document.json",
