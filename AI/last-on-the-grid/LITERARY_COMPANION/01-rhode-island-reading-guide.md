@@ -187,6 +187,18 @@ The screenplay proposes **Providence as 1-3**; the current game data still place
 
 ---
 
+## Optional encounters — ordinary happiness
+
+Two optional outings give the main story breathing room. They are **not** lessons to be delivered aloud, and neither should advance the machine intelligence plot.
+
+**Thompson Speedway — “Bring It”:** Cait challenges Rob to race. The joking wager over dinner and their immediate demand for a rematch establish genuine shared pleasure, competitiveness, and mutual familiarity. **Counterreading:** Neither can be made into an idealized carer; they're allowed to be petty and cocky. **Adaptation test:** Win/loss barks must match the actual result, and a time-trial fallback must remain viable if head-to-head AI isn't supported.
+
+**Boston outskirts — “Guitar Strings”:** Rob asks Cait to accompany him on a minor errand; Cait agrees, mocks his musicianship, then genuinely listens when he plays. **First reading:** Two friends spending an ordinary afternoon doing something unnecessary. **Second reading:** Rob's invitation and Cait's quiet attention matter because they are freely offered; there's no need to say so. **Counterreading:** The trip can simply be fun, without every pleasant gesture being a secret confession of love. **Continuity test:** The intact shop must be on a safely accessible outskirts route, with chronology sensible relative to Boston's demolition; no suddenly restored downtown. If the optional encounter never happens, later scenes must not assume the guitar strings were found.
+
+**Overall test:** Remove both scenes and the main plot still makes sense. Play either and the player's affection for the characters has a chance to grow. Do not punish players who prefer to race through the main campaign.
+
+---
+
 ## Discussion questions for writers, reviewers, and readers
 
 1. Why might Rob's concern on Tower Hill feel loving on a first playthrough and frightened on a second? Is either interpretation necessarily wrong?
