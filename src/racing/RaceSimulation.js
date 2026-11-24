@@ -1,3 +1,4 @@
+import {getRaceAiRuntimeTuning} from './RaceAiSimulation.js';
 import {queueVehicleFleetCollisions} from './simulation/VehiclePairCollision.js';
 import { tireSizeForWheel } from './TireSizes.js';
 import {advanceRaceDriftScore,driftContactCount} from './RaceDriftScore.js';
@@ -836,7 +837,7 @@ export function initializeRaceVehiclePresentation(editor) {
   for(const ai of session.aiRuntime || []){
     if(ai.vehicleRenderState)continue;
     const car=ai.runtimeCar || editor.findRaceProjectCarById(ai.carId) || editor.selectedCar;
-    editor.updateRaceAiVehiclePhysics(ai,{car,tuning:editor.getRaceCarTuning(car),seconds:0});
+    editor.updateRaceAiVehiclePhysics(ai,{car,tuning:getRaceAiRuntimeTuning(editor,ai,car),seconds:0});
   }
 }
 

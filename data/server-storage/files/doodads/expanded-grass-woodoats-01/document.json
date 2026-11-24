@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "race-doodad",
-  "savedAt": 1794860932875,
+  "savedAt": 1795558135908,
   "selectedDoodadId": "campaign-expanded-grass-woodoats-01",
   "doodad": {
     "id": "campaign-expanded-grass-woodoats-01",
@@ -20,6 +20,7 @@
     "hitboxHeightM": 0.7200000000000001,
     "weightKg": 1,
     "defaultRule": {
+      "minSpeedMph": 0,
       "behavior": "flatten",
       "speedDrainPercent": 0,
       "damage": {

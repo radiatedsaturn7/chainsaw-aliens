@@ -1,3 +1,4 @@
+import {raceAiFinishStopDistance} from './RaceAiFinishRunoff.js';
 import {raceAiPassingOffset,clearRaceAiOvertakePlan} from './RaceAiOvertaking.js';
 import {raceAiLaunchLaneOffset} from './RaceAiLaunchLane.js';
 import {raceAiGroundSpeed} from './RaceAiControls.js';
@@ -68,7 +69,8 @@ export function planRaceAiDriving(editor, ai, tuning, {
   const samplePose = (ahead) => editor.getRaceWorldPoseAtDistance(distance + ahead, { runtimeType, allowVisualExtension: true });
   const safety = roadSafety || getRaceAiRoadSafety(editor, ai, tuning);
   const nominalLookahead = clamp(5 + speed * (0.65 - safety.risk * .25), 6, 30 - safety.risk * 14);
-  const roadPlan=getRaceAiRoadPlan(editor);
+  const nearFinish = runtimeType !== 'circuit' && distance + 320 >= routeLength;
+  const roadPlan=nearFinish ? null : getRaceAiRoadPlan(editor);
   // Long straight-line lookahead cuts inside an apex. Bound the chord's
   // sagitta on bends to keep the driven body near the optimized path.
   const upcomingCurvature=roadPlan?.racingLine ? Math.max(roadPlan.curvature[raceAiRoadPlanIndex(roadPlan,distance)],roadPlan.curvature[raceAiRoadPlanIndex(roadPlan,distance+nominalLookahead)]) : 0;
@@ -215,7 +217,12 @@ export function planRaceAiDriving(editor, ai, tuning, {
   // Slow down while recovering a missed line instead of accelerating off-road.
   targetSpeedMps *= clamp(1 - Math.abs(headingError) / 1.8, 0.12, 1);
   if(turningBack)targetSpeedMps=Math.min(targetSpeedMps,3);
-  if (runtimeType !== 'circuit' && distance >= routeLength) targetSpeedMps = 0;
+  if (runtimeType !== 'circuit') {
+    const stopDistance = raceAiFinishStopDistance(editor.selectedRace?.road, routeLength);
+    const remaining = Math.max(0, stopDistance - distance);
+    const stopSpeed = Math.sqrt(2 * deceleration * Math.max(0, remaining - speed * .45));
+    targetSpeedMps = Math.min(targetSpeedMps, remaining < .5 ? 0 : stopSpeed);
+  }
   // Leave braking room behind slower cars, including the player. Lateral
   // clearance means cars already alongside can continue their pass.
   const refreshTraffic = !cheap || invalid || memo.trafficLimit === undefined || (trafficDue && (

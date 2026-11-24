@@ -86,3 +86,12 @@ test('distant motion follows the same offset racing line as detailed steering',(
  const settled=getRaceAiRouteMotion(editor,ai,options);
  assert.ok(Math.abs(settled.x-202)<1e-8,'do not pull a car off its racing line before promotion');
 });
+
+test('distant cars continue along authored road after the timing line',()=>{
+ const {editor,ai,options}=fixture();
+ editor.selectedRace={road:{autoExtend:false,continuations:{finish:[{offset:137}]}}};
+ ai.distance=1000;Object.assign(ai,{worldX:pose(1000).x,worldZ:pose(1000).z,carYaw:pose(1000).yaw,physicsBudgetDetail:'cheap'});
+ const result=getRaceAiRouteMotion(editor,ai,options);assert.ok(result);
+ const expected=pose(1000.75);
+ assert.ok(Math.hypot(result.x-expected.x,result.z-expected.z)<1e-8);
+});

@@ -124,6 +124,7 @@ import { openEditorForm } from './shared/editorForm.js';
 import {carAvailabilityLabel,openCarAvailability} from './CarAvailabilityEditor.js';
 import {hydrateRaceCarVersions as refreshEditorRaceCarVersions} from './RaceCarVersionFiles.js';
 import { applyCarImportPlacementDefaults } from '../racing/CarImportPlacementDefaults.js';
+import {batchStaticDoodadModels} from '../model3d/StaticModelBatch.js';
 import {syncRaceModelTiles} from '../model3d/RaceModelTiles.js';
 import {ensureModelSceneLighting} from '../model3d/ModelRender.js';
 import {modelAssets,ModelAssetInstance} from '../model3d/ModelAssets.js';
@@ -14957,9 +14958,17 @@ export default class RaceEditor {
     const projectionSearchRadiusM = 64;
     if (this.raceRouteProjectionIndex?.samples !== samples) {
       const buckets = new Map();
+      // Immutable numeric coefficients belong to the sample index, not each
+      // wheel, surface and rendered-car query. Preserve division order exactly.
+      const coefficients = new Float64Array(samples.length * 7);
       for (let index = 1; index < samples.length; index += 1) {
         const previous = samples[index - 1];
         const next = samples[index];
+        const offset = index * 7;
+        const ax = Number(previous.x || 0), az = Number(previous.z || 0);
+        const dx = Number(next.x || 0) - ax, dz = Number(next.z || 0) - az;
+        coefficients.set([ax, az, dx, dz, Math.max(0.0001, dx * dx + dz * dz),
+          Number(previous.distance || 0), Number(next.distance || 0) - Number(previous.distance || 0)], offset);
         const minX = Math.floor((Math.min(Number(previous.x || 0), Number(next.x || 0)) - projectionSearchRadiusM) / projectionCellSizeM);
         const maxX = Math.floor((Math.max(Number(previous.x || 0), Number(next.x || 0)) + projectionSearchRadiusM) / projectionCellSizeM);
         const minZ = Math.floor((Math.min(Number(previous.z || 0), Number(next.z || 0)) - projectionSearchRadiusM) / projectionCellSizeM);
@@ -14974,13 +14983,14 @@ export default class RaceEditor {
           }
         }
       }
-      this.raceRouteProjectionIndex = { samples, buckets };
+      this.raceRouteProjectionIndex = { samples, buckets, coefficients };
     }
     const projectionCandidates = this.raceRouteProjectionIndex.buckets
       .get(Math.floor(px / projectionCellSizeM))?.get(Math.floor(pz / projectionCellSizeM));
     let bestIndex = 0, bestDistanceSq = Infinity, bestScore = Infinity, bestT = 0;
-    const progressHint={hint:point.routeDistanceHint,window:point.routeHintWindowM??40,
-      length:routeSamples.at(-1)?.distance||0,circuit:this.getSelectedRaceRuntimeType()==='circuit'};
+    const coefficients = this.raceRouteProjectionIndex.coefficients;
+    const progressHint=Number.isFinite(point.routeDistanceHint) ? {hint:point.routeDistanceHint,window:point.routeHintWindowM??40,
+      length:routeSamples.at(-1)?.distance||0,circuit:this.getSelectedRaceRuntimeType()==='circuit'} : null;
     let bestX = 0, bestZ = 0, bestDx = 0, bestDz = 0, bestOffsetX = 0, bestOffsetZ = 0;
     // Same ordered candidates and exact fallback, without a per-query closure
     // or a freshly formatted spatial-bucket string.
@@ -14989,23 +14999,19 @@ export default class RaceEditor {
       const count = pass === 0 ? (projectionCandidates?.length || 0) : (fallbackIndex >= 1 ? 1 : 0);
       for (let candidate = 0; candidate < count; candidate += 1) {
         const index = pass === 0 ? projectionCandidates[candidate] : fallbackIndex;
-        const previous = samples[index - 1];
-        const next = samples[index];
-        const ax = Number(previous.x || 0);
-        const az = Number(previous.z || 0);
-        const bx = Number(next.x || 0);
-        const bz = Number(next.z || 0);
-        const dx = bx - ax;
-        const dz = bz - az;
-        const lengthSq = Math.max(0.0001, dx * dx + dz * dz);
+        const offset = index * 7;
+        const ax = coefficients[offset], az = coefficients[offset + 1];
+        const dx = coefficients[offset + 2], dz = coefficients[offset + 3];
+        const lengthSq = coefficients[offset + 4];
         const t = clamp(((px - ax) * dx + (pz - az) * dz) / lengthSq, 0, 1);
         const x = ax + dx * t;
         const z = az + dz * t;
         const offsetX = px - x;
         const offsetZ = pz - z;
         const distanceSq = offsetX * offsetX + offsetZ * offsetZ;
-        const along=Number(previous.distance||0)+(Number(next.distance||0)-Number(previous.distance||0))*t;
-        const score=routeProjectionScore(distanceSq,along,progressHint);
+        const score = progressHint
+          ? routeProjectionScore(distanceSq, coefficients[offset + 5] + coefficients[offset + 6] * t, progressHint)
+          : distanceSq;
         if (!bestIndex || score < bestScore) {
           bestIndex = index; bestDistanceSq = distanceSq; bestScore=score; bestT = t;
           bestX = x; bestZ = z; bestDx = dx; bestDz = dz;
@@ -20027,8 +20033,8 @@ export default class RaceEditor {
   }
 
   updateRaceAiVehiclePhysics(ai = {}, {
-    car = this.selectedCar,
-    tuning = this.getRaceCarTuning(car),
+    car = ai.runtimeCar || this.selectedCar,
+    tuning = undefined,
     seconds = 0,
     previousSpeedMps = Number(ai.speedMps || 0),
     targetVelocityWorld = null,
@@ -37016,6 +37022,7 @@ export default class RaceEditor {
       const disposedMaterials = new Set();
       group.traverse?.((entry)=>entry.userData?.modelInstance?.dispose());
       group.traverse?.((entry) => {
+        if (entry.userData?.borrowedModelResources) { entry.dispose?.(); return; }
         entry.geometry?.dispose?.();
         if (entry.material && !entry.material.__raceSharedMaterial
           && !sharedMaterials.has(entry.material) && !disposedMaterials.has(entry.material)) {
@@ -37531,6 +37538,7 @@ export default class RaceEditor {
       map: texture,
       side: THREE.DoubleSide,
       transparent: true,
+      forceSinglePass: true, // Flat sprites have no separate back/front volume.
       alphaTest: 0.05,
       depthTest: true,
       depthWrite: true,
@@ -37839,7 +37847,11 @@ export default class RaceEditor {
       if (sprite.fenceId || staticScenery) {
         const key = `${sprite.fenceId || 'scenery'}:${doodad.artRef || sprite.artRef}:${Math.floor(sprite.x / 128)},${Math.floor(sprite.z / 128)}`;
         let batch = fenceBatches.get(key);
-        if (!batch) { batch = { material, artRef: doodad.artRef || sprite.artRef || '', positions: [], uvs: [] }; fenceBatches.set(key, batch); }
+        if (!batch) { batch = { material, artRef: doodad.artRef || sprite.artRef || '', positions: [], uvs: [], softVegetation: [] }; fenceBatches.set(key, batch); }
+        if (doodad.defaultRule?.behavior === 'flatten' && !doodad.defaultRule.speedDrainPercent
+          && !Object.values(doodad.defaultRule.damage || {}).some(Number) && !doodad.rules?.length) {
+          batch.softVegetation.push({id:sprite.id, start:batch.positions.length, count:vertices.length * 3});
+        }
         for (const point of vertices) {
           batch.positions.push(Number(point.x || 0), this.getRaceThreeElevationM(point), Number(point.z || 0));
           batch.uvs.push(Number(point.u || 0), Number(point.v || 0));
@@ -37878,9 +37890,11 @@ export default class RaceEditor {
       geometry.setAttribute('uv', new THREE.Float32BufferAttribute(batch.uvs, 2));
       geometry.computeVertexNormals(); geometry.computeBoundingSphere();
       const mesh = new THREE.Mesh(geometry, batch.material);
-      mesh.name = `raceFence:${key}`; mesh.renderOrder = 7; mesh.userData.sceneryArtRef = batch.artRef; group.add(mesh);
+      mesh.name = `raceFence:${key}`; mesh.renderOrder = 7; mesh.userData.sceneryArtRef = batch.artRef;
+      mesh.userData.softVegetation = batch.softVegetation; group.add(mesh);
     }
     if (!group.children.length) return false;
+    batchStaticDoodadModels(group);
     renderer.scene.add(group);
     renderer.dynamicDoodadGroup = group;
     renderer.dynamicDoodadAnimations = [];

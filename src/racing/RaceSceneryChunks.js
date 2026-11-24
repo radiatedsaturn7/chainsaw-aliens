@@ -7,7 +7,7 @@ let buildSequence = 0;
 // These are submitted geometry counts, not a measurement of GPU frame time.
 export function getRaceSceneryMeshStats(group) {
   let drawCalls = 0, polygons = 0;
-  group.traverse(entry => {
+  group.traverseVisible(entry => {
     if (!entry.isMesh) return;
     const { geometry, material } = entry;
     if (Array.isArray(material)) {
@@ -15,7 +15,7 @@ export function getRaceSceneryMeshStats(group) {
       polygons += geometry.groups.reduce((sum, group) => sum + Math.floor(group.count / 3), 0);
     } else {
       drawCalls += 1;
-      polygons += Math.floor((geometry.index?.count ?? geometry.getAttribute('position')?.count ?? 0) / 3);
+      polygons += Math.floor((geometry.index?.count ?? geometry.getAttribute('position')?.count ?? 0) / 3) * (entry.isInstancedMesh ? entry.count : 1);
     }
   });
   return { drawCalls, polygons };
@@ -77,6 +77,40 @@ function refreshChunkArtwork(editor,renderer,holder,chunk,previous,next,key) {
   return sprites.length;
 }
 
+// Destruction of soft vegetation changes only visibility. Retain all neighboring
+// props and their GPU resources; restore the exact triangles if IDs are cleared.
+export function updateSoftVegetationVisibility(holder, visible) {
+  if (!holder.visibilityIds || !holder.dynamicDoodadGroup) return false;
+  const next = new Set(visible.map(sprite => sprite.id));
+  const changed = new Set();
+  for (const id of holder.visibilityIds) if (!next.has(id)) changed.add(id);
+  for (const id of next) if (!holder.visibilityIds.has(id)) changed.add(id);
+  const ranges = new Map();
+  holder.dynamicDoodadGroup.traverse(mesh => {
+    for (const range of mesh.userData.softVegetation || []) ranges.set(range.id, {mesh, range});
+  });
+  for (const id of changed) if (!ranges.has(id)) return false;
+  for (const id of changed) {
+    const {mesh, range} = ranges.get(id), attribute = mesh.geometry.getAttribute('position');
+    const array = attribute.array;
+    if (next.has(id)) {
+      if (range.original) array.set(range.original, range.start);
+    } else {
+      range.original ||= array.slice(range.start, range.start + range.count);
+      for (let i=0;i<range.count;i+=3) {
+        array[range.start+i]=range.original[0];
+        array[range.start+i+1]=range.original[1];
+        array[range.start+i+2]=range.original[2];
+      }
+    }
+    attribute.addUpdateRange(range.start, range.count);
+    attribute.needsUpdate = true;
+  }
+  holder.visibilityIds = next;
+  holder.dynamicDoodadCount = visible.length;
+  return true;
+}
+
 export function syncManagedRaceSceneryChunks(editor, renderer, state, sceneKey, stats = null) {
   const sameScene = renderer.dynamicDoodadGroup
     && renderer.dynamicDoodadManagedState === state
@@ -125,6 +159,11 @@ export function syncManagedRaceSceneryChunks(editor, renderer, state, sceneKey, 
       renderer.dynamicDoodadChunks.set(chunk.key, holder);
     }
     if (holder.chunkRevision === chunk.revision && !assetChanged(holder)) continue;
+    if (sameScene && updateSoftVegetationVisibility(holder, chunk.visible)) {
+      holder.chunkRevision = chunk.revision;
+      if (stats) stats.dynamicDoodadVisibilityUpdates = (stats.dynamicDoodadVisibilityUpdates || 0) + 1;
+      continue;
+    }
     const chunkSceneKey=`${renderer.dynamicDoodadBuildSequence}:${chunk.key}:${chunk.revision}`;
     const refreshed=sameGeometry&&!sameScene
       ? refreshChunkArtwork(editor,renderer,holder,chunk,previousAssets,snapshot,chunkSceneKey):null;
@@ -138,6 +177,7 @@ export function syncManagedRaceSceneryChunks(editor, renderer, state, sceneKey, 
       if(definition.model?.ref)holder.modelRefs.add(definition.model.ref);
     }
     holder.chunkRevision = chunk.revision;
+    holder.visibilityIds = new Set(chunk.visible.map(sprite => sprite.id));
     rebuilt += 1;
     placements += refreshed??chunk.visible.length;
   }

@@ -47,6 +47,14 @@ export function captureRaceAi(editor, {detailed=false}={}) {
    movementReason:car.distantPhysicsReason??null,trafficBlocker:car.distantTrafficBlocker??null,
    cheapRecoveries:car.cheapRecoveryCount||0,resetCount:car.automaticVehicleResetCount||0};
   if(detailed){
+   const powertrain=local?.powertrainState;
+   result.powertrain=powertrain?{
+    launchRpm:number(runner.config.powertrainTuning?.launchRpm),
+    clutchCoupling:number(powertrain.clutchCoupling),
+    clutchTakeup:number(powertrain.automaticClutchTakeup),
+    tractionTorqueScale:number(powertrain.tractionTorqueScale),
+    launchPhase:powertrain.launchControl?.phase??null
+   }:null;
    result.velocity=vector(state.velocity);result.angularVelocity=vector(state.angularVelocityWorld);
    result.grounded=typeof state.grounded==='boolean'?state.grounded:null;
    result.lateralSpeedMps=number(state.bodyLateralSpeedMps);

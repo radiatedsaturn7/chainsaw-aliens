@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "race-doodad",
-  "savedAt": 1794860932873,
+  "savedAt": 1795558135910,
   "selectedDoodadId": "campaign-expanded-fern-christmas-01",
   "doodad": {
     "id": "campaign-expanded-fern-christmas-01",
@@ -20,6 +20,7 @@
     "hitboxHeightM": 0.5850000000000001,
     "weightKg": 1,
     "defaultRule": {
+      "minSpeedMph": 0,
       "behavior": "flatten",
       "speedDrainPercent": 0,
       "damage": {

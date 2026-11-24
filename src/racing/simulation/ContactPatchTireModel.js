@@ -161,6 +161,7 @@ export function createWheelContactKinematicsScratch() {
       mountPosition: { x: 0, y: 0, z: 0 },
       normal: { x: 0, y: 1, z: 0 },
       steeringAngles: { fl: 0, fr: 0, rl: 0, rr: 0 },
+      steeringRequest: {},
       rawForward: { x: 0, y: 0, z: 1 },
       projectedForward: { x: 0, y: 0, z: 1 },
       wheelForward: { x: 0, y: 0, z: 1 },
@@ -742,6 +743,12 @@ export function calculateAquaplaningState({
   return output;
 }
 
+function rotateContactVector(orientation, normalized, value, output) {
+  return normalized
+    ? rotateVectorByNormalizedQuaternionInto(value, normalized, output)
+    : rotateVectorByQuaternion(value, orientation);
+}
+
 export function calculateWheelContactKinematics({
   state,
   config,
@@ -800,11 +807,6 @@ export function calculateWheelContactKinematics({
   const normalizedOrientation = computationScratch
     ? normalizeQuaternionInto(orientation, computationScratch.normalizedOrientation)
     : null;
-  const rotateInto = computationScratch
-    ? (value, output) => rotateVectorByNormalizedQuaternionInto(
-        value, normalizedOrientation, output
-      )
-    : (value) => rotateVectorByQuaternion(value, orientation);
   const staticHubOffset = computationScratch?.staticHubOffset || {};
   staticHubOffset.x = (left ? -0.5 : 0.5) * track;
   staticHubOffset.y = -config.cgHeightM + wheelRadiusFor(config, wheelId);
@@ -838,7 +840,7 @@ export function calculateWheelContactKinematics({
         )
       )
     : add(fullDroopHubOffset, scale(suspensionAxisLocal, -suspensionRestLengthM));
-  const rotatedForward = rotateInto(
+  const rotatedForward = rotateContactVector(orientation, normalizedOrientation,
     computationScratch?.localForward || { x: 0, y: 0, z: 1 },
     computationScratch?.rotatedForward
   );
@@ -847,7 +849,7 @@ export function calculateWheelContactKinematics({
         computationScratch.chassisForward, rotatedForward, { x: 0, y: 0, z: 1 }
       )
     : normalize(rotatedForward, { x: 0, y: 0, z: 1 });
-  const rotatedRight = rotateInto(
+  const rotatedRight = rotateContactVector(orientation, normalizedOrientation,
     computationScratch?.localRight || { x: 1, y: 0, z: 0 },
     computationScratch?.rotatedRight
   );
@@ -856,15 +858,15 @@ export function calculateWheelContactKinematics({
         computationScratch.chassisRight, rotatedRight, { x: 1, y: 0, z: 0 }
       )
     : normalize(rotatedRight, { x: 1, y: 0, z: 0 });
-  const centerRadius = rotateInto(localOffset, computationScratch?.centerRadius);
+  const centerRadius = rotateContactVector(orientation, normalizedOrientation, localOffset, computationScratch?.centerRadius);
   const center = computationScratch
     ? addInto(computationScratch.center, state.position, centerRadius)
     : add(vector(state.position), centerRadius);
-  const mountRadius = rotateInto(suspensionMountOffset, computationScratch?.mountRadius);
+  const mountRadius = rotateContactVector(orientation, normalizedOrientation, suspensionMountOffset, computationScratch?.mountRadius);
   const mountPosition = computationScratch
     ? addInto(computationScratch.mountPosition, state.position, mountRadius)
     : add(vector(state.position), mountRadius);
-  const rotatedSuspensionAxis = rotateInto(
+  const rotatedSuspensionAxis = rotateContactVector(orientation, normalizedOrientation,
     suspensionAxisLocal, computationScratch?.suspensionAxisWorld
   );
   const suspensionAxisWorld = computationScratch
@@ -888,23 +890,25 @@ export function calculateWheelContactKinematics({
         { x: 0, y: 1, z: 0 }
       ));
   const centerSteeringAngleRad = resolvePhysicalCenterSteeringAngle(controls, config, state);
-  const steeringAngles = getAckermannSteeringAngles({
-    steeringAngleRad: centerSteeringAngleRad,
-    wheelbaseM: config.wheelbaseM,
-    frontTrackWidthM: config.frontTrackWidthM,
-    ackermannRatio: config.ackermannRatio,
-    // centerSteeringAngleRad is already the physical post-rack center angle.
-    steeringRackRatio: 1,
-    target: computationScratch?.steeringAngles
-  });
-  const fallbackAlignment = resolvePerWheelAlignment({
+  const steeringRequest = computationScratch?.steeringRequest || {};
+  steeringRequest.steeringAngleRad = centerSteeringAngleRad;
+  steeringRequest.wheelbaseM = config.wheelbaseM;
+  steeringRequest.frontTrackWidthM = config.frontTrackWidthM;
+  steeringRequest.ackermannRatio = config.ackermannRatio;
+  // Already the physical post-rack center angle.
+  steeringRequest.steeringRackRatio = 1;
+  steeringRequest.target = computationScratch?.steeringAngles;
+  const steeringAngles = getAckermannSteeringAngles(steeringRequest);
+  const resolvedToe = toeOverrideRad ?? environment.toeByWheel?.[wheelId];
+  const resolvedCamber = camberOverrideRad ?? environment.camberByWheel?.[wheelId];
+  const fallbackAlignment = resolvedToe == null || resolvedCamber == null ? resolvePerWheelAlignment({
     wheelId,
     axleCamberRad: front ? config.camberFrontRad : config.camberRearRad,
     axleToeRad: front ? config.toeFrontRad : config.toeRearRad
-  });
+  }) : null;
   const physicalSteeringAngleRad = steeringAngles[wheelId];
   const toeAngleRad = Number(
-    toeOverrideRad ?? environment.toeByWheel?.[wheelId] ?? fallbackAlignment.toeRad
+    resolvedToe ?? fallbackAlignment.toeRad
   );
   const steeringAngleRad = physicalSteeringAngleRad + toeAngleRad;
   let rawForward;
@@ -1017,9 +1021,7 @@ export function calculateWheelContactKinematics({
   const slipRatio = (rollingSpeedMps - longitudinalVelocityMps)
     / Math.max(0.5, Math.abs(longitudinalVelocityMps), Math.abs(rollingSpeedMps) * 0.12);
   const slipAngleRad = Math.atan2(lateralVelocityMps, Math.max(0.35, Math.abs(longitudinalVelocityMps)));
-  const camberAngleRad = Number(camberOverrideRad
-    ?? environment.camberByWheel?.[wheelId]
-    ?? fallbackAlignment.camberRad);
+  const camberAngleRad = Number(resolvedCamber ?? fallbackAlignment.camberRad);
   const output = target && typeof target === 'object' ? target : {};
   output.wheelId = wheelId;
   output.wheelCenterWorld = cleanVectorInto(output.wheelCenterWorld, center);

@@ -1,3 +1,4 @@
+import {raceAiFinishStopDistance} from './RaceAiFinishRunoff.js';
 import {raceAiLaunchLaneOffset} from './RaceAiLaunchLane.js';
 import {sampleRaceRacingLine} from './RaceRacingLine.js';
 import {getRaceAiRoadPlan} from './RaceAiDirector.js';
@@ -14,7 +15,7 @@ export function getRaceAiRouteMotion(editor,ai,{tuning,averageSpeed,seconds,hold
     || (ai.physicsBudgetDetail !== 'cheap' && Math.hypot(ai.worldX-session.worldX,ai.worldZ-session.worldZ)<120)) return null;
   const distance=Number(ai.projectedDistance??ai.distance);
   if(!Number.isFinite(distance) || !(seconds>0) || !(averageSpeed>0)) return null;
-  const options={runtimeType:session.routeRuntimeType};
+  const options={runtimeType:session.routeRuntimeType,allowVisualExtension:true};
   const current=editor.getRaceWorldPoseAtDistance(distance,options);
   if(![current?.x,current?.z,current?.yaw].every(Number.isFinite))return null;
   const halfWidth=editor.getRaceRoadHalfWidthWorld(current.segment);
@@ -32,13 +33,13 @@ export function getRaceAiRouteMotion(editor,ai,{tuning,averageSpeed,seconds,hold
   let nextDistance=distance+travel;
   const length=Number(session.routeLength);
   if(length>0)nextDistance=session.routeRuntimeType==='circuit'
-    ? ((nextDistance%length)+length)%length : Math.min(nextDistance,length);
+    ? ((nextDistance%length)+length)%length : Math.min(nextDistance,raceAiFinishStopDistance(editor.selectedRace?.road,length));
   const next=editor.getRaceWorldPoseAtDistance(nextDistance,options);
   if(![next?.x,next?.z,next?.yaw].every(Number.isFinite))return null;
   const nextUsable=Math.max(0,editor.getRaceRoadHalfWidthWorld(next.segment)-width*.5-.25);
   // Detailed steering follows the optimized racing line, not the road centre.
   // Use that same target here so promotion does not introduce a sudden lane change.
-  const racingPoint=sampleRaceRacingLine(length>0 && !session.debugAiCenterSlow ? getRaceAiRoadPlan(editor) : null,nextDistance);
+  const racingPoint=sampleRaceRacingLine(length>0 && !session.debugAiCenterSlow && (options.runtimeType==='circuit' || nextDistance<length) ? getRaceAiRoadPlan(editor) : null,nextDistance);
   const racingOffset=racingPoint ? -(racingPoint.x-next.x)*Math.cos(next.yaw)
     +(racingPoint.z-next.z)*Math.sin(next.yaw) : 0;
   const desiredOffset=racingOffset+clamp(Number(ai.lineOffset)||0,-.78,.78)*halfWidth;

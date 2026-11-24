@@ -19,6 +19,15 @@ function materialTexture(source){
   texture.colorSpace=THREE.SRGBColorSpace;texture.flipY=true;texture.magFilter=THREE.NearestFilter;texture.minFilter=THREE.NearestFilter;
   texture.needsUpdate=true;return texture;
 }
+export function modelMaterialNeedsBlending(material) {
+  // Binary alpha is an alpha-tested cutout. Only fractional alpha requires
+  // sorting/blending (and the two-sided transparent model render passes).
+  return Boolean(material.texture?.pixels?.some(pixel => {
+    if (typeof pixel !== 'string' || pixel.length !== 9) return false;
+    const alpha = parseInt(pixel.slice(7), 16);
+    return alpha > 0 && alpha < 255;
+  }));
+}
 export function buildModelObject(model){
   const verticesById = new Map();
   // Match Array.find on duplicate IDs and strict equality (which never matches NaN).
@@ -27,7 +36,7 @@ export function buildModelObject(model){
   }
   const vertexForId = id => verticesById.get(id);
   const root=new THREE.Group();root.name=model.name;root.userData.modelDocument=model;
-  const materials=new Map(model.materials.map(m=>[m.id,new THREE.MeshStandardMaterial({color:m.color||'#ffffff',map:materialTexture(m.texture),side:THREE.DoubleSide,roughness:0.8,transparent:true,alphaTest:0.01})]));
+  const materials=new Map(model.materials.map(m=>[m.id,new THREE.MeshStandardMaterial({color:m.color||'#ffffff',map:materialTexture(m.texture),side:THREE.DoubleSide,roughness:0.8,transparent:modelMaterialNeedsBlending(m),alphaTest:0.01})]));
   for(const material of model.materials){
     const vertices=[],uvs=[],vertexIds=[],faceIds=[];
     for(const face of model.faces.filter(f=>f.material===material.id))for(const triangle of triangulateFace(model,face,vertexForId))for(const index of triangle){

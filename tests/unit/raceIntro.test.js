@@ -110,3 +110,30 @@ test('showcase initializes every opponent wheel pose before countdown without st
  assert.deepEqual(s.aiRuntime.map(ai=>ai.vehicleDynamicsRunner),runners);
  assert.equal(s.elapsedMs,0);
 });
+
+test('showcase and AI driver resolve the same gearbox independently of player shift mode',async()=>{
+ const {default:RaceEditor}=await import('../../src/ui/RaceEditor.js');
+ const {initializeRaceVehiclePresentation}=await import('../../src/racing/RaceSimulation.js');
+ const {getRaceAiRuntimeTuning}=await import('../../src/racing/RaceAiSimulation.js');
+ for(const shiftMode of ['automatic','manual']){
+  const e=new RaceEditor({});e.startPlaytest(e.selectedCar.id,{hydrateCars:false});
+  e.playtestSession.transmissionType=shiftMode==='automatic'?'manual':'automatic';
+  const car=structuredClone(e.selectedCar);
+  car.transmissions={manual:{launchRpm:1800,gearRatios:[3.8,2.1,1.4,1]},automatic:{launchRpm:3800,gearRatios:[3.1,1.9,1.3,1]}};
+  const pose=e.getRaceWorldPoseAtDistance(15);
+  const ai={id:'consistent-launch',runtimeCar:car,carId:car.id,shiftMode,difficulty:'hard',
+   worldX:pose.x,worldZ:pose.z,carYaw:pose.yaw,distance:15,projectedDistance:15,speedMps:0,gear:1,rpm:800,lap:1,currentLapMs:0};
+  e.playtestSession.aiRuntime=[ai];
+  initializeRaceVehiclePresentation(e);
+  const expected=getRaceAiRuntimeTuning(e,ai,car),runner=ai.vehicleDynamicsRunner;
+  assert.equal(runner.config.powertrainTuning.launchRpm,expected.launchRpm);
+  assert.deepEqual(runner.config.powertrainTuning.gearRatios,expected.gearRatios);
+  for(let i=0;i<120;i++)e.updateRaceAiDrivers(1/60,{preStartMode:'standing'});
+  assert.strictEqual(ai.vehicleDynamicsRunner,runner,'countdown must retain the correctly initialized runner');
+  assert.ok(Math.abs(ai.rpm-expected.launchRpm)<10);
+  assert.ok(ai.speedMps<.1,'rev staging must not move the grid');
+  const direct={...ai,vehicleDynamicsRunner:null,vehicleRenderState:null};
+  e.updateRaceAiVehiclePhysics(direct,{seconds:0});
+  assert.equal(direct.vehicleDynamicsRunner.config.powertrainTuning.launchRpm,expected.launchRpm,'direct initialization must use the AI car and transmission too');
+ }
+});

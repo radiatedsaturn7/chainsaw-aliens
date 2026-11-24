@@ -168,7 +168,8 @@ test('AI crosses the finish before slowing down on a destination route', () => {
   const editor = road();
   editor.playtestSession.routeRuntimeType = 'destination';
   assert.ok(planRaceAiDriving(editor, racer({ projectedDistance: 1999, worldZ: 1999 }), car).targetSpeedMps > 0);
-  assert.equal(planRaceAiDriving(editor, racer({ projectedDistance: 2000, worldZ: 2000 }), car).targetSpeedMps, 0);
+  assert.ok(planRaceAiDriving(editor, racer({ projectedDistance: 2000, worldZ: 2000 }), car).targetSpeedMps > 0);
+  assert.equal(planRaceAiDriving(editor, racer({ projectedDistance: 2212, worldZ: 2212 }), car).targetSpeedMps, 0);
 });
 
 test('AI corrects a displaced car using the actual tire and chassis simulation', () => {
@@ -369,4 +370,20 @@ test('a racer in a physically clear passing lane is not capped to the slower lea
  leader.worldX=0;
  const blocked=planRaceAiDriving(e,ai,car,{seconds:1/60,roadSafety:{risk:0,maxLineOffset:.78}});
  assert.ok(clear.targetSpeedMps>blocked.targetSpeedMps+5);
+});
+
+test('destination racers drive through timing line, follow runoff bend and brake beyond it',()=>{
+ const e=road(d=>d<=2000?{x:0,z:d,yaw:0}:{x:(d-2000)*.6,z:2000+(d-2000)*.8,yaw:Math.atan2(.6,.8)});
+ e.playtestSession.routeRuntimeType='destination';
+ e.selectedRace={road:{autoExtend:false,continuations:{finish:[{offset:137}]}}};
+ e.playtestSession.debugAiIndependentPlanning=true;
+ const options={topSpeedMps:40,roadSafety:{risk:0,maxLineOffset:.78}};
+ const atLine=racer({worldZ:2000,projectedDistance:2000,speedMps:15});
+ const crossing=planRaceAiDriving(e,atLine,car,options);
+ assert.ok(crossing.targetSpeedMps>5,'must drive across line');
+ assert.ok(crossing.steeringAngleRad>0,'must follow bend after finish');
+ const nearEnd=racer({worldX:128*.6,worldZ:2000+128*.8,carYaw:Math.atan2(.6,.8),projectedDistance:2128,speedMps:5});
+ assert.ok(planRaceAiDriving(e,nearEnd,car,options).targetSpeedMps<5);
+ nearEnd.projectedDistance=2129;
+ assert.equal(planRaceAiDriving(e,nearEnd,car,options).targetSpeedMps,0);
 });

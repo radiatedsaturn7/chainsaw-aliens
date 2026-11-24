@@ -1,3 +1,4 @@
+import {raceAiOpenRoadDistance} from './RaceAiFinishRunoff.js';
 import { tireSizeForWheel } from './TireSizes.js';
 import {getRaceAiRoadPlan} from './RaceAiDirector.js';
 import {raceAiRoadPlanIndex} from './RaceAiRoadPlan.js';
@@ -306,8 +307,8 @@ export function recoverUpsideDownRaceAi(editor, ai, { car, tuning, seconds = 0, 
 }
 
 export function updateRaceAiVehiclePhysics(editor, ai = {}, {
-  car = editor.selectedCar,
-  tuning = editor.getRaceCarTuning(car),
+  car = ai.runtimeCar || editor.selectedCar,
+  tuning = getRaceAiRuntimeTuning(editor, ai, car),
   seconds = 0,
   previousSpeedMps = Number(ai.speedMps || 0),
   targetVelocityWorld = null,
@@ -1418,8 +1419,9 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
       }
       ai.projectedDistance = ((ai.distance % routeLength) + routeLength) % routeLength;
     } else {
-      ai.distance = Math.min(ai.distance, routeLength);
-      ai.projectedDistance = clamp(ai.distance, 0, routeLength);
+      ai.distance = raceAiOpenRoadDistance(editor, physicalProjection, ai, routeLength);
+      ai.projectedDistance = Math.max(0, ai.distance);
+      if (ai.distance >= routeLength && !ai.seriesFinishMs) ai.seriesFinishMs = Math.max(1, session.elapsedMs || 1);
     }
     if (session.trackState) {
       const aiSurfaceSession = {
