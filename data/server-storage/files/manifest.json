@@ -5899,6 +5899,7 @@
       "landmark-city-wy-wyoming-state-capitol-3d": "models/landmark-city-wy-wyoming-state-capitol-3d/document.json",
       "laurel-forest-cabin-3d": "models/laurel-forest-cabin-3d/document.json",
       "laurel-park-sign-3d": "models/laurel-park-sign-3d/document.json",
+      "laurel-stone-retaining-wall-3d": "models/laurel-stone-retaining-wall-3d/document.json",
       "mount-washington-weather-instruments-3d": "models/mount-washington-weather-instruments-3d/document.json",
       "ohio-river-crossing-flood-marker-3d": "models/ohio-river-crossing-flood-marker-3d/document.json",
       "pikes-peak-summit-sign-3d": "models/pikes-peak-summit-sign-3d/document.json",
@@ -5926,6 +5927,7 @@
       "thornapple-acr-finished": "models/thornapple-acr-finished/document.json",
       "thornapple-acr-wheel": "models/thornapple-acr-wheel/document.json",
       "tower-hill-mailbox-3d": "models/tower-hill-mailbox-3d/document.json",
+      "tower-hill-short-stone-wall-3d": "models/tower-hill-short-stone-wall-3d/document.json",
       "tower-hill-small-shed-3d": "models/tower-hill-small-shed-3d/document.json"
     },
     "music": {
