@@ -49,7 +49,7 @@ import {
   prepareManagedRaceScenery, getManagedRaceScenery, getManagedRaceSceneryVersion,
   invalidateRaceSceneryPresentation, releaseManagedRaceScenery
 } from '../racing/RaceVisibleScenery.js';
-import { syncManagedRaceSceneryChunks } from '../racing/RaceSceneryChunks.js';
+import { getRaceSceneryMeshStats, isRaceSceneryAnimated, syncManagedRaceSceneryChunks } from '../racing/RaceSceneryChunks.js';
 import { staticWorldKeyChanges } from '../racing/RaceStaticWorldCache.js';
 import {raceStartupWarmupReady,RACE_STARTUP_ART_WAIT_MS} from '../racing/RaceStartupWarmup.js';
 import {drawRacePerformanceStatus} from '../racing/RacePerformanceStatus.js';
@@ -983,6 +983,13 @@ export function buildRacePortraitMenuModel(editorId = 'race') {
 
 export function buildCarPortraitMenuModel() {
   return buildRacePortraitMenuModel('car');
+}
+
+function getRaceDoodadModelFallbackArtRef(sprite, doodad) {
+  // A scenery placement may retain its real sprite alongside its native model.
+  // Leave pre-existing model-only items and all fences on their original paths.
+  if (!doodad.model?.ref || doodad.itemType === 'item' || doodad.itemType === 'mix-tape' || doodad.isFence || sprite.fenceId) return '';
+  return doodad.artRef || sprite.artRef || '';
 }
 
 export default class RaceEditor {
@@ -37541,10 +37548,12 @@ export default class RaceEditor {
   }
 
   getRaceDoodadVisualLayout(sprite = {}, doodad = this.getRaceDoodadForScenery(sprite), canvas = null) {
-    const source = { ...doodad, widthM: doodad.widthM || sprite.widthM, heightM: doodad.heightM || sprite.heightM,
+    const fallbackArtRef = getRaceDoodadModelFallbackArtRef(sprite, doodad);
+    const source = { ...doodad, model: fallbackArtRef ? null : doodad.model,
+      widthM: doodad.widthM || sprite.widthM, heightM: doodad.heightM || sprite.heightM,
       groundOffsetM: doodad.groundOffsetM ?? sprite.groundOffsetM };
-    const art = canvas || (!doodad.isFence && !sprite.fenceId && !doodad.model?.ref
-      ? this.getRaceArtSpriteCanvas(doodad.artRef || sprite.artRef) : null);
+    const art = canvas || (!doodad.isFence && !sprite.fenceId && !source.model?.ref
+      ? this.getRaceArtSpriteCanvas(fallbackArtRef || doodad.artRef || sprite.artRef) : null);
     return doodadVisualLayout(source, art, { fence: Boolean(sprite.fenceId) });
   }
 
@@ -37795,12 +37804,16 @@ export default class RaceEditor {
       const quad = this.getRaceDoodadWorldQuad(sprite);
       if (!quad) return;
       const { doodad } = quad;
-      if(doodad.model?.ref){
-        const model=modelAssets.get(doodad.model.ref);if(!model)return;
+      const fallbackArtRef = getRaceDoodadModelFallbackArtRef(sprite, doodad);
+      const model = doodad.model?.ref ? modelAssets.get(doodad.model.ref) : null;
+      if (model) {
         ensureModelSceneLighting(resourceRenderer.scene);
         const instance=new ModelAssetInstance();instance.setModel(model,doodad.model);
         const placement=new THREE.Group();placement.userData.modelInstance=instance;placement.userData.spriteId=sprite.id;
         placement.add(instance.object);
+        // Authored static props need their initial pose only; avoid per-frame
+        // reskinning and normal/bounds rebuilds for these dual-visual models.
+        placement.userData.staticDoodadModel = Boolean(fallbackArtRef && !instance.binding.clip);
         const ground={...quad.points[2],x:Number(sprite.x)||0,z:Number(sprite.z)||0};
         placement.position.set(Number(sprite.x)||0,this.getRaceThreeElevationM(ground),Number(sprite.z)||0);
         placement.rotation.y=Number(sprite.yaw)||0;
@@ -37808,12 +37821,17 @@ export default class RaceEditor {
         const box=new THREE.Box3();for(const vertex of model.vertices)box.expandByPoint(new THREE.Vector3(...vertex.position));
         if(!box.isEmpty()){
           const size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());
-          const sx=doodad.widthM/Math.max(0.001,size.x),sy=doodad.heightM/Math.max(0.001,size.y);
+          const widthM = fallbackArtRef ? quad.widthM : doodad.widthM;
+          const heightM = fallbackArtRef ? quad.heightM : doodad.heightM;
+          const sx=widthM/Math.max(0.001,size.x),sy=heightM/Math.max(0.001,size.y);
           instance.object.scale.set(sx,sy,sx);instance.object.position.set(-center.x*sx,-box.min.y*sy,-center.z*sx);
         }
         instance.time=Number(this.playtestSession?.elapsedMs||0)/1000*instance.binding.speed;instance.update(0);
         group.add(placement);this.addRaceThreeDoodadHitboxMeshes(resourceRenderer,group,sprite,{stats});return;
       }
+      // On a cold or failed native load, retain the original sprite. The model
+      // cache revision in the scene key rebuilds this batch when it becomes ready.
+      if (doodad.model?.ref && !fallbackArtRef) return;
       const material = this.getRaceThreeDoodadMaterial(resourceRenderer, doodad.artRef || sprite.artRef);
       if (!material) return;
       const vertices = [quad.points[0], quad.points[1], quad.points[2], quad.points[0], quad.points[2], quad.points[3]];
@@ -37867,15 +37885,16 @@ export default class RaceEditor {
     renderer.dynamicDoodadGroup = group;
     renderer.dynamicDoodadAnimations = [];
     group.traverse(entry => {
-      if (entry.userData?.mixTape || entry.userData?.modelInstance) renderer.dynamicDoodadAnimations.push(entry);
+      if (isRaceSceneryAnimated(entry)) renderer.dynamicDoodadAnimations.push(entry);
     });
+    const meshStats = getRaceSceneryMeshStats(group);
+    renderer.dynamicDoodadDrawCalls = meshStats.drawCalls;
+    renderer.dynamicDoodadPolygons = meshStats.polygons;
     renderer.dynamicDoodadSceneKey = sceneKey;
     renderer.dynamicDoodadCount = sprites.length;
-    renderer.dynamicDoodadDrawCalls = group.children.length;
-    renderer.dynamicDoodadPolygons = group.children.reduce((sum, mesh) => sum + Math.floor((mesh.geometry?.getAttribute('position')?.count || 0) / 3), 0);
     if (stats) {
       stats.threeDoodads = sprites.length;
-      stats.drawCalls = (Number(stats.drawCalls) || 0) + group.children.length;
+      stats.drawCalls = (Number(stats.drawCalls) || 0) + renderer.dynamicDoodadDrawCalls;
       stats.polygons = (Number(stats.polygons) || 0) + renderer.dynamicDoodadPolygons;
       stats.dynamicDoodadRebuilds = (Number(stats.dynamicDoodadRebuilds) || 0) + 1;
     }
@@ -40952,7 +40971,10 @@ export default class RaceEditor {
       const doodad = this.getRaceDoodadForScenery(sprite);
       const preset = RACE_SCENERY_PRESET_BY_ID[sprite.presetId] || RACE_SCENERY_PRESETS[0];
       const frameIndex = sprite.animated ? Math.floor(Math.max(0, Number(this.playtestSession?.elapsedMs || 0)-Number(sprite.spawnedAtMs || 0))/90) : 0;
-      const artCanvas = doodad.model?.ref ? modelSprites.snapshot(doodad.model,Number(this.playtestSession?.elapsedMs||0)/1000,{width:256,height:256}) : this.getRaceArtSpriteCanvas(doodad.artRef || sprite.artRef, { frameIndex });
+      const fallbackArtRef = getRaceDoodadModelFallbackArtRef(sprite, doodad);
+      const artCanvas = doodad.model?.ref && !fallbackArtRef
+        ? modelSprites.snapshot(doodad.model,Number(this.playtestSession?.elapsedMs||0)/1000,{width:256,height:256})
+        : this.getRaceArtSpriteCanvas(fallbackArtRef || doodad.artRef || sprite.artRef, { frameIndex });
       const visual = this.getRaceDoodadVisualLayout(sprite, doodad, artCanvas);
       const widthM = visual.widthM;
       const heightM = visual.heightM;

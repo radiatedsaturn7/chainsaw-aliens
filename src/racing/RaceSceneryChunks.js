@@ -3,6 +3,28 @@ import { mixTapeRotation } from '../radio/MixTapePickup.js';
 
 let buildSequence = 0;
 
+// Count actual renderable meshes, including those nested in a native prop.
+// These are submitted geometry counts, not a measurement of GPU frame time.
+export function getRaceSceneryMeshStats(group) {
+  let drawCalls = 0, polygons = 0;
+  group.traverse(entry => {
+    if (!entry.isMesh) return;
+    const { geometry, material } = entry;
+    if (Array.isArray(material)) {
+      drawCalls += geometry.groups.length;
+      polygons += geometry.groups.reduce((sum, group) => sum + Math.floor(group.count / 3), 0);
+    } else {
+      drawCalls += 1;
+      polygons += Math.floor((geometry.index?.count ?? geometry.getAttribute('position')?.count ?? 0) / 3);
+    }
+  });
+  return { drawCalls, polygons };
+}
+
+export function isRaceSceneryAnimated(entry) {
+  return Boolean(entry.userData?.mixTape || (entry.userData?.modelInstance && !entry.userData.staticDoodadModel));
+}
+
 function animate(renderer, time) {
   for (const entry of renderer.dynamicDoodadAnimations || []) {
     if (entry.userData.mixTape) entry.rotation.y = entry.userData.baseYaw + mixTapeRotation(time);
@@ -47,10 +69,11 @@ function refreshChunkArtwork(editor,renderer,holder,chunk,previous,next,key) {
     for(const material of retiredMaterials)material.dispose?.();
   }
   holder.dynamicDoodadAnimations=[];
-  group.traverse(entry=>{if(entry.userData?.mixTape||entry.userData?.modelInstance)holder.dynamicDoodadAnimations.push(entry);});
+  group.traverse(entry=>{if(isRaceSceneryAnimated(entry))holder.dynamicDoodadAnimations.push(entry);});
   holder.dynamicDoodadCount=group.children.length?chunk.visible.length:0;
-  holder.dynamicDoodadDrawCalls=group.children.length;
-  holder.dynamicDoodadPolygons=group.children.reduce((n,mesh)=>n+Math.floor((mesh.geometry?.getAttribute('position')?.count||0)/3),0);
+  const meshStats=getRaceSceneryMeshStats(group);
+  holder.dynamicDoodadDrawCalls=meshStats.drawCalls;
+  holder.dynamicDoodadPolygons=meshStats.polygons;
   return sprites.length;
 }
 

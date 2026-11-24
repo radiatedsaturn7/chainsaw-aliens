@@ -5689,7 +5689,9 @@
       "spruce-clover-finished": "models/spruce-clover-finished/document.json",
       "spruce-clover-wheel": "models/spruce-clover-wheel/document.json",
       "thornapple-acr-finished": "models/thornapple-acr-finished/document.json",
-      "thornapple-acr-wheel": "models/thornapple-acr-wheel/document.json"
+      "thornapple-acr-wheel": "models/thornapple-acr-wheel/document.json",
+      "tower-hill-mailbox-3d": "models/tower-hill-mailbox-3d/document.json",
+      "tower-hill-small-shed-3d": "models/tower-hill-small-shed-3d/document.json"
     },
     "music": {
       "1": "music/1/document.json",
