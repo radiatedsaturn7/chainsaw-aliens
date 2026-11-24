@@ -121,8 +121,8 @@ export default class MenuPlayer {
     const all=this.resources.choices('cars',this.flow.document,{...this.flow.parameters,includeDisabledCars:action==='owned'||action==='inspect'&&owned.includes(value.ref)});
     if(action==='inspect'||action==='buy'){
       if(!all.some(c=>c.value===value.ref))throw Error('Car unavailable');
-      const selected=await this.game.resolveRaceTravelCarAsync(value.ref);if(!selected?.car)throw Error('Car unavailable');
-      const price=campaignCarPrice(this.resources.performance(selected.car).points);
+      const purchaseCar=await this.game.resolveRaceTravelCarAsync(value.ref);if(!purchaseCar?.car)throw Error('Car unavailable');
+      const price=campaignCarPrice(this.resources.performance(purchaseCar.car).points);
       if(action==='buy'){
         await garage.transaction(next=>{
           if(ownedOf(next.garage).includes(value.ref))return {debit:0};

@@ -6,7 +6,7 @@ const root=new URL('../../data/server-storage/files/',import.meta.url);
 const previewFile=new URL('../../assets/car-previews/manifest.json',import.meta.url);
 const runtimeManifest=JSON.parse(fs.readFileSync(new URL('manifest.json',root)));
 const unpack=d=>d.__chainsawStorage?JSON.parse(gunzipSync(Buffer.from(d.data,'base64'))):d;
-const carDocs=new Map(Object.entries(runtimeManifest.folders.cars).map(([name,path])=>[name,unpack(JSON.parse(fs.readFileSync(new URL(path,root))))]));
+const carDocs=new Map(Object.entries(runtimeManifest.folders.cars).filter(([name])=>!name.startsWith('__')).map(([name,path])=>[name,unpack(JSON.parse(fs.readFileSync(new URL(path,root))))]));
 const mainArtPaths=new Set();
 const refsByName=new Map();
 function artRefs(value,set=new Set()){

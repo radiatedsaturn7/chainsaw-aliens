@@ -9,7 +9,7 @@ import {createMenuDocument} from '../../src/menus/MenuDocument.js';
 import Input from '../../src/game/Input.js';
 import RaceEditor from '../../src/ui/RaceEditor.js';
 
-function fixture(){const calls=[];const game={input:{},canvas:{style:{}},audio:{setEffectsVolume:v=>calls.push(['fx',v])},transitionTo:s=>calls.push(['state',s]),setActiveMusicTrack:()=>{},startRaceTravel:async p=>{calls.push(['race',p]);return true}};const player=new MenuPlayer(game);player.settings.load=async()=>{};return {player,game,calls};}
+function fixture(){const calls=[];const game={input:{},canvas:{style:{}},audio:{setEffectsVolume:v=>calls.push(['fx',v])},transitionTo:s=>calls.push(['state',s]),setActiveMusicTrack:()=>{},startRaceTravel:async p=>{calls.push(['race',p]);return true}};const player=new MenuPlayer(game);player.settings.load=async()=>{};player.resources.prepareScreen=()=>null;return {player,game,calls};}
 const input=(codes=[],buttons=[])=>({wasPressedCode:code=>codes.includes(code),wasGamepadPressed:button=>buttons.includes(button)});
 test('keyboard and controller Start navigate the splash, choices retain typed parameters',async()=>{
  for(const controls of [input(['Space']),input([],['gamepadStart'])]){

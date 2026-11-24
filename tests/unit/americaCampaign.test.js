@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
+import {campaignTravelOrder} from '../../src/menus/CampaignItinerary.js';
 import {createAmericaWorldMap,AMERICA_OPENING_RACE} from '../../src/menus/AmericaWorldMap.js';
 import {normalizeMenuElement} from '../../src/menus/MenuDocument.js';
 import {worldMapNodes,worldMapSelectableNodes,raceCompletionKey} from '../../src/menus/MenuWorldMap.js';
@@ -58,16 +59,17 @@ test('single geographic route unlocks exactly one next race at a time',()=>{
  const parameters={};
  assert.equal(worldMapSelectableNodes(worldMapNodes(map,null,null,parameters)).length,1);
  assert.equal(map.nodes[0].raceRef,AMERICA_OPENING_RACE);
- for(const [i,stage] of catalog.entries()){
+ const itinerary=[...catalog].sort((a,b)=>campaignTravelOrder(a.stage)-campaignTravelOrder(b.stage));
+ for(const [i,stage] of itinerary.entries()){
   const nodes=worldMapNodes(map,null,null,parameters);
   assert.equal(nodes[i].locked,false);
   if(i<10)assert.equal(nodes[i+1].locked,true);
-  if(i)assert.ok(map.connections.some(c=>c.from===catalog[i-1].id&&c.to===stage.id));
+  if(i)assert.ok(map.connections.some(c=>c.from===itinerary[i-1].id&&c.to===stage.id));
   parameters[raceCompletionKey(stage.name)]=true;
   assert.equal(worldMapSelectableNodes(worldMapNodes(map,null,null,parameters)).length,Math.min(11,i+2));
  }
  // The requested St Louis stop is east of the Ozarks; geography is not faked.
- assert.ok(map.nodes[5].x>map.nodes[4].x);
+ assert.ok(map.nodes.find(n=>n.id===catalog[5].id).x>map.nodes.find(n=>n.id===catalog[4].id).x);
  assert.ok(map.nodes[1].y<map.nodes[0].y);
 });
 
