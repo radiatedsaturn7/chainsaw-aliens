@@ -519,7 +519,25 @@ He smiles, and for once doesn't try to hide it.
 
 **ROB:** “Yeah. We did.”
 
-Cait lets the silence last. She doesn't ask how it ended, or what Heaven means. The player has no reason yet to doubt the ordinary meaning of his words.
+He takes another look at the upstairs window.
+
+**ROB:** “Used to think about her every day. First thing in the morning, last thing at night. Then one day I realized I hadn't thought about her all week.”
+
+**CAIT:** “And that bothered you?”
+
+**ROB:** “A bit. Thought it meant I'd forgotten something important.”
+
+He rubs the back of his neck.
+
+**ROB:** “But I haven't. I remember the good stuff. And the arguments. Christ, we could argue about anything.”
+
+**CAIT:** “Can't imagine that.”
+
+**ROB:** “Oh, piss off.”
+
+She grins. He gives the house another moment.
+
+Cait doesn't ask how it ended, or what Heaven means. The player has no reason yet to doubt the ordinary meaning of his words.
 
 They watch a loose shutter tap against the house.
 
