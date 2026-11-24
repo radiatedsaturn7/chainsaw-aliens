@@ -4369,6 +4369,8 @@
       "Game Menu": "menus/Game Menu/document.json"
     },
     "models": {
+      "expanded-robot-building-3d": "models/expanded-robot-building-3d/document.json",
+      "expanded-unfinished-human-building-3d": "models/expanded-unfinished-human-building-3d/document.json",
       "2005 Flint Coupe Body": "models/2005 Flint Coupe Body/document.json",
       "2024 Sentinel Sedan Body": "models/2024 Sentinel Sedan Body/document.json",
       "AARTG001 Body": "models/AARTG001 Body/document.json",
