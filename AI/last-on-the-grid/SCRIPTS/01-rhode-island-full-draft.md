@@ -499,23 +499,27 @@ Cait doesn't react as though he's revealed a mystery. To her it is a complete, o
 
 A car door creaks slightly in the wind.
 
-**ROB:** “Funny. I wonder if she still thinks about me.”
+**ROB:** “I haven't been down this road in years. Funny how you can remember every bloody turn, though.”
 
-Cait doesn't answer for her.
+**CAIT:** “You remembered where to park.”
 
-**CAIT:** “You do.”
+**ROB:** “That I did.”
 
-**ROB:** “Sometimes. Not every day. Used to, though. Every stupid little thing reminded me of her. A song on the radio, somebody with the same coat, the smell of a bakery we used to go to. Bloody inconvenient way to live.”
+He looks up at the window again.
 
-**CAIT:** “Sounds exhausting.”
+**ROB:** “Used to tell myself I'd forgotten the place. Then I saw the driveway and remembered that awful winter she made me shovel it. She stood in the doorway, drinking coffee, telling me I was doing it wrong.”
 
-**ROB:** “It was. Then one day I went a whole morning without thinking about her. Felt awful about that, too.”
+**CAIT:** “Were you?”
 
-Cait leans against the car beside him.
+**ROB:** “Probably. Didn't stop me complaining.”
 
-**CAIT:** “I don't think forgetting to be sad for a morning is the same as forgetting a person.”
+He smiles, and for once doesn't try to hide it.
 
-**ROB:** “No. Guess not.”
+**CAIT:** “Sounds like you had some good times.”
+
+**ROB:** “Yeah. We did.”
+
+Cait lets the silence last. She doesn't ask how it ended, or what Heaven means. The player has no reason yet to doubt the ordinary meaning of his words.
 
 They watch a loose shutter tap against the house.
 
