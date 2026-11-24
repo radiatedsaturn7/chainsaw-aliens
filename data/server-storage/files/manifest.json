@@ -5954,7 +5954,8 @@
       "tower-hill-short-stone-wall-3d": "models/tower-hill-short-stone-wall-3d/document.json",
       "tower-hill-small-shed-3d": "models/tower-hill-small-shed-3d/document.json",
       "ohio-river-crossing-riverside-building-3d": "models/ohio-river-crossing-riverside-building-3d/document.json",
-      "expanded-abandoned-waste-management-facility-3d": "models/expanded-abandoned-waste-management-facility-3d/document.json"
+      "expanded-abandoned-waste-management-facility-3d": "models/expanded-abandoned-waste-management-facility-3d/document.json",
+      "route-66-rusted-pickup-3d": "models/route-66-rusted-pickup-3d/document.json"
     },
     "music": {
       "1": "music/1/document.json",
