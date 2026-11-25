@@ -975,17 +975,30 @@ export function getCutsceneTriggerActionDefaults(cutsceneId = '') {
   return { cutsceneId, pauseGameplay: true, skippable: true };
 }
 
-// Let the opening shot settle, then briefly teach the gesture. Holding G
-// always reveals progress, including after the introductory hint has faded.
-export function cutsceneSkipHintAlpha(elapsedMs, holdMs = 0, delayMs = 1500) {
-  if (holdMs > 0) return 0.9;
-  const age = elapsedMs - delayMs;
-  if (age <= 0 || age >= 5200) return 0;
-  return 0.65 * Math.min(1, age / 400, (5200 - age) / 800);
+const SKIP_CUE_MAX_MS = 1650;
+const SKIP_CUE_GAP_MS = 100;
+const SKIP_CUE_MIN_MS = 420;
+
+function getCutsceneSkipCueEndMs(doc, ignorePauseMarkers) {
+  const visibleLayers = new Set(doc.layers.filter(layer => layer.visible !== false).map(layer => layer.id));
+  let firstOverlayMs = doc.durationMs;
+  for (const clip of doc.clips) {
+    if ((clip.type === 'text' && visibleLayers.has(clip.layerId))
+        || (!ignorePauseMarkers && clip.type === 'pause' && clip.waitForInput !== false)) {
+      firstOverlayMs = Math.min(firstOverlayMs, clip.startMs);
+    }
+  }
+  const endMs = Math.min(SKIP_CUE_MAX_MS, firstOverlayMs - SKIP_CUE_GAP_MS);
+  return endMs >= SKIP_CUE_MIN_MS ? endMs : 0;
 }
 
-export function drawCutsceneSkipHint(ctx, bounds, { elapsedMs = 0, holdMs = 0, delayMs = 1500 } = {}) {
-  const alpha = cutsceneSkipHintAlpha(elapsedMs, holdMs, delayMs);
+export function cutsceneSkipHintAlpha(elapsedMs, endMs = SKIP_CUE_MAX_MS) {
+  if (elapsedMs <= 0 || elapsedMs >= endMs) return 0;
+  return .65 * Math.min(1, elapsedMs / 120, (endMs - elapsedMs) / 220);
+}
+
+export function drawCutsceneSkipHint(ctx, bounds, { elapsedMs = 0, holdMs = 0, endMs = SKIP_CUE_MAX_MS } = {}) {
+  const alpha = cutsceneSkipHintAlpha(elapsedMs, endMs);
   if (!alpha) return;
   const unit = Math.max(1, Math.min(2, Math.floor(bounds.w / 180)));
   const label = 'Hold G to skip', w = measureBitmapText(label, unit);
@@ -1033,9 +1046,10 @@ export class CutscenePlayer {
     this.onDone = onDone;
     this.skippable = skippable !== false;
     this.skipHoldMs = 0;
-    this.skipHintElapsedMs = 0;
-    this.skipHintDelayMs = Math.max(1500, this.doc.sceneFadeInMs - this.startTimeMs + 500);
     this.ignorePauseMarkers = Boolean(ignorePauseMarkers);
+    this.skipHintEndMs = this.skippable && this.startTimeMs === 0
+      ? getCutsceneSkipCueEndMs(this.doc, this.ignorePauseMarkers)
+      : 0;
     this.firedAudio.clear();
     this.stopLoopingAudio();
     this.audioClipById = new Map((this.doc.clips || []).map((clip) => [clip.id, clip]));
@@ -1062,7 +1076,6 @@ export class CutscenePlayer {
 
   update(dt) {
     if (!this.active || !this.doc) return;
-    this.skipHintElapsedMs += Math.max(0, Number(dt) || 0) * 1000;
     if (this.waitingPauseClipId) return;
     const advancedTimeMs = this.timeMs + Math.max(0, dt) * 1000;
     this.timeMs = advancedTimeMs;
@@ -1189,10 +1202,10 @@ export class CutscenePlayer {
   draw(ctx, width, height) {
     if (!this.active || !this.doc) return;
     drawCutsceneDocument(ctx, this.doc, this.timeMs, { x: 0, y: 0, w: width, h: height }, this, { fit: 'contain', drawBorder: false });
-    if (this.skippable) {
+    if (this.timeMs < this.skipHintEndMs && !this.waitingPauseClipId) {
       const { stageRect } = getCutsceneStageProjection(this.doc, { x: 0, y: 0, w: width, h: height });
       drawCutsceneSkipHint(ctx, stageRect, {
-        elapsedMs: this.skipHintElapsedMs, holdMs: this.skipHoldMs, delayMs: this.skipHintDelayMs
+        elapsedMs: this.timeMs, holdMs: this.skipHoldMs, endMs: this.skipHintEndMs
       });
     }
   }
