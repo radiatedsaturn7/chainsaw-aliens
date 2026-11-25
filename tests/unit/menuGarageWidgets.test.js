@@ -172,7 +172,7 @@ test('showroom statistics follow highlighted cars, including the authoring fallb
  const labels=[];const ctx=new Proxy({globalAlpha:1,fillText:text=>labels.push(text)},{get:(o,k)=>k in o?o[k]:(()=>{})});
  p.resources.choices=()=>cars.slice(0,2);p.resources.car=ref=>vehicles[Number(ref?.split('-')[1])]||null;
  p.resources.tuning=car=>car.tuning;p.resources.art=()=>null;
- p.resources.game.carEditor={getRaceCarProjectedArtRef:()=>({artRef:'test'}),getRaceTorqueNmAtRpm:(_rpm,t)=>t.torqueLbFt*1.355817948};
+ p.resources.game.carEditor={collectRaceCarArtRefs:()=>[],getRaceCarProjectedArtRef:()=>({artRef:'test'}),getRaceTorqueNmAtRpm:(_rpm,t)=>t.torqueLbFt*1.355817948};
  p.resources.carPreview.drawSprite=()=>{};
  const render=parameters=>{labels.length=0;drawMenuScreen(ctx,{x:0,y:0,w:960,h:540},doc,screen,parameters,{resources:p.resources,editing:true});return [...labels]};
  const initial={carRef:''},first=render(initial);

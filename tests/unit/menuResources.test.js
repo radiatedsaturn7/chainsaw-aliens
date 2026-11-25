@@ -223,21 +223,24 @@ test('picker resolves missing-preview cars before requesting legacy artwork',asy
  const {invalidateProjectCarThumbnail,resetCarPreviewThumbnailsForTests}=await import('../../src/ui/shared/carPreviewThumbnails.js');
  const {modelAssets}=await import('../../src/model3d/ModelAssets.js');
  const ctx=new Proxy({measureText:()=>({width:20})},{get:(o,k)=>k in o?o[k]:()=>{},set:(o,k,v)=>(o[k]=v,true)});
- const names=['Direct native','Alternate loading','Sprite fallback'];
- const cars=[{art:{bodyModel:{ref:'bound model'}}},{art:{}},{art:{}}];
- const requested=[];
- const resources=new MenuResources({carEditor:{getRaceCarProjectedArtRef:()=>({artRef:''})}});
+ const names=['Direct native','Alternate loading','Sprite fallback','Procedural fallback'];
+ const cars=[{art:{bodyModel:{ref:'bound model'}}},{art:{}},{art:{body:'authored-body',tires:'stock-tire-sheet'}},{art:{tires:'stock-tire-sheet'}}];
+ const requested=[],artwork=[];
+ const resources=new MenuResources({carEditor:{getRaceCarProjectedArtRef:car=>({artRef:car.art.body??''})}});
  resources.choices=()=>names.map(value=>({label:value,value}));
  resources.car=(ref,{prepareExterior=true}={})=>{requested.push([ref,prepareExterior]);return cars[names.indexOf(ref)];};
  resources.activeCarVersionPending=ref=>ref==='Alternate loading';
- resources.exteriorArtRefs=()=>[];
+ resources.exteriorArtRefs=car=>[car.art.body,car.art.tires].filter(Boolean);
+ resources.requestExteriorArt=(ref,art)=>artwork.push([ref,art]);
  resources.carPreview.drawSprite=()=>true;
+ resources.carPreview.draw=()=>true;
  const get=modelAssets.get;modelAssets.get=()=>null;
  try{
   for(const name of names)invalidateProjectCarThumbnail(name);
   const doc=normalizeMenuDocument({screens:[{id:'cars',elements:[{id:'showroom',type:'car-showroom',binding:'carRef',maxVisible:4}]}]});
   drawMenuScreen(ctx,{x:0,y:0,w:960,h:540},doc,doc.screens[0],{carRef:names[0]},{resources});
-  assert.deepEqual(requested,[[names[0],false],[names[1],false],[names[2],false],[names[2],true]]);
+  assert.deepEqual(requested,names.map(name=>[name,false]));
+  assert.deepEqual(artwork,[[names[2],'authored-body'],[names[2],'stock-tire-sheet']]);
  }finally{modelAssets.get=get;resetCarPreviewThumbnailsForTests();}
 });
 

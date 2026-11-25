@@ -184,7 +184,11 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
             paintCarThumbnail(ctx,still,entry.value,MENU_MODEL_STILL_ANGLE);
         }else if(fallback&&car&&!resources?.activeCarVersionPending?.(entry.value)){
           const view={...element,type:'car-preview',showroomPreview:true,animation:'none',angleBinding:'',angle};
-          drawCarComponent(ctx,preview,view,resources?.car(entry.value),resources,time,parameters,fontFamily);
+          // Procedural bodies do not draw a billboard, even if their garage
+          // setup references a legacy tire sheet. Prepare art only for a real sprite.
+          drawCarComponent(ctx,preview,view,car,resources,time,parameters,fontFamily,()=>{
+            for(const art of resources.exteriorArtRefs(car))resources.requestExteriorArt(entry.value,art);
+          });
         }else if(!modelHint||car)paintCarThumbnail(ctx,preview,entry.value,angle,undefined,undefined,selected);
         ctx.fillStyle=element.color;drawText(entry.label,card.x+card.w/2,card.y+card.h-4,card.w-8);ctx.restore();
       }

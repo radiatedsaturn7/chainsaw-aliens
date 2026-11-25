@@ -2,7 +2,7 @@ import {usesGarageModelPreview} from './GarageModelPreview.js';
 import {drawMenuText} from './MenuAppearance.js';
 import {garageCarPerformance} from '../garage/GarageAutoUpgrade.js';
 
-export function drawCarComponent(ctx,b,e,car,resources,time,parameters,fontFamily='system-ui'){
+export function drawCarComponent(ctx,b,e,car,resources,time,parameters,fontFamily='system-ui',prepareSpriteArt=null){
   const drawText=(...args)=>drawMenuText(ctx,e,...args);
   if(!car){drawText('Choose a car',b.x+b.w/2,b.y+b.h/2,b.w-10);return;}
   const renderer=resources.game.carEditor;
@@ -11,6 +11,7 @@ export function drawCarComponent(ctx,b,e,car,resources,time,parameters,fontFamil
     ctx.save();const yaw=e.angleBinding?Number(parameters[e.angleBinding]??e.angle)*Math.PI/180:e.animation==='spin'?(e.loop?time/e.duration:Math.min(1,time/e.duration))*Math.PI*2:e.angle*Math.PI/180;
     const choice=renderer.getRaceCarProjectedArtRef(car,0,yaw);
     if(car.art?.bodyModel?.ref||!choice.artRef){resources.carPreview.draw(ctx,b,car,yaw+Math.PI,time);ctx.restore();return;}
+    prepareSpriteArt?.();
     resources.carPreview.drawSprite(ctx,b,car,choice,{showroomArt:e.showroomPreview===true});ctx.restore();return;
   }
   const tuning=resources.tuning(car);
