@@ -1,3 +1,4 @@
+import {roadsideKind,softenRoadsideDefinition} from './RoadsideCollisionPolicy.js';
 import {normalizeModelBinding} from '../model3d/ModelBinding.js';
 export const RACE_DOODAD_SCHEMA_VERSION = 1;
 
@@ -97,7 +98,7 @@ export function normalizeRaceDoodadDocument(data = {}, fallbackName = '') {
   const widthM = clamp(Number(doodad.widthM) || fallback.widthM, RACE_DOODAD_SIZE_LIMITS.minM, RACE_DOODAD_SIZE_LIMITS.maxWidthM);
   const heightM = clamp(Number(doodad.heightM) || fallback.heightM, RACE_DOODAD_SIZE_LIMITS.minM, RACE_DOODAD_SIZE_LIMITS.maxHeightM);
   const groundOffsetLimitM = getRaceDoodadGroundOffsetLimit(heightM);
-  return {
+  const normalized = {
     id,
     name: String(doodad.name || cleanName || fallback.name),
     artRef: String(doodad.artRef || '').trim(),
@@ -116,6 +117,11 @@ export function normalizeRaceDoodadDocument(data = {}, fallbackName = '') {
     defaultRule,
     rules
   };
+  // Old imported definitions may still contain generic rigid-object rules.
+  // Resolve the known soft roadside identities at load time as well as authoring.
+  const softRef=[doodad.ref,doodad.artRef,doodad.id,cleanName].find(ref=>roadsideKind(ref));
+  if(softRef)softenRoadsideDefinition(normalized,softRef,false);
+  return normalized;
 }
 
 export function serializeRaceDoodadDocument(doodad = DEFAULT_RACE_DOODAD) {

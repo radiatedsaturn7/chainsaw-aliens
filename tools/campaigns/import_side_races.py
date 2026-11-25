@@ -23,7 +23,14 @@ def mapped_road_width(tags, default=7):
     # Bad OSM width tags must not discard the independently mapped lane count.
     try: width=float(tags.get('width',''))
     except (TypeError,ValueError): width=0
-    if math.isfinite(width) and 3<=width<=30:return width
+    # The legacy MassGIS import repeats a 50-foot width even on one-way
+    # parkway branches. Treat implausible lane widths as uncertain, not pavement.
+    lanes=str(tags.get('lanes',''))
+    legacy_suspect=(str(tags.get('source','')).startswith('massgis_import_')
+                    and tags.get('highway') not in ('raceway','motorway','motorway_link','trunk','trunk_link')
+                    and lanes.isdigit() and 1<=int(lanes)<=2
+                    and width>int(lanes)*5+2)
+    if math.isfinite(width) and 3<=width<=30 and not legacy_suspect:return width
     lanes=str(tags.get('lanes',''))
     if lanes.isdigit() and 1<=int(lanes)<=8:
         lane_width=3.6576 if tags.get('highway') in ('motorway','motorway_link','trunk','trunk_link') else 3.2

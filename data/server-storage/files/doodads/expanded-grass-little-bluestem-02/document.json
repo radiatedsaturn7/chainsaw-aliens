@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "race-doodad",
-  "savedAt": 1795558135909,
+  "savedAt": 1795615765039,
   "selectedDoodadId": "campaign-expanded-grass-little-bluestem-02",
   "doodad": {
     "id": "campaign-expanded-grass-little-bluestem-02",
@@ -20,7 +20,6 @@
     "hitboxHeightM": 0.63,
     "weightKg": 1,
     "defaultRule": {
-      "minSpeedMph": 0,
       "behavior": "flatten",
       "speedDrainPercent": 0,
       "damage": {

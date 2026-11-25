@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "race-track",
-  "savedAt": 1794861822826,
+  "savedAt": 1795617550240,
   "selectedRaceId": "osm-13b8ce5d5412",
   "race": {
     "id": "osm-13b8ce5d5412",
@@ -46963,13 +46963,14 @@
       {
         "id": "ecology-v2-0-1",
         "doodadRef": "expanded-fern-bracken-dry-01",
-        "x": -205.69,
-        "z": -60.77,
+        "x": -208.82,
+        "z": -47.99,
         "widthM": 1.3504983418155463,
         "heightM": 0.6752491709077731,
         "trackDistance": 84.75869520813131,
-        "trackLateral": 7.795419325683999,
-        "ecologyLayer": "verge"
+        "trackLateral": -5.358527827017254,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-0-2",
@@ -47128,13 +47129,14 @@
       {
         "id": "ecology-v2-0-16",
         "doodadRef": "expanded-grass-woodoats-01",
-        "x": -248.51,
-        "z": -77.34,
+        "x": -253.65,
+        "z": -62.42,
         "widthM": 0.6001844661368523,
         "heightM": 0.6001844661368523,
         "trackDistance": 131.34932223241742,
-        "trackLateral": 11.483067054397555,
-        "ecologyLayer": "verge"
+        "trackLateral": -4.300092233068415,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-0-17",
@@ -47183,13 +47185,14 @@
       {
         "id": "ecology-v2-0-21",
         "doodadRef": "expanded-grass-roadside-weeds-01",
-        "x": -223.95,
-        "z": -48.02,
+        "x": -220.52,
+        "z": -61.65,
         "widthM": 0.6484174368844834,
         "heightM": 0.6484174368844834,
         "trackDistance": 99.33912249071489,
-        "trackLateral": -9.032392411220819,
-        "ecologyLayer": "verge"
+        "trackLateral": 5.024190477186144,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-0-22",
@@ -48382,13 +48385,14 @@
       {
         "id": "ecology-v2-3-1",
         "doodadRef": "expanded-fern-bracken-dry-01",
-        "x": -732.41,
-        "z": -325.74,
+        "x": -730.29,
+        "z": -337.74,
         "widthM": 1.5445327753084712,
         "heightM": 0.7722663876542356,
         "trackDistance": 707.7358249013863,
-        "trackLateral": -6.7048873190524265,
-        "ecologyLayer": "verge"
+        "trackLateral": 5.472036752106675,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-3-2",
@@ -48437,13 +48441,14 @@
       {
         "id": "ecology-v2-3-6",
         "doodadRef": "expanded-grass-woodoats-01",
-        "x": -736.37,
-        "z": -346.11,
+        "x": -739.36,
+        "z": -328.74,
         "widthM": 0.5130336687667295,
         "heightM": 0.5130336687667295,
         "trackDistance": 715.3216258784319,
-        "trackLateral": 12.539341380504954,
-        "ecologyLayer": "verge"
+        "trackLateral": -5.083775779892294,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-3-7",
@@ -48624,13 +48629,14 @@
       {
         "id": "ecology-v2-3-23",
         "doodadRef": "expanded-fern-bracken-dry-01",
-        "x": -715.09,
-        "z": -314.74,
+        "x": -711.59,
+        "z": -333.48,
         "widthM": 1.123149259132333,
         "heightM": 0.5615746295661665,
         "trackDistance": 688.6180770897254,
-        "trackLateral": -14.147748263285033,
-        "ecologyLayer": "verge"
+        "trackLateral": 4.911574629566162,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-3-24",
@@ -48855,13 +48861,14 @@
       {
         "id": "ecology-v2-4-1",
         "doodadRef": "expanded-grass-roadside-weeds-01",
-        "x": -850.05,
-        "z": -359.85,
+        "x": -842.17,
+        "z": -368.31,
         "widthM": 0.7080708260764368,
         "heightM": 0.7080708260764368,
         "trackDistance": 831.7209921747246,
-        "trackLateral": -6.504691518716756,
-        "ecologyLayer": "verge"
+        "trackLateral": 5.054007886986415,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-4-2",
@@ -48888,13 +48895,14 @@
       {
         "id": "ecology-v2-4-4",
         "doodadRef": "expanded-grass-roadside-weeds-01",
-        "x": -861.25,
-        "z": -367.72,
+        "x": -854.2,
+        "z": -378.13,
         "widthM": 0.5734332667430863,
         "heightM": 0.5734332667430863,
         "trackDistance": 846.5712853004953,
-        "trackLateral": -8.367169797298843,
-        "ecologyLayer": "verge"
+        "trackLateral": 4.19893144124994,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-4-5",
@@ -49823,13 +49831,14 @@
       {
         "id": "ecology-v2-6-3",
         "doodadRef": "expanded-grass-woodoats-01",
-        "x": -1256.73,
-        "z": -365.8,
+        "x": -1250.09,
+        "z": -354.84,
         "widthM": 0.7364499843562954,
         "heightM": 0.7364499843562954,
         "trackDistance": 1256.7373823309103,
-        "trackLateral": 7.713761629101238,
-        "ecologyLayer": "verge"
+        "trackLateral": -5.069663399850513,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-6-4",
@@ -49900,13 +49909,14 @@
       {
         "id": "ecology-v2-6-10",
         "doodadRef": "expanded-grass-roadside-weeds-01",
-        "x": -1222.03,
-        "z": -365.83,
+        "x": -1224.74,
+        "z": -377.34,
         "widthM": 0.6046640133077744,
         "heightM": 0.6046640133077744,
         "trackDistance": 1224.3314460141241,
-        "trackLateral": -7.1444456673102845,
-        "ecologyLayer": "verge"
+        "trackLateral": 4.652115397637485,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-6-11",
@@ -50087,13 +50097,14 @@
       {
         "id": "ecology-v2-6-27",
         "doodadRef": "expanded-grass-woodoats-01",
-        "x": -1217.21,
-        "z": -387.46,
+        "x": -1215.2,
+        "z": -369.43,
         "widthM": 0.6347925348265563,
         "heightM": 0.6347925348265563,
         "trackDistance": 1216.1700952104482,
-        "trackLateral": 13.45331372661653,
-        "ecologyLayer": "verge"
+        "trackLateral": -4.667309134605931,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-6-28",
@@ -50197,13 +50208,14 @@
       {
         "id": "ecology-v2-6-37",
         "doodadRef": "expanded-fern-bracken-dry-01",
-        "x": -1224.46,
-        "z": -367.26,
+        "x": -1227.06,
+        "z": -377.63,
         "widthM": 1.2086012119660154,
         "heightM": 0.6043006059830077,
         "trackDistance": 1226.5102905162232,
-        "trackLateral": -5.353279119512036,
-        "ecologyLayer": "verge"
+        "trackLateral": 5.296471045631753,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-6-38",
@@ -50263,13 +50275,14 @@
       {
         "id": "ecology-v2-7-0",
         "doodadRef": "expanded-grass-woodoats-01",
-        "x": -1269.74,
-        "z": -358.95,
+        "x": -1260.33,
+        "z": -347.64,
         "widthM": 0.6566765786556061,
         "heightM": 0.6566765786556061,
         "trackDistance": 1269.8797887131338,
-        "trackLateral": 10.32350831288976,
-        "ecologyLayer": "verge"
+        "trackLateral": -4.351214401478876,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-7-1",
@@ -50472,13 +50485,14 @@
       {
         "id": "ecology-v2-7-19",
         "doodadRef": "expanded-fern-bracken-dry-01",
-        "x": -1253.46,
-        "z": -343.5,
+        "x": -1265.25,
+        "z": -355.3,
         "widthM": 1.2994724373682403,
         "heightM": 0.6497362186841201,
         "trackDistance": 1268.3979099244411,
-        "trackLateral": -12.069287586643739,
-        "ecologyLayer": "verge"
+        "trackLateral": 4.594940500016315,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-7-20",
@@ -50692,13 +50706,14 @@
       {
         "id": "ecology-v2-7-39",
         "doodadRef": "expanded-grass-woodoats-01",
-        "x": -1288.02,
-        "z": -294.71,
+        "x": -1302.87,
+        "z": -301.26,
         "widthM": 0.5242845804488753,
         "heightM": 0.5242845804488753,
         "trackDistance": 1333.2302586747421,
-        "trackLateral": -11.245046279628765,
-        "ecologyLayer": "verge"
+        "trackLateral": 4.962142290224383,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-7-40",
@@ -50890,13 +50905,14 @@
       {
         "id": "ecology-v2-8-14",
         "doodadRef": "expanded-fern-bracken-dry-01",
-        "x": -1345.06,
-        "z": -205.92,
+        "x": -1337.64,
+        "z": -196.84,
         "widthM": 1.1298878117115239,
         "heightM": 0.5649439058557619,
         "trackDistance": 1441.454759697803,
-        "trackLateral": 6.458599257208034,
-        "ecologyLayer": "verge"
+        "trackLateral": -5.235866750650832,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-8-15",
@@ -51693,13 +51709,14 @@
       {
         "id": "ecology-v2-10-1",
         "doodadRef": "expanded-grass-roadside-weeds-01",
-        "x": -1693.24,
-        "z": -60.22,
+        "x": -1688.67,
+        "z": -50.34,
         "widthM": 0.7761542185209692,
         "heightM": 0.7761542185209692,
         "trackDistance": 1845.106558512095,
-        "trackLateral": 6.090388239257194,
-        "ecologyLayer": "verge"
+        "trackLateral": -4.738076279778248,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-10-2",
@@ -51726,13 +51743,14 @@
       {
         "id": "ecology-v2-10-4",
         "doodadRef": "expanded-grass-roadside-weeds-01",
-        "x": -1752.47,
-        "z": 12.3,
+        "x": -1767.42,
+        "z": 3.7,
         "widthM": 0.598915163485799,
         "heightM": 0.598915163485799,
         "trackDistance": 1940.5811441577007,
-        "trackLateral": -12.56256289552982,
-        "ecologyLayer": "verge"
+        "trackLateral": 4.6494575798652455,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-10-5",
@@ -51803,13 +51821,14 @@
       {
         "id": "ecology-v2-10-11",
         "doodadRef": "expanded-grass-woodoats-01",
-        "x": -1662.16,
-        "z": -81.88,
+        "x": -1657.69,
+        "z": -68.43,
         "widthM": 0.7604438248439692,
         "heightM": 0.7604438248439692,
         "trackDistance": 1808.7416631706803,
-        "trackLateral": 9.656003437667268,
-        "ecologyLayer": "verge"
+        "trackLateral": -4.472499853766016,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-10-12",
@@ -51836,13 +51855,14 @@
       {
         "id": "ecology-v2-10-14",
         "doodadRef": "expanded-fern-bracken-dry-01",
-        "x": -1791.67,
-        "z": 29.49,
+        "x": -1779.04,
+        "z": 39.23,
         "widthM": 1.2913296319544316,
         "heightM": 0.6456648159772158,
         "trackDistance": 1976.6046159303617,
-        "trackLateral": 10.563600496714871,
-        "ecologyLayer": "verge"
+        "trackLateral": -5.345664815977071,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-10-15",
@@ -51869,13 +51889,14 @@
       {
         "id": "ecology-v2-10-17",
         "doodadRef": "expanded-grass-roadside-weeds-01",
-        "x": -1774.47,
-        "z": 46.35,
+        "x": -1790.17,
+        "z": 37.24,
         "widthM": 0.6516612281673588,
         "heightM": 0.6516612281673588,
         "trackDistance": 1981.113952708744,
-        "trackLateral": -13.096096080291144,
-        "ecologyLayer": "verge"
+        "trackLateral": 5.025830614083789,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-10-18",
@@ -52034,13 +52055,14 @@
       {
         "id": "ecology-v2-10-32",
         "doodadRef": "expanded-fern-bracken-dry-01",
-        "x": -1762.3,
-        "z": -7.57,
+        "x": -1753.21,
+        "z": -0.05,
         "widthM": 1.488886268984061,
         "heightM": 0.7444431344920305,
         "trackDistance": 1929.4849245710034,
-        "trackLateral": 6.630407940063286,
-        "ecologyLayer": "verge"
+        "trackLateral": -5.105791901237535,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-10-33",
@@ -52067,13 +52089,14 @@
       {
         "id": "ecology-v2-10-35",
         "doodadRef": "expanded-grass-woodoats-01",
-        "x": -1712.04,
-        "z": -57.13,
+        "x": -1703.52,
+        "z": -41.12,
         "widthM": 0.7701482554955874,
         "heightM": 0.7701482554955874,
         "trackDistance": 1862.782118154349,
-        "trackLateral": 12.937683539720421,
-        "ecologyLayer": "verge"
+        "trackLateral": -5.159697645029302,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-10-36",
@@ -52122,13 +52145,14 @@
       {
         "id": "ecology-v2-10-40",
         "doodadRef": "expanded-grass-woodoats-01",
-        "x": -1688.96,
-        "z": -39.46,
+        "x": -1699.35,
+        "z": -55.07,
         "widthM": 0.7817725390254054,
         "heightM": 0.7817725390254054,
         "trackDistance": 1851.9099332173187,
-        "trackLateral": -13.983737723996324,
-        "ecologyLayer": "verge"
+        "trackLateral": 4.740865858522373,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-10-41",
@@ -52166,13 +52190,14 @@
       {
         "id": "ecology-v2-11-1",
         "doodadRef": "expanded-grass-woodoats-01",
-        "x": -1789.52,
-        "z": 56.48,
+        "x": -1798.81,
+        "z": 51.64,
         "widthM": 0.4975222110340838,
         "heightM": 0.4975222110340838,
         "trackDistance": 1997.8844733406488,
-        "trackLateral": -6.165353089177909,
-        "ecologyLayer": "verge"
+        "trackLateral": 4.248761105517075,
+        "ecologyLayer": "verge",
+        "nearVergeCue": true
       },
       {
         "id": "ecology-v2-11-2",
@@ -66491,7 +66516,8 @@
         "rejected": 0,
         "refs": {}
       },
-      "roadsideOrientationVersion": 2
+      "roadsideOrientationVersion": 2,
+      "nearVergeReview": 1
     },
     "description": "Old Staples Road, Cumberland, RI. OSM geometry and approximate USGS 3DEP terrain elevations; imported for road-grade assessment. Default width 6 m where unmapped. Not a surveyed road surface.",
     "visualFx": {

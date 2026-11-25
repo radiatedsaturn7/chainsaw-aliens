@@ -1,3 +1,4 @@
+import { roadCameraCue, roadsidePassMix } from '../racing/RaceMotionCues.js';
 import {raceAiRenderState} from '../racing/RaceAiRenderState.js';
 import {selectMatchedRaceGrid, matchRaceCarPI} from '../racing/RaceMatchedGrid.js';
 import {raceStartingGrid, raceGridDistance, raceGridLateral, raceGridColumns} from '../racing/RaceStartingGrid.js';
@@ -1379,7 +1380,7 @@ export default class RaceEditor {
     this.resetRacePlaytestInputs();
     this.game?.audio?.stopWeatherThunder?.();
     this.game?.audio?.setEngineRev?.(false);
-    this.game?.audio?.setTireScreech?.(false);
+    this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
     this.game?.stopSfxById?.('', { key: 'race-engine' });
   }
 
@@ -6856,7 +6857,7 @@ export default class RaceEditor {
     const message = String(reason || 'Race could not present its first playable frame');
     const session = this.playtestSession;
     this.game?.audio?.setEngineRev?.(false);
-    this.game?.audio?.setTireScreech?.(false);
+    this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
     this.game?.stopSfxById?.('', { key: 'race-engine' });
     if (session?.carEditorPreview === true) {
       this.resetCarEditorPreviewPlaytest({ preserveEditorUi: true });
@@ -6882,7 +6883,7 @@ export default class RaceEditor {
     }
     if (session) session.startupPhase = 'failed';
     this.game?.audio?.setEngineRev?.(false);
-    this.game?.audio?.setTireScreech?.(false);
+    this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
     this.game?.stopSfxById?.('', { key: 'race-engine' });
     if (carEditorPreview) {
       const failedRevision = String(failureRevision || this.getCarEditorPreviewTuningRevision?.(
@@ -7263,7 +7264,7 @@ export default class RaceEditor {
     const car = this.project.cars.find((candidate) => candidate.id === carId) || this.selectedCar;
     const engineSoundId = preview?.session?.activeEngineSoundId || preview?.session?.engineSoundId || preview?.activeEngineSoundId || car?.audio?.engineSoundId;
     this.game?.audio?.setEngineRev?.(false);
-    this.game?.audio?.setTireScreech?.(false);
+    this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
     if (engineSoundId) this.game?.stopSfxById?.(engineSoundId, { key: 'race-engine' });
     this.game?.stopSfxById?.('', { key: 'race-engine' });
   }
@@ -14119,7 +14120,7 @@ export default class RaceEditor {
     this.playtestSession = null;
     this.resetRacePlaytestInputs();
     this.game?.audio?.setEngineRev?.(false);
-    this.game?.audio?.setTireScreech?.(false);
+    this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
     if (engineSoundId || car.audio?.engineSoundId) this.game?.stopSfxById?.(engineSoundId || car.audio.engineSoundId, { key: 'race-engine' });
     this.game?.stopSfxById?.('', { key: 'race-engine' });
     if (this.getRaceStartSettings().musicTrackId) this.game?.setActiveMusicTrack?.(null);
@@ -14184,7 +14185,7 @@ export default class RaceEditor {
     session.finishFade={elapsedMs:0,durationMs:finish.fadeOutMs||800,blackDrawn:false,submitted:false};
     this.raceInput.paused=true;
     this.vehicleDynamicsAuthority?.workerBridge?.setPaused?.(true);
-    this.game?.audio?.setEngineRev?.(false);this.game?.audio?.setTireScreech?.(false);
+    this.game?.audio?.setEngineRev?.(false);this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
     this.game?.stopSfxById?.('',{key:'race-engine'});
   }
 
@@ -14198,7 +14199,7 @@ export default class RaceEditor {
     session.raceResults=true;
     void this.saveCampaignRaceResult(session).catch(error=>this.game?.showSystemToast?.(`Autosave failed: ${error.message}`));
     this.raceInput.paused=true;this.raceInput.pauseMenuMode='main';this.raceInput.pauseMenuIndex=this.getRacePauseMenuRows().length-1;
-    this.game?.audio?.setEngineRev?.(false);this.game?.audio?.setTireScreech?.(false);
+    this.game?.audio?.setEngineRev?.(false);this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
     this.game?.stopSfxById?.('',{key:'race-engine'});
   }
 
@@ -14236,7 +14237,7 @@ export default class RaceEditor {
       this.resetRacePlaytestInputs();
     }
     this.game?.audio?.setEngineRev?.(false);
-    this.game?.audio?.setTireScreech?.(false);
+    this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
     if (engineSoundId || car.audio?.engineSoundId) this.game?.stopSfxById?.(engineSoundId || car.audio.engineSoundId, { key: 'race-engine' });
     this.game?.stopSfxById?.('', { key: 'race-engine' });
     if (this.getRaceStartSettings().musicTrackId) this.game?.setActiveMusicTrack?.(null);
@@ -15239,6 +15240,7 @@ export default class RaceEditor {
   }
 
   getRaceThirdPersonChaseDistance(car = this.selectedCar) {
+    if(car?.art?.bodyModel?.ref)return Math.max(8, (Number(car.dimensions?.lengthM)||4.5)/2+4);
     return RACE_THIRD_PERSON_CHASE_DISTANCE_M;
   }
 
@@ -16025,7 +16027,8 @@ export default class RaceEditor {
   }
 
   getRaceThreeCameraFov(cameraView = 'third-person') {
-    return cameraView === 'first-person' ? 58 : 48;
+    if(cameraView==='first-person')return 58;
+    return this.getRaceSessionCar(this.playtestSession)?.art?.bodyModel?.ref ? 54 : 48;
   }
 
   getRaceThreeCameraLookDropScale(cameraView = 'third-person') {
@@ -17131,7 +17134,7 @@ export default class RaceEditor {
     if(!this.selectPlaytestCarEntry({id:carId,name:picked.name,car},{silent:true}))return;
     const worldBake=session.worldBake||this.raceWorldBakeCache,autoShift=this.raceInput.autoShift;
     this.disposeRacePlaytestSession(session,'debug-car-swap');
-    this.game?.audio?.setEngineRev?.(false);this.game?.audio?.setTireScreech?.(false);
+    this.game?.audio?.setEngineRev?.(false);this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
     this.game?.stopSfxById?.(session.activeEngineSoundId||session.engineSoundId||'',{key:'race-engine'});
     this.resetRacePlaytestInputs();
     if(this.raceThreeWorldRenderer){
@@ -18698,7 +18701,13 @@ export default class RaceEditor {
 
   updateRaceTireAudio({ slip = 0, surface = 'asphalt', speedMps = 0, slipSpeedMps = 0 } = {}) {
     const session = this.playtestSession;
-    if (!session || !this.game?.audio?.setTireScreech) return;
+    if (!session) return;
+    this.game?.audio?.setRoadMotion?.(session.running===true&&!session.startupFramePending&&!session.carEditorPreview, {
+      speedMps:Math.abs(Number(speedMps)||0),surface:getSurfaceById(surface).id,
+      grounded:session.airborne!==true,cockpit:session.cameraView==='first-person',
+      passing:roadsidePassMix(getManagedRaceScenery(this.selectedRace.scenery||[],session),session,session.roadPassMix ||= {left:0,right:0})
+    });
+    if(!this.game?.audio?.setTireScreech)return;
     const amount = clamp(Number(slip) || 0, 0, 1);
     if (amount <= 0.02 || Math.max(Math.abs(Number(speedMps) || 0),Number(slipSpeedMps)||0) < 0.45) {
       this.game.audio.setTireScreech(false);
@@ -20723,7 +20732,7 @@ export default class RaceEditor {
     const autoShift = this.raceInput.autoShift;
     this.disposeRacePlaytestSession(session, 'restart');
     this.game?.audio?.setEngineRev?.(false);
-    this.game?.audio?.setTireScreech?.(false);
+    this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
     this.game?.stopSfxById?.(session.activeEngineSoundId || session.engineSoundId || car?.audio?.engineSoundId || '', { key: 'race-engine' });
     this.resetRacePlaytestInputs();
     if (this.raceThreeWorldRenderer) {
@@ -21776,7 +21785,7 @@ export default class RaceEditor {
       const message = `Race render failed during the first frame: ${String(error?.message || error)}`;
       console.error(message, error);
       this.game?.audio?.setEngineRev?.(false);
-      this.game?.audio?.setTireScreech?.(false);
+      this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
       this.game?.stopSfxById?.('', { key: 'race-engine' });
       if (session.carEditorPreview === true) {
         this.resetCarEditorPreviewPlaytest({ preserveEditorUi: true });
@@ -40313,7 +40322,7 @@ export default class RaceEditor {
       cameraView
     });
     const camera = safeCameraPlacement.camera;
-    camera.horizonRatio = horizonRatio;
+    camera.horizonRatio = horizonRatio + (cameraView === 'third-person' && !introShot && !safeCameraPlacement.tunnelConstrained ? roadCameraCue(session) : 0);
     const chaseDistance = safeCameraPlacement.chaseDistance;
     let cameraYaw = liveCameraYaw;
     const liveNearPlane = Math.max(1.2, 1.35 + pitchProfile.nearPlaneBoost * 1.2 + Math.max(0, hillPitch) * 0.7);
@@ -40387,7 +40396,7 @@ export default class RaceEditor {
     const cinematicTarget=camera.cinematicTarget;
     const cinematicHorizon=cinematicTarget ? .5 + (cinematicTarget.y-camera.elevation*RACE_THREE_ELEVATION_M)
       / Math.max(.1,Math.hypot(cinematicTarget.x-camera.x,cinematicTarget.z-camera.z))
-      / (2*Math.tan(camera.cinematicFov*Math.PI/360)) : horizonRatio;
+      / (2*Math.tan(camera.cinematicFov*Math.PI/360)) : camera.horizonRatio;
     const horizon = bounds.y + bounds.h * cinematicHorizon;
     const terrainTop = this.getRaceProjectedTerrainTop(bounds, camera);
     const roadBottom = bounds.y + bounds.h;

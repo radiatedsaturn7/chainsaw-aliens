@@ -975,6 +975,38 @@ export function getCutsceneTriggerActionDefaults(cutsceneId = '') {
   return { cutsceneId, pauseGameplay: true, skippable: true };
 }
 
+// Let the opening shot settle, then briefly teach the gesture. Holding G
+// always reveals progress, including after the introductory hint has faded.
+export function cutsceneSkipHintAlpha(elapsedMs, holdMs = 0, delayMs = 1500) {
+  if (holdMs > 0) return 0.9;
+  const age = elapsedMs - delayMs;
+  if (age <= 0 || age >= 5200) return 0;
+  return 0.65 * Math.min(1, age / 400, (5200 - age) / 800);
+}
+
+export function drawCutsceneSkipHint(ctx, bounds, { elapsedMs = 0, holdMs = 0, delayMs = 1500 } = {}) {
+  const alpha = cutsceneSkipHintAlpha(elapsedMs, holdMs, delayMs);
+  if (!alpha) return;
+  const unit = Math.max(1, Math.min(2, Math.floor(bounds.w / 180)));
+  const label = 'Hold G to skip', w = measureBitmapText(label, unit);
+  const margin = Math.max(8, unit * 6);
+  const x = Math.round(bounds.x + bounds.w - w - margin);
+  const y = Math.round(bounds.y + bounds.h - unit * 7 - margin - 5);
+  ctx.save();
+  ctx.globalAlpha *= alpha;
+  // Same terminal bitmap lettering as scene dialogue; a small shadow keeps
+  // it readable over bright artwork without a large opaque instruction box.
+  drawBitmapText(ctx, label, x + unit, y + unit, unit, '#000');
+  drawBitmapText(ctx, label, x, y, unit, UI_SUITE.colors.text);
+  if (holdMs > 0) {
+    ctx.fillStyle = UI_SUITE.colors.muted;
+    ctx.fillRect(x, y + unit * 8 + 2, w, 2);
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.fillRect(x, y + unit * 8 + 2, Math.round(w * clamp(holdMs / 1000, 0, 1)), 2);
+  }
+  ctx.restore();
+}
+
 export class CutscenePlayer {
   constructor(game) {
     this.game = game;
@@ -1001,6 +1033,8 @@ export class CutscenePlayer {
     this.onDone = onDone;
     this.skippable = skippable !== false;
     this.skipHoldMs = 0;
+    this.skipHintElapsedMs = 0;
+    this.skipHintDelayMs = Math.max(1500, this.doc.sceneFadeInMs - this.startTimeMs + 500);
     this.ignorePauseMarkers = Boolean(ignorePauseMarkers);
     this.firedAudio.clear();
     this.stopLoopingAudio();
@@ -1028,6 +1062,7 @@ export class CutscenePlayer {
 
   update(dt) {
     if (!this.active || !this.doc) return;
+    this.skipHintElapsedMs += Math.max(0, Number(dt) || 0) * 1000;
     if (this.waitingPauseClipId) return;
     const advancedTimeMs = this.timeMs + Math.max(0, dt) * 1000;
     this.timeMs = advancedTimeMs;
@@ -1154,11 +1189,11 @@ export class CutscenePlayer {
   draw(ctx, width, height) {
     if (!this.active || !this.doc) return;
     drawCutsceneDocument(ctx, this.doc, this.timeMs, { x: 0, y: 0, w: width, h: height }, this, { fit: 'contain', drawBorder: false });
-    if(this.skippable){
-      const size=Math.max(10,Math.min(18,height*.035)),w=size*9,x=width-w-12,y=height-size-20;
-      ctx.save();ctx.fillStyle='rgba(0,0,0,.65)';ctx.fillRect(x-6,y-4,w+12,size+14);
-      ctx.fillStyle='#fff';ctx.font=`${size}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='top';ctx.fillText('Hold G to skip',x+w/2,y);
-      ctx.fillStyle='#666';ctx.fillRect(x,y+size+4,w,3);ctx.fillStyle='#fff';ctx.fillRect(x,y+size+4,w*Math.min(1,(this.skipHoldMs||0)/1000),3);ctx.restore();
+    if (this.skippable) {
+      const { stageRect } = getCutsceneStageProjection(this.doc, { x: 0, y: 0, w: width, h: height });
+      drawCutsceneSkipHint(ctx, stageRect, {
+        elapsedMs: this.skipHintElapsedMs, holdMs: this.skipHoldMs, delayMs: this.skipHintDelayMs
+      });
     }
   }
 
