@@ -7,6 +7,7 @@ const previewFile=new URL('../../assets/car-previews/manifest.json',import.meta.
 const runtimeManifest=JSON.parse(fs.readFileSync(new URL('manifest.json',root)));
 const unpack=d=>d.__chainsawStorage?JSON.parse(gunzipSync(Buffer.from(d.data,'base64'))):d;
 const carDocs=new Map(Object.entries(runtimeManifest.folders.cars).filter(([name])=>!name.startsWith('__')).map(([name,path])=>[name,unpack(JSON.parse(fs.readFileSync(new URL(path,root))))]));
+const versionDocument=unpack(JSON.parse(fs.readFileSync(new URL(runtimeManifest.folders.cars.__car_versions__,root))));
 const mainArtPaths=new Set();
 const refsByName=new Map();
 function artRefs(value,set=new Set()){
@@ -22,7 +23,9 @@ for(const [name,{car}] of carDocs){
  for(const key of ['shell','body','artRef','tires'])if(typeof car.art?.[key]==='string')exterior.add(car.art[key]);
  for(const key of ['tread','wheel'])artRefs(car.art?.tireSurfaces?.[key],exterior);
  const all=artRefs(car.art);
- refsByName.set(name,{id:car.id,exterior:[...exterior],all:[...all]});
+ const active=versionDocument.families?.[name]?.active;
+ const native=active&&active!==name?carDocs.get(active)?.car:car;
+ refsByName.set(name,{id:car.id,bodyModel:native?.art?.bodyModel?.ref,exterior:[...exterior],all:[...all]});
  for(const ref of exterior)if(runtimeManifest.folders.art[ref])mainArtPaths.add(runtimeManifest.folders.art[ref]);
 }
 const resourceKey=url=>{
@@ -39,7 +42,14 @@ export function catalogCar(name){return refsByName.get(name);}
 export function catalogArtPath(ref){return runtimeManifest.folders.art[ref];}
 export const isCatalogArtRequest=(url,ref)=>resourceKey(url)===catalogArtPath(ref);
 
-export async function installThumbnailBrowseWitness(context){
+export async function installThumbnailBrowseWitness(context,{originalSprites=false}={}){
+ // Loading/placeholder tests explicitly exercise the retained sprite versions.
+ // Normal picker tests keep the saved active (including native 3D) versions.
+ if(originalSprites){
+  const registry=structuredClone(versionDocument);
+  for(const [name,family] of Object.entries(registry.families||{}))family.active=name;
+  await context.route(url=>url.pathname==='/__storage/file'&&url.searchParams.get('folder')==='cars'&&url.searchParams.get('name')==='__car_versions__',route=>route.fulfill({json:{ok:true,file:{folder:'cars',name:'__car_versions__',version:1,data:registry}}}));
+ }
  const thumb=JSON.parse(fs.readFileSync(previewFile));
  expect(thumb.schemaVersion).toBe(1);
  expect(thumb.anglesDeg).toEqual([0,45,90,135,180,225,270,315]);
@@ -56,10 +66,32 @@ export async function installThumbnailBrowseWitness(context){
  await context.addInitScript(()=>{
   const original=CanvasRenderingContext2D.prototype.drawImage;
   const draws=new Map(),sampled=new WeakMap(),scratch=document.createElement('canvas').getContext('2d',{willReadFrequently:true});
-  const data={draws,mark:()=>draws.clear()};
+  const modelSources=new WeakMap(),modelDraws=new Map();
+  const data={draws,modelDraws,mark:()=>{draws.clear();modelDraws.clear();}};
+  // Witness the production native renderer's output, not any arbitrary canvas.
+  if(location.protocol.startsWith('http'))void import('/src/menus/MenuCarPreview.js').then(({MenuCarPreview})=>{
+   const draw=MenuCarPreview.prototype.draw;
+   MenuCarPreview.prototype.draw=function(ctx,b,car,...args){
+    const result=draw.call(this,ctx,b,car,...args);
+    if(result&&car?.art?.bodyModel?.ref)modelSources.set(ctx.canvas,car.art.bodyModel.ref);
+    return result;
+   };
+  });
   Object.defineProperty(window,'__thumbnailBrowseWitness',{value:data});
   CanvasRenderingContext2D.prototype.drawImage=function(image,...args){
    const result=original.call(this,image,...args);
+   if(this.canvas===window.__game?.canvas&&modelSources.has(image)&&args.length===4){
+    const [dx,dy,dw,dh]=args,m=this.getTransform(),w=image.width,h=image.height;
+    const p0=m.transformPoint({x:dx,y:dy}),p1=m.transformPoint({x:dx+dw,y:dy+dh});
+    let sample=sampled.get(image);
+    if(!sample){
+     const rgba=image.getContext('2d').getImageData(0,0,w,h).data,probes=[];let opaque=0,clear=0;
+     for(let i=3;i<rgba.length;i+=4){opaque+=rgba[i]>245;clear+=rgba[i]<8;}
+     for(let y=0;y<h;y+=3)for(let x=0;x<w;x+=3){const i=4*(y*w+x);if(rgba[i+3]>245)probes.push([x,y,...rgba.slice(i,i+3)]);}
+     sample={opaque,clear,probes};sampled.set(image,sample);
+    }
+    modelDraws.set(modelSources.get(image),{box:[p0.x,p0.y,p1.x,p1.y],opacity:this.globalAlpha,sample,w,h,at:performance.now()});
+   }
    if(this.canvas!==window.__game?.canvas||!(image instanceof HTMLImageElement)||args.length!==8)return result;
    const path=new URL(image.currentSrc||image.src).pathname;
    if(!path.includes('/assets/car-previews/'))return result;
@@ -84,11 +116,28 @@ export async function installThumbnailBrowseWitness(context){
    draws.set(path,{path,sx,sy,sw,sh,nw:image.naturalWidth,nh:image.naturalHeight,box:[p0.x,p0.y,p1.x,p1.y],opacity:this.globalAlpha,sample,at:performance.now()});
   };
  });
- return {thumb,requested,thumbRequests,loaded,choose(){choosing=true;}, assertBrowseCold(){
+ return {thumb,originalSprites,requested,thumbRequests,loaded,choose(){choosing=true;}, assertBrowseCold(){
   expect(requested.filter(x=>!x.choosing),'full car body/tire requests before choose').toEqual([]);
  }};
 }
 export async function thumbnailOnCanvas(page,qa,name,{selected=true}={}){
+ const bodyRef=!qa.originalSprites&&catalogCar(name)?.bodyModel;
+ if(bodyRef)return page.evaluate(({bodyRef,selected})=>{
+  const d=window.__thumbnailBrowseWitness.modelDraws.get(bodyRef),c=window.__game.canvas;
+  if(!d||performance.now()-d.at>2500||!d.sample.opaque||!d.sample.clear)return null;
+  if(selected?d.opacity<.95:!(d.opacity>0&&d.opacity<.95))return null;
+  const [x1,y1,x2,y2]=d.box;
+  if(!(x1>=0&&y1>=0&&x2<=c.width&&y2<=c.height&&x2>x1&&y2>y1))return null;
+  const x0=Math.floor(x1),y0=Math.floor(y1),px=c.getContext('2d').getImageData(x0,y0,Math.ceil(x2)-x0,Math.ceil(y2)-y0);
+  let matched=0,probed=0;
+  for(const [sx,sy,r,g,b] of d.sample.probes){
+   if(Math.max(r,g,b)*d.opacity<34)continue;
+   probed++;
+   const x=Math.floor(x1+(sx+.5)*(x2-x1)/d.w)-x0,y=Math.floor(y1+(sy+.5)*(y2-y1)/d.h)-y0,j=4*(y*px.width+x);
+   if(px.data[j+3]>200&&Math.max(Math.abs(px.data[j]-r*d.opacity),Math.abs(px.data[j+1]-g*d.opacity),Math.abs(px.data[j+2]-b*d.opacity))<=Math.max(19,40*d.opacity))matched++;
+  }
+  return probed>=3&&matched>=Math.max(3,Math.floor(probed*.1))?{kind:'native-model',bodyRef,box:d.box,matched}:null;
+ },{bodyRef,selected});
  const key=qa.thumb.carsByName?.[name],asset=qa.thumb.previews?.[key];
  expect(asset,`thumbnail entry for ${name}`).toBeTruthy();
  expect(asset.carId??key, `raw runtime identity for ${name}`).toBe(catalogCar(name)?.id);

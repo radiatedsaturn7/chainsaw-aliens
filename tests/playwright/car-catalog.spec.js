@@ -134,7 +134,7 @@ test('car selector does not show a fake car while real stock previews load',asyn
   test.setTimeout(120000);
   const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'});
   await context.addInitScript(()=>Object.defineProperty(navigator,'userAgentData',{value:{mobile:true}}));
-  const qa=await installThumbnailBrowseWitness(context);
+  const qa=await installThumbnailBrowseWitness(context,{originalSprites:true});
   const target=names[0],path='/'+qa.thumb.previews[qa.thumb.carsByName[target]].url;
   const net=await holdImage(context,path);
   try{
@@ -164,7 +164,7 @@ test('car selector does not show a fake car while real stock previews load',asyn
 for(const mode of ['open','saveAs'])test('Cars '+mode+' stays blank until the actual poster is ready',async({browser})=>{
   test.setTimeout(120000);
   const context=await browser.newContext({serviceWorkers:'block'});
-  const qa=await installThumbnailBrowseWitness(context);
+  const qa=await installThumbnailBrowseWitness(context,{originalSprites:true});
   const target=names[0],path='/'+qa.thumb.previews[qa.thumb.carsByName[target]].poster.url;
   const net=await holdImage(context,path);
   try{
@@ -198,7 +198,7 @@ for(const mode of ['open','saveAs'])test('Cars '+mode+' stays blank until the ac
 test('campaign Load Save stays blank until the slot poster is ready',async({browser})=>{
   test.setTimeout(120000);
   const context=await browser.newContext({serviceWorkers:'block'});
-  const qa=await installThumbnailBrowseWitness(context);
+  const qa=await installThumbnailBrowseWitness(context,{originalSprites:true});
   const target=names[0],path='/'+qa.thumb.previews[qa.thumb.carsByName[target]].poster.url;
   const net=await holdImage(context,path);
   try{
