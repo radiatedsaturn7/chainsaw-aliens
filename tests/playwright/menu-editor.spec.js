@@ -463,8 +463,8 @@ test('motorsport menus use standard controls and return to the world map',async(
  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('motorsport-list');
  await activate('motorsport-pick-0');
  expect(await page.evaluate(()=>window.__game.menuPlayer.flow.screen.name)).toBe('American Apex');
- await activate('motorsport-back');
- await activate('motorsport-back');await activate('motorsport-back');
+ // Preview and scrolling lists use the standard Return control, not a Back button.
+ for(let i=0;i<3;i++){await menuReady(page);await page.keyboard.press('Escape');}
  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('world-map');
  await activate('world-championships');await activate('motorsport-rallies');
  for(let i=0;i<6;i++)await activate('motorsport-down');

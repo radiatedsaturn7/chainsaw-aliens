@@ -295,10 +295,12 @@ const server = http.createServer((req, res) => {
     });
     return;
   }
-  const pathname = url.pathname === '/' ? '/index.html' : url.pathname;
+  let pathname;
+  try { pathname = url.pathname === '/' ? '/index.html' : decodeURIComponent(url.pathname); }
+  catch { res.writeHead(400); res.end('Invalid URL encoding'); return; }
   const safePath = path.normalize(path.join(rootDir, pathname));
 
-  if (!safePath.startsWith(rootDir)) {
+  if (!safePath.startsWith(rootDir + path.sep)) {
     res.writeHead(403);
     res.end('Forbidden');
     return;
@@ -325,4 +327,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { decodeStoredDocument, readStoredMetadata };
+module.exports = { decodeStoredDocument, readStoredMetadata, server };

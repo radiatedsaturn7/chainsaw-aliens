@@ -31,10 +31,13 @@ for(const mobile of [false,true])test(`car presets load isolated drafts and save
  await page.getByPlaceholder('Filename',{exact:true}).fill(name);
  await page.locator('.project-browser-actions').getByRole('button',{name:'Save',exact:true}).click();
  await expect.poll(()=>page.evaluate(()=>window.__game.carEditor.status)).toBe('Saved');
- const saved=await page.evaluate(name=>{
-  const e=window.__game.carEditor;e.hydrateProjectCarsFromSavedFiles();
-  const entry=e.getSavedRaceCarEntriesForPlaytest().find(entry=>entry.name===name);
-  return {name:entry?.name,drive:entry?.car.tuning.drivetrain,system:entry?.car.systemFile===true,draft:entry?.car.__editorDraft===true};
+ const saved=await page.evaluate(async name=>{
+  // Read the saved file through the async production loader. Enumerating every
+  // saved car here synchronously downloads and normalizes the entire catalog.
+  const {hydrateProjectFilePayload}=await import('/src/ui/projectFiles.js');
+  const payload=await hydrateProjectFilePayload('cars',name);
+  const car=payload?.data?.car;
+  return {name:payload?.name,drive:car?.tuning.drivetrain,system:car?.systemFile===true,draft:car?.__editorDraft===true};
  },name);
  expect(saved).toEqual({name,drive:'fwd',system:false,draft:false});
 });

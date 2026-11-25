@@ -23,7 +23,7 @@ def _stock_preview_path(root, relative):
     return resolved
 
 
-def publish_stock_preview_binding(source, root, target, manifest, remote_commit=None):
+def publish_stock_preview_binding(source, root, target, manifest, remote_commit=None, *, verify_only=False):
     """Bind only a sealed stock package to this exact built project index."""
     asset_manifest = source / 'assets/car-previews/manifest.json'
     source_binding = root / 'stock-preview-release.json'
@@ -99,6 +99,9 @@ def publish_stock_preview_binding(source, root, target, manifest, remote_commit=
                 # deliberately displays placeholders rather than asserting it.
                 print('Stock previews omitted: optimized local documents differ from the verified source bytes.')
                 return
+
+    if verify_only:
+        return
 
     served = target / 'manifest.json'
     published = {'schemaVersion': 1, 'stockPreviewReleaseRevision': release,

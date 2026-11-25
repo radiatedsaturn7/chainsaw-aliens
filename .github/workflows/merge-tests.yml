@@ -103,7 +103,7 @@ jobs:
         run: node --test tests/unit/carPresets.test.js tests/unit/carPerformance.test.js tests/unit/raceAiCarSelectionPersistence.test.js tests/unit/raceAiDriving.test.js tests/unit/raceAiProjection.test.js tests/unit/raceAiRecovery.test.js
 
       - name: Run menu designer and runtime tests
-        run: node --test tests/unit/menu*.test.js tests/unit/carDirectionalArt.test.js tests/unit/raceTravel.test.js
+        run: node --test tests/unit/playwrightStaticServer.test.js tests/unit/menu*.test.js tests/unit/carDirectionalArt.test.js tests/unit/raceTravel.test.js
 
       - name: Run radio and mix tape tests
         run: node --test tests/unit/handbrakeRecovery.test.js tests/unit/automaticKickdown.test.js tests/unit/automaticClutch.test.js tests/unit/raceLaunchControl.test.js tests/unit/uphillTraction.test.js tests/unit/vehicleSound.test.js tests/unit/raceMusicDrops.test.js tests/unit/garageParts.test.js tests/unit/garageCatalog.test.js tests/unit/garageSetups.test.js tests/unit/garageSetupSlots.test.js tests/unit/garageAutoUpgrade.test.js tests/unit/garagePowertrainUpgrades.test.js tests/unit/garageConversions.test.js tests/unit/garageChassis.test.js tests/unit/garageCooling.test.js tests/unit/garageUpgradeAudit.test.js tests/unit/garageSkidPlates.test.js tests/unit/garageMenuHierarchy.test.js tests/unit/itemEffects.test.js tests/unit/itemSystem.test.js tests/unit/itemInventory.test.js tests/unit/vehicleDynamicsWorkerProtocol.test.js tests/unit/radioEditor.test.js tests/unit/radioPlayer.test.js tests/unit/mixTapePickup.test.js tests/unit/doodadEditor.test.js tests/unit/raceDoodads.test.js tests/unit/pauseMenu.test.js tests/unit/titleLayout.test.js
@@ -197,11 +197,23 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Verify local stock preview stamps before browser tests
+        run: python3 tools/refresh_stock_preview_stamps.py
+
+      - name: Run focused browser regressions
+        if: matrix.shard == '1/4'
+        run: >-
+          npx playwright test tests/playwright/agrimony-static-picker.spec.js
+          tests/playwright/car-presets.spec.js tests/playwright/campaign-paths.spec.js
+          tests/playwright/menu-editor.spec.js tests/playwright/car-catalog.spec.js
+          --grep 'Agrimony.*static picker|car presets load|regional campaign canvas|motorsport menus|car selector does not show|Cars (open|saveAs) stays blank|campaign Load Save stays blank'
+          --reporter=line --workers=1 --max-failures=3
+
       - name: Run Playwright tests
         env:
           # Cover every authored sky/device while reusing startup across small batches.
           RACE_RENDER_BATCH_SIZE: 8
-        run: npm run test:playwright -- --config=playwright.editor.config.js --reporter=line --workers=1 --shard=${{ matrix.shard }}
+        run: npm run test:playwright -- --config=playwright.editor.config.js --reporter=line --workers=1 --max-failures=5 --shard=${{ matrix.shard }}
 
       - name: Upload Playwright report
         if: failure()
