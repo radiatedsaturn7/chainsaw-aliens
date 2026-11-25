@@ -97,6 +97,10 @@ export class MenuResources {
     const versions=getRaceCarVersions(),name=canonicalCarVersionRef(versions,ref),active=activeCarVersionRef(versions,name);
     return Boolean(active&&active!==name);
   }
+  activeCarVersionPending(ref){
+    const versions=getRaceCarVersions(),name=canonicalCarVersionRef(versions,ref),active=activeCarVersionRef(versions,name);
+    return Boolean(active&&active!==name&&this.pending.has('car-version:'+name+':'+active));
+  }
   request(key,fn){if(this.pending.has(key))return this.pending.get(key);if(this.errors.has(key))return Promise.resolve();const task=Promise.resolve().then(fn).catch(e=>this.errors.set(key,String(e?.message||e))).finally(()=>{this.pending.delete(key);this.showroomFrames=new WeakMap();});this.pending.set(key,task);return task;}
   car(ref,{prepareExterior=true}={}){
     const stock=this.stockCar(ref,{prepareExterior}),garage=this.garage;

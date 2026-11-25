@@ -216,3 +216,27 @@ test('a lightweight car card defers garage tire artwork without satisfying a lat
  assert.equal(resources.car('Lightweight')?.id,stock.id);
  assert.deepEqual(calls.map(c=>c.options),[{hydrateArtwork:false},{hydrateArtwork:true}]);
 });
+
+test('picker resolves missing-preview cars before requesting legacy artwork',async()=>{
+ const {normalizeMenuDocument}=await import('../../src/menus/MenuDocument.js');
+ const {drawMenuScreen}=await import('../../src/menus/MenuRenderer.js');
+ const {invalidateProjectCarThumbnail,resetCarPreviewThumbnailsForTests}=await import('../../src/ui/shared/carPreviewThumbnails.js');
+ const {modelAssets}=await import('../../src/model3d/ModelAssets.js');
+ const ctx=new Proxy({measureText:()=>({width:20})},{get:(o,k)=>k in o?o[k]:()=>{},set:(o,k,v)=>(o[k]=v,true)});
+ const names=['Direct native','Alternate loading','Sprite fallback'];
+ const cars=[{art:{bodyModel:{ref:'bound model'}}},{art:{}},{art:{}}];
+ const requested=[];
+ const resources=new MenuResources({carEditor:{getRaceCarProjectedArtRef:()=>({artRef:''})}});
+ resources.choices=()=>names.map(value=>({label:value,value}));
+ resources.car=(ref,{prepareExterior=true}={})=>{requested.push([ref,prepareExterior]);return cars[names.indexOf(ref)];};
+ resources.activeCarVersionPending=ref=>ref==='Alternate loading';
+ resources.exteriorArtRefs=()=>[];
+ resources.carPreview.drawSprite=()=>true;
+ const get=modelAssets.get;modelAssets.get=()=>null;
+ try{
+  for(const name of names)invalidateProjectCarThumbnail(name);
+  const doc=normalizeMenuDocument({screens:[{id:'cars',elements:[{id:'showroom',type:'car-showroom',binding:'carRef',maxVisible:4}]}]});
+  drawMenuScreen(ctx,{x:0,y:0,w:960,h:540},doc,doc.screens[0],{carRef:names[0]},{resources});
+  assert.deepEqual(requested,[[names[0],false],[names[1],false],[names[2],false],[names[2],true]]);
+ }finally{modelAssets.get=get;resetCarPreviewThumbnailsForTests();}
+});

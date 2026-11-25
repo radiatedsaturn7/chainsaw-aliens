@@ -173,16 +173,18 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
         const angle=element.angle+(selected&&!editing?elapsed/element.duration*360:0);
         const fallback=editing||carThumbnailNeedsFallback(entry.value,angle,selected);
         const modelHint=carThumbnailHasModelSource(entry.value)||resources?.hasActiveCarVersion?.(entry.value);
-        const car=fallback?resources?.car(entry.value):modelHint?resources?.car(entry.value,{prepareExterior:false}):null;
+        // A missing stock poster does not imply a sprite car. Resolve the
+        // actual body first, without waking the legacy exterior pipeline.
+        const car=fallback||modelHint?resources?.car(entry.value,{prepareExterior:false}):null;
         if(car?.art?.bodyModel?.ref){
           // A native body uses one clear front-quarter image, no elapsed-time
           // angle or selected zoom. Do not shrink ordinary sprite cars.
           const still=menuModelStillBounds({...card,h:card.h*.85});
           if(!paintMenuModelStill(ctx,still,car,resources?.carPreview)&&modelHint)
             paintCarThumbnail(ctx,still,entry.value,MENU_MODEL_STILL_ANGLE);
-        }else if(fallback){
+        }else if(fallback&&car&&!resources?.activeCarVersionPending?.(entry.value)){
           const view={...element,type:'car-preview',showroomPreview:true,animation:'none',angleBinding:'',angle};
-          drawCarComponent(ctx,preview,view,car,resources,time,parameters,fontFamily);
+          drawCarComponent(ctx,preview,view,resources?.car(entry.value),resources,time,parameters,fontFamily);
         }else if(!modelHint||car)paintCarThumbnail(ctx,preview,entry.value,angle,undefined,undefined,selected);
         ctx.fillStyle=element.color;drawText(entry.label,card.x+card.w/2,card.y+card.h-4,card.w-8);ctx.restore();
       }
