@@ -1,5 +1,6 @@
 import {test,expect} from '@playwright/test';
 import fs from 'node:fs';
+import {selectCatalogTarget} from '../helpers/carCatalogBoundedPickerSetup.js';
 import {catalogCar,expectThumbnailOnCanvas,installThumbnailBrowseWitness} from '../helpers/carThumbnailBrowseWitness.js';
 for(const mobile of [false,true])test(`Sanicle ${mobile?'handheld touch':'desktop keyboard'} static picker initial page, later page, cockpit and real input drive`,async({browser},info)=>{
  test.setTimeout(360000);
@@ -11,9 +12,7 @@ for(const mobile of [false,true])test(`Sanicle ${mobile?'handheld touch':'deskto
  const snapshot=()=>page.evaluate(async()=>{const g=window.__game,p=g.menuPlayer,{showroomPage}=await import('/src/menus/MenuGarageWidgets.js'),e=p.flow.screen.elements.find(e=>e.type==='car-showroom'),choices=p.resources.choices('cars',p.flow.document,p.flow.parameters),shown=showroomPage(choices,p.flow.parameters[e.binding],e.maxVisible);return {selected:p.flow.parameters.carRef,start:shown.start,visible:shown.entries.map(e=>e.value),targetIndex:choices.findIndex(e=>e.value==='Sanicle 1970'),selectedIndex:shown.index,loadedCars:p.resources.cars.size,totalChoices:choices.length,errors:[...p.resources.errors]};});
  const first=await snapshot();expect(first.start).toBe(0);expect(first.visible).toContain(first.selected);first.thumbnail=await expectThumbnailOnCanvas(page,qa,first.selected);qa.assertBrowseCold();expect(first.loadedCars).toBeLessThan(first.totalChoices);await page.screenshot({path:info.outputPath('picker-initial.png')});
  expect(first.targetIndex).toBeGreaterThan(3);
- const forward=(first.targetIndex-first.selectedIndex+first.totalChoices)%first.totalChoices,backward=(first.selectedIndex-first.targetIndex+first.totalChoices)%first.totalChoices;
- // Exercise real wraparound picker controls rather than hydrating every unrelated car.
- for(let i=0;i<Math.min(forward,backward);i++){if(mobile){const pt=await page.evaluate(async forward=>{const g=window.__game,p=g.menuPlayer,{menuElementBounds}=await import('/src/menus/MenuRenderer.js'),{menuElementPose}=await import('/src/menus/MenuDocument.js');const e=p.flow.screen.elements.find(e=>e.type==='car-showroom'),b=menuElementBounds(e,p.bounds,menuElementPose(e,p.flow.time)),r=g.canvas.getBoundingClientRect();return {x:r.x+(b.x+b.w*(forward?.75:.25))*r.width/g.canvas.width,y:r.y+(b.y+b.h-12)*r.height/g.canvas.height};},forward<=backward);await page.touchscreen.tap(pt.x,pt.y);}else await page.keyboard.press(forward<=backward?'ArrowRight':'ArrowLeft');await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));if(i%5===4){await menuReady();console.log('picker navigation',i+1,'of',Math.min(forward,backward));}}await menuReady();
+ await selectCatalogTarget(page,{targetName:'Sanicle 1970',mobile,menuReady,info,thumbnailQA:qa});
  // Wait for the target's decoded atlas to be drawn without loading its original art.
  const laterThumbnail=await expectThumbnailOnCanvas(page,qa,'Sanicle 1970');
  const later=await snapshot();expect(later.selected).toBe('Sanicle 1970');expect(later.start).toBeGreaterThan(0);expect(later.visible).toContain('Sanicle 1970');later.thumbnail=laterThumbnail;qa.assertBrowseCold();expect(later.errors).toEqual([]);await page.screenshot({path:info.outputPath('picker-later.png')});fs.writeFileSync(info.outputPath('picker.json'),JSON.stringify({first,later},null,2));
