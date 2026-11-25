@@ -105,12 +105,13 @@ export class MenuResources {
     const canonical=canonicalCarVersionRef(getRaceCarVersions(),ref);
     if(ref!==canonical&&!garage?.progress?.cars?.[ref])ref=canonical;
     if(!stock||!garage?.items.ready)return stock;
-    const key=`${ref}:${garage.revision}:${garage.items.revision}`;
+    // A metadata-only build must not satisfy a later full-art request.
+    const key=`${ref}:${garage.revision}:${garage.items.revision}${prepareExterior?'':':no-exterior'}`;
     const cached=this.garageCars.get(key);if(cached?.stock===stock){
       if(prepareExterior&&this.showroomNames?.has(ref))for(const artRef of this.exteriorArtRefs(cached.car))this.requestExteriorArt(ref,artRef);
       return cached.car;
     }
-    this.request(`garage-car:${key}`,async()=>{const car=await garage.build(ref,stock);this.garageCars.set(key,{stock,car});});
+    this.request(`garage-car:${key}`,async()=>{const car=await garage.build(ref,stock,{hydrateArtwork:prepareExterior});this.garageCars.set(key,{stock,car});});
     return null;
   }
   raceReward(ref){

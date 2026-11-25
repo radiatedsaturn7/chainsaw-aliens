@@ -201,3 +201,18 @@ test('missing-thumbnail fallback fetches only four cars, without cockpit or smok
   assert.deepEqual(resources.choices('cars').map(c=>c.value),before,'downloads must not reshuffle the carousel');
  }finally{globalThis.document=previousDocument;globalThis.fetch=previousFetch;resetProjectFilesForTests();}
 });
+
+test('a lightweight car card defers garage tire artwork without satisfying a later full-art request',async()=>{
+ const stock={id:'lightweight-fixture'},calls=[];
+ const garage={items:{ready:true,revision:1},revision:2,
+  async build(ref,car,options){calls.push({ref,car,options});return {...car};}};
+ const resources=new MenuResources({carEditor:{},items:{garage}});
+ resources.stockCar=()=>stock;
+ assert.equal(resources.car('Lightweight',{prepareExterior:false}),null);
+ await Promise.all(resources.pending.values());
+ assert.equal(resources.car('Lightweight',{prepareExterior:false})?.id,stock.id);
+ assert.equal(resources.car('Lightweight'),null);
+ await Promise.all(resources.pending.values());
+ assert.equal(resources.car('Lightweight')?.id,stock.id);
+ assert.deepEqual(calls.map(c=>c.options),[{hydrateArtwork:false},{hydrateArtwork:true}]);
+});

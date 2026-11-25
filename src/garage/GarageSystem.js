@@ -122,10 +122,10 @@ export class GarageSystem {
  saveCondition(ref,condition){return saveCarCondition(this,ref,condition);}
  repair(ref,id,car){return repairCar(this,ref,id,car);}
  repairRows(ref,car){return repairRows(this,ref,car);}
- async stockBaseline(stock){
+ async stockBaseline(stock,{hydrateArtwork=true}={}){
   const baseline=structuredClone(stock);
   const keepArt=hasFittedStockWheelArt(stock);
-  const tire=keepArt?await this.loadTire('Stock',{hydrateArtwork:false}):await this.loadTire('Stock');
+  const tire=keepArt||!hydrateArtwork?await this.loadTire('Stock',{hydrateArtwork:false}):await this.loadTire('Stock');
   const pressure=baseline.setup?.tirePressurePsi,size=structuredClone(baseline.setup?.tireSize);
   const axleSizes=structuredClone(baseline.setup?.tireSizeByAxle);
   applyTireDefinition(baseline,tire,'Stock',{keepArt});
@@ -134,15 +134,18 @@ export class GarageSystem {
   if(size)baseline.setup.tireSize=size;
   return baseline;
  }
- async build(carRef,stock){
+ async build(carRef,stock,{hydrateArtwork=true}={}){
   await this.load();
   await this.items.queue;
   if(this.items.progress.unlocks['cheat.lonely']&&!this.items.progress.unlocks[`cheat.lonely.equipped.${carRef}`])await unlockBestUpgrades(this,carRef,stock);
   const parts=this.installed(carRef);
   for(const item of parts)if(!partFits(item.carPart,carRef,stock))throw Error('An installed part is no longer compatible');
   this.validateSetup(carRef,this.items.progress);
-  const tires={};for(const item of parts)if(item.carPart.tireRef)tires[item.carPart.tireRef]=await this.loadTire(item.carPart.tireRef);
-  const baseline=await this.stockBaseline(stock);
+  const tires={};
+  for(const {carPart:{tireRef}} of parts)if(tireRef){
+   tires[tireRef]=await (hydrateArtwork?this.loadTire(tireRef):this.loadTire(tireRef,{hydrateArtwork:false}));
+  }
+  const baseline=await this.stockBaseline(stock,{hydrateArtwork});
   const built=buildGarageCar(baseline,{parts,tune:this.configuration(carRef).tune,tires});
   // Always supply current equipment defaults, even when Stock has no authored
   // mechanics. Saved condition retains wear/fluids, not removed upgrade ratings.
