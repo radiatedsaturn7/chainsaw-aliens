@@ -109,13 +109,16 @@ export class MenuResources {
     const canonical=canonicalCarVersionRef(getRaceCarVersions(),ref);
     if(ref!==canonical&&!garage?.progress?.cars?.[ref])ref=canonical;
     if(!stock||!garage?.items.ready)return stock;
+    // Sprite fallbacks still request their visible exterior refs below, but
+    // browsing must not separately hydrate tire sheets through garage setup.
+    const hydrateArtwork=prepareExterior&&!this.showroomNames?.has(ref);
     // A metadata-only build must not satisfy a later full-art request.
-    const key=`${ref}:${garage.revision}:${garage.items.revision}${prepareExterior?'':':no-exterior'}`;
+    const key=`${ref}:${garage.revision}:${garage.items.revision}${hydrateArtwork?'':':no-exterior'}`;
     const cached=this.garageCars.get(key);if(cached?.stock===stock){
       if(prepareExterior&&this.showroomNames?.has(ref))for(const artRef of this.exteriorArtRefs(cached.car))this.requestExteriorArt(ref,artRef);
       return cached.car;
     }
-    this.request(`garage-car:${key}`,async()=>{const car=await garage.build(ref,stock,{hydrateArtwork:prepareExterior});this.garageCars.set(key,{stock,car});});
+    this.request(`garage-car:${key}`,async()=>{const car=await garage.build(ref,stock,{hydrateArtwork});this.garageCars.set(key,{stock,car});});
     return null;
   }
   raceReward(ref){
@@ -148,7 +151,8 @@ export class MenuResources {
     for(const name of names){
       const stock=this.cars.get(name),garage=this.garage;
       if(!stock)continue;
-      const built=garage?.items.ready?this.garageCars.get(`${name}:${garage.revision}:${garage.items.revision}`):null;
+      const buildKey=garage?.items.ready?`${name}:${garage.revision}:${garage.items.revision}`:null;
+      const built=buildKey?(this.garageCars.get(buildKey+':no-exterior')||this.garageCars.get(buildKey)):null;
       for(const car of built?.stock===stock?[stock,built.car]:[stock])
         for(const ref of this.exteriorArtRefs(car))this.showroomWanted.add(ref);
     }

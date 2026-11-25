@@ -240,3 +240,26 @@ test('picker resolves missing-preview cars before requesting legacy artwork',asy
   assert.deepEqual(requested,[[names[0],false],[names[1],false],[names[2],false],[names[2],true]]);
  }finally{modelAssets.get=get;resetCarPreviewThumbnailsForTests();}
 });
+
+test('sprite fallback hydrates only visible exterior refs, not the garage tire sheets',async()=>{
+ const stock={id:'sprite-fixture',art:{body:'authored-body'}},builds=[],requested=[];
+ const garage={items:{ready:true,revision:1},revision:2,
+  async build(ref,car,opts){builds.push(opts);return {...car,art:{...car.art,tires:'actual-fit'}};}};
+ const resources=new MenuResources({carEditor:{},items:{garage}});
+ resources.stockCar=()=>stock;
+ resources.exteriorArtRefs=car=>[car.art.body,car.art.tires].filter(Boolean);
+ resources.requestExteriorArt=(_ref,asset)=>requested.push(asset);
+ resources.cars.set('Sprite',stock);
+ resources.retainShowroomPage([{value:'Sprite'}]);
+ assert.equal(resources.car('Sprite'),null);
+ await Promise.all(resources.pending.values());
+ assert.equal(resources.car('Sprite')?.art.tires,'actual-fit');
+ assert.deepEqual(builds,[{hydrateArtwork:false}]);
+ assert.deepEqual(requested,['authored-body','actual-fit']);
+ resources.retainShowroomPage([{value:'Sprite'}]);
+ assert.ok(resources.showroomWanted.has('actual-fit'));
+ resources.retainShowroomPage([]);
+ assert.equal(resources.car('Sprite'),null);
+ await Promise.all(resources.pending.values());
+ assert.deepEqual(builds,[{hydrateArtwork:false},{hydrateArtwork:true}]);
+});
