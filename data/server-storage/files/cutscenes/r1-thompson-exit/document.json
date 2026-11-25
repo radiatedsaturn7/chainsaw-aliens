@@ -1087,8 +1087,14 @@
   ],
   "description": "Thompson Speedway · After the run",
   "voiceover": {
-    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "model": "Qwen/Qwen3-TTS-12Hz-0.6B-Base",
     "trackId": "qwen-dialogue",
-    "captionSha256": "022647c905d8d0353186a2535cc5410b49a3f080af1092e8d4f22596d4f87703"
+    "captionSha256": "022647c905d8d0353186a2535cc5410b49a3f080af1092e8d4f22596d4f87703",
+    "modelRevision": "5d83992436eae1d760afd27aff78a71d676296fc",
+    "mode": "fixed-reference",
+    "castSha256": {
+      "rob": "c369af51c674e8dbe7f358391d0e687e146c53864fc85dafd9c1d3b092edeb6e",
+      "cait": "96e32c0c4cce7ac2fc82806e0a0fa612ac4f27c744b34b2a369f3a2e4eaed564"
+    }
   }
 }

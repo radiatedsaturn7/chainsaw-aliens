@@ -2752,8 +2752,14 @@
   ],
   "description": "Boston Outskirts · Before the run",
   "voiceover": {
-    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "model": "Qwen/Qwen3-TTS-12Hz-0.6B-Base",
     "trackId": "qwen-dialogue",
-    "captionSha256": "45f404b5c11c166137afb235855173a0ddfb90fcac80ee53c2843b13b2d9aa92"
+    "captionSha256": "45f404b5c11c166137afb235855173a0ddfb90fcac80ee53c2843b13b2d9aa92",
+    "modelRevision": "5d83992436eae1d760afd27aff78a71d676296fc",
+    "mode": "fixed-reference",
+    "castSha256": {
+      "rob": "c369af51c674e8dbe7f358391d0e687e146c53864fc85dafd9c1d3b092edeb6e",
+      "cait": "96e32c0c4cce7ac2fc82806e0a0fa612ac4f27c744b34b2a369f3a2e4eaed564"
+    }
   }
 }

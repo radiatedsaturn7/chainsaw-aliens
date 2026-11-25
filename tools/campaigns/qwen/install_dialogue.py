@@ -80,9 +80,20 @@ def put(root,output,takes,selected,preserve_blue=None):
   exported=doc if not raw else {**raw,'data':base64.b64encode(gzip.compress(json.dumps(doc,ensure_ascii=False,separators=(',',':')).encode(),mtime=0)).decode()}
   (dst/'document.json').write_text(json.dumps(exported,indent=2,ensure_ascii=False)+'\n')
   print('WIRED',scene,len(group),'lines',mp3.stat().st_size,'bytes',flush=True)
+def stamp_reference_cast(root,scenes,reference_file):
+ cfg=json.loads(reference_file.read_text())
+ for scene in scenes:
+  path=root/scene/'document.json'; packed,doc=load(path)
+  doc['voiceover'].update(model=cfg['model'],modelRevision=cfg['modelRevision'],mode='fixed-reference',
+                          castSha256={name:ref['sha256'] for name,ref in cfg['speakers'].items()})
+  result=doc if not packed else {**packed,'data':base64.b64encode(gzip.compress(json.dumps(doc,ensure_ascii=False,separators=(',',':')).encode(),mtime=0)).decode()}
+  path.write_text(json.dumps(result,indent=2,ensure_ascii=False)+'\n')
+
 if __name__=='__main__':
  p=argparse.ArgumentParser(description=__doc__)
  p.add_argument('root',type=Path);p.add_argument('--out',type=Path,required=True)
  p.add_argument('--takes',type=Path,required=True);p.add_argument('--scene',action='append')
  p.add_argument('--approved-blue-hills-stem',type=Path)
+ p.add_argument('--cast',type=Path,help='Record fixed reference model and fingerprints in the installed scene')
  a=p.parse_args();put(a.root,a.out,a.takes,a.scene,a.approved_blue_hills_stem)
+ if a.cast:stamp_reference_cast(a.out,{r['scene'] for r in item_plan(a.root,a.scene)},a.cast)

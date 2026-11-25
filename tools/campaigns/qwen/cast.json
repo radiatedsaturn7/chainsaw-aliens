@@ -1,0 +1,16 @@
+{
+  "model": "Qwen/Qwen3-TTS-12Hz-0.6B-Base",
+  "modelRevision": "5d83992436eae1d760afd27aff78a71d676296fc",
+  "speakers": {
+    "rob": {
+      "file": "references/rob.wav",
+      "text": "We need to change the tires before we leave. That's the speech.",
+      "sha256": "c369af51c674e8dbe7f358391d0e687e146c53864fc85dafd9c1d3b092edeb6e"
+    },
+    "cait": {
+      "file": "references/cait.wav",
+      "text": "They built that. I saw the recordings. It wasn't even finished a year ago.",
+      "sha256": "96e32c0c4cce7ac2fc82806e0a0fa612ac4f27c744b34b2a369f3a2e4eaed564"
+    }
+  }
+}
