@@ -25,3 +25,22 @@ Movie Maker lists all 15 new project saves with `r1-` names. A before/after pair
 Optional stills that improve close-ups without changing authored timing or dialogue: `blue-hills-cait-close.png`, `providence-salvage-close.png`, `ri116-rob-close.png`, `ri116-cait-close.png`, `pachaug-cups-close.png`, and `boston-guitar-close.png`. If absent, the relevant wide shot stays in the timeline. The source screenplay can be compiled again before editing in Movie Maker; after hand-editing a generated save, back it up before recompiling.
 
 Region 1 keeps Providence's named route, event identity, existing race content and world-map pin. The regional route puts it third instead of last. The Pachaug finale returns to the world map, triggering the new-road animation when New Hampshire first becomes available. Older saves that already unlocked New Hampshire keep it without being marked as having seen the new Pachaug scene.
+
+### Director's edit (existing staged scenes)
+
+Inspect and update the camera, reaction holds, insert shots and audio in
+`region1_cinematic_direction.mjs`. Rebuild just the 15 native Movie Maker
+documents with the existing approved art:
+
+```sh
+node tools/campaigns/build_region1_cutscenes.mjs --cinematic-only
+```
+
+Optionally pass `--stills /path/to/approved-inserts` to use one or more of the
+additional PNG angle keys in that direction file. Only the named new inserts
+are copied in this mode; missing inserts fall back to the previous illustrated
+angle. Existing dialogue, art, manifest, race documents, menus, metadata, and
+both original intro documents are not rewritten. In the Movie Maker timeline,
+the subtitle panel is visible only while a caption plays, image keyframes give
+editable camera motion, and the score lane uses editable volume keyframes
+with silence for the story beats that need it.

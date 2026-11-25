@@ -12,6 +12,7 @@ const catalog=read('data/campaigns/america/catalog.json');
 const map=normalizeMenuElement({type:'world-map',...createAmericaWorldMap(catalog)});
 const decode=d=>d.__chainsawStorage?JSON.parse(zlib.gunzipSync(Buffer.from(d.data,'base64'))):d;
 const raceFor=s=>decode(read(path.join('data/server-storage/files',s.documentPath))).race;
+const REGION1_FINALE='Pachaug State Forest — public gravel access roads';
 const expected=['Providence, Rhode Island','Mount Washington Auto Road','Laurel Highlands Scenic Byway','Ohio River Crossing','Ozark Backroads','Data Center City','Historic Route 66','Pikes Peak Highway','Moki Dugway','Oak Creek Canyon','Angeles Crest Highway'];
 
 test('eleven ordered Middle Route locations resolve to installed races',()=>{
@@ -23,7 +24,8 @@ test('eleven ordered Middle Route locations resolve to installed races',()=>{
   assert.equal(manifest.folders.races[stage.name],stage.documentPath);
   assert.ok(Number.isFinite(stage.location.lat)&&Number.isFinite(stage.location.lon));
   const race=raceFor(stage);assert.equal(race.id,stage.id);assert.equal(race.type,'destination');
-  assert.equal(race.finishBehavior.menuScreen,'world-map');
+  // Providence is a stop inside Chapter One; only its finale returns to America.
+  assert.equal(race.finishBehavior.menuScreen,i===0?'campaign-hub-1':'world-map');
  }
  assert.ok(!Object.keys(manifest.folders.races).some(n=>/^(North|South|Middle) \d\d - /.test(n)));
 });
@@ -77,11 +79,22 @@ test('saved menu retains route progression with editable pin positions and old c
  const menu=decode(read('data/server-storage/files/menus/Game Menu/document.json'));
  const saved=normalizeMenuElement(menu.screens.find(s=>s.id==='world-map').elements.find(e=>e.type==='world-map'));
  const progression=nodes=>nodes.map(({id,raceRef,unlockParameter,unlockValue,completedParameter})=>({id,raceRef,unlockParameter,unlockValue,completedParameter}));
- assert.deepEqual(progression(saved.nodes),progression(map.nodes));
+ const expectedProgression=progression(map.nodes);
+ const region1=menu.parameters.campaignProgression.regions.find(r=>r.stage===1);
+ assert.equal(region1.bossRef,AMERICA_OPENING_RACE); // Graphic pin stays Providence.
+ assert.equal(region1.finaleRef,REGION1_FINALE);
+ const finaleKey=raceCompletionKey(REGION1_FINALE);
+ expectedProgression[0].completedParameter=finaleKey;
+ expectedProgression[1].unlockParameter=finaleKey;
+ assert.deepEqual(progression(saved.nodes),expectedProgression);
  assert.deepEqual(saved.connections.map(({from,to})=>({from,to})),map.connections.map(({from,to})=>({from,to})));
  assert.ok(saved.nodes.every(n=>Number.isFinite(n.x)&&Number.isFinite(n.y)));
- const parameters={[raceCompletionKey('North 01 - Providence - Blackstone')]:true,[raceCompletionKey(AMERICA_OPENING_RACE)]:true};
- assert.deepEqual(worldMapSelectableNodes(worldMapNodes(saved,null,null,parameters)).map(n=>n.raceRef),catalog.slice(0,2).map(s=>s.name));
+ const legacyFlags={[raceCompletionKey('North 01 - Providence - Blackstone')]:true,[raceCompletionKey(AMERICA_OPENING_RACE)]:true};
+ const selectable=parameters=>worldMapSelectableNodes(worldMapNodes(saved,null,null,parameters)).map(n=>n.raceRef);
+ assert.deepEqual(selectable(legacyFlags),[AMERICA_OPENING_RACE]);
+ assert.deepEqual(selectable({...legacyFlags,[finaleKey]:true}),expectedProgression.slice(0,2).map(n=>n.raceRef));
+ const finale=raceFor({documentPath:read('data/server-storage/files/manifest.json').folders.races[REGION1_FINALE]});
+ assert.equal(finale.finishBehavior.menuScreen,'world-map');
  assert.equal(menu.parameters.campaignOpeningRace,'Tower Hill Road');
 });
 

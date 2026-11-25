@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-import {CutscenePlayer,normalizeCutsceneDocument,sampleCutsceneClip} from '../../src/ui/CutsceneEditor.js';
+import {CutscenePlayer,normalizeCutsceneDocument,sampleCutsceneClip,sampleCutsceneAudioVolume} from '../../src/ui/CutsceneEditor.js';
 import {campaignRaceAccess,campaignRegionState,migrateCampaignProgress,PROVIDENCE_BOSS} from '../../src/menus/CampaignProgression.js';
 import {REGION1_FINALE} from '../../src/menus/CampaignPaths.js';
 import {captureCampaignWorldReturn} from '../../src/menus/CampaignWorldReveal.js';
@@ -44,7 +44,7 @@ test('native timeline covers its duration; dialogue stays intact with or without
  for(const recipe of recipes){
   const doc=sceneMap.get(recipe.name),base=compileScene(recipe,source,primary);
   assert.equal(doc.schemaVersion,2);
-  assert.deepEqual(doc.tracks.map(t=>t.id),['dialogue','caption-panel','stills']);
+  assert.deepEqual(doc.tracks.map(t=>t.id),['dialogue','caption-panel','stills','score']);
   assert.equal(doc.width/doc.height,16/9);
   assert.equal(textOf(doc),textOf(base),recipe.name);
   assert.deepEqual(normalizeCutsceneDocument(doc),doc);
@@ -60,7 +60,7 @@ test('native timeline covers its duration; dialogue stays intact with or without
    t+=frame.durationMs;
   }
   assert.equal(doc.durationMs,t);
-  for(const asset of doc.assets){
+  for(const asset of doc.assets.filter(a=>a.type!=='music')){
    assert.equal(asset.type,'image');
    assert.match(asset.dataUrl.__chainsawAssetRef,/^assets\/[a-z0-9-]+\.png$/);
    assert.equal(asset.dataUrl.mime,'image/png');
@@ -74,6 +74,32 @@ test('native timeline covers its duration; dialogue stays intact with or without
  assert.equal(player.active,true);assert.equal(player.doc.name,scene.name);assert.equal(finished,false);
  player.update(scene.durationMs/1000+1);
  assert.equal(finished,true);assert.equal(player.active,false);
+});
+
+test('director edit uses continuous camera coverage, clean pauses, and resolvable music in all 15 scenes',()=>{
+ const md=JSON.parse(fs.readFileSync('data/server-storage/files/manifest.json','utf8'));
+ for(const doc of sceneMap.values()){
+  const captions=doc.clips.filter(c=>c.type==='text').sort((a,b)=>a.startMs-b.startMs);
+  const shots=doc.clips.filter(c=>c.type==='image');
+  const score=doc.clips.filter(c=>c.type==='music');
+  assert.equal(score.length,1,doc.name);
+  assert.ok(md.folders.music[doc.assets.find(a=>a.id===score[0].assetId).ref],doc.name);
+  assert.ok(score[0].keyframes.some(k=>k.volume>.04),doc.name);
+  assert.ok(score[0].keyframes[0].volume===0&&score[0].keyframes.at(-1).volume===0,doc.name);
+  assert.ok(shots.length>=3&&new Set(shots.map(c=>[c.keyframes[0].x,c.keyframes[0].y,c.keyframes[0].scale].join(','))).size>=2,doc.name);
+  if(captions.length>=2){
+   assert.ok(captions.some((c,i)=>i>0&&c.startMs-(captions[i-1].startMs+captions[i-1].durationMs)>=400),doc.name);
+   const boards=doc.clips.filter(c=>c.trackId==='caption-panel');
+   assert.deepEqual(boards.map(c=>[c.startMs,c.durationMs]),captions.map(c=>[c.startMs,c.durationMs]),doc.name);
+  }
+ }
+ const house=sceneMap.get('r1-ri116-exit'),reveal=house.clips.find(c=>c.text.includes('She went to Heaven.'));
+ const score=house.clips.find(c=>c.type==='music');
+ const before=house.clips.find(c=>c.text.includes('What happened?'));
+ assert.ok(reveal.startMs-before.startMs-before.durationMs>=1200);
+ assert.equal(sampleCutsceneAudioVolume(score,reveal.startMs+400),0);
+ assert.equal(sampleCutsceneAudioVolume(score,reveal.startMs+reveal.durationMs+1000),0);
+ assert.ok(house.clips.some(c=>c.assetId==='shot-ri116-cait-close'&&c.startMs===reveal.startMs+reveal.durationMs));
 });
 
 test('Chapter 1 dialogue keeps the ambiguous Heaven line, non-hostile convoy, and optional stories apart',()=>{

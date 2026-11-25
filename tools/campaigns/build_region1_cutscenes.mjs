@@ -18,6 +18,8 @@ import {raceCompletionKey} from '../../src/menus/MenuWorldMap.js';
 import {PROVIDENCE_BOSS} from '../../src/menus/CampaignProgression.js';
 import {authorCampaignTopology} from './author_campaign_road_topology.mjs';
 
+import {beatsByStill,coverageByStill,scoreByScene,scoreRefs,additionalStills} from './region1_cinematic_direction.mjs';
+
 export const SCREENPLAY='AI/last-on-the-grid/SCRIPTS/01-rhode-island-full-draft.md';
 const saveRoot='data/server-storage/files/';
 const id=(slug,phase)=>'r1-'+slug+'-'+phase;
@@ -68,25 +70,13 @@ export const REGION1_RACES=[
 ];
 // A distinct editor document, never wired as a compulsory race scene. The
 // screenplay's separate inspect action and restoration quest are not simulated.
-const OPTIONAL_CUTS={
- 'blue-hills-summit':[{shot:'blue-hills-cait-close',from:'Jesus.',until:'Rob?'}],
- 'providence-lab':[{shot:'providence-salvage-close',from:"The BMW's still here."}],
- 'ri116-house':[
-  {shot:'ri116-rob-close',from:'She always left that light on.',until:"You remembered where to park."},
-  {shot:'ri116-cait-close',from:"Sounds like you had some good times.",until:'Used to think about her every day.'},
-  {shot:'ri116-rob-close',from:'Used to think about her every day.',until:"Can't imagine that."}
- ],
- 'pachaug-camp':[{shot:'pachaug-cups-close',from:"I didn't mean for any of this to happen.",until:'I was looking at the routes for tomorrow.'}],
- 'boston-music-shop':[{shot:'boston-guitar-close',from:'Play something.',until:"It's nice."}],
-};
-export const OPTIONAL_STILLS=[...new Set(Object.values(OPTIONAL_CUTS).flatMap(cuts=>cuts.map(cut=>cut.shot)))].sort();
+export const OPTIONAL_STILLS=[...new Set(Object.values(coverageByStill)
+ .flatMap(c=>[c.robStill,c.caitStill,c.insertStill]).concat(additionalStills).filter(Boolean))].sort();
 export const OPTIONAL_SCENES=[
  {slug:'garage-m3',title:'Garage M3 inspection',shots:[cue('garage-map','**[OPTIONAL — GARAGE INSPECTION','### SCENE 3')]},
 ];
 const W=256,H=144;
-const START_MARGIN=1150,END_MARGIN=950;
 const stableSaveAt=Date.UTC(2026,10,25,16,37);
-const silentDuration=3500;
 // Terminal bitmap glyphs do not cover typographic punctuation.
 const glyphText=s=>s.normalize('NFC').replace(/[’‘]/g,"'").replace(/[“”]/g,'"').replace(/…/g,'...').replace(/[–—]/g,' - ');
 const dialogueLine=/^\*\*(ROB|CAIT)(?: \([^*]*\))?:\*\*\s*“(.*)”(?:\s*\*.*\*)?\s*$/;
@@ -143,60 +133,125 @@ function imageDimensions(buffer,label){
 }
 
 export function compileScene(recipe,script,imageInfo){
- const assets=new Map(),clips=[],tracks=[
-  // Movie Maker paints its first track in front and its last track in back.
+ const assets=new Map(),clips=[],silences=[],tracks=[
+  // Movie Maker paints its first track over the others.
   {id:'dialogue',name:'Rob / Cait dialogue'},
   {id:'caption-panel',name:'Subtitle Contrast'},
-  {id:'stills',name:'Storyboards / Cinematic Stills'},
+  {id:'stills',name:'Camera / Stills'},
+  {id:'score',name:'Music / Silence',type:'audio'},
  ];
- let startMs=0,sequence=0;
- function addStill(shot,startMs,durationMs,crop){
+ let startMs=0,sequence=0,lastStill=null;
+ const frameTypes=new Set(['wide','alternate','insert','rob','cait']);
+ function addStill(still,how,startMs,durationMs,override){
+  if(durationMs<=0)return;
+  assert.ok(frameTypes.has(how),'Unrecognized Region 1 camera: '+how);
+  const frame=how,cov=coverageByStill[still]||{};
+  let shot=still, anchor=cov[frame];
+  if((frame==='rob'||frame==='cait')&&!anchor)anchor=[.5,.5,1.09];
+  if(frame==='alternate')anchor=[.51,.49,1.17];
+  const special=override||cov[frame+'Still'];
+  if(special&&imageInfo.has(special)){shot=special;anchor=[.50,.49,1.09];}
   const image=imageInfo.get(shot);
   assert.ok(image,'Missing approved still: '+shot);
   const assetId='shot-'+shot;
   if(!assets.has(assetId))assets.set(assetId,{id:assetId,type:'image',name:shot+'.png',dataUrl:{__chainsawAssetRef:'assets/'+shot+'.png',mime:'image/png'},width:image.width,height:image.height});
-  // Accept a generated wide still without stretching faces. A native 16:9
-  // frame is full bleed; other ratios use quiet framing around the original.
-  const ratio=image.width/image.height,w=Math.min(W,H*ratio),h=Math.min(H,W/ratio);
-  if(durationMs>0)clips.push({id:'still-'+sequence++,type:'image',layerId:'background',trackId:'stills',assetId,startMs,durationMs,x:W/2,y:H/2,w,h,
-   keyframes:[{timeMs:0,x:W/2,y:H/2,w,h,scale:1},{timeMs:durationMs,x:W/2,y:H/2,w,h,scale:crop}]});
+  // Wide preserves all art. Punch-ins fill the stage with no geometric
+  // stretch; edge clamps prevent a black margin on a panned close-up.
+  const ratio=image.width/image.height,w=anchor?Math.max(W,H*ratio):Math.min(W,H*ratio),h=w/ratio;
+  const [u,v,zoom]=anchor||[.5,.5,1];
+  const balance=(screen,drawn,focus)=>screen/2+Math.min(Math.max(0,(drawn-screen)/2),Math.max(-Math.max(0,(drawn-screen)/2),(.5-focus)*drawn));
+  const pose=(t,scale)=>({timeMs:t,manual:true,x:balance(W,w*scale,u),y:balance(H,h*scale,v),w,h,scale});
+  const move=duration=>duration>=900?(frame==='wide'||frame==='insert'? .035 : .022):0;
+  const previous=lastStill;
+  if(previous&&previous.assetId===assetId&&previous.id.startsWith(frame+'-shot-')&&previous.startMs+previous.durationMs===startMs){
+   previous.durationMs+=durationMs;
+   previous.keyframes[1]=pose(previous.durationMs,zoom+move(previous.durationMs));
+   return;
+  }
+  lastStill={id:frame+'-shot-'+sequence++,type:'image',layerId:'background',trackId:'stills',assetId,startMs,durationMs,
+   ...pose(0,zoom),keyframes:[pose(0,zoom),pose(durationMs,zoom+move(durationMs))]};
+  clips.push(lastStill);
  }
- for(const {shot,from,to} of recipe.shots){
-  const dialogue=screenplayDialogue(script,from,to);
+ const silence=(from,to,full=false)=>{if(to>from)silences.push({from,to,full});};
+ for(const [block,{shot,from,to}] of recipe.shots.entries()){
+  const dialogue=screenplayDialogue(script,from,to),notes=beatsByStill[shot]||[];
   if(from)assert.ok(dialogue.length,'Empty scripted dialogue: '+from);
-  const marks=[0];
-  for(const {text} of dialogue)marks.push(marks.at(-1)+captionParts(text).reduce((sum,part)=>sum+shotDurationMs(part),0));
-  const captions=dialogue.flatMap(({speaker,text})=>captionParts(text).map(part=>({speaker,text:part})));
-  const durationMs=captions.length?START_MARGIN+captions.reduce((sum,c)=>sum+shotDurationMs(c.text),0)+END_MARGIN:silentDuration;
-  const cuts=[];
-  for(const cut of OPTIONAL_CUTS[shot]||[]){
-   if(!imageInfo.has(cut.shot)||!dialogue.length)continue;
-   const first=dialogue.findIndex(d=>d.text.startsWith(cut.from));
-   const last=cut.until?dialogue.findIndex((d,i)=>i>first&&d.text.startsWith(cut.until)):dialogue.length;
-   if(first<0||last<=first)continue;
-   cuts.push({shot:cut.shot,inMs:startMs+START_MARGIN+marks[first],outMs:startMs+START_MARGIN+marks[last]});
+  const cov=coverageByStill[shot]||{};
+  const rapid=/-thompson-|-ri44-intro/.test(recipe.name);
+  const contemplative=/-ri116-exit|-pachaug-exit/.test(recipe.name);
+  const prelude=block?540:rapid?720:contemplative?1420:1100;
+  if(!dialogue.length){
+   const open=rapid?1000:1300;
+   addStill(shot,'wide',startMs,open);
+   addStill(shot,'insert',startMs+open,1200);
+   addStill(shot,'alternate',startMs+open+1200,1000);
+   startMs+=open+2200;
+   continue;
   }
-  let stillStart=startMs;
-  for(const cut of cuts.sort((a,b)=>a.inMs-b.inMs)){
-   assert.ok(cut.inMs>=stillStart,'Optional cutaways overlap.');
-   addStill(shot,stillStart,cut.inMs-stillStart,1.035);
-   addStill(cut.shot,cut.inMs,cut.outMs-cut.inMs,1.015);
-   stillStart=cut.outMs;
+  addStill(shot,'wide',startMs,prelude);
+  let cursor=startMs+prelude,lastFrame='alternate';
+  for(const [index,{speaker,text}] of dialogue.entries()){
+   const note=notes.find(b=>text.startsWith(b.prefix))||{};
+   const subject=speaker.toLowerCase(),listener=subject==='rob'?'cait':'rob';
+   // Lead with a speaker close-up, then spend some exchanges off-camera so
+   // there is rhythm rather than automatic left/right slideshow cutting.
+   const autoFrame=!cov[subject]?(index%4===2?'alternate':'wide'):
+    index%5===2?'wide':index%5===4?listener:subject;
+   const frame=note.frame||autoFrame;
+   if(note.before){
+    addStill(shot,lastFrame,cursor,note.before);
+    if(note.silence)silence(cursor,cursor+note.before,true);
+    cursor+=note.before;
+   }
+   const captions=captionParts(text);
+   const durationMs=captions.reduce((sum,c)=>sum+shotDurationMs(c),0);
+   addStill(shot,frame,cursor,durationMs,note.alternate);
+   if(note.silence)silence(cursor,cursor+durationMs,true);
+   for(const part of captions){
+    const durationMs=shotDurationMs(part);
+    clips.push({id:'contrast-'+sequence++,type:'color-board',layerId:'sprites',trackId:'caption-panel',startMs:cursor,durationMs,x:128,y:126,w:256,h:36,color:'#0a111b',opacity:.73,fadeInMs:70,fadeOutMs:85});
+    clips.push({id:'caption-'+sequence++,type:'text',layerId:'text',trackId:'dialogue',startMs:cursor,durationMs,text:speaker+': '+part,
+     x:128,y:126,w:236,h:36,textAlign:'center',fontSize:8,color:speaker==='CAIT'?'#d2e9ff':'#fff1db',textBorderEnabled:true,textBorderColor:'#101820',textBorderSize:1,
+     animation:'none',showCursor:false,fadeInMs:75,fadeOutMs:100});
+    cursor+=durationMs;
+   }
+   // Reactions have no subtitle at all. Let a look carry the scripted beat.
+   const gap=note.after??(rapid?135:contemplative?270:205);
+   lastFrame=note.look||frame;
+   if(gap){
+    addStill(shot,lastFrame,cursor,gap);
+    if(note.silence)silence(cursor,cursor+gap,true);
+    else if(note.look&&gap>=700)silence(cursor,cursor+gap);
+    cursor+=gap;
+   }
   }
-  addStill(shot,stillStart,startMs+durationMs-stillStart,1.035);
-  let cursor=startMs+START_MARGIN;
-  if(captions.length)clips.push({id:'contrast-'+sequence++,type:'color-board',layerId:'sprites',trackId:'caption-panel',startMs:cursor,durationMs:durationMs-START_MARGIN-END_MARGIN,x:128,y:126,w:256,h:36,color:'#0a111b',opacity:.73});
-  for(const {speaker,text} of captions){
-   const durationMs=shotDurationMs(text);
-   clips.push({id:'caption-'+sequence++,type:'text',layerId:'text',trackId:'dialogue',startMs:cursor,durationMs,text:speaker+': '+text,
-    x:128,y:126,w:236,h:36,textAlign:'center',fontSize:8,color:speaker==='CAIT'?'#d2e9ff':'#fff1db',textBorderEnabled:true,textBorderColor:'#101820',textBorderSize:1,
-    animation:'none',showCursor:false,fadeInMs:70,fadeOutMs:75});
-   cursor+=durationMs;
-  }
-  startMs+=durationMs;
+  const tail=block===recipe.shots.length-1?(rapid?670:contemplative?1450:950):270;
+  addStill(shot,'wide',cursor,tail);
+  startMs=cursor+tail;
  }
- return normalizeCutsceneDocument({name:recipe.name,description:recipe.title,width:W,height:H,durationMs:startMs,fps:30,sceneFadeInMs:280,sceneFadeOutMs:380,tracks,clips,assets:[...assets.values()]});
+ const score=scoreByScene[recipe.name];
+ // Every new document carries a real Movie Maker music asset/track; score
+ // eases underneath dialogue and drops out completely at the pivotal beats.
+ assert.ok(score,'Missing Region 1 score direction: '+recipe.name);
+ const start=score.arrival,end=startMs-70,len=end-start;
+ const key=new Map([[0,0],[Math.min(900,Math.floor(len/3)),score.normal],[Math.max(0,len-score.tail),score.normal],[len,0]]);
+ for(const {from,to,full} of silences){
+  const l=from-start,r=to-start,mix=full?score.silence:score.hush;
+  if(l<0||r>len)continue;
+  for(const t of key.keys())if(t>=l&&t<=r)key.delete(t);
+  key.set(Math.max(0,l-210),score.normal);key.set(l,mix);key.set(r,mix);key.set(Math.min(len,r+380),score.normal);
+ }
+ // Adjacent full-silence intervals are generated per caption/reaction; clear
+ // any return key accidentally added by one adjacent cut at their boundary.
+ for(const {from,to,full} of silences)if(full)for(const t of key.keys())if(t>=from-start&&t<=to-start)key.set(t,0);
+ key.set(0,0);key.set(len,0);
+ assets.set('region1-score',{id:'region1-score',type:'music',name:score.ref,ref:score.ref});
+ clips.push({id:'score-bed',type:'music',layerId:'audio',trackId:'score',assetId:'region1-score',startMs:start,durationMs:len,loop:true,volume:0,fadeMs:180,
+  keyframes:[...key].sort(([a],[b])=>a-b).map(([timeMs,volume])=>({timeMs,volume,manual:true}))});
+ return normalizeCutsceneDocument({name:recipe.name,description:recipe.title,width:W,height:H,durationMs:startMs,fps:30,sceneFadeInMs:rapidFade(recipe.name)?190:365,sceneFadeOutMs:rapidFade(recipe.name)?300:510,tracks,clips,assets:[...assets.values()]});
 }
+
+const rapidFade=name=>/-thompson-|-ri44/.test(name);
 
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const unpack=raw=>raw.__chainsawStorage==='compact-v1'?JSON.parse(gunzipSync(Buffer.from(raw.data,'base64'))):raw;
@@ -245,12 +300,28 @@ export function updateRegion1Race(doc,recipe){
  return doc;
 }
 
-export function compileRegion1(project,stills,{dryRun=false}={}){
+export function compileRegion1(project,stills,{dryRun=false,cinematicOnly=false}={}){
  const root=path.resolve(project,saveRoot),script=fs.readFileSync(path.resolve(project,SCREENPLAY),'utf8');
  const manifestFile=path.join(root,'manifest.json'),manifest=readJson(manifestFile);
- const supplied=[...sceneInventory(),...OPTIONAL_STILLS.filter(s=>fs.existsSync(path.resolve(stills,s+'.png')))];
+ for(const name of scoreRefs)assert.ok(manifest.folders.music?.[name],'Missing project MIDI: '+name);
+ const existingInputs=new Map();
+ if(cinematicOnly)for(const {name} of sceneRecipe()){
+  const docPath=manifest.folders.cutscenes?.[name];
+  assert.ok(docPath,'Missing existing scene for camera-only rebuild: '+name);
+  const dir=path.dirname(path.join(root,docPath));
+  for(const file of fs.readdirSync(path.join(dir,'assets')).filter(file=>file.endsWith('.png'))){
+   const key=file.slice(0,-4),source=path.join(dir,'assets',file);
+   if(existingInputs.has(key))assert.ok(fs.readFileSync(source).equals(fs.readFileSync(existingInputs.get(key))), 'Conflicting approval art for '+key);
+   else existingInputs.set(key,source);
+  }
+ }
+ const source=shot=>cinematicOnly
+  ?(additionalStills.includes(shot)&&stills&&fs.existsSync(path.resolve(stills,shot+'.png'))?path.resolve(stills,shot+'.png'):existingInputs.get(shot))
+  :path.resolve(stills,shot+'.png');
+ const supplied=[...sceneInventory(),...OPTIONAL_STILLS.filter(s=>source(s)&&fs.existsSync(source(s)))];
  const imageInfo=new Map(supplied.map(shot=>{
-  const f=path.resolve(stills,shot+'.png'),bytes=fs.readFileSync(f);
+  assert.ok(source(shot),'Missing approved still: '+shot);
+  const bytes=fs.readFileSync(source(shot));
   return [shot,{...imageDimensions(bytes,shot),bytes}];
  }));
  // Validate everything before mutating either a menu or race hookup.
@@ -261,10 +332,19 @@ export function compileRegion1(project,stills,{dryRun=false}={}){
   assert.ok(!manifest.folders.cutscenes[scene.name]||manifest.folders.cutscenes[scene.name]===relative,'Cutscene name collision.');
   manifest.folders.cutscenes[scene.name]=relative;
   writes.set(path.join(dir,'document.json'),json(scene));
+  if(cinematicOnly){
+   for(const asset of scene.assets.filter(a=>a.type==='image')){
+    const to=path.join(dir,asset.dataUrl.__chainsawAssetRef),bytes=imageInfo.get(asset.name.slice(0,-4)).bytes;
+    if(!fs.existsSync(to))writes.set(to,bytes);
+    else assert.ok(bytes.equals(fs.readFileSync(to)),'Unexpected local asset drift: '+to);
+   }
+   continue;
+  }
   const meta=path.join(dir,'metadata.json');
   writes.set(meta,json(fs.existsSync(meta)?readJson(meta):{name:scene.name,folder:'cutscenes',savedAt:stableSaveAt,version:1}));
-  for(const asset of scene.assets){const shot=asset.name.slice(0,-4);writes.set(path.join(dir,asset.dataUrl.__chainsawAssetRef),imageInfo.get(shot).bytes);}
+  for(const asset of scene.assets.filter(a=>a.type==='image')){const shot=asset.name.slice(0,-4);writes.set(path.join(dir,asset.dataUrl.__chainsawAssetRef),imageInfo.get(shot).bytes);}
  }
+ if(!cinematicOnly){
  for(const recipe of REGION1_RACES){
   const relative=manifest.folders.races[recipe.ref];
   assert.ok(relative,'Race missing from manifest: '+recipe.ref);
@@ -276,8 +356,9 @@ export function compileRegion1(project,stills,{dryRun=false}={}){
  writes.set(menuFile,json(repack(menuRaw,updateRegion1Menu(unpack(menuRaw)))));
  manifest.folders.cutscenes=Object.fromEntries(Object.entries(manifest.folders.cutscenes).sort(([a],[b])=>a<b?-1:a>b?1:0));
  writes.set(manifestFile,json(manifest));
+ }
  if(!dryRun)for(const [file,data] of writes){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,data);}
- return {stills:imageInfo.size,scenes:scenes.length,newRaceHooks:REGION1_RACES.length-1,files:[...writes.keys()].map(f=>path.relative(project,f))};
+ return {stills:imageInfo.size,scenes:scenes.length,newRaceHooks:cinematicOnly?0:REGION1_RACES.length-1,files:[...writes.keys()].map(f=>path.relative(project,f))};
 }
 
 if(process.argv[1]&&pathToFileURL(process.argv[1]).href===import.meta.url){
@@ -286,7 +367,8 @@ if(process.argv[1]&&pathToFileURL(process.argv[1]).href===import.meta.url){
  if(args.includes('--inventory'))console.log(JSON.stringify(sceneInventory(),null,2));
  else{
   const project=arg('--project')||process.cwd(),stills=arg('--stills');
-  assert.ok(stills,'Provide --stills containing approved illustrated PNGs; use --inventory for filenames.');
-  console.log(JSON.stringify(compileRegion1(project,stills,{dryRun:args.includes('--dry-run')}),null,2));
+  const cinematicOnly=args.includes('--cinematic-only');
+  assert.ok(stills||cinematicOnly,'Provide --stills containing approved illustrated PNGs; use --inventory for filenames.');
+  console.log(JSON.stringify(compileRegion1(project,stills,{dryRun:args.includes('--dry-run'),cinematicOnly}),null,2));
  }
 }
