@@ -33,6 +33,16 @@
       "dataUrl": "",
       "width": 0,
       "height": 0
+    },
+    {
+      "id": "qwen-dialogue",
+      "type": "voice",
+      "name": "Rob & Cait (Qwen)",
+      "ref": "",
+      "dataUrl": {
+        "__chainsawAssetRef": "assets/qwen-dialogue.mp3",
+        "mime": "audio/mpeg"
+      }
     }
   ],
   "layers": [
@@ -88,6 +98,10 @@
     {
       "id": "score",
       "name": "Music / Silence"
+    },
+    {
+      "id": "qwen-dialogue",
+      "name": "Dialogue (Qwen)"
     }
   ],
   "clips": [
@@ -2003,7 +2017,24 @@
           "volume": 0
         }
       ]
+    },
+    {
+      "id": "qwen-dialogue",
+      "type": "music",
+      "layerId": "audio",
+      "trackId": "qwen-dialogue",
+      "assetId": "qwen-dialogue",
+      "startMs": 0,
+      "durationMs": 28630,
+      "loop": false,
+      "volume": 1,
+      "fadeMs": 0
     }
   ],
-  "description": "Putnam Pike · Before the run"
+  "description": "Putnam Pike · Before the run",
+  "voiceover": {
+    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "trackId": "qwen-dialogue",
+    "captionSha256": "6b6068b25f0e275e9039cf9adcdf2d8a7dd150dcc685fbe8a3cac2682611f7ee"
+  }
 }

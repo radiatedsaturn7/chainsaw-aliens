@@ -46,6 +46,16 @@
       "dataUrl": "",
       "width": 0,
       "height": 0
+    },
+    {
+      "id": "qwen-dialogue",
+      "type": "voice",
+      "name": "Rob & Cait (Qwen)",
+      "ref": "",
+      "dataUrl": {
+        "__chainsawAssetRef": "assets/qwen-dialogue.mp3",
+        "mime": "audio/mpeg"
+      }
     }
   ],
   "layers": [
@@ -101,6 +111,10 @@
     {
       "id": "score",
       "name": "Music / Silence"
+    },
+    {
+      "id": "qwen-dialogue",
+      "name": "Dialogue (Qwen)"
     }
   ],
   "clips": [
@@ -3797,7 +3811,24 @@
           "volume": 0
         }
       ]
+    },
+    {
+      "id": "qwen-dialogue",
+      "type": "music",
+      "layerId": "audio",
+      "trackId": "qwen-dialogue",
+      "assetId": "qwen-dialogue",
+      "startMs": 0,
+      "durationMs": 40585,
+      "loop": false,
+      "volume": 1,
+      "fadeMs": 0
     }
   ],
-  "description": "Boston Outskirts · After the run"
+  "description": "Boston Outskirts · After the run",
+  "voiceover": {
+    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "trackId": "qwen-dialogue",
+    "captionSha256": "550101ae00a02cd660e716690faf723e106c84d10ab0c192542623e8ca450a04"
+  }
 }

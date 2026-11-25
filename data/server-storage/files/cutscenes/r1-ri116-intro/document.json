@@ -33,6 +33,16 @@
       "dataUrl": "",
       "width": 0,
       "height": 0
+    },
+    {
+      "id": "qwen-dialogue",
+      "type": "voice",
+      "name": "Rob & Cait (Qwen)",
+      "ref": "",
+      "dataUrl": {
+        "__chainsawAssetRef": "assets/qwen-dialogue.mp3",
+        "mime": "audio/mpeg"
+      }
     }
   ],
   "layers": [
@@ -88,6 +98,10 @@
     {
       "id": "score",
       "name": "Music / Silence"
+    },
+    {
+      "id": "qwen-dialogue",
+      "name": "Dialogue (Qwen)"
     }
   ],
   "clips": [
@@ -5010,7 +5024,24 @@
           "volume": 0
         }
       ]
+    },
+    {
+      "id": "qwen-dialogue",
+      "type": "music",
+      "layerId": "audio",
+      "trackId": "qwen-dialogue",
+      "assetId": "qwen-dialogue",
+      "startMs": 0,
+      "durationMs": 64920,
+      "loop": false,
+      "volume": 1,
+      "fadeMs": 0
     }
   ],
-  "description": "RI 116 · Before the run"
+  "description": "RI 116 · Before the run",
+  "voiceover": {
+    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "trackId": "qwen-dialogue",
+    "captionSha256": "8191e2fed51e0ef1fed5c7da46b4acc7ec3f7d467fad620e7224ee45b347b8ad"
+  }
 }

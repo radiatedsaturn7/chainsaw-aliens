@@ -6,7 +6,7 @@ import {openWheelSettings} from '../hardware/wheels/WheelSettings.js';
 import {RaceHaptics} from '../racing/RaceHaptics.js';
 import {openFontEditor} from '../ui/FontEditor.js';
 import AudioMusicPlayer from '../audio/AudioMusicPlayer.js';
-import {isAudioMusic} from '../audio/MusicAsset.js';
+import {getEmbeddedCutsceneMusic, isAudioMusic} from '../audio/MusicAsset.js';
 import {musicMediaVolume} from '../audio/musicVolume.js';
 import {setMenuProgress} from '../menus/MenuProgress.js';
 import {captureCampaignWorldReturn} from '../menus/CampaignWorldReveal.js';
@@ -7106,21 +7106,26 @@ export default class Game {
     const clips = Array.isArray(document?.clips) ? document.clips : [];
     const assetById = new Map(assets.map((asset) => [asset?.id, asset]));
     const musicIds = new Set();
+    const preparedMusic = new Map();
     const sfxIds = new Set();
     clips.forEach((clip) => {
       if (!clip || (clip.type !== 'music' && clip.type !== 'sfx')) return;
       const asset = assetById.get(clip.assetId) || null;
       const ref = String(asset?.ref || clip.assetId || '').trim();
       if (!ref) return;
-      if (clip.type === 'music') musicIds.add(ref);
+      if (clip.type === 'music') {
+        const song = getEmbeddedCutsceneMusic(asset);
+        if (song) preparedMusic.set(ref, {id: ref, name: asset.name || ref, song});
+        else musicIds.add(ref);
+      }
       if (clip.type === 'sfx') sfxIds.add(ref);
     });
-    const preparedMusic = new Map();
     const preparedSfx = new Map();
     const loads = [];
-    await Promise.all([...musicIds].map(id=>hydrateProjectFilePayload('music',id)));
+    await Promise.all([...musicIds].filter(id=>!preparedMusic.has(id)).map(id=>hydrateProjectFilePayload('music',id)));
     await Promise.all([...sfxIds].map(id=>hydrateProjectFilePayload('sfx',id)));
     musicIds.forEach((trackId) => {
+      if (preparedMusic.has(trackId)) return;
       const libraryEntry = this.getLibrarySong(trackId);
       if (libraryEntry?.song) {
         preparedMusic.set(trackId, libraryEntry);

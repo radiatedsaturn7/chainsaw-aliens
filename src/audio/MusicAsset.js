@@ -24,3 +24,13 @@ export async function importMusicAsset({choose=chooseEditorFiles,form=openEditor
  const data=midi?midiMusicDocument(parseMidi(await file.arrayBuffer()),name):{kind:'audio-music',mimeType:'audio/mpeg',fileName:file.name,src:await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(Error('Could not read music'));reader.readAsDataURL(file);})};
  await saveProjectFileAndConfirm('music',name,data);return {name,data};
 }
+
+
+// Cutscene-local audio can use the same externalized dataUrl as an image, so
+// it travels with the scene without adding entries to the global music library.
+export function getEmbeddedCutsceneMusic(asset) {
+  const src = asset?.dataUrl;
+  if (!['music', 'voice'].includes(asset?.type) || typeof src !== 'string') return null;
+  const match = /^data:(audio\/(?:mpeg|mp3|wav|wave|ogg|opus|webm|mp4|aac|flac));base64,/i.exec(src);
+  return match ? {kind: 'audio-music', mimeType: match[1], fileName: asset.name || '', src, dialogue: asset.type === 'voice'} : null;
+}

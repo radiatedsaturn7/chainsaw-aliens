@@ -18,6 +18,7 @@ import {selectableIndex,nextSelectableIndex,selectableGridIndex} from './MenuSel
 import {GarageDialogueState,garageDialogueContext} from '../garage/GarageDialogue.js';
 import {MenuScreenTransition} from './MenuScreenTransition.js';
 import {musicMediaVolume} from '../audio/musicVolume.js';
+import {getEmbeddedCutsceneMusic} from '../audio/MusicAsset.js';
 import {GarageTuner} from '../garage/GarageTuning.js';
 import {drawGarageTuner} from './MenuTuningRenderer.js';
 import {menuCodeValue,cycleCodeLetter} from './MenuCodeEntry.js';
@@ -787,7 +788,7 @@ this.flow.setParameter(popup.element.binding,popup.choices[index].value);this.ch
     const payload=await hydrateProjectFilePayload('cutscenes',ref);if(!flow.active||flow.generation!==generation)return;if(!payload?.data)throw Error(`Movie not found: ${ref}`);
     const assets=payload.data.assets||[],references=new Map();
     for(const asset of assets){const folder={art:'art',music:'music',sfx:'sfx',actor:'actors'}[asset.type];if(folder&&asset.ref)references.set(`${folder}:${asset.ref}`,{folder,ref:asset.ref});if(asset.actorRef)references.set(`actors:${asset.actorRef}`,{folder:'actors',ref:asset.actorRef});}
-    for(const clip of payload.data.clips||[])if(['music','sfx'].includes(clip.type)){const asset=assets.find(a=>a.id===clip.assetId),name=asset?.ref||clip.assetId;if(name)references.set(`${clip.type}:${name}`,{folder:clip.type,ref:name});}
+    for(const clip of payload.data.clips||[])if(['music','sfx'].includes(clip.type)){const asset=assets.find(a=>a.id===clip.assetId),name=asset?.ref||clip.assetId;if(clip.type==='music'&&getEmbeddedCutsceneMusic(asset))continue;if(name)references.set(`${clip.type}:${name}`,{folder:clip.type,ref:name});}
     const loads=await Promise.allSettled([...references.values()].map(async asset=>{const value=await hydrateProjectFilePayload(asset.folder,asset.ref);if(!value?.data)throw Error(`Movie asset not found: ${asset.ref}`);return value}));
     const failure=loads.find(result=>result.status==='rejected');if(failure)throw failure.reason;
     await this.game.prepareCutsceneAudioResources?.(payload.data);

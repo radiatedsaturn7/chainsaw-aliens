@@ -59,6 +59,16 @@
       "dataUrl": "",
       "width": 0,
       "height": 0
+    },
+    {
+      "id": "qwen-dialogue",
+      "type": "voice",
+      "name": "Rob & Cait (Qwen)",
+      "ref": "",
+      "dataUrl": {
+        "__chainsawAssetRef": "assets/qwen-dialogue.mp3",
+        "mime": "audio/mpeg"
+      }
     }
   ],
   "layers": [
@@ -114,6 +124,10 @@
     {
       "id": "score",
       "name": "Music / Silence"
+    },
+    {
+      "id": "qwen-dialogue",
+      "name": "Dialogue (Qwen)"
     }
   ],
   "clips": [
@@ -2503,7 +2517,24 @@
           "volume": 0
         }
       ]
+    },
+    {
+      "id": "qwen-dialogue",
+      "type": "music",
+      "layerId": "audio",
+      "trackId": "qwen-dialogue",
+      "assetId": "qwen-dialogue",
+      "startMs": 0,
+      "durationMs": 25635,
+      "loop": false,
+      "volume": 1,
+      "fadeMs": 0
     }
   ],
-  "description": "Blue Hills · After the run"
+  "description": "Blue Hills · After the run",
+  "voiceover": {
+    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "trackId": "qwen-dialogue",
+    "captionSha256": "0ff8b1038c54d8ae48cfc35758f981b1788a4dd0477e329eec01391f1f49a323"
+  }
 }

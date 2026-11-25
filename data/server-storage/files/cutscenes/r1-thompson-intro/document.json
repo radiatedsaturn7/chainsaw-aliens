@@ -33,6 +33,16 @@
       "dataUrl": "",
       "width": 0,
       "height": 0
+    },
+    {
+      "id": "qwen-dialogue",
+      "type": "voice",
+      "name": "Rob & Cait (Qwen)",
+      "ref": "",
+      "dataUrl": {
+        "__chainsawAssetRef": "assets/qwen-dialogue.mp3",
+        "mime": "audio/mpeg"
+      }
     }
   ],
   "layers": [
@@ -88,6 +98,10 @@
     {
       "id": "score",
       "name": "Music / Silence"
+    },
+    {
+      "id": "qwen-dialogue",
+      "name": "Dialogue (Qwen)"
     }
   ],
   "clips": [
@@ -3508,7 +3522,24 @@
           "volume": 0
         }
       ]
+    },
+    {
+      "id": "qwen-dialogue",
+      "type": "music",
+      "layerId": "audio",
+      "trackId": "qwen-dialogue",
+      "assetId": "qwen-dialogue",
+      "startMs": 0,
+      "durationMs": 32855,
+      "loop": false,
+      "volume": 1,
+      "fadeMs": 0
     }
   ],
-  "description": "Thompson Speedway · Before the run"
+  "description": "Thompson Speedway · Before the run",
+  "voiceover": {
+    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "trackId": "qwen-dialogue",
+    "captionSha256": "6586186e6336aa952794fff6e3f38ee5de5e13c3f307010e1a4bdb1370c39727"
+  }
 }

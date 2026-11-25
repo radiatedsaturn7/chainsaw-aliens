@@ -65,6 +65,16 @@
       "type": "music",
       "name": "SomethingLeftUnsaid.mp3",
       "ref": "SomethingLeftUnsaid.mp3"
+    },
+    {
+      "id": "qwen-dialogue",
+      "type": "voice",
+      "name": "Rob & Cait (Qwen)",
+      "ref": "",
+      "dataUrl": {
+        "__chainsawAssetRef": "assets/qwen-dialogue.mp3",
+        "mime": "audio/mpeg"
+      }
     }
   ],
   "layers": [
@@ -132,6 +142,10 @@
     {
       "id": "track-1794250018099-95146",
       "name": "SomethingLeftUnsaid.mp3"
+    },
+    {
+      "id": "qwen-dialogue",
+      "name": "Dialogue (Qwen)"
     }
   ],
   "clips": [
@@ -596,6 +610,23 @@
         "phase": 0
       },
       "keyframes": []
+    },
+    {
+      "id": "qwen-dialogue",
+      "type": "music",
+      "layerId": "audio",
+      "trackId": "qwen-dialogue",
+      "assetId": "qwen-dialogue",
+      "startMs": 0,
+      "durationMs": 19000,
+      "loop": false,
+      "volume": 1,
+      "fadeMs": 0
     }
-  ]
+  ],
+  "voiceover": {
+    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "trackId": "qwen-dialogue",
+    "captionSha256": "428cdf0feb15b0200fc85b5dd90725f7776dee577e711a85ee4601d88fcf34fc"
+  }
 }
