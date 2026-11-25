@@ -1,12 +1,55 @@
+const fixtureFiles=new Map([
+ ['art',new Set(['grass','rtg-001','tire'])],
+ ['races',new Set(['Studio Sprint','Studio Sprint2'])],
+ ['cars',new Set(['2022 Subaru WRX2'])],
+ ['levels',new Set(['levelA'])]
+]);
+const isolatedPages=new WeakSet();
+
+async function isolateRaceRuntimeFiles(page){
+  if(isolatedPages.has(page))return;
+  const files=new Map();
+  // Browser tests share the development server. Fixtures must survive reload
+  // within this test, but must not replace real files or enter another test's picker.
+  await page.route(url=>url.pathname==='/__storage/file',async route=>{
+    const request=route.request(),method=request.method(),url=new URL(request.url());
+    if(method!=='GET'&&method!=='POST')return route.fallback();
+    const posted=method==='POST'?request.postDataJSON():null;
+    const folder=posted?.folder??url.searchParams.get('folder'),name=posted?.name??url.searchParams.get('name');
+    if(!fixtureFiles.get(folder)?.has(name))return route.fallback();
+    const key=`${folder}:${name}`;
+    if(posted){
+      const {data,savedAt,version}=posted;
+      files.set(key,{folder,name,data,savedAt,version});
+    }
+    const file=files.get(key);
+    if(!file)return route.fallback();
+    return route.fulfill({json:{ok:true,file}});
+  });
+  await page.route(url=>url.pathname==='/__storage/index',async route=>{
+    if(!files.size||route.request().method()!=='GET')return route.fallback();
+    const folder=new URL(route.request().url()).searchParams.get('folder');
+    const relevant=[...files.values()].filter(file=>!folder||file.folder===folder);
+    if(!relevant.length)return route.fallback();
+    const response=await route.fetch();
+    if(!response.ok())return route.fulfill({response});
+    const payload=await response.json();
+    for(const file of relevant)(payload.index[file.folder]??={})[file.name]={updatedAt:file.savedAt,size:JSON.stringify(file.data).length};
+    return route.fulfill({response,json:payload});
+  });
+  isolatedPages.add(page);
+}
+
 export async function seedRaceRuntimeFixtures(page, {straight = false} = {}) {
+  await isolateRaceRuntimeFiles(page);
   await page.evaluate(async ({straight}) => {
     const game = window.__game;
     const editor = game.raceEditor;
     const clone = (value) => JSON.parse(JSON.stringify(value));
     const now = Date.now();
     const {saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js');
-    // Seed the browser cache as well as the server. Raw POSTs leave documents
-    // hydrated during startup pointing at the user's committed race/car data.
+    // Seed the browser cache as well as its scoped storage. Raw POSTs leave
+    // documents hydrated during startup pointing at committed race/car data.
     const postFile = async (folder, name, data, offset = 0) => {
       await saveProjectFileAndConfirm(folder,name,data,{savedAt:now+offset,createVersion:false});
     };
