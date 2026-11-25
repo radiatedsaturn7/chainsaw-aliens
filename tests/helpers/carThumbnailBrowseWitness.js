@@ -53,8 +53,23 @@ export async function installThumbnailBrowseWitness(context,{originalSprites=fal
  const thumb=JSON.parse(fs.readFileSync(previewFile));
  expect(thumb.schemaVersion).toBe(1);
  expect(thumb.anglesDeg).toEqual([0,45,90,135,180,225,270,315]);
- const requested=[],thumbRequests=[],loaded=[];
+ const requested=[],thumbRequests=[],loaded=[],initiators=[];
  let choosing=false;
+ await context.exposeBinding('__reportPickerFileRequest',(_source,{url,stack,screen,car})=>{
+  if(choosing||!mainArtPaths.has(resourceKey(url))||initiators.length>=24)return;
+  initiators.push({url,stack,screen,car});
+ });
+ await context.addInitScript(()=>{
+  const report=value=>{
+   let url;try{url=new URL(typeof value==='string'||value instanceof URL?value:value?.url,location.href);}catch{return;}
+   if(url.searchParams.get('folder')!=='art'&&!url.pathname.includes('/server-storage/files/art/'))return;
+   const flow=window.__game?.menuPlayer?.flow;
+   void window.__reportPickerFileRequest?.({url:url.href,stack:new Error().stack,screen:flow?.screenId,car:flow?.parameters?.carRef});
+  };
+  const fetch=window.fetch,xhrOpen=XMLHttpRequest.prototype.open;
+  window.fetch=function(input,...args){report(input);return fetch.call(this,input,...args);};
+  XMLHttpRequest.prototype.open=function(method,url,...args){report(url);return xhrOpen.call(this,method,url,...args);};
+ });
  context.on('request',request=>{
   const url=request.url(),path=resourceKey(url);
   if(mainArtPaths.has(path))requested.push({path,choosing});
@@ -117,7 +132,9 @@ export async function installThumbnailBrowseWitness(context,{originalSprites=fal
   };
  });
  return {thumb,originalSprites,requested,thumbRequests,loaded,choose(){choosing=true;}, assertBrowseCold(){
-  expect(requested.filter(x=>!x.choosing),'full car body/tire requests before choose').toEqual([]);
+  const early=requested.filter(x=>!x.choosing);
+  const context=early.length&&initiators.length?'\n'+JSON.stringify(initiators,null,2):'';
+  expect(early,'full car body/tire requests before choose'+context).toEqual([]);
  }};
 }
 export async function thumbnailOnCanvas(page,qa,name,{selected=true}={}){

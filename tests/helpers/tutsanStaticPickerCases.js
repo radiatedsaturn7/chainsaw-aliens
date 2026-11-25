@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 import fs from 'node:fs';
-import {confirmPicker,pickerState,stepPicker} from './carCatalogBoundedPickerSetup.js';
+import {confirmPicker,pickerState,selectCatalogTarget} from './carCatalogBoundedPickerSetup.js';
 import {catalogArtPath,catalogCar,expectThumbnailOnCanvas,installThumbnailBrowseWitness,isCatalogArtRequest} from './carThumbnailBrowseWitness.js';
 const chaseCar='Tutsan 2003',raceName='Demo Track';
 
@@ -23,10 +23,7 @@ for(const mobile of [false,true])test(`Tutsan ${mobile?'handheld touch':'desktop
  first.thumbnail=await expectThumbnailOnCanvas(page,qa,first.selected);
  const targetIndex=first.choices.indexOf(chaseCar);expect(targetIndex).toBeGreaterThan(3);
  await page.screenshot({path:info.outputPath('picker-initial.png')});
- for(let i=first.index+1;i<=targetIndex;i++){
-  await stepPicker(page,mobile,menuReady,1);
-  const s=await pickerState(page);expect(s.selected).toBe(first.choices[i]);expect(s.index).toBe(i);
- }
+ await selectCatalogTarget(page,{targetName:chaseCar,mobile,menuReady,info,thumbnailQA:qa});
  const later=await pickerState(page);expect(later.selected).toBe(chaseCar);expect(later.start).toBeGreaterThan(0);expect(later.visible).toContain(chaseCar);expect(later.errors).toEqual([]);
  later.thumbnail=await expectThumbnailOnCanvas(page,qa,chaseCar);
  const loadedCars=await page.evaluate(()=>window.__game.menuPlayer.resources.cars.size);
