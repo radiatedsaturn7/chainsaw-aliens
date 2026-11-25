@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {pathToFileURL} from 'node:url';
+import {campaignFinaleRef} from '../../src/menus/CampaignProgression.js';
 import {mapRoadPoint,mapRoadRoute,campaignRoadDirectionalNode} from '../../src/menus/MenuMapRoads.js';
 const V={right:[1,0],down:[0,1],left:[-1,0],up:[0,-1]};
 const names=Object.keys(V),near=.045;
@@ -95,7 +96,7 @@ export function validateTopology(map){
 function nextParts(map,r){
  const byRef=new Map(map.nodes.map(n=>[n.raceRef,n.id]));
  assert.equal(byRef.size,8,r.bossRef);
- const start=byRef.get(r.mainPath[0]),boss=byRef.get(r.bossRef);
+ const start=byRef.get(r.mainPath[0]),boss=byRef.get(campaignFinaleRef(r));
  const required=new Set(r.mainPath.map(ref=>byRef.get(ref)));
  const optional=new Set(map.nodes.filter(n=>!required.has(n.id)&&n.id!==boss).map(n=>n.id));
  assert.ok(start&&boss);assert.equal(required.size,5);assert.equal(optional.size,2);
@@ -208,6 +209,7 @@ export function authorCampaignTopology(doc,{orders=CAMPAIGN_ROAD_ORDERS,branchPa
   assert.deepEqual(map.nodes,old);
   const journey=mapRoadRoute(map.nodes,connections,start,boss);assert.equal(journey.length,5,'boss must follow all five main stops');
   journey.forEach((step,i)=>{map.nodes.find(n=>n.id===step.previous).label=String(i+1);});
+  if(r.finaleRef)map.nodes.find(n=>n.id===boss).label='Finale';
   map.mapEntrance='auto';
   summary.push({stage:r.stage,bossRef:r.bossRef,start,boss,iterations,maxDegree:Math.max(...[...graph.values()].map(v=>v.length)),edges:connections.length});
  }

@@ -1,5 +1,6 @@
 import {campaignTravelOrder} from './CampaignItinerary.js';
 import {authorCampaignPath,campaignPathScreen} from './CampaignPaths.js';
+import {campaignFinaleRef} from './CampaignProgression.js';
 import {normalizeMenuDocument} from './MenuDocument.js';
 
 // Surface comes from the installed course, not the old core/wildcard priority.
@@ -60,7 +61,7 @@ export function createCampaignHubMenus(catalog, research, installed = []) {
   progression.regions.push(region);
   if(region.mainPath)screens.push(campaignPathScreen(region,boss.label||boss.name));
   screens.push(screen(region.mainPath?`${id}-events`:id,boss.label||boss.name,[
-   {label:'Main Mission',action:select(boss.name)},
+   {label:'Main Mission',action:select(campaignFinaleRef(region))},
    link('Road Runs',`${id}-roads`),link('City Runs',`${id}-cities`),link('Detours',`${id}-detours`),link('Raceways',`${id}-raceways`),back
   ]));
   const choice=r=>({label:(r.layoutLabel||r.displayName||r.raceRef||r.name)+(ready.has(r.id)?'':' (Unavailable)'),

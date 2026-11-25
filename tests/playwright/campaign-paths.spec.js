@@ -11,7 +11,7 @@ for(const viewport of [{width:844,height:390},{width:390,height:844}]){
     import('/src/menus/MenuDocument.js'),import('/src/menus/MenuRenderer.js'),import('/src/menus/MenuWorldMap.js'),import('/src/menus/MenuPlayer.js')]);
    const doc=normalizeMenuDocument(await(await fetch('/data/server-storage/files/menus/Game%20Menu/document.json')).json());
    const screen=doc.screens.find(s=>s.id==='campaign-hub-1'),map=screen.elements.find(e=>e.type==='world-map');
-   const region=doc.parameters.campaignProgression.regions[0],parameters={raceRef:region.mainPath[2],[raceCompletionKey(region.bossRef)]:true};
+   const region=doc.parameters.campaignProgression.regions[0],parameters={raceRef:region.mainPath[2],[raceCompletionKey(region.finaleRef||region.bossRef)]:true};
    const art=new Image();art.src=`/assets/campaign-art/maps/${map.artRef}.png`;await art.decode();
    const canvas=document.querySelector('canvas');canvas.width=innerWidth;canvas.height=innerHeight;
    drawMenuScreen(canvas.getContext('2d'),{x:0,y:0,w:innerWidth,h:innerHeight},doc,screen,parameters,{resources:{art:ref=>ref===map.artRef?art:null},editing:true});

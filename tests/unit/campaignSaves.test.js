@@ -46,7 +46,7 @@ test('overwrite requires confirmation and failed persistence preserves the slot 
  await assert.rejects(saves.startNew(0),/Confirm/);fail(true);
  await assert.rejects(saves.startNew(0,{overwrite:true}),/Could not save/);
  assert.deepEqual(store.get(CAMPAIGN_SAVE_KEY),original);assert.equal(game.menuProgress.selectedGameCar,'Keep Me');
- fail(false);await saves.startNew(0,{overwrite:true});assert.deepEqual(game.menuProgress,{campaignProgressionVersion:1});
+ fail(false);await saves.startNew(0,{overwrite:true});assert.deepEqual(game.menuProgress,{campaignProgressionVersion:2});
  assert.equal(game.player.credits,500);assert.equal(saves.slots[1],null);
 });
 test('legacy car and garage migrate once into Slot 1 without deleting legacy data',async()=>{
@@ -55,7 +55,7 @@ test('legacy car and garage migrate once into Slot 1 without deleting legacy dat
  const {saves}=await fixture(store);assert.equal(saves.slots[0].progress.selectedGameCar,'Existing');
  await saves.resume(0);assert.equal(saves.game.player.credits,345);
  assert.deepEqual(store.get('menu-progress'),legacy);
- await saves.startNew(0,{overwrite:true});const restarted=await fixture(store);assert.deepEqual(restarted.saves.slots[0].progress,{campaignProgressionVersion:1});
+ await saves.startNew(0,{overwrite:true});const restarted=await fixture(store);assert.deepEqual(restarted.saves.slots[0].progress,{campaignProgressionVersion:2});
 });
 test('concurrent progress and inventory writes keep both updates in the active slot',async()=>{
  const {game,saves}=await fixture();await saves.startNew(2);

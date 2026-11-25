@@ -1,4 +1,4 @@
-import {migrateCampaignProgress} from './CampaignProgression.js';
+import {CAMPAIGN_PROGRESS_VERSION,migrateCampaignProgress} from './CampaignProgression.js';
 import {HAPTIC_DEFAULTS} from '../racing/RaceHaptics.js';
 import {normalizeCarCondition,repairRows,repairConditionSummary} from '../garage/GarageRepairs.js';
 import {loadServerPreferenceAsync, saveServerPreference} from '../ui/serverPreferences.js';
@@ -85,7 +85,7 @@ export class CampaignSaves {
     if(!validSlot(index))throw Error('Choose a save slot.');
     await this.load();await this.settle();
     if(this.slots[index]&&!overwrite)throw Error('Confirm before overwriting this save slot.');
-    const snapshot={savedAt:this.now(),playTimeSeconds:0,progress:{campaignProgressionVersion:1},items:{...normalizeItemProgress(),stats:{...freshStats(),credits:500}},parameters:{}};
+    const snapshot={savedAt:this.now(),playTimeSeconds:0,progress:{campaignProgressionVersion:CAMPAIGN_PROGRESS_VERSION},items:{...normalizeItemProgress(),stats:{...freshStats(),credits:500}},parameters:{}};
     const slots=this.slots.slice();slots[index]=snapshot;
     await this.persist(slots);this.slots=slots;this.activeSlot=index;this.playTimes.set(index,0);this.restore(snapshot);return copy(snapshot);
   }

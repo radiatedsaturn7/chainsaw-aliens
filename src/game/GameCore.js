@@ -2250,7 +2250,7 @@ export default class Game {
     const variables={...(completedRef?{[raceCompletionKey(completedRef)]:finishBehavior.mechanicalMissionSuccess!==false,lastCompletedRace:completedRef,garageReturnCount:Number(this.menuProgress?.garageReturnCount||0)+(finishBehavior.progressSaved?0:1),garageDialogueEvent:''}:{}),...finishBehavior.variables};
     const campaignWorldReturn=finishBehavior.mechanicalMissionSuccess!==false
       && session.menuFlow===this.menuPlayer?.flow&&session.menuFlow?.active
-      && session.campaignWorldReturn?.bossRef===completedRef ? session.campaignWorldReturn : null;
+      && (session.campaignWorldReturn?.finaleRef||session.campaignWorldReturn?.bossRef)===completedRef ? session.campaignWorldReturn : null;
     if(campaignWorldReturn)finishBehavior={...finishBehavior,type:'menu',menuRef:'',menuScreen:'world-map',campaignWorldReturn};
     if(finishBehavior.type==='menu'){
       // Keep the race presentation alive until progress and menu assets are ready.

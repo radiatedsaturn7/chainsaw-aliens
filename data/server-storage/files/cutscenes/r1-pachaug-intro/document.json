@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 2,
+  "name": "r1-pachaug-intro",
+  "width": 256,
+  "height": 144,
+  "durationMs": 3500,
+  "fps": 30,
+  "snapEnabled": true,
+  "snapSize": 8,
+  "sceneFadeInMs": 280,
+  "sceneFadeOutMs": 380,
+  "masterVolume": 1,
+  "assets": [
+    {
+      "id": "shot-pachaug-forest",
+      "type": "image",
+      "name": "pachaug-forest.png",
+      "ref": "",
+      "actorRef": "",
+      "dataUrl": {
+        "__chainsawAssetRef": "assets/pachaug-forest.png",
+        "mime": "image/png"
+      },
+      "width": 1672,
+      "height": 941
+    }
+  ],
+  "layers": [
+    {
+      "id": "background",
+      "name": "Background",
+      "type": "visual",
+      "visible": true,
+      "locked": false
+    },
+    {
+      "id": "sprites",
+      "name": "Sprites",
+      "type": "visual",
+      "visible": true,
+      "locked": false
+    },
+    {
+      "id": "text",
+      "name": "Text",
+      "type": "text",
+      "visible": true,
+      "locked": false
+    },
+    {
+      "id": "effects",
+      "name": "Effects",
+      "type": "effect",
+      "visible": true,
+      "locked": false
+    },
+    {
+      "id": "audio",
+      "name": "Audio",
+      "type": "audio",
+      "visible": true,
+      "locked": false
+    }
+  ],
+  "tracks": [
+    {
+      "id": "dialogue",
+      "name": "Rob / Cait dialogue"
+    },
+    {
+      "id": "caption-panel",
+      "name": "Subtitle Contrast"
+    },
+    {
+      "id": "stills",
+      "name": "Storyboards / Cinematic Stills"
+    }
+  ],
+  "clips": [
+    {
+      "id": "still-0",
+      "type": "image",
+      "layerId": "background",
+      "trackId": "stills",
+      "assetId": "shot-pachaug-forest",
+      "assetRef": "",
+      "actorRef": "",
+      "stateId": "",
+      "stateEvents": [],
+      "text": "",
+      "startMs": 0,
+      "durationMs": 3500,
+      "loop": false,
+      "volume": 1,
+      "fadeMs": 250,
+      "effectType": "rain",
+      "intensity": 1,
+      "wind": 0,
+      "opacity": 1,
+      "prompt": "Press a button",
+      "waitForInput": true,
+      "color": "#ffffff",
+      "backgroundColor": "rgba(0,0,0,0)",
+      "fontSize": 8,
+      "fontFamily": "terminal",
+      "textAlign": "center",
+      "textBorderEnabled": false,
+      "textBorderColor": "#000000",
+      "textBorderSize": 1,
+      "animation": "none",
+      "revealSpeed": 30,
+      "showCursor": true,
+      "cursorBlinkMs": 420,
+      "easing": "linear",
+      "fadeInMs": 0,
+      "fadeOutMs": 0,
+      "playAnimation": false,
+      "animationStartMs": 0,
+      "animationSpeed": 1,
+      "loopAnimation": true,
+      "activeFrameIndex": 0,
+      "fx": {
+        "type": "none",
+        "amount": 0,
+        "frequency": 2,
+        "speed": 1,
+        "phase": 0
+      },
+      "x": 128,
+      "y": 72,
+      "scale": 1,
+      "scaleX": 1,
+      "scaleY": 1,
+      "aspectLocked": true,
+      "rotation": 0,
+      "w": 255.86397449521786,
+      "h": 144,
+      "keyframes": []
+    }
+  ],
+  "description": "Pachaug · Before the run"
+}

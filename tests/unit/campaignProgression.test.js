@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
-import {campaignRegionState,campaignRaceAccess,migrateCampaignProgress,refreshCampaignScreen,PROVIDENCE_BOSS} from '../../src/menus/CampaignProgression.js';
+import {campaignFinaleRef,campaignRegionState,campaignRaceAccess,migrateCampaignProgress,refreshCampaignScreen,PROVIDENCE_BOSS} from '../../src/menus/CampaignProgression.js';
 import {raceCompletionKey,worldMapNodes} from '../../src/menus/MenuWorldMap.js';
 import {setMenuProgress} from '../../src/menus/MenuProgress.js';
 import MenuPlayer from '../../src/menus/MenuPlayer.js';
@@ -28,7 +28,7 @@ test('legacy progression without a regional widget preserves its saved main-path
    if(i<4)assert.equal(campaignRaceAccess(config,region.mainPath[i+1],p).allowed,false);
    clear(p,ref);assert.equal(state().wins,i+1);
   }
-  assert.equal(state().bossReady,true);clear(p,region.bossRef);
+  assert.equal(state().bossReady,true);clear(p,campaignFinaleRef(region));
   for(const ref of region.events)assert.ok(campaignRaceAccess(config,ref,p).allowed);
  }
 });
@@ -99,13 +99,13 @@ test('losing a replay cannot revoke a saved completion',async()=>{
 });
 test('locked buttons remain focusable and explain progress; race launch also enforces the gate',async()=>{
  const screen=structuredClone(menu.screens.find(s=>s.id==='campaign-hub-1-events'));
- refreshCampaignScreen(screen,config,{}, {},{},menu);assert.equal(screen.elements.find(e=>e.action?.value===first.bossRef).label,'Main Mission (Locked)');
+ refreshCampaignScreen(screen,config,{}, {},{},menu);assert.equal(screen.elements.find(e=>e.action?.value===campaignFinaleRef(first)).label,'Main Mission (Locked)');
  const player=Object.create(MenuPlayer.prototype);player.flow={document:menu,parameters:{},busy:false,run:()=>assert.fail('locked action ran')};player.resources={};
- await player.activate(screen.elements.find(e=>e.action?.value===first.bossRef));assert.match(player.flow.error,/main route/);
- await assert.rejects(()=>player.launchRace(first.bossRef,{}),/main route/);
+ await player.activate(screen.elements.find(e=>e.action?.value===campaignFinaleRef(first)));assert.match(player.flow.error,/main route/);
+ await assert.rejects(()=>player.launchRace(campaignFinaleRef(first),{}),/main route/);
 });
 test('world-map pins represent open regions, not whether their boss is ready',()=>{
  const map=menu.screens.find(s=>s.id==='world-map').elements.find(e=>e.type==='world-map');
  const nodes=worldMapNodes(map,{},menu,{});assert.equal(nodes[0].locked,false);assert.equal(nodes[1].locked,true);
- const p={[raceCompletionKey(first.bossRef)]:true};assert.equal(worldMapNodes(map,{},menu,p)[1].locked,false);
+ const p={[raceCompletionKey(campaignFinaleRef(first))]:true};assert.equal(worldMapNodes(map,{},menu,p)[1].locked,false);
 });

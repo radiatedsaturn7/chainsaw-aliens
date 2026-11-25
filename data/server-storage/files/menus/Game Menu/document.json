@@ -263,7 +263,6 @@
             "Blue Hills — Reservation Parkways",
             "RI 44 — Putnam Pike Glocester",
             "I-95 — Attleboro to Warwick curves",
-            "Pachaug State Forest — public gravel access roads",
             "Hartford, CT — Landmark Run",
             "Thompson Speedway — 1.7-mile road course",
             "RI 102 — Victory Highway",
@@ -275,7 +274,8 @@
             "Newark, NJ — Landmark Run",
             "Lime Rock Park — West Chicane",
             "New York, NY — Landmark Run",
-            "Lime Rock Park — Both Chicanes"
+            "Lime Rock Park — Both Chicanes",
+            "Providence, RI — Landmark Run"
           ],
           "batchSize": 4,
           "clearsPerBatch": 3,
@@ -283,20 +283,21 @@
           "mainPath": [
             "Tower Hill Road",
             "Blue Hills — Reservation Parkways",
+            "Providence, RI — Landmark Run",
             "RI 116 — North Smithfield Scituate",
-            "RI 44 — Putnam Pike Glocester",
-            "Pachaug State Forest — public gravel access roads"
+            "RI 44 — Putnam Pike Glocester"
           ],
           "branches": [
             {
               "raceRef": "Thompson Speedway — 1.7-mile road course",
-              "after": "RI 116 — North Smithfield Scituate"
+              "after": "RI 44 — Putnam Pike Glocester"
             },
             {
               "raceRef": "Boston, MA — Landmark Run",
-              "after": "Pachaug State Forest — public gravel access roads"
+              "after": "Blue Hills — Reservation Parkways"
             }
-          ]
+          ],
+          "finaleRef": "Pachaug State Forest — public gravel access roads"
         },
         {
           "bossRef": "Mount Washington Auto Road — point-to-point",
@@ -26116,7 +26117,7 @@
               "raceRef": "Providence, RI — Landmark Run",
               "x": 0.96,
               "y": 0.27,
-              "completedParameter": "raceCompleted.Providence__RI___Landmark_Run"
+              "completedParameter": "raceCompleted.Pachaug_State_Forest___public_gravel_access_roads"
             },
             {
               "id": "osm-cf573fba73e0",
@@ -26125,7 +26126,7 @@
               "raceRef": "Mount Washington Auto Road — point-to-point",
               "x": 0.88,
               "y": 0.08,
-              "unlockParameter": "raceCompleted.Providence__RI___Landmark_Run",
+              "unlockParameter": "raceCompleted.Pachaug_State_Forest___public_gravel_access_roads",
               "unlockValue": true,
               "completedParameter": "raceCompleted.Mount_Washington_Auto_Road___point-to-point"
             },
@@ -26902,7 +26903,7 @@
             },
             {
               "id": "stop-1",
-              "label": "3",
+              "label": "4",
               "raceRef": "RI 116 — North Smithfield Scituate",
               "kind": "race",
               "disabled": false,
@@ -26917,7 +26918,7 @@
             },
             {
               "id": "stop-4",
-              "label": "4",
+              "label": "5",
               "raceRef": "RI 44 — Putnam Pike Glocester",
               "kind": "race",
               "disabled": false,
@@ -26932,7 +26933,7 @@
             },
             {
               "id": "stop-3",
-              "label": "5",
+              "label": "Finale",
               "raceRef": "Pachaug State Forest — public gravel access roads",
               "kind": "race",
               "disabled": false,
@@ -26947,7 +26948,7 @@
             },
             {
               "id": "stop-5",
-              "label": "Boss",
+              "label": "3",
               "raceRef": "Providence, RI — Landmark Run",
               "kind": "race",
               "disabled": false,
@@ -26999,59 +27000,59 @@
               "to": "stop-2",
               "curve": "bezier",
               "fromPort": "right",
-              "toPort": "left",
-              "portBend": 0.45
+              "toPort": "down",
+              "portBend": 1
             },
             {
               "id": "road-2",
               "from": "stop-2",
-              "to": "stop-1",
-              "curve": "bezier",
-              "fromPort": "down",
-              "toPort": "up",
-              "portBend": 1
-            },
-            {
-              "id": "road-3",
-              "from": "stop-1",
-              "to": "stop-4",
-              "curve": "bezier",
-              "fromPort": "left",
-              "toPort": "right",
-              "portBend": 1
-            },
-            {
-              "id": "road-4",
-              "from": "stop-4",
-              "to": "stop-3",
-              "curve": "bezier",
-              "fromPort": "down",
-              "toPort": "up",
-              "portBend": 1
-            },
-            {
-              "id": "road-5",
-              "from": "stop-3",
               "to": "stop-5",
               "curve": "bezier",
               "fromPort": "right",
-              "toPort": "left",
-              "portBend": 1
+              "toPort": "down",
+              "portBend": 1.35
+            },
+            {
+              "id": "road-3",
+              "from": "stop-5",
+              "to": "stop-1",
+              "curve": "bezier",
+              "fromPort": "right",
+              "toPort": "right",
+              "portBend": 0.72
+            },
+            {
+              "id": "road-4",
+              "from": "stop-1",
+              "to": "stop-4",
+              "curve": "bezier",
+              "fromPort": "up",
+              "toPort": "up",
+              "portBend": 1.35
+            },
+            {
+              "id": "road-5",
+              "from": "stop-4",
+              "to": "stop-3",
+              "curve": "bezier",
+              "fromPort": "right",
+              "toPort": "right",
+              "portBend": 0.72
             },
             {
               "id": "road-6",
-              "from": "stop-2",
-              "to": "stop-7",
+              "from": "stop-4",
+              "to": "stop-6",
               "curve": "bezier",
-              "fromPort": "up",
-              "toPort": "down",
+              "fromPort": "down",
+              "toPort": "right",
               "portBend": 1,
               "pattern": "dotted"
             },
             {
               "id": "road-7",
-              "from": "stop-4",
-              "to": "stop-6",
+              "from": "stop-2",
+              "to": "stop-7",
               "curve": "bezier",
               "fromPort": "left",
               "toPort": "right",
@@ -27462,7 +27463,7 @@
             "type": "set-param",
             "target": "",
             "parameter": "raceRef",
-            "value": "Providence, RI — Landmark Run",
+            "value": "Pachaug State Forest — public gravel access roads",
             "then": {
               "type": "screen",
               "target": "garage",

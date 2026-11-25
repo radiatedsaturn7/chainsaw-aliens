@@ -97,3 +97,20 @@ test('invisible future pins cannot intercept a nearby open pin tap',()=>{
  p.handlePointerDown({x:(open.x+.023)*b.w,y:open.y*(b.h-36)});
  assert.equal(activations,1);
 });
+
+test('alternate regional finale plays its exit movie and reveals the original world pin route',()=>{
+ const revised=structuredClone(doc);
+ revised.parameters.campaignProgression.regions[0].finaleRef='P Forest';
+ const snapshot=captureCampaignWorldReturn(revised,'P Forest',{},{});
+ const flow={active:true},game=Object.create(Game.prototype);
+ game.menuPlayer={flow};
+ game.ensureRaceTravelSession=()=>({menuFlow:flow,campaignWorldReturn:snapshot});
+ game.playRaceFinishCutscene=destination=>destination;
+ const result=game.completeRaceTravel({type:'menu',menuScreen:'campaign-hub-1',cutsceneRef:'r1-pachaug-exit'},{raceDocumentName:'P Forest'});
+ assert.equal(result.menuScreen,'world-map');
+ assert.equal(result.cutsceneRef,'r1-pachaug-exit');
+ assert.equal(result.campaignWorldReturn.bossRef,'P');
+ assert.equal(result.campaignWorldReturn.reveal.toRef,'Q');
+ assert.equal(result.variables[raceCompletionKey('P Forest')],true);
+ assert.equal(result.variables[raceCompletionKey('P')],undefined);
+});

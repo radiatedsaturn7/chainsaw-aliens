@@ -1,3 +1,4 @@
+import {campaignFinaleRef} from './CampaignProgression.js';
 import {worldMapNodes,worldMapConnections} from './MenuWorldMap.js';
 
 export const WORLD_ROAD_REVEAL_SECONDS=1.1;
@@ -10,14 +11,15 @@ export const campaignWorldOverview=(screen,document)=>screen?.id==='world-map'&&
 // saved by the results screen. A replay or a previously opened region never
 // replays an old reveal, even if race rewards were recorded before the flags.
 export function captureCampaignWorldReturn(document,ref,resources,parameters){
- if(!document?.parameters?.campaignProgression?.regions?.some(r=>r.bossRef===ref))return null;
+ const region=document?.parameters?.campaignProgression?.regions?.find(r=>campaignFinaleRef(r)===ref);
+ if(!region)return null;
  const element=campaignWorldOverview(document.screens?.find(s=>s.id==='world-map'),document);
  if(!element)return null;
- const nodes=worldMapNodes(element,resources,document,parameters),i=nodes.findIndex(n=>n.raceRef===ref);
+ const nodes=worldMapNodes(element,resources,document,parameters),i=nodes.findIndex(n=>n.raceRef===region.bossRef);
  if(i<0)return null;
  const from=nodes[i],to=nodes[i+1];
  const link=to&&worldMapConnections(element,nodes).find(c=>c.from===from.id&&c.to===to.id||c.to===from.id&&c.from===to.id);
- return {bossRef:ref,binding:element.binding,reveal:!from.completed&&to?.locked&&!to.disabled&&link ? {from:from.id,to:to.id,toRef:to.raceRef,elapsed:0} : null};
+ return {bossRef:region.bossRef,...(ref===region.bossRef?{}:{finaleRef:ref}),binding:element.binding,reveal:!from.completed&&to?.locked&&!to.disabled&&link ? {from:from.id,to:to.id,toRef:to.raceRef,elapsed:0} : null};
 }
 
 export function campaignWorldPresentation(nodes,links,reveal){

@@ -1,7 +1,10 @@
+import {campaignFinaleRef,PROVIDENCE_BOSS} from './CampaignProgression.js';
+
+export const REGION1_FINALE='Pachaug State Forest — public gravel access roads';
 // Authored campaign itinerary. References resolve to existing imported races;
 // coordinates below are illustrated-map positions, never replacement GPS data.
 export const CAMPAIGN_PATHS = [
- ["Tower Hill Road", "Blue Hills — Reservation Parkways", "RI 116 — North Smithfield Scituate", "RI 44 — Putnam Pike Glocester", "Pachaug State Forest — public gravel access roads"],
+ ["Tower Hill Road", "Blue Hills — Reservation Parkways", PROVIDENCE_BOSS, "RI 116 — North Smithfield Scituate", "RI 44 — Putnam Pike Glocester"],
  ["Hurricane Mountain Road — Conway", "Pinkham Notch — NH 16", "Bear Notch Road — Bartlett", "Kancamagus Highway — NH 112", "Team O’Neil-inspired Rally Stage (2994)"],
  ["Brandywine Valley — Montchanin Road", "Forbes State Forest — designated gravel roads", "County Line Road — Seven Springs", "PA 711 — Normalville Champion", "US 40 — Chalk Hill Summit"],
  ["OH 536 — Ohio River hills", "OH 26 — Covered Bridge Scenic Byway", "OH 550 — Barlow approach", "Washington County western covered-bridge gravel loop", "OH 555 — Triple Nickel"],
@@ -28,7 +31,7 @@ export const CAMPAIGN_BRANCHES = [
 ];
 // Preserve the named unlock prerequisites even when the route order changes.
 const CAMPAIGN_BRANCH_AFTER = [
- ["RI 116 — North Smithfield Scituate", "Pachaug State Forest — public gravel access roads"],
+ ["RI 44 — Putnam Pike Glocester", "Blue Hills — Reservation Parkways"],
  ["Team O’Neil-inspired Rally Stage (2994)", "Hurricane Mountain Road — Conway"],
  ["PA 711 — Normalville Champion", "US 40 — Chalk Hill Summit"],
  ["Washington County western covered-bridge gravel loop", "OH 536 — Ohio River hills"],
@@ -43,15 +46,18 @@ const CAMPAIGN_BRANCH_AFTER = [
 export function authorCampaignPath(region) {
  const mainPath=CAMPAIGN_PATHS[region.stage-1];
  if(!mainPath)return region;
+ const chapterOne=region.stage===1&&region.bossRef===PROVIDENCE_BOSS;
+ if(chapterOne&&region.finaleRef!==REGION1_FINALE&&!region.events.includes(REGION1_FINALE))return region;
+ const events=chapterOne?[...new Set([...region.events,region.bossRef])].filter(ref=>ref!==REGION1_FINALE):region.events;
  const branches=CAMPAIGN_BRANCHES[region.stage-1].map((raceRef,i)=>({raceRef,after:CAMPAIGN_BRANCH_AFTER[region.stage-1][i]}));
- for(const ref of [...mainPath,...branches.map(b=>b.raceRef)])if(!region.events.includes(ref))return region; // Partial/custom catalogs keep their existing menus.
- return {...region,mainPath:[...mainPath],branches,bossClears:mainPath.length};
+ for(const ref of [...mainPath,...branches.map(b=>b.raceRef)])if(!events.includes(ref))return region; // Partial/custom catalogs keep their existing menus.
+ return {...region,events,...(chapterOne?{finaleRef:REGION1_FINALE}:{}),mainPath:[...mainPath],branches,bossClears:mainPath.length};
 }
 export function campaignPathScreen(region,name) {
  const id=`campaign-hub-${region.stage}`;
  const points=[[.12,.77],[.34,.63],[.18,.39],[.46,.25],[.72,.39],[.87,.16],[.60,.78],[.73,.64]];
- const refs=[...region.mainPath,region.bossRef,...region.branches.map(b=>b.raceRef)];
- const nodes=refs.map((raceRef,i)=>({id:`stop-${i}`,raceRef,label:i===5?'Boss':i>5?'Detour':`${i+1}`,x:points[i][0],y:points[i][1]}));
+ const refs=[...region.mainPath,campaignFinaleRef(region),...region.branches.map(b=>b.raceRef)];
+ const nodes=refs.map((raceRef,i)=>({id:`stop-${i}`,raceRef,label:i===5?(region.finaleRef?'Finale':'Boss'):i>5?'Detour':`${i+1}`,x:points[i][0],y:points[i][1]}));
  const connections=nodes.slice(1,6).map((n,i)=>({from:nodes[i].id,to:n.id,curve:'bezier'}));
  region.branches.forEach((branch,i)=>connections.push({from:nodes[region.mainPath.indexOf(branch.after)].id,to:nodes[6+i].id,pattern:'dotted',curve:'bezier'}));
  return {id,name,background:'#000000',useDefaultBackground:false,musicMode:'continue',elements:[
