@@ -1,13 +1,51 @@
 import * as THREE from '../vendorBridge/three.js';
-import {normalizeModelBinding,modelWheelBindingForAxle} from './ModelBinding.js';
+import {normalizeModelBinding,modelWheelBindingForAxle,placeOutboardWheelFace} from './ModelBinding.js';
+import {automotiveTrackProfile} from './AutomotiveMaterials.js';
+import {wrxPilotPart} from './WrxVisualPilot.js';
+import {syncWrxBrakeHardware} from './WrxBrakeHardware.js';
 import {isNativeModelWheelCar,hasAuthoritativeModelWheelPose} from './ModelWheel.js';
 import {jointMatrices} from './ModelRig.js';
 import {ModelAssetInstance,modelAssets} from './ModelAssets.js';
 
+const visualWheelIds=['fl','fr','rl','rr'];
+const wheelCentroidByDocument=new WeakMap();
+const anchorScratch=new THREE.Vector3(),wheelScratch=new THREE.Vector3(),qScratch=new THREE.Quaternion();
+
+// The legacy/startup render path can have four world wheel centers before
+// it has an authoritative chassis snapshot. Keep the exact WRX model on
+// those wheels instead of applying the authored CG offset to a route origin.
+// Only the visual root is corrected; wheel positions, pitch and roll,
+// authoritative physics poses, control inputs and collision stay intact.
+export function fitWrxFallbackVisualBody(parts,car,session){
+  if(car?.art?.bodyModel?.ref!=='Field-Forgetmenot'||(typeof location!=='undefined'&&!wrxPilotPart(car.art.bodyModel.ref)))return false;
+  const body=parts.body,instance=body?.userData?.modelInstance;
+  if(!instance?.model)return false;
+  instance.object.position.set(0,0,0);
+  if(visualWheelIds.every(id=>hasAuthoritativeModelWheelPose(session?.vehicleRenderState?.wheelPoses?.[id])))return false;
+  if(!visualWheelIds.every(id=>parts.wheels?.[id]?.position))return false;
+  let anchor=wheelCentroidByDocument.get(instance.model);
+  if(!anchor){
+    const mat=jointMatrices(instance.model);
+    const moving=instance.model.joints.filter(j=>visualWheelIds.includes(j.name?.slice(-2).toLowerCase())&&j.name.startsWith('WheelMount_'));
+    if(moving.length!==4||moving.some(j=>!mat.has(j.id)))return false;
+    anchor=new THREE.Vector3();
+    for(const j of moving)anchor.add(anchorScratch.setFromMatrixPosition(mat.get(j.id)));
+    anchor.multiplyScalar(.25);wheelCentroidByDocument.set(instance.model,anchor);
+  }
+  instance.root.updateMatrix();
+  anchorScratch.copy(anchor).applyMatrix4(instance.root.matrix);
+  wheelScratch.set(0,0,0);
+  for(const id of visualWheelIds)wheelScratch.add(parts.wheels[id].position);
+  wheelScratch.multiplyScalar(.25).sub(body.position).applyQuaternion(qScratch.copy(body.quaternion).invert());
+  instance.object.position.copy(wheelScratch.sub(anchorScratch));
+  return true;
+}
+
 // Replace procedural parts in the existing vehicle scene. Parent transforms
 // continue to come from physics (including suspension, steering and body roll).
-export function updateRaceModelParts(group,car,session,{library=modelAssets}={}){
+export function updateRaceModelParts(group,car,session,{library=modelAssets,automotiveProfile=null,automotiveRenderer=null}={}){
   const parts=group.userData.parts;
+  const profile=automotiveProfile??automotiveTrackProfile({night:session?.night===true,weather:session?.triggerWeather??session?.weatherFxState?.weatherId});
   const install=(part,binding,wheelId=null)=>{
     if(!part||!binding?.ref)return part;
     const model=library.get(binding.ref);if(!model)return part;
@@ -21,12 +59,14 @@ export function updateRaceModelParts(group,car,session,{library=modelAssets}={})
       const spin=new THREE.Group();spin.add(instance.object);replacement.add(spin);replacement.userData.spin=spin;
       group.add(replacement);part=replacement;
     }
-    if(wheelId)binding=modelWheelBindingForAxle(binding,wheelId);
+    // Race wheel IDs name -X left and +X right in the chassis frame.
+    if(wheelId)binding=placeOutboardWheelFace(modelWheelBindingForAxle(binding,wheelId),String(wheelId).toLowerCase().endsWith('l')?-1:1);
     const bindingKey=JSON.stringify(binding);
     if(instance.model!==model||instance.raceBindingKey!==bindingKey){
-      instance.setModel(model,binding);
+      instance.setModel(model,binding,{vehicleVisual:true});
       instance.raceBindingKey=bindingKey;
     }
+    if(instance.root.userData.automotiveMaterials?.length)instance.setAutomotiveEnvironment(profile,automotiveRenderer);
     if(instance.binding.clip&&model.animations.some(clip=>clip.id===instance.binding.clip||clip.name===instance.binding.clip)){
       instance.time=Math.max(0,Number(session?.elapsedMs)||0)/1000*instance.binding.speed;
       instance.update(0);
@@ -35,13 +75,15 @@ export function updateRaceModelParts(group,car,session,{library=modelAssets}={})
       const pose=session?.vehicleRenderState?.wheelPoses?.[wheelId];
       // A native body uses the canonical world wheel orientation (which
       // already includes spin). Do not apply spin a second time here.
-      part.userData.spin.rotation.x=isNativeModelWheelCar(car)&&hasAuthoritativeModelWheelPose(pose)
-        ?0:Number(pose?.spinAngleRad)||0;
+      const canonical=isNativeModelWheelCar(car)&&hasAuthoritativeModelWheelPose(pose);
+      part.userData.spin.rotation.x=canonical?0:Number(pose?.spinAngleRad)||0;
+      syncWrxBrakeHardware(part,car,wheelId,canonical?pose.spinAngleRad:0);
     }
     return part;
   };
   parts.body=install(parts.body,car.art?.bodyModel);
   for(const [id,part] of Object.entries(parts.wheels||{}))parts.wheels[id]=install(part,car.art?.wheelModel,id);
+  fitWrxFallbackVisualBody(parts,car,session);
 }
 
 
@@ -59,7 +101,55 @@ export function hasRaceModelLampMounts(car){
  const model=modelAssets.get(car?.art?.bodyModel?.ref);
  return Boolean(model&&mountedLampLocalFrames(model).size);
 }
-export function syncRaceModelLamps(part,session,{braking=false,enabled=true,defaultHeadlights=false}={}){
+// Shared optical masks for a lens explicitly authored in this UV layout.
+// Do not blanket-light the whole silver housing or put a sphere in front
+// of the bodywork. Road beams still originate at the four authored mounts.
+let wrxReflectorMasks;
+function reflectorMask(highBeam){
+ const w=64,h=48,bytes=new Uint8Array(w*h*4);
+ const glow=(u,v,cx,cy,rx,ry,slant)=>{
+  const dx=(u-cx)/rx,dy=(v-cy-slant*(u-cx))/ry,r=dx*dx+dy*dy;
+  return Math.pow(Math.max(0,1-r),1.5);
+ };
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+  const u=x/(w-1),v=y/(h-1);
+  const main=glow(u,v,.561,.442,.178,.191,.24);
+  const hi=highBeam?glow(u,v,.209,.472,.088,.192,.16):0;
+  const sat=Math.max(main,hi*.92),i=4*(y*w+x);
+  bytes[i+0]=Math.round(255*sat);
+  bytes[i+1]=Math.round((249-main*7+hi*3)*sat);
+  bytes[i+2]=Math.round((222+main*25-hi*8)*sat);
+  bytes[i+3]=255;
+ }
+ const map=new THREE.DataTexture(bytes,w,h,THREE.RGBAFormat);
+ map.colorSpace=THREE.SRGBColorSpace;map.magFilter=map.minFilter=THREE.LinearFilter;
+ map.needsUpdate=true;return map;
+}
+// Red and white channels share the same built-in UVs but never illuminate
+// each other's optical pockets. Cache the six combinations for all WRX instances.
+const wrxRearMasks=new Map();
+function rearLensMask(redState,reversing){
+ const key=redState*2+Number(reversing);
+ if(wrxRearMasks.has(key))return wrxRearMasks.get(key);
+ const w=96,h=56,bytes=new Uint8Array(w*h*4);
+ const smooth=x=>Math.max(0,Math.min(1,x));
+ const spot=(u,v,cx,cy,rx,ry)=>Math.pow(Math.max(0,1-((u-cx)/rx)**2-((v-cy)/ry)**2),.52);
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+  const u=x/(w-1),v=y/(h-1),band=.49+.07*Math.sin(Math.PI*u)-.02*u+.085;
+  const r=redState ? spot(u,v,.43,.316,.368,.174)*smooth((band-.103-v)*34)*(redState===2?1:.49):0;
+  const white=reversing?spot(u,v,.29,band,.169,.068):0;
+  const optics=.88+.12*Math.cos(u*83*Math.PI);
+  const i=(y*w+x)*4;
+  bytes[i]=Math.round(255*Math.max(r,.88*white)*optics);
+  bytes[i+1]=Math.round(255*Math.max(.105*r,.93*white)*optics);
+  bytes[i+2]=Math.round(255*Math.max(.095*r,white)*optics);
+  bytes[i+3]=255;
+ }
+ const map=new THREE.DataTexture(bytes,w,h,THREE.RGBAFormat);
+ map.colorSpace=THREE.SRGBColorSpace;map.magFilter=map.minFilter=THREE.LinearFilter;map.needsUpdate=true;
+ wrxRearMasks.set(key,map);return map;
+}
+export function syncRaceModelLamps(part,session,{braking=false,reversing=false,enabled=true,defaultHeadlights=false}={}){
  const instance=part?.userData?.modelInstance;
  const root=instance?.root;
  if(!root)return false;
@@ -76,9 +166,34 @@ export function syncRaceModelLamps(part,session,{braking=false,enabled=true,defa
   const rearBar=rearBars.size===1&&frames.has('TaillightMount_L')&&frames.has('TaillightMount_R')
     ?rearBars.values().next().value:null;
   instance.raceRearBarMaterial=rearBar;
+  const rearLenses=instance.binding?.ref==='Field-Forgetmenot'
+    ?root.children.filter(mesh=>mesh.isMesh&&mesh.material?.name==='WRX fitted rear lens'
+      &&mesh.material?.emissive&&mesh.material?.map):[];
+  const rearLens=rearLenses.length===1&&frames.has('TaillightMount_L')&&frames.has('TaillightMount_R')
+    ?rearLenses[0].material:null;
+  instance.raceRearLensMaterial=rearLens;
+  if(rearLens){
+   rearLens.emissive.set(0xffffff);rearLens.emissiveMap=rearLensMask(0,false);
+   rearLens.emissiveIntensity=0;rearLens.needsUpdate=true;
+  }
+  const wrxReflectors=instance.binding?.ref==='Field-Forgetmenot'
+    ? root.children.filter(mesh=>mesh.isMesh&&mesh.material?.name==='Continuous reflector headlight lens'
+      &&mesh.material?.emissive&&mesh.material?.map)
+    : [];
+  const frontLens=wrxReflectors.length===1&&frames.has('HeadlightMount_L')&&frames.has('HeadlightMount_R')
+    ?wrxReflectors[0].material:null;
+  instance.raceFrontReflectorMaterial=frontLens;
+  if(frontLens){
+    wrxReflectorMasks ||= [reflectorMask(false),reflectorMask(true)];
+    frontLens.emissive.set(0xf4f6ff);
+    frontLens.emissiveMap=wrxReflectorMasks[0];
+    frontLens.emissiveIntensity=0;
+    frontLens.needsUpdate=true;
+  }
   if(rearBar)rearBar.emissive.set(0xa61117);
   for(const [name,pose] of frames){
     const isTail=name.startsWith('Tail');
+    if(isTail?rearLens:frontLens)continue;
     const lamp=new THREE.Mesh(new THREE.SphereGeometry(1,10,6),
       new THREE.MeshStandardMaterial({color:isTail?0xa01719:0xfff1d2,
        emissive:isTail?0xf21821:0xffe7bd,emissiveIntensity:0}));
@@ -96,13 +211,27 @@ export function syncRaceModelLamps(part,session,{braking=false,enabled=true,defa
  }
  const headlights=Boolean(session?.mechanical?.headlights??defaultHeadlights);
  const rearBar=instance.raceRearBarMaterial;
+ const frontLens=instance.raceFrontReflectorMaterial;
+ if(frontLens){
+   const high=Boolean(session?.mechanical?.highBeams);
+   const lampPower=Math.max(0,Math.min(1,session?.mechanical?.effects?.lights??1));
+   frontLens.emissiveMap=wrxReflectorMasks[high?1:0];
+   frontLens.emissiveIntensity=enabled&&headlights?lampPower*(high?1.75:1.28):0;
+ }
+ const rearLens=instance.raceRearLensMaterial;
+ if(rearLens){
+  const redState=braking?2:headlights?1:0;
+  rearLens.emissiveMap=rearLensMask(redState,reversing);
+  rearLens.emissiveIntensity=enabled&&(redState||reversing)
+    ?1.6*Math.max(0,Math.min(1,session?.mechanical?.effects?.lights??1)):0;
+ }
  if(rearBar)rearBar.emissiveIntensity=enabled?(braking?4:headlights?2:0):0;
  for(const [name,lamp] of lights){
   const tail=name.startsWith('Tail');
   lamp.visible=enabled&&(headlights||tail&&braking)&&!(tail&&rearBar);
   lamp.material.emissiveIntensity=tail?(braking?3.1:1.05):(session?.mechanical?.highBeams?2.9:1.95);
  }
- return lights.size>0;
+ return lights.size>0||Boolean(frontLens)||Boolean(rearLens);
 }
 
 // Build the same chassis-local placement used by the outer Three car, from

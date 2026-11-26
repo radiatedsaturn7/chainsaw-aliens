@@ -1,8 +1,9 @@
 import * as THREE from '../vendorBridge/three.js';
 import {ModelAssetInstance, modelAssets, normalizeModelBinding} from '../model3d/ModelAssets.js';
-import {modelWheelBindingForAxle} from '../model3d/ModelBinding.js';
+import {modelWheelBindingForAxle,placeOutboardWheelFace} from '../model3d/ModelBinding.js';
 import {jointMatrices} from '../model3d/ModelRig.js';
 import {ensureModelSceneLighting} from '../model3d/ModelRender.js';
+import {syncWrxBrakeHardware} from '../model3d/WrxBrakeHardware.js';
 import {createModelWheel, isDedicatedModelWheelCar} from '../model3d/ModelWheel.js';
 
 const GARAGE_WIDGETS=new Set(['garage-preview','tuning-car-preview','upgrades-car-preview']);
@@ -126,7 +127,7 @@ export class GarageModelPreview {
   if(this.model===model&&this.wheelModel===wheelModel&&this.key===key)return true;
   this.disposePlacements();
   this.model=model;this.wheelModel=wheelModel;this.key=key;const stance=garageModelStance(model,car);
-  this.instance.setModel(model,stance.binding);
+  this.instance.setModel(model,stance.binding,{vehicleVisual:true});
   this.instance.object.position.copy(stance.pivot).negate();
   this.bodyPivot.position.set(0,stance.radius,stance.shift);
   this.bodyPivot.rotation.set(stance.pitch,0,0);
@@ -140,11 +141,14 @@ export class GarageModelPreview {
   for(const hub of stance.hubs){
    let wheel,garageY=hub.y;
    if(wheelModel){
-    const placement=modelWheelBindingForAxle(wheelBinding,hub.id);
-    const instance=new ModelAssetInstance();instance.setModel(wheelModel,placement);
+    // Native joint names follow the modeler's convention (not race IDs).
+    // Use the measured hub coordinate to determine the real outboard side.
+    const placement=placeOutboardWheelFace(modelWheelBindingForAxle(wheelBinding,hub.id),Math.sign(hub.x));
+    const instance=new ModelAssetInstance();instance.setModel(wheelModel,placement,{vehicleVisual:true});
     if(placement!==wheelBinding)garageY=hub.y*placement.scale[1]/(wheelBinding.scale?.[1]||1);
     (this.wheelInstances ||= []).push(instance);wheel=instance.object;
    }else wheel=createModelWheel(stance.radius,stance.width);
+   syncWrxBrakeHardware(wheel,car,hub.id);
    wheel.name=`garageModelWheel-${hub.id}`;wheel.position.set(hub.x,garageY,hub.z);this.wheels.add(wheel);
    shadowPlane(hub.x,hub.z,stance.width*2.9,stance.radius*2.35,.88);
   }
@@ -162,6 +166,8 @@ export class GarageModelPreview {
   if(this.framingSize!==size){
    this.renderer.setSize(w,h,false);configureGarageModelCamera(this.camera,this.points,w,h);this.framingSize=size;
   }
+  this.instance.setAutomotiveEnvironment('studio',this.renderer);
+  for(const instance of this.wheelInstances||[])instance.setAutomotiveEnvironment('studio',this.renderer);
   this.renderer.render(this.scene,this.camera);
   ctx.drawImage(this.renderer.domElement,b.x,b.y,b.w,b.h);
   return true;
