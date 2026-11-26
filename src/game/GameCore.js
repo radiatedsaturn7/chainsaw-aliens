@@ -29,6 +29,7 @@ import Input from './Input.js';
 import StateManager from './state/StateManager.js';
 import TitleState from './state/states/TitleState.js';
 import GameplayState from './state/states/GameplayState.js';
+import SurfaceStudioState from './state/states/SurfaceStudioState.js';
 import { createDelegatedState } from './state/states/DelegatedState.js';
 import RobterSessionState from './state/states/RobterSessionState.js';
 import Camera from './Camera.js';
@@ -499,7 +500,7 @@ export default class Game {
       'item-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'doodad-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height]
     };
-    this.editorStateKeys = new Set(Object.keys(this.editorStateTargetKeys));
+    this.editorStateKeys = new Set([...Object.keys(this.editorStateTargetKeys), 'surface-studio']);
     this.robterSession = new RobterSession({ input: this.input, audio: this.audio, isMobile: this.deviceIsMobile });
     this.editorReturnState = 'title';
     this.pixelStudioReturnState = 'title';
@@ -928,6 +929,8 @@ export default class Game {
         void openFontEditor().catch(error=>window.alert(error.message));
       } else if (action === 'menu-editor') {
         this.enterMenuEditor();
+      } else if (action === 'surface-studio') {
+        this.enterSurfaceStudio();
       } else if (action === 'model-editor') {
         this.enterModelEditor();
       } else if (action === 'tire-editor') {
@@ -2354,6 +2357,19 @@ export default class Game {
       await this.menuPlayer.open(payload.data);
     } catch (error) { this.showSystemToast(error.message); }
     finally { this.menuLaunchPending = false; }
+  }
+
+  enterSurfaceStudio() {
+    this.transitionTo('surface-studio');
+    this.setRevAudio(false);
+    this.playtestActive = false;
+  }
+
+  exitSurfaceStudio() {
+    if (this.state !== 'surface-studio') return;
+    this.transitionTo('title', {forceCleanup:true});
+    this.title.setScreen('graphics');
+    this.title.folderSelections.graphics = this.title.folderOrders.graphics.indexOf('surface-studio');
   }
 
   enterModelEditor() {
@@ -11548,6 +11564,7 @@ export default class Game {
     this.stateManager.register('race-editor', createDelegatedState(this, 'raceEditor'));
     this.stateManager.register('car-editor', createDelegatedState(this, 'carEditor'));
     this.stateManager.register('tire-editor', createDelegatedState(this, 'tireEditor'));
+    this.stateManager.register('surface-studio', new SurfaceStudioState(this));
     this.stateManager.register('model-editor', createDelegatedState(this, 'modelEditor'));
     this.stateManager.register('radio-editor', createDelegatedState(this, 'radioEditor'));
     this.stateManager.register('menu-editor', createDelegatedState(this, 'menuEditor'));

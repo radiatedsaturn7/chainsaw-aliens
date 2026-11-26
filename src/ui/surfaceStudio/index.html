@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Surface Studio · Fender Designer</title>
+<link rel="stylesheet" href="./style.css">
+<body>
+<header class="mast"><div class="brand"><span class="mark" aria-hidden="true">◩</span><div><p>LAST ON THE GRID / TOOLROOM</p><h1>Surface Studio</h1></div></div><button id="back-to-graphics" type="button">‹ Graphics</button><div class="utility"><button id="undo" type="button" title="Ctrl or Cmd + Z">Undo</button><button id="reset" type="button">Reset</button><button id="load" type="button">Open JSON</button><button id="save" type="button">Save JSON</button><button id="export" class="primary" type="button">Export OBJ</button><input id="file" type="file" accept=".json,application/json" hidden></div></header>
+<main class="layout">
+<section class="rail controls" aria-label="Design controls">
+<div class="rail-intro"><div class="eyebrow">01 / MODEL</div><h2>Fender designer</h2><p>Shape the actual panel surface, not just its outline.</p></div>
+<label class="field" for="preset"><span>Starting model</span><select id="preset"><option value="wrx">Subaru WRX STI ’04</option><option value="e30">BMW M3 E30</option><option value="993">Porsche 911 (993)</option></select></label>
+<div id="parameters"></div>
+</section>
+<section class="workspace" aria-label="Surface viewport">
+<div class="toolbar">
+ <div class="cluster" id="views" aria-label="Camera"><button type="button" data-view="orbit" aria-pressed="true">Orbit</button><button type="button" data-view="side">Side</button><button type="button" data-view="front">Front</button><button type="button" data-view="top">Top</button></div>
+ <div class="cluster"><label class="sr-only" for="shading">Surface appearance</label><select id="shading"><option value="clay">Clay</option><option value="gloss">Gloss</option><option value="zebra">Zebra</option><option value="wire">Wire</option><option value="normals">Normals</option></select><button type="button" id="fit">Fit</button></div>
+</div>
+<div class="viewport" id="viewport" tabindex="0" aria-label="Interactive 3D surface. Choose front, side, or top for orthographic inspection.">
+ <canvas id="scene"></canvas><div id="reference" aria-hidden="true"></div><span class="badge" id="view-badge">PERSPECTIVE · METRES</span>
+ <aside class="key" aria-hidden="true"><span class="x">X</span><span class="y">Y</span><span class="z">Z</span></aside><div id="error" role="alert" hidden></div>
+</div>
+<div class="viewport-tools"><div class="toggles"><label><input id="cage" type="checkbox" checked> Control cage</label><label><input id="network" type="checkbox" checked> Adjacent panels</label><label><input id="overlay" type="checkbox"> Reference guide</label></div><div id="ref-source" hidden>Authored ortho guide, not a calibrated photo · <a target="_blank" rel="noopener noreferrer">Source photo ↗</a></div><div id="hint">Drag to orbit · Scroll to zoom</div></div>
+</section>
+<aside class="rail inspector" aria-label="Inspector">
+<section class="side-section"><div class="eyebrow">02 / VALIDATION</div><h2>Surface check</h2><div class="status" id="status" role="status"><i></i><span>Initializing…</span></div><dl id="diagnostics"></dl></section>
+<section class="side-section"><div class="eyebrow">03 / CONTROL POINT</div><h2>Point editing</h2><p id="point-help">Pick a point on the cage, or select it below.</p><label class="field" for="point"><span>Selected point</span><select id="point"><option value="">None</option></select></label><div id="axes" class="axes"></div><button type="button" id="reset-point" disabled>Reset point</button></section>
+<section class="side-section scale"><b>Scene axes</b><p><span class="x">X</span> right · <span class="y">Y</span> up · <span class="z">Z</span> forward</p></section>
+</aside>
+</main>
+<nav id="studio-mobile-rail" aria-label="3D Car Design tools">
+ <button type="button" data-drawer="view" aria-pressed="true">View</button>
+ <button type="button" data-drawer="shape" aria-pressed="false">Shape</button>
+ <button type="button" data-drawer="points" aria-pressed="false">Points</button>
+ <button type="button" data-drawer="file" aria-pressed="false">File</button>
+</nav>
+<footer class="footer"><span>PROCEDURAL SURFACE MODELING</span><span>Preview retains the last valid geometry</span></footer>
+<script type="module" src="./editor.mjs"></script>
+</body>
+</html>
