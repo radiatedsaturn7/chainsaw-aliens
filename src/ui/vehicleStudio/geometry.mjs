@@ -1,0 +1,318 @@
+import * as T from '../../vendorBridge/three.js';
+import {normalizeVehicle,evaluateInteriorPatch,math} from './genome.mjs';
+const {mix,clamp,buildFender}=math;
+const RAD=Math.PI/180;
+const UP_PATCH=(g,k,z,u,z0,z1)=>evaluateInteriorPatch(g.surfaces[k].points,clamp((z-z0)/(z1-z0)),clamp(u));
+const bell=(x)=>Math.sin(Math.PI*clamp(x));
+const lerp3=(a,b,t)=>a.map((e,i)=>mix(e,b[i],t));
+const cloneJSON=x=>structuredClone(x);
+function patch(n,m,fn,flip=false){
+ const pos=[],uv=[],tri=[];
+ for(let i=0;i<=n;i++)for(let j=0;j<=m;j++){pos.push(...fn(i/n,j/m));uv.push(i/n,j/m);}
+ for(let i=0;i<n;i++)for(let j=0;j<m;j++){
+  const a=i*(m+1)+j,b=a+m+1;if(flip)tri.push(a,b+1,b,a,a+1,b+1);else tri.push(a,b,b+1,a,b+1,a+1);
+ }
+ const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));g.setIndex(tri);g.computeVertexNormals();return g;
+}
+function lathe(profile,segments=40){
+ // Profile is [radius, lateral position]. Local X follows the engine axle.
+ return new T.LatheGeometry(profile.map(([r,x])=>new T.Vector2(r,-x)),segments).rotateZ(Math.PI/2);
+}
+function box(w,h,l){return new T.BoxGeometry(w,h,l);}
+function ellipsoid(w,h,l){return new T.SphereGeometry(1,16,10).scale(w/2,h/2,l/2);}
+function ovalCylinder(w,h,l){
+ return new T.CylinderGeometry(1,1,l,24).rotateX(Math.PI/2).scale(w/2,h/2,1);
+}
+function geometryBounds(geo){geo.computeBoundingBox();return geo.boundingBox;}
+function addModelPart(out,component,material,geo,p=null,rotation=null){
+ if(rotation){const [x,y,z]=rotation;geo.applyMatrix4(new T.Matrix4().makeRotationFromEuler(new T.Euler(x,y,z)));}
+ if(p)geo.translate(...p);
+ out.push({component,material,geometry:geo});return geo;
+}
+export const disposeDesign=design=>{for(const p of [...design.parts,...design.wheelParts])p.geometry.dispose();};
+function tireGeo(r,w,shape,type,depth){
+ const camber=mix(.055,.15,shape),c=w/2,t=type==='rally'?.011:.004,i=r*(.73-.06*(depth-1));
+ return lathe([[i,-c*.79],[r*.84,-c],[r*(1-camber*.34),-c],[r-t,-c*.83],
+ [r,-c*.53],[r,c*.53],[r-t,c*.83],[r*(1-camber*.34),c],[r*.84,c],[i,c*.79],[i,-c*.79]]);
+}
+function wheelParts(g){
+ const {diameter,tireWidth,rimRatio}=g.dimensions,r=diameter/2,w=tireWidth,c=g.components.wheels,t=g.components.tires;
+ const out=[],put=(k,m,x,p=null,r=null)=>addModelPart(out,k,m,x,p,r);
+ put('tires','rubber',tireGeo(r,w,t.shape,t.type,t.depth));
+ const rim=r*rimRatio*c.size,face=w*.47,lip=rim*.057,dish=.018+c.shape*.073;
+ put('wheels','wheel',lathe([[rim*.83,-w*.47],[rim*.92,-w*.49],[rim,-w*.45],[rim,face],[rim-lip*.32,face+.006],[rim-lip,face+.005],[rim-lip*1.43,face-.014],[rim-lip*1.4,-w*.41],[rim*.83,-w*.47]]));
+ const n=c.type==='6-spoke'?6:c.type==='5-spoke'?5:14;
+ const disk=Math.max(.07,rim*.71);put('wheels','chrome',lathe([[0,-.038],[disk,-.038],[disk,.018],[0,.018]],40));
+ put('wheels','trim',box(w*.27,disk*.55,disk*.35),[w*.06,disk*.68,disk*.31]);
+ put('wheels','wheel',lathe([[0,face-dish-.012],[rim*.28,face-dish-.012],[rim*.27,face-dish+.013],[rim*.20,face-dish+.022],[0,face-dish+.022]],32));
+ for(let k=0;k<n;k++){
+  const a=k*Math.PI*2/n;
+  const spoke=(s,t,inside)=>{const radius=mix(rim*.19,rim*.974,s),width=rim*mix(.095,.038,s)*(n>7?.75:1)*c.depth;
+   const x=mix(face-dish,face-.007,s*s)+.006*bell(t)-(inside?.014:0),angle=a+(t-.5)*width/radius;
+   return [x,Math.cos(angle)*radius,Math.sin(angle)*radius];};
+  put('wheels','wheel',patch(7,4,(s,t)=>spoke(s,t,false)));
+  put('wheels','wheel',patch(7,1,(s,t)=>lerp3(spoke(s,0,false),spoke(s,0,true),t)));
+  put('wheels','wheel',patch(7,1,(s,t)=>lerp3(spoke(s,1,true),spoke(s,1,false),t)));
+ }
+ for(let k=0;k<5;k++){const a=k*Math.PI*2/5;put('wheels','chrome',new T.CylinderGeometry(.011,.012,.018,6).rotateZ(-Math.PI/2),
+  [face-dish+.014,Math.cos(a)*rim*.15,Math.sin(a)*rim*.15]);}
+ return out;
+}
+export function generateVehicle(input,{quality='preview'}={}){
+ const g=normalizeVehicle(input),d=g.dimensions,c=g.components,G=g.constraints.gap*.5;
+ const parts=[],issues=[],warnings=[], joins=[];
+ const X=d.width/2,R=d.diameter/2,L=d.wheelbase/2,Lf=L+d.front,Lr=-L-d.rear,length=Lf-Lr;
+ const floor=d.stance, B=d.height*d.belt,radius=R+g.constraints.archClearance;
+ let t=(X*d.track),clearance=X-t-d.tireWidth/2;
+ if(clearance<.011){t=X-d.tireWidth/2-.011;warnings.push('Track narrowed to keep tires inside the arch lips.');}
+ if(t*2<1.2){issues.push('Track below the runtime suspension envelope.');}
+ 
+ if(floor>R-.03)warnings.push('Rocker sits above the hub; this is an elevated stance.');
+ const wide=clamp(d.box),zC=(Lf+Lr)*.5+length*d.cabin;
+ let cabinFront=zC+length*(d.cabinLength/2-d.hood),cabinRear=zC-length*(d.cabinLength/2-d.trunk);
+ cabinFront=clamp(cabinFront,Lr+.9,Lf-.53);cabinRear=clamp(cabinRear,Lr+.50,cabinFront-1.52);
+ const doorFront=clamp(cabinFront+.12,-.15,L-.26),doorRear=clamp(cabinRear-.17,-L+.23,doorFront-.65);
+ const bumperFront=Lf-Math.min(d.front*.49,.43),bumperRear=Lr+Math.min(d.rear*.49,.43);
+ const roofFront=mix(cabinFront,doorRear,.37+.10*c.glass.shape),roofRear=mix(cabinRear,doorFront,
+  g.family==='fastback'?.45:.22+.10*c.glass.shape);
+ const nose=B-(.14+.10*(1-wide))*c.frontBumper.depth,deck=B-(c.trunk.type==='fastback'?.13:.065)*c.rearBumper.depth;
+ const skinY=z=>z>cabinFront?mix(B,nose,((z-cabinFront)/(Lf-cabinFront))**1.4):z<cabinRear?mix(B,deck,((cabinRear-z)/(cabinRear-Lr))**1.38):B;
+ const regionalBox=z=>clamp(wide+(z>0?d.frontBox:d.rearBox)*clamp(Math.abs(z)/L));
+ function skinX(z){const noseT=clamp((Math.abs(z-(Lf+Lr)*.5)/(.5*length)-.70)/.30);return X*(1-(.058+.13*(1-regionalBox(z)))*noseT**2);}
+ const lipHeight=z=>{
+  const p=z>0?c.frontFenders:c.rearFenders,dist=Math.min(Math.abs(z-L),Math.abs(z+L));
+  const r=radius+.025*(p.size-1);if(dist>=r)return floor;
+  const s=dist/r,a=clamp((1-s)/.065),curved=R+r*Math.sqrt(Math.max(0,1-s*s));
+  return mix(floor,curved,a*a*(3-2*a));
+ };
+ for(const [component,axle] of [['frontFenders',L],['rearFenders',-L]]){
+  const r=radius+.025*(c[component].size-1);
+  for(const trial of [-.55,-.30,0,.30,.55]){
+   const z=axle+r*trial,needed=R+Math.sqrt(Math.max(0,r*r-(z-axle)**2));
+   if(skinY(z)-needed<.025){issues.push('Beltline intersects the '+(axle>0?'front':'rear')+' wheel opening; raise the beltline or fit smaller tires.');break;}
+  }
+ }
+ const surface=buildFender(g.surfaces.frontFenders,{uSteps:quality==='export'?36:23,vSteps:quality==='export'?20:13,lipSteps:4});
+ if(!surface.diagnostics.valid)issues.push(...surface.diagnostics.issues.map(s=>'Front fender: '+s));
+ const frontPanelSamples=Array.from({length:21},(_,i)=>Array.from({length:11},(_,j)=>surface.eval(i/20,j/10)));
+ const panelSample=(u,v)=>{const a=clamp(u)*20,b=clamp(v)*10,i=Math.min(19,Math.floor(a)),j=Math.min(9,Math.floor(b));return lerp3(lerp3(frontPanelSamples[i][j],frontPanelSamples[i+1][j],a-i),lerp3(frontPanelSamples[i][j+1],frontPanelSamples[i+1][j+1],a-i),b-j);};
+ function skinPoint(z,v,sgn,comp){
+  const side=skinX(z), localBox=regionalBox(z), bottom=Math.min(skinY(z)-.022,lipHeight(z)),archAt=z>0?L:-L,
+      flare=clamp(1-Math.abs(z-archAt)/(radius+.25))**1.65;
+  const lower=floor-.013;
+  const p=c[comp],center=comp==='doors'?-.5:0;
+  const shape=comp==='doors'?p.shape*(.46+.54*wide):p.shape;
+  const profile=comp==='frontFenders'||comp==='rearFenders'?
+   (p.type==='boxed'?.055:p.type==='integrated'||p.type==='wide'?.072:.045)*p.depth*flare*Math.sin(v*Math.PI*.75):0;
+  let x=side- .023*v-(.012+.035*(1-localBox))*v**3+profile+(.008+.027*shape)*Math.sin(v*Math.PI*1.5);
+  const edgePull=clamp((v-.72)/.28)*clamp((flare-.18)/.65);
+  x=mix(x,Math.max(x,t+d.tireWidth/2+.018),edgePull);
+  let y=mix(skinY(z),bottom,v);
+  if(comp==='frontFenders'){
+   const u=clamp((z-doorFront)/(bumperFront-doorFront)),q=panelSample(u,v),edge=lerp3(panelSample(u,0),panelSample(u,1),v);
+   const influence=Math.sin(Math.PI*u)*Math.sin(Math.PI*v)**.64;
+   x+=(q[0]-edge[0])*influence*p.size;
+   const sp=g.surfaces.frontFenders.parameters;
+   y+=((q[1]-edge[1])*.30+sp.height*.3+sp.hoodBoundary*.35)*influence;
+   z+=(q[2]-edge[2])*.72*influence;
+   if(v>.68){
+    const t=(v-.68)/.32;
+    x+=sp.lipRadius*.7*influence*t;
+   }
+  }
+  if(comp==='doors'){
+   x+=(.007+.02*shape)*Math.exp(-((v-.30-center*.03)**2)/.009)*c.doors.depth;
+  }
+  if(bottom<=lower+.007)y=Math.max(y,lower+.007);
+  return [sgn*x,y,z];
+ }
+ const put=(k,m,x,p=null,r=null)=>addModelPart(parts,k,m,x,p,r);
+ const lowY=floor+.008;
+ // Roof/door/fender share station curves. Each component evaluates the same
+ // seam datum; inset bands produce gaps without independent panel drift.
+ function top(z,u,crown,comp){
+  const a=2*u-1,w=skinX(z),co=(1-Math.abs(a)**(wide>.65?3.3:2.5));
+  return [w*a,skinY(z)+co*crown+(comp==='hood'&&c.hood.type==='power bulge'?Math.exp(-a*a*15)*.038*bell((z-cabinFront)/(Lf-cabinFront)):0),z];
+ }
+ const sheet=(name,material,z0,z1,fn,n=14,m=10)=>put(name,material,patch(n,m,(u,v)=>fn(mix(z0,z1,u),v)));
+ const hoodC=(.027+.059*c.hood.shape)*(c.hood.type==='flat'?.29:c.hood.type==='power bulge'?1.32:1)*c.hood.depth;
+ const hoodPoint=(z,v)=>{const p=top(z,v,mix(hoodC,.019*c.frontBumper.size,clamp((z-(bumperFront-.28))/.28)**2),'hood');
+  p[1]+=UP_PATCH(g,'hood',z,v,cabinFront,bumperFront);return p;};
+ sheet('hood','paint',cabinFront+G,bumperFront-G,hoodPoint);
+ const trunkC=(c.trunk.type==='fastback'?.034:c.trunk.type==='ducktail'?.064:.047)*(.68+c.trunk.shape)*c.trunk.depth;
+ const trunkPoint=(z,v)=>{const p=top(z,v,mix(trunkC,.019*c.rearBumper.size,clamp((bumperRear+.28-z)/.28)**2),'trunk');
+  p[1]+=UP_PATCH(g,'trunk',z,v,bumperRear,cabinRear);return p;};
+ sheet('trunk','paint',bumperRear+G,cabinRear-G,trunkPoint);
+ function fasciaPoint(type,sgn,u,v){
+  const p=c[type],x=2*u-1,center=1-Math.abs(x)**2.5,along=sgn>0?Lf-G:Lr+G;
+  const z=along-sgn*center*(.027+.02*p.shape)*v**2,outer=skinPoint(along,v,1,type);
+  return [x*outer[0],outer[1]+center*((1-v)*.019*p.size+v*.034/(p.depth*p.size)),z];
+ }
+ const bumper=(type,sgn)=>{
+  const a=sgn>0?bumperFront:bumperRear,z=sgn>0?Lf:Lr,p=c[type];
+  sheet(type,'paint',Math.min(a,z)+G,Math.max(a,z)-G,(z,u)=>top(z,u,.019*p.size,'bumper'),9,12);
+  put(type,'paint',patch(20,7,(u,v)=>fasciaPoint(type,sgn,u,v),sgn<0));
+ };
+ function lampSurface(sgn,side,p,spread){
+  const type=sgn>0?'frontBumper':'rearBumper';
+  const q=fasciaPoint(type,sgn,(1+side*spread)/2,.21-p.bias*.155);
+  return q.map((x,i)=>i===2?x+sgn*.018:x);
+ }
+ bumper('frontBumper',1);bumper('rearBumper',-1);
+ // All side panels use the same trimmed wheel envelope; arch edge samples
+ // and hem are generated from the same function as the adjacent skin.
+ for(const s of [-1,1]){
+  const doorSplits=c.doors.type==='four door'?[doorRear,mix(doorRear,doorFront,.47),doorFront]:[doorRear,doorFront];
+  const slabs=[['rearBumper',Lr,bumperRear],['rearFenders',bumperRear,doorRear],...doorSplits.slice(1).map((z,i)=>['doors',doorSplits[i],z]),['frontFenders',doorFront,bumperFront],['frontBumper',bumperFront,Lf]];
+  for(const [key,a,b] of slabs){
+   sheet(key,'paint',a+G,b-G,(z,v)=>skinPoint(z,v,s,key),key.includes('Fender')?30:18,10);
+   joins.push({a,b,component:key,side:s});
+  }
+  for(const [comp,axle] of [['rearFenders',-L],['frontFenders',L]]){
+   put(comp,'paint',patch(30,4,(u,v)=>{
+    const z=axle-(radius+.025*(c[comp].size-1))*Math.cos(u*Math.PI),p=skinPoint(z,1,s,comp),r=.0045+c[comp].shape*.005;
+    return [p[0]-s*r*(1-Math.cos(v*2.1)),p[1]-r*Math.sin(v*2.1),p[2]];
+   }));
+   put(comp,'trim',patch(24,2,(u,v)=>{const z=axle-(radius+.025*(c[comp].size-1))*Math.cos(u*Math.PI),edge=skinPoint(z,1,s,comp);return [mix(edge[0]-s*.013,s*(t-d.tireWidth*.56),v),edge[1]+v*.028,z];}));
+  }
+  const p=c.rockers;
+  const sillHeight=(p.type==='blade'?.052:p.type==='deep'?.14:.089)*p.size*d.skirt;
+  addModelPart(parts,'rockers',p.type==='blade'?'trim':'paint',patch(16,5,(u,v)=>{
+   const z=mix(-L+radius+.011,L-radius-.011,u);
+   return [s*(skinPoint(z,1,s,'doors')[0]*s+.01*p.depth+.025*bell(v)*p.shape),floor-.020+sillHeight*v,z];
+  }));
+  const mirror=c.mirrors,sx=X*.87,sy=B+.105*mirror.depth,mz=cabinFront-.19+mirror.bias*.08;
+  put('mirrors','trim',box(.19,.032,.055),[s*(sx+.085),sy-.026,mz]);
+  put('mirrors','paint',ellipsoid(.25*mirror.size,.115*mirror.depth,.185*mirror.size*(mirror.type==='aero'?1.42:1)),[s*(sx+.19),sy,mz],[mirror.angle*RAD,s*(mirror.shape-.5)*.52,0]);
+  put('mirrors','chrome',ellipsoid(.19*mirror.size,.087,.019),[s*(sx+.20),sy,mz-.081*mirror.size]);
+  for(let i=1;i<doorSplits.length;i++){
+   const z=doorSplits[i-1]+(doorSplits[i]-doorSplits[i-1])*.26,hp=c.handles;
+   const q=skinPoint(z,.27,s,'doors');put('handles',hp.type==='flush'?'paint':'trim',ellipsoid(.020*hp.depth,(.020+hp.shape*.022)*hp.size,.132*hp.size),[q[0]+s*.005,q[1],z]);
+  }
+ }
+ // Shared q(u,v) cabin envelope consumed by all glazing, pillars and roof.
+ const roofW=Math.min(X*.91,X*d.cabinWidth*c.roof.size*.94),glassBaseW=X*d.cabinWidth*1.12,
+  roofC=(.023+.068*d.crown)*(.60+c.roof.shape)*(c.roof.type==='flat'?.40:1)*c.roof.depth;
+ const baseW=z=>Math.min(skinX(z)-.035,glassBaseW);
+ const roofPoint=(z,u)=>{const k=2*u-1;return [k*roofW*(1-.067*Math.abs(2*(z-roofRear)/Math.max(.15,roofFront-roofRear)-1)**2),d.height+UP_PATCH(g,'roof',z,u,roofRear,roofFront)-roofC*Math.abs(k)**2-roofC*.45*Math.abs(2*(z-roofRear)/Math.max(.15,roofFront-roofRear)-1)**2,z];};
+ const glassPoint=(sgn,t,u)=>{const edge=sgn>0?roofFront:roofRear,gate=sgn>0?cabinFront:cabinRear;
+  const w=baseW(gate),x=(2*u-1)*w,k=(x/skinX(gate)+1)/2;
+  const q=lerp3([x,(sgn>0?hoodPoint:trunkPoint)(gate,k)[1]+.004,gate],roofPoint(edge,u),t);
+  q[2]+=sgn*.045*c.glass.depth*bell(t)*bell(u);return q;};
+ sheet('roof','paint',roofRear,roofFront,roofPoint,17,12);
+ for(const s of [-1,1]){
+  put('glass',c.glass.type==='tinted'?'glass':'glass',patch(12,16,(v,u)=>glassPoint(s,v,u),s<0));
+  const sidePoint=(u,v)=>{
+   if(u<.23)return glassPoint(1,v,s>0?1:0).map((x,i)=>i===2?x-(.23-u)*.15:x);
+   if(u>.77)return glassPoint(-1,v,s>0?1:0).map((x,i)=>i===2?x+(.77-u)*.15:x);
+   let t=(u-.23)/.54;
+   const q=roofPoint(mix(roofFront,roofRear,t),s>0?1:0),z=mix(cabinFront-.032,cabinRear+.032,t);
+   return lerp3([s*baseW(z),B+.006,z],q,v);
+  };
+  // Full side glazing from A to C with matching raked edge rails.
+  function side(u,v){
+   const f=glassPoint(1,v,s>0?1:0),r=glassPoint(-1,v,s>0?1:0);
+   const a=lerp3(f,r,u);
+   const mid=sidePoint(clamp(.23+u*.54,.23001,.76999),v);
+   const blend=Math.sin(Math.PI*u)**2;
+   return lerp3(a,mid,blend);
+  }
+  put('glass','glass',patch(20,9,side,s<0));
+  put('doors','paint',patch(20,4,(u,v)=>{
+   const q=side(u,0),outer=skinX(q[2]);
+   return [s*mix(Math.abs(q[0]),outer,v),q[1]+(skinY(q[2])-q[1])*v,q[2]];
+  },s<0));
+  for(const u of [0,c.doors.type==='four door'?.50:.65,1]){
+   const mat=c.pillars.type==='painted'?'paint':'trim',w=(.013+.027*c.pillars.shape)*c.pillars.size;
+   put('pillars',mat,patch(12,2,(v,j)=>{
+    const q=side(clamp(u+(j-.5)*w*(u===.5?2:3)),v);q[0]+=s*.012*c.pillars.depth;return q;
+   }));
+  }
+  put('pillars','trim',patch(18,3,(u,v)=>{const q=side(u,v*.060);q[0]+=s*.010;return q;}));
+ }
+ // Optical and trim dimensions are tied to fascia, not independent world coordinates.
+ const lampMounts={};
+ for(const [name,sgn] of [['headlights',1],['tails',-1]]){
+  const p=c[name],front=sgn>0,round=p.type==='round',bar=p.type==='strip';
+  for(const s of [-1,1]){
+   const [x,y,edge]=lampSurface(sgn,s,p,bar?.41:.694),
+    w=X*(round?.25:bar?.63:.54)*p.size,
+    h=(round?.15:bar?.068:.118)*(.7+.56*p.shape)*p.depth;
+   const outline=round?ovalCylinder:ellipsoid,turn=[p.angle*RAD,s*sgn*.075,(front&&p.type==='swept'?-.13:0)*s];
+   put(name,'trim',outline(w+.025,h+.022,.053),[x,y,edge-sgn*.002],turn);
+   put(name,front?'head':'tail',outline(w,h,.026),[x,y,edge+sgn*.020],turn);
+   if(!round&&!bar)put(name,'chrome',ellipsoid(w*.38,h*.45,.010),[x+s*w*.13,y,edge+sgn*.035],turn);
+   lampMounts[(front?'Headlight':'Taillight')+'Mount_'+(s<0?'L':'R')]=[x,y,edge+sgn*.035];
+  }
+ }
+ const gp=c.grille;
+ if(gp.type!=='closed'){
+  const y=nose-.10-.036*gp.shape,w=Math.min(.66,X*.72)*gp.size,h=.13*gp.depth;
+  put('grille','trim',ellipsoid(w,h,.070),[0,y,Lf+.005]);
+  for(let i=0;i<(gp.type==='bars'?3:5);i++)put('grille','chrome',box(w*.83,.006,.017),[0,y+h*(i/(gp.type==='bars'?2:4)-.5)*.53,Lf+.038]);
+ }
+ const fb=c.frontBumper;
+ put('frontBumper','trim',ellipsoid(X*(fb.type==='rally'?1.29:1.08)*fb.size,.105+fb.shape*.080,.070*fb.depth),[0,mix(lowY,nose,.30),Lf+.003]);
+ if(c.rearBumper.type!=='smooth')put('rearBumper','trim',ellipsoid(X*.96*c.rearBumper.size,.095,.06),[0,lowY+.085,Lr-.007]);
+ const fog=c.fogs;
+ if(fog.type!=='off')for(const s of [-1,1])put('fogs','head',(fog.type==='round'?ovalCylinder:ellipsoid)(.115*fog.size,.095*fog.size*(fog.type==='strip'?.46:1),.065*fog.depth),[s*X*(.68+.075*fog.shape),mix(lowY,nose,.33)+fog.bias*.055,Lf-.01],[fog.angle*RAD,0,0]);
+ const sc=c.scoop;
+ if(sc.type!=='off'){
+  const z=mix(cabinFront,bumperFront,.49+sc.bias*.14),p=hoodPoint(z,.5),w=.41*sc.size,l=.34*sc.depth,h=.045+.085*sc.shape;
+  if(sc.type==='scoop'){
+   put('scoop','paint',patch(13,10,(u,v)=>{const a=2*u-1,sz=z+(v-.5)*l;return [w*a*.5,hoodPoint(sz,.5)[1]+(h+sc.angle*RAD*l*.3)*(1-Math.abs(a)**3)*v**1.25,sz];}));
+   put('scoop','trim',ellipsoid(w*.91,h*.73,.027),[0,hoodPoint(z+l*.482,.5)[1]+(h+sc.angle*RAD*l*.3)*.38,z+l*.482]);
+  }else for(const s of [-1,1])for(let i=0;i<3;i++)put('scoop','trim',ellipsoid(w*.33,.014,.042),[s*w*.26,p[1]-.008,z+l*(i-1)*.3]);
+ }
+ const sp=c.spoiler;
+ if(sp.type!=='off'){
+  const z=mix(Lr,cabinRear,.29+sp.bias*.11),base=trunkPoint(z,.5)[1],h=(sp.type==='wing'?.15+sp.shape*.16:.030+sp.shape*.036)*sp.depth,
+   w=skinX(z)*1.75*sp.size;
+  if(sp.type==='wing')for(const s of [-1,1])put('spoiler','paint',ellipsoid(.068,h*1.22,.22),[s*w*.34,base+h*.47,z],[.13,0,0]);
+  put('spoiler','paint',ellipsoid(w,.075*sp.depth,.32*sp.size),[0,base+h,z],[.15+sp.angle*RAD,0,0]);
+ }
+ const ex=c.exhaust,n=ex.type==='quad'?4:ex.type==='dual'?2:1;
+ for(let i=0;i<n;i++){
+  const x=n===1?X*.67:(2*(i/(n-1))-1)*X*.72,y=lowY+.09+.04*ex.shape+ex.bias*.04,z=Lr+.025;
+  const r=.042*ex.size;
+  put('exhaust','chrome',new T.LatheGeometry([[r*.75,-.085],[r,-.085],[r,.052],[r*.75,.052],[r*.75,-.085]].map(([a,b])=>new T.Vector2(a,b*ex.depth)),22).rotateX(Math.PI/2),[x,y,z],[ex.angle*RAD,0,0]);
+  put('exhaust','trim',ovalCylinder(r*1.43,r*1.43,.014),[x,y,z-.052*ex.depth]);
+ }
+ // Cabin floor, tail pan and front pan block sight through the wheel wells.
+ const cabinY=floor+.22;
+ put('seats','floor',box(X*1.48,.052,cabinFront-cabinRear+.08),[0,cabinY-.065,(cabinFront+cabinRear)*.5]);
+ put('rockers','floor',box(Math.min(2*t-d.tireWidth-.04,X*1.53),.08,length*.93),[0,floor+.008,(Lf+Lr)*.5]);
+ const dz=cabinFront-.23,dh=B-.133,dw=X*d.cabinWidth*c.dash.size*1.65;
+ put('dash','interior',ellipsoid(dw,.17*c.dash.depth,.32+ .24*c.dash.shape),[0,dh,dz]);
+ if(c.dash.type==='sport')put('dash','chrome',box(dw*.91,.022,.025),[0,dh,dz-.2]);
+ for(const s of [-1,1]){
+  const p=c.seats,x=s*X*.42,z=mix(cabinFront,cabinRear,.56),w=Math.min(X*.55,p.size*.48);
+  put('seats','seat',ellipsoid(w,.14*p.depth,.47*p.size),[x,cabinY,z]);
+  put('seats','seat',ellipsoid(w,.53*p.size,.19*p.depth),[x,cabinY+.26,z-.21],[.13+p.shape*.14,0,0]);
+  if(p.type==='bucket')for(const f of [-1,1])put('seats','interior',ellipsoid(.11,.35,.25),[x+f*w*.41,cabinY+.23+p.shape*.10,z-.14]);
+ }
+ if(c.doors.type==='four door')put('seats','seat',ellipsoid(X*1.47,.19,.60),[0,cabinY+.06,cabinRear+.36]);
+ const sx=-X*.43,sy=dh+.018,sz=dz-.36,st=c.steering,r=.162*st.size;
+ const wheelring=new T.TorusGeometry(r,.015*st.depth,8,36);
+ if(st.type==='flat-bottom'){const a=wheelring.attributes.position;for(let i=0;i<a.count;i++)a.setY(i,Math.max(-r*(.57+st.shape*.29),a.getY(i)));wheelring.computeVertexNormals();}
+ put('steering','rubber',wheelring,[sx,sy,sz],[.29,0,0]);put('steering','trim',box(r*(1.3+.55*st.shape),.040,.035),[sx,sy,sz]);
+ const ip=c.instruments;put('instruments','trim',ellipsoid(.29*ip.size,.16*ip.depth,.13),[sx,dh+.08,dz-.13]);
+ for(let i=0;i<(ip.type==='digital'?1:2);i++)put('instruments','head',ip.type==='digital'?box(.21*ip.size,.055,.015):ovalCylinder(.074*ip.size,.076,.015),[sx+(ip.type==='digital'?0:(i-.5)*.09),dh+.07,dz-.194-ip.shape*.018]);
+ const cp=c.console,cZ=mix(cabinFront,cabinRear,.44);
+ put('console','interior',ellipsoid(.26*cp.size,.19*cp.depth,.66),[0,cabinY+.14,cZ]);
+ put('console','chrome',box(.043,.12+cp.shape*.05,.050),[0,cabinY+.28,cZ]);
+ put('console','trim',ellipsoid(cp.type==='manual'?.075:.10,.055,.068),[0,cabinY+.37,cZ]);
+ const wheels=Object.fromEntries([['fl',-1,L],['fr',1,L],['rl',-1,-L],['rr',1,-L]].map(([id,s,z])=>[id,[s*t,R,z]]));
+ const wp=wheelParts(g);
+ const floorContact=Math.min(...Object.values(wheels).map(v=>v[1]-R));
+ for(const part of [...parts,...wp]){
+  const {geometry,component}=part,a=geometry.attributes.position;
+  for(const v of a.array)if(!Number.isFinite(v)){issues.push('Nonfinite geometry in '+component);break;}
+  const b=geometryBounds(geometry);if(b.isEmpty())issues.push('Empty geometry in '+component);
+ }
+ for(const [a,b] of [[roofRear,roofFront],[doorRear,doorFront],[bumperRear,doorRear],[doorFront,bumperFront]])if(a+.025>=b)issues.push('Shared stations crossed; change the vehicle proportions.');
+ const triangles=(p)=>p.reduce((n,{geometry:x})=>n+(x.index?.count??x.attributes.position.count)/3,0);
+ return {genome:g,parts,wheelParts:wp,wheels,lampMounts,stations:{cabinFront,cabinRear,roofFront,roofRear,doorFront,doorRear,bumperFront,bumperRear},
+  metadata:{lengthM:length,widthM:d.width,heightM:d.height,wheelbaseM:d.wheelbase,trackWidthM:t*2,trackFrontM:t*2,trackRearM:t*2,wheelRadiusM:R,rideHeightM:floor},
+  diagnostics:{issues:[...new Set(issues)],warnings:[...new Set(warnings)],floorContact,joins,bodyTriangles:triangles(parts),wheelTriangles:triangles(wp),panel:cloneJSON(surface.diagnostics)}};
+}

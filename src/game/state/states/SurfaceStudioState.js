@@ -1,4 +1,5 @@
-const STUDIO_URL = new URL('../../../ui/surfaceStudio/index.html', import.meta.url);
+import {startStudioDrive} from './StudioDriveState.js';
+const STUDIO_URL = new URL('../../../ui/vehicleStudio/index.html', import.meta.url);
 const EXIT_EVENT = 'lotg-surface-studio-exit';
 
 export default class SurfaceStudioState {
@@ -21,14 +22,21 @@ export default class SurfaceStudioState {
     this.loadBack = fallback;
     this.onBack = () => this.game.exitSurfaceStudio();
     fallback.addEventListener('click', this.onBack);
+    this.onDrive = event => {
+      if (event.target !== frame.contentDocument || !event.detail?.bundle) return;
+      try { event.detail.handled = startStudioDrive(this.game,event.detail.bundle); }
+      catch (error) { event.detail.error=error.message; }
+    };
     this.onLoad = () => {
       const doc = frame.contentDocument;
       if (!doc) return;
       doc.addEventListener(EXIT_EVENT, this.onBack);
-      const tool = frame.contentWindow?.designer;
+      doc.addEventListener('lotg-vehicle-studio-drive', this.onDrive);
+      const tool = frame.contentWindow?.vehicleDesigner;
       if (tool) {
         fallback.remove();
-        if (this.draft) tool.applyGenome(this.draft, {fit:true});
+        if (this.draft) tool.restoreDraft(this.draft);
+        frame.dataset.studioConnected = 'true';
       }
       frame.contentWindow?.focus();
     };
@@ -41,8 +49,9 @@ export default class SurfaceStudioState {
     const frame = this.frame;
     if (!frame) return;
     try {
-      this.draft = frame.contentWindow?.designer?.getGenome() ?? this.draft;
+      this.draft = frame.contentWindow?.vehicleDesigner?.getGenome() ?? this.draft;
       frame.contentDocument?.removeEventListener(EXIT_EVENT, this.onBack);
+      frame.contentDocument?.removeEventListener('lotg-vehicle-studio-drive', this.onDrive);
     } finally {
       frame.removeEventListener('load', this.onLoad);
       frame.remove();

@@ -29,6 +29,7 @@ import Input from './Input.js';
 import StateManager from './state/StateManager.js';
 import TitleState from './state/states/TitleState.js';
 import GameplayState from './state/states/GameplayState.js';
+import {finishStudioDrive} from './state/states/StudioDriveState.js';
 import SurfaceStudioState from './state/states/SurfaceStudioState.js';
 import { createDelegatedState } from './state/states/DelegatedState.js';
 import RobterSessionState from './state/states/RobterSessionState.js';
@@ -2400,6 +2401,7 @@ export default class Game {
   }
 
   exitRaceEditor() {
+    if (finishStudioDrive(this)) return;
     this.raceEditor?.disposeRaceEditorSessions?.('global-exit');
     this.carEditor?.disposeRaceEditorSessions?.('global-exit');
     this.playtestActive = false;

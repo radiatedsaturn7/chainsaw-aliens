@@ -163,6 +163,7 @@ function refresh({fit=false,sync=true}={}){
  if(sync)syncInputs();
  if(fit)fitCamera();
  renderSoon();
+ document.dispatchEvent(new CustomEvent('lotg-surface-studio-changed',{detail:{genome:copy(state.genome),valid:state.valid}}));
  return state.valid;
 }
 function syncInputs(){

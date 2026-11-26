@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>3D Car Design</title><link rel="stylesheet" href="./style.css"></head>
+<body>
+<header><div><small>RTG STUDIO / GRAPHICS</small><h1>3D Car Design</h1></div><button id="back">‹ Graphics</button></header>
+<main>
+ <section id="view" aria-label="Complete vehicle preview">
+  <canvas id="scene" aria-label="Interactive 3D vehicle; drag to orbit, pinch to zoom and pan"></canvas>
+  <div id="view-meta"><b id="name-tag"></b><span id="metrics"></span></div>
+  <div id="ref-overlay" aria-hidden="true"></div>
+  <div id="viewport-toolbar" aria-label="Quick views">
+   <button data-view="orbit" aria-pressed="true">¾</button><button data-view="front">Front</button><button data-view="rear">Rear</button><button data-view="side">Side</button><button data-view="top">Top</button>
+  </div>
+  <div id="notice" role="status"></div>
+ </section>
+ <section id="controls" aria-label="Design controls">
+  <nav id="hotbar" aria-label="Design mode"><button data-tab="vehicle">Vehicle</button><button data-tab="parts">Parts</button><button data-tab="view">View</button><button data-tab="surface">Surface</button></nav>
+  <div id="inspector"></div>
+  <div id="advanced" hidden><div><strong>Surface Studio · Front fender</strong><button id="advanced-done">Done</button></div><iframe id="panel-editor" title="Advanced front fender surface editor"></iframe></div>
+ </section>
+</main>
+<footer>
+ <button id="pan-pad" aria-label="Pan viewport; arrow keys also pan" title="Drag to pan; press Enter to recenter"><span></span></button>
+ <label id="zoom-control">Zoom<input id="zoom" type="range" min="1" max="4" step=".01" value="1.18" aria-label="Viewport zoom"></label>
+ <div id="actions"><button id="menu" aria-expanded="false">Menu</button><button id="undo" disabled>Undo</button><button id="redo" disabled>Redo</button><button id="drive">▶ Test Drive</button></div>
+</footer>
+<div id="menu-sheet" hidden aria-label="Design file menu">
+ <div><strong>Design file</strong><button id="menu-close" aria-label="Close menu">Done</button></div>
+ <button id="save">Save design</button><button id="load">Load design</button><button id="duplicate">Duplicate</button><button id="reset">Reset to preset</button><button id="export">Export game vehicle</button>
+ <p>Design files keep sliders and panel edits. The game export includes body, wheels, attachments, materials and vehicle data.</p>
+</div>
+<input id="design-file" type="file" accept="application/json,.json" hidden>
+<input id="reference-file" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+<script type="module" src="./editor.mjs"></script>
+</body></html>

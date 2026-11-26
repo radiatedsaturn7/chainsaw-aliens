@@ -12,7 +12,7 @@ import {loadProjectFile,hydrateProjectFilePayload} from '../ui/projectFiles.js';
 // Placements own geometry and pose; animating one never changes another.
 export class ModelAssetLibrary {
   constructor({load=loadProjectFile,hydrate=hydrateProjectFilePayload,bundled=null}={}){
-    this.load=load;this.hydrate=hydrate;this.bundled=bundled;this.entries=new Map();this.pending=new Map();this.errors=new Map();this.revision=0;
+    this.load=load;this.hydrate=hydrate;this.bundled=bundled;this.entries=new Map();this.temporary=new Map();this.pending=new Map();this.errors=new Map();this.revision=0;
   }
   adopt(ref,payload){
     const document=payload?.data||payload;
@@ -22,8 +22,15 @@ export class ModelAssetLibrary {
     const model=validateModelDocument(structuredClone(document));
     this.entries.set(ref,{source:document,model,revision:++this.revision});this.errors.delete(ref);return model;
   }
+  adoptTemporary(ref,document){
+    if(typeof ref!=='string'||!ref.startsWith('studio-session-')||this.temporary.has(ref))throw Error('Invalid temporary model reference');
+    const model=validateModelDocument(structuredClone(document));
+    this.temporary.set(ref,model);this.revision++;
+    return ()=>{if(this.temporary.get(ref)===model){this.temporary.delete(ref);this.revision++;}};
+  }
   get(ref){
     if(!ref)return null;
+    if(this.temporary.has(ref))return this.temporary.get(ref);
     if(this.bundled&&wrxBundledModelUrl(ref)&&!this.errors.has(ref)){
       if(this.entries.has(ref))return this.entries.get(ref).model;
       if(!this.pending.has(ref))void this.prepare(ref).catch(()=>{});
@@ -37,6 +44,7 @@ export class ModelAssetLibrary {
   }
   prepare(ref){
     if(!ref)return Promise.reject(Error('Select a saved 3D model'));
+    if(this.temporary.has(ref))return Promise.resolve(this.temporary.get(ref));
     if(this.pending.has(ref))return this.pending.get(ref);
     const request=Promise.resolve().then(async()=>{
       let visual=null;
