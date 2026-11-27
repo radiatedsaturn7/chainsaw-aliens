@@ -1,3 +1,4 @@
+import {NOSE_PROFILES,NOSE_FIELDS} from './genome.mjs';
 import {FAMILIES,GLOBAL,DIMENSIONS,TOTAL_LENGTH,COMPONENTS,COMPONENT_FIELDS,POSITIONABLE,PATCH_PANELS,PATCH_RANGE,createDesignSession,createVehicle} from './genome.mjs';
 import {generateVehicle,disposeDesign} from './geometry.mjs';
 import {exportVehicle} from './export.mjs';
@@ -105,6 +106,12 @@ const componentControls={
  exhaust:['size','shape','depth'],dash:['size','shape','depth'],seats:['size','shape','depth'],steering:['size','shape','depth'],
  instruments:['size','shape','depth'],console:['size','shape','depth']
 };
+function noseControls(parent,g){
+ const p=g.components.frontBumper;
+ select(parent,'nose-profile','Nose shape',Object.entries(NOSE_PROFILES),p.profile,v=>edit('components','frontBumper',v,'profile'));
+ for(const [k,spec] of Object.entries(NOSE_FIELDS))range(parent,'components','frontBumper',spec,p[k],k);
+ parent.append(element('p',{textContent:'Try Top view to see the silhouette. Corner sweep sets how far the sides trail the center. Hood-to-bumper roll softens the leading edge. Nose drop lowers the front profile.'}));
+}
 function inspector(){
  const root=$('inspector'),g=work.get();root.replaceChildren();fields.clear();
  if(tab==='vehicle'){
@@ -119,6 +126,7 @@ function inspector(){
    }
    for(const key of keys)range(details,'dimensions',key,GLOBAL[key],g.dimensions[key]);
   }
+  noseControls(group(root,'Front-end shape',true),g);
   const data=group(root,'Materials',false);color(data,'paint','Body paint',g);color(data,'wheel','Wheel finish',g);
   color(data,'glass','Glass tint',g);color(data,'seat','Seat upholstery',g);
   root.append(element('p',{id:'setup-status',textContent:geo?.diagnostics.warnings.join(' ')||'Shared body stations and suspension mounts update together.'}));
@@ -130,6 +138,7 @@ function inspector(){
   };
   search.onkeydown=e=>{if(e.key==='Enter'){const v=Array.from(sel.options).find(o=>!o.hidden);if(v)selectComponent(v.value);}};
   const d=COMPONENTS[part],p=g.components[part];
+  if(part==='frontBumper')noseControls(root,g);
   select(root,'part-type',d.label+' type',d.types,p.type,v=>edit('components',part,v,'type'));
   for(const key of [...componentControls[part],...(POSITIONABLE.has(part)?['bias','angle']:[])])range(root,'components',part,{...COMPONENT_FIELDS[key],label:key==='shape'?d.shape[0].toUpperCase()+d.shape.slice(1):COMPONENT_FIELDS[key].label},p[key],key);
   if(part==='wheels'||part==='tires')for(const k of ['diameter','tireWidth','rimRatio'])range(root,'dimensions',k,DIMENSIONS[k],g.dimensions[k]);

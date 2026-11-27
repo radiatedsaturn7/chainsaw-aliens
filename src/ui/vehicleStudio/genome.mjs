@@ -32,8 +32,11 @@ export const COMPONENTS={
  seats:style('Seats',['bucket','touring']),steering:style('Steering wheel',['round','flat-bottom']),
  instruments:style('Instrument cluster',['analog','digital']),console:style('Center console',['manual','automatic'])
 };
+export const NOSE_PROFILES={square:'Square / classic',round:'Rounded / rally',v:'Pointed V / hypercar'};
+export const NOSE_FIELDS={sweep:F('Corner sweep',0,1,.01),rollover:F('Hood-to-bumper roll',0,1,.01),drop:F('Nose drop',0,1,.01)};
+const NOSE_DEFAULTS={sedan:{profile:'round',sweep:.55,rollover:.56,drop:.30},coupe:{profile:'square',sweep:.33,rollover:.32,drop:.19},fastback:{profile:'round',sweep:.70,rollover:.65,drop:.51}};
 export const POSITIONABLE=new Set(['headlights','tails','fogs','scoop','spoiler','mirrors','exhaust']);
-export const COMPONENT_FIELDS={bias:F('Mount position bias',-1,1,.025),angle:F('Pitch or rake (°)',-12,12,.5),size:F('Size',.72,1.28,.01),shape:F('Shape',0,1,.01),depth:F('Depth',.72,1.28,.01)};
+export const COMPONENT_FIELDS={bias:F('Mount position bias',-1,1,.025),angle:F('Pitch or rake (°)',-12,12,.5),size:F('Size',.72,1.28,.01),shape:F('Shape',0,1,.01),depth:F('Depth',.72,1.28,.01),...NOSE_FIELDS};
 const defaults={coupe:{doors:1,headlights:1,trunk:0,roof:1,wheels:2,spoiler:1,grille:1,scoop:2},fastback:{doors:1,headlights:2,tails:1,trunk:1,roof:2,wheels:1,frontBumper:1,scoop:1,spoiler:1}};
 const number=(value,spec,key)=>{if(typeof value!=='number'||!Number.isFinite(value)||value<spec.min-1e-9||value>spec.max+1e-9)throw Error('Out of range: '+key);return value;};
 export const TOTAL_LENGTH=F('Overall length (m)',3.47,5.73,.005);
@@ -46,7 +49,7 @@ export function createVehicle(family='sedan'){
  const f=FAMILIES[family];
  return {kind:'lotg-vehicle-design',schemaVersion:1,generatorVersion:VERSION,name:f.label,family,
  dimensions:{...Object.fromEntries(Object.keys(GLOBAL).map((k,i)=>[k,f.dims[i]])),diameter:family==='fastback'?.635:.634,tireWidth:family==='fastback'?.235:.225,rimRatio:.681},
- components:Object.fromEntries(Object.entries(COMPONENTS).map(([k,c])=>[k,{type:c.types[defaults[family]?.[k]??0],size:1,shape:.5,depth:1,...(POSITIONABLE.has(k)?{bias:0,angle:0}:{})}])),
+ components:Object.fromEntries(Object.entries(COMPONENTS).map(([k,c])=>[k,{type:c.types[defaults[family]?.[k]??0],size:1,shape:.5,depth:1,...(k==='frontBumper'?NOSE_DEFAULTS[family]:{}),...(POSITIONABLE.has(k)?{bias:0,angle:0}:{})}])),
  surfaces:{frontFenders:createPanel(f.panel),...Object.fromEntries(PATCH_PANELS.map(key=>[key,{kind:'bicubic-interior-v1',points:[0,0,0,0]}]))}, constraints:{gap:.005,archClearance:.045,partition:'shared-stations-v1'},
  materials:{...MAT,paint:f.color,wheel:f.wheel}, attachments:{schema:'axles-and-optics-v1'}};
 }
@@ -58,7 +61,11 @@ export function normalizeVehicle(x){
  for(const [k,v] of Object.entries(x.components??{})){
   if(!Object.hasOwn(COMPONENTS,k)||!v||typeof v!=='object')throw Error('Unknown component '+k);
   if(v.type!==undefined){if(!COMPONENTS[k].types.includes(v.type))throw Error('Unknown '+k+' type');g.components[k].type=v.type;}
-  for(const s of Object.keys(g.components[k]).filter(f=>f!=='type'))if(v[s]!==undefined)g.components[k][s]=number(v[s],COMPONENT_FIELDS[s],k+'.'+s);
+  if(k==='frontBumper'&&v.profile!==undefined){
+   if(!Object.hasOwn(NOSE_PROFILES,v.profile))throw Error('Unknown front nose profile');
+   g.components[k].profile=v.profile;
+  }
+  for(const s of Object.keys(g.components[k]).filter(f=>f!=='type'&&f!=='profile'))if(v[s]!==undefined)g.components[k][s]=number(v[s],COMPONENT_FIELDS[s],k+'.'+s);
  }
  for(const [k,v] of Object.entries(x.materials??{})){
   if(!Object.hasOwn(MAT,k)||typeof v!=='string'||!/^#[a-f\d]{6}$/i.test(v))throw Error('Invalid material '+k);

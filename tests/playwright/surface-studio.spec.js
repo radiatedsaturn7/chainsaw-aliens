@@ -126,3 +126,28 @@ test('an exported car can be driven twice with different geometry, without mutat
  });
  expect(after).toEqual(project);
 });
+
+test('mobile nose controls visibly reshape the same draft and persist',async({page})=>{
+ const frame=await openDesign(page);
+ const body=frame.locator('body');
+ const shape=frame.getByLabel('Nose shape',{exact:true});
+ const image=()=>body.evaluate(()=>vehicleDesigner.renderView({angle:'top',mode:'clay',lighting:'studio',projection:'ortho'}));
+ await shape.selectOption('square');
+ const square=await image();
+ await shape.selectOption('v');
+ const pointed=await image();
+ expect(pointed).not.toBe(square);
+ await shape.selectOption('round');
+ expect(await image()).not.toBe(pointed);
+ await frame.getByLabel('Corner sweep value',{exact:true}).fill('0.85');
+ await frame.getByLabel('Corner sweep value',{exact:true}).press('Tab');
+ await frame.getByLabel('Nose drop value',{exact:true}).fill('0.72');
+ await frame.getByLabel('Nose drop value',{exact:true}).press('Tab');
+ await expect.poll(()=>body.evaluate(()=>vehicleDesigner.getGenome().components.frontBumper)).toMatchObject({profile:'round',sweep:.85,drop:.72});
+ await frame.getByRole('button',{name:'Parts',exact:true}).tap();
+ await frame.locator('#component').selectOption('frontBumper');
+ await expect(frame.getByLabel('Nose drop value',{exact:true})).toHaveValue('0.72');
+ const file=await body.evaluate(()=>vehicleDesigner.save());
+ await frame.locator('#design-file').setInputFiles({name:'rounded.json',mimeType:'application/json',buffer:Buffer.from(file)});
+ expect(await body.evaluate(()=>vehicleDesigner.export({quality:'preview'}).genome.components.frontBumper)).toMatchObject({profile:'round',sweep:.85,drop:.72});
+});

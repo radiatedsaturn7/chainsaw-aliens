@@ -85,3 +85,42 @@ test('temporary drive documents resolve through get and prepare without storage 
  }
  assert.equal(lib.entries.size,0);
 });
+
+test('nose profiles change the silhouette, keep wheels fixed, and seat the optics on the generated cap',()=>{
+ const legacy=createVehicle('sedan');
+ for(const k of ['profile','sweep','rollover','drop'])delete legacy.components.frontBumper[k];
+ const baseline=loadVehicle(JSON.stringify(legacy));assert.equal(baseline.components.frontBumper.profile,'round');
+ const measurements={};
+ for(const family of Object.keys(FAMILIES))for(const profile of ['square','round','v']){
+  const g=updateDesign(createVehicle(family),'components','frontBumper',profile,'profile');
+  g.components.frontBumper.sweep=.92;
+  build(g,d=>{
+   assert.deepEqual(d.diagnostics.issues,[]);
+   const cap=d.parts.find(p=>p.component==='frontBumper'&&p.material==='paint').geometry;
+   const a=cap.attributes.position, cols=33, mid=12*cols;
+   const ctr=a.getZ(mid+16),q=a.getZ(mid+24),corner=a.getZ(mid+32);
+   assert.ok(ctr>corner);
+   const noseSide=d.parts.filter(p=>p.component==='frontBumper'&&p.material==='paint').slice(1);
+   for(const [s,p] of noseSide.entries()){
+    const get=i=>[a.getX(i),a.getY(i),a.getZ(i)];
+    const side=p.geometry.attributes.position;
+    for(let j=1;j<=12;j++){
+     const i=12*13+j, c=(12+j)*cols+(s===0?0:32);
+     assert.ok(get(c).every((v,axis)=>Math.abs(v-side.array[i*3+axis])<1e-6));
+    }
+   }
+   const mount=d.lampMounts.HeadlightMount_R;
+   assert.ok(mount.every(Number.isFinite));assert.ok(Math.abs(mount[2]-ctr)<.3);
+   assert.equal(d.metadata.wheelbaseM,g.dimensions.wheelbase);
+   if(family==='sedan')measurements[profile]={relative:(ctr-q)/(ctr-corner),sweep:ctr-corner,mount};
+  });
+ }
+ assert.ok(measurements.square.relative<.18);
+ assert.ok(measurements.round.relative>.25&&measurements.round.relative<.40);
+ assert.ok(measurements.v.relative>.6);
+ assert.ok(measurements.v.sweep>measurements.square.sweep*2);
+ assert.ok(measurements.square.mount[2]>measurements.v.mount[2]+.10);
+ const lowered=updateDesign(baseline,'components','frontBumper',1,'drop');
+ build(baseline,b=>build(lowered,d=>{assert.deepEqual(d.wheels,b.wheels);assert.ok(b.lampMounts.HeadlightMount_R[1]>d.lampMounts.HeadlightMount_R[1]+.09);}));
+ assert.throws(()=>updateDesign(baseline,'components','frontBumper','triangle','profile'));
+});
