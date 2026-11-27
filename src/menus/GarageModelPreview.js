@@ -149,7 +149,7 @@ export class GarageModelPreview {
     if(placement!==wheelBinding)garageY=hub.y*placement.scale[1]/(wheelBinding.scale?.[1]||1);
     (this.wheelInstances ||= []).push(instance);wheel=instance.object;
    }else wheel=createModelWheel(stance.radius,stance.width);
-   syncWrxBrakeHardware(wheel,car,hub.id);
+   syncWrxBrakeHardware(wheel,car,hub.id,0,wheelModel);
    wheel.name=`garageModelWheel-${hub.id}`;wheel.position.set(hub.x,garageY,hub.z);this.wheels.add(wheel);
    shadowPlane(hub.x,hub.z,stance.width*2.9,stance.radius*2.35,.88);
   }

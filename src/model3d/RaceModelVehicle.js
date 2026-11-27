@@ -77,7 +77,7 @@ export function updateRaceModelParts(group,car,session,{library=modelAssets,auto
       // already includes spin). Do not apply spin a second time here.
       const canonical=isNativeModelWheelCar(car)&&hasAuthoritativeModelWheelPose(pose);
       part.userData.spin.rotation.x=canonical?0:Number(pose?.spinAngleRad)||0;
-      syncWrxBrakeHardware(part,car,wheelId,canonical?pose.spinAngleRad:0);
+      syncWrxBrakeHardware(part,car,wheelId,canonical?pose.spinAngleRad:0,model);
       const studioCaliper=instance.root.children.find(mesh=>mesh.material?.name?.startsWith('[studio9:static-caliper]'));
       if(studioCaliper){
         const spin=Number(pose?.spinAngleRad)||0;
