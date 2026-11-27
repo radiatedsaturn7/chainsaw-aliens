@@ -3,12 +3,12 @@ import {ModelAssetInstance, modelAssets, normalizeModelBinding} from '../model3d
 import {modelWheelBindingForAxle,placeOutboardWheelFace} from '../model3d/ModelBinding.js';
 import {jointMatrices} from '../model3d/ModelRig.js';
 import {ensureModelSceneLighting} from '../model3d/ModelRender.js';
-import {isWrxFit10Document} from '../model3d/WrxBundledModels.js';
+import {isWrxFit10Document,isWrxFit12Document} from '../model3d/WrxBundledModels.js';
 import {syncWrxBrakeHardware} from '../model3d/WrxBrakeHardware.js';
 import {createModelWheel, isDedicatedModelWheelCar} from '../model3d/ModelWheel.js';
 
 export const garageEnvironmentProfile=(body,wheel)=>
- isWrxFit10Document(body,'body')&&isWrxFit10Document(wheel,'wheel')?'garage-bay':'studio';
+ (isWrxFit10Document(body,'body')&&isWrxFit10Document(wheel,'wheel')||isWrxFit12Document(body,'body')&&isWrxFit12Document(wheel,'wheel'))?'garage-bay':'studio';
 
 const GARAGE_WIDGETS=new Set(['garage-preview','tuning-car-preview','upgrades-car-preview']);
 export const usesGarageModelPreview=(element,car)=>GARAGE_WIDGETS.has(element?.id)&&Boolean(isDedicatedModelWheelCar(car)||car?.art?.bodyModel?.ref&&car.art.wheelModel?.ref);

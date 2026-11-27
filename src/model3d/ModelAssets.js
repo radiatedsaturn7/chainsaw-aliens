@@ -1,5 +1,5 @@
 import {applyAutomotiveEnvironment,automotivePilotEnabled,automotiveFleetEnabled} from './AutomotiveMaterials.js';
-import {wrxBundledModelUrl,loadWrxBundledModel,isWrxFit10Document} from './WrxBundledModels.js';
+import {wrxBundledModelUrl,loadWrxBundledModel,isWrxStudioDocument} from './WrxBundledModels.js';
 import {wrxPilotPart} from './WrxVisualPilot.js';
 import {normalizeModelBinding} from './ModelBinding.js';
 export {normalizeModelBinding} from './ModelBinding.js';
@@ -74,7 +74,7 @@ export class ModelAssetInstance {
     if(changed){
       if(this.root){this.object.remove(this.root);disposeModelObject(this.root);}
       const part=wrxPilotPart(normalized.ref);
-      const wrxPart=part&&!isWrxFit10Document(model,part)?part:null;
+      const wrxPart=part&&!isWrxStudioDocument(model,part)?part:null;
       this.root=buildModelObject(model,{wrxPart,automotive:wrxPart?automotivePilotEnabled:vehicleVisual&&automotiveFleetEnabled});this.object.add(this.root);this.model=model;this.time=0;
     }
     if(this.binding?.clip!==normalized.clip)this.time=0;

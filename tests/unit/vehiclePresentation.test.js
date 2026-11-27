@@ -10,8 +10,8 @@ import {installRaceLighting} from '../../src/racing/RaceLighting.js';
 import {automotiveEnvironment,applyAutomotiveEnvironment} from '../../src/model3d/AutomotiveMaterials.js';
 import {garageEnvironmentProfile,garageModelPixelRatio} from '../../src/menus/GarageModelPreview.js';
 
-test('Fit 10 native lamps follow the same inputs as the race light effects',()=>{
- const bytes=readFileSync(new URL('../../src/model3d/wrx/fit10-body.pack',import.meta.url));
+for(const fit of [10,12])test('Fit '+fit+' native lamps follow the same inputs as the race light effects',()=>{
+ const bytes=readFileSync(new URL('../../src/model3d/wrx/fit'+fit+'-body.pack',import.meta.url));
  const model=JSON.parse(gunzipSync(bytes));
  const root=buildModelObject(model,{automotive:true});
  const instance={root,object:new THREE.Group(),model,binding:{ref:'Field-Forgetmenot'}};

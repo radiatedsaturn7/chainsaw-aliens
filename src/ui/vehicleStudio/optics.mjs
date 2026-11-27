@@ -65,7 +65,7 @@ export function makeOpenings({end,g,segments=32}){
    width:sat(num(raw.width,.5)),height:sat(num(raw.height,.5)),corner:sat(num(raw.corner,.5)),
    angle:signed(num(raw.angle,(legacy.angle||0)/18)),sweep:sat(num(raw.sweep,.5)),
    curvature:sat(num(raw.curvature,.5)),recess:sat(num(raw.recess,.5)),convexity:sat(num(raw.convexity,.5)),
-   sideWrap:sat(num(raw.sideWrap,0)),silverUpper:sat(num(raw.silverUpper,0)),rearCells:sat(num(raw.rearCells,0)),roundBowls:sat(num(raw.roundBowls,0)),flutedBowls:sat(num(raw.flutedBowls,0)),position:sat(num(raw.position,.5)),protrusion:sat(num(raw.protrusion,0)),formula:raw.formula??'',modules:Math.max(0,Math.min(8,Math.round(raw.modules??0))),spacing:sat(num(raw.spacing,.5)),inboardReach:sat(num(raw.inboardReach,.5)),formulaSide:g.construction?.symmetry?.[group]==='linked'?s:1,outline:Array.isArray(raw.outline)?raw.outline:[]};
+   sideWrap:sat(num(raw.sideWrap,0)),silverFront:sat(num(raw.silverFront,0)),silverUpper:sat(num(raw.silverUpper,0)),rearCells:sat(num(raw.rearCells,0)),roundBowls:sat(num(raw.roundBowls,0)),flutedBowls:sat(num(raw.flutedBowls,0)),position:sat(num(raw.position,.5)),protrusion:sat(num(raw.protrusion,0)),formula:raw.formula??'',modules:Math.max(0,Math.min(8,Math.round(raw.modules??0))),spacing:sat(num(raw.spacing,.5)),inboardReach:sat(num(raw.inboardReach,.5)),formulaSide:g.construction?.symmetry?.[group]==='linked'?s:1,outline:Array.isArray(raw.outline)?raw.outline:[]};
 
  // The bands are deliberately disjoint even at all slider extremes:
  // lamp inside <= .366; center grille starts >= .388; lower intakes start >= .31.
@@ -304,7 +304,11 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
   }
   const d=mix(.044,.084,num(opt.recess,.5)), maxProtrusion=num(opt.protrusion,0);
   const bowl=ring(.843,d*.89);
-  putGeo('trim',[seat,ring(.873,d*.59),bowl],pt(cx,cy,d));
+  const silverBack=front&&kind==='lamp'&&opt.silverFront;
+  putGeo('trim',[seat,ring(.873,d*.59),bowl],silverBack?null:pt(cx,cy,d));
+  // The real assembly reads as one lens: a continuous bright interior
+  // behind the separate bowls, with a dark gasket around the outside.
+  if(silverBack)putGeo('opticSilver',[bowl],pt(cx,cy,d));
   // A reflector subassembly never breaches the physical setback or housing.
   const oLayout=kind==='fog'?'projector':opt.layout;
   const ellipse=(x,y,rx,ry,n=18)=>pairs(n,t=>[x+rx*Math.cos(t*tau),y+ry*Math.sin(t*tau)]);

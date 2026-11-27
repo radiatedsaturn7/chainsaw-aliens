@@ -1,4 +1,4 @@
-import {isWrxFit10Document} from './WrxBundledModels.js';
+import {isWrxStudioDocument} from './WrxBundledModels.js';
 import * as THREE from '../vendorBridge/three.js';
 import {mergeGeometries} from '../../vendor/three-addons/utils/BufferGeometryUtils.js';
 
@@ -67,7 +67,7 @@ export function createWrxBrakeHardware(wheelId){
 const assemblyByWheel=new WeakMap();
 export function syncWrxBrakeHardware(wheel,car,wheelId,spinAngle=0,model=null){
  let hardware=assemblyByWheel.get(wheel);
- if(!usesWrxBrakeHardware(car)||isWrxFit10Document(model,'wheel')){
+ if(!usesWrxBrakeHardware(car)||isWrxStudioDocument(model,'wheel')){
   if(hardware){
    hardware.removeFromParent();assemblyByWheel.delete(wheel);
    for(const mesh of hardware.children){mesh.geometry.dispose();mesh.material.dispose();}

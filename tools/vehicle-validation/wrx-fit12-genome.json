@@ -1,0 +1,780 @@
+{
+  "kind": "lotg-vehicle-design",
+  "schemaVersion": 1,
+  "generatorVersion": 5,
+  "name": "Field Forgetmenot 2004 · Fit 12",
+  "family": "sedan",
+  "dimensions": {
+    "wheelbase": 2.54,
+    "width": 1.745,
+    "height": 1.421,
+    "front": 0.939,
+    "rear": 0.929,
+    "track": 0.847,
+    "belt": 0.605,
+    "box": 0.66,
+    "stance": 0.153,
+    "cabin": -0.039,
+    "cabinLength": 0.546,
+    "cabinWidth": 0.825,
+    "hood": -0.008,
+    "trunk": 0.026,
+    "crown": 0.69,
+    "skirt": 1.07,
+    "frontBox": 0.03,
+    "rearBox": 0.12,
+    "diameter": 0.636,
+    "tireWidth": 0.225,
+    "rimRatio": 0.696,
+    "archReserve": 0.011,
+    "rearTrackBias": 0
+  },
+  "components": {
+    "hood": {
+      "type": "power bulge",
+      "size": 1,
+      "shape": 0.59,
+      "depth": 1
+    },
+    "frontFenders": {
+      "type": "integrated",
+      "size": 1.03,
+      "shape": 0.53,
+      "depth": 1.13
+    },
+    "rearFenders": {
+      "type": "swept",
+      "size": 1.01,
+      "shape": 0.44,
+      "depth": 0.96
+    },
+    "frontBumper": {
+      "type": "sport",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1,
+      "profile": "round",
+      "sweep": 0.77,
+      "rollover": 0.39,
+      "drop": 0.15
+    },
+    "rearBumper": {
+      "type": "sport",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "doors": {
+      "type": "four door",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "roof": {
+      "type": "crowned",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "pillars": {
+      "type": "painted frame",
+      "size": 1.17,
+      "shape": 0.75,
+      "depth": 1
+    },
+    "glass": {
+      "type": "tinted",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "rockers": {
+      "type": "deep",
+      "size": 0.82,
+      "shape": 0.37,
+      "depth": 0.94
+    },
+    "trunk": {
+      "type": "notch",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "headlights": {
+      "type": "swept",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1,
+      "bias": 0,
+      "angle": 0
+    },
+    "tails": {
+      "type": "stacked",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1,
+      "bias": 0,
+      "angle": 0
+    },
+    "fogs": {
+      "type": "blank",
+      "size": 1.28,
+      "shape": 0.5,
+      "depth": 1.28,
+      "bias": 0,
+      "angle": 0
+    },
+    "grille": {
+      "type": "mesh",
+      "size": 1.28,
+      "shape": 0.5,
+      "depth": 1.28
+    },
+    "scoop": {
+      "type": "scoop",
+      "size": 1.24,
+      "shape": 0.68,
+      "depth": 1.11,
+      "bias": -0.62,
+      "angle": 0
+    },
+    "spoiler": {
+      "type": "boxed wing",
+      "size": 1.22,
+      "shape": 0.66,
+      "depth": 0.97,
+      "bias": 0.21,
+      "angle": -1.5
+    },
+    "mirrors": {
+      "type": "folded rectangle",
+      "size": 1.07,
+      "shape": 0.57,
+      "depth": 0.97,
+      "bias": 0,
+      "angle": 0
+    },
+    "handles": {
+      "type": "painted lever",
+      "size": 0.98,
+      "shape": 0.6,
+      "depth": 1
+    },
+    "wheels": {
+      "type": "10-spoke",
+      "size": 0.99,
+      "shape": 0.62,
+      "depth": 0.86
+    },
+    "tires": {
+      "type": "road",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "exhaust": {
+      "type": "single",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1,
+      "bias": 0,
+      "angle": 0
+    },
+    "dash": {
+      "type": "road",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "seats": {
+      "type": "bucket",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "steering": {
+      "type": "round",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "instruments": {
+      "type": "analog",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "console": {
+      "type": "manual",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    }
+  },
+  "fascia": {
+    "front": {
+      "profile": "round",
+      "intakes": "single",
+      "hoodNoseDrop": 0.038,
+      "hoodNoseShoulder": 0.82,
+      "deckSurfaceBlend": 0,
+      "deckSurfaceCrown": 0.012,
+      "deckLowerRoll": 0,
+      "deckRailCurve": 0,
+      "bumperFaceBlend": 0,
+      "bumperFaceCrown": 0.018,
+      "deckPanel": 0,
+      "deckWidth": 0.5,
+      "deckHeight": 0.5,
+      "valanceRise": 0.015,
+      "valanceWidth": 0.55,
+      "bumperBeltRise": 0.015,
+      "bumperBeltHeight": 0.47,
+      "bumperBeltSweep": 0.11,
+      "lampShoulderRoll": 0,
+      "cornerTuck": 0.053,
+      "paintedPocket": 0,
+      "upperEndSweep": 0.052,
+      "bumperMidReach": 0.041,
+      "quarterWaist": 0.013,
+      "quarterBlend": 0.15,
+      "terminalTuck": 0,
+      "plateOpeningStretch": 0,
+      "plateMount": 0,
+      "platePosition": 0.615,
+      "bumperStation": 0.41,
+      "upperFasciaLift": 0.051,
+      "outerFasciaWidth": 0.069,
+      "grilleWidth": 1,
+      "grilleHeight": 0.7,
+      "grilleHeightPosition": 0.15,
+      "fogCoverHeight": 1,
+      "plateHeight": 0.5,
+      "plateWidth": 0.5,
+      "lowerIntakeRise": 0.095,
+      "lowerIntakeDepth": 0.035,
+      "fogCoverStamp": 0.83,
+      "intakeWidth": 1,
+      "intakeHeight": 1,
+      "intakeHeightPosition": 0.405,
+      "sweep": 0.77,
+      "pointedness": 0.06,
+      "center": 1,
+      "roundness": 0.43,
+      "taper": 0.055,
+      "drop": 0.15,
+      "verticalRoundness": 0.39,
+      "rake": 0.18,
+      "rollover": 0.39,
+      "lowerRoll": 0.48,
+      "wrap": 0.93,
+      "shoulder": 0.57,
+      "chin": 0.51,
+      "recess": 0.18,
+      "crease": 0.58,
+      "boxiness": 0.68,
+      "grilleShape": "round-rect",
+      "intakeShape": "rectangle",
+      "curves": {
+        "plan": [
+          0.06,
+          0.07,
+          0.16,
+          0.04
+        ],
+        "vertical": [
+          0.2,
+          0.06,
+          -0.03,
+          -0.04
+        ],
+        "transverse": [
+          -0.11,
+          0.1,
+          0.1,
+          -0.11
+        ]
+      }
+    },
+    "rear": {
+      "profile": "round",
+      "intakes": "closed",
+      "hoodNoseDrop": 0,
+      "hoodNoseShoulder": 0.72,
+      "deckSurfaceBlend": 0.96,
+      "deckSurfaceCrown": 0.009,
+      "deckLowerRoll": 0.71,
+      "deckRailCurve": 0.39,
+      "bumperFaceBlend": 0.88,
+      "bumperFaceCrown": 0.022,
+      "deckPanel": 0.25,
+      "deckWidth": 0.91,
+      "deckHeight": 0.93,
+      "valanceRise": 0.09,
+      "valanceWidth": 0.66,
+      "bumperBeltRise": 0.006,
+      "bumperBeltHeight": 0.48,
+      "bumperBeltSweep": 0.07,
+      "lampShoulderRoll": 0.038,
+      "cornerTuck": 0.067,
+      "paintedPocket": 1,
+      "upperEndSweep": 0.077,
+      "bumperMidReach": 0.076,
+      "quarterWaist": 0.044,
+      "quarterBlend": 0.33,
+      "terminalTuck": 0.094,
+      "plateOpeningStretch": 0.26,
+      "plateMount": 0.87,
+      "platePosition": 0.662,
+      "bumperStation": 0.43,
+      "upperFasciaLift": 0.103,
+      "outerFasciaWidth": 0.037,
+      "grilleWidth": 0.5,
+      "grilleHeight": 0.5,
+      "grilleHeightPosition": 0.5,
+      "fogCoverHeight": 0.5,
+      "plateHeight": 0.97,
+      "plateWidth": 0.79,
+      "lowerIntakeRise": 0,
+      "lowerIntakeDepth": 0,
+      "fogCoverStamp": 0,
+      "intakeWidth": 0.5,
+      "intakeHeight": 0.5,
+      "intakeHeightPosition": 0.5,
+      "sweep": 0.34,
+      "pointedness": 0,
+      "center": 0.99,
+      "roundness": 0.71,
+      "taper": 0.04,
+      "drop": 0.12,
+      "verticalRoundness": 0.25,
+      "rake": 0.62,
+      "rollover": 0.32,
+      "lowerRoll": 0.78,
+      "wrap": 0.91,
+      "shoulder": 0.39,
+      "chin": -0.07,
+      "recess": 0.17,
+      "crease": 0.54,
+      "boxiness": 0.68,
+      "grilleShape": "trapezoid",
+      "intakeShape": "trapezoid",
+      "curves": {
+        "plan": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "vertical": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "transverse": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  "optics": {
+    "front": {
+      "housing": "round-twin",
+      "layout": "factory-split",
+      "width": 0.78,
+      "height": 1,
+      "corner": 0.93,
+      "angle": -0.54,
+      "sweep": 0.5,
+      "curvature": 0.42,
+      "recess": 0.4,
+      "convexity": 0.24,
+      "position": 0.047,
+      "outboard": 0.48,
+      "sideWrap": 0.38,
+      "tallHousing": 0,
+      "lowerLensReach": 0.105,
+      "rearCells": 0,
+      "roundBowls": 0.86,
+      "silverFront": 1,
+      "silverUpper": 0,
+      "flutedBowls": 0.9,
+      "inboardReach": 0.47,
+      "protrusion": 0,
+      "outline": [
+        0,
+        0,
+        0.04,
+        0,
+        0.04,
+        -0.02,
+        -0.02,
+        0.04
+      ],
+      "formula": "0.05*cos(2*theta)-0.08*sin(2*theta)",
+      "modules": 0,
+      "spacing": 0.5
+    },
+    "rear": {
+      "housing": "upright-wrap",
+      "layout": "factory-split",
+      "width": 0.82,
+      "height": 1,
+      "corner": 0.52,
+      "angle": -0.12,
+      "sweep": 0.5,
+      "curvature": 0.5,
+      "recess": 0.2,
+      "convexity": 0.38,
+      "position": 0.255,
+      "outboard": 0.775,
+      "sideWrap": 0.24,
+      "tallHousing": 0.25,
+      "lowerLensReach": 0,
+      "rearCells": 1,
+      "roundBowls": 0,
+      "silverFront": 0,
+      "silverUpper": 1,
+      "flutedBowls": 0,
+      "inboardReach": 0.62,
+      "protrusion": 0,
+      "outline": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "formula": "",
+      "modules": 0,
+      "spacing": 0.5
+    }
+  },
+  "construction": {
+    "symmetry": {
+      "headlights": "mirrored",
+      "taillights": "mirrored",
+      "fogs": "mirrored",
+      "mirrors": "mirrored",
+      "fenders": "mirrored",
+      "doors": "mirrored",
+      "wheels": "mirrored",
+      "vents": "mirrored",
+      "rockers": "mirrored"
+    },
+    "sides": {
+      "L": {},
+      "R": {}
+    },
+    "cabin": {
+      "layout": "bench",
+      "bolster": 0.85,
+      "lumbar": 0.45,
+      "trim": 0.54,
+      "rearPillarFoot": 0.24,
+      "rearRoofShift": 0.03,
+      "rearPillarWidth": 0.045,
+      "rearGlassArc": 0.094,
+      "canopyLength": 0.67,
+      "canopyShoulder": 0.72,
+      "glassBow": 0.56
+    },
+    "finish": {
+      "paintRoughness": 0.285,
+      "coatRoughness": 0.077
+    },
+    "hood": {
+      "shoulderRise": 0.043,
+      "shoulderWidth": 0.083,
+      "shoulderAt": 0.65,
+      "shoulderSweep": 0.09,
+      "scoopWidth": 0.586,
+      "scoopHeight": 0.089,
+      "scoopCorner": 0.68
+    },
+    "wing": {
+      "elevation": 0.005,
+      "boxWallWidth": 0.052,
+      "boxWallRake": -0.39,
+      "camber": 0.03,
+      "sweep": 0.015,
+      "taper": 0.02,
+      "thickness": 0.17,
+      "angle": 0,
+      "supports": 2,
+      "spacing": 0.88,
+      "formula": "",
+      "elements": 1
+    },
+    "exhaust": [
+      {
+        "id": "left-round-outlet",
+        "x": 0.36,
+        "y": 0.01,
+        "spacing": 0.09,
+        "count": 1,
+        "diameter": 0.137,
+        "shape": "round",
+        "protrusion": 0.037,
+        "curvature": 0.26,
+        "pitch": 2,
+        "yaw": -4,
+        "roll": 0,
+        "wall": 0.004,
+        "bevel": 0.004,
+        "recess": 0.009,
+        "finish": "steel",
+        "mirror": false
+      }
+    ],
+    "features": []
+  },
+  "seams": {
+    "rearFenderSeam": {
+      "gap": 0.0045,
+      "offset": 0,
+      "flush": 0,
+      "radius": 0.0016,
+      "thickness": 0.0012,
+      "depth": 0.012,
+      "flange": 0.82,
+      "seal": 0,
+      "align": 1,
+      "tangent": 0.92,
+      "curvature": 0.84,
+      "crease": 0
+    },
+    "rearDoorSeam": {
+      "gap": 0.0045,
+      "offset": 0,
+      "flush": 0,
+      "radius": 0.0016,
+      "thickness": 0.0012,
+      "depth": 0.012,
+      "flange": 0.82,
+      "seal": 0,
+      "align": 1,
+      "tangent": 0.92,
+      "curvature": 0.84,
+      "crease": 0
+    },
+    "centerDoorSeam": {
+      "gap": 0.0045,
+      "offset": 0,
+      "flush": 0,
+      "radius": 0.0016,
+      "thickness": 0.0012,
+      "depth": 0.012,
+      "flange": 0.82,
+      "seal": 0,
+      "align": 1,
+      "tangent": 0.92,
+      "curvature": 0.84,
+      "crease": 0
+    },
+    "frontDoorSeam": {
+      "gap": 0.0045,
+      "offset": 0,
+      "flush": 0,
+      "radius": 0.0016,
+      "thickness": 0.0012,
+      "depth": 0.012,
+      "flange": 0.82,
+      "seal": 0,
+      "align": 1,
+      "tangent": 0.92,
+      "curvature": 0.84,
+      "crease": 0
+    },
+    "frontFenderSeam": {
+      "gap": 0.0045,
+      "offset": 0,
+      "flush": 0,
+      "radius": 0.0016,
+      "thickness": 0.0012,
+      "depth": 0.012,
+      "flange": 0.82,
+      "seal": 0,
+      "align": 1,
+      "tangent": 0.92,
+      "curvature": 0.84,
+      "crease": 0
+    },
+    "hoodSeam": {
+      "gap": 0.0045,
+      "offset": 0,
+      "flush": 0,
+      "radius": 0.0016,
+      "thickness": 0.0012,
+      "depth": 0.012,
+      "flange": 0.82,
+      "seal": 0.55,
+      "align": 1,
+      "tangent": 0.92,
+      "curvature": 0.84,
+      "crease": 0
+    },
+    "trunkSeam": {
+      "gap": 0.0045,
+      "offset": 0,
+      "flush": 0,
+      "radius": 0.0016,
+      "thickness": 0.0012,
+      "depth": 0.012,
+      "flange": 0.82,
+      "seal": 0.55,
+      "align": 1,
+      "tangent": 0.92,
+      "curvature": 0.84,
+      "crease": 0
+    },
+    "roofSeam": {
+      "gap": 0.0032,
+      "offset": 0,
+      "flush": 0,
+      "radius": 0.0016,
+      "thickness": 0.0012,
+      "depth": 0.012,
+      "flange": 0.82,
+      "seal": 0.88,
+      "align": 1,
+      "tangent": 0.92,
+      "curvature": 0.84,
+      "crease": 0
+    }
+  },
+  "body": {
+    "frontFlareScale": 0.38,
+    "rearFlareScale": 0.34,
+    "lipScale": 0.53,
+    "archFootBlend": 0.105,
+    "doorStamp": 0.021,
+    "doorStampFade": 0.205,
+    "doorStampWidth": 0.052,
+    "doorStampFront": 0.16,
+    "doorStampRear": 0.08,
+    "doorStampHeight": 0.481,
+    "doorStampSweep": 0.007,
+    "frontArchUpper": 0.024,
+    "rearArchUpper": 0.022,
+    "frontArchFore": 0.027,
+    "rearArchFore": 0.026,
+    "creaseHeight": 0.38,
+    "creaseStrength": 0.44,
+    "archCrown": 0.38,
+    "roofEdge": 0.64,
+    "handleRecess": 0.49
+  },
+  "surfaces": {
+    "frontFenders": {
+      "schemaVersion": 1,
+      "preset": "wrx",
+      "topology": "swept-fender",
+      "boundaryConstraints": {
+        "shutLineM": 0.0035,
+        "hoodApproach": "tangent",
+        "bumperApproach": "style-break"
+      },
+      "parameters": {
+        "length": 1.422,
+        "width": 0,
+        "height": 0,
+        "longCrown": 0,
+        "latCrown": 0,
+        "shoulderPos": 0,
+        "shoulderCurvature": 0,
+        "shoulderSharpness": 0,
+        "frontBoxiness": 0,
+        "rearBoxiness": 0,
+        "archRadius": 0.354,
+        "archPosition": 0,
+        "archEccentricity": 0.9943502824858756,
+        "flareDepth": 0,
+        "flareWidth": 1,
+        "lipRadius": 0.0055,
+        "hoodBoundary": 0,
+        "headlightBoundary": 0,
+        "doorBoundary": 0,
+        "bumperBoundary": 0,
+        "rocker": 0,
+        "localCurvature": 0
+      },
+      "overrides": {}
+    },
+    "hood": {
+      "kind": "bicubic-interior-v1",
+      "points": [
+        0.013,
+        0.013,
+        0.01,
+        0.01
+      ]
+    },
+    "roof": {
+      "kind": "bicubic-interior-v1",
+      "points": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "trunk": {
+      "kind": "bicubic-interior-v1",
+      "points": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "constraints": {
+    "gap": 0.005,
+    "archClearance": 0.045,
+    "partition": "shared-stations-v1"
+  },
+  "materials": {
+    "paint": "#124b9a",
+    "wheel": "#ac8543",
+    "glass": "#425965",
+    "rubber": "#171a20",
+    "trim": "#22262b",
+    "chrome": "#a3abb5",
+    "head": "#d9e7fb",
+    "tail": "#961c25",
+    "interior": "#292d36",
+    "seat": "#244284",
+    "floor": "#303843",
+    "opticCover": "#e0efff",
+    "indicator": "#d68a26",
+    "seamDark": "#141b23",
+    "projector": "#474d55",
+    "reflector": "#b5b9c0",
+    "reflectorFluted": "#b3bac1",
+    "rotor": "#64696e",
+    "barrel": "#303238",
+    "caliper": "#88643a",
+    "underbody": "#292c31",
+    "heatShield": "#575957",
+    "leather": "#202934",
+    "cloth": "#1f3370",
+    "stitch": "#686b71",
+    "opticRed": "#b60913",
+    "opticClear": "#8299a7",
+    "opticSilver": "#d9dfe5",
+    "signalL": "#ef9c3e",
+    "signalR": "#ef9c3e",
+    "runningRed": "#a51018"
+  },
+  "attachments": {
+    "schema": "axles-and-optics-v1"
+  }
+}
