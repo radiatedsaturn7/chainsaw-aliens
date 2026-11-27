@@ -12,14 +12,23 @@ function validate(g){
  assert(e.metrics.carTriangles<=15000);assert.equal(e.metrics.carTriangles,e.metrics.bodyTriangles+4*e.metrics.wheelTriangles);
  return Object.values(e.models)[0].faces;
 }
-test('C4 gets two recessed upright wrap rear housings, retaining split hatch glazing',()=>{
+test('C4 hatch-edge lights flank both rear panes instead of staying in the bumper',()=>{
  const g=load('citroen-c4');
  assert.equal(g.optics.rear.housing,'upright-wrap');
  assert(g.optics.rear.sideWrap>0);
  assert.equal(g.optics.rear.layout,'factory-split');
  assert.equal(loadVehicle(serializeVehicle(g)).construction.cabin.rearHatchFold,1);
+ const d=generateVehicle(g);
+ try{
+  assert(!d.fascia.rear.openings.some(o=>o.component==='tails'));
+  assert.equal(d.features.filter(x=>x.type==='lamp'&&x.end==='rear').length,2);
+  const mounted=Object.entries(d.lampMounts).filter(([k])=>k.startsWith('TaillightMount_')).map(([,p])=>p);
+  assert.equal(mounted.length,2);
+  assert.ok(mounted.every(([x,y])=>Math.abs(x)>.5&&y>g.dimensions.height*g.dimensions.belt));
+ }finally{disposeDesign(d);}
  const f=validate(g);
- assert(f.some(x=>x.component==='tails'&&x.material==='studio-mat-opticRed'));
+ for(const material of ['opticRed','runningRed','opticClear'])
+  assert(f.some(x=>x.component==='tails'&&x.material==='studio-mat-'+material));
  assert(f.some(x=>x.component==='glass'&&x.material==='studio-mat-seamDark'));
 });
 test('Carnival gets geometry-matched applique and sliding track without losing seventh seat',()=>{

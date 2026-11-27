@@ -24,8 +24,17 @@ of exact factory tolerances, identical tires, or moving assemblies.
 
 ## Budget verification
 
-The matched photo-fit exports are 13,252 (Linaria), 13,428 (Linum),
-14,016 (Ember Pod), 14,626 (Kestrel), 13,964 (Flint), 13,560 (Caravan),
-14,298 (Dustjack), 14,204 (Lark), and 13,728 (Briar) triangles including four
-wheels. Roster unit tests regenerate the exact packaged exports and verify
-all four stock hardpoints and lamp material roles.
+This pass traces each folded wheel-arch hem from the actual tessellated
+panel edge, seats the liners behind it, and fixes the mirrored skirt winding. It also refits the
+C4-style Flint's hatch-edge lenses and plate recess, the Kestrel's
+rear deck and split optical treatment, and the Caravan's shared
+headlamp/grille band. The optional hatch-edge lamp control lives on the
+split-hatch chart, not as a second lamp laid over the original bumper lens.
+The C4 placement was checked against [photos of a 2005 C4 VTS](https://auctions.wbandsons.com/auction/lot/lot-113---2005-citroen-c4-vts/?lot=3198&sd=1).
+
+The matched exports are 13,204 (Linaria), 14,902 (Linum),
+13,976 (Ember Pod), 14,526 (Kestrel), 14,994 (Flint), 14,991 (Caravan),
+14,266 (Dustjack), 14,092 (Lark), and 13,664 (Briar) triangles including
+four wheels. The WRX stays at 14,764 with the previous hood and paint.
+Roster unit tests regenerate the exact packaged exports and verify
+all four stock hardpoints and the headlight, brake and reverse roles.

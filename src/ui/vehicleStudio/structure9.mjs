@@ -113,7 +113,10 @@ export function buildStructure({g,quality='preview',compact=0,put,sample,dims}){
     // from that exterior flange so the open bay doesn't reveal another wheel.
     const guard=.032*smooth(th*6), top=Math.max(oy-.002,Math.min(B+.021,targetTop));
     const row=exact(0,1,small(perf?4:high?7:5,3,3,3)).map(u=>{
-     const x=mix(ox,innerX,u);
+     // Seat the liner just behind the painted hem. Using the sampled
+     // panel rail prevents a higher-resolution liner slicing through
+     // low-detail body panels on a short quarter or wide swept arch.
+     const x=mix(ox-s*.003,innerX,u);
      // Only the source edge (u=0) remains on the hem. Raise inward along most
      // of the vault before flattening into the protected inner wall.
      const y=mix(oy-.002,top,smooth(u*4))+(isOpening?guard*Math.sin(Math.PI*u):0);

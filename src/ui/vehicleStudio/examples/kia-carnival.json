@@ -21,7 +21,7 @@
     "trunk": -0.13,
     "crown": 0.12,
     "skirt": 1.02,
-    "frontBox": 0.23,
+    "frontBox": 0.3,
     "rearBox": 0.3,
     "diameter": 0.7373,
     "tireWidth": 0.235,
@@ -247,7 +247,7 @@
       "outerFasciaWidth": 0.035,
       "grilleWidth": 1,
       "grilleHeight": 1,
-      "grilleHeightPosition": 0.4,
+      "grilleHeightPosition": 0.29,
       "fogCoverHeight": 0.5,
       "plateHeight": 0.5,
       "plateWidth": 0.5,
@@ -255,7 +255,7 @@
       "lowerIntakeDepth": 0,
       "fogCoverStamp": 0,
       "intakeWidth": 0.84,
-      "intakeHeight": 0.25,
+      "intakeHeight": 0.39,
       "intakeHeightPosition": 0.5,
       "sweep": 0.37,
       "pointedness": 0,
@@ -273,7 +273,7 @@
       "recess": 0.16,
       "crease": 0.24,
       "boxiness": 0.34,
-      "grilleShape": "angular",
+      "grilleShape": "round-rect",
       "intakeShape": "angular",
       "curves": {
         "plan": [
@@ -294,7 +294,12 @@
           0,
           0
         ]
-      }
+      },
+      "insertBand": 0.8,
+      "insertWidth": 0.9,
+      "insertTop": 0.24,
+      "insertBottom": 0.5,
+      "insertSweep": 0.048
     },
     "rear": {
       "profile": "square",
@@ -383,18 +388,18 @@
   },
   "optics": {
     "front": {
-      "housing": "round-rect",
+      "housing": "angular",
       "layout": "twin",
-      "width": 0.47,
-      "height": 0.34,
+      "width": 0.84,
+      "height": 0.48,
       "corner": 0.5,
-      "angle": 0,
-      "sweep": 0.31,
+      "angle": -0.12,
+      "sweep": 0.52,
       "curvature": 0.5,
       "recess": 0.67,
       "convexity": 0.5,
-      "position": 0.61,
-      "outboard": 0.98,
+      "position": 0.5,
+      "outboard": 1,
       "sideWrap": 0,
       "tallHousing": 0,
       "lowerLensReach": 0,
