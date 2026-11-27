@@ -89,3 +89,22 @@ rear separates the red and clear zones while the front has a distinct amber
 section and twin reflector modules. Fog cover and rear license pocket dimensions
 are editable from the fascia controls. These options require no imported meshes
 and are stored in the normal editable vehicle design JSON.
+
+### Lamps that turn the corner, trunk seams, and valance
+
+In **Front / Rear → Optics**, **Wrap lamp into side** extends the same lens
+outline and cavity from the face around the exterior corner as a single cut.
+The cavity, reflector and lens use the local body-surface normal for depth.
+The original front-face behavior is unchanged at zero. Controls continue to
+respect linked or independent optical pairs.
+
+In **Rear → Shape**, turn up **Trunk panel recess / seam** and set the trunk
+width and depth. The deck insert is cut into the shared panel with painted
+lips and a dark closed return. Its boundary is constrained by the lamps and
+plate recess. **Lower valance rise** and **Width of raised valance** (under
+Valance) shape the bottom edge and the attached backing, not a separate
+floating skirt. These are geometry controls, not baked-on highlights.
+
+**Parts → Mirrors → Folded rectangle** gives the mirror housing its own
+rolled painted shell, dark base and separate inset mirror glass. Existing
+elliptical mirror variants are unchanged.

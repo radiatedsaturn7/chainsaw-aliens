@@ -60,7 +60,7 @@ export function makeOpenings({end,g,segments=32}){
    width:sat(num(raw.width,.5)),height:sat(num(raw.height,.5)),corner:sat(num(raw.corner,.5)),
    angle:signed(num(raw.angle,(legacy.angle||0)/18)),sweep:sat(num(raw.sweep,.5)),
    curvature:sat(num(raw.curvature,.5)),recess:sat(num(raw.recess,.5)),convexity:sat(num(raw.convexity,.5)),
-   position:sat(num(raw.position,.5)),protrusion:sat(num(raw.protrusion,0)),formula:raw.formula??'',modules:Math.max(0,Math.min(8,Math.round(raw.modules??0))),spacing:sat(num(raw.spacing,.5)),inboardReach:sat(num(raw.inboardReach,.5)),formulaSide:g.construction?.symmetry?.[group]==='linked'?s:1,outline:Array.isArray(raw.outline)?raw.outline:[]};
+   sideWrap:sat(num(raw.sideWrap,0)),position:sat(num(raw.position,.5)),protrusion:sat(num(raw.protrusion,0)),formula:raw.formula??'',modules:Math.max(0,Math.min(8,Math.round(raw.modules??0))),spacing:sat(num(raw.spacing,.5)),inboardReach:sat(num(raw.inboardReach,.5)),formulaSide:g.construction?.symmetry?.[group]==='linked'?s:1,outline:Array.isArray(raw.outline)?raw.outline:[]};
 
  // The bands are deliberately disjoint even at all slider extremes:
  // lamp inside <= .366; center grille starts >= .388; lower intakes start >= .31.
@@ -89,6 +89,44 @@ export function makeOpenings({end,g,segments=32}){
  }
  if(!front&&g.construction)out.push(aperture({id:'rear-plate-recess',component:'rearBumper',housing:'round-rect',cx:.5,cy:.615,
   width:mix(.155,.291,num(fascia.plateWidth,.5)),height:.125+(num(fascia.plateHeight,.5)-.5)*.214,kind:'plate',segments}));
+ if(!front&&(fascia.deckPanel??0)>0){
+  const plate=out.find(o=>o.kind==='plate');
+  const hi=Math.min(.483,plate?Math.min(...plate.outline.map(p=>p[1]))-.02:.483);
+  const top=.026,bottom=Math.min(hi,mix(.28,.495,num(fascia.deckHeight,.5)));
+  const width=mix(.16,.34,num(fascia.deckWidth,.5));
+  if(bottom-top>.10){
+   const lamps=out.filter(o=>o.kind==='lamp');
+   // Clip against the inwardmost part of each lamp over the neighboring
+   // station interval, not only at the sample. Joining segments therefore
+   // cannot cut through a shallow or steeply sloped light outline.
+   const count=24, step=(bottom-top)/count;
+   function outer(y){
+    const lo=y-step-.001,hi=y+step+.001;
+    let reach=width*(1-.18*((y-top)/(bottom-top))**1.33);
+    for(const o of lamps){
+     for(let k=0;k<o.outline.length;k++){
+      const a=o.outline[k],b=o.outline[(k+1)%o.outline.length];
+      if(Math.max(a[1],b[1])<lo||Math.min(a[1],b[1])>hi)continue;
+      const f=v=>Math.abs(b[1]-a[1])>1e-10?mix(a[0],b[0],sat((v-a[1])/(b[1]-a[1]))):a[0];
+      const v=[f(lo),f(hi),...(a[1]>=lo&&a[1]<=hi?[a[0]]:[]),...(b[1]>=lo&&b[1]<=hi?[b[0]]:[])];
+      reach=Math.min(reach,...v.map(x=>Math.abs(.5-x)-.012));
+     }
+    }
+    return Math.max(.047,reach);
+   }
+   // Use straight draft rails across the whole drop. A footprint can
+   // never follow the light's scallops and double back through itself.
+   const bound=Array.from({length:count+1},(_,i)=>outer(mix(top,bottom,i/count)));
+   const lower=Math.min(...bound)*.978;
+   const upper=Math.min(width,...bound.slice(0,-1).map((q,i)=>(q-lower*i/count)/(1-i/count)));
+   const side=sign=>Array.from({length:count+1},(_,i)=>{
+    const t=i/count,y=mix(top,bottom,t);
+    const bevel=i===0||i===count?.965:1;
+    return [.5+sign*mix(upper,lower,t)*bevel,y];
+   });
+   out.push({id:'rear-deck-insert',component:'trunk',kind:'deck',outline:[...side(1),...side(-1).reverse()],center:[.5,(top+bottom)/2],opt:{depth:fascia.deckPanel}});
+  }
+ }
  if(mode!=='closed'){
   const grp=front?'frontBumper':'rearBumper',iMode=mode==='split'?'split':'single';
   const wideDucts=front&&c.fogs?.type==='off';
@@ -147,7 +185,8 @@ function makeMesh(rows,sign,{disk=null}={}){
   const [A,B,C]=[p[a].pos,p[b].pos,p[c].pos], U=B.map((x,k)=>x-A[k]),V=C.map((x,k)=>x-A[k]);
   const x=U[1]*V[2]-U[2]*V[1], y=U[2]*V[0]-U[0]*V[2],z=U[0]*V[1]-U[1]*V[0];
   if(Math.hypot(x,y,z)<1e-11)return;
-  if(z*sign>=0)fs.push(a,b,c);else fs.push(a,c,b);
+  const out=p[a].out??p[b].out??p[c].out;
+  if(out?x*out[0]+y*out[1]+z*out[2]>=0:z*sign>=0)fs.push(a,b,c);else fs.push(a,c,b);
  };
  const n=rows[0].length;
  for(let j=0;j<rows.length-1;j++)for(let i=0;i<n;i++){
@@ -163,11 +202,18 @@ function makeMesh(rows,sign,{disk=null}={}){
  geom.setAttribute('uv',new T.Float32BufferAttribute(uv,2));
  geom.setIndex(fs);geom.computeVertexNormals();return geom;
 }
-export function emitOpenings({end,openings,surface,put,lod=false}){
+export function emitOpenings({end,openings,surface,put,lod=false,spatialDepth=false}){
  const front=end==='front',sign=front?1:-1,mounts={},issues=[],batches=new Map();
  for(const a of openings){
   const {outline,center:[cx,cy],opt,kind,width:w,height:h,side}=a;
-  const pt=(x,y,d)=>{const p=point3(surface(x,y));return {pos:[p[0],p[1],p[2]-sign*d],uv:[x,1-y]};};
+  const pt=(x,y,d)=>{
+   const p=point3(surface(x,y)),uv=[x,1-y];
+   if(!spatialDepth)return {pos:[p[0],p[1],p[2]-sign*d],uv};
+   const a=new T.Vector3(...surface(Math.min(1,x+.0006),y)).sub(new T.Vector3(...surface(Math.max(0,x-.0006),y)));
+   const b=new T.Vector3(...surface(x,Math.min(1,y+.0006))).sub(new T.Vector3(...surface(x,Math.max(0,y-.0006))));
+   const out=b.cross(a).normalize().multiplyScalar(sign).toArray();
+   return {pos:p.map((k,i)=>k-out[i]*d),out,uv};
+  };
   const ring=(k,d,poly=outline,x=cx,y=cy)=>poly.map(([u,v])=>pt(mix(x,u,k),mix(y,v,k),d));
   const putGeo=(m,rows,disk=null)=>{
    const q=makeMesh(rows,sign,{disk});
@@ -177,6 +223,15 @@ export function emitOpenings({end,openings,surface,put,lod=false}){
    if(!batches.has(key))batches.set(key,{component:a.component,material:m,geos:[]});
    batches.get(key).geos.push(q);
   };
+  if(kind==='deck'){
+   // Closed return under the panel: a physical narrow seam, never a slit through the car.
+   const d=mix(.002,.009,num(opt.depth,0));
+   putGeo('paint',[ring(1,0),ring(.997,.001)]);
+   putGeo('seamDark',[ring(.997,.001),ring(.980,d+.002),ring(.970,d+.002)]);
+   // Preserve the face shape inside the cut; ordinary rings fan to the center.
+   putGeo('paint',[ring(.970,d+.002),ring(.967,d),ring(.72,d),ring(.44,d),ring(.18,d)],pt(cx,cy,d));
+   continue;
+  }
   const mouth=ring(1,0); const lip=ring(.965,.005), seat=ring(.912,.015);
   // Shared rim exactly duplicated at d=0 (no opening exists behind a closed slab).
   putGeo('paint',[mouth,lip]);putGeo('trim',[lip,seat]);

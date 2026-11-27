@@ -188,29 +188,59 @@ export function generateVehicle(input,{quality='preview'}={}){
    sideAt:(z,v,s)=>skinPoint(z,v,s,name),bumper:c[name],upper});
   ends[end]=surf;
   const openings=makeOpenings({end,g,segments:quality==='opponent'?14:lod?18:quality==='export'?32:24});
-  const shell=put(name,'paint',fasciaMesh(surf.face,openings,{rear:!front,across,down,tolerance:lod?.155:quality==='export'?.092:.115}));
+  const wrapped=openings.some(o=>o.kind==='lamp'&&o.opt.sideWrap>.0001);
+  const trail=wrapped?Math.ceil(along*.56):along, wingSteps=along-trail;
+  const band=.125, t0=trail/along;
+  const toAtlas=u=>band+(1-2*band)*u;
+  const columns=wrapped?[...Array.from({length:wingSteps},(_,i)=>band*i/wingSteps),
+    ...Array.from({length:across+1},(_,i)=>toAtlas(i/across)),
+    ...Array.from({length:wingSteps},(_,i)=>1-band+band*(i+1)/wingSteps)]:null;
+  const curtain=wrapped?(u,v)=>u<band?surf.bumperSide(mix(t0,1,u/band),v,-1):
+   u>1-band?surf.bumperSide(mix(1,t0,(u-(1-band))/band),v,1):surf.face(clamp((u-band)/(1-2*band)),v):surf.face;
+  const chart=wrapped?(u,v)=>{
+   const base=curtain(u,v),corner=Math.min(Math.abs(u-band),Math.abs(u-(1-band)));
+   const w=.022;
+   if(corner>=w||v===0||v===1)return base;
+   const A=curtain(u-w*.7,v),B=curtain(u+w*.7,v);
+   const weight=.65*unitSmooth(1-corner/w)*unitSmooth(clamp(v/.095))*unitSmooth(clamp((1-v)/.125));
+   return lerp3(base,lerp3(A,B,.5),weight);
+  }:curtain;
+  if(wrapped)for(const o of openings){
+   const [cx,cy]=o.center,side=cx>.5?1:-1;
+   const r=o.kind==='lamp'?o.opt.sideWrap:0;
+   const far=Math.max(...o.outline.map(p=>(p[0]-cx)*side));
+   const edge=cx+far*side;
+   const travel=r*Math.max(0,(side>0?1-.042-toAtlas(edge):toAtlas(edge)-.042));
+   o.outline=o.outline.map(([u,v])=>{
+    const reach=Math.max(0,(u-cx)*side)/(far||1);
+    return [toAtlas(u)+side*travel*reach*reach,v];
+   });
+   o.center=[toAtlas(cx),cy];if(o.width)o.width*=(1-2*band);
+  }
+  const shell=put(name,'paint',fasciaMesh(chart,openings,{rear:!front,across,down,columns,tolerance:wrapped?(lod?.097:.067):lod?.155:quality==='export'?.092:.115}));
+  const faceColumns=columns?columns.length-1:across;
   for(const opening of openings){
-   const right=opening.center[0]>.5,p=opening.outline.map(uv=>surf.face(...uv)),letter=right?'R':'L';
+   const right=opening.center[0]>.5,p=opening.outline.map(uv=>chart(...uv)),letter=right?'R':'L';
    const id=opening.kind==='lamp'?end+'-lamp-'+letter:opening.id;
    const xSide=right?1:-1;
-   features.push(guideFeature(id,opening.kind==='lamp'?'lamp':'opening',opening.kind==='lamp'?(front?'Headlight outline':'Taillight outline')+' · '+letter:opening.component==='grille'?'Grille perimeter':opening.kind==='fog'?'Fog-light perimeter':'Intake / valance perimeter',opening.component,p,
+   features.push(guideFeature(id,opening.kind==='lamp'?'lamp':'opening',opening.kind==='lamp'?(front?'Headlight outline':'Taillight outline')+' · '+letter:opening.kind==='deck'?'Trunk perimeter':opening.component==='grille'?'Grille perimeter':opening.kind==='fog'?'Fog-light perimeter':'Intake / valance perimeter',opening.component,p,
     {end,side:letter,closed:true,view:end,axis:0,scale:.18*xSide,anchor:p.reduce((a,b)=>xSide*b[0]>xSide*a[0]?b:a)}));
   }
   features.push(guideFeature(end+'-silhouette','silhouette',front?'Nose silhouette':'Tail silhouette',name,curvePoints(u=>surf.face(u,.13)),{end,view:'top',axis:2,scale:sign*.28}));
-  const mounted=emitOpenings({end,openings,surface:surf.face,put,lod});
+  const mounted=emitOpenings({end,openings,surface:chart,put,lod,spatialDepth:wrapped});
   Object.assign(lampMounts,mounted.mounts);
   issues.push(...(mounted.issues??[]));
-  fascia[end]={guides:surf.guides,trimArea:shell.userData.trimArea,
+  fascia[end]={guides:surf.guides,trimArea:shell.userData.trimArea,wrapped,
    samples:[0,.15,.30,.45,.5,.55,.70,.85,1].map(u=>surf.face(u,.13)),
    openings:openings.map(({id,component,outline})=>({id,component,outline:cloneJSON(outline)}))};
   const lamp=openings.find(x=>x.kind==='lamp'&&x.center[0]>.5);
-  if(lamp){const ring=lamp.outline;fascia[end].guides.outline={points:Array.from({length:8},(_,i)=>surf.face(...ring[Math.floor(i*ring.length/8)])),axis:1,scale:.05};}
+  if(lamp){const ring=lamp.outline;fascia[end].guides.outline={points:Array.from({length:8},(_,i)=>chart(...ring[Math.floor(i*ring.length/8)])),axis:1,scale:.05};}
   if(Math.abs(shell.userData.trimArea.mesh-shell.userData.trimArea.expected)>1e-6||shell.userData.trimArea.unmatched)issues.push('Overlapping or invalid '+end+' cutouts.');
   const roll=put(name,'paint',patch(along,across,(t,u)=>{
    const q=surf.bridge(u,t);
    q[2]+=sign*upper.gap*.5*(1-t)**3;q[1]+=upper.flush*.5*(1-t)**3;return q;
   },!front));
-  surf.geometries={shell,roll};
+  surf.geometries={shell,roll,trail,wingSteps,faceColumns};
  }
  const hoodEdge=bumperFront+g.seams.hoodSeam.offset-g.seams.hoodSeam.gap*.5,
   trunkEdge=bumperRear+g.seams.trunkSeam.offset+g.seams.trunkSeam.gap*.5;
@@ -240,8 +270,12 @@ export function generateVehicle(input,{quality='preview'}={}){
   n.normalize();for(const [g,i] of entries)g.attributes.normal.setXYZ(i,n.x,n.y,n.z);
  }
  for(const end of ['front','rear']){
-  const {shell,roll}=ends[end].geometries;
-  for(let i=0;i<=across;i++)weldNormals([shell,i],[roll,along*(across+1)+i]);
+  const {shell,roll,wingSteps}=ends[end].geometries;
+  for(let i=0;i<=across;i++)weldNormals([shell,i+wingSteps],[roll,along*(across+1)+i]);
+  for(let j=0;j<wingSteps;j++){
+   weldNormals([shell,j],[roll,(along-wingSteps+j)*(across+1)]);
+   weldNormals([shell,across+2*wingSteps-j],[roll,(along-wingSteps+j)*(across+1)+across]);
+  }
  }
  // All side panels use the same trimmed wheel envelope; arch edge samples
  // and hem are generated from the same function as the adjacent skin.
@@ -264,12 +298,13 @@ export function generateVehicle(input,{quality='preview'}={}){
   for(let index=0;index<slabs.length;index++){
    const {key,start:a,end:b}=slabs[index],sampler=(u,v)=>master.panel(index,u,v);
    if(key==='frontBumper'||key==='rearBumper'){
-    const front=key==='frontBumper',surf=ends[front?'front':'rear'],col=s<0?0:across,{shell,roll}=surf.geometries;
-    const side=put(key,'paint',patch(along,down,sampler,s<0));
-    const tipIndex=front?along:0, at=i=>front?i:along-i;
-    for(let i=0;i<=along;i++)weldNormals([roll,i*(across+1)+col],[side,at(i)*(down+1)]);
+    const front=key==='frontBumper',surf=ends[front?'front':'rear'],col=s<0?0:across,{shell,roll,trail,faceColumns}=surf.geometries;
+    const fraction=trail/along;
+    const side=put(key,'paint',patch(trail,down,(u,v)=>sampler(front?u*fraction:1-(1-u)*fraction,v),s<0));
+    const tipIndex=front?trail:0, at=i=>front?i:trail-i;
+    for(let i=0;i<=trail;i++)weldNormals([roll,i*(across+1)+col],[side,at(i)*(down+1)]);
     for(let j=1;j<=down;j++){
-     const row=s>0?across+j:2*across+2*down-j;
+     const row=s>0?faceColumns+j:2*faceColumns+2*down-j;
      weldNormals([shell,row],[side,tipIndex*(down+1)+j]);
     }
    }else{
@@ -305,9 +340,25 @@ export function generateVehicle(input,{quality='preview'}={}){
    return [master.at(z,.99)[0]+s*(.008*p.depth+.020*bell(v)*p.shape),floor-.019+sillHeight*v,z];
   }));
   const mirror=getSideSettings(g,'mirrors',letter,c.mirrors),sx=X*.87,sy=B+.105*mirror.depth,mz=cabinFront-.19+mirror.bias*.08;
+  if(mirror.type==='folded rectangle'){
+   const center=[s*(sx+.106),sy+.009,mz],width=.239*mirror.size,height=.125*mirror.depth,depth=.123*mirror.size;
+   const exponent=.32+.36*mirror.shape,power=t=>Math.sign(t)*Math.abs(t)**exponent;
+   const local=(u,scale,z)=>{const angle=u*2*Math.PI; const x=width*.5*power(Math.cos(angle))*scale;
+    return [center[0]+x,center[1]+height*.5*power(Math.sin(angle))*scale-s*x*.105,center[2]+z+s*x*.21];
+   };
+   const ringPatch=(z0,z1,r0,r1,flip=true)=>patch(3,lod?24:32,(t,u)=>local(u,mix(r0,r1,unitSmooth(t)),mix(z0,z1,t)),flip);
+   put('mirrors','paint',ringPatch(-depth*.43,-depth*.29,.93,1));
+   put('mirrors','paint',ringPatch(-depth*.29,depth*.16,1,.96));
+   put('mirrors','paint',ringPatch(depth*.16,depth*.48,.96,.51));
+   put('mirrors','paint',ringPatch(depth*.48,depth*.55,.51,.005));
+   put('mirrors','trim',ringPatch(-depth*.43,-depth*.449,.93,.84,false));
+   put('mirrors','chrome',ringPatch(-depth*.449,-depth*.452,.84,.001,false));
+   put('mirrors','trim',box(.165,.044,.074),[s*(sx+.017),sy-.022,mz-.015]);
+  }else{
   put('mirrors','trim',box(.19,.032,.055),[s*(sx+.085),sy-.026,mz]);
   put('mirrors','paint',ellipsoid(.25*mirror.size,.115*mirror.depth,.185*mirror.size*(mirror.type==='aero'?1.42:1)),[s*(sx+.19),sy,mz],[mirror.angle*RAD,s*(mirror.shape-.5)*.52,0]);
   put('mirrors','chrome',ellipsoid(.19*mirror.size,.087,.019),[s*(sx+.20),sy,mz-.081*mirror.size]);
+  }
   for(const z of handleStations){
    const hp=c.handles,q=master.at(z,.22);
    if(hp.type==='painted lever'){

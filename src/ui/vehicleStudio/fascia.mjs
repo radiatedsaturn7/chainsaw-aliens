@@ -64,7 +64,8 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
   const cross=guide(f.curves.transverse,(x+1)*.5)*transverseScale;
   const form=shoulder(b)*(.013+.085*f.shoulder)+.034*co*(1-f.boxiness);
   const y=edge[1]-drop*(1-v)+(f.upperFasciaLift??0)*(1-v)**1.65*(.63+.37*Math.sin(Math.PI*u))+form*(1-v)**1.8 +vOffsetGuide(v)*(.28+.72*co)*(1-v)*.65+cross*(.76+.24*hump(v))*(1-v);
-  return [x*edge[0]*track*(1+(f.outerFasciaWidth??0)),y,s*z];
+  const lip=(f.valanceRise??0)*smooth(clamp((v-.67)/.33))*(1-smooth(clamp((Math.abs(x)-(.16+.58*(f.valanceWidth??.5)))/.24)));
+  return [x*edge[0]*track*(1+(f.outerFasciaWidth??0)),y+lip,s*z];
  }
  function bridge(u,r){
   const start=upperPanel(seam,u),lead=face(u,0);
@@ -107,11 +108,12 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
 
 // Tessellate with exact trim rings. Refinement only splits internal edges;
 // mounting walls and adjacent panels keep precisely the same boundary vertices.
-export function fasciaMesh(surface,openings,{rear=false,across=34,down=14,tolerance=.103}={}){
+export function fasciaMesh(surface,openings,{rear=false,across=34,down=14,tolerance=.103,columns=null}={}){
+ const xs=columns??Array.from({length:across+1},(_,i)=>i/across);across=xs.length-1;
  const outline=[];
- for(let i=0;i<=across;i++)outline.push([i/across,0]);
+ for(let i=0;i<=across;i++)outline.push([xs[i],0]);
  for(let i=1;i<=down;i++)outline.push([1,i/down]);
- for(let i=1;i<=across;i++)outline.push([1-i/across,1]);
+ for(let i=1;i<=across;i++)outline.push([xs[across-i],1]);
  for(let i=1;i<down;i++)outline.push([0,1-i/down]);
  const rings=[outline,...openings.map(x=>x.outline)],points=rings.flat();
  const key=(a,b)=>a<b?a+':'+b:b+':'+a;

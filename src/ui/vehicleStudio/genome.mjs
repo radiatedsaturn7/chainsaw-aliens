@@ -27,7 +27,7 @@ export const COMPONENTS={
  headlights:style('Headlights',['swept','rectangular','round']),tails:style('Taillights',['stacked','strip','round']),
  fogs:style('Fog lights',['round','strip','blank','off']),grille:style('Grille',['mesh','bars','closed']),
  scoop:style('Scoop and vents',['scoop','vents','off']),spoiler:style('Spoiler',['wing','lip','off']),
- mirrors:style('Mirrors',['standard','aero']),handles:style('Door handles',['lever','flush','painted lever']),
+ mirrors:style('Mirrors',['standard','aero','folded rectangle'],'corner radius'),handles:style('Door handles',['lever','flush','painted lever']),
  wheels:style('Wheels',['6-spoke','5-spoke','mesh','10-spoke'],'dish'),tires:style('Tires',['road','rally'],'sidewall'),
  exhaust:style('Exhaust',['single','dual','quad']),dash:style('Dashboard',['road','sport']),
  seats:style('Seats',['bucket','touring']),steering:style('Steering wheel',['round','flat-bottom']),
@@ -40,6 +40,8 @@ export const FASCIA_PROFILES={...NOSE_PROFILES,aero:'Tapered / aero'};
 export const INTAKE_TYPES={single:'Central opening',split:'Split ducts',closed:'Closed skin'};
 const unit=label=>F(label,0,1,.01),signed=label=>F(label,-1,1,.01);
 export const FASCIA_FIELDS={
+ deckPanel:unit('Trunk panel recess / seam'),deckWidth:unit('Trunk panel width'),deckHeight:unit('Trunk panel depth'),
+ valanceRise:F('Lower valance rise (m)',0,.18,.005),valanceWidth:unit('Width of raised valance'),
  bumperStation:F('Bumper seam span (m)',.24,.63,.005),upperFasciaLift:F('Upper fascia elevation (m)',-.085,.14,.005),outerFasciaWidth:F('Terminal fascia width',-.09,.12,.005),
  grilleWidth:unit('Upper grille width'),grilleHeight:unit('Upper grille height'),grilleHeightPosition:unit('Upper grille position'),
  fogCoverHeight:unit('Fog cover height'),plateHeight:unit('Rear plate pocket height'),plateWidth:unit('Rear plate pocket width'),
@@ -54,7 +56,7 @@ export const OPTIC_HOUSINGS={'circle':'Circular',oval:'Oval',rectangle:'Rectangu
 export const OPTIC_LAYOUTS={projector:'Single projector',twin:'Twin elements',led:'LED signature',mixed:'Projector + LED','factory-split':'Factory split lens'};
 export const OPTIC_FIELDS={width:unit('Housing width'),height:unit('Housing height'),corner:unit('Corner radius'),angle:signed('Housing angle'),
  sweep:unit('Housing sweep'),curvature:unit('Lens curvature'),recess:unit('Recess depth'),convexity:unit('Lens convexity'),
- position:unit('Vertical position'),outboard:unit('Outboard lamp placement'),inboardReach:unit('Lens reach toward grille'),protrusion:unit('Lens protrusion')};
+ position:unit('Vertical position'),outboard:unit('Outboard lamp placement'),sideWrap:F('Wrap lamp into side',0,1,.01),inboardReach:unit('Lens reach toward grille'),protrusion:unit('Lens protrusion')};
 export const FASCIA_DEMOS={classic:'Upright classic',rally:'Rounded sport sedan',hyper:'Pointed hypercar',compound:'Compound-curved sports car'};
 const enumValue=(v,choices,key)=>{if(typeof v!=='string'||!Object.hasOwn(choices,v))throw Error('Unknown '+key);return v;};
 const cleanList=(v,n,key)=>{if(!Array.isArray(v)||v.length!==n)throw Error('Invalid '+key);return v.map(x=>number(x,{min:-1,max:1},key));};
@@ -63,11 +65,11 @@ function baseFascia(family,front,legacy){
  return {profile:front?legacy.profile:family==='coupe'?'square':family==='fastback'?'aero':'round',intakes:front?'single':family==='fastback'?'split':'closed',
   ...initial(FASCIA_FIELDS,front?{...legacy,taper:.26,center:.82,wrap:.68,rake:.10,recess:.08,crease:.16,chin:0,boxiness:family==='coupe'?.78:.34,pointedness:0}:
   {sweep:.46,taper:.37,drop:.20,rollover:.50,lowerRoll:.60,center:.78,wrap:.64,rake:.16,recess:.05,crease:.14,chin:-.12,boxiness:family==='coupe'?.77:.41,pointedness:0}),
-  bumperStation:.43,upperFasciaLift:0,outerFasciaWidth:0,grilleShape:'trapezoid',intakeShape:front?'angular':'trapezoid',curves:{plan:[0,0,0,0],vertical:[0,0,0,0],transverse:[0,0,0,0]}};
+  deckPanel:0,valanceRise:0,bumperStation:.43,upperFasciaLift:0,outerFasciaWidth:0,grilleShape:'trapezoid',intakeShape:front?'angular':'trapezoid',curves:{plan:[0,0,0,0],vertical:[0,0,0,0],transverse:[0,0,0,0]}};
 }
 function baseOptic(family,front){return {
  housing:front?(family==='coupe'?'round-rect':family==='fastback'?'oval':'swept'):(family==='fastback'?'wrap':'trapezoid'),
- layout:front?'mixed':'led',...initial(OPTIC_FIELDS,{angle:0,width:.58,height:.54,position:.46,recess:.53,protrusion:0}),outline:Array(8).fill(0),formula:'',modules:0,spacing:.5,outboard:.5,inboardReach:.5
+ layout:front?'mixed':'led',...initial(OPTIC_FIELDS,{angle:0,width:.58,height:.54,position:.46,recess:.53,protrusion:0,sideWrap:0}),outline:Array(8).fill(0),formula:'',modules:0,spacing:.5,outboard:.5,inboardReach:.5
 };}
 export function createFasciaDemo(key){
  if(!Object.hasOwn(FASCIA_DEMOS,key))throw Error('Unknown fascia demonstration');
