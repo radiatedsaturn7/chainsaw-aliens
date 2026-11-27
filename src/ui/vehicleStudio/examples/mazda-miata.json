@@ -242,7 +242,7 @@
       "plateOpeningStretch": 0,
       "plateMount": 0,
       "platePosition": 0.615,
-      "bumperStation": 0.445,
+      "bumperStation": 0.3,
       "upperFasciaLift": 0.015,
       "outerFasciaWidth": 0,
       "grilleWidth": 0.5,
@@ -491,6 +491,12 @@
       "coatRoughness": 0.086
     },
     "hood": {
+      "lampLids": "flush",
+      "lidWidth": 0.255,
+      "lidLength": 0.235,
+      "lidSpread": 0.296,
+      "lidSetback": 0.046,
+      "lidGap": 0.005,
       "shoulderRise": 0.01,
       "shoulderWidth": 0.145,
       "shoulderAt": 0.66,

@@ -229,7 +229,7 @@ function makeMesh(rows,sign,{disk=null}={}){
  geom.setAttribute('uv',new T.Float32BufferAttribute(uv,2));
  geom.setIndex(fs);geom.computeVertexNormals();return geom;
 }
-export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spatialDepth=false}){
+export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spatialDepth=false,shellMaterial='paint'}){
  const front=end==='front',sign=front?1:-1,mounts={},issues=[],batches=new Map();
  for(const a of openings){
   const {outline,center:[cx,cy],opt,kind,width:w,height:h,side}=a;
@@ -246,6 +246,12 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
    const q=makeMesh(rows,sign,{disk});
    if(!q)return;
    if(m==='opticCover')return put(a.component,m,q);
+   // Painted aperture returns continue the fascia insert on the same
+   // atlas as the shell. Only this material uses top-to-bottom chart UV.
+   if(m==='paint'&&shellMaterial!=='paint'){
+    m=shellMaterial;const uv=q.attributes.uv;
+    for(let i=0;i<uv.count;i++)uv.setY(i,1-uv.getY(i));
+   }
    const key=a.component+' '+m;
    if(!batches.has(key))batches.set(key,{component:a.component,material:m,geos:[]});
    batches.get(key).geos.push(q);

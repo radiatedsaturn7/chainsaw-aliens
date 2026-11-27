@@ -1,8 +1,9 @@
 import {
- BODY_EDITOR_FIELDS,HOOD_CONSTRUCTION_FIELDS,FINISH_FIELDS,WING_FIELDS,EXHAUST_FIELDS,STYLE_FIELDS,STYLE_KINDS,PAIR_MODES,CABIN_LAYOUTS,
+ BODY_EDITOR_FIELDS,HOOD_CONSTRUCTION_FIELDS,FINISH_FIELDS,WING_FIELDS,WING_MOUNTS,EXHAUST_FIELDS,STYLE_FIELDS,STYLE_KINDS,PAIR_MODES,CABIN_LAYOUTS,
  EXHAUST_SHAPES,EXHAUST_FINISHES,OPTIC_HOUSINGS,OPTIC_LAYOUTS,OPTIC_FIELDS,
  getSideSettings,newOutlet,newStyle
 } from './genome.mjs';
+import {HOOD_LIDS,HOOD_LID_FIELDS} from './genome.mjs';
 
 export const CONSTRUCTION_PANELS={cabin:'Cabin and seating',finish:'Paint finish',hood:'Hood shoulders and scoop',exhaust:'Exhaust outlets',wing:'Wing and supports',styling:'Panel styling curves',pairs:'Paired lamps'};
 const node=(tag,props={})=>Object.assign(document.createElement(tag),props);
@@ -65,13 +66,17 @@ export function renderConstruction(root,{state,get,edit,repaint,setLevel,level,s
  const promote=()=>button(root,'build-expert','Expert formulas',()=>setLevel('expert'));
  if(state.panel==='cabin'){
   select(root,'build-cabin-layout','Seating layout',CABIN_LAYOUTS,data.cabin.layout,v=>sectionSet('cabin','layout',v));
-  sectionNumbers('cabin',BODY_EDITOR_FIELDS);
+  sectionNumbers('cabin',Object.fromEntries(Object.entries(BODY_EDITOR_FIELDS).filter(([k])=>k!=='rearBenchSeats'||data.cabin.layout==='three-row')));
   root.append(node('p',{textContent:'Seats and interior panels fit the body dimensions. A lightweight cabin is exported for the drive preview.'}));
  }else if(state.panel==='finish'){
   sectionNumbers('finish',FINISH_FIELDS);
   root.append(node('p',{textContent:'Clearcoat roughness controls reflection sharpness in the editor and exported vehicle. Lower values sharpen the reflected environment without turning paint metallic.'}));
  }else if(state.panel==='hood'){
   select(root,'build-hood-intake','Hood intake',{scoop:'Raised scoop',vents:'Vents',off:'Off'},initial.components.scoop.type,v=>edit('components','scoop',v,'type'));
+  select(root,'build-hood-lids','Headlamp covers',HOOD_LIDS,data.hood.lampLids,v=>{
+   const ok=sectionSet('hood','lampLids',v);if(ok!==false)repaint();return ok;
+  });
+  if(data.hood.lampLids==='flush')sectionNumbers('hood',HOOD_LID_FIELDS);
   sectionNumbers('hood',HOOD_CONSTRUCTION_FIELDS);
   root.append(node('p',{textContent:'Shoulder changes are formed into the hood surface. The scoop width and height can be edited separately; zero preserves the existing Size or Shape behavior.'}));
   button(root,'build-show-hood','Frame elevated front',()=>setView('frontElevated'));
@@ -79,8 +84,12 @@ export function renderConstruction(root,{state,get,edit,repaint,setLevel,level,s
   select(root,'build-spoiler-style','Spoiler style',{wing:'Airfoil wing','boxed wing':'Boxed wing',lip:'Deck lip',off:'Off'},initial.components.spoiler.type,v=>{
    const ok=edit('components','spoiler',v,'type');if(ok!==false)repaint();return ok;
   });
-  const boxed=initial.components.spoiler.type==='boxed wing';
-  sectionNumbers('wing',Object.fromEntries(Object.entries(WING_FIELDS).filter(([k])=>boxed?!['elements','spacing','supports'].includes(k):!k.startsWith('boxWall'))));
+  const spoiler=initial.components.spoiler.type,boxed=spoiler==='boxed wing',swan=data.wing.supportMount==='top';
+  if(spoiler==='wing')select(root,'build-wing-mount','Support mounting',WING_MOUNTS,data.wing.supportMount,v=>{
+   const ok=sectionSet('wing','supportMount',v);if(ok!==false)repaint();return ok;
+  });
+  sectionNumbers('wing',Object.fromEntries(Object.entries(WING_FIELDS).filter(([k])=>boxed?!['elements','spacing','supports'].includes(k):!k.startsWith('boxWall')&&!(spoiler==='wing'&&swan&&k==='elements'))));
+  if(spoiler==='wing'&&swan)root.append(node('p',{textContent:'Slim curved supports attach to the top of a single airfoil, leaving its underside clear.'}));
   if(level==='expert')formula(root,'build-wing-formula','Span profile formula',()=>sectionValue('wing','formula'),(v,o)=>sectionSet('wing','formula',v,o),'0.08*sin(pi*u)');
   else promote();
   button(root,'build-show-wing','Frame rear view',()=>setView('rear'));

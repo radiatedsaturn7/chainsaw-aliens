@@ -41,7 +41,7 @@ function boxMesh(x,y,z,p){return new T.BoxGeometry(x,y,z).translate(...p);}
 
 function wingGeometry({cfg,sp,put,sample,dims,evalFormula,quality,compact=0}){
  if(sp.type==='off'||sp.type==='none')return {elements:0,supports:0};
- const {X,Lr,cabinRear}=dims,lip=sp.type==='lip'||sp.type==='ducktail',boxed=sp.type==='boxed wing';
+ const {X,Lr,cabinRear}=dims,lip=sp.type==='lip'||sp.type==='ducktail',boxed=sp.type==='boxed wing',swan=!lip&&!boxed&&cfg.supportMount==='top';
  const w=bounded((.66+.19*sp.size)*X,.24,X*.95,X*.8);
  const depth=bounded(sp.depth,.55,1.8,1),chord=lip?.21*depth:.31*depth;
  const z=mix(Lr,cabinRear,(boxed?.46:lip?.14:.29)+bounded(sp.bias,-1,1,0)*.075);
@@ -49,7 +49,7 @@ function wingGeometry({cfg,sp,put,sample,dims,evalFormula,quality,compact=0}){
  const cam=chord*bounded(cfg.camber,0,1,.34)*.21,sweep=.19*bounded(cfg.sweep,-1,1,.08);
  const taper=bounded(cfg.taper,0,.85,.22),angle=bounded(cfg.angle,-24,24,finite(sp.angle,-1.5))*rad;
  const thickness=chord*bounded(cfg.thickness,.035,.245,.10);
- const elements=lip||boxed?1:Math.round(bounded(cfg.elements,1,3,1));
+ const elements=lip||boxed||swan?1:Math.round(bounded(cfg.elements,1,3,1));
  const supports=lip?0:boxed?2:Math.round(bounded(cfg.supports,1,4,2));
  const reach=(x,at)=>sample.trunk(at,bounded((1+x/X)*.5,0,1,.5))[1];
  const base=reach(0,z);
@@ -109,6 +109,27 @@ function wingGeometry({cfg,sp,put,sample,dims,evalFormula,quality,compact=0}){
  for(let i=0;i<supports;i++){
   const a=supports===1?0:(2*i/(supports-1)-1)*bounded(cfg.spacing,.18,.95,.68),x=w*a;
   const Z=z+sweep*Math.abs(a)**1.7,y=reach(x,Z)-.013,top=base+h-.009;
+  if(swan){
+   const v=.36,C=chord*(1-taper*Math.abs(a)**1.5),d=.5-v;
+   const wingTop=base+h+cam*Math.sin(Math.PI*v)+thickness*1.48*(.2969*Math.sqrt(v)-.126*v-.3516*v*v+.2843*v**3-.1015*v**4)*5
+    +d*C*Math.sin(angle)+formula((a+1)*.5,v,x);
+   const contactZ=Z+d*C*Math.cos(angle),frontEdgeZ=Z+.5*C*Math.cos(angle);
+   const footZ=bounded(frontEdgeZ+.044,Lr+.10,cabinRear-.030,frontEdgeZ);
+   const footY=reach(x,footZ)-.011,hookY=Math.max(wingTop+.074,footY+.095);
+   const p0=[x,footY,footZ],over=[x,hookY,contactZ+.045],end=[x,wingTop-.010,contactZ];
+   // Rise forward of the leading edge, then fold back onto the top skin.
+   // The last few millimetres embed in the airfoil rather than hovering.
+   const p1=[x,mix(footY,hookY,.41),frontEdgeZ+.092],p2=[x,hookY-.012,frontEdgeZ+.068];
+   const p3=[x,hookY+.004,contactZ+.015],p4=[x,wingTop+.040,contactZ];
+   const path=t=>t<=.62?arc(p0,p1,p2,over,t/.62):arc(over,p3,p4,end,(t-.62)/.38);
+   const steps=compact?8:quality==='lod'?10:15,segments=compact?6:8;
+   const rows=Array.from({length:steps+1},(_,j)=>{
+    const t=j/steps,p=path(t),D=unit(sub(path(Math.min(1,t+.001)),path(Math.max(0,t-.001))));
+    return ring(p,mix(.022,.015,t),mix(.031,.025,t),segments,'rectangular',[1,0,0],[0,D[2],-D[1]]);
+   });
+   put('spoiler','trim',loft(rows));
+   continue;
+  }
   if(top<=y+.010)continue;
   const rows=Array.from({length:5},(_,j)=>{
    const t=j/4,p=[x+Math.sign(x)*.023*Math.sin(Math.PI*t),mix(y,top,t),Z+.075*(1-t)-.046*t*t];
@@ -122,7 +143,7 @@ function wingGeometry({cfg,sp,put,sample,dims,evalFormula,quality,compact=0}){
    put('spoiler','paint',loft(br));
   }
  }
- return {elements,supports};
+ return swan?{elements,supports,mount:'top'}:{elements,supports};
 }
 
 export function buildAero({g,quality='preview',compact=0,put,sample,dims,evalFormula}){

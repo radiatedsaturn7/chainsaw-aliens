@@ -192,7 +192,7 @@ export function buildCabin({g,quality='preview',compact=0,put,sample,dims}){
   for(let i=0;i<12;i++){const t=(lo+hi)*.5;if((glassAt(end,t,u)[2]-z)*dir<0)lo=t;else hi=t;}
   return glassAt(end,(lo+hi)*.5,u)[1];
  };
- function addSeat({x,z,w,l,y,bench=false,row=0}){
+ function addSeat({x,z,w,l,y,bench=false,positions=2,row=0}){
   const rearZ=z-l*.48,foreZ=z+l*.51,stand=.052;
   const hh=clamp((profileY(rearZ-.12,x)-y-.204)/.82,.234,bench?.52:.65);
   const cushionH=(bench?.098:.106)*clamp(c.seats.depth,.80,1.2);
@@ -233,8 +233,8 @@ export function buildCabin({g,quality='preview',compact=0,put,sample,dims}){
     add('seats','interior',box(.052,.028,.07),[x+s*w*.26,y-stand-.020,rearZ+.035]);
    }
   }
-  const headW=bench?w*.21:w*.51,headL=.079,headH=.10;
-  const headrests=bench?[-1,1]:[0];
+  const headW=bench?w*(positions===3?.17:.21):w*.51,headL=.079,headH=.10;
+  const headrests=bench?(positions===3?[-1,0,1]:[-1,1]):[0];
   for(const s of headrests){
    const hx=x+s*w*.28,hy=up+hBack-.009,hz=rearZ+.028-tilt;
    if(!lod)for(const sign of [-1,1])add('seats','chrome',rod([hx+sign*headW*.24,hy-.036,hz],[hx+sign*headW*.24,hy+.065,hz],.005,6));
@@ -242,7 +242,7 @@ export function buildCabin({g,quality='preview',compact=0,put,sample,dims}){
     const sw=.76+.24*Math.sin(pi*u);return [hx+headW*.5*sw*f(Math.cos(a),.59),hy+.040+headH*u,hz+headL*.5*sw*f(Math.sin(a),.57)];
    },true));
   }
-  seats.push({row,center:[x,y,z],width:w,length:l,bench});
+  seats.push({row,center:[x,y,z],width:w,length:l,bench,headrests:headrests.length});
   return {height:up+hBack};
  }
  for(let i=0;i<rowCount;i++){
@@ -255,9 +255,9 @@ export function buildCabin({g,quality='preview',compact=0,put,sample,dims}){
   const rowStart=seats.length;
   for(const s of ordered){
    const x=s*width*.247;
-   addSeat({x,z,w:isBench?width*.93:Math.min(width*.43,.51*c.seats.size),l:length,y,bench:isBench,row:i});
+   addSeat({x,z,w:isBench?width*.93:Math.min(width*.43,.51*c.seats.size),l:length,y,bench:isBench,positions:rowCount===3&&i===2?g.construction.cabin.rearBenchSeats:2,row:i});
   }
-  rowMeta.push({index:i,z,layout:isBench?'bench':'individual',count:isBench?(layout==='three-row'?2:3):2,parts:seats.length-rowStart});
+  rowMeta.push({index:i,z,layout:isBench?'bench':'individual',count:isBench?(layout==='three-row'?g.construction.cabin.rearBenchSeats:3):2,parts:seats.length-rowStart});
  }
 
  const dashZ=front-.118, dw=Math.min(widthAt(dashZ)*1.95,xBound(dashZ)*2*c.dash.size);

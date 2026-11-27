@@ -226,8 +226,8 @@
       "deckPanel": 0,
       "deckWidth": 0.5,
       "deckHeight": 0.5,
-      "valanceRise": 0.145,
-      "valanceWidth": 0.81,
+      "valanceRise": 0.18,
+      "valanceWidth": 0.95,
       "bumperBeltRise": 0,
       "bumperBeltHeight": 0.44,
       "bumperBeltSweep": 0,
@@ -310,8 +310,8 @@
       "deckPanel": 0,
       "deckWidth": 0.5,
       "deckHeight": 0.5,
-      "valanceRise": 0.129,
-      "valanceWidth": 0.74,
+      "valanceRise": 0.166,
+      "valanceWidth": 0.89,
       "bumperBeltRise": 0,
       "bumperBeltHeight": 0.44,
       "bumperBeltSweep": 0,
@@ -484,7 +484,8 @@
       "rearGlassArc": 0,
       "canopyLength": 0.55,
       "canopyShoulder": 0.56,
-      "glassBow": 0.56
+      "glassBow": 0.56,
+      "rallyTubework": 1
     },
     "finish": {
       "paintRoughness": 0.44,

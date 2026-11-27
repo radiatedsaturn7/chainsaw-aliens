@@ -1,0 +1,54 @@
+import * as T from '../../vendorBridge/three.js';
+import {fasciaMesh} from './fascia.mjs';
+
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+const ch=.22,profile=[
+ [-1+ch,-1],[1-ch,-1],[1,-1+ch],[1,1-ch],[1-ch,1],[-1+ch,1],[-1,1-ch],[-1,-1+ch]
+];
+
+// Cut the apertures into the actual hood, then span their visible gap with
+// recessed backing. There is no painted line or floating piece to z-fight.
+export function emitFlushHoodLids({cover,hoodLength,settings,across,along,compact,put}){
+ const surface=(u,v)=>cover(u,v);
+ const wide=surface(1,.14)[0]-surface(0,.14)[0];
+ const yLen=hoodLength;
+ const hw=clamp(settings.lidWidth/wide*.5,.031,.128),hv=clamp(settings.lidLength/yLen*.5,.044,.22);
+ const center=clamp(settings.lidSpread,.23,.36);
+ const v0=clamp(settings.lidSetback/yLen+hv,.045+hv,.92-hv);
+ const insetU=clamp(settings.lidGap/wide,.001,.012),insetV=clamp(settings.lidGap/yLen,.001,.020);
+ const paired=[-1,1].map(side=>{
+  const u=.5+side*center,v=v0;
+  const loop=(w,h)=>profile.map(([x,y])=>[u+x*w,v+y*h]);
+  return {outline:loop(hw,hv),lip:loop(hw-insetU*.52,hv-insetV*.52),
+   inner:loop(hw-insetU,hv-insetV),center:[u,v]};
+ });
+ const hood=fasciaMesh(surface,paired,{rear:true,across,down:along,tolerance:compact?.21:.114});
+ put('hood','paint',hood);
+ function strip(rings,drop,center=null){
+  const steps=profile.length;
+  const positions=rings.flatMap((r,j)=>r.flatMap(([u,v])=>surface(u,v).map((n,k)=>k===1?n-drop[j]:n)));
+  const uv=rings.flat(1).flat(),index=[];
+  for(let j=0;j<rings.length-1;j++)for(let k=0;k<steps;k++){
+   const a=j*steps+k,b=j*steps+(k+1)%steps;index.push(a,b,b+steps,a,b+steps,a+steps);
+  }
+  if(center){
+   const at=positions.length/3,tail=at-steps,p=surface(...center);
+   positions.push(p[0],p[1]-.001,p[2]);uv.push(...center);
+   for(let k=0;k<steps;k++)index.push(tail+k,tail+(k+1)%steps,at);
+  }
+  const geo=new T.BufferGeometry();
+  geo.setAttribute('position',new T.Float32BufferAttribute(positions,3));
+  geo.setAttribute('uv',new T.Float32BufferAttribute(uv,2));geo.setIndex(index);geo.computeVertexNormals();
+  return geo;
+ }
+ for(const lid of paired){
+  const seam=strip([lid.outline,lid.lip,lid.inner],[0,.006,.001]);
+  seam.userData.constructionRole='headlamp covers / recessed shutline';
+  put('hood','seamDark',seam);
+  const mid=lid.inner.map(p=>p.map((n,j)=>(n+lid.center[j])*.5));
+  const insert=strip([lid.inner,mid],[.001,.001],lid.center);
+  insert.userData.constructionRole='headlamp covers / painted lid';
+  put('hood','paint',insert);
+ }
+ return hood.userData.trimArea;
+}

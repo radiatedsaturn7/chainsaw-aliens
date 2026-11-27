@@ -77,9 +77,9 @@
       "depth": 1
     },
     "pillars": {
-      "type": "dark",
+      "type": "painted frame",
       "size": 1,
-      "shape": 0.5,
+      "shape": 0.72,
       "depth": 1
     },
     "glass": {
@@ -139,7 +139,7 @@
       "angle": 0
     },
     "spoiler": {
-      "type": "lip",
+      "type": "off",
       "size": 0.89,
       "shape": 0.05,
       "depth": 0.72,
@@ -318,7 +318,7 @@
       "lampShoulderRoll": 0,
       "cornerTuck": 0,
       "paintedPocket": 0,
-      "upperEndSweep": 0,
+      "upperEndSweep": 0.024,
       "bumperMidReach": 0,
       "quarterWaist": 0,
       "quarterBlend": 0.18,
@@ -327,7 +327,7 @@
       "plateMount": 0,
       "platePosition": 0.64,
       "bumperStation": 0.25,
-      "upperFasciaLift": 0.05,
+      "upperFasciaLift": 0.123,
       "outerFasciaWidth": 0,
       "grilleWidth": 0.5,
       "grilleHeight": 0.5,
@@ -422,18 +422,18 @@
     "rear": {
       "housing": "upright-wrap",
       "layout": "factory-split",
-      "width": 0.73,
-      "height": 1,
+      "width": 0.27,
+      "height": 0.99,
       "corner": 0.5,
       "angle": 0,
       "sweep": 0.5,
       "curvature": 0.37,
       "recess": 0.53,
       "convexity": 0.5,
-      "position": 0.17,
-      "outboard": 0.86,
-      "sideWrap": 0.72,
-      "tallHousing": 0.29,
+      "position": 0.13,
+      "outboard": 0.93,
+      "sideWrap": 0.73,
+      "tallHousing": 0.42,
       "lowerLensReach": 0,
       "rearCells": 0,
       "roundBowls": 0,
@@ -484,7 +484,9 @@
       "rearGlassArc": 0,
       "canopyLength": 1,
       "canopyShoulder": 0.2,
-      "glassBow": 0.2
+      "glassBow": 0.2,
+      "utilityRoofRails": 0.77,
+      "rearHatchUpright": 0.96
     },
     "finish": {
       "paintRoughness": 0.44,

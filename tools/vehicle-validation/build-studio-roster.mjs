@@ -53,8 +53,10 @@ export function buildStudioRoster(target){
 }
 if(process.argv.includes('--write')){
  const selected=new Set(process.argv.slice(process.argv.indexOf('--write')+1));
- const rows=targets().filter(t=>!selected.size||selected.has(t.id));
- for(const t of rows){
+ const rows=targets();
+ const known=new Set(rows.map(t=>t.id));
+ for(const id of selected)assert.ok(known.has(id),'Unknown roster study: '+id);
+ for(const t of rows.filter(t=>!selected.size||selected.has(t.id))){
   const {pair,metrics}=buildStudioRoster(t);
   writeFileSync(new URL(t.id+'.pack',outputDir),gzipSync(JSON.stringify(pair),{level:9}));
   console.log(t.label,JSON.stringify(metrics));

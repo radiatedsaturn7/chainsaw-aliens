@@ -326,7 +326,7 @@
       "plateOpeningStretch": 0,
       "plateMount": 0,
       "platePosition": 0.615,
-      "bumperStation": 0.43,
+      "bumperStation": 0.30,
       "upperFasciaLift": 0,
       "outerFasciaWidth": 0,
       "grilleWidth": 0.5,
@@ -482,6 +482,8 @@
       "rearRoofShift": 0.22,
       "rearPillarWidth": 0.026,
       "rearGlassArc": 0.016,
+      "rearHatchUpright": 0.93,
+      "rearBenchSeats": 3,
       "canopyLength": 0.98,
       "canopyShoulder": 0.29,
       "glassBow": 0.38

@@ -500,6 +500,7 @@
       "scoopCorner": 0
     },
     "wing": {
+      "supportMount": "top",
       "elevation": 0.115,
       "boxWallWidth": 0.041,
       "boxWallRake": 0,

@@ -18,16 +18,28 @@ To view the earlier 3D artwork, add `studioRoster=legacy` to the game URL.
 | Lark 1600 1990 | Mazda MX-5 Miata 1.6 NA | Roadster hardpoints and lamps-down silhouette |
 | Briar XT 2004 | Subaru Forester 2.5XT | Boxy body and hood scoop |
 
-These are editable geometry studies, not photo-accurate replacements. In
-particular the Studio does not yet generate a moving Miata roof or pop-up
-lights, a close copy of the Rally Fighter's exposed long-travel suspension,
-the Kia's third-row three-person bench, or a truly upright Forester hatch.
-The GT3 wing lacks exact swan-neck mounting; the C4's divided rear glass
-isn't fully represented. The Honda exercises the shared compact dimension
-range; its opening roof is not animated.
+These editable studies are not photo-accurate replicas. This pass adds:
+
+- **Linaria:** adjustable swan-neck supports that attach from above.
+- **Linum:** flatter nose with a wider grille and more rectangular lamps,
+  revised coupe profile and side molding.
+- **Ember Pod:** a continuous dark fascia finish spanning the separate
+  front apertures, with independent front and rear insert controls.
+- **Kestrel:** dark fabric targa cover, lower nose and reshaped apertures.
+- **Flint:** two rear glazing faces separated by a physical divider.
+- **Caravan-9:** longer roof, upright hatch and 2+2+3 seating.
+- **Dustjack:** visible suspension links, axles and skid plates; static
+  body geometry only, not a suspension-physics change.
+- **Lark:** two flush headlamp lids with recessed shutlines.
+- **Briar:** longer roof, upright framed hatch, rails and taller tail lamps.
+
+The Honda roof and Miata roof/headlamp lids are not animated. The Carnival
+still uses the shared door/glass layout rather than modeled sliding doors.
+The Rally Fighter suspension geometry is a visual approximation.
 
 Run `node tools/vehicle-validation/build-studio-roster.mjs --write` to
-regenerate the bundled model pairs from the editable genes. The pairs bind
-only to those existing model references. Compact geometry is capped at
+regenerate the bundled model pairs from the editable genes. Append study IDs
+to re-export only those packs without dropping the other registry entries.
+The packs bind only to those existing model references. Compact geometry is capped at
 15,000 triangles with four wheels and fitted to existing wheel hardpoints.
 If a pair fails to load, the game uses that car's earlier assets.

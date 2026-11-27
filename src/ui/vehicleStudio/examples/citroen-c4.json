@@ -139,9 +139,9 @@
       "angle": 0
     },
     "spoiler": {
-      "type": "lip",
-      "size": 0.86,
-      "shape": 0.65,
+      "type": "off",
+      "size": 1,
+      "shape": 0.5,
       "depth": 1,
       "bias": 0,
       "angle": 0
@@ -482,6 +482,7 @@
       "rearRoofShift": 0.13,
       "rearPillarWidth": 0.072,
       "rearGlassArc": 0.085,
+      "rearHatchFold": 1,
       "canopyLength": 0.78,
       "canopyShoulder": 0.62,
       "glassBow": 0.61

@@ -215,6 +215,11 @@
     "front": {
       "profile": "aero",
       "intakes": "single",
+      "insertBand": 1,
+      "insertWidth": 0.69,
+      "insertTop": 0.12,
+      "insertBottom": 0.94,
+      "insertSweep": 0.067,
       "hoodNoseDrop": 0.009,
       "hoodNoseShoulder": 0.86,
       "deckSurfaceBlend": 0,
@@ -299,6 +304,11 @@
     "rear": {
       "profile": "aero",
       "intakes": "closed",
+      "insertBand": 1,
+      "insertWidth": 0.88,
+      "insertTop": 0.066,
+      "insertBottom": 0.94,
+      "insertSweep": 0.12,
       "hoodNoseDrop": 0,
       "hoodNoseShoulder": 0.72,
       "deckSurfaceBlend": 0,
@@ -491,6 +501,8 @@
       "coatRoughness": 0.085
     },
     "hood": {
+      "crossCrown": 0,
+      "noseFairing": 0,
       "shoulderRise": 0,
       "shoulderWidth": 0.087,
       "shoulderAt": 0.65,
