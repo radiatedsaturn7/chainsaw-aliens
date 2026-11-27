@@ -304,7 +304,7 @@ export function makeOpenings({end,g,segments=32,face=null}){
    }
    if(width<.032)continue;
    out.push(aperture({id:(front?'lower-':'rear-')+'duct'+(k<.48?'-r':k>.52?'-l':''),component:grp,
-    housing:fascia.intakeShape??(front?'angular':'trapezoid'),cx:k,cy,width,height,kind:'duct',segments,style:fascia.ductStyle??'mesh',opt:{throatDepth:front?num(fascia.lowerIntakeDepth,0):0,upperBar:front&&iMode==='single'?num(fascia.lowerDuctCap,0):0}}));
+    housing:fascia.intakeShape??(front?'angular':'trapezoid'),cx:k,cy,width,height,kind:'duct',segments,style:fascia.ductStyle??'mesh',opt:{throatDepth:front?num(fascia.lowerIntakeDepth,0):0,upperBar:front&&iMode==='single'?num(fascia.lowerDuctCap,0):0,matte:num(fascia.lowerDuctMatte,0)}}));
   }
  }
  return out;
@@ -504,7 +504,7 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
   if(kind==='duct'){
    const extra=Math.min(.055,Math.max(0,num(opt.throatDepth,0)));
    const d=.047+extra, back=ring(mix(.79,.88,extra/.055),d);
-   const ductMaterial=opt.upperBar?'seamDark':'trim';
+   const ductMaterial=opt.matte?'ductMatte':opt.upperBar?'seamDark':'trim';
    putGeo(ductMaterial,[seat,ring(mix(.857,.90,extra/.055),.028+extra*.36),back],pt(cx,cy,d-.002));
    const n=compact?(a.style==='bars'?3:4):a.style==='bars'?4:7, inset=outline.map(([x,y])=>[mix(cx,x,.74),mix(cy,y,.73)]);
    // Join a recessed inlet cap to the inner outline, not over the rim.
@@ -514,7 +514,7 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
     const [tl,tr]=spanAt(inset,top),[bl,br]=spanAt(inset,bottom);
     if(tr>tl&&br>bl){
      const path=[[tl,top],[tr,top],[br,bottom],[bl,bottom]],depth=.018;
-     putGeo('seamDark',[path.map(([x,y])=>pt(x,y,depth)),path.map(([x,y])=>pt(x,y,depth+.006))],
+     putGeo(opt.matte?'ductMatte':'seamDark',[path.map(([x,y])=>pt(x,y,depth)),path.map(([x,y])=>pt(x,y,depth+.006))],
       pt(cx,(top+bottom)*.5,depth));
     }
    }

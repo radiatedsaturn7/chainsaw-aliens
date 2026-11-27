@@ -165,8 +165,8 @@
     "wheels": {
       "type": "5-spoke",
       "size": 1,
-      "shape": 0.39,
-      "depth": 1
+      "shape": 0.32,
+      "depth": 1.18
     },
     "tires": {
       "type": "road",
@@ -507,8 +507,9 @@
       "canopyLength": 0.88,
       "canopyShoulder": 0.76,
       "glassBow": 0.43,
-      "rearDeckButtresses": 0.104,
-      "targaRearBulkhead": 0.9
+      "rearDeckButtresses": 0.083,
+      "targaRearBulkhead": 0.9,
+      "sideGlassRise": 0.04
     },
     "finish": {
       "paintRoughness": 0.34,
@@ -781,7 +782,7 @@
   },
   "materials": {
     "paint": "#eab412",
-    "wheel": "#444953",
+    "wheel": "#9ba4ac",
     "glass": "#698292",
     "rubber": "#171a20",
     "trim": "#171b20",
@@ -798,7 +799,7 @@
     "reflector": "#a2abb1",
     "reflectorFluted": "#b3bac1",
     "rotor": "#64696e",
-    "barrel": "#303238",
+    "barrel": "#292d31",
     "caliper": "#88643a",
     "underbody": "#292c31",
     "heatShield": "#575957",

@@ -25,7 +25,7 @@
     "rearBox": -0.15,
     "diameter": 0.76,
     "tireWidth": 0.275,
-    "rimRatio": 0.568,
+    "rimRatio": 0.55,
     "archReserve": 0.011,
     "rearTrackBias": 0
   },
@@ -162,14 +162,14 @@
     },
     "wheels": {
       "type": "6-spoke",
-      "size": 1,
+      "size": 0.91,
       "shape": 0.5,
       "depth": 1
     },
     "tires": {
       "type": "rally",
       "size": 1,
-      "shape": 0.5,
+      "shape": 0.64,
       "depth": 1
     },
     "exhaust": {

@@ -486,18 +486,19 @@
       "rearPillarFoot": 0.29,
       "rearRoofShift": 0.085,
       "rearPillarWidth": 0.04,
-      "rearGlassArc": 0.08,
+      "rearGlassArc": 0.104,
       "canopyLength": 0.4,
-      "canopyShoulder": 0.92,
-      "glassBow": 0.79
+      "canopyShoulder": 0.99,
+      "glassBow": 0.94,
+      "frontScreenRake": 0.065
     },
     "finish": {
       "paintRoughness": 0.29,
       "coatRoughness": 0.09
     },
     "hood": {
-      "shoulderRise": 0.048,
-      "shoulderWidth": 0.127,
+      "shoulderRise": 0.055,
+      "shoulderWidth": 0.147,
       "shoulderAt": 0.68,
       "shoulderSweep": -0.048,
       "scoopWidth": 0,
@@ -663,8 +664,8 @@
     }
   },
   "body": {
-    "frontFlareScale": 0.68,
-    "rearFlareScale": 0.89,
+    "frontFlareScale": 1.04,
+    "rearFlareScale": 1.06,
     "lipScale": 0.46,
     "archFootBlend": 0.065,
     "doorStamp": 0,
@@ -680,7 +681,7 @@
     "rearArchFore": 0.025,
     "creaseHeight": 0.35,
     "creaseStrength": 0.43,
-    "archCrown": 0.48,
+    "archCrown": 0.67,
     "roofEdge": 0.88,
     "handleRecess": 0.49
   },

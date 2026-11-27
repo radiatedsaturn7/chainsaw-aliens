@@ -251,12 +251,12 @@
       "fogCoverHeight": 0.5,
       "plateHeight": 0.5,
       "plateWidth": 0.5,
-      "lowerIntakeRise": 0.04,
+      "lowerIntakeRise": 0.091,
       "lowerIntakeDepth": 0.037,
       "fogCoverStamp": 0,
       "intakeWidth": 0.91,
-      "intakeHeight": 0.57,
-      "intakeHeightPosition": 0.52,
+      "intakeHeight": 0.67,
+      "intakeHeightPosition": 0.37,
       "sweep": 0.83,
       "pointedness": 0,
       "center": 0.94,
@@ -266,10 +266,10 @@
       "verticalRoundness": 0.79,
       "rake": 0.3,
       "rollover": 0.94,
-      "lowerRoll": 0.8,
+      "lowerRoll": 0.55,
       "wrap": 0.91,
       "shoulder": 0.61,
-      "chin": 0.18,
+      "chin": 0.105,
       "recess": 0.19,
       "crease": 0.16,
       "boxiness": 0.34,
@@ -295,7 +295,8 @@
           0.05
         ]
       },
-      "lowerInsert": 0.06
+      "lowerInsert": 0.06,
+      "sideRailFairing": 0.88
     },
     "rear": {
       "profile": "round",
@@ -485,7 +486,8 @@
       "rearGlassArc": 0.024,
       "canopyLength": 0.4,
       "canopyShoulder": 0.59,
-      "glassBow": 0.51
+      "glassBow": 0.51,
+      "darkWindscreenFrame": 1
     },
     "finish": {
       "paintRoughness": 0.27,

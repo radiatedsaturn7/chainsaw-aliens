@@ -255,6 +255,7 @@
       "lowerIntakeDepth": 0.053,
       "fogBypass": 0.94,
       "lowerDuctCap": 0.81,
+      "lowerDuctMatte": 1,
       "fogCoverStamp": 0.83,
       "intakeWidth": 1,
       "intakeHeight": 1,
@@ -747,7 +748,7 @@
   },
   "materials": {
     "paint": "#124b9a",
-    "wheel": "#ac8543",
+    "wheel": "#c6a464",
     "glass": "#425965",
     "rubber": "#171a20",
     "trim": "#22262b",

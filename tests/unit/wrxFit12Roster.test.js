@@ -15,11 +15,15 @@ test('Fit 12: reproducible roster pair, original hubs, gold alloy and isolated f
   baseBody.joints.filter(j=>j.name.startsWith('WheelMount_')).map(j=>j.position));
  assert.deepEqual(wheel.faces,baseWheel.faces);
  assert.deepEqual(wheel.vertices,baseWheel.vertices);
- assert.equal(wheel.materials.find(m=>m.id==='studio-mat-wheel').color,'#ac8543');
+ assert.equal(wheel.materials.find(m=>m.id==='studio-mat-wheel').color,'#c6a464');
  assert.deepEqual(body.materials.find(m=>m.id==='studio-mat-paint'),baseBody.materials.find(m=>m.id==='studio-mat-paint'));
  for(const lamp of ['head','running','brake','reverse'])assert.ok(body.materials.some(m=>m.name.startsWith('[studio9:'+lamp+']')));
  assert.ok(body.faces.some(f=>f.component==='headlights'&&f.material==='studio-mat-opticSilver'));
  assert.ok(body.faces.some(f=>f.component==='headlights'&&f.material==='studio-mat-opticCover'));
+ assert.ok(body.faces.some(f=>f.component==='frontBumper'&&f.material==='studio-mat-ductMatte'));
+ const backing=body.materials.find(m=>m.id==='studio-mat-ductMatte');
+ assert.equal(backing.automotive.roughness,.97);
+ assert.equal(backing.automotive.metalness,0);
  assert.ok(isWrxStudioDocument(body,'body')&&isWrxStudioDocument(wheel,'wheel'));
  assert.equal(garageEnvironmentProfile(body,wheel),'garage-bay');
  assert.equal(garageEnvironmentProfile(body,baseWheel),'studio');

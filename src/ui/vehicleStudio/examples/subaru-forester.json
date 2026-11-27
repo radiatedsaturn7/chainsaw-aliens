@@ -83,7 +83,7 @@
       "depth": 1
     },
     "glass": {
-      "type": "clear",
+      "type": "tinted",
       "size": 1,
       "shape": 0.5,
       "depth": 1
@@ -481,14 +481,14 @@
       "lumbar": 0.45,
       "trim": 0.54,
       "rearPillarFoot": 0,
-      "rearRoofShift": 0.22,
-      "rearPillarWidth": 0.045,
-      "rearGlassArc": 0,
+      "rearRoofShift": 0.17,
+      "rearPillarWidth": 0.028,
+      "rearGlassArc": 0.024,
       "canopyLength": 1,
       "canopyShoulder": 0.2,
       "glassBow": 0.2,
       "utilityRoofRails": 0.77,
-      "rearHatchUpright": 0.96
+      "rearHatchUpright": 0.85
     },
     "finish": {
       "paintRoughness": 0.36,

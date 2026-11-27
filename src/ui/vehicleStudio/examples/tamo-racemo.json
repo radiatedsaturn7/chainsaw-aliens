@@ -322,7 +322,7 @@
       "deckPanel": 0,
       "deckWidth": 0.93,
       "deckHeight": 0.56,
-      "valanceRise": 0.085,
+      "valanceRise": 0.034,
       "valanceWidth": 0.87,
       "bumperBeltRise": 0,
       "bumperBeltHeight": 0.44,
@@ -334,7 +334,7 @@
       "bumperMidReach": 0,
       "quarterWaist": 0,
       "quarterBlend": 0,
-      "terminalTuck": 0.038,
+      "terminalTuck": 0.057,
       "plateOpeningStretch": 0,
       "plateMount": 0.86,
       "platePosition": 0.67,
@@ -393,7 +393,10 @@
       },
       "rearSculptDepth": 0.039,
       "rearSculptSweep": 0.235,
-      "rearSculptWidth": 0.086
+      "rearSculptWidth": 0.086,
+      "rearTrayDepth": 0.063,
+      "rearTrayWidth": 0.82,
+      "rearTrayHeight": 0.67
     }
   },
   "optics": {

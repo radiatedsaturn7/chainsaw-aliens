@@ -74,3 +74,18 @@ or plate openings. With relief set to zero the original shell is kept.
 - [Tata Motors Racemo product note](https://www.tatamotors.com/wp-content/uploads/2025/06/7feb18-product-note-Racemo.pdf): 205/50R17 front, 235/45R18 rear.
 
 Studio reproduces the section widths and nominal rim diameters through the Wheels and Tires controls. Game roster exports retain the original physics rolling radius and mounted hub centers on both axles, so sidewall heights are the difference between those retained radii and the requested rims, not a physics retune. Zero rear offsets preserve a single shared wheel model. Both axle meshes count toward the same 15,000-triangle vehicle budget.
+
+## Ten-car refinement pass
+
+- Field Forgetmenot (WRX): matte lower-intake backing and warmer gold wheel faces. Same recessed optics and physical wheel mounts.
+- Linaria (GT3): stronger hood and fender crowns, with a more curved canopy.
+- Linum (Quattro): deeper lower intake with a crossbar, stronger angular arch shoulders, and more hood clearance over the wheel liners.
+- Ember Pod (Racemo): recessed diffuser and corner reflectors below the sculpted bridge, retaining the raised center exhaust.
+- Kestrel (S660): broader satin five-spoke wheel faces over dark barrels, lower rear deck buttresses, and rising side glazing.
+- Flint (C4): fuller split-hatch bridge, more defined rear bumper and deeper plate pocket.
+- Caravan (Carnival): crisper, swept door crease and lower bumper shoulder.
+- Dustjack (Rally Fighter): fuller visible tire sidewalls; unchanged outer rolling radius.
+- Lark (Miata): taller oval inlet, rounded lower nose transition, and a dark windshield frame.
+- Briar (Forester): darker, more raked rear glazing with slimmer rear pillars.
+
+All ten remain editable through their Studio genomes. The roster bundles do not modify car documents, suspension, or wheel mounting transforms.

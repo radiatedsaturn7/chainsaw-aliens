@@ -306,24 +306,24 @@
       "deckLowerRoll": 0.38,
       "deckRailCurve": 0.26,
       "bumperFaceBlend": 0.65,
-      "bumperFaceCrown": 0.007,
+      "bumperFaceCrown": 0.018,
       "deckPanel": 0.4,
       "deckWidth": 0.91,
       "deckHeight": 0.46,
       "valanceRise": 0,
       "valanceWidth": 0.5,
-      "bumperBeltRise": 0.016,
+      "bumperBeltRise": 0.024,
       "bumperBeltHeight": 0.52,
-      "bumperBeltSweep": 0,
+      "bumperBeltSweep": 0.071,
       "lampShoulderRoll": 0.015,
-      "cornerTuck": 0.05,
+      "cornerTuck": 0.061,
       "paintedPocket": 0,
       "upperEndSweep": 0.035,
       "bumperMidReach": 0,
       "quarterWaist": 0,
       "quarterBlend": 0,
-      "terminalTuck": 0.085,
-      "plateOpeningStretch": 0,
+      "terminalTuck": 0.108,
+      "plateOpeningStretch": 0.13,
       "plateMount": 0.87,
       "platePosition": 0.56,
       "bumperStation": 0.43,
@@ -379,7 +379,8 @@
           0
         ]
       },
-      "lowerInsert": 0.88
+      "lowerInsert": 0.88,
+      "sideRailFairing": 0.67
     }
   },
   "optics": {
@@ -488,8 +489,8 @@
       "canopyShoulder": 0.62,
       "glassBow": 0.61,
       "hatchEdgeLamps": 0.95,
-      "hatchBridge": 0.07,
-      "hatchBridgeWidth": 0.86,
+      "hatchBridge": 0.083,
+      "hatchBridgeWidth": 0.92,
       "hatchQuarterTaper": 0.92,
       "hatchLampFill": 0.87
     },
