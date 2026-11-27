@@ -310,8 +310,15 @@ export function generateVehicle(input,{quality='preview'}={}){
   put('mirrors','chrome',ellipsoid(.19*mirror.size,.087,.019),[s*(sx+.20),sy,mz-.081*mirror.size]);
   for(const z of handleStations){
    const hp=c.handles,q=master.at(z,.22);
+   if(hp.type==='painted lever'){
+    const span=.132*hp.size, height=.025+hp.shape*.014, rise=.009*hp.depth;
+    put('handles','seamDark',new T.SphereGeometry(1,12,6).scale(.004,height*.64,span*.53),[q[0]-s*.0005,q[1],q[2]]);
+    const grip=new T.CapsuleGeometry(height*.25,span-height*.5,3,9).rotateX(Math.PI*.5).scale(.69,.95,1);
+    put('handles','paint',grip,[q[0]+s*rise,q[1]-.002,q[2]]);
+   }else{
    put('handles','seamDark',new T.SphereGeometry(1,10,5).scale(.0045,(.032+hp.shape*.025)*hp.size*.5,.080*hp.size),[q[0]-s*.002,q[1],q[2]]);
    put('handles',hp.type==='flush'?'paint':'trim',new T.SphereGeometry(1,10,5).scale((.008+.005*hp.depth)*.5,(.018+hp.shape*.014)*hp.size*.5,.063*hp.size),[q[0]+s*.004,q[1]+.001,q[2]]);
+   }
   }
  }
  // Shared q(u,v) cabin envelope consumed by all glazing, pillars and roof.
@@ -322,7 +329,13 @@ export function generateVehicle(input,{quality='preview'}={}){
  const glassPoint=(sgn,t,u)=>{const edge=sgn>0?roofFront:roofRear,gate=sgn>0?cabinFront:cabinRear;
   const w=baseW(gate),x=(2*u-1)*w,k=(x/skinX(gate)+1)/2;
   const q=lerp3([x,(sgn>0?hoodPoint:trunkPoint)(gate,k)[1]+.004,gate],roofPoint(edge,u),t);
-  q[2]+=sgn*.045*c.glass.depth*bell(t)*bell(u);return q;};
+  q[2]+=sgn*.045*c.glass.depth*bell(t)*bell(u);
+  if(sgn<0&&canopy.rearGlassArc){
+   const round=bell(t)**1.35;
+   q[1]+=canopy.rearGlassArc*round;
+   q[2]-=canopy.rearGlassArc*.28*round;
+  }
+  return q;};
  sheet('roof','paint',roofRear,roofFront,roofPoint,17,12);
  for(const s of [-1,1]){
   put('glass',c.glass.type==='tinted'?'glass':'glass',patch(12,16,(v,u)=>glassPoint(s,v,u),s<0));
@@ -346,12 +359,22 @@ export function generateVehicle(input,{quality='preview'}={}){
    const q=side(u,0),outer=skinX(q[2]);
    return [s*mix(Math.abs(q[0]),outer,v),q[1]+(skinY(q[2])-q[1])*v,q[2]];
   },s<0));
+  const framed=c.pillars.type==='painted frame';
   for(const u of [0,c.doors.type==='four door'?.50:.65,1]){
-   const mat=c.pillars.type==='painted'?'paint':'trim',w=(.013+.027*c.pillars.shape)*c.pillars.size;
-   put('pillars',mat,patch(lod?7:12,3,(v,j)=>{
+   const outer=u===0||u===1;
+   const mat=c.pillars.type==='painted'||framed&&outer?'paint':'trim',w=(.013+.027*c.pillars.shape)*c.pillars.size;
+   const pillar=(v,j)=>{
     const q=side(clamp(u+(j-.5)*w*(u===.5?2:3)),v);q[0]+=s*(.007+.011*bell(j))*c.pillars.depth;return q;
-   }));
+   };
+   put('pillars',mat,patch(lod?7:12,3,pillar,framed&&s<0));
+   if(framed&&outer)put('pillars','trim',patch(lod?7:12,2,(v,j)=>{
+    const edge=u===0?.78:.22, q=pillar(v,edge+(u===0?1:-1)*j*.18);
+    q[0]+=s*.0012;return q;
+   },(s<0)!==(u===1)));
   }
+  if(framed)put('pillars','paint',patch(20,3,(u,j)=>{
+   const q=side(u,1-j*.046);q[0]+=s*.006;return q;
+  },s<0));
   put('pillars','trim',patch(18,3,(u,v)=>{const q=side(u,v*.060);q[0]+=s*.010;return q;}));
  }
  // Optical and trim dimensions are tied to fascia, not independent world coordinates.

@@ -21,13 +21,13 @@ export const COMPONENTS={
  hood:style('Hood',['crowned','flat','power bulge'],'crown'), frontFenders:style('Front fenders',['swept','boxed','integrated'],'flare'),
  rearFenders:style('Rear quarters / fenders',['swept','boxed','wide'],'flare'),frontBumper:style('Front bumper',['sport','smooth','rally']),
  rearBumper:style('Rear bumper',['sport','smooth','diffuser']), doors:style('Doors',['four door','two door'],'character line'),
- roof:style('Roof',['crowned','flat','arched'],'curvature'),pillars:style('Pillars',['dark','painted'],'thickness'),
+ roof:style('Roof',['crowned','flat','arched'],'curvature'),pillars:style('Pillars',['dark','painted','painted frame'],'thickness'),
  glass:style('Windshield, rear and side glass',['clear','tinted'],'rake'),rockers:style('Rockers and side skirts',['stock','deep','blade']),
  trunk:style('Trunk / rear deck',['notch','fastback','ducktail'],'crown'),
  headlights:style('Headlights',['swept','rectangular','round']),tails:style('Taillights',['stacked','strip','round']),
  fogs:style('Fog lights',['round','strip','blank','off']),grille:style('Grille',['mesh','bars','closed']),
  scoop:style('Scoop and vents',['scoop','vents','off']),spoiler:style('Spoiler',['wing','lip','off']),
- mirrors:style('Mirrors',['standard','aero']),handles:style('Door handles',['lever','flush']),
+ mirrors:style('Mirrors',['standard','aero']),handles:style('Door handles',['lever','flush','painted lever']),
  wheels:style('Wheels',['6-spoke','5-spoke','mesh','10-spoke'],'dish'),tires:style('Tires',['road','rally'],'sidewall'),
  exhaust:style('Exhaust',['single','dual','quad']),dash:style('Dashboard',['road','sport']),
  seats:style('Seats',['bucket','touring']),steering:style('Steering wheel',['round','flat-bottom']),
@@ -42,6 +42,7 @@ const unit=label=>F(label,0,1,.01),signed=label=>F(label,-1,1,.01);
 export const FASCIA_FIELDS={
  bumperStation:F('Bumper seam span (m)',.24,.63,.005),upperFasciaLift:F('Upper fascia elevation (m)',-.085,.14,.005),outerFasciaWidth:F('Terminal fascia width',-.09,.12,.005),
  grilleWidth:unit('Upper grille width'),grilleHeight:unit('Upper grille height'),grilleHeightPosition:unit('Upper grille position'),
+ fogCoverHeight:unit('Fog cover height'),plateHeight:unit('Rear plate pocket height'),plateWidth:unit('Rear plate pocket width'),
  intakeWidth:unit('Lower intake width'),intakeHeight:unit('Lower intake height'),intakeHeightPosition:unit('Lower intake position'),
  sweep:unit('Corner sweep'),pointedness:unit('Pointedness'),center:unit('Center projection'),roundness:unit('Horizontal roundness'),
  taper:unit('Width taper'),drop:unit('End drop'),verticalRoundness:unit('Vertical roundness'),rake:signed('Fascia rake'),
@@ -50,7 +51,7 @@ export const FASCIA_FIELDS={
 };
 export const OPTIC_HOUSINGS={'circle':'Circular',oval:'Oval',rectangle:'Rectangular','round-rect':'Rounded rectangle',
  trapezoid:'Trapezoidal',angular:'Angular',swept:'Swept',wrap:'Wraparound',compound:'Compound'};
-export const OPTIC_LAYOUTS={projector:'Single projector',twin:'Twin elements',led:'LED signature',mixed:'Projector + LED'};
+export const OPTIC_LAYOUTS={projector:'Single projector',twin:'Twin elements',led:'LED signature',mixed:'Projector + LED','factory-split':'Factory split lens'};
 export const OPTIC_FIELDS={width:unit('Housing width'),height:unit('Housing height'),corner:unit('Corner radius'),angle:signed('Housing angle'),
  sweep:unit('Housing sweep'),curvature:unit('Lens curvature'),recess:unit('Recess depth'),convexity:unit('Lens convexity'),
  position:unit('Vertical position'),outboard:unit('Outboard lamp placement'),inboardReach:unit('Lens reach toward grille'),protrusion:unit('Lens protrusion')};
@@ -123,7 +124,7 @@ export const PAIR_MODES={mirrored:'Mirrored',linked:'Linked',independent:'Indepe
 export const PAIR_GROUPS={headlights:'Headlights',taillights:'Taillights',fogs:'Fog lights',mirrors:'Mirrors',fenders:'Fenders',doors:'Doors',wheels:'Wheels',vents:'Vents',rockers:'Side skirts'};
 export const STYLE_KINDS={ridge:'Stamped ridge',groove:'Recessed groove',crease:'Styling crease',trim:'Raised molding',shoulder:'Raised shoulder',recess:'Local recess'};
 export const BODY_EDITOR_FIELDS={bolster:F('Seat bolster',0,1,.01),lumbar:F('Lumbar curve',0,1,.01),trim:F('Interior trim',0,1,.01),
- canopyLength:F('Roof length / cabin rake',0,1,.01),canopyShoulder:F('Roof shoulder rounding',0,1,.01),glassBow:F('Side glazing outward bow',0,1,.01)
+ rearGlassArc:F('Rear glass upper sweep (m)',0,.12,.002),canopyLength:F('Roof length / cabin rake',0,1,.01),canopyShoulder:F('Roof shoulder rounding',0,1,.01),glassBow:F('Side glazing outward bow',0,1,.01)
 };
 export const HOOD_CONSTRUCTION_FIELDS={
  shoulderRise:F('Shoulder drop (m)',0,.055,.001),
@@ -151,7 +152,7 @@ export const newStyle=(id='styling-1')=>({id,kind:'ridge',side:'both',start:.24,
 const constructionDefaults=()=>({
  symmetry:Object.fromEntries(Object.keys(PAIR_GROUPS).map(k=>[k,'mirrored'])),
  sides:{L:{},R:{}},
- cabin:{layout:'bench',bolster:.53,lumbar:.45,trim:.54,canopyLength:.5,canopyShoulder:.5,glassBow:.5},
+ cabin:{layout:'bench',bolster:.53,lumbar:.45,trim:.54,rearGlassArc:0,canopyLength:.5,canopyShoulder:.5,glassBow:.5},
  hood:{shoulderRise:0,shoulderWidth:.087,shoulderAt:.65,shoulderSweep:0,scoopWidth:0,scoopHeight:0,scoopCorner:0},
  wing:{elevation:0,camber:.34,sweep:.08,taper:.42,thickness:.097,angle:4,supports:2,spacing:.67,formula:'',elements:1},
  exhaust:[],features:[]

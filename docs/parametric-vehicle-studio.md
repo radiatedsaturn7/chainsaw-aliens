@@ -76,3 +76,16 @@ shared panel edges. The mouth has independent width, rise and corner shape;
 its inner sleeve is actual geometry. Zero width and rise retain the legacy
 Size / Shape mapping. The new settings live in `construction.hood`; older
 version-5 records omit them and retain their previous geometry.
+
+### Painted glazing frames, door hardware and split lamps
+
+Parts → Pillars → Painted frame keeps the A and C frames and roof rail in
+body color, with a dark center divider and narrow seals. Parts → Door handles
+→ Painted lever adds body-color grips over recessed pockets while leaving
+earlier handle types unchanged. The Cabin workbench's Rear glass upper sweep
+control bends the rear glass and adjoining side perimeter without moving their
+endpoints. Factory split lens is available for the front and rear optics; the
+rear separates the red and clear zones while the front has a distinct amber
+section and twin reflector modules. Fog cover and rear license pocket dimensions
+are editable from the fascia controls. These options require no imported meshes
+and are stored in the normal editable vehicle design JSON.

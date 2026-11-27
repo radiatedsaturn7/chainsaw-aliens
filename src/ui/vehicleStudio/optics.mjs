@@ -20,7 +20,7 @@ const profiles={
  compound:[[-1,-.36],[-.79,-.77],[-.29,-.99],[.24,-.87],[.83,-.98],[1,-.69],[.95,.33],[.72,.89],[.27,.82],[-.36,1],[-.82,.78],[-1,.31]]
 };
 export const HOUSING_FAMILIES=['round-rect','circle','oval','rectangle','trapezoid','angular','swept','wrap','compound'];
-const layouts=new Set(['projector','twin','led','mixed']);
+const layouts=new Set(['projector','twin','led','mixed','factory-split']);
 function curvePolygon(points,r,n){
  const controls=(p,q,t)=>p.map((x,i)=>mix(x,q[i],t));
  const list=[];
@@ -83,12 +83,12 @@ export function makeOpenings({end,g,segments=32}){
    if(sideFog.type==='off')continue;
    out.push(aperture({id:'fog'+(s>0?'-l':'-r'),component:'fogs',
    housing:sideFog.type==='strip'||sideFog.type==='blank'?'round-rect':'oval',cx:.5+s*.277,cy:.765,
-   width:mix(.065,.151,sat(num(sideFog.size,1)*.53)),height:sideFog.type==='strip'?.070:mix(.107,.174,sat(num(sideFog.depth,1)*.52)),
+   width:mix(.065,.151,sat(num(sideFog.size,1)*.53)),height:sideFog.type==='strip'?.070:mix(.107,.174,sat(num(sideFog.depth,1)*.52))*(sideFog.type==='blank'?mix(.60,1.75,num(fascia.fogCoverHeight,.5))/1.175:1),
    kind:sideFog.type==='blank'?'blank':'fog',segments,side:s,opt:{layout:'projector',protrusion:0}}));
   }
  }
  if(!front&&g.construction)out.push(aperture({id:'rear-plate-recess',component:'rearBumper',housing:'round-rect',cx:.5,cy:.615,
-  width:.223,height:.125,kind:'plate',segments}));
+  width:mix(.155,.291,num(fascia.plateWidth,.5)),height:.125+(num(fascia.plateHeight,.5)-.5)*.214,kind:'plate',segments}));
  if(mode!=='closed'){
   const grp=front?'frontBumper':'rearBumper',iMode=mode==='split'?'split':'single';
   const wideDucts=front&&c.fogs?.type==='off';
@@ -223,6 +223,36 @@ export function emitOpenings({end,openings,surface,put,lod=false}){
    putGeo('reflector',[rr(1,d*.65),rr(.82,d*.73),rr(.47,d*.80)],pt(x,y,d*.81));
    putGeo(front?'projector':'opticRed',[rr(.51,bright?d*.60:d*.64),rr(.29,d*.55)],pt(x,y,d*.53));
   };
+  if(oLayout==='factory-split'){
+   // Inside the sealed housing, divide the lens into two shallow molded
+   // sections, independently of its external profile and cavity.
+   const clip=(pol,line,keep)=>{
+    const out=[];
+    for(let i=0;i<pol.length;i++){
+     const a=pol[i],b=pol[(i+1)%pol.length],y=line(a),z=line(b),ai=y*keep>=0,bi=z*keep>=0;
+     if(ai)out.push(a);
+     if(ai!==bi){const t=y/(y-z);out.push(a.map((q,k)=>mix(q,b[k],t)));}
+    }
+    return out;
+   };
+   const plate=(poly,m,depth)=>{
+    if(poly.length<3)return;
+    const x=poly.reduce((p,q)=>p+q[0],0)/poly.length,y=poly.reduce((p,q)=>p+q[1],0)/poly.length;
+    putGeo(m,[ring(1,depth+.004,poly,x,y),ring(.94,depth,poly,x,y)],pt(x,y,depth-.002));
+   };
+   const line=front?([x,y])=>(y-cy)+.20*(x-cx)*side+h*.17:([x,y])=>y-cy+(x-cx)*side*.13+h*.13;
+   const zones=outline.map(([x,y])=>[mix(cx,x,.89),mix(cy,y,.88)]);
+   if(front){
+    const outer=clip(zones,([x])=>(x-cx)*side+w*.12,1);
+    plate(clip(outer,line,-1),side>0?'signalR':'signalL',d*.60);
+    proj(-.21,.164,.315);proj(.165,.154,.29,false);
+   }else{
+    plate(clip(zones,q=>line(q)-.0009,1),'opticRed',d*.46);
+    plate(clip(zones,q=>line(q)+.0009,-1),'opticClear',d*.46);
+    const t=fitted(cx+side*w*.12,cy+h*.19,w*.24,h*.106,lod?12:16);
+    putGeo('runningRed',[ring(1,d*.40,t.p,t.x,t.y),ring(.87,d*.36,t.p,t.x,t.y)],pt(t.x,t.y,d*.35));
+   }
+  }
   if(oLayout==='projector')proj(0,.23,.29);
   if(oLayout==='twin'){proj(-.19,.159,front?.289:.255);proj(.17,.135,front?.268:.227,false);}
   if(oLayout==='mixed')proj(-.14,.16,.227);
@@ -234,7 +264,7 @@ export function emitOpenings({end,openings,surface,put,lod=false}){
     putGeo(front?'head':'opticRed',[ring(1,d*.66,poly,x,y),ring(.72,d*.50,poly,x,y)],pt(x,y,d*.48));
    }
   }
-  if(kind==='lamp'){
+  if(kind==='lamp'&&oLayout!=='factory-split'){
    const {x,y,p}=fitted(cx+side*w*(oLayout==='twin'?.34:.303),cy+h*.223,w*.058,h*.058,10);
    putGeo(front?(side>0?'signalR':'signalL'):'opticClear',[ring(1,d*.68,p,x,y),ring(.78,d*.54,p,x,y)],pt(x,y,d*.52));
    if(!front){
@@ -244,7 +274,7 @@ export function emitOpenings({end,openings,surface,put,lod=false}){
   }
   // Convex lens follows parametric fascia wrap, with independent radial
   // center curvature; default is recessed and never a solid white face.
-  if(!front){
+  if(!front&&oLayout!=='factory-split'){
    const strip=fitted(cx,cy+h*.24,w*.31,h*.072,lod?10:14);
    putGeo('runningRed',[ring(1,d*.37,strip.p,strip.x,strip.y),ring(.87,d*.34,strip.p,strip.x,strip.y)],pt(strip.x,strip.y,d*.34));
   }
@@ -254,7 +284,7 @@ export function emitOpenings({end,openings,surface,put,lod=false}){
   putGeo('opticCover',[ring(.925,coverOuter),ring(.68,coverOuter-convex*.53),
    ring(.31,coverOuter-convex*.89)],pt(cx,cy,coverCenter));
   if(kind==='lamp'){
-   const x=cx+(oLayout==='twin'?-.19:oLayout==='mixed'?-.14:0)*side*w;
+   const x=cx+(oLayout==='twin'||oLayout==='factory-split'&&front?-.19:oLayout==='mixed'?-.14:0)*side*w;
    mounts[(front?'HeadlightMount_':'TaillightMount_')+(side>0?'L':'R')]=pt(x,cy,d*.47).pos;
   }
  }
