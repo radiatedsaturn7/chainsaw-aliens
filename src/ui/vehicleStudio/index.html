@@ -9,13 +9,15 @@
   <canvas id="scene" aria-label="Interactive 3D vehicle; drag to orbit, pinch to zoom and pan"></canvas>
   <div id="view-meta"><b id="name-tag"></b><span id="metrics"></span></div>
   <div id="ref-overlay" aria-hidden="true"></div>
+  <svg id="fascia-overlay" aria-label="Projected fascia control points" hidden></svg>
+  <div id="fascia-canvas-note" aria-live="polite" hidden></div>
   <div id="viewport-toolbar" aria-label="Quick views">
    <button data-view="orbit" aria-pressed="true">¾</button><button data-view="front">Front</button><button data-view="rear">Rear</button><button data-view="side">Side</button><button data-view="top">Top</button>
   </div>
   <div id="notice" role="status"></div>
  </section>
  <section id="controls" aria-label="Design controls">
-  <nav id="hotbar" aria-label="Design mode"><button data-tab="vehicle">Vehicle</button><button data-tab="parts">Parts</button><button data-tab="view">View</button><button data-tab="surface">Surface</button></nav>
+  <nav id="hotbar" aria-label="Design mode"><button data-tab="vehicle">Vehicle</button><button data-tab="parts">Parts</button><button data-tab="front" aria-label="Front fascia">Front</button><button data-tab="rear" aria-label="Rear fascia">Rear</button><button data-tab="view">View</button><button data-tab="surface">Surface</button></nav>
   <div id="inspector"></div>
   <div id="advanced" hidden><div><strong>Surface Studio · Front fender</strong><button id="advanced-done">Done</button></div><iframe id="panel-editor" title="Advanced front fender surface editor"></iframe></div>
  </section>

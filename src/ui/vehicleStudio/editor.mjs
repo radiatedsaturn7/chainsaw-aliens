@@ -1,4 +1,5 @@
-import {NOSE_PROFILES,NOSE_FIELDS} from './genome.mjs';
+import * as phenotype from './genome.mjs';
+import {guideModes,createFasciaOverlay} from './fasciaUi.mjs';
 import {FAMILIES,GLOBAL,DIMENSIONS,TOTAL_LENGTH,COMPONENTS,COMPONENT_FIELDS,POSITIONABLE,PATCH_PANELS,PATCH_RANGE,createDesignSession,createVehicle} from './genome.mjs';
 import {generateVehicle,disposeDesign} from './geometry.mjs';
 import {exportVehicle} from './export.mjs';
@@ -13,6 +14,9 @@ const layout=()=>{
 };
 window.addEventListener('resize',layout);layout();
 const draftKey='lotg.studio.design.draft.v1';
+const fasciaState={front:{category:'shape',advanced:false,guide:'transverse',point:0},rear:{category:'shape',advanced:false,guide:'transverse',point:0}};
+const endOfTab=()=>Object.hasOwn(fasciaState,tab)?tab:null;
+let fasciaOverlay=null;
 const work=createDesignSession(), fields=new Map();let tab='vehicle',part='frontFenders',geo=null,regeneration=0,advanced=null,reference=null,refView='side',panelSync=false,viewMode='orbit',noticeTimer=0,hasDraft=false;
 const element=(tag,props={})=>Object.assign(document.createElement(tag),props);
 const announce=(message,error=false,hold=false)=>{
@@ -21,8 +25,9 @@ const announce=(message,error=false,hold=false)=>{
 };
 let viewport=null;
 try{
- viewport=createViewport($('scene'),{onZoom:n=>$('zoom').value=n,onPick:key=>selectComponent(key,true),onFailure:e=>announce(e,true,true)});
+ viewport=createViewport($('scene'),{onZoom:n=>$('zoom').value=n,onPick:key=>selectComponent(key,true),onFailure:e=>announce(e,true,true),onRender:()=>fasciaOverlay?.render()});
 }catch(e){announce('WebGL preview unavailable on this device. Export and file controls still work.',true,true);}
+fasciaOverlay=createFasciaOverlay({svg:$('fascia-overlay'),view:()=>viewport,get:overlayConfig,write:writeGuide,select:selectGuidePoint});
 
 function retain(){
  hasDraft=true;
@@ -36,7 +41,7 @@ function regenerate(){
  const started=performance.now();
  try{
   const design=generateVehicle(work.get());
-  if(geo)disposeDesign(geo);geo=design;viewport?.setDesign(geo);
+  if(geo)disposeDesign(geo);geo=design;viewport?.setDesign(geo);fasciaOverlay?.render();
   const {metadata:m,diagnostics:d}=geo,ms=Math.round(performance.now()-started);
   $('name-tag').textContent=geo.genome.name;
   $('metrics').textContent=[m.lengthM,m.widthM,m.heightM].map(n=>n.toFixed(2)).join(' × ')+' m · '+(d.bodyTriangles+4*d.wheelTriangles).toLocaleString()+' tris';
@@ -92,7 +97,7 @@ function select(parent,id,label,options,value,fn){
  options.forEach(o=>{const [k,v]=Array.isArray(o)?o:[o,o];s.append(new Option(v,k));});s.value=value;s.onchange=()=>fn(s.value);l.append(s);return s;
 }
 function color(parent,key,label,g){
- const l=fieldRow(parent,label),x=element('input',{type:'color',value:g.materials[key]});x.setAttribute('aria-label',label);x.onchange=()=>edit('materials',key,x.value);l.append(x);
+ const l=fieldRow(parent,label),x=element('input',{id:'color-'+key,type:'color',value:g.materials[key]});x.setAttribute('aria-label',label);x.onchange=()=>edit('materials',key,x.value);l.append(x);
 }
 function group(container,label,open){
  const d=element('details',{open});d.append(element('summary',{textContent:label}));container.append(d);return d;
@@ -106,15 +111,183 @@ const componentControls={
  exhaust:['size','shape','depth'],dash:['size','shape','depth'],seats:['size','shape','depth'],steering:['size','shape','depth'],
  instruments:['size','shape','depth'],console:['size','shape','depth']
 };
+const fallbackProfiles={square:'Square / classic',round:'Rounded',v:'Pointed V'};
+const profileOptions=()=>Object.entries(phenotype.FASCIA_PROFILES??phenotype.NOSE_PROFILES??fallbackProfiles);
 function noseControls(parent,g){
- const p=g.components.frontBumper;
- select(parent,'nose-profile','Nose shape',Object.entries(NOSE_PROFILES),p.profile,v=>edit('components','frontBumper',v,'profile'));
- for(const [k,spec] of Object.entries(NOSE_FIELDS))range(parent,'components','frontBumper',spec,p[k],k);
- parent.append(element('p',{textContent:'Try Top view to see the silhouette. Corner sweep sets how far the sides trail the center. Hood-to-bumper roll softens the leading edge. Nose drop lowers the front profile.'}));
+ const p=g.fascia?.front??g.components.frontBumper,domain=g.fascia?.front?'fascia':'components',end=g.fascia?.front?'front':'frontBumper';
+ select(parent,'nose-profile','Nose shape',profileOptions(),p.profile,v=>edit(domain,end,v,'profile'));
+ for(const [k,spec] of Object.entries(phenotype.FASCIA_FIELDS??phenotype.NOSE_FIELDS??{})){
+  if(['sweep','rollover','drop'].includes(k)&&Number.isFinite(p[k]))range(parent,domain,end,spec,p[k],k);
+ }
+ const b=element('button',{textContent:'Open front fascia'});b.onclick=()=>setTab('front');parent.append(b);
+}
+function guideRange(guide){
+ const spec=(guide==='outline'?phenotype.OPTIC_OUTLINE_FIELD:phenotype.FASCIA_CURVE_FIELD)??{};
+ return {min:spec.min??-1,max:spec.max??1,step:spec.step??.025};
+}
+function guideValues(g,end,guide){
+ return guide==='outline'?g.optics?.[end]?.outline:g.fascia?.[end]?.curves?.[guide];
+}
+function overlayConfig(){
+ const end=endOfTab();if(!end)return null;
+ const cfg=fasciaState[end],mode=guideModes[cfg.guide];
+ if(!cfg.advanced||viewMode!==mode.view(end))return null;
+ const guide=geo?.fascia?.[end]?.guides?.[cfg.guide],values=guideValues(work.get(),end,cfg.guide);
+ if(!guide||!Array.isArray(guide.points)||!values)return null;
+ return {id:end+':'+cfg.guide,guide,values,range:guideRange(cfg.guide),selected:cfg.point,closed:cfg.guide==='outline'};
+}
+function syncGuideUI(){
+ const end=endOfTab(),note=$('fascia-canvas-note');note.hidden=!end||!fasciaState[end].advanced;
+ if(!end||!fasciaState[end].advanced){fasciaOverlay.render();return;}
+ const cfg=fasciaState[end],v=guideValues(work.get(),end,cfg.guide)??[];
+ const pose=guideModes[cfg.guide],poseView=pose.view(end);
+ const visible=Boolean(overlayConfig());
+ note.textContent=visible?(cfg.guide==='outline'?'Lens outline · Drag a point':'Control points · Drag a point'):(viewMode===poseView?'Numeric guide editing':'Select '+poseView+' view for the projected controls');
+ for(const button of $('inspector').querySelectorAll('[data-guide-point]')){
+  button.setAttribute('aria-pressed',String(Number(button.dataset.guidePoint)===cfg.point));
+ }
+ const num=$('guide-value'),slide=$('guide-range');
+ if(num)num.value=v[cfg.point]??0;if(slide)slide.value=v[cfg.point]??0;
+ fasciaOverlay.render();
+}
+function selectGuidePoint(index){
+ const end=endOfTab();if(!end)return;
+ const cfg=fasciaState[end],n=guideValues(work.get(),end,cfg.guide)?.length??0;
+ cfg.point=Math.max(0,Math.min(n-1,Number(index)||0));syncGuideUI();
+}
+function writeGuide(index,value,{record=true}={}){
+ const end=endOfTab();if(!end)return false;
+ const cfg=fasciaState[end],g=work.get(),v=guideValues(g,end,cfg.guide);
+ if(!v||!Number.isFinite(value)||index<0||index>=v.length)return false;
+ const {min,max}=guideRange(cfg.guide);
+ const next=Number(Math.min(max,Math.max(min,value)).toFixed(6));
+ if(v[index]===next){syncGuideUI();return true;}
+ v[index]=next;
+ const cls=cfg.guide==='outline'?'optics':'fascia';
+ const field=cls==='optics'?'outline':'curves';
+ const patch=field==='outline'?v:g.fascia[end].curves;
+ const ok=edit(cls,end,patch,field,{record});syncGuideUI();return ok;
+}
+function frameGuide(end){
+ const guide=fasciaState[end].guide,preset=guideModes[guide];setView(preset.view(end));
+ const pts=geo?.fascia?.[end]?.guides?.[guide]?.points;
+ if(pts?.length){
+  const center=[0,1,2].map(axis=>pts.reduce((t,p)=>t+p[axis],0)/pts.length);
+  viewport?.focusWorld(center);
+ }
+ fasciaOverlay.render();
+}
+function setFasciaGuide(guide){
+ const end=endOfTab();if(!end||!Object.hasOwn(guideModes,guide))return;
+ const cfg=fasciaState[end];cfg.advanced=true;cfg.guide=guide;cfg.point=0;
+ inspector();frameGuide(end);syncGuideUI();
+}
+function setFasciaAdvanced(on){
+ const end=endOfTab();if(!end)return;
+ const cfg=fasciaState[end];cfg.advanced=Boolean(on);
+ inspector();if(cfg.advanced){viewport?.setZoom(2.05);frameGuide(end);}
+ else {setView(end);viewport?.setZoom(1.67);}
+ syncGuideUI();
+}
+const fasciaLabel=side=>side==='front'?'Front':'Rear';
+function fasciaDemo(key){
+ if(!key||typeof phenotype.createFasciaDemo!=='function')return false;
+ try{
+  work.replace(phenotype.createFasciaDemo(key));retain();regenerate();
+  inspector();if(endOfTab()&&fasciaState[endOfTab()].advanced)frameGuide(endOfTab());syncGuideUI();
+  announce('Fascia study loaded. Undo restores your previous design.');return true;
+ }catch(e){announce(e.message,true);return false;}
+}
+function categories(parent,items,on,choose,aria){
+ const row=element('div',{className:'fascia-tabs'});row.setAttribute('aria-label',aria);
+ for(const [key,label] of Object.entries(items)){
+  const b=element('button',{textContent:label,type:'button'});b.dataset.category=key;b.setAttribute('aria-pressed',String(key===on));b.onclick=()=>choose(key);row.append(b);
+ }
+ parent.append(row);return row;
+}
+function numericGuide(parent,end,g){
+ const cfg=fasciaState[end], guide=guideModes[cfg.guide];
+ categories(parent,Object.fromEntries(Object.entries(guideModes).map(([k,v])=>[k,v.label])),cfg.guide,setFasciaGuide,'Direct editing guide').classList.add('fascia-guide-tabs');
+ parent.append(element('p',{textContent:guide.help+' Or choose a point and use the numeric input.'}));
+ const v=guideValues(g,end,cfg.guide)??[];
+ const points=element('div',{className:'fascia-points'});points.setAttribute('aria-label','Numeric point selection');
+ v.forEach((_,i)=>{
+  const b=element('button',{textContent:String(i+1),type:'button'});b.dataset.guidePoint=i;b.setAttribute('aria-label','Select point '+(i+1));b.setAttribute('aria-pressed',String(i===cfg.point));b.onclick=()=>selectGuidePoint(i);points.append(b);
+ });
+ parent.append(points);
+ const row=fieldRow(parent,'Point offset'),wrap=element('div',{className:'fascia-point-range'}),spec=guideRange(cfg.guide);
+ const slider=element('input',{id:'guide-range',type:'range',min:spec.min,max:spec.max,step:spec.step,value:v[cfg.point]??0});
+ const num=element('input',{id:'guide-value',type:'number',inputMode:'decimal',min:spec.min,max:spec.max,step:spec.step,value:v[cfg.point]??0});
+ slider.setAttribute('aria-label','Selected control point slider');num.setAttribute('aria-label','Selected control point value');
+ let moving=false;
+ slider.oninput=()=>{writeGuide(cfg.point,slider.valueAsNumber,{record:!moving});moving=true;};
+ slider.onchange=slider.onblur=()=>{moving=false;};
+ num.onchange=()=>{if(Number.isFinite(num.valueAsNumber))writeGuide(cfg.point,num.valueAsNumber);else syncGuideUI();};
+ wrap.append(slider,num);row.append(wrap);
+ const zero=element('button',{textContent:'Reset selected point',type:'button'});zero.onclick=()=>writeGuide(cfg.point,0);parent.append(zero);
+ const fit=element('button',{textContent:'Frame this guide',type:'button'});fit.onclick=()=>frameGuide(end);parent.append(fit);
+}
+function fasciaInspector(root,g,end){
+ const cfg=fasciaState[end],data=g.fascia?.[end],optics=g.optics?.[end];
+ if(!data||!optics){root.append(element('p',{textContent:'Fascia components are unavailable for this design.'}));return;}
+ const head=element('div',{className:'fascia-head'});const title=element('h2',{textContent:fasciaLabel(end)+' fascia'});
+ const b=element('button',{id:'fascia-advanced',type:'button',textContent:cfg.advanced?'Done direct edit':'Edit control points'});
+ b.setAttribute('aria-pressed',String(cfg.advanced));b.onclick=()=>setFasciaAdvanced(!cfg.advanced);
+ head.append(title,b);root.append(head);
+ root.append(element('p',{className:'fascia-desc',textContent:cfg.advanced?'Shape the shared surface directly against the live orthographic model.':'Style and fit the actual panels and optics. The opposite end stays independent.'}));
+ if(cfg.advanced){numericGuide(root,end,g);return;}
+ categories(root,{shape:'Shape',intakes:end==='front'?'Intakes':'Valance',optics:'Optics'},cfg.category,v=>{cfg.category=v;inspector();},'Fascia categories');
+ const choose=(id,label,options,domain,field)=>select(root,id,label,Object.entries(options??{}),domain==='fascia'?data[field]:optics[field],v=>edit(domain,end,v,field));
+ const fieldsFor=(domain,selector)=>{
+  const source=domain==='fascia'?(phenotype.FASCIA_FIELDS??{}):(phenotype.OPTIC_FIELDS??{}),row=domain==='fascia'?data:optics;
+  for(const [key,spec] of Object.entries(source))if(selector(key,spec)&&Number.isFinite(row[key]))range(root,domain,end,spec,row[key],key);
+ };
+ const isIntake=(k,spec)=>/intake|duct|opening|vent|splitter|chin|valance|diffuser|grille/i.test(k+' '+(spec.group??''));
+ const partFields=(parent,key,keys=['shape','depth','size'])=>{
+  const c=COMPONENTS[key],p=g.components[key];
+  select(parent,'fascia-component-'+key,c.label+' type',c.types,p.type,v=>edit('components',key,v,'type'));
+  for(const k of keys)range(parent,'components',key,{...COMPONENT_FIELDS[k],label:c.label+' '+k},p[k],k);
+ };
+
+ if(cfg.category==='shape'){
+  choose('fascia-profile',end==='front'?'Nose profile':'Tail profile',Object.fromEntries(profileOptions()),'fascia','profile');
+  fieldsFor('fascia',(k,s)=>!isIntake(k,s));
+  const joining=end==='front'?'hood':'trunk', groupName=end==='front'?'Hood integration':'Trunk integration';
+  const panel=group(root,groupName,false);partFields(panel,joining,['shape','depth']);
+  const advancedPanel=element('button',{textContent:'Edit '+joining+' surface patch',type:'button'});
+  advancedPanel.onclick=()=>{part=joining;setTab('surface');};panel.append(advancedPanel);
+ }else if(cfg.category==='intakes'){
+  choose('fascia-intakes',end==='front'?'Intake layout':'Valance opening',phenotype.INTAKE_TYPES,'fascia','intakes');
+  fieldsFor('fascia',isIntake);
+  const bumper=group(root,'Bumper styling',false);partFields(bumper,end==='front'?'frontBumper':'rearBumper');
+  if(end==='front'){
+   partFields(group(root,'Grille',false),'grille',['size','depth']);
+   partFields(group(root,'Fog lights',false),'fogs',['size','depth']);
+  }else partFields(group(root,'Exhaust',false),'exhaust',['size','depth','shape','bias','angle']);
+ }else{
+  choose('optic-housing','Housing',phenotype.OPTIC_HOUSINGS,'optics','housing');
+  choose('optic-layout','Internal lamp layout',phenotype.OPTIC_LAYOUTS,'optics','layout');
+  fieldsFor('optics',()=>true);
+  const palette=group(root,'Optic materials',true);
+  for(const [key,label] of [
+   [end==='front'?'head':'tail',end==='front'?'Front lamp element':'Rear lamp element'],
+   ['indicator','Turn signals (both ends)'],
+   ['opticCover','Lens tint (both ends)'],
+   ['trim','Trim and gaskets (global)']
+  ])if(g.materials[key])color(palette,key,label,g);
+  const outline=element('button',{textContent:'Edit lens outline',type:'button'});outline.onclick=()=>setFasciaGuide('outline');root.append(outline);
+ }
+ const demoEntries=Object.entries(phenotype.FASCIA_DEMOS??{});
+ if(demoEntries.length){
+  const d=group(root,'Starting-point studies',false);
+  select(d,'fascia-demo','Load a complete study',[['','Choose a study…'],...demoEntries.map(([key,name])=>[key,typeof name==='string'?name:name.label??key])],'',v=>{if(v)fasciaDemo(v);});
+ }
 }
 function inspector(){
  const root=$('inspector'),g=work.get();root.replaceChildren();fields.clear();
- if(tab==='vehicle'){
+ const end=endOfTab();
+ if(end){fasciaInspector(root,g,end);syncGuideUI();}
+ else if(tab==='vehicle'){
   select(root,'family','Body family',Object.entries(FAMILIES).map(([k,v])=>[k,v.label]),g.family,v=>{if(edit('family','family',v)){inspector();}});
   const n=element('input',{id:'design-name',type:'text',value:g.name,maxLength:80});n.setAttribute('aria-label','Design name');n.onchange=()=>edit('name','name',n.value);fieldRow(root,'Design name').append(n);
   for(const [label,keys] of Object.entries({'Proportions & stance':['wheelbase','width','height','front','rear','track','stance'],
@@ -177,13 +350,20 @@ function inspector(){
 }
 function selectComponent(key,fromViewport=false){
  if(!Object.hasOwn(COMPONENTS,key))return;
- part=key;viewport?.select(part);if(fromViewport&&tab!=='surface'&&tab!=='view')setTab('parts');else if(tab==='parts'||(tab==='surface'&&!advanced))inspector();
+ part=key;const end=endOfTab();
+ if(end){if(fromViewport&&!fasciaState[end].advanced){if(['headlights','tails'].includes(part))fasciaState[end].category='optics';else if(part==='fogs'||part==='grille')fasciaState[end].category='intakes';else if(part==='frontBumper'||part==='rearBumper')fasciaState[end].category='shape';inspector();}return;}
+ viewport?.select(part);if(fromViewport&&tab!=='surface'&&tab!=='view')setTab('parts');else if(tab==='parts'||(tab==='surface'&&!advanced))inspector();
 }
 function setTab(k){
  if(k!=='surface'&&advanced)closeAdvanced(false);
+ const previous=endOfTab();
  tab=k;
+ const end=endOfTab();
+ document.body.classList.toggle('fascia-mode',Boolean(end));
+ if(end){viewport?.select('');if(fasciaState[end].advanced){viewport?.setZoom(2.05);frameGuide(end);}else{setView(end);viewport?.setZoom(1.67);}}
+ else if(previous){viewport?.setZoom(1.18);setView('orbit');}
  for(const b of document.querySelectorAll('[data-tab]'))b.setAttribute('aria-pressed',String(b.dataset.tab===k));
- inspector();
+ inspector();syncGuideUI();
 }
 function exportForDrive(){
  const detail={bundle:exportVehicle(work.get(),{id:'studio-session-'+(crypto.randomUUID?.()??Date.now().toString(36)),quality:'preview'}),handled:false,error:null};
@@ -222,7 +402,7 @@ function syncPanel(){
 function setView(v){
  viewMode=v;viewport?.setView(v);
  for(const b of document.querySelectorAll('[data-view]'))b.setAttribute('aria-pressed',String(b.dataset.view===v));showReference();
- if(tab==='view')inspector();
+ if(tab==='view')inspector();syncGuideUI();
 }
 function showReference(){$('ref-overlay').style.backgroundImage=reference&&refView===viewMode?'url("'+reference+'")':'';}
 function clearReference(){if(reference)URL.revokeObjectURL(reference);reference=null;showReference();if(tab==='view')inspector();}
@@ -267,7 +447,7 @@ pan.onkeydown=e=>{
  if(delta){e.preventDefault();viewport?.nudge(...delta);}else if(['Enter',' '].includes(e.key)){e.preventDefault();viewport?.resetPan();}
 };
 window.addEventListener('keydown',e=>{
- if(e.key==='Escape'){if(!$('menu-sheet').hidden)menu(false);else if(advanced)closeAdvanced();else $('back').click();}
+ if(e.key==='Escape'){if(!$('menu-sheet').hidden)menu(false);else if(advanced)closeAdvanced();else if(endOfTab()&&fasciaState[endOfTab()].advanced)setFasciaAdvanced(false);else $('back').click();}
  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'&&!['INPUT','TEXTAREA'].includes(document.activeElement?.tagName)){
   e.preventDefault();afterUndo(e.shiftKey);
  }
@@ -281,6 +461,7 @@ window.vehicleDesigner={
  setMaterialMode:m=>viewport?.setMode(m),setLighting:v=>viewport?.setLighting(v),setDisplay:d=>viewport?.setDisplay(d),
  undo(){afterUndo();return work.get();},redo(){afterUndo(true);return work.get();},
  duplicate(){work.duplicate();inspector();schedule();return work.get();},reset(){work.reset();inspector();syncPanel();schedule();return work.get();},
+ setFasciaAdvanced,setFasciaGuide,selectGuidePoint,writeGuide,fasciaDemo,
  save:work.save,load(text){work.load(text);inspector();syncPanel();schedule();return work.get();},
  regenerate,export:opts=>exportVehicle(work.get(),opts),drive:exportForDrive,
  renderView:async({angle='orbit',mode='production',lighting='studio',projection=null}={})=>{
@@ -289,5 +470,5 @@ window.vehicleDesigner={
   await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
   return $('scene').toDataURL('image/png');
  },
- getState:()=>({tab,part,view:viewport?.state(),diagnostics:geo?.diagnostics,metadata:geo?.metadata,advanced:Boolean(advanced)})};
+ getState:()=>({tab,part,view:viewport?.state(),diagnostics:geo?.diagnostics,metadata:geo?.metadata,advanced:Boolean(advanced),fascia:endOfTab()?{...fasciaState[endOfTab()],end:endOfTab(),overlays:Boolean(overlayConfig())}:null})};
 setTab('vehicle');regenerate();document.documentElement.dataset.designerReady='true';

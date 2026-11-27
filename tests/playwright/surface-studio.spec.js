@@ -141,13 +141,33 @@ test('mobile nose controls visibly reshape the same draft and persist',async({pa
  expect(await image()).not.toBe(pointed);
  await frame.getByLabel('Corner sweep value',{exact:true}).fill('0.85');
  await frame.getByLabel('Corner sweep value',{exact:true}).press('Tab');
- await frame.getByLabel('Nose drop value',{exact:true}).fill('0.72');
- await frame.getByLabel('Nose drop value',{exact:true}).press('Tab');
+ await frame.getByLabel('End drop value',{exact:true}).fill('0.72');
+ await frame.getByLabel('End drop value',{exact:true}).press('Tab');
  await expect.poll(()=>body.evaluate(()=>vehicleDesigner.getGenome().components.frontBumper)).toMatchObject({profile:'round',sweep:.85,drop:.72});
  await frame.getByRole('button',{name:'Parts',exact:true}).tap();
  await frame.locator('#component').selectOption('frontBumper');
- await expect(frame.getByLabel('Nose drop value',{exact:true})).toHaveValue('0.72');
+ await expect(frame.getByLabel('End drop value',{exact:true})).toHaveValue('0.72');
  const file=await body.evaluate(()=>vehicleDesigner.save());
  await frame.locator('#design-file').setInputFiles({name:'rounded.json',mimeType:'application/json',buffer:Buffer.from(file)});
- expect(await body.evaluate(()=>vehicleDesigner.export({quality:'preview'}).genome.components.frontBumper)).toMatchObject({profile:'round',sweep:.85,drop:.72});
+ expect(await body.evaluate(()=>vehicleDesigner.export({quality:'preview'}).genome.fascia.front)).toMatchObject({profile:'round',sweep:.85,drop:.72});
+});
+
+test('front and rear fascia studies, direct guides, and independent optics work on mobile',async({page})=>{
+ const frame=await openDesign(page),body=frame.locator('body'),g=()=>body.evaluate(()=>vehicleDesigner.getGenome());
+ await frame.locator('[data-tab=front]').tap();
+ await frame.locator('summary').filter({hasText:'Starting-point studies'}).tap();
+ await frame.locator('#fascia-demo').selectOption('hyper');
+ expect((await g()).fascia.front.profile).toBe('v');
+ await frame.locator('#fascia-advanced').tap();
+ await expect(frame.locator('#fascia-overlay')).toBeVisible();
+ await expect.poll(()=>body.evaluate(()=>vehicleDesigner.getState().view.projection)).toBe('ortho');
+ await frame.locator('#fascia-advanced').tap();
+ await frame.locator('[data-tab=rear]').tap();
+ await frame.getByRole('button',{name:'Optics',exact:true}).tap();
+ await frame.locator('#optic-housing').selectOption('trapezoid');
+ await frame.locator('#optic-layout').selectOption('mixed');
+ const res=await g();
+ expect(res.optics.rear).toMatchObject({housing:'trapezoid',layout:'mixed'});
+ expect(res.optics.front.housing).toBe('angular');
+ expect(res.fascia.front.profile).toBe('v');
 });

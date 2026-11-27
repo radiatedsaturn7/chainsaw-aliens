@@ -1,4 +1,6 @@
 import * as T from '../../vendorBridge/three.js';
+import {createEndSurface,fasciaMesh} from './fascia.mjs';
+import {makeOpenings,emitOpenings} from './optics.mjs';
 import {normalizeVehicle,evaluateInteriorPatch,math} from './genome.mjs';
 const {mix,clamp,buildFender}=math;
 const RAD=Math.PI/180;
@@ -127,7 +129,6 @@ export function generateVehicle(input,{quality='preview'}={}){
   return [sgn*x,y,z];
  }
  const put=(k,m,x,p=null,r=null)=>addModelPart(parts,k,m,x,p,r);
- const lowY=floor+.008;
  // Roof/door/fender share station curves. Each component evaluates the same
  // seam datum; inset bands produce gaps without independent panel drift.
  function top(z,u,crown,comp){
@@ -136,116 +137,75 @@ export function generateVehicle(input,{quality='preview'}={}){
  }
  const sheet=(name,material,z0,z1,fn,n=14,m=10)=>put(name,material,patch(n,m,(u,v)=>fn(mix(z0,z1,u),v)));
  const hoodC=(.027+.059*c.hood.shape)*(c.hood.type==='flat'?.29:c.hood.type==='power bulge'?1.32:1)*c.hood.depth;
- const hoodPoint=(z,v)=>{const p=top(z,v,mix(hoodC,.019*c.frontBumper.size,clamp((z-(bumperFront-.28))/.28)**2),'hood');
+ const originalHood=(z,v)=>{const p=top(z,v,mix(hoodC,.019*c.frontBumper.size,clamp((z-(bumperFront-.28))/.28)**2),'hood');
   p[1]+=UP_PATCH(g,'hood',z,v,cabinFront,bumperFront);return p;};
- sheet('hood','paint',cabinFront+G,bumperFront-G,hoodPoint);
  const trunkC=(c.trunk.type==='fastback'?.034:c.trunk.type==='ducktail'?.064:.047)*(.68+c.trunk.shape)*c.trunk.depth;
- const trunkPoint=(z,v)=>{const p=top(z,v,mix(trunkC,.019*c.rearBumper.size,clamp((bumperRear+.28-z)/.28)**2),'trunk');
+ const originalTrunk=(z,v)=>{const p=top(z,v,mix(trunkC,.019*c.rearBumper.size,clamp((bumperRear+.28-z)/.28)**2),'trunk');
   p[1]+=UP_PATCH(g,'trunk',z,v,bumperRear,cabinRear);return p;};
- sheet('trunk','paint',bumperRear+G,cabinRear-G,trunkPoint);
- // The front cap is one surface from the hood seam through the leading roll
- // to the lower valance. Its corner curve also drives the left/right skins.
- // Front-Z grows forward. Plan sweep never consumes the front wheel opening.
- const fb=c.frontBumper,frontSeam=bumperFront+G;
- const roll=.035+.16*fb.rollover;
- const archEnd=L+radius+.025*Math.max(0,c.frontFenders.size-1)+.025;
- const sweepRoom=Math.max(.030,Lf-Math.max(frontSeam+.095,archEnd)-.022);
- const minSweep=fb.profile==='v'?sweepRoom*.58:fb.profile==='round'?sweepRoom*.26:Math.min(.022,sweepRoom*.18);
- const maxSweep=fb.profile==='v'?sweepRoom:fb.profile==='round'?sweepRoom*.96:Math.min(.15,sweepRoom*.52);
- const sweep=mix(minSweep,maxSweep,fb.sweep);
- const sideSweepStart=Math.min(Lf-G-.055,Math.max(frontSeam,archEnd));
- const frontCurve=a=>{
-  const b=Math.abs(a),angle=b*Math.PI/2, x=Math.sin(angle);
-  if(fb.profile==='v'){
-   // Slightly round the center apex; leave a long, near-straight diagonal.
-   const tip=.10-.065*fb.sweep;
-   return [(Math.sqrt(x*x+tip*tip)-tip)/(Math.sqrt(1+tip*tip)-tip),x];
-  }
-  if(fb.profile==='square')return [(1-Math.cos(angle))**3.6,mix(a,Math.sign(a)*x,.48)];
-  return [1-Math.cos(angle),Math.sign(a)*x];
- };
- function frontCap(u,t){
-  const a=2*u-1,[retreat,dist]=frontCurve(a),x=fb.profile==='v'?Math.sign(a)*dist:dist;
-  const along=Lf-G, leading=along-sweep*retreat;
-  const above=t<=.54, r=above?t/.54:(t-.54)/.46;
-  const edge=skinPoint(along,above?0:r,1,'frontBumper');
-  const co=1-x*x;
-  const leadY=skinY(along)-roll*.31-(skinY(along)-floor)*.42*fb.drop+co*(.023+.016*fb.shape)*fb.size;
-  const leadX=skinPoint(along,0,1,'frontBumper')[0];
-  if(above){
-   // Stay aligned to the hood edge at the seam, but roll over instead of
-   // ending in a flat horizontal slab meeting a flat vertical bumper.
-   const h=hoodPoint(frontSeam,u);
-   const blend=r*r*(3-2*r),pitch=(h[1]-hoodPoint(frontSeam-.014,u)[1])/.014;
-   const exponent=1.42+fb.rollover*.73;
-   return [mix(h[0],x*leadX,blend),mix(h[1],leadY,r**1.65)+pitch*(leading-frontSeam)*exponent*r*(1-r)**2,
-    leading-(leading-frontSeam)*(1-r)**exponent];
-  }
-  const lowerY=edge[1]+co*r*.028;
-  const tuck=(.026+roll*.41)*r**1.72;
-  // Tuck increases inboard so the cut line wraps into the sides instead
-  // of folding backward at the corners.
-  return [x*edge[0],lowerY+(leadY-skinY(along))*(1-r),leading-tuck*co];
+ const ends={},fascia={},lampMounts={};
+ const across=quality==='export'?46:34,down=quality==='export'?18:14,along=quality==='export'?20:15;
+ const hoodPoint=(z,u)=>ends.front.upperPanel(z,u);
+ const trunkPoint=(z,u)=>ends.rear.upperPanel(z,u);
+ for(const end of ['front','rear']){
+  const front=end==='front',sign=front?1:-1,name=front?'frontBumper':'rearBumper',
+   fender=front?'frontFenders':'rearFenders',tip=(front?Lf:Lr)-sign*G,seam=front?bumperFront:bumperRear;
+  const surf=createEndSurface({settings:g.fascia[end],end,tip,seam,cabin:front?cabinFront:cabinRear,
+   archEnd:L+radius+.025*(c[fender].size-1),floor,deckAt:front?originalHood:originalTrunk,
+   sideAt:(z,v,s)=>skinPoint(z,v,s,name),bumper:c[name]});
+  ends[end]=surf;
+  const openings=makeOpenings({end,g});
+  const shell=put(name,'paint',fasciaMesh(surf.face,openings,{rear:!front,across,down}));
+  const mounted=emitOpenings({end,openings,surface:surf.face,put});
+  Object.assign(lampMounts,mounted.mounts);
+  issues.push(...(mounted.issues??[]));
+  fascia[end]={guides:surf.guides,trimArea:shell.userData.trimArea,
+   samples:[0,.15,.30,.45,.5,.55,.70,.85,1].map(u=>surf.face(u,.13)),
+   openings:openings.map(({id,component,outline})=>({id,component,outline:cloneJSON(outline)}))};
+  const lamp=openings.find(x=>x.kind==='lamp'&&x.center[0]>.5);
+  if(lamp){const ring=lamp.outline;fascia[end].guides.outline={points:Array.from({length:8},(_,i)=>surf.face(...ring[Math.floor(i*ring.length/8)])),axis:1,scale:.05};}
+  if(Math.abs(shell.userData.trimArea.mesh-shell.userData.trimArea.expected)>1e-6||shell.userData.trimArea.unmatched)issues.push('Overlapping or invalid '+end+' cutouts.');
+  const roll=put(name,'paint',patch(along,across,(t,u)=>{
+   const q=surf.bridge(u,t);
+   q[2]+=sign*G*(1-t)**3;return q;
+  },!front));
+  surf.geometries={shell,roll};
  }
- function sideFront(z,v,s){
-  const p=skinPoint(z,v,s,'frontBumper'),u=s>0?1:0;
-  const progress=clamp((z-frontSeam)/(Lf-G-frontSeam));
-  const edge=frontCap(u,.54+.46*v),top=frontCap(u,.54*progress),lead=frontCap(u,.54);
-  if(progress>=1-1e-9)return edge;
-  const b=clamp((z-sideSweepStart)/(Lf-G-sideSweepStart));
-  const blend=b*b*(3-2*b), span=Lf-G-sideSweepStart;
-  const endSpan=Math.max(.001,edge[2]-sideSweepStart);
-  const lowerZ=z<=sideSweepStart?z:sideSweepStart+endSpan*(1-(1-b)**Math.min(3,span/endSpan));
-  const topShift=top[1]-skinY(z),edgeShift=edge[1]-skinPoint(Lf-G,v,s,'frontBumper')[1];
-  const leadShift=lead[1]-skinY(Lf-G);
-  const bias=v*v*(3-2*v);
-  return [mix(mix(top[0]*s,skinPoint(z,0,s,'frontBumper')[0],bias)+(p[0]-skinPoint(z,0,s,'frontBumper')[0]),edge[0],blend*bias),
-   p[1]+topShift*(1-v)+(edgeShift-leadShift*(1-v))*progress**2,mix(top[2],lowerZ,bias)];
+ sheet('hood','paint',cabinFront+G,bumperFront-G,hoodPoint,20,across);
+ sheet('trunk','paint',bumperRear+G,cabinRear-G,trunkPoint,20,across);
+ function weldNormals(...entries){
+  const get=(a,i)=>new T.Vector3().fromBufferAttribute(a,i);
+  const [g0,i0]=entries[0],p=get(g0.attributes.position,i0);
+  const n=new T.Vector3();
+  for(const [g,i] of entries){if(p.distanceToSquared(get(g.attributes.position,i))>1e-8)return;n.add(get(g.attributes.normal,i));}
+  n.normalize();for(const [g,i] of entries)g.attributes.normal.setXYZ(i,n.x,n.y,n.z);
  }
- // Close the shared seam with identical face/side samples. Use the same
- // evaluator for optics and grille so neither floats when the nose changes.
- const frontSteps=quality==='export'?36:24,frontAround=quality==='export'?44:32;
- const capSample=t=>t<=.5?1.08*t:.54+.92*(t-.5);
- const cap=put('frontBumper','paint',patch(frontSteps,frontAround,(t,u)=>frontCap(u,capSample(t))));
- function weldNormal(a,i,b,j){
-  const d=(attr,k)=>new T.Vector3().fromBufferAttribute(attr,k);
-  if(d(a.attributes.position,i).distanceToSquared(d(b.attributes.position,j))>1e-9)return;
-  const n=d(a.attributes.normal,i).add(d(b.attributes.normal,j)).normalize();
-  a.attributes.normal.setXYZ(i,n.x,n.y,n.z);b.attributes.normal.setXYZ(j,n.x,n.y,n.z);
+ for(const end of ['front','rear']){
+  const {shell,roll}=ends[end].geometries;
+  for(let i=0;i<=across;i++)weldNormals([shell,i],[roll,along*(across+1)+i]);
  }
- function frontDetail(key,mat,uc,vc,w,h,relief,shape=1,tilt=0,normalDepth=false,sag=0){
-  const sampled=(t,k)=>{
-   const a=2*k-1,e=Math.max(.00001,1-a*a)**shape;
-   const u=uc+a*w/2,v=vc+(t-.5)*h*e+a*tilt;
-   const p=frontCap(clamp(u),clamp(v));
-   if(normalDepth){
-    const n1=frontCap(clamp(u+.0001),clamp(v)),n2=frontCap(clamp(u),clamp(v+.0001));
-    const U=new T.Vector3(...n1).sub(new T.Vector3(...p)),V=new T.Vector3(...n2).sub(new T.Vector3(...p));
-    const n=V.cross(U).normalize();return p.map((x,i)=>x+n.getComponent(i)*(relief+sag*e*Math.sin(t*Math.PI)));
-   }
-   return [p[0],p[1],p[2]+relief];
-  };
-  return put(key,mat,patch(5,22,sampled));
- }
- const rearP=c.rearBumper;
- sheet('rearBumper','paint',Lr+G,bumperRear-G,(z,u)=>top(z,u,.019*rearP.size,'bumper'),9,12);
- function rearFascia(u,v){
-  const x=2*u-1,center=1-Math.abs(x)**2.5,along=Lr+G,outer=skinPoint(along,v,1,'rearBumper');
-  return [x*outer[0],outer[1]+center*((1-v)*.019*rearP.size+v*.034/(rearP.depth*rearP.size)),along+center*(.027+.02*rearP.shape)*v**2];
- }
- put('rearBumper','paint',patch(20,7,rearFascia));
  // All side panels use the same trimmed wheel envelope; arch edge samples
  // and hem are generated from the same function as the adjacent skin.
  for(const s of [-1,1]){
   const doorSplits=c.doors.type==='four door'?[doorRear,mix(doorRear,doorFront,.47),doorFront]:[doorRear,doorFront];
   const slabs=[['rearBumper',Lr,bumperRear],['rearFenders',bumperRear,doorRear],...doorSplits.slice(1).map((z,i)=>['doors',doorSplits[i],z]),['frontFenders',doorFront,bumperFront],['frontBumper',bumperFront,Lf]];
   for(const [key,a,b] of slabs){
-   if(key==='frontBumper'){
-    const n=frontSteps/2,across=frontAround+1,col=s<0?0:frontAround;
-    const side=put(key,'paint',patch(n,n,(u,v)=>sideFront(mix(a+G,b-G,u),v,s),s<0));
-    for(let i=0;i<=n;i++)weldNormal(cap,i*across+col,side,i*(n+1));
-    for(let j=1;j<=n;j++)weldNormal(cap,(n+j)*across+col,side,n*(n+1)+j);
-   }else sheet(key,'paint',a+G,b-G,(z,v)=>skinPoint(z,v,s,key),key.includes('Fender')?30:18,10);
+   if(key==='frontBumper'||key==='rearBumper'){
+    const front=key==='frontBumper',surf=ends[front?'front':'rear'];
+    const n=along, col=s<0?0:across,{shell,roll}=surf.geometries;
+    const side=put(key,'paint',patch(n,down,(t,v)=>{
+     const q=surf.bumperSide(t,v,s);
+     q[2]+=(front?1:-1)*G*(1-t)**3;return q;
+    },front?s<0:s>0));
+    for(let i=0;i<=n;i++)weldNormals([roll,i*(across+1)+col],[side,i*(down+1)]);
+    // The closed UV domain runs clockwise down the right and up the left.
+    for(let j=1;j<=down;j++){
+     const row=s>0?across+j:2*across+2*down-j;
+     weldNormals([shell,row],[side,n*(down+1)+j]);
+    }
+   }else if(key==='frontFenders'||key==='rearFenders'){
+    const surf=ends[key==='frontFenders'?'front':'rear'];
+    put(key,'paint',patch(32,12,(u,v)=>{const z=mix(a+G,b-G,u);return surf.quarter(z,v,s,skinPoint(z,v,s,key));},s<0));
+   }else sheet(key,'paint',a+G,b-G,(z,v)=>skinPoint(z,v,s,key),18,10);
    joins.push({a,b,component:key,side:s});
   }
   for(const [comp,axle] of [['rearFenders',-L],['frontFenders',L]]){
@@ -311,43 +271,6 @@ export function generateVehicle(input,{quality='preview'}={}){
   put('pillars','trim',patch(18,3,(u,v)=>{const q=side(u,v*.060);q[0]+=s*.010;return q;}));
  }
  // Optical and trim dimensions are tied to fascia, not independent world coordinates.
- const lampMounts={};
- const hp=c.headlights;
- for(const s of [-1,1]){
-  const round=hp.type==='round',strip=hp.type==='strip';
-  const uc=.5+s*(fb.profile==='v'?.27:.29),vc=.65-hp.bias*.070;
-  const w=(round?.119:strip?.31:.254)*hp.size,h=(round?.155:strip?.075:.155)*hp.depth*(.78+hp.shape*.42);
-  const tilt=s*((hp.type==='swept'?-.044:0)+hp.angle*RAD*.08);
-  frontDetail('headlights','trim',uc,vc,w+.025,h+.023,.002,round?.50:.21,tilt,true);
-  frontDetail('headlights','head',uc,vc,w,h,.007,round?.50:.21,tilt,true,.003);
-  if(!round&&!strip)frontDetail('headlights','chrome',uc-s*.026,vc+.016,w*.47,h*.40,.012,.41,tilt,true);
-  const [x,y,z]=frontCap(uc,vc);
-  lampMounts['HeadlightMount_'+(s<0?'L':'R')]=[x,y,z+.021];
- }
- const tp=c.tails;
- for(const s of [-1,1]){
-  const round=tp.type==='round',bar=tp.type==='strip';
-  const [x,y,edge]=rearFascia((1+s*(bar?.41:.694))/2,.21-tp.bias*.155);
-  const w=X*(round?.25:bar?.63:.54)*tp.size,h=(round?.15:bar?.068:.118)*(.7+.56*tp.shape)*tp.depth;
-  const outline=round?ovalCylinder:ellipsoid,turn=[tp.angle*RAD,-s*.075,0];
-  put('tails','trim',outline(w+.025,h+.022,.053),[x,y,edge-.016],turn);
-  put('tails','tail',outline(w,h,.026),[x,y,edge-.038],turn);
-  if(!round&&!bar)put('tails','chrome',ellipsoid(w*.38,h*.45,.010),[x+s*w*.13,y,edge-.053],turn);
-  lampMounts['TaillightMount_'+(s<0?'L':'R')]=[x,y,edge-.053];
- }
- const gp=c.grille;
- if(gp.type!=='closed'){
-  const w=(fb.profile==='v'?.24:.28)*gp.size,h=.19*gp.depth;
-  frontDetail('grille','trim',.5,.737,w,h,.004,.29,0,true);
-  const rows=gp.type==='bars'?3:5;
-  for(let i=0;i<rows;i++)frontDetail('grille','chrome',.5,.737+h*(i/(rows-1)-.5)*.52,w*.80,.008,.30,0,true);
- }
- if(fb.type==='rally'||fb.profile==='v'){
-  for(const s of [-1,1])frontDetail('frontBumper','trim',.5+s*.205,.859,.24*fb.size,.12*fb.depth,.004,.35,s*.027,true);
- }else frontDetail('frontBumper','trim',.5,.875,.50*fb.size,(.075+.052*fb.shape)*fb.depth,.004,.32,0,true);
- if(c.rearBumper.type!=='smooth')put('rearBumper','trim',ellipsoid(X*.96*c.rearBumper.size,.095,.06),[0,lowY+.085,Lr-.007]);
- const fog=c.fogs;
- if(fog.type!=='off')for(const s of [-1,1])frontDetail('fogs','head',.5+s*(.315+.030*fog.shape),.85-fog.bias*.04,.077*fog.size,.100*fog.size*fog.depth*(fog.type==='strip'?.46:1),.011,.45,fog.angle*RAD*.07,true);
  const sc=c.scoop;
  if(sc.type!=='off'){
   const z=mix(cabinFront,bumperFront,.49+sc.bias*.14),p=hoodPoint(z,.5),w=.41*sc.size,l=.34*sc.depth,h=.045+.085*sc.shape;
@@ -365,7 +288,8 @@ export function generateVehicle(input,{quality='preview'}={}){
  }
  const ex=c.exhaust,n=ex.type==='quad'?4:ex.type==='dual'?2:1;
  for(let i=0;i<n;i++){
-  const x=n===1?X*.67:(2*(i/(n-1))-1)*X*.72,y=lowY+.09+.04*ex.shape+ex.bias*.04,z=Lr+.025;
+  const u=n===1?.77:mix(.245,.755,i/(n-1));
+  const edge=ends.rear.face(u,1),x=edge[0],y=edge[1]+.022+.034*ex.shape+ex.bias*.025,z=edge[2]+.016;
   const r=.042*ex.size;
   put('exhaust','chrome',new T.LatheGeometry([[r*.75,-.085],[r,-.085],[r,.052],[r*.75,.052],[r*.75,-.085]].map(([a,b])=>new T.Vector2(a,b*ex.depth)),22).rotateX(Math.PI/2),[x,y,z],[ex.angle*RAD,0,0]);
   put('exhaust','trim',ovalCylinder(r*1.43,r*1.43,.014),[x,y,z-.052*ex.depth]);
@@ -373,11 +297,14 @@ export function generateVehicle(input,{quality='preview'}={}){
  // Cabin floor, tail pan and front pan block sight through the wheel wells.
  const cabinY=floor+.22;
  put('seats','floor',box(X*1.48,.052,cabinFront-cabinRear+.08),[0,cabinY-.065,(cabinFront+cabinRear)*.5]);
- const underFront=Lf-sweep-.075,underRear=Lr+.10;
+ const underFront=Lf-ends.front.maxRetreat-.11,underRear=Lr+ends.rear.maxRetreat+.11;
  put('rockers','floor',box(Math.min(2*t-d.tireWidth-.04,X*1.53),.05,underFront-underRear),[0,floor+.025,(underFront+underRear)*.5]);
- put('frontBumper','floor',patch(7,frontAround,(v,u)=>{
-  const p=frontCap(u,1);return [mix(p[0],(2*u-1)*X*.54,v),mix(p[1]-.001,floor+.003,v),mix(p[2],underFront-.045,v)];
- },true));
+ for(const end of ['front','rear']){
+  const front=end==='front',surf=ends[end];
+  put(front?'frontBumper':'rearBumper','floor',patch(7,across,(v,u)=>{
+   const p=surf.face(u,1);return [mix(p[0],(2*u-1)*X*.54,v),mix(p[1],floor+.003,v),mix(p[2],front?underFront-.045:underRear+.045,v)];
+  },!front));
+ }
  const dz=cabinFront-.23,dh=B-.133,dw=X*d.cabinWidth*c.dash.size*1.65;
  put('dash','interior',ellipsoid(dw,.17*c.dash.depth,.32+ .24*c.dash.shape),[0,dh,dz]);
  if(c.dash.type==='sport')put('dash','chrome',box(dw*.91,.022,.025),[0,dh,dz-.2]);
@@ -408,7 +335,7 @@ export function generateVehicle(input,{quality='preview'}={}){
  }
  for(const [a,b] of [[roofRear,roofFront],[doorRear,doorFront],[bumperRear,doorRear],[doorFront,bumperFront]])if(a+.025>=b)issues.push('Shared stations crossed; change the vehicle proportions.');
  const triangles=(p)=>p.reduce((n,{geometry:x})=>n+(x.index?.count??x.attributes.position.count)/3,0);
- return {genome:g,parts,wheelParts:wp,wheels,lampMounts,stations:{cabinFront,cabinRear,roofFront,roofRear,doorFront,doorRear,bumperFront,bumperRear},
+ return {genome:g,parts,wheelParts:wp,wheels,lampMounts,fascia,stations:{cabinFront,cabinRear,roofFront,roofRear,doorFront,doorRear,bumperFront,bumperRear},
   metadata:{lengthM:length,widthM:d.width,heightM:d.height,wheelbaseM:d.wheelbase,trackWidthM:t*2,trackFrontM:t*2,trackRearM:t*2,wheelRadiusM:R,rideHeightM:floor},
   diagnostics:{issues:[...new Set(issues)],warnings:[...new Set(warnings)],floorContact,joins,bodyTriangles:triangles(parts),wheelTriangles:triangles(wp),panel:cloneJSON(surface.diagnostics)}};
 }

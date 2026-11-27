@@ -3,7 +3,7 @@ import * as T from '../../vendorBridge/three.js';
 import {automotiveMaterial,applyAutomotiveEnvironment} from '../../model3d/AutomotiveMaterials.js';
 import {materialDoc} from './export.mjs';
 const {sin,cos,PI}=Math;
-const views={orbit:[.72,.26],front:[0,.02],rear:[PI,.02],side:[PI/2,.02],top:[0,PI/2-.0001]};
+const views={orbit:[.72,.26],front:[0,0],rear:[PI,0],side:[PI/2,0],top:[0,PI/2]};
 const clamp=(x,a,b)=>Math.max(a,Math.min(x,b));
 const zebra=new T.ShaderMaterial({side:T.DoubleSide,
  vertexShader:`varying vec3 p; varying vec3 n;void main(){vec4 v=modelViewMatrix*vec4(position,1.);p=v.xyz;n=normalMatrix*normal;gl_Position=projectionMatrix*v;}`,
@@ -13,7 +13,7 @@ const zebra=new T.ShaderMaterial({side:T.DoubleSide,
   float x=sin(32.*atan(r.y,length(r.xz))+7.*r.x);
   float a=max(0.05,0.75*fwidth(x));gl_FragColor=vec4(mix(vec3(0.023,0.030,0.041),vec3(0.95,0.97,1.),smoothstep(-a,a,x)),1.);}`,
  uniforms:{cameraWorld:{value:new T.Matrix4()},ortho:{value:false}}});
-export function createViewport(canvas,{onPick=()=>{},onZoom=()=>{},onFailure=()=>{}}={}){
+export function createViewport(canvas,{onPick=()=>{},onZoom=()=>{},onFailure=()=>{},onRender=()=>{}}={}){
  const scene=new T.Scene();scene.background=new T.Color('#243747');
  const renderer=new T.WebGLRenderer({canvas,antialias:true,preserveDrawingBuffer:true});
  renderer.setPixelRatio(Math.min(1.6,devicePixelRatio||1));renderer.outputColorSpace=T.SRGBColorSpace;
@@ -50,10 +50,10 @@ export function createViewport(canvas,{onPick=()=>{},onZoom=()=>{},onFailure=()=
   const ey=new T.Vector3(sin(az)*cos(el),sin(el),cos(az)*cos(el)).multiplyScalar(dist);
   const center=pan.clone().add(new T.Vector3(0,(geo?.metadata.heightM??1.4)*.44,0));
   if(ortho){const extent=dist*.343;or.left=-extent*aspect;or.right=extent*aspect;or.top=extent;or.bottom=-extent;or.updateProjectionMatrix();}
-  c.position.copy(center).add(ey);c.lookAt(center);c.updateMatrixWorld();camActive=c;zebra.uniforms.cameraWorld.value.copy(c.matrixWorld);zebra.uniforms.ortho.value=ortho;
+  c.position.copy(center).add(ey);c.up.set(0,view==='top'?0:1,view==='top'?-1:0);c.lookAt(center);c.updateMatrixWorld();camActive=c;zebra.uniforms.cameraWorld.value.copy(c.matrixWorld);zebra.uniforms.ortho.value=ortho;
   return [w,h];
  }
- function render(){frame=0;const [w,h]=camera();if(!w||!h)return;const size=renderer.getSize(new T.Vector2());if(size.x!==w||size.y!==h)renderer.setSize(w,h,false);renderer.render(scene,camActive);}
+ function render(){frame=0;const [w,h]=camera();if(!w||!h)return;const size=renderer.getSize(new T.Vector2());if(size.x!==w||size.y!==h)renderer.setSize(w,h,false);renderer.render(scene,camActive);onRender();}
  function setLighting(k){
   light=k;const outdoor=k==='track-clear';scene.background.set(outdoor?'#6c91b3':'#263a4b');ground.material.color.set(outdoor?'#46535e':'#223445');
   key.intensity=outdoor?3.4:2.38;fill.intensity=outdoor?.30:.88;ambient.intensity=outdoor?1.48:1.24;
@@ -85,9 +85,10 @@ export function createViewport(canvas,{onPick=()=>{},onZoom=()=>{},onFailure=()=
   const keys=new Set([...next.parts,...next.wheelParts].map(r=>r.material));
   for(const id of keys){
    const doc=materialDoc(next.genome,id,{texture:false});
-   const glass=id==='glass';
-   mats[id]=automotiveMaterial({color:doc.color,side:T.DoubleSide,transparent:glass,opacity:glass?(next.genome.components.glass.type==='tinted'?.52:.31):1},
+   const glass=id==='glass',optic=id==='opticCover';
+   mats[id]=automotiveMaterial({color:doc.color,side:T.DoubleSide,transparent:glass||optic,opacity:optic?.19:glass?(next.genome.components.glass.type==='tinted'?.52:.31):1},
     doc.automotive);
+   if(optic){mats[id].opacity=.19;mats[id].transparent=true;mats[id].depthWrite=false;}
   }
   world.userData.automotiveMaterials=Object.values(mats);
   delete world.userData.automotiveEnvironmentKey;
@@ -131,7 +132,7 @@ export function createViewport(canvas,{onPick=()=>{},onZoom=()=>{},onFailure=()=
    const other=[...drag].find(([id])=>id!==e.pointerId)[1];const dist=(x,y)=>Math.hypot(x-other[0],y-other[1]);
    setZoom(zoom*clamp(dist(e.clientX,e.clientY)/Math.max(8,dist(...prev)),.71,1.39));nudge(dx/2,dy/2);
   }else if(dragChanged){
-   if(e.shiftKey||e.buttons===4)nudge(dx,dy);
+   if(e.shiftKey||e.buttons===4||(projection==='ortho'&&view!=='orbit'))nudge(dx,dy);
    else{az-=dx*.008;el=clamp(el+dy*.007,-1.28,1.56);view='orbit';request();}
   }
   drag.set(e.pointerId,[e.clientX,e.clientY,prev[2],prev[3]]);
@@ -146,7 +147,19 @@ export function createViewport(canvas,{onPick=()=>{},onZoom=()=>{},onFailure=()=
  canvas.addEventListener('wheel',e=>{e.preventDefault();setZoom(zoom*Math.exp(-e.deltaY*.002));},{passive:false});
  canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();onFailure('3D context lost. Reopen the designer to restore the preview.');});
  const observer=new ResizeObserver(request);observer.observe(canvas);
- return {setDesign,setView,nudge,setZoom,setLighting,resetPan(){pan.set(0,0,0);request();},
+ function project(p){
+  const [w,h]=camera();
+  const q=new T.Vector3().fromArray(p).project(camActive);
+  return {x:(q.x*.5+.5)*w,y:(1-(q.y*.5+.5))*h,visible:q.z>=-1&&q.z<=1&&Math.abs(q.x)<=1&&Math.abs(q.y)<=1};
+ }
+ function unprojectAt(x,y,p){
+  const [w,h]=camera();if(!w||!h)return null;
+  const origin=new T.Vector3().fromArray(p),normal=camActive.getWorldDirection(new T.Vector3());
+  ray.setFromCamera(new T.Vector2(2*x/w-1,1-2*y/h),camActive);
+  const point=ray.ray.intersectPlane(new T.Plane().setFromNormalAndCoplanarPoint(normal,origin),new T.Vector3());
+  return point?.toArray()??null;
+ }
+ return {setDesign,setView,project,unprojectAt,nudge,focusWorld(p){pan.fromArray(p);pan.y-=(geo?.metadata.heightM??1.4)*.44;request();},setZoom,setLighting,resetPan(){pan.set(0,0,0);request();},
   setProjection(p){projection=p;request();},setMode(m){if(m!=='production'&&!diagnostic[m])return;mode=m;restyle();},
   setDisplay(d){display=d;restyle();},select(s){selected=s;restyle();},
   state:()=>({mode,lift:el,az,zoom,projection,display,selected,light,view,drawCalls:renderer.info.render.calls,glError:renderer.getContext().getError()}),

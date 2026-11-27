@@ -1,0 +1,297 @@
+{
+  "kind": "lotg-vehicle-design",
+  "schemaVersion": 1,
+  "generatorVersion": 1,
+  "name": "Legacy coupe with custom nose",
+  "family": "coupe",
+  "dimensions": {
+    "wheelbase": 2.57,
+    "width": 1.7,
+    "height": 1.365,
+    "front": 0.72,
+    "rear": 1.07,
+    "track": 0.825,
+    "belt": 0.588,
+    "box": 0.88,
+    "stance": 0.12,
+    "cabin": -0.055,
+    "cabinLength": 0.46,
+    "cabinWidth": 0.795,
+    "hood": 0.02,
+    "trunk": 0.02,
+    "crown": 0.25,
+    "skirt": 1.04,
+    "frontBox": 0.09,
+    "rearBox": 0.02,
+    "diameter": 0.634,
+    "tireWidth": 0.225,
+    "rimRatio": 0.681
+  },
+  "components": {
+    "hood": {
+      "type": "crowned",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "frontFenders": {
+      "type": "swept",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "rearFenders": {
+      "type": "swept",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "frontBumper": {
+      "type": "sport",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1,
+      "profile": "v",
+      "sweep": 0.76,
+      "rollover": 0.32,
+      "drop": 0.65
+    },
+    "rearBumper": {
+      "type": "sport",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "doors": {
+      "type": "two door",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "roof": {
+      "type": "flat",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "pillars": {
+      "type": "dark",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "glass": {
+      "type": "clear",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "rockers": {
+      "type": "stock",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "trunk": {
+      "type": "notch",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "headlights": {
+      "type": "rectangular",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1,
+      "bias": 0,
+      "angle": 0
+    },
+    "tails": {
+      "type": "stacked",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1,
+      "bias": 0,
+      "angle": 0
+    },
+    "fogs": {
+      "type": "round",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1,
+      "bias": 0,
+      "angle": 0
+    },
+    "grille": {
+      "type": "bars",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "scoop": {
+      "type": "off",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1,
+      "bias": 0,
+      "angle": 0
+    },
+    "spoiler": {
+      "type": "lip",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1,
+      "bias": 0,
+      "angle": 0
+    },
+    "mirrors": {
+      "type": "standard",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1,
+      "bias": 0,
+      "angle": 0
+    },
+    "handles": {
+      "type": "lever",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "wheels": {
+      "type": "mesh",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "tires": {
+      "type": "road",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "exhaust": {
+      "type": "single",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1,
+      "bias": 0,
+      "angle": 0
+    },
+    "dash": {
+      "type": "road",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "seats": {
+      "type": "bucket",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "steering": {
+      "type": "round",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "instruments": {
+      "type": "analog",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    },
+    "console": {
+      "type": "manual",
+      "size": 1,
+      "shape": 0.5,
+      "depth": 1
+    }
+  },
+  "surfaces": {
+    "frontFenders": {
+      "schemaVersion": 1,
+      "preset": "e30",
+      "topology": "box-flare",
+      "boundaryConstraints": {
+        "shutLineM": 0.0035,
+        "hoodApproach": "tangent",
+        "bumperApproach": "style-break"
+      },
+      "parameters": {
+        "length": 1.465,
+        "width": 0.014,
+        "height": 0.008,
+        "longCrown": 0,
+        "latCrown": -0.009,
+        "shoulderPos": 0.18,
+        "shoulderCurvature": 0.01,
+        "shoulderSharpness": 0.38,
+        "frontBoxiness": 0.65,
+        "rearBoxiness": 0.56,
+        "archRadius": 0.339,
+        "archPosition": 0.008,
+        "archEccentricity": 0.94,
+        "flareDepth": 0.016,
+        "flareWidth": 0.93,
+        "lipRadius": 0.0045,
+        "hoodBoundary": 0.009,
+        "headlightBoundary": -0.022,
+        "doorBoundary": -0.012,
+        "bumperBoundary": -0.019,
+        "rocker": 0.004,
+        "localCurvature": 0
+      },
+      "overrides": {}
+    },
+    "hood": {
+      "kind": "bicubic-interior-v1",
+      "points": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "roof": {
+      "kind": "bicubic-interior-v1",
+      "points": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "trunk": {
+      "kind": "bicubic-interior-v1",
+      "points": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "constraints": {
+    "gap": 0.005,
+    "archClearance": 0.045,
+    "partition": "shared-stations-v1"
+  },
+  "materials": {
+    "paint": "#b82c34",
+    "wheel": "#bfc9d3",
+    "glass": "#698292",
+    "rubber": "#171a20",
+    "trim": "#22262b",
+    "chrome": "#a3abb5",
+    "head": "#d9e7fb",
+    "tail": "#b61728",
+    "interior": "#292d36",
+    "seat": "#363b48",
+    "floor": "#303843"
+  },
+  "attachments": {
+    "schema": "axles-and-optics-v1"
+  }
+}

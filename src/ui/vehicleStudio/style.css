@@ -41,3 +41,39 @@ footer{padding:4px max(6px,env(safe-area-inset-right)) max(5px,env(safe-area-ins
 @media(max-width:370px){#actions{gap:2px;grid-template-columns:repeat(3,minmax(38px,1fr)) minmax(79px,1.45fr)}#actions button{padding-inline:4px;font-size:.86rem}footer{gap:4px}}
 
 @media(max-width:440px) and (orientation:portrait){#actions{grid-template-columns:repeat(3,minmax(47px,1fr)) minmax(102px,1.7fr)}#drive{white-space:nowrap;font-size:.86rem}#zoom-control{max-width:70px}#actions button{font-size:.86rem}}
+
+/* Front/rear working views: canvas remains live under the interactive cage. */
+#hotbar{grid-template-columns:repeat(6,minmax(0,1fr))}
+#hotbar button{white-space:nowrap}
+#fascia-overlay{position:absolute;inset:0;z-index:2;width:100%;height:100%;pointer-events:none;overflow:hidden}
+#viewport-toolbar{z-index:3}
+#notice{z-index:4}
+#fascia-overlay .guide-line{stroke:#8bfae5;stroke-width:1.45;stroke-dasharray:5 5;fill:none;opacity:.79;pointer-events:none}
+#fascia-overlay .guide-sample{stroke:#d2f9fb;stroke-width:1.05;fill:none;opacity:.47;pointer-events:none}
+#fascia-overlay .guide-handle{pointer-events:auto;cursor:grab;outline:none;touch-action:none}
+#fascia-overlay .guide-handle:active{cursor:grabbing}
+#fascia-overlay .guide-hit{fill:transparent;pointer-events:all}
+#fascia-overlay .guide-dot{fill:#1b3f49;stroke:#afeedc;stroke-width:1.6;pointer-events:none}
+#fascia-overlay .guide-dottext{font:600 9px ui-monospace,monospace;fill:#f3fffd;pointer-events:none}
+#fascia-overlay .guide-handle[data-selected=true] .guide-dot,#fascia-overlay .guide-handle:focus-visible .guide-dot{fill:#fbd8a8;stroke:#fff2c5;stroke-width:2.4}
+#fascia-overlay .guide-handle[data-selected=true] .guide-dottext,#fascia-overlay .guide-handle:focus-visible .guide-dottext{fill:#26333a}
+#fascia-canvas-note{position:absolute;z-index:1;top:8px;right:8px;max-width:52%;padding:5px 8px;border:1px solid #5f7f91;border-radius:6px;background:#13303ce8;color:#b5f5e7;font-size:.76rem;pointer-events:none;text-align:center}
+.fascia-head{display:flex;justify-content:space-between;gap:6px;align-items:center;margin:2px 0 0}
+.fascia-head h2{font-size:1.05rem;margin:0}
+.fascia-head button{min-height:37px;padding-inline:8px;font-size:.84rem}
+.fascia-desc{margin:5px 0 9px}
+.fascia-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin:2px 0 8px}
+.fascia-tabs button{padding-inline:3px;font-size:.82rem}
+.fascia-guide-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+.fascia-points{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.fascia-points button{padding-inline:3px}
+.fascia-head~button{margin:3px 5px 3px 0}
+@media (max-width:460px) and (orientation:portrait){
+ #hotbar{gap:3px;padding:4px}
+ #hotbar button{font-size:.78rem;padding-inline:1px;min-height:42px}
+ #fascia-canvas-note{top:42px;max-width:65%;font-size:.69rem}
+}
+@media (orientation:landscape) and (max-height:560px){
+ #hotbar button{font-size:.75rem;min-height:39px;padding-inline:1px}
+ #fascia-canvas-note{top:45px}
+}

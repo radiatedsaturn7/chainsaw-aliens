@@ -3,7 +3,7 @@ import {createBuiltInRaceCars} from '../../racing/raceData.js';
 import {generateVehicle,disposeDesign} from './geometry.mjs';
 const PALETTE={
  paint:['Coachwork paint','paint'],wheel:['Wheel alloy','alloy'],glass:['Cabin glass','glass'],rubber:['Tire rubber','rubber'],
- trim:['Exterior trim','trim'],chrome:['Machined steel','machined'],head:['Front optical lens','optic'],tail:['Rear optical lens','optic'],
+ trim:['Exterior trim','trim'],chrome:['Machined steel','machined'],head:['Front optical lens','optic'],tail:['Rear optical lens','optic'],opticCover:['Clear optical cover','glass'],indicator:['Amber indicator','optic'],
  interior:['Interior vinyl','trim'],seat:['Seat upholstery','upholstery'],floor:['Floor carpet','upholstery']
 };
 const solidTexture=(pixel)=>({width:1,height:1,pixels:[pixel]});
@@ -19,7 +19,7 @@ function tireTexture(){
 export function materialDoc(g,key,{texture=true}={}){
  const [name,preset]=PALETTE[key];const rimFace=key==='wheel';
  return {id:'studio-mat-'+key,name,color:g.materials[key],
-  texture:!texture?null:key==='glass'?solidTexture(g.components.glass.type==='tinted'?'#ffffff70':'#ffffff48'):key==='rubber'?tireTexture():null,
+  texture:!texture?null:key==='glass'?solidTexture(g.components.glass.type==='tinted'?'#ffffff70':'#ffffff48'):key==='opticCover'?solidTexture('#ffffff31'):key==='rubber'?tireTexture():null,
   automotive:{preset,creaseAngle:0,...(rimFace?{roughness:.27}:{}),...(key==='paint'?{paintCalibration:true}:{})}};
 }
 function encodeModel(design,parts,name,joints={}){

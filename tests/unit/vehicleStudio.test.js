@@ -1,6 +1,7 @@
 import test from 'node:test';
+import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
-import {createVehicle,updateDesign,evaluateInteriorPatch,createDesignSession,serializeVehicle,loadVehicle,FAMILIES,COMPONENTS} from '../../src/ui/vehicleStudio/genome.mjs';
+import {createVehicle,updateDesign,evaluateInteriorPatch,createDesignSession,serializeVehicle,loadVehicle,FAMILIES,COMPONENTS,FASCIA_DEMOS,createFasciaDemo} from '../../src/ui/vehicleStudio/genome.mjs';
 import {generateVehicle,disposeDesign} from '../../src/ui/vehicleStudio/geometry.mjs';
 import {exportVehicle} from '../../src/ui/vehicleStudio/export.mjs';
 import {setParameter,setControl} from '../../src/ui/surfaceStudio/surface.mjs';
@@ -86,41 +87,59 @@ test('temporary drive documents resolve through get and prepare without storage 
  assert.equal(lib.entries.size,0);
 });
 
-test('nose profiles change the silhouette, keep wheels fixed, and seat the optics on the generated cap',()=>{
- const legacy=createVehicle('sedan');
- for(const k of ['profile','sweep','rollover','drop'])delete legacy.components.frontBumper[k];
- const baseline=loadVehicle(JSON.stringify(legacy));assert.equal(baseline.components.frontBumper.profile,'round');
- const measurements={};
- for(const family of Object.keys(FAMILIES))for(const profile of ['square','round','v']){
-  const g=updateDesign(createVehicle(family),'components','frontBumper',profile,'profile');
-  g.components.frontBumper.sweep=.92;
+test('legacy v1 design explicitly upgrades to generator v2 with its nose settings, not frozen replay',()=>{
+ const g=loadVehicle(readFileSync(new URL('../fixtures/studio-genome-v1.json',import.meta.url),'utf8'));
+ assert.equal(g.generatorVersion,2);assert.equal(g.schemaVersion,1);assert.equal(g.family,'coupe');
+ assert.equal(g.fascia.front.profile,'v');assert.equal(g.fascia.front.sweep,.76);assert.equal(g.fascia.front.drop,.65);
+ assert.deepEqual(loadVehicle(serializeVehicle(g)),g);
+});
+test('same wheelbase and width produce box, arc and V profiles, and independent rear edits',()=>{
+ const baseline=createVehicle(),observed={};
+ let before;
+ for(const profile of ['square','round','v']){
+  const g=structuredClone(baseline);Object.assign(g.fascia.front,{profile,sweep:.85,center:1,pointedness:0});
   build(g,d=>{
    assert.deepEqual(d.diagnostics.issues,[]);
-   const cap=d.parts.find(p=>p.component==='frontBumper'&&p.material==='paint').geometry;
-   const a=cap.attributes.position, cols=33, mid=12*cols;
-   const ctr=a.getZ(mid+16),q=a.getZ(mid+24),corner=a.getZ(mid+32);
-   assert.ok(ctr>corner);
-   const noseSide=d.parts.filter(p=>p.component==='frontBumper'&&p.material==='paint').slice(1);
-   for(const [s,p] of noseSide.entries()){
-    const get=i=>[a.getX(i),a.getY(i),a.getZ(i)];
-    const side=p.geometry.attributes.position;
-    for(let j=1;j<=12;j++){
-     const i=12*13+j, c=(12+j)*cols+(s===0?0:32);
-     assert.ok(get(c).every((v,axis)=>Math.abs(v-side.array[i*3+axis])<1e-6));
-    }
-   }
-   const mount=d.lampMounts.HeadlightMount_R;
-   assert.ok(mount.every(Number.isFinite));assert.ok(Math.abs(mount[2]-ctr)<.3);
-   assert.equal(d.metadata.wheelbaseM,g.dimensions.wheelbase);
-   if(family==='sedan')measurements[profile]={relative:(ctr-q)/(ctr-corner),sweep:ctr-corner,mount};
+   const z=d.fascia.front.samples.map(p=>p[2]),dz=z[4]-z[0];
+   observed[profile]=[(z[4]-z[2])/dz,dz];
+   if(!before)before=d.wheels;assert.deepEqual(d.wheels,before);
   });
  }
- assert.ok(measurements.square.relative<.18);
- assert.ok(measurements.round.relative>.25&&measurements.round.relative<.40);
- assert.ok(measurements.v.relative>.6);
- assert.ok(measurements.v.sweep>measurements.square.sweep*2);
- assert.ok(measurements.square.mount[2]>measurements.v.mount[2]+.10);
- const lowered=updateDesign(baseline,'components','frontBumper',1,'drop');
- build(baseline,b=>build(lowered,d=>{assert.deepEqual(d.wheels,b.wheels);assert.ok(b.lampMounts.HeadlightMount_R[1]>d.lampMounts.HeadlightMount_R[1]+.09);}));
- assert.throws(()=>updateDesign(baseline,'components','frontBumper','triangle','profile'));
+ assert.ok(observed.square[0]<.15&&observed.round[0]>.14&&observed.round[0]<.36);
+ assert.ok(observed.v[0]>.42&&observed.v[1]>observed.square[1]*1.6);
+ const varied=updateDesign(baseline,'fascia','rear',1,'taper');
+ build(baseline,a=>build(varied,b=>{
+  assert.deepEqual(positions(a,'frontBumper'),positions(b,'frontBumper'));
+  assert.notDeepEqual(positions(a,'trunk'),positions(b,'trunk'));assert.notDeepEqual(positions(a,'rearFenders'),positions(b,'rearFenders'));
+  assert.deepEqual(a.wheels,b.wheels);assert.deepEqual(a.metadata,b.metadata);
+ }));
+ const advanced=updateDesign(baseline,'fascia','front',{...baseline.fascia.front.curves,vertical:[0,.55,-.38,0]},'curves');
+ build(baseline,a=>build(advanced,b=>assert.notDeepEqual(a.fascia.front.guides.vertical.points,b.fascia.front.guides.vertical.points)));
+});
+test('matched lens/rim vertices, four demos and preview/export resolution maintain valid trim boundaries',()=>{
+ for(const k of Object.keys(FASCIA_DEMOS)){
+  const g=createFasciaDemo(k);
+  for(const quality of ['preview','export']){
+   const d=generateVehicle(g,{quality});try{
+    assert.deepEqual(d.diagnostics.issues,[],k+' '+quality);
+    for(const end of ['front','rear']){
+     const {trimArea,openings}=d.fascia[end];
+     assert.ok(trimArea.holes>.05);
+     assert.equal(trimArea.unmatched,0);assert.ok(Math.abs(trimArea.mesh-trimArea.expected)<1e-8);
+     assert.ok(openings.filter(x=>x.component===(end==='front'?'headlights':'tails')).length===2);
+    }
+    assert.equal(Object.keys(d.lampMounts).length,4);
+   }finally{disposeDesign(d);}
+  }
+ }
+ const g=createFasciaDemo('compound'),different=updateDesign(g,'optics','rear','projector','layout');
+ build(g,a=>build(different,b=>{
+  assert.deepEqual(a.fascia.rear.openings,b.fascia.rear.openings);
+  assert.notDeepEqual(positions(a,'tails'),positions(b,'tails'));
+ }));
+ const reshaped=updateDesign(g,'optics','front','circle','housing');
+ build(g,a=>build(reshaped,b=>{
+  assert.notDeepEqual(a.fascia.front.openings,b.fascia.front.openings);
+  assert.notDeepEqual(positions(a,'frontBumper'),positions(b,'frontBumper'));
+ }));
 });
