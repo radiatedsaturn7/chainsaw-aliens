@@ -1,3 +1,4 @@
+import {validateModelDocument} from './ModelDocument.js';
 import {wrxPilotPart} from './WrxVisualPilot.js';
 
 export function normalizeModelBinding(value){
@@ -20,6 +21,19 @@ export function modelWheelBindingForAxle(binding, wheelID){
   const standard=normalizeModelBinding(binding);
   const scale=standard?.axleScale&&standard.axleScale[String(wheelID).toLowerCase().startsWith('f')?'front':'rear'];
   return scale?{...standard,scale:standard.scale.map((n,i)=>n*scale[i]),axleScale:null}:binding;
+}
+
+// Keep the existing single catalog reference: staggered Studio wheels carry
+// a separately generated rear assembly, not a scaled copy of the front.
+const rearModels=new WeakMap();
+export function modelWheelDocumentForAxle(model,wheelId){
+ if(!model?.rearAxleModel||!String(wheelId).toLowerCase().startsWith('r'))return model;
+ if(!rearModels.has(model)){
+  const rear=model.rearAxleModel;
+  try{rearModels.set(model,validateModelDocument(rear));}
+  catch{rearModels.set(model,model);}
+ }
+ return rearModels.get(model);
 }
 
 // The labelled pilot wheel has a real outboard face only on local +X.

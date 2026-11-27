@@ -8,7 +8,7 @@ import {buildCabin} from './cabin9.mjs';
 import {buildStructure} from './structure9.mjs';
 import {buildAero} from './aero9.mjs';
 import {buildRoofRails,buildUtilitySuspension} from './utility9.mjs';
-import {buildWheels} from './wheels9.mjs';
+import {buildWheels,rearWheelDimensions} from './wheels9.mjs';
 import {evalFormula,compileFormula} from './formula9.mjs';
 import {normalizeVehicle,SEAM_KEYS,getSideSettings,evaluateInteriorPatch,math} from './genome.mjs';
 const {mix,clamp,buildFender}=math;
@@ -87,7 +87,7 @@ function addModelPart(out,component,material,geo,p=null,rotation=null){
  if(p)geo.translate(...p);
  out.push({component,material,geometry:geo});return geo;
 }
-export const disposeDesign=design=>{for(const p of [...design.parts,...design.wheelParts])p.geometry.dispose();};
+export const disposeDesign=design=>{for(const p of [...design.parts,...design.wheelParts,...(design.rearWheelParts??[])])p.geometry.dispose();};
 export function generateVehicle(input,{quality='preview',compact=0}={}){
  const slim=compact>0,small=(ordinary,...steps)=>slim?steps[compact-1]:ordinary;
  const g=normalizeVehicle(input),d=g.dimensions,c=g.components,G=g.constraints.gap*.5;
@@ -103,7 +103,8 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  const radius=R+Math.max(g.body.frontArchFore,g.body.rearArchFore);
  let t=(X*d.track),clearance=X-t-d.tireWidth/2;
  if(clearance<d.archReserve){t=X-d.tireWidth/2-d.archReserve;warnings.push('Track narrowed to keep tires inside the arch lips.');}
- const rearTrack=Math.min(X-d.tireWidth/2-d.archReserve,t+d.rearTrackBias*.5);
+ const rearFit=rearWheelDimensions(d), staggered=d.rearTireWidthOffset!==0||d.rearRimRatioOffset!==0;
+ const rearTrack=Math.min(X-rearFit.tireWidth/2-d.archReserve,t+d.rearTrackBias*.5);
  if(t*2<1.2){issues.push('Track below the runtime suspension envelope.');}
  
  if(floor>R-.03)warnings.push('Rocker sits above the hub; this is an elevated stance.');
@@ -189,7 +190,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    (p.type==='boxed'?.055:p.type==='integrated'||p.type==='wide'?.072:.045)*p.depth*flare*flareScale*Math.sin(v*Math.PI*.75):0;
   let x=side- .023*v-(.012+.035*(1-localBox))*v**3+profile+(.008+.027*shape)*Math.sin(v*Math.PI*1.5);
   const edgePull=clamp((v-.72)/.28)*clamp((flare-.18)/.65);
-  x=mix(x,Math.max(x,t+d.tireWidth/2+.018*(.6+.4*flareScale)),edgePull);
+  x=mix(x,Math.max(x,(archAt<0&&staggered?rearTrack+rearFit.tireWidth/2:t+d.tireWidth/2)+.018*(.6+.4*flareScale)),edgePull);
   let y=mix(skinY(z),bottom,v);
   if(comp==='frontFenders'){
    const u=clamp((z-doorFront)/(bumperFront-doorFront)),q=panelSample(u,v),edge=lerp3(panelSample(u,0),panelSample(u,1),v);
@@ -798,8 +799,10 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  }
  const wheels=Object.fromEntries([['fl',-1,L],['fr',1,L],['rl',-1,-L],['rr',1,-L]].map(([id,s,z])=>[id,[s*(z>0?t:rearTrack),R,z]]));
  const wp=[];buildWheels(g,{quality,compact,emit:(k,m,geo,p,r)=>addModelPart(wp,k,m,geo,p,r)});
+ const rearWp=staggered?[]:null;
+ if(rearWp)buildWheels(g,{quality,compact,rear:true,emit:(k,m,geo,p,r)=>addModelPart(rearWp,k,m,geo,p,r)});
  const floorContact=Math.min(...Object.values(wheels).map(v=>v[1]-R));
- for(const part of [...parts,...wp]){
+ for(const part of [...parts,...wp,...(rearWp??[])]){
   const {geometry,component}=part,a=geometry.attributes.position;
   for(const v of a.array)if(!Number.isFinite(v)){issues.push('Nonfinite geometry in '+component);break;}
   const normal=geometry.attributes.normal;
@@ -818,8 +821,8 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   return {...seam,flags};
  });
  for(const feature of features){const known=checkedSeams.find(s=>s.id===feature.id);if(known&&feature.metrics)feature.metrics.flags=known.flags;}
- for(const p of [...parts,...wp])p.semantic={id:'part-'+p.component,type:'component',component:p.component};
- return {genome:g,parts,wheelParts:wp,wheels,lampMounts,fascia,features,cabin,aero,structure:structure.metrics,stations:{cabinFront,cabinRear,roofFront,roofRear,doorFront,doorRear,bumperFront,bumperRear},
+ for(const p of [...parts,...wp,...(rearWp??[])])p.semantic={id:'part-'+p.component,type:'component',component:p.component};
+ return {genome:g,parts,wheelParts:wp,rearWheelParts:rearWp,wheels,lampMounts,fascia,features,cabin,aero,structure:structure.metrics,stations:{cabinFront,cabinRear,roofFront,roofRear,doorFront,doorRear,bumperFront,bumperRear},
   metadata:{lengthM:length,widthM:d.width,heightM:d.height,wheelbaseM:d.wheelbase,trackWidthM:t*2,trackFrontM:t*2,trackRearM:rearTrack*2,wheelRadiusM:R,rideHeightM:floor},
   diagnostics:{issues:[...new Set(issues)],warnings:[...new Set(warnings)],floorContact,joins,seams:checkedSeams,bodyTriangles:triangles(parts),wheelTriangles:triangles(wp),panel:cloneJSON(surface.diagnostics)}};
 }

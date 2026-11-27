@@ -24,8 +24,10 @@
     "frontBox": 0.21,
     "rearBox": 0.26,
     "diameter": 0.645,
-    "tireWidth": 0.223,
-    "rimRatio": 0.69,
+    "tireWidth": 0.205,
+    "rimRatio": 0.645731,
+    "rearTireWidthOffset": 0.03,
+    "rearRimRatioOffset": 0.037984,
     "archReserve": 0.011,
     "rearTrackBias": 0.02
   },

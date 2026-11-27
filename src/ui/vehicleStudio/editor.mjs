@@ -563,7 +563,7 @@ function inspector(){
   if(part==='frontBumper')noseControls(root,g);
   select(root,'part-type',d.label+' type',d.types,p.type,v=>edit('components',part,v,'type'));
   for(const key of [...componentControls[part],...(POSITIONABLE.has(part)?['bias','angle']:[])])range(root,'components',part,{...COMPONENT_FIELDS[key],label:key==='shape'?d.shape[0].toUpperCase()+d.shape.slice(1):COMPONENT_FIELDS[key].label},p[key],key);
-  if(part==='wheels'||part==='tires')for(const k of ['diameter','tireWidth','rimRatio'])range(root,'dimensions',k,DIMENSIONS[k],g.dimensions[k]);
+  if(part==='wheels'||part==='tires')for(const k of ['diameter','tireWidth','rimRatio','rearTireWidthOffset','rearRimRatioOffset'])range(root,'dimensions',k,DIMENSIONS[k],g.dimensions[k]);
  if(['wheels','tires','frontFenders','rearFenders'].includes(part)){
   const arch=group(root,'Wheel opening fit',true);
   range(arch,'body','sillRelief',phenotype.BODY_FIELDS.sillRelief,g.body.sillRelief);

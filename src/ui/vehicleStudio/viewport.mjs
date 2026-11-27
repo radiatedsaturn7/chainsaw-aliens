@@ -224,7 +224,7 @@ export function createViewport(canvas,{onPick=()=>{},onFeature=null,onZoom=()=>{
    }
   };
   appendBatch(next.parts);
-  Object.values(next.wheels).forEach(pos=>appendBatch(next.wheelParts,pos));
+  Object.entries(next.wheels).forEach(([id,pos])=>appendBatch(id.startsWith('r')&&next.rearWheelParts?next.rearWheelParts:next.wheelParts,pos));
   shadow.scale.set(next.metadata.widthM*1.46,next.metadata.lengthM*1.19,1);
   setLighting(light);restyle();
  }

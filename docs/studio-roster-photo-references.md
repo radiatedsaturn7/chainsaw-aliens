@@ -68,3 +68,9 @@ The **Swept rear bridge** controls add a backed, sculpted panel that
 rises toward the rear lamps. The swage occupies a real cutout and
 follows the existing fascia, stopping before adjacent lamps, exhaust,
 or plate openings. With relief set to zero the original shell is kept.
+
+### Front/rear wheel fitments
+- [Honda S660 official specification](https://www.honda.co.jp/ownersmanual/webom/jpn/s660/2015/details/13697090-15246.html): 165/55R15 front, 195/45R16 rear.
+- [Tata Motors Racemo product note](https://www.tatamotors.com/wp-content/uploads/2025/06/7feb18-product-note-Racemo.pdf): 205/50R17 front, 235/45R18 rear.
+
+Studio reproduces the section widths and nominal rim diameters through the Wheels and Tires controls. Game roster exports retain the original physics rolling radius and mounted hub centers on both axles, so sidewall heights are the difference between those retained radii and the requested rims, not a physics retune. Zero rear offsets preserve a single shared wheel model. Both axle meshes count toward the same 15,000-triangle vehicle budget.

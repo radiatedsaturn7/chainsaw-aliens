@@ -44,10 +44,12 @@ export function buildStudioRoster(target){
  // same single wheel asset mirrored by the regular engine paths.
  const rad=target.radius/(genome.dimensions.diameter/2);
  assert.ok(rad>.84&&rad<1.17,'Tire radius differs too much from the existing car');
- for(const v of wheel.vertices){v.position[1]*=rad;v.position[2]*=rad;}
- for(const f of wheel.faces)f.cornerNormals=f.cornerNormals?.map(n=>unit(n[0],n[1]/rad,n[2]/rad));
+ for(const model of [wheel,wheel.rearAxleModel].filter(Boolean)){
+  for(const v of model.vertices){v.position[1]*=rad;v.position[2]*=rad;}
+  for(const f of model.faces)f.cornerNormals=f.cornerNormals?.map(n=>unit(n[0],n[1]/rad,n[2]/rad));
+ }
  body.name=target.label+' · Studio body';wheel.name=target.label+' · Studio wheel';
- const triangles=body.faces.length+4*wheel.faces.length;
+ const triangles=body.faces.length+2*(wheel.faces.length+(wheel.rearAxleModel?.faces.length??wheel.faces.length));
  assert.ok(triangles<=GAMEPLAY_TRIANGLE_BUDGET);
  return {pair:{body,wheel},metrics:{triangles,rad}};
 }

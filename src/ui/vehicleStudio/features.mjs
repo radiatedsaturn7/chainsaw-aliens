@@ -62,7 +62,7 @@ export function featureControls(genome,feature,level='basic'){
   if(name==='frontBumper'||name==='rearBumper')return featureControls(g,{...f,type:'silhouette'},level);
   if(name==='frontFenders'||name==='rearFenders')return featureControls(g,{...f,type:'arch'},level);
   entries=[c('components',name,'type',componentType(name)),...field('components',name,'shape','size'),...(more?field('components',name,'depth'):[])];
-  if(name==='wheels'||name==='tires')entries.push(...dims('diameter','tireWidth','rimRatio'));
+  if(name==='wheels'||name==='tires')entries.push(...dims('diameter','tireWidth','rimRatio','rearTireWidthOffset','rearRimRatioOffset'));
   if(name==='handles')entries.push(...body('handleRecess'));
  }
  }

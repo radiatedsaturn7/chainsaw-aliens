@@ -237,13 +237,13 @@ const number=(value,spec,key)=>{if(typeof value!=='number'||!Number.isFinite(val
 export const TOTAL_LENGTH=F('Overall length (m)',3.47,5.73,.005);
 export const PATCH_PANELS=['hood','roof','trunk'];
 export const PATCH_RANGE=F('Interior patch height (m)',-.045,.045,.001);
-export const DIMENSIONS={archReserve:F('Outer tire clearance (m)',.004,.024,.001),rearTrackBias:F('Rear track bias (m)',-.08,.08,.001),diameter:F('Tire diameter (m)',.54,.76,.002),tireWidth:F('Tire width (m)',.16,.33,.002),rimRatio:F('Rim / tire diameter',.55,.83,.005),gap:F('Panel gap (m)',.002,.012,.001)};
+export const DIMENSIONS={archReserve:F('Outer tire clearance (m)',.004,.024,.001),rearTrackBias:F('Rear track bias (m)',-.08,.08,.001),diameter:F('Tire diameter (m)',.54,.76,.002),tireWidth:F('Tire width (m)',.16,.33,.002),rimRatio:F('Rim / tire diameter',.55,.83,.005),rearTireWidthOffset:F('Rear tire width difference (m)',-.065,.085,.001),rearRimRatioOffset:F('Rear rim / tire ratio difference',-.12,.12,.001),gap:F('Panel gap (m)',.002,.012,.001)};
 const MAT={paint:'#164bb8',wheel:'#c69a4d',glass:'#698292',rubber:'#171a20',trim:'#22262b',chrome:'#a3abb5',head:'#d9e7fb',tail:'#b61728',interior:'#292d36',seat:'#363b48',floor:'#303843',opticCover:'#e0efff',indicator:'#f29b38',seamDark:'#141b23',projector:'#7990a0',reflector:'#a2abb1',reflectorFluted:'#b3bac1',rotor:'#64696e',barrel:'#303238',caliper:'#88643a',underbody:'#292c31',heatShield:'#575957',leather:'#323642',cloth:'#424654',stitch:'#686b71',opticRed:'#96202a',opticClear:'#8299a7',opticSilver:'#d3d7db',signalL:'#ef9c3e',signalR:'#ef9c3e',runningRed:'#87212b'};
 export function createVehicle(family='sedan'){
  if(!Object.hasOwn(FAMILIES,family))throw Error('Unknown body family');
  const f=FAMILIES[family];
  return {kind:'lotg-vehicle-design',schemaVersion:1,generatorVersion:VERSION,name:f.label,family,
- dimensions:{...Object.fromEntries(Object.keys(GLOBAL).map((k,i)=>[k,f.dims[i]])),diameter:family==='fastback'?.635:.634,tireWidth:family==='fastback'?.235:.225,rimRatio:.681,archReserve:.011,rearTrackBias:0},
+ dimensions:{...Object.fromEntries(Object.keys(GLOBAL).map((k,i)=>[k,f.dims[i]])),diameter:family==='fastback'?.635:.634,tireWidth:family==='fastback'?.235:.225,rimRatio:.681,archReserve:.011,rearTrackBias:0,rearTireWidthOffset:0,rearRimRatioOffset:0},
  components:Object.fromEntries(Object.entries(COMPONENTS).map(([k,c])=>[k,{type:c.types[defaults[family]?.[k]??0],size:1,shape:.5,depth:1,...(k==='frontBumper'?NOSE_DEFAULTS[family]:{}),...(POSITIONABLE.has(k)?{bias:0,angle:0}:{})}])),
  fascia:Object.fromEntries(['front','rear'].map(end=>[end,baseFascia(family,end==='front',NOSE_DEFAULTS[family])])),
  optics:Object.fromEntries(['front','rear'].map(end=>[end,baseOptic(family,end==='front')])),

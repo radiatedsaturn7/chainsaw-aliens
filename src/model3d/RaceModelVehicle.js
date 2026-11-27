@@ -1,5 +1,5 @@
 import * as THREE from '../vendorBridge/three.js';
-import {normalizeModelBinding,modelWheelBindingForAxle,placeOutboardWheelFace} from './ModelBinding.js';
+import {normalizeModelBinding,modelWheelBindingForAxle,modelWheelDocumentForAxle,placeOutboardWheelFace} from './ModelBinding.js';
 import {automotiveTrackProfile} from './AutomotiveMaterials.js';
 import {wrxPilotPart} from './WrxVisualPilot.js';
 import {isStudioRosterWheel} from './StudioRosterModels.js';
@@ -58,7 +58,8 @@ export function updateRaceModelParts(group,car,session,{
   const profile=automotiveProfile??conditions.skyProbe??automotiveTrackProfile(conditions);
   const install=(part,binding,wheelId=null)=>{
     if(!part||!binding?.ref)return part;
-    const model=library.get(binding.ref);if(!model)return part;
+    const baseModel=library.get(binding.ref);if(!baseModel)return part;
+    const model=wheelId?modelWheelDocumentForAxle(baseModel,wheelId):baseModel;
     let instance=part.userData.modelInstance;
     if(!instance){
       const replacement=new THREE.Group();replacement.name=part.name;
@@ -70,7 +71,7 @@ export function updateRaceModelParts(group,car,session,{
       group.add(replacement);part=replacement;
     }
     // Race wheel IDs name -X left and +X right in the chassis frame.
-    if(wheelId)binding=placeOutboardWheelFace(modelWheelBindingForAxle(binding,wheelId),String(wheelId).toLowerCase().endsWith('l')?-1:1,isStudioRosterWheel(model,binding.ref));
+    if(wheelId)binding=placeOutboardWheelFace(modelWheelBindingForAxle(binding,wheelId),String(wheelId).toLowerCase().endsWith('l')?-1:1,isStudioRosterWheel(baseModel,binding.ref)||Boolean(baseModel.rearAxleModel));
     const bindingKey=JSON.stringify(binding);
     if(instance.model!==model||instance.raceBindingKey!==bindingKey){
       instance.setModel(model,binding,{vehicleVisual:true});

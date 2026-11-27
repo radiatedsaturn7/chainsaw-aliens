@@ -1,6 +1,6 @@
 import * as THREE from '../vendorBridge/three.js';
 import {ModelAssetInstance, modelAssets, normalizeModelBinding} from '../model3d/ModelAssets.js';
-import {modelWheelBindingForAxle,placeOutboardWheelFace} from '../model3d/ModelBinding.js';
+import {modelWheelBindingForAxle,modelWheelDocumentForAxle,placeOutboardWheelFace} from '../model3d/ModelBinding.js';
 import {jointMatrices} from '../model3d/ModelRig.js';
 import {ensureModelSceneLighting} from '../model3d/ModelRender.js';
 import {isStudioRosterWheel} from '../model3d/StudioRosterModels.js';
@@ -157,8 +157,8 @@ export class GarageModelPreview {
    if(wheelModel){
     // Native joint names follow the modeler's convention (not race IDs).
     // Use the measured hub coordinate to determine the real outboard side.
-    const placement=placeOutboardWheelFace(modelWheelBindingForAxle(wheelBinding,hub.id),Math.sign(hub.x),isStudioRosterWheel(wheelModel,wheelBinding.ref));
-    const instance=new ModelAssetInstance();instance.setModel(wheelModel,placement,{vehicleVisual:true});
+    const placement=placeOutboardWheelFace(modelWheelBindingForAxle(wheelBinding,hub.id),Math.sign(hub.x),isStudioRosterWheel(wheelModel,wheelBinding.ref)||Boolean(wheelModel.rearAxleModel));
+    const instance=new ModelAssetInstance();instance.setModel(modelWheelDocumentForAxle(wheelModel,hub.id),placement,{vehicleVisual:true});
     if(placement!==wheelBinding)garageY=hub.y*placement.scale[1]/(wheelBinding.scale?.[1]||1);
     (this.wheelInstances ||= []).push(instance);wheel=instance.object;
    }else wheel=createModelWheel(stance.radius,stance.width);

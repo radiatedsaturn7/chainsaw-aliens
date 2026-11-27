@@ -78,7 +78,7 @@ function gameplayDesign(genome,quality){
  // drop arbitrary faces: the apertures, seams and all wheel copies survive.
  for(const tier of quality==='drive'?[1,2,3]:[2,3]){
   const design=generateVehicle(genome,{quality,compact:tier});
-  const total=emitted(design.parts)+4*emitted(design.wheelParts);
+  const total=emitted(design.parts)+2*(emitted(design.wheelParts)+emitted(design.rearWheelParts??design.wheelParts));
   if(!design.diagnostics.issues.length&&total<=GAMEPLAY_TRIANGLE_BUDGET)return {design,tier};
   last=design.diagnostics.issues.length?design.diagnostics.issues.join(' '):
    'Vehicle requires '+total.toLocaleString('en-US')+' triangles. Gameplay limit is '+GAMEPLAY_TRIANGLE_BUDGET.toLocaleString('en-US')+' including the four wheels.';
@@ -145,10 +145,13 @@ export function exportVehicle(genome,{id=null,quality='drive'}={}){
    wheelModel:{ref:wheel,position:[0,0,0],rotation:[0,0,0],scale:[1,1,1]},bodyColor:g.materials.paint,cameraView:'third-person'};
   const carDocument={kind:'race-car',schemaVersion:1,car};
   const models={[body]:encodeModel(design,design.parts,g.name+' body',mounts),[wheel]:encodeModel(design,design.wheelParts,g.name+' wheel')};
-  const carTriangles=models[body].faces.length+4*models[wheel].faces.length;
+  if(design.rearWheelParts)models[wheel].rearAxleModel=encodeModel(design,design.rearWheelParts,g.name+' rear wheel');
+  const rearTriangles=models[wheel].rearAxleModel?.faces.length??models[wheel].faces.length;
+  const carTriangles=models[body].faces.length+2*(models[wheel].faces.length+rearTriangles);
   if(gameQualities.has(quality)&&carTriangles>GAMEPLAY_TRIANGLE_BUDGET)throw Error('Gameplay mesh exceeded the triangle budget.');
   return {kind:'lotg-studio-export',schemaVersion:1,genome:g,car:carDocument,models,
    attachments:mounts,metrics:{...d,quality,tier,triangleBudget:gameQualities.has(quality)?GAMEPLAY_TRIANGLE_BUDGET:null,carTriangles,bodyTriangles:models[body].faces.length,wheelTriangles:models[wheel].faces.length,
+    ...(design.rearWheelParts?{rearWheelTriangles:rearTriangles}:{}),
     textureMemory:studioTextureBytes(Object.values(models).flatMap(m=>m.materials)),geometry:auditVehicleGeometry(design)}};
  }finally{disposeDesign(design);}
 }

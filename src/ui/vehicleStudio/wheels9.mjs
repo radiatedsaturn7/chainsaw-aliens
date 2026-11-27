@@ -144,10 +144,13 @@ function caliper(rotor,thick,low){
  const g=mesh(p,tri,uv);g.userData.nonSpinning=true;return g;
 }
 
-export function buildWheels(g,{quality='preview',compact=0,emit}={}){
+export const rearWheelDimensions=d=>({tireWidth:clamp(d.tireWidth+(d.rearTireWidthOffset??0),.16,.36),rimRatio:clamp(d.rimRatio+(d.rearRimRatioOffset??0),.55,.86)});
+
+export function buildWheels(g,{quality='preview',compact=0,emit,rear=false}={}){
  const out=[];
  const put=(k,m,x)=>{if(emit)emit(k,m,x);else out.push({component:k,material:m,geometry:x});};
- const {diameter,tireWidth,rimRatio}=g.dimensions;
+ const {diameter}=g.dimensions;
+ const {tireWidth,rimRatio}=rear?rearWheelDimensions(g.dimensions):g.dimensions;
  const r=diameter/2,c=tireWidth/2,w=g.components.wheels,t=g.components.tires;
  const detail=quality==='export'||quality==='preview'||quality==='garage';
  const low=quality==='opponent'||quality==='lod'||compact>0;

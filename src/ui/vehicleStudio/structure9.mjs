@@ -1,6 +1,7 @@
 // Hidden stamped enclosure: tray, tire-clear vaults, sill returns and end pans.
 // The visible skin / aperture rails are owned by geometry.mjs, never guessed.
 import * as T from '../../vendorBridge/three.js';
+import {rearWheelDimensions} from './wheels9.mjs';
 
 const EPS=1e-8, mix=(a,b,t)=>a+(b-a)*t, cap=x=>Math.max(0,Math.min(1,x));
 const smooth=x=>{x=cap(x);return x*x*(3-2*x);};
@@ -39,7 +40,7 @@ export function buildStructure({g,quality='preview',compact=0,put,sample,dims}){
  const {X,L,Lf,Lr,floor,B,cabinFront,cabinRear,tireTrack,rearTireTrack=tireTrack,wheelRadius:R,archRadius,frontArchRadius=archRadius,rearArchRadius=archRadius}=dims;
  const W=g.dimensions.tireWidth,issues=[];
  const perf=quality==='drive',high=quality==='export';
- const envelope=(ax)=>structureTireEnvelope(R,W,ax>0?.63:.13,.054);
+ const envelope=(ax)=>structureTireEnvelope(R,ax>0?W:rearWheelDimensions(g.dimensions).tireWidth,ax>0?.63:.13,.054);
  const wheelZ=[-L,L],parts=[];
  const add=(name,mat,rows,n)=>{
   const q=mesh(rows,n);if(!q.index.count){q.dispose();return;}

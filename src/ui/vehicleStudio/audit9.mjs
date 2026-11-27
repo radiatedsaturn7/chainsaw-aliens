@@ -1,9 +1,9 @@
 export function auditVehicleGeometry(design){
  const groups={};
- const measure=(parts,wheels=false)=>{
+ const measure=(parts,wheels=0,axle='')=>{
   for(const p of parts){
    const {geometry:g,material,component}=p,role=g.userData?.constructionRole??(wheels?material==='rotor'?'brake rotor':material==='caliper'?'brake caliper':component:component);
-   const group=groups[(wheels?'Wheel template / ':'Body / ')+role+' / '+material]??={triangles:0,vertices:0,instances:wheels?4:1,meshes:0,degenerate:0};
+   const group=groups[(wheels?'Wheel '+(axle||'template')+' / ':'Body / ')+role+' / '+material]??={triangles:0,vertices:0,instances:wheels||1,meshes:0,degenerate:0};
    const pos=g.attributes.position,ind=g.index,n=ind?.count??pos.count;
    group.triangles+=n/3;group.vertices+=pos.count;group.meshes++;
    const A=[0,0,0],B=[0,0,0],C=[0,0,0];
@@ -17,7 +17,8 @@ export function auditVehicleGeometry(design){
    }
   }
  };
- measure(design.parts);measure(design.wheelParts,true);
+ measure(design.parts);measure(design.wheelParts,design.rearWheelParts?2:4,design.rearWheelParts?'front':'');
+ if(design.rearWheelParts)measure(design.rearWheelParts,2,'rear');
  const fields=['triangles','vertices','degenerate'];
  const totals=Object.fromEntries(fields.map(k=>[k,Object.values(groups).reduce((s,g)=>s+g[k]*g.instances,0)]));
  return {groups,totals};
