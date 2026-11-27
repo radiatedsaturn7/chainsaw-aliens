@@ -25,7 +25,7 @@ export function featureControls(genome,feature,level='basic'){
   break;
  case 'lamp':
   entries=[c('optics',end,'housing',choice('Housing shape',OPTIC_HOUSINGS)),...optic(end,'width','height','recess')];
-  if(more)entries.push(...optic(end,'position','outboard','inboardReach','corner','angle','sweep','curvature','convexity','protrusion'),c('optics',end,'layout',choice('Optical layout',OPTIC_LAYOUTS)));
+  if(more)entries.push(...optic(end,'position','outboard','inboardReach','corner','angle','sweep','curvature','convexity','protrusion',...(end==='rear'?['tallHousing']:[])),c('optics',end,'layout',choice('Optical layout',OPTIC_LAYOUTS)));
   break;
  case 'roof':
  case 'glass-edge':
@@ -40,8 +40,9 @@ export function featureControls(genome,feature,level='basic'){
   break;
  }
  case 'crease':
-  entries=body('creaseHeight','creaseStrength');
-  if(more)entries.push(...fascia(end,'crease','shoulder'),...field('components','doors','shape','depth'));
+  entries=g.body.doorStamp?body('doorStampHeight','doorStamp'):body('creaseHeight','creaseStrength');
+  if(more&&g.body.doorStamp)entries.push(...body('doorStampWidth','doorStampFade','doorStampFront','doorStampRear','doorStampSweep'));
+  if(more&&!g.body.doorStamp)entries.push(...fascia(end,'crease','shoulder'),...field('components','doors','shape','depth'));
   break;
  case 'arch':
   entries=[...body('archCrown'),...field('components',f.component,'size','depth')];
@@ -125,7 +126,10 @@ export function proposeFeatureEdit(genome,f,command,intensity=.65){
   if(command==='flatten')set('styleFeature',seam,'depth',.001,'Feature depth');
   else set('styleFeature',seam,'sharpness',command==='sharp'?.96:.14,'Feature sharpness');
  }else if(f.type==='crease'){
-  bb('creaseStrength',command==='sharp'?.93:command==='blend'?.37:.10);
+  if(g.body.doorStamp){
+   bb('doorStamp',command==='sharp'?.026:command==='blend'?.014:.004);
+   if(command==='blend')bb('doorStampFade',.30);
+  }else bb('creaseStrength',command==='sharp'?.93:command==='blend'?.37:.10);
  }else if(f.type==='arch'||['frontFenders','rearFenders'].includes(f.component)){
   bb('archCrown',command==='flatten'?.17:.90);
   if(command==='widen')set('components',f.component,'depth',1.27,'Fender flare depth');
@@ -159,7 +163,7 @@ export function dragFeature(input,feature,deltaWorld){
  const rule=f.type==='seam'?['seams',k,'offset',SEAM_FIELDS.offset]:
  f.type==='lamp'?['optics',end,'width',OPTIC_FIELDS.width]:
  ['roof','glass-edge'].includes(f.type)?['dimensions','crown',undefined,GLOBAL.crown]:
- f.type==='crease'?['body','creaseHeight',undefined,BODY_FIELDS.creaseHeight]:
+ f.type==='crease'?['body',g.body.doorStamp?'doorStampHeight':'creaseHeight',undefined,g.body.doorStamp?BODY_FIELDS.doorStampHeight:BODY_FIELDS.creaseHeight]:
  f.type==='arch'?['body','archCrown',undefined,BODY_FIELDS.archCrown]:
  ['silhouette','opening'].includes(f.type)?['fascia',end,'sweep',FASCIA_FIELDS.sweep]:null;
  if(!rule)return g;

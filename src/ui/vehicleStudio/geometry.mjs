@@ -121,10 +121,10 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  if(!surface.diagnostics.valid)issues.push(...surface.diagnostics.issues.map(s=>'Front fender: '+s));
  const frontPanelSamples=Array.from({length:21},(_,i)=>Array.from({length:11},(_,j)=>surface.eval(i/20,j/10)));
  const panelSample=(u,v)=>{const a=clamp(u)*20,b=clamp(v)*10,i=Math.min(19,Math.floor(a)),j=Math.min(9,Math.floor(b));return lerp3(lerp3(frontPanelSamples[i][j],frontPanelSamples[i+1][j],a-i),lerp3(frontPanelSamples[i][j+1],frontPanelSamples[i+1][j+1],a-i),b-j);};
- const {doorStamp,doorStampHeight,doorStampSweep}=g.body;
- const stampStation=z=>clamp((z-(doorRear-.26))/(doorFront-doorRear+.52));
+ const {doorStamp,doorStampHeight,doorStampSweep,doorStampFade,doorStampWidth,doorStampFront,doorStampRear}=g.body;
+ const stampStation=z=>clamp((z-(doorRear-doorStampRear))/(doorFront-doorRear+doorStampFront+doorStampRear));
  const stampLine=z=>doorStampHeight+doorStampSweep*(stampStation(z)-.5);
- const stampFade=z=>unitSmooth(clamp(stampStation(z)/.16))*unitSmooth(clamp((1-stampStation(z))/.16));
+ const stampFade=z=>unitSmooth(clamp(stampStation(z)/doorStampFade))*unitSmooth(clamp((1-stampStation(z))/doorStampFade));
  function skinPoint(z,v,sgn,comp){
   const side=skinX(z), localBox=regionalBox(z), bottom=Math.min(skinY(z)-.022,lipHeight(z,sgn)),archAt=z>0?L:-L,
       flare=clamp(1-Math.abs(z-archAt)/(radius+.25))**1.65;
@@ -156,7 +156,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   x+=(.003+.014*g.body.creaseStrength)*crease*Math.exp(-((v-g.body.creaseHeight)**2)/(creaseWidth**2));
   x+=(.004+.018*g.body.archCrown)*flare*flareScale*Math.sin(Math.PI*v)**2;
   if(doorStamp){
-   const p=(v-stampLine(z))/.066;
+   const p=(v-stampLine(z))/doorStampWidth;
    x+=doorStamp*stampFade(z)*(Math.exp(-p*p)-.48*Math.exp(-((p+.99)**2)));
   }
   if(comp==='doors'){
@@ -332,7 +332,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
      const t=stations[Math.round(u*(stations.length-1))];
      if(!doorStamp||key!=='doors')return sampler(t,v);
      const q=stampLine(mix(a,b,t)),base=Math.round(q*down),row=clamp(base,2,down-2);
-     const k=Math.round(v*down),wanted=k===row-1?q-.071:k===row?q-.007:k===row+1?q+.053:null;
+     const k=Math.round(v*down),wanted=k===row-1?q-.071*(doorStampWidth/.066):k===row?q-.007:k===row+1?q+.053*(doorStampWidth/.066):null;
      const fade=unitSmooth(clamp(t/.10))*unitSmooth(clamp((1-t)/.10));
      // Keep shared seam samples in place. Move only the neighboring rows,
      // enough to capture the crest and the return without extra triangles.
@@ -351,7 +351,10 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     {key:k,side:letter,end:k.startsWith('rear')?'rear':'front',view:'side',axis:2,scale:1,metrics}));
   }
   features.push(guideFeature('door-crease-'+letter,'crease','Door character line · '+letter,'doors',
-   curvePoints(u=>master.at(mix(doorRear+.12,doorFront-.12,u),g.body.creaseHeight)),
+   curvePoints(u=>{
+    const z=mix(doorRear+.12,doorFront-.12,u);
+    return master.at(z,doorStamp?stampLine(z):g.body.creaseHeight);
+   }),
    {side:letter,view:'side',axis:1,scale:-.56}));
   for(const [comp,axle] of [['rearFenders',-L],['frontFenders',L]]){
    put(comp,'paint',patch(small(30,18,15,13),small(4,2,2,1),(u,v)=>{

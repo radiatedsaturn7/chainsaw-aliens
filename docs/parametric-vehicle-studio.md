@@ -159,3 +159,14 @@ removing zero-area faces, and rejects any over-budget gameplay build rather
 than dropping arbitrary triangles. It reports body, individual wheel and
 complete car counts. Editing and explicit authoring previews remain detailed;
 their displayed count is marked **edit tris** and is not the in-game budget.
+
+### Front and rear contour matching
+
+The Shape tab now has an independent top-edge setback and a lower quarter
+draw-in with a shoulder-roll control. This separates the side silhouette from
+the face's overall width and keeps the bumper transition on the common body
+surface. Rear Optics has a taller housing control that keeps both split-lens
+colors and the physical mounting opening. Door character-line width, front
+and rear extension, and fade are editable; the contextual drag and Wizard
+edit the visible stamp when it is enabled, rather than the legacy crease
+underneath. These edits do not increase the gameplay triangle cap.

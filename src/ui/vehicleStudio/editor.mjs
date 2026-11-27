@@ -294,7 +294,7 @@ function fasciaInspector(root,g,end){
   constructionButton(root,'construction-optics','Paired lamp settings','pairs',end);
   choose('optic-housing','Housing',phenotype.OPTIC_HOUSINGS,'optics','housing');
   choose('optic-layout','Internal lamp layout',phenotype.OPTIC_LAYOUTS,'optics','layout');
-  fieldsFor('optics',k=>end==='rear'||k!=='silverUpper');
+  fieldsFor('optics',k=>end==='rear'||!['silverUpper','tallHousing'].includes(k));
   const palette=group(root,'Optic materials',true);
   for(const [key,label] of [
    [end==='front'?'head':'tail',end==='front'?'Front lamp element':'Rear lamp element'],
@@ -572,7 +572,7 @@ function inspector(){
  }
  if(part==='doors'){
   const stamp=group(root,'Door character line',true);
-  for(const k of ['doorStamp','doorStampHeight','doorStampSweep'])range(stamp,'body',k,phenotype.BODY_FIELDS[k],g.body[k]);
+  for(const k of ['doorStamp','doorStampHeight','doorStampSweep','doorStampWidth','doorStampFade','doorStampFront','doorStampRear'])range(stamp,'body',k,phenotype.BODY_FIELDS[k],g.body[k]);
  }
   if(part==='frontFenders'){const b=element('button',{textContent:'Open Surface Studio'});b.onclick=()=>openAdvanced();root.append(b);}
   else if(PATCH_PANELS.includes(part)){const b=element('button',{textContent:'Edit surface patch'});b.onclick=()=>setTab('surface');root.append(b);}

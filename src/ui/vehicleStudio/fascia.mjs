@@ -70,7 +70,11 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
   const stamp=(f.bumperBeltRise??0)*(Math.exp(-q*q)-.42*Math.exp(-((q+.91)**2)))*(1-.33*Math.abs(x)**8);
   const tucked=(f.terminalTuck??0)*smooth(clamp((v-.13)/.73))*(.66+.34*co);
   const corner=(f.cornerTuck??0)*Math.abs(x)**1.75*smooth(clamp((v-.16)/.75));
-  return [x*edge[0]*track*(1+(f.outerFasciaWidth??0))-Math.sign(x)*corner*.72,y+lip,s*(z+stamp-tucked-corner)];
+  const sweepAmount=f.upperEndSweep?Math.min(f.upperEndSweep,Math.max(0,z-s*upperPanel(seam,u)[2]-.054)):0;
+  const noseRake=sweepAmount*(1-smooth(clamp(v/.67)))*(.83+.17*co);
+  const past=z+stamp-tucked-corner-noseRake;
+  const knee=(f.bumperMidReach??0)*Math.exp(-(((v-.49)/.175)**2))*(.36+.64*Math.abs(x)**1.8);
+  return [x*edge[0]*track*(1+(f.outerFasciaWidth??0))-Math.sign(x)*corner*.72,y+lip,s*(past+Math.min(knee,Math.max(0,along-past)))];
  }
  function bridge(u,r){
   const start=upperPanel(seam,u),lead=face(u,0);
@@ -88,12 +92,14 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
  function quarter(z,v,sign,raw){
   const u=sign>0?1:0,roof=upperPanel(z,u),b=gateBlend(z),r=smooth(v);
   const upperOld=sideAt(z,0,sign);
-  return [mix(roof[0],raw[0]*(1-(.022+.15*f.taper)*b*.43),r),
+  const flank=(f.quarterWaist??0)*b*smooth(clamp((v-.46)/.54));
+  const roll=(f.quarterBlend??0)*b*.025*Math.sin(Math.PI*v)**2;
+  return [mix(roof[0],raw[0]*(1-(.022+.15*f.taper)*b*.43)-sign*flank,r)+sign*roll,
    raw[1]+(roof[1]-upperOld[1])*(1-r),mix(roof[2],raw[2],smooth(clamp(v/.34)))];
  }
  function bumperSide(t,v,sign){
   const u=sign>0?1:0, edge=face(u,v), up=bridge(u,t);
-  const w=smooth(v);
+  const w=mix(smooth(v),v**.74,f.quarterBlend??0);
   if(t>=1)return edge;
   const z=mix(seam,tip,t), seed=quarter(z,v,sign,sideAt(z,v,sign));
   const last=quarter(tip,v,sign,sideAt(tip,v,sign));
