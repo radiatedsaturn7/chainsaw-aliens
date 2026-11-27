@@ -11,7 +11,8 @@ export const usesGarageModelPreview=(element,car)=>GARAGE_WIDGETS.has(element?.i
 const HUBS=['FL','FR','RL','RR'];
 const FOREGROUND_SHIFT=.12;
 const CHASSIS_PITCH=-.014;
-const CAMERA_YAW=-Math.PI*.43;
+// Front three-quarter view exposes the headlights while retaining the side profile.
+const CAMERA_YAW=-Math.PI*.25;
 const CAMERA_ELEVATION=.10;
 
 // Read exact pivots from native DCC exports, without importing/animating race
