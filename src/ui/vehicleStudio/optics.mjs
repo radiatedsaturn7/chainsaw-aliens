@@ -11,6 +11,7 @@ const num=(x,d)=>Number.isFinite(x)?x:d;
 const mix=(a,b,t)=>a+(b-a)*t;
 const pairs=(n,fn)=>Array.from({length:n},(_,i)=>fn(i/n,i));
 const profiles={
+ 'upright-wrap':[[-1,-.54],[-.68,-.65],[.36,-.93],[.68,-.98],[.94,-.70],[1,-.18],[.95,.53],[.75,.80],[.12,.89],[-.70,.85],[-.96,.60]],
  rectangle:[[-1,-1],[1,-1],[1,1],[-1,1]],
  'round-rect':[[-.84,-1],[.84,-1],[1,-.73],[1,.73],[.84,1],[-.84,1],[-1,.73],[-1,-.73]],
  trapezoid:[[-.72,-1],[.72,-1],[1,1],[-1,1]],
@@ -19,7 +20,7 @@ const profiles={
  wrap:[[-1,-.31],[-.88,-.72],[.43,-1],[.94,-.88],[1,-.45],[.8,.28],[.41,.84],[-.69,1],[-1,.70]],
  compound:[[-1,-.36],[-.79,-.77],[-.29,-.99],[.24,-.87],[.83,-.98],[1,-.69],[.95,.33],[.72,.89],[.27,.82],[-.36,1],[-.82,.78],[-1,.31]]
 };
-export const HOUSING_FAMILIES=['round-rect','circle','oval','rectangle','trapezoid','angular','swept','wrap','compound'];
+export const HOUSING_FAMILIES=['round-rect','circle','oval','rectangle','trapezoid','angular','swept','wrap','upright-wrap','compound'];
 const layouts=new Set(['projector','twin','led','mixed','factory-split']);
 function curvePolygon(points,r,n){
  const controls=(p,q,t)=>p.map((x,i)=>mix(x,q[i],t));

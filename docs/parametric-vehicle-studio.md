@@ -182,3 +182,10 @@ All modifiers are optional, and the 15,000-triangle drive cap is unchanged.
 Rear Optics also has **Molded red reflector cells** for the split lens. The
 reflector rims sit inside the red chamber and retain the separately wired
 running, brake, and reverse materials.
+
+**Rear → Shape → Roll rear lamp shoulder** rounds the shared corner skin
+and updates its terminal rail and the entire lamp assembly with it. The
+unchanged deck and valance edges bound the roll. **Rear → Optics → Housing
+→ Upright rounded wrap** provides a taller outboard wall and a flatter lower
+edge; the contour, optics layout, and side wrap remain separately editable.
+Legacy designs default to zero shoulder roll and retain their housing.

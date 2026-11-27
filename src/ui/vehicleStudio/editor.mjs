@@ -275,7 +275,7 @@ function fasciaInspector(root,g,end){
 
  if(cfg.category==='shape'){
   choose('fascia-profile',end==='front'?'Nose profile':'Tail profile',Object.fromEntries(profileOptions()),'fascia','profile');
-  fieldsFor('fascia',(k,s)=>!isIntake(k,s)&&(end==='rear'||!k.startsWith('deck')&&!k.startsWith('bumperFace')&&!k.toLowerCase().includes('plate')&&!k.startsWith('paintedPocket'))&&(end==='front'||k!=='fogCoverHeight'));
+  fieldsFor('fascia',(k,s)=>!isIntake(k,s)&&(end==='rear'||!k.startsWith('deck')&&!k.startsWith('bumperFace')&&k!=='lampShoulderRoll'&&!k.toLowerCase().includes('plate')&&!k.startsWith('paintedPocket'))&&(end==='front'||k!=='fogCoverHeight'));
   const joining=end==='front'?'hood':'trunk', groupName=end==='front'?'Hood integration':'Trunk integration';
   const panel=group(root,groupName,false);partFields(panel,joining,['shape','depth']);
   const advancedPanel=element('button',{textContent:'Edit '+joining+' surface patch',type:'button'});

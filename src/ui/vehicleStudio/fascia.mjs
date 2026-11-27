@@ -81,20 +81,27 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
  // and side perimeter; the same evaluator drives the backing and trims.
  const smoother=t=>(t=clamp(t),t*t*t*(10+t*(-15+t*6)));
  const active=f.deckSurfaceBlend||f.bumperFaceBlend;
+ const lampRoll=end==='rear'?(f.lampShoulderRoll??0):0;
  const topRails=active?[rawFace(.5,.065),rawFace(.5,.485)]:null;
  const lowerRails=active?[rawFace(.5,.49),rawFace(.5,.86)]:null;
  const blendZ=(rails,v,a,b)=>mix(rails[0][2],rails[1][2],clamp((v-a)/(b-a),-.18,1.18));
  function face(u,v){
   const p=rawFace(u,v);
-  if(!active||end!=='rear')return p;
+  if((!active&&!lampRoll)||end!=='rear')return p;
   const q=Math.abs(2*u-1);
   const cross=1-smoother((q-.37)/.43);
   const upperBand=smoother(v/.063)*(1-smoother((v-.47)/.102));
   const lowerBand=smoother((v-.475)/.095)*(1-smoother((v-.83)/.143));
   const edge=q*q*.88;
-  let z=mix(p[2],blendZ(topRails,v,.065,.485)-s*f.deckSurfaceCrown*edge,cross*upperBand*f.deckSurfaceBlend);
-  z=mix(z,blendZ(lowerRails,v,.49,.86)-s*f.bumperFaceCrown*edge,cross*lowerBand*f.bumperFaceBlend);
-  return [p[0],p[1],z];
+  let z=p[2];
+  if(active){
+   z=mix(z,blendZ(topRails,v,.065,.485)-s*f.deckSurfaceCrown*edge,cross*upperBand*f.deckSurfaceBlend);
+   z=mix(z,blendZ(lowerRails,v,.49,.86)-s*f.bumperFaceCrown*edge,cross*lowerBand*f.bumperFaceBlend);
+  }
+  // Rolling the corner on the untrimmed skin also moves the aperture,
+  // its gasket, inner optics and the quarter-panel terminal rail.
+  const lip=smoother((q-.59)/.41)*smoother(v/.16)*(1-smoother((v-.41)/.31))*lampRoll;
+  return [p[0]-Math.sign(u-.5)*lip*.48,p[1],z-s*lip];
  }
  function bridge(u,r){
   const start=upperPanel(seam,u),lead=face(u,0);

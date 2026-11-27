@@ -46,7 +46,7 @@ export const FASCIA_FIELDS={
  deckPanel:unit('Trunk panel recess / seam'),deckWidth:unit('Trunk panel width'),deckHeight:unit('Trunk panel depth'),
  valanceRise:F('Lower valance rise (m)',0,.18,.005),valanceWidth:unit('Width of raised valance'),
  bumperBeltRise:F('Stamped bumper line depth (m)',0,.026,.001),bumperBeltHeight:F('Stamped bumper line height',.24,.78,.01),bumperBeltSweep:F('Stamped line rise at corners',-.17,.17,.01),
- cornerTuck:F('Tuck outer bumper corners (m)',0,.09,.005),paintedPocket:F('Painted rear plate pocket (off/on)',0,1,1),
+ lampShoulderRoll:F('Roll rear lamp shoulder (m)',0,.060,.002),cornerTuck:F('Tuck outer bumper corners (m)',0,.09,.005),paintedPocket:F('Painted rear plate pocket (off/on)',0,1,1),
  upperEndSweep:F('Pull back top edge (m)',0,.22,.005),bumperMidReach:F('Mid-bumper shoulder reach (m)',0,.10,.002),
  quarterWaist:F('Quarter panel lower draw-in (m)',0,.075,.002),quarterBlend:F('Quarter shoulder roll',0,1,.01),
  terminalTuck:F('Bumper tuck (m)',0,.12,.005),plateOpeningStretch:F('Rear plate opening vertical stretch',0,.36,.01),plateMount:unit('Visible rear plate mount'),platePosition:F('Rear plate height position',.50,.75,.005),
@@ -59,7 +59,7 @@ export const FASCIA_FIELDS={
  rollover:unit('Upper rollover'),lowerRoll:unit('Lower rollover'),wrap:unit('Fender wraparound'),
  shoulder:unit('Shoulder crown'),chin:signed('Chin / diffuser projection'),recess:unit('Center recess'),crease:unit('Character crease'),boxiness:unit('Regional boxiness')
 };
-export const OPTIC_HOUSINGS={'circle':'Circular',oval:'Oval',rectangle:'Rectangular','round-rect':'Rounded rectangle',
+export const OPTIC_HOUSINGS={'circle':'Circular',oval:'Oval',rectangle:'Rectangular','upright-wrap':'Upright rounded wrap','round-rect':'Rounded rectangle',
  trapezoid:'Trapezoidal',angular:'Angular',swept:'Swept',wrap:'Wraparound',compound:'Compound'};
 export const OPTIC_LAYOUTS={projector:'Single projector',twin:'Twin elements',led:'LED signature',mixed:'Projector + LED','factory-split':'Factory split lens'};
 export const OPTIC_FIELDS={width:unit('Housing width'),height:unit('Housing height'),corner:unit('Corner radius'),angle:signed('Housing angle'),
@@ -73,7 +73,7 @@ function baseFascia(family,front,legacy){
  return {profile:front?legacy.profile:family==='coupe'?'square':family==='fastback'?'aero':'round',intakes:front?'single':family==='fastback'?'split':'closed',
   ...initial(FASCIA_FIELDS,front?{...legacy,taper:.26,center:.82,wrap:.68,rake:.10,recess:.08,crease:.16,chin:0,boxiness:family==='coupe'?.78:.34,pointedness:0}:
   {sweep:.46,taper:.37,drop:.20,rollover:.50,lowerRoll:.60,center:.78,wrap:.64,rake:.16,recess:.05,crease:.14,chin:-.12,boxiness:family==='coupe'?.77:.41,pointedness:0}),
-  deckPanel:0,deckSurfaceBlend:0,deckSurfaceCrown:.012,deckLowerRoll:0,deckRailCurve:0,bumperFaceBlend:0,bumperFaceCrown:.018,valanceRise:0,upperEndSweep:0,bumperMidReach:0,quarterWaist:0,quarterBlend:0,cornerTuck:0,paintedPocket:0,terminalTuck:0,plateOpeningStretch:0,plateMount:0,platePosition:.615,bumperBeltRise:0,bumperBeltHeight:.44,bumperBeltSweep:0,bumperStation:.43,upperFasciaLift:0,outerFasciaWidth:0,grilleShape:'trapezoid',intakeShape:front?'angular':'trapezoid',curves:{plan:[0,0,0,0],vertical:[0,0,0,0],transverse:[0,0,0,0]}};
+  deckPanel:0,deckSurfaceBlend:0,deckSurfaceCrown:.012,deckLowerRoll:0,deckRailCurve:0,bumperFaceBlend:0,bumperFaceCrown:.018,valanceRise:0,upperEndSweep:0,bumperMidReach:0,quarterWaist:0,quarterBlend:0,lampShoulderRoll:0,cornerTuck:0,paintedPocket:0,terminalTuck:0,plateOpeningStretch:0,plateMount:0,platePosition:.615,bumperBeltRise:0,bumperBeltHeight:.44,bumperBeltSweep:0,bumperStation:.43,upperFasciaLift:0,outerFasciaWidth:0,grilleShape:'trapezoid',intakeShape:front?'angular':'trapezoid',curves:{plan:[0,0,0,0],vertical:[0,0,0,0],transverse:[0,0,0,0]}};
 }
 function baseOptic(family,front){return {
  housing:front?(family==='coupe'?'round-rect':family==='fastback'?'oval':'swept'):(family==='fastback'?'wrap':'trapezoid'),
