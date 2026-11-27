@@ -2,7 +2,7 @@
   "kind": "lotg-vehicle-design",
   "schemaVersion": 1,
   "generatorVersion": 5,
-  "name": "Linaria 2021 · 911 GT3 (992.1) study",
+  "name": "Linaria 2021 \u00b7 911 GT3 (992.1) study",
   "family": "fastback",
   "dimensions": {
     "wheelbase": 2.457,
@@ -228,8 +228,8 @@
       "deckHeight": 0.5,
       "valanceRise": 0,
       "valanceWidth": 0.5,
-      "bumperBeltRise": 0,
-      "bumperBeltHeight": 0.44,
+      "bumperBeltRise": 0.013,
+      "bumperBeltHeight": 0.37,
       "bumperBeltSweep": 0,
       "lampShoulderRoll": 0,
       "cornerTuck": 0,
@@ -252,7 +252,7 @@
       "plateHeight": 0.5,
       "plateWidth": 0.5,
       "lowerIntakeRise": 0.075,
-      "lowerIntakeDepth": 0.038,
+      "lowerIntakeDepth": 0.052,
       "fogCoverStamp": 0,
       "intakeWidth": 1,
       "intakeHeight": 0.85,
@@ -299,7 +299,8 @@
       "insertWidth": 0.86,
       "insertTop": 0.42,
       "insertBottom": 0.975,
-      "insertSweep": -0.018
+      "insertSweep": -0.018,
+      "lowerDuctMatte": 0.72
     },
     "rear": {
       "profile": "round",
@@ -505,11 +506,11 @@
       "scoopHeight": 0,
       "scoopCorner": 0,
       "lampLids": "inset",
-      "lidWidth": 0.194,
-      "lidLength": 0.368,
+      "lidWidth": 0.255,
+      "lidLength": 0.388,
       "lidSpread": 0.35,
       "lidSetback": 0.045,
-      "lidGap": 0.004
+      "lidGap": 0.006
     },
     "wing": {
       "supportMount": "top",
@@ -769,8 +770,8 @@
     "opticCover": "#e0efff",
     "indicator": "#f29b38",
     "seamDark": "#141b23",
-    "projector": "#7990a0",
-    "reflector": "#a2abb1",
+    "projector": "#98afb9",
+    "reflector": "#58616b",
     "reflectorFluted": "#b3bac1",
     "rotor": "#64696e",
     "barrel": "#303238",

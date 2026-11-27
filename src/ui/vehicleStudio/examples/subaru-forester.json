@@ -313,9 +313,9 @@
       "deckHeight": 0.5,
       "valanceRise": 0,
       "valanceWidth": 0.5,
-      "bumperBeltRise": 0.017,
-      "bumperBeltHeight": 0.66,
-      "bumperBeltSweep": 0,
+      "bumperBeltRise": 0.024,
+      "bumperBeltHeight": 0.737,
+      "bumperBeltSweep": 0.09,
       "lampShoulderRoll": 0,
       "cornerTuck": 0.062,
       "paintedPocket": 1,
@@ -334,8 +334,8 @@
       "grilleHeight": 0.5,
       "grilleHeightPosition": 0.5,
       "fogCoverHeight": 0.5,
-      "plateHeight": 0.68,
-      "plateWidth": 0.85,
+      "plateHeight": 0.74,
+      "plateWidth": 0.98,
       "lowerIntakeRise": 0,
       "lowerIntakeDepth": 0,
       "fogCoverStamp": 0,
@@ -380,7 +380,7 @@
           0
         ]
       },
-      "lowerInsert": 0.51
+      "lowerInsert": 0.59
     }
   },
   "optics": {
@@ -424,15 +424,15 @@
     "rear": {
       "housing": "upright-wrap",
       "layout": "factory-split",
-      "width": 0.37,
+      "width": 0.31,
       "height": 1,
       "corner": 0.48,
-      "angle": -0.38,
+      "angle": 0.06,
       "sweep": 0.5,
       "curvature": 0.45,
       "recess": 0.44,
       "convexity": 0.5,
-      "position": 0.06,
+      "position": 0.03,
       "outboard": 0.93,
       "sideWrap": 0.61,
       "tallHousing": 0.42,
@@ -440,7 +440,7 @@
       "rearCells": 1,
       "roundBowls": 0,
       "silverFront": 0,
-      "silverUpper": 0,
+      "silverUpper": 1,
       "flutedBowls": 0,
       "inboardReach": 0.5,
       "protrusion": 0,
@@ -483,9 +483,9 @@
       "rearPillarFoot": 0,
       "rearRoofShift": 0.17,
       "rearPillarWidth": 0.028,
-      "rearGlassArc": 0.024,
+      "rearGlassArc": 0.048,
       "canopyLength": 1,
-      "canopyShoulder": 0.2,
+      "canopyShoulder": 0.47,
       "glassBow": 0.2,
       "utilityRoofRails": 0.77,
       "rearHatchUpright": 0.85
@@ -700,7 +700,7 @@
     "creaseHeight": 0.37,
     "creaseStrength": 0.71,
     "archCrown": 0.39,
-    "roofEdge": 0.75,
+    "roofEdge": 0.56,
     "handleRecess": 0.49
   },
   "surfaces": {

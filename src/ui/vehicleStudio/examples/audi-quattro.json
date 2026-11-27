@@ -2,7 +2,7 @@
   "kind": "lotg-vehicle-design",
   "schemaVersion": 1,
   "generatorVersion": 5,
-  "name": "Linum 1983 · Audi quattro A1 R44 Group B study",
+  "name": "Linum 1983 \u00b7 Audi quattro A1 R44 Group B study",
   "family": "coupe",
   "dimensions": {
     "wheelbase": 2.524,
@@ -139,10 +139,10 @@
       "angle": 0
     },
     "spoiler": {
-      "type": "lip",
-      "size": 0.93,
-      "shape": 0.64,
-      "depth": 1,
+      "type": "boxed wing",
+      "size": 0.88,
+      "shape": 0.46,
+      "depth": 0.75,
       "bias": 0,
       "angle": 0
     },
@@ -495,7 +495,8 @@
       "rearGlassArc": 0,
       "canopyLength": 0.625,
       "canopyShoulder": 0.22,
-      "glassBow": 0.04
+      "glassBow": 0.04,
+      "darkWindscreenFrame": 1
     },
     "finish": {
       "paintRoughness": 0.45,
@@ -511,14 +512,14 @@
       "scoopCorner": 0
     },
     "wing": {
-      "elevation": 0,
-      "boxWallWidth": 0.041,
-      "boxWallRake": 0,
-      "camber": 0.34,
-      "sweep": 0.08,
+      "elevation": -0.046,
+      "boxWallWidth": 0.038,
+      "boxWallRake": -0.17,
+      "camber": 0.17,
+      "sweep": 0.1,
       "taper": 0.42,
-      "thickness": 0.097,
-      "angle": 4,
+      "thickness": 0.103,
+      "angle": 2.75,
       "supports": 2,
       "spacing": 0.67,
       "formula": "",

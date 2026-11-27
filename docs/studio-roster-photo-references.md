@@ -89,3 +89,20 @@ Studio reproduces the section widths and nominal rim diameters through the Wheel
 - Briar (Forester): darker, more raked rear glazing with slimmer rear pillars.
 
 All ten remain editable through their Studio genomes. The roster bundles do not modify car documents, suspension, or wheel mounting transforms.
+
+### Follow-up matched-angle pass
+
+| Vehicle | Main photo-fit change |
+| --- | --- |
+| Field Forgetmenot (WRX) | Lower, tighter pressed line along the doors; wider, more squared hood-scoop mouth. Hood crown and paint unchanged. |
+| Linaria (GT3) | More distinct recessed oval projector bowls and deeper lower intake. |
+| Linum (Quattro) | Low painted boxed rally wing with upright end frames and dark windshield trim. |
+| Ember Pod (Racemo) | Wider, deeper diffuser and more distinct silver bridge below the raised twin exhaust. |
+| Kestrel (S660) | Stronger rising door crease; correct rear orientation retained in the review. |
+| Flint (C4) | Darker red and separate clear hatch-edge lens zones, checked from straight rear and rear three-quarter. |
+| Caravan (Carnival) | Raised, thicker swept front lamp line and rounder bumper-to-quarter transitions. |
+| Dustjack (Rally Fighter) | More rearward roof/pillar sweep and windshield rake, without changing the stock overall height. |
+| Lark (Miata) | Crowned hood, softer nose profile and wider inset amber bumper markers. |
+| Briar (Forester) | Two-tone rear lamps, wider plate pocket and stronger rear bumper molding. |
+
+The guides are for visual comparison: these are still editable approximations. All four stock wheel mounts and the existing suspension are preserved.

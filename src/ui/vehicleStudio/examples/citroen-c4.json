@@ -424,15 +424,15 @@
     "rear": {
       "housing": "upright-wrap",
       "layout": "factory-split",
-      "width": 0.22,
+      "width": 0.68,
       "height": 1,
-      "corner": 0.5,
+      "corner": 0.16,
       "angle": 0.19,
       "sweep": 0.36,
       "curvature": 0.5,
       "recess": 0.8,
-      "convexity": 0.5,
-      "position": 0.22,
+      "convexity": 0.79,
+      "position": 0.06,
       "outboard": 0.96,
       "sideWrap": 0.6,
       "tallHousing": 0.42,
@@ -482,17 +482,17 @@
       "trim": 0.36,
       "rearPillarFoot": 0.275,
       "rearRoofShift": 0.13,
-      "rearPillarWidth": 0.072,
+      "rearPillarWidth": 0.038,
       "rearGlassArc": 0.085,
       "rearHatchFold": 1,
       "canopyLength": 0.78,
       "canopyShoulder": 0.62,
       "glassBow": 0.61,
-      "hatchEdgeLamps": 0.95,
+      "hatchEdgeLamps": 1,
       "hatchBridge": 0.083,
       "hatchBridgeWidth": 0.92,
       "hatchQuarterTaper": 0.92,
-      "hatchLampFill": 0.87
+      "hatchLampFill": 1
     },
     "finish": {
       "paintRoughness": 0.44,
@@ -755,12 +755,12 @@
     "leather": "#323642",
     "cloth": "#424654",
     "stitch": "#686b71",
-    "opticRed": "#b22e36",
-    "opticClear": "#aeb5ba",
+    "opticRed": "#641018",
+    "opticClear": "#938079",
     "opticSilver": "#d3d7db",
     "signalL": "#ef9c3e",
     "signalR": "#ef9c3e",
-    "runningRed": "#ae2833"
+    "runningRed": "#751923"
   },
   "attachments": {
     "schema": "axles-and-optics-v1"

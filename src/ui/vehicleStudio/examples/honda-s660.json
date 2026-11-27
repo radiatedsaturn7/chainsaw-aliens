@@ -572,6 +572,19 @@
         "sharpness": 0.78,
         "falloff": 0.24,
         "formula": "0.065*sin(pi*u)"
+      },
+      {
+        "id": "folded-side-spear",
+        "kind": "ridge",
+        "side": "both",
+        "start": 0.305,
+        "end": 0.645,
+        "height": 0.75,
+        "width": 0.032,
+        "depth": 0.012,
+        "sharpness": 0.67,
+        "falloff": 0.22,
+        "formula": "-0.21*sin(pi*u)+0.06*u"
       }
     ]
   },
@@ -694,13 +707,13 @@
     "rearFlareScale": 0.76,
     "lipScale": 0.66,
     "archFootBlend": 0.1,
-    "doorStamp": 0.019,
+    "doorStamp": 0.031,
     "doorStampFade": 0.31,
-    "doorStampWidth": 0.051,
+    "doorStampWidth": 0.056,
     "doorStampFront": 0.26,
     "doorStampRear": 0.26,
-    "doorStampHeight": 0.46,
-    "doorStampSweep": 0.15,
+    "doorStampHeight": 0.52,
+    "doorStampSweep": -0.20,
     "frontArchUpper": 0.025,
     "rearArchUpper": 0.023,
     "frontArchFore": 0.029,

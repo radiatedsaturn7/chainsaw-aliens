@@ -485,14 +485,15 @@
       "bolster": 0.53,
       "lumbar": 0.45,
       "trim": 0.54,
-      "rearPillarFoot": 0.15,
-      "rearRoofShift": -0.14,
-      "rearPillarWidth": 0.03,
+      "rearPillarFoot": 0.32,
+      "rearRoofShift": -0.2,
+      "rearPillarWidth": 0.021,
       "rearGlassArc": 0,
       "canopyLength": 0.79,
-      "canopyShoulder": 0.68,
+      "canopyShoulder": 0.83,
       "glassBow": 0.56,
-      "rallyTubework": 1
+      "rallyTubework": 1,
+      "frontScreenRake": 0.17
     },
     "finish": {
       "paintRoughness": 0.41,

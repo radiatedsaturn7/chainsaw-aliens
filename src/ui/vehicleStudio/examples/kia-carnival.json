@@ -232,12 +232,12 @@
       "bumperBeltHeight": 0.65,
       "bumperBeltSweep": -0.085,
       "lampShoulderRoll": 0,
-      "cornerTuck": 0.043,
+      "cornerTuck": 0.067,
       "paintedPocket": 0,
       "upperEndSweep": 0.033,
-      "bumperMidReach": 0,
+      "bumperMidReach": 0.039,
       "quarterWaist": 0,
-      "quarterBlend": 0,
+      "quarterBlend": 0.42,
       "terminalTuck": 0,
       "plateOpeningStretch": 0,
       "plateMount": 0,
@@ -299,9 +299,10 @@
       "insertWidth": 0.89,
       "insertTop": 0.168,
       "insertBottom": 0.45,
-      "insertSweep": 0.042,
+      "insertSweep": 0.067,
       "insertStep": 0.123,
-      "lowerInsert": 0.265
+      "lowerInsert": 0.265,
+      "sideRailFairing": 0.75
     },
     "rear": {
       "profile": "square",
@@ -393,10 +394,10 @@
       "housing": "swept",
       "layout": "led",
       "width": 0.98,
-      "height": 0.105,
+      "height": 0.19,
       "corner": 0.5,
-      "angle": 0.045,
-      "sweep": 0.73,
+      "angle": 0.165,
+      "sweep": 0.84,
       "curvature": 0.5,
       "recess": 0.67,
       "convexity": 0.25,
@@ -500,8 +501,8 @@
       "darkWindscreenFrame": 1
     },
     "finish": {
-      "paintRoughness": 0.365,
-      "coatRoughness": 0.1
+      "paintRoughness": 0.34,
+      "coatRoughness": 0.082
     },
     "hood": {
       "shoulderRise": 0,

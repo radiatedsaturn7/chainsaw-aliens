@@ -2,7 +2,7 @@
   "kind": "lotg-vehicle-design",
   "schemaVersion": 1,
   "generatorVersion": 5,
-  "name": "Tamo Racemo · Geneva 2017",
+  "name": "Tamo Racemo \u00b7 Geneva 2017",
   "family": "fastback",
   "dimensions": {
     "wheelbase": 2.43,
@@ -391,12 +391,12 @@
           0
         ]
       },
-      "rearSculptDepth": 0.039,
+      "rearSculptDepth": 0.05,
       "rearSculptSweep": 0.235,
-      "rearSculptWidth": 0.086,
-      "rearTrayDepth": 0.063,
-      "rearTrayWidth": 0.82,
-      "rearTrayHeight": 0.67
+      "rearSculptWidth": 0.094,
+      "rearTrayDepth": 0.08,
+      "rearTrayWidth": 0.88,
+      "rearTrayHeight": 0.621
     }
   },
   "optics": {
@@ -810,7 +810,7 @@
     "barrel": "#303238",
     "caliper": "#8e292e",
     "underbody": "#292c31",
-    "heatShield": "#7a7c80",
+    "heatShield": "#9da2a8",
     "leather": "#323642",
     "cloth": "#424654",
     "stitch": "#686b71",
