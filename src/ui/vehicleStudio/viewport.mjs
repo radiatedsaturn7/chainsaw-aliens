@@ -17,7 +17,7 @@ const disposeStudioMaterial=m=>{
  for(const q of new Set([m.map,m.normalMap,m.roughnessMap,m.metalnessMap,m.aoMap]))q?.dispose();
  m.dispose();
 };
-const views={orbit:[.72,.26],front:[0,0],rear:[PI,0],side:[PI/2,0],top:[0,PI/2]};
+const views={orbit:[.72,.26],front:[0,0],rear:[PI,0],frontElevated:[0,13*PI/180],rearElevated:[PI,14*PI/180],side:[PI/2,0],top:[0,PI/2]};
 const clamp=(x,a,b)=>Math.max(a,Math.min(x,b));
 const zebra=new T.ShaderMaterial({side:T.DoubleSide,
  vertexShader:`varying vec3 p; varying vec3 n;void main(){vec4 v=modelViewMatrix*vec4(position,1.);p=v.xyz;n=normalMatrix*normal;gl_Position=projectionMatrix*v;}`,
@@ -228,7 +228,7 @@ export function createViewport(canvas,{onPick=()=>{},onFeature=null,onZoom=()=>{
   shadow.scale.set(next.metadata.widthM*1.46,next.metadata.lengthM*1.19,1);
   setLighting(light);restyle();
  }
- function setView(next){if(!Object.hasOwn(views,next))return;[az,el]=views[next];view=next;pan.set(0,0,0);projection=next==='orbit'?'perspective':'ortho';request();}
+ function setView(next){if(!Object.hasOwn(views,next))return;[az,el]=views[next];view=next;pan.set(0,0,0);projection=next==='orbit'||next.endsWith('Elevated')?'perspective':'ortho';request();}
  function setZoom(v){zoom=clamp(v,1,4);onZoom(zoom);request();}
  function nudge(dx,dy){const c=camActive;const ms=(geo?.metadata.lengthM??4.4)/Math.max(80,canvas.clientHeight)/zoom;
   pan.addScaledVector(new T.Vector3().setFromMatrixColumn(c.matrixWorld,0),-dx*ms).addScaledVector(new T.Vector3().setFromMatrixColumn(c.matrixWorld,1),dy*ms);request();

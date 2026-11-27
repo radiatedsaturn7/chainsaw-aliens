@@ -507,6 +507,7 @@ function constructionFor(key){
  if(['seats','dash','steering','instruments','console','cabin','roof','glass','pillars'].includes(key))return 'cabin';
  if(key==='exhaust'||key==='rearBumper')return 'exhaust';
  if(key==='spoiler')return 'wing';
+ if(key==='hood'||key==='scoop')return 'hood';
  if(['headlights','tails'].includes(key))return 'pairs';
  if(['doors','frontFenders','rearFenders','rockers','styling'].includes(key))return 'styling';
  return null;
@@ -567,13 +568,14 @@ function inspector(){
  }else if(tab==='view'){
   const s=viewport?.state()??{};
   select(root,'shading','Diagnostic material',[['production','Production materials'],['clay','Neutral clay'],['glossy','Glossy reflection'],['wire','Wireframe'],['normals','Surface normals'],['zebra','Dense zebra']],s.mode??'production',v=>viewport?.setMode(v));
+  select(root,'review-angle','Review camera',[['orbit','Three-quarter'],['front','Front • straight on'],['frontElevated','Front • slightly above'],['rear','Rear • straight on'],['rearElevated','Rear • slightly above'],['side','Side'],['top','Top']],viewMode,v=>setView(v));
   select(root,'projection','Camera projection',[['perspective','Perspective'],['ortho','Orthographic']],s.projection??'perspective',v=>viewport?.setProjection(v));
   select(root,'display','Assembly',[['complete','Complete vehicle'],['isolate','Isolate selected part'],['exploded','Exploded']],s.display??'complete',v=>viewport?.setDisplay(v));
   select(root,'feature-overlay-mode','Feature overlays',[['off','Off'],['all','All editable features'],['alignment','Panel alignment']],featureOverlayMode,v=>{featureOverlayMode=v;syncFeatureViewport();});
   select(root,'lighting','Lighting',[['studio','Automotive studio'],['track-clear','Outdoor daylight']],s.light??'studio',v=>viewport?.setLighting(v));
   const d=group(root,'Reference overlay',true),btn=element('button',{textContent:reference?'Replace image':'Choose local reference image'});d.append(btn);
   btn.onclick=()=>{$('reference-file').click();};
-  select(d,'ref-view','Reference angle',['front','rear','side','top'],refView,v=>{refView=v;setView(v);});
+  select(d,'ref-view','Reference angle',[['front','Front'],['frontElevated','Front • slightly above'],['rear','Rear'],['rearElevated','Rear • slightly above'],['side','Side'],['top','Top'],['orbit','Three-quarter']],refView,v=>{refView=v;setView(v);});
   const amount=element('input',{type:'range',min:0,max:1,step:.025,value:Number($('ref-overlay').style.opacity||.35)});
   amount.setAttribute('aria-label','Reference image opacity');amount.oninput=()=>{$('ref-overlay').style.opacity=amount.value;};fieldRow(d,'Reference opacity').append(amount);
   let hide=element('button',{textContent:'Remove reference'});hide.onclick=()=>clearReference();d.append(hide);
@@ -657,6 +659,8 @@ function syncPanel(){
 }
 function setView(v){
  viewMode=v;viewport?.setView(v);
+ if($('review-angle'))$('review-angle').value=v;
+ if($('projection'))$('projection').value=viewport?.state().projection??'perspective';
  for(const b of document.querySelectorAll('[data-view]'))b.setAttribute('aria-pressed',String(b.dataset.view===v));showReference();
  if(tab==='view')inspector();syncGuideUI();syncFeatureViewport();bodyOverlay?.render();
 }

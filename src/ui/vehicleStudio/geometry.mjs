@@ -156,8 +156,21 @@ export function generateVehicle(input,{quality='preview'}={}){
  }
  const sheet=(name,material,z0,z1,fn,n=14,m=10)=>put(name,material,patch(n,m,(u,v)=>fn(mix(z0,z1,u),v)));
  const hoodC=(.027+.059*c.hood.shape)*(c.hood.type==='flat'?.29:c.hood.type==='power bulge'?1.32:1)*c.hood.depth;
+ const hoodDesign=g.construction.hood;
+ const hoodShoulder=(z,v)=>{
+  if(!hoodDesign.shoulderRise)return 0;
+  const t=clamp((z-cabinFront)/(bumperFront-cabinFront)),a=Math.abs(v*2-1);
+  const center=clamp(hoodDesign.shoulderAt-hoodDesign.shoulderSweep*t,.28,.91);
+  const q=(a-center)*skinX(z)/hoodDesign.shoulderWidth;
+  // Stamped crown above the shoulder, with a return to the shared edge.
+  // Fade both ends so the base seam tangents and attachment rail are preserved.
+  const edge=unitSmooth(clamp((1-a)/.14));
+  const blend=unitSmooth(clamp((t-.015)/.155))*unitSmooth(clamp((.983-t)/.143));
+  const crown=(1-Math.tanh(q))*0.5;
+  return hoodDesign.shoulderRise*blend*edge*(crown-.22*Math.exp(-((q-.74)**2)));
+ };
  const originalHood=(z,v)=>{const p=top(z,v,mix(hoodC,.019*c.frontBumper.size,clamp((z-(bumperFront-.28))/.28)**2),'hood');
-  p[1]+=UP_PATCH(g,'hood',z,v,cabinFront,bumperFront);return p;};
+  p[1]+=UP_PATCH(g,'hood',z,v,cabinFront,bumperFront)+hoodShoulder(z,v);return p;};
  const trunkC=(c.trunk.type==='fastback'?.034:c.trunk.type==='ducktail'?.064:.047)*(.68+c.trunk.shape)*c.trunk.depth;
  const originalTrunk=(z,v)=>{const p=top(z,v,mix(trunkC,.019*c.rearBumper.size,clamp((bumperRear+.28-z)/.28)**2),'trunk');
   p[1]+=UP_PATCH(g,'trunk',z,v,bumperRear,cabinRear);return p;};
@@ -344,23 +357,47 @@ export function generateVehicle(input,{quality='preview'}={}){
  // Optical and trim dimensions are tied to fascia, not independent world coordinates.
  const sc=c.scoop;
  if(sc.type!=='off'){
-  const z=mix(cabinFront,bumperFront,.49+sc.bias*.14),p=hoodPoint(z,.5),w=.41*sc.size,l=.34*sc.depth,h=.045+.085*sc.shape;
+  const z=mix(cabinFront,bumperFront,.49+sc.bias*.14),p=hoodPoint(z,.5),w=hoodDesign.scoopWidth?Math.max(.12,hoodDesign.scoopWidth):.41*sc.size,l=.34*sc.depth,h=hoodDesign.scoopHeight?Math.max(.015,hoodDesign.scoopHeight):.045+.085*sc.shape;
   if(sc.type==='scoop'){
    const lipZ=z+l*.48,ht=h+sc.angle*RAD*l*.24;
    function surface(a,b){
     const sz=mix(z-l*.56,lipZ,b),x=w*.5*a*(.87+.13*b);
     const base=hoodPoint(sz,clamp(.5+x/(2*skinX(sz))))[1];
-    const cross=Math.max(0,1-Math.abs(a)**8)**.64;
+    const cross=Math.max(0,1-Math.abs(a)**(8+12*hoodDesign.scoopCorner))**(.64-.30*hoodDesign.scoopCorner);
     return [x,base+ht*cross*(b*b*(3-2*b))-.001,sz];
    }
    put('scoop','paint',patch(lod?8:16,8,(b,u)=>surface(2*u-1,b)));
    // A real open sleeve with painted lip, black inside walls and a recessed
    // termination; shadows have physical depth, not a floating black oval.
+   if(hoodDesign.scoopWidth||hoodDesign.scoopHeight||hoodDesign.scoopCorner){
+    const base=(x,at)=>hoodPoint(at,clamp(.5+x/(2*skinX(at))))[1];
+    const ringShape=(a,at,scale,height)=>{
+     const x=w*.5*a*scale,arch=Math.max(0,1-Math.abs(a)**(8+12*hoodDesign.scoopCorner))**(.64-.30*hoodDesign.scoopCorner);
+     const bottom=base(x,at)-.001;
+     return {x,bottom,top:bottom+height*arch};
+    };
+    const cut=(a,b,inner)=>{
+     const out=ringShape(a,lipZ,1,ht),p=ringShape(a,lipZ+.003,.91,ht-.009);
+     const bottom=p.bottom+.004,top=Math.max(bottom+.0008,p.top);
+     return inner?[p.x,mix(bottom,top,b),lipZ+.003]:[out.x,mix(out.bottom,out.top,b),lipZ];
+    };
+    const back=(a,b)=>{
+     const at=lipZ-Math.min(l*.43,.17);
+     const p=ringShape(a,at,.78,ht*.52);
+     return [p.x,mix(p.bottom+.002,Math.max(p.bottom+.0028,p.top),b),at];
+    };
+    for(const b of [0,1]){
+     put('scoop','paint',patch(18,2,(u,t)=>lerp3(cut(u*2-1,b,false),cut(u*2-1,b,true),t),b===0));
+     put('scoop','seamDark',patch(18,2,(u,t)=>lerp3(cut(u*2-1,b,true),back(u*2-1,b),t),b===1));
+    }
+    put('scoop','seamDark',patch(18,4,(u,t)=>back(u*2-1,t)));
+   }else{
    const mouth=(a,v,back=0)=>{const p=surface(a,1),q=hoodPoint(lipZ,.5+a*w/(4*skinX(lipZ)));
     return [p[0]*(1-.17*back),mix(q[1]+.006,p[1]-.006,v)-.006*back,lipZ+.002-.105*back];};
    put('scoop','seamDark',patch(12,3,(u,v)=>mouth(2*u-1,v,1)));
    for(const rim of [0,1])put('scoop',rim?'paint':'trim',patch(12,4,(u,v)=>mouth(2*u-1,rim,v)));
    for(const s of [-1,1])put('scoop','seamDark',patch(4,3,(u,v)=>mouth(s*.967,u,v),s<0));
+   }
   }else for(const s of [-1,1])for(let i=0;i<3;i++)put('scoop','trim',ellipsoid(w*.33,.014,.042),[s*w*.26,p[1]-.008,z+l*(i-1)*.3]);
  }
  const dims={X,L,Lf,Lr,floor,B,cabinFront,cabinRear,roofFront,roofRear,tireTrack:t,rearTireTrack:rearTrack,wheelRadius:R,archRadius:radius};

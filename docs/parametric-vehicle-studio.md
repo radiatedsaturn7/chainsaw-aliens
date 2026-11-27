@@ -60,3 +60,19 @@ For front or rear lamps, **Mirrored** copies the shared settings and reflects th
 Matching the existing hand-authored Field Forgetmenot exposed controls that could not be replaced by one vehicle preset. The editor now offers separately shaped and positioned upper/lower openings, blank fog inserts, bumper-seam station, upper fascia height/width, lamp outboard placement and grille-side reach, and roof length/shoulder/glass-bow controls. Vehicle width/stance now separates front and rear track and the outside tire reserve; the well-liner calculation follows the authored axle tracks. The wing has additional rise independent of its airfoil thickness.
 
 Generator revision 5 retains all v1–v4 authored fields and defaults the new controls. A reconstructed genome retains native proportions and identical wheel centers when set accordingly, but it is not a mesh importer. In particular, an optic at a rear corner cannot yet cut across the fascia-to-quarter seam as a single continuous aperture, and the existing hand-built undercarriage and cabin details are not traced automatically. The stock package stays unchanged.
+
+### Elevated photo review and formed hoods
+
+Under **View → Review camera**, Front / Rear • slightly above are perspective
+cameras tilted down about 13° and 14° toward the car respectively. The existing
+straight orthographic views are unchanged, including when entering fascia editing.
+The local reference overlay can target the elevated and three-quarter views.
+These are review camera presets, not gameplay camera or exposure changes.
+
+**Parts → Hood / Scoop → Open Hood shoulders and scoop** exposes the underlying
+molded surface and scoop. A paired profile shapes the sheet metal below the
+shoulder (with a soft return and swept position); its influence vanishes at the
+shared panel edges. The mouth has independent width, rise and corner shape;
+its inner sleeve is actual geometry. Zero width and rise retain the legacy
+Size / Shape mapping. The new settings live in `construction.hood`; older
+version-5 records omit them and retain their previous geometry.

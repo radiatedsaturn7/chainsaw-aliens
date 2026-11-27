@@ -125,6 +125,15 @@ export const STYLE_KINDS={ridge:'Stamped ridge',groove:'Recessed groove',crease:
 export const BODY_EDITOR_FIELDS={bolster:F('Seat bolster',0,1,.01),lumbar:F('Lumbar curve',0,1,.01),trim:F('Interior trim',0,1,.01),
  canopyLength:F('Roof length / cabin rake',0,1,.01),canopyShoulder:F('Roof shoulder rounding',0,1,.01),glassBow:F('Side glazing outward bow',0,1,.01)
 };
+export const HOOD_CONSTRUCTION_FIELDS={
+ shoulderRise:F('Shoulder drop (m)',0,.055,.001),
+ shoulderWidth:F('Shoulder blend width (m)',.045,.18,.001),
+ shoulderAt:F('Shoulder position across hood',.43,.90,.01),
+ shoulderSweep:F('Shoulder sweep toward grille',-.19,.19,.005),
+ scoopWidth:F('Intake mouth width (m, 0 = linked to size)',0,.86,.005),
+ scoopHeight:F('Intake mouth height (m, 0 = linked to shape)',0,.20,.005),
+ scoopCorner:F('Intake corner shape',0,1,.01)
+};
 export const WING_FIELDS={elevation:F('Extra wing rise (m)',-.10,.12,.002),camber:F('Airfoil camber',0,1,.01),sweep:F('Wing sweep',-1,1,.01),taper:F('Wing taper',0,1,.01),thickness:F('Airfoil thickness',.04,.24,.005),angle:F('Angle of attack',-15,15,.25),supports:F('Supports',2,4,1),spacing:F('Support spacing',.22,.88,.01),elements:F('Wing elements',1,2,1)};
 export const EXHAUST_FIELDS={
  x:F('Side location (m)',-.95,.95,.005),y:F('Height above floor (m)',-.04,.25,.005),spacing:F('Tip spacing (m)',.045,.20,.005),count:F('Outlet count',1,6,1),
@@ -143,6 +152,7 @@ const constructionDefaults=()=>({
  symmetry:Object.fromEntries(Object.keys(PAIR_GROUPS).map(k=>[k,'mirrored'])),
  sides:{L:{},R:{}},
  cabin:{layout:'bench',bolster:.53,lumbar:.45,trim:.54,canopyLength:.5,canopyShoulder:.5,glassBow:.5},
+ hood:{shoulderRise:0,shoulderWidth:.087,shoulderAt:.65,shoulderSweep:0,scoopWidth:0,scoopHeight:0,scoopCorner:0},
  wing:{elevation:0,camber:.34,sweep:.08,taper:.42,thickness:.097,angle:4,supports:2,spacing:.67,formula:'',elements:1},
  exhaust:[],features:[]
 });
@@ -266,6 +276,7 @@ export function normalizeVehicle(x){
  }
  if(cc.cabin?.layout!==undefined)k.cabin.layout=enumValue(cc.cabin.layout,CABIN_LAYOUTS,'seating layout');
  for(const [p,s] of Object.entries(BODY_EDITOR_FIELDS))if(cc.cabin?.[p]!==undefined)k.cabin[p]=number(cc.cabin[p],s,p);
+ for(const [p,s] of Object.entries(HOOD_CONSTRUCTION_FIELDS))if(cc.hood?.[p]!==undefined)k.hood[p]=number(cc.hood[p],s,p);
  for(const [p,s] of Object.entries(WING_FIELDS))if(cc.wing?.[p]!==undefined)k.wing[p]=number(cc.wing[p],s,p);
  if(cc.wing?.formula!==undefined)k.wing.formula=safeFormula(cc.wing.formula,'Airfoil');
  if(cc.exhaust!==undefined)k.exhaust=safeRows(cc.exhaust,8,newOutlet,'outlet',EXHAUST_FIELDS,(d,r)=>({...d,count:Math.round(d.count),mirror:r.mirror===true,shape:enumValue(r.shape??d.shape,EXHAUST_SHAPES,'tip profile'),finish:enumValue(r.finish??d.finish,EXHAUST_FINISHES,'tip finish')}));
