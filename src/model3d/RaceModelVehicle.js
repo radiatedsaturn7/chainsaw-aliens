@@ -47,9 +47,14 @@ export function fitWrxFallbackVisualBody(parts,car,session){
 export const raceVehicleEnvironmentProfile=(profile,model,part)=>
   profile==='track-clear'&&isWrxFit10Document(model,part)?'track-clear-rally':profile;
 
-export function updateRaceModelParts(group,car,session,{library=modelAssets,automotiveProfile=null,automotiveRenderer=null}={}){
+export function updateRaceModelParts(group,car,session,{
+  library=modelAssets,automotiveProfile=null,automotiveRenderer=null,automotiveConditions=null
+}={}){
   const parts=group.userData.parts;
-  const profile=automotiveProfile??automotiveTrackProfile({night:session?.night===true,weather:session?.triggerWeather??session?.weatherFxState?.weatherId});
+  // Gameplay passes the same conditions that are used to draw sky and fog.
+  // Stand-alone previews may supply a fixed probe or just a simulation session.
+  const conditions=automotiveConditions??{night:session?.night===true,weather:session?.triggerWeather??session?.weatherFxState?.weatherId};
+  const profile=automotiveProfile??conditions.skyProbe??automotiveTrackProfile(conditions);
   const install=(part,binding,wheelId=null)=>{
     if(!part||!binding?.ref)return part;
     const model=library.get(binding.ref);if(!model)return part;

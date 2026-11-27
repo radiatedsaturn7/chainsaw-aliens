@@ -107,3 +107,20 @@ test('clear race reflections change only for the exact Fit 10 model and preserve
    assert.equal(raceVehicleEnvironmentProfile('track-clear',{name:'other'},part),'track-clear');
  }
 });
+
+test('race ambient is not applied twice to authored indirect specular and clearcoat',()=>{
+ const m=new THREE.MeshPhysicalMaterial();
+ m.userData.automotive={preset:'paint'};
+ m.userData.raceVehicleLamp=true;
+ const shader={uniforms:{},vertexShader:THREE.ShaderLib.physical.vertexShader,fragmentShader:THREE.ShaderLib.physical.fragmentShader};
+ installRaceLighting(m,{});
+ m.onBeforeCompile(shader);
+ assert.match(shader.fragmentShader,/rtgSceneReflection=reflectedLight.indirectSpecular/);
+ assert.match(shader.fragmentShader,/Fcc\)\+clearcoatSpecularIndirect\*material.clearcoat/);
+ assert.match(shader.fragmentShader,/rtgProtectedLight = rtgSceneReflection \+ totalEmissiveRadiance/);
+ assert.match(shader.fragmentShader,/rtgFog\(\(outgoingLight - rtgProtectedLight\)/);
+ const basic=new THREE.MeshStandardMaterial();
+ const other={uniforms:{},vertexShader:THREE.ShaderLib.standard.vertexShader,fragmentShader:THREE.ShaderLib.standard.fragmentShader};
+ installRaceLighting(basic,{});basic.onBeforeCompile(other);
+ assert.doesNotMatch(other.fragmentShader,/rtgSceneReflection/);
+});

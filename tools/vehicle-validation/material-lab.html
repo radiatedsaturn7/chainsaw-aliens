@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8">
+<title>Vehicle Material Validation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>body{margin:0;background:#1c232d;color:#edf3fc;font:16px system-ui}main{margin:auto;max-width:1150px;padding:16px}h1{font-size:24px}fieldset{display:flex;flex-wrap:wrap;gap:12px;border:1px solid #425267;padding:10px;margin:8px 0}label,button,select,input{font:inherit}select,button,input{color:#edf3fc;background:#253244;border:1px solid #65788e;padding:5px}canvas{display:block;width:100%;height:auto;touch-action:none;border:1px solid #425267}output{display:block;font-size:13px;white-space:pre-wrap;margin:8px 0}</style>
+<main><h1>Vehicle material validation</h1>
+<fieldset><legend>Compare one variable at a time</legend>
+<label>Channel <select id="channel"></select></label>
+<label>Environment <select id="probe"><option>track-clear</option><option>track-clear-rally</option><option>track-overcast</option><option>track-night</option><option>garage-bay</option><option>studio</option><option>studio-strips</option><option value="none">None</option></select></label>
+<label>Output <select id="outputMode"><option value="runtime">Runtime shoulder</option><option value="aces">Studio ACES</option><option value="neutral">Neutral</option></select></label>
+<label>Exposure <input id="exposure" type="number" min=".25" max="4" step=".05" value="1"></label>
+<label>Camera <select id="view"><option value="front">Front three-quarter</option><option value="rear">Rear chase</option><option value="side">Side</option><option value="hood">Hood close-up</option><option value="wheel">Wheel close-up</option><option value="calibration">Calibration arrays</option></select></label>
+<label>Vehicle heading <input id="heading" type="range" min="-180" max="180" value="0"></label>
+<label>Orbit <input id="orbit" type="range" min="-180" max="180" value="0"></label>
+<button id="profile" type="button">Measure GPU</button></fieldset>
+<fieldset><legend>Paint and light experiment (never changes the saved vehicle)</legend>
+<label>Basecoat metalness <input id="metalness" type="number" min="0" max="1" step=".05" value="0"></label>
+<label>Basecoat roughness <input id="baseRoughness" type="number" min=".0525" max="1" step=".005" value=".285"></label>
+<label>Clearcoat roughness <input id="coatRoughness" type="number" min=".0525" max="1" step=".005" value=".077"></label>
+<label>Hemispheric fill <input id="fill" type="number" min="0" max="3" step=".05" value="2"></label>
+<button id="reset-light" type="button">Reset paint and fill</button></fieldset>
+<canvas id="render" width="1080" height="650"></canvas>
+<output id="measure">Loading exact roster model…</output>
+</main><script type="module" src="./material-lab.mjs"></script>

@@ -11,6 +11,7 @@ const STANDARD=THREE.MeshStandardMaterial, PHYSICAL=THREE.MeshPhysicalMaterial;
 const PRESETS=Object.freeze({
   // Automotive enamel is pigmented dielectric under a separate clearcoat.
   paint:      Object.freeze({ type:PHYSICAL, roughness:.44, metalness:0, clearcoat:1, clearcoatRoughness:.16, ior:1.5, crease:52 }),
+  'gltf-pbr': Object.freeze({ type:PHYSICAL, roughness:1, metalness:1, clearcoat:0, clearcoatRoughness:0, ior:1.5, crease:0 }),
   alloy:      Object.freeze({ type:STANDARD, roughness:.34, metalness:.92, crease:44 }),
   rubber:     Object.freeze({ type:STANDARD, roughness:.88, metalness:0, crease:54 }),
   glass:      Object.freeze({ type:PHYSICAL, roughness:.17, metalness:0, clearcoat:.28, clearcoatRoughness:.14, ior:1.5, crease:48 }),
@@ -201,20 +202,25 @@ export function automotiveMaterial(options, spec, { ormMap=null, normalMap=null 
    map.minFilter=pot?THREE.LinearMipmapLinearFilter:THREE.LinearFilter;
    map.generateMipmaps=pot;map.needsUpdate=true;
  }
- const shell=spec.preset==='clear-cover';
+ const shell=spec.preset==='clear-cover', imported=spec.preset==='gltf-pbr';
  const calibratedPaint=spec.preset==='paint'&&(spec.paintCalibration===true||
    spec.paintCalibration!==false&&automotivePaintCalibrated);
  const calibrated=calibratedPaint?{
    specularIntensity:bounded(spec.paintBaseSpecular,calibratedPaintDefaults.baseSpecular),
    clearcoatRoughness:bounded(spec.paintClearcoatRoughness,calibratedPaintDefaults.clearcoatRoughness,.0525),
  }:{};
- const material=new type({...options,...base,...calibrated,
+ const importedCoat=imported?{clearcoat:bounded(spec.clearcoat,0),
+   clearcoatRoughness:bounded(spec.clearcoatRoughness,0),ior:bounded(spec.ior,1.5,1,2.333)}:{};
+ const normalScale=imported&&Array.isArray(spec.normalScale)
+   ?new THREE.Vector2(bounded(spec.normalScale[0],1,-16,16),bounded(spec.normalScale[1],1,-16,16))
+   :new THREE.Vector2().setScalar(bounded(spec.normalStrength,1,0,2));
+ const material=new type({...options,...base,...calibrated,...importedCoat,
    ...(shell?{side:THREE.FrontSide,forceSinglePass:true}:{}),
-   roughness:bounded(spec.roughness,ormMap?1:roughness,.035),
+   roughness:bounded(spec.roughness,ormMap?1:roughness,imported?0:.035),
    metalness:bounded(spec.metalness,ormMap?1:metalness),
    depthWrite:(shell||spec.preset==='glass')&&options.transparent?false:options.depthWrite??true,
    ...(ormMap?{aoMap:ormMap,roughnessMap:ormMap,metalnessMap:ormMap,aoMapIntensity:bounded(spec.aoIntensity,1)}:{}),
-   ...(normalMap?{normalMap,normalScale:new THREE.Vector2().setScalar(bounded(spec.normalStrength,1,0,2))}:{}),
+   ...(normalMap?{normalMap,normalScale}:{}),
  });
  material.userData.automotive={
    preset:spec.preset,crease:bounded(spec.creaseAngle,crease,0,89),

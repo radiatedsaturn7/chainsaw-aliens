@@ -1,4 +1,4 @@
-import {automotiveMaterial,automotivePilotEnabled} from './AutomotiveMaterials.js';
+import {applyAutomotiveEnvironment,automotiveMaterial,automotivePilotEnabled} from './AutomotiveMaterials.js';
 import {benchmarkNormals,wrxMaterialKind,wrxPilotMaterial} from './WrxVisualPilot.js';
 import * as THREE from '../vendorBridge/three.js';
 import {faceNormal} from './ModelDocument.js';
@@ -83,6 +83,10 @@ function automotiveSpecification(material,wrxPart,automotive){
   return {preset:'trim'};
 }
 export function modelMaterialNeedsBlending(material) {
+  if(material.automotive?.preset==='gltf-pbr'){
+    if(material.automotive.alphaMode==='blend')return true;
+    if(material.automotive.alphaMode==='mask'||material.automotive.alphaMode==='opaque')return false;
+  }
   // Binary alpha is an alpha-tested cutout. Only fractional alpha requires
   // sorting/blending (and the two-sided transparent model render passes).
   return Boolean(material.texture?.pixels?.some(pixel => {
@@ -103,6 +107,14 @@ export function buildModelObject(model,{wrxPart=null,automotive=(wrxPart&&automo
     const options={color:m.color||'#ffffff',map:materialTexture(m.texture),side:THREE.DoubleSide,
       roughness:.8,transparent:modelMaterialNeedsBlending(m),alphaTest:.01};
     const spec=automotiveSpecification(m,wrxPart,automotive);
+    if(spec?.preset==='gltf-pbr'){
+      options.side=spec.doubleSided?THREE.DoubleSide:THREE.FrontSide;
+      options.opacity=spec.opacity??1;
+      options.alphaTest=spec.alphaMode==='mask'?spec.alphaCutoff??.5:0;
+      options.emissive=spec.emissive??'#000000';
+      options.emissiveIntensity=spec.emissiveIntensity??1;
+      options.depthWrite=!options.transparent;
+    }
     let surface=null;
     if(spec){
       const ormMap=materialTexture(spec.orm,true),normalMap=materialTexture(spec.normal,true);
@@ -169,7 +181,7 @@ export function getModelFrame(model) {
 // Shared canvas renderer for editor work surfaces and side-view Level assets.
 // Race integration can attach buildModelObject directly to its existing scene.
 export class ModelCanvasRenderer {
-  constructor({cacheSize=1}={}){this.cacheSize=cacheSize;this.roots=new Map();this.renderer=null;this.model=null;this.root=null;this.revision=null;}
+  constructor({cacheSize=1,authoredVehiclePreview=false}={}){this.cacheSize=cacheSize;this.authoredVehiclePreview=authoredVehiclePreview;this.roots=new Map();this.renderer=null;this.model=null;this.root=null;this.revision=null;}
   frameModel(model){this.framing=getModelFrame(model);}
   ensure(){
     if(this.renderer)return true;if(typeof document==='undefined')return false;
@@ -184,7 +196,13 @@ export class ModelCanvasRenderer {
       if(this.root)this.scene.remove(this.root);
       const cached=this.roots.get(model);
       if(cached&&cached.revision!==revision){disposeModelObject(cached.root);this.roots.delete(model);}
-      const entry=this.roots.get(model)||{root:buildModelObject(model),revision};
+      let entry=this.roots.get(model);
+      if(!entry){
+        const authoredVehicle=this.authoredVehiclePreview&&model.materials.some(material=>typeof material.automotive?.preset==='string');
+        const root=buildModelObject(model,{automotive:authoredVehicle});
+        if(authoredVehicle)applyAutomotiveEnvironment(root,'studio',this.renderer);
+        entry={root,revision,authoredVehicle,restBuffers:null};
+      }
       this.roots.delete(model);this.roots.set(model,entry);
       while(this.roots.size>this.cacheSize){const [key,old]=this.roots.entries().next().value;disposeModelObject(old.root);this.roots.delete(key);}
       this.root=entry.root;this.scene.add(this.root);this.model=model;this.revision=revision;
@@ -192,7 +210,25 @@ export class ModelCanvasRenderer {
     this.root.position.fromArray(transform?.position||[0,0,0]);
     this.root.rotation.set(...(transform?.rotation||[0,0,0]));
     this.root.scale.fromArray(transform?.scale||[1,1,1]);
-    updateModelPose(this.root,model,{clip,time,pose});for(const material of this.root.userData.materials)material.wireframe=wireframe;
+    const entry=this.roots.get(model);
+    if(!entry.authoredVehicle){
+      updateModelPose(this.root,model,{clip,time,pose});
+    }else if(clip||Object.keys(pose||{}).length){
+      // Pose edits still deform the preview. Retain exactly the authored bind
+      // surface once, so exiting a pose restores the production corner normals.
+      entry.restBuffers ||= this.root.children.map(mesh=>['position','normal'].map(name=>mesh.geometry.getAttribute(name).array.slice()));
+      updateModelPose(this.root,model,{clip,time,pose});
+    }else if(entry.restBuffers){
+      this.root.children.forEach((mesh,i)=>{
+        for(const [j,name] of ['position','normal'].entries()){
+          const attribute=mesh.geometry.getAttribute(name);
+          attribute.array.set(entry.restBuffers[i][j]);attribute.needsUpdate=true;
+        }
+        mesh.geometry.computeBoundingSphere();
+      });
+      entry.restBuffers=null;
+    }
+    for(const material of this.root.userData.materials)material.wireframe=wireframe;
     const width=Math.max(1,Math.round(bounds.w)),height=Math.max(1,Math.round(bounds.h)),aspect=width/height;
     this.renderer.setSize(width,height,false);
     const extent=this.framing.extent;

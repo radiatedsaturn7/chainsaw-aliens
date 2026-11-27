@@ -1,3 +1,5 @@
+import {raceAutomotiveSkyProbe} from '../racing/RaceAutomotiveSkyProbe.js';
+import {compositeRace3dWorld, race3dTargetSize, readRace3dPresentationOptions} from '../racing/Race3dPresentation.js';
 import { roadCameraCue, roadsidePassMix } from '../racing/RaceMotionCues.js';
 import {raceAiRenderState} from '../racing/RaceAiRenderState.js';
 import {selectMatchedRaceGrid, matchRaceCarPI} from '../racing/RaceMatchedGrid.js';
@@ -997,6 +999,8 @@ function getRaceDoodadModelFallbackArtRef(sprite, doodad) {
 export default class RaceEditor {
   constructor(game, { mode = 'race' } = {}) {
     this.game = game;
+    this.race3dPresentation = readRace3dPresentationOptions(globalThis.location?.search);
+    this.raceUseAuthoredSkyProbe = new URLSearchParams(globalThis.location?.search).get('race3dProbe')==='sky';
     this.mode = mode;
     this.raceSimulationSystems = createRaceSimulationSystems({
       steeringConfig: RACE_CONTROLLER_STEERING
@@ -36792,10 +36796,11 @@ export default class RaceEditor {
     return count > 0;
   }
 
-  getRaceThreeWorldRendererForViewport(bounds, renderScale = this.getRaceWebGLTrackRenderResolution(this.getRaceGroundScanlineSettings())) {
-    const width = clamp(Math.round(Number(bounds?.w || 1) * renderScale), 1, 32768);
-    const height = clamp(Math.round(Number(bounds?.h || 1) * renderScale), 1, 18432);
-    return this.getRaceThreeWorldRenderer(width, height);
+  getRaceThreeWorldRendererForViewport(bounds, renderScale = this.getRaceWebGLTrackRenderResolution(this.getRaceGroundScanlineSettings()), context = null) {
+    const {width, height, density} = race3dTargetSize(bounds, renderScale, context, this.race3dPresentation);
+    const renderer = this.getRaceThreeWorldRenderer(width, height);
+    if (renderer) renderer.presentationDensity = density;
+    return renderer;
   }
 
   getRaceThreeWorldRenderer(width = 1, height = 1) {
@@ -36938,7 +36943,7 @@ export default class RaceEditor {
     this.lastRaceRenderStats.threeCarSpriteMs = Math.max(0,this.getNowMs()-spriteStartMs);
   }
 
-  syncRaceThreeAiModels(renderer, cameraYaw = 0) {
+  syncRaceThreeAiModels(renderer, cameraYaw = 0, automotiveConditions = null) {
     const holders = renderer.aiModelCars ||= new Map();
     const active = new Set();
     for (const ai of this.playtestSession?.aiRuntime || []) {
@@ -36961,6 +36966,7 @@ export default class RaceEditor {
       if (!holder) { holder = { scene: renderer.scene, solidMaterialCache: renderer.solidMaterialCache ||= new Map() }; holders.set(ai, holder); }
       const modelWheels=isDedicatedModelWheelCar(car);
       this.addRaceThreeProceduralCar(holder, { ...pose, car, session:pose.session, braking:Boolean(ai.braking||ai.brake),
+        automotiveConditions, automotiveRenderer:renderer.threeRenderer,
         drawBody: !hasBodyArt, drawWheels: modelWheels || !this.hasCarTireArtOverride(car),
         drawLights: modelWheels || hasRaceModelLampMounts(car) || !hasBodyArt && !car.art?.brakeLightArtRef && !car.art?.fx?.length,
         drawShadow: !car.art?.shadowArtRef,
@@ -36971,9 +36977,9 @@ export default class RaceEditor {
     }
   }
 
-  syncRaceThreePlayerModel(renderer,dynamicCar,cameraView,stats) {
+  syncRaceThreePlayerModel(renderer,dynamicCar,cameraView,stats,automotiveConditions = null) {
     if (dynamicCar) {
-      this.addRaceThreeProceduralCar(renderer, { ...dynamicCar, stats });
+      this.addRaceThreeProceduralCar(renderer, { ...dynamicCar, stats, automotiveConditions });
       if(renderer.dynamicCarGroup)renderer.dynamicCarGroup.visible=true;
     } else if(cameraView==='first-person'&&renderer.dynamicCarGroup?.userData?.nativeModelWheels
       &&isNativeModelWheelCar(this.getRaceSessionCar(this.playtestSession))){
@@ -38195,6 +38201,8 @@ export default class RaceEditor {
     braking = false,
     reversing = null,
     headlights = null,
+    automotiveConditions = null,
+    automotiveRenderer = renderer?.threeRenderer,
     car = this.selectedCar,
     session = this.playtestSession,
     color = '#58d6ff',
@@ -38284,7 +38292,7 @@ export default class RaceEditor {
         session?.vehicleRenderState?.wheelPoses?.[wheelId]);
     };
     const syncModelParts=group=>{
-      updateRaceModelParts(group,car,session);
+      updateRaceModelParts(group,car,session,{automotiveConditions,automotiveRenderer});
       if(hasMountedLamps)syncRaceModelLamps(group.userData.parts.body,session,{
         enabled:mountedLights,braking,reversing:reversing??carFxDrivingState(session).reverse,
         headlights,defaultHeadlights:raceStartsWithHeadlights(this.selectedRace)
@@ -38857,7 +38865,7 @@ export default class RaceEditor {
       || typeof ctx.drawImage !== 'function') return false;
     const width = Math.max(1, Math.round(Number(bounds.w || 1)));
     const height = Math.max(1, Math.round(Number(bounds.h || 1)));
-    const renderer = this.getRaceThreeWorldRendererForViewport(bounds, renderScale);
+    const renderer = this.getRaceThreeWorldRendererForViewport(bounds, renderScale, ctx);
     if (!renderer?.threeRenderer) return false;
     if (stats) {
       stats.webglRenderWidth = Number(renderer.canvas.width);
@@ -38865,6 +38873,8 @@ export default class RaceEditor {
       stats.effectiveRenderScaleX = stats.webglRenderWidth / width;
       stats.effectiveRenderScaleY = stats.webglRenderHeight / height;
       stats.webglTargetScale = Math.min(stats.effectiveRenderScaleX, stats.effectiveRenderScaleY);
+      stats.threePresentationDensity = renderer.presentationDensity;
+      stats.threeCompositeFilter = this.race3dPresentation?.linearFilter ? 'linear' : 'nearest';
     }
     const textureUploadStart = Number(renderer.textureUploads || 0);
     const staticKey = this.getRaceThreeStaticWorldKey(cells, {
@@ -38955,8 +38965,18 @@ export default class RaceEditor {
     if(camera.firstPersonFrame)applyFirstPersonCameraFrame(renderer.camera,camera.firstPersonFrame);
     renderer.camera.updateProjectionMatrix();
     this.alignRaceThreeCameraHorizon(renderer.camera, camera, cameraYaw, bounds);
-    this.syncRaceThreePlayerModel(renderer,dynamicCar,cameraView,stats);
-    this.syncRaceThreeAiModels(renderer, cameraYaw);
+    const automotiveConditions={
+      night:Boolean(this.playtestSession&&this.selectedRace?.timeOfDay==='night'),
+      weather:weatherState.id
+    };
+    if(this.raceUseAuthoredSkyProbe&&weatherState.id==='clear'&&!automotiveConditions.night){
+      const sky=this.getRaceSkyboxSettings();
+      if(sky.artRef)automotiveConditions.skyProbe=raceAutomotiveSkyProbe(
+        this.getRaceSkyboxRenderCanvas(sky.artRef),sky,bounds,{ground:this.getSelectedRaceSkybox().ground}
+      );
+    }
+    this.syncRaceThreePlayerModel(renderer,dynamicCar,cameraView,stats,automotiveConditions);
+    this.syncRaceThreeAiModels(renderer,cameraYaw,automotiveConditions);
     this.addRaceThreeDoodads(renderer, { stats });
     this.syncRaceThreeDecals(renderer, { stats });
     this.syncRaceTileModels(renderer,camera);
@@ -38986,18 +39006,15 @@ export default class RaceEditor {
     const lightDimensions=this.getRaceCarDimensions(lightCar);
     const brightness=this.playtestSession?this.getRaceLightingBrightness():1;
     const rearLights=carFxDrivingState(this.playtestSession,this.raceInput);
-    updateRaceLighting(renderer,{mountedLamps,brightness,night:Boolean(this.playtestSession&&this.selectedRace?.timeOfDay==='night'),braking:rearLights.braking,reverse:rearLights.reverse,lampPower:this.playtestSession?.mechanical?.effects?.lights??1,highBeams:this.playtestSession?.mechanical?.highBeams===true,auxIntensity:this.playtestSession?.mechanical?.auxLights?(this.playtestSession?.mechanical?.effects?.lights??1):0,visibilityDistanceM:weatherState.visibilityDistanceM,cameraPosition:{x:Number(camera.x||0),y:cameraY,z:Number(camera.z||0)},headlightIntensity:this.raceHeadlightsEnabled()?(this.playtestSession?.mechanical?.effects?.lights??1):0,pose:lightPose?{...lightPose,y:lightPose.elevation*RACE_THREE_ELEVATION_M}:null,dimensions:{width:lightDimensions.widthM,length:lightDimensions.lengthM}});
+    updateRaceLighting(renderer,{mountedLamps,brightness,night:automotiveConditions.night,braking:rearLights.braking,reverse:rearLights.reverse,lampPower:this.playtestSession?.mechanical?.effects?.lights??1,highBeams:this.playtestSession?.mechanical?.highBeams===true,auxIntensity:this.playtestSession?.mechanical?.auxLights?(this.playtestSession?.mechanical?.effects?.lights??1):0,visibilityDistanceM:weatherState.visibilityDistanceM,cameraPosition:{x:Number(camera.x||0),y:cameraY,z:Number(camera.z||0)},headlightIntensity:this.raceHeadlightsEnabled()?(this.playtestSession?.mechanical?.effects?.lights??1):0,pose:lightPose?{...lightPose,y:lightPose.elevation*RACE_THREE_ELEVATION_M}:null,dimensions:{width:lightDimensions.widthM,length:lightDimensions.lengthM}});
     renderer.threeRenderer.clear(true, true, true);
     syncRaceThreeDrivingLine(this, renderer);
     const renderStartMs = this.getNowMs();
     renderer.threeRenderer.render(renderer.scene, renderer.camera);
     const compositeStartMs = this.getNowMs();
-    const previousSmoothing = ctx.imageSmoothingEnabled;
-    ctx.imageSmoothingEnabled = false;
     // Sky brightness is applied by the background pass; world light affects only geometry.
-    ctx.drawImage(renderer.canvas, Number(bounds.x || 0), Number(bounds.y || 0), Number(bounds.w || 1), Number(bounds.h || 1));
+    compositeRace3dWorld(ctx, renderer.canvas, bounds, this.race3dPresentation);
     this.raceHeadlightsRendered=true;
-    ctx.imageSmoothingEnabled = previousSmoothing;
     if (stats) {
       if (compositeStartMs > 0) stats.compositeMs = Math.max(0, this.getNowMs() - compositeStartMs);
       stats.threeTerrainRenderer = 1;
@@ -40441,7 +40458,7 @@ export default class RaceEditor {
       && renderDebug.threeEnabled === true
       && (staticWorldBake?.terrainCells?.length || staticWorldBake?.packedTerrain?.positions?.length)
       && ['road-origin-indexed', 'corridor-first', 'constrained-road-first', 'route-network'].includes(String(staticWorldBake.terrainTopology || 'corridor-first'))
-      && Boolean(this.getRaceThreeWorldRendererForViewport(bounds)?.threeRenderer);
+      && Boolean(this.getRaceThreeWorldRendererForViewport(bounds, undefined, ctx)?.threeRenderer);
     const stableRoadSections = canUseStaticThreeWorld
       ? []
       : this.getRaceStableRoadSections({
