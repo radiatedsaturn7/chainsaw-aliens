@@ -23,7 +23,7 @@ const PRESETS=Object.freeze({
 const validPreset=key=>Object.prototype.hasOwnProperty.call(PRESETS,key);
 const bounded=(v,f,min=0,max=1)=>typeof v==='number'&&Number.isFinite(v)?Math.max(min,Math.min(max,v)):f;
 
-const PROFILES=new Set(['studio','studio-strips','track-clear','track-overcast','track-night']);
+const PROFILES=new Set(['studio','studio-strips','garage-bay','track-clear','track-overcast','track-night']);
 const probes=new Map();
 const smooth=(a,b,v)=>{
  const t=Math.max(0,Math.min(1,(v-a)/(b-a)));
@@ -59,6 +59,21 @@ function stripBoothRadiance(phi,y){
  const side=panel(.10,.80,.12,.215)*3.65+panel(.20,.75,.42,.50)*3.5+panel(-2.94,.49,.22,.33)*2.6;
  const v=horizon+front*.58+rear*.70+side*.37;
  return [v*.975,v*.989,v];
+}
+// Garage art shows a cool open bay behind the car and warmer shop
+// fixtures on the sides. Their angular shapes create reflections without
+// changing material response. Solid-angle mean luminance matches studio.
+function garageBayRadiance(phi,y) {
+ const box=(az,half,lo,hi)=>(1-smooth(half*.85,half,Math.abs(angularDelta(phi,az))))*
+   smooth(lo-.035,lo,y)*(1-smooth(hi,hi+.04,y));
+ const doorway=box(-.9,.68,.02,.65);
+ const overhead=smooth(.4,.55,y)*(1-smooth(.78,.9,y))*Math.max(
+   box(-.05,1.05,.35,.92),box(2.9,.67,.35,.92));
+ const side=box(-2.85,.34,-.08,.27)+box(.85,.26,-.09,.21);
+ const studio=studioRadiance(phi,y);
+ return [.031+doorway*1.15+overhead*1.65+side*.74,
+   .032+doorway*1.46+overhead*1.2+side*.44,
+   .043+doorway*1.95+overhead*.78+side*.21].map((c,i)=>c*1.00838*.76+studio[i]*.24);
 }
 function trackRadiance(phi,x,y,z,profile) {
  // A fixed, world-aligned HDR panorama approximation, not a dynamic probe.
@@ -100,7 +115,7 @@ export function automotiveEnvironment(profile='studio') {
    // atan(z,x)/(2pi)+.5; vertical sample ~= asin(y)/pi+.5.
    const phi=((i+.5)/w-.5)*Math.PI*2, latitude=((j+.5)/h-.5)*Math.PI;
    const y=Math.sin(latitude),flat=Math.cos(latitude),x=Math.cos(phi)*flat,z=Math.sin(phi)*flat;
-   const radiance=profile==='studio'?studioRadiance(phi,y):profile==='studio-strips'?stripBoothRadiance(phi,y):trackRadiance(phi,x,y,z,profile);
+   const radiance=profile==='studio'?studioRadiance(phi,y):profile==='studio-strips'?stripBoothRadiance(phi,y):profile==='garage-bay'?garageBayRadiance(phi,y):trackRadiance(phi,x,y,z,profile);
    const at=(j*w+i)*4;
    for(let k=0;k<3;k++)data[at+k]=half(radiance[k]);
    data[at+3]=half(1);
@@ -137,7 +152,7 @@ function supportsPrefilter(renderer) {
  if(supportByRenderer.has(renderer))return supportByRenderer.get(renderer);
  const get=name=>renderer.extensions?.has(name)===true;
  const supported=renderer.capabilities?.isWebGL2
-   ?get('EXT_color_buffer_float')
+   ?(get('EXT_color_buffer_float')||get('EXT_color_buffer_half_float'))
    :get('EXT_color_buffer_half_float')&&get('OES_texture_half_float')&&get('OES_texture_half_float_linear');
  supportByRenderer.set(renderer,supported);
  return supported;

@@ -7,7 +7,8 @@ import {buildModelObject} from '../../src/model3d/ModelRender.js';
 import {syncRaceModelLamps} from '../../src/model3d/RaceModelVehicle.js';
 import {carFxDrivingState} from '../../src/racing/CarFx.js';
 import {installRaceLighting} from '../../src/racing/RaceLighting.js';
-import {garageModelPixelRatio} from '../../src/menus/GarageModelPreview.js';
+import {automotiveEnvironment,applyAutomotiveEnvironment} from '../../src/model3d/AutomotiveMaterials.js';
+import {garageEnvironmentProfile,garageModelPixelRatio} from '../../src/menus/GarageModelPreview.js';
 
 test('Fit 10 native lamps follow the same inputs as the race light effects',()=>{
  const bytes=readFileSync(new URL('../../src/model3d/wrx/fit10-body.pack',import.meta.url));
@@ -58,4 +59,38 @@ test('garage buffer follows the compositing transform without an unbounded mobil
  assert.equal(garageModelPixelRatio(ctx(2,2),480,300),2);
  assert.equal(garageModelPixelRatio(ctx(3,3),1000,600),1.6);
  assert.equal(garageModelPixelRatio({},480,300),1);
+});
+
+test('only the matched WRX Fit 10 bundle uses the garage bay reflection profile',()=>{
+ const model=part=>JSON.parse(gunzipSync(readFileSync(new URL(
+   `../../src/model3d/wrx/fit10-${part}.pack`,import.meta.url))));
+ const body=model('body'),wheel=model('wheel');
+ assert.equal(garageEnvironmentProfile(body,wheel),'garage-bay');
+ assert.equal(garageEnvironmentProfile(body,null),'studio');
+ assert.equal(garageEnvironmentProfile({name:'other'},wheel),'studio');
+ const sample=name=>{
+   const {data,width,height}=automotiveEnvironment(name).image;
+   let lum=0,weights=0;
+   for(let j=0;j<height;j++)for(let i=0;i<width;i++){
+     const w=Math.cos(Math.PI*((j+.5)/height-.5)),k=(j*width+i)*4;
+     const channel=n=>THREE.DataUtils.fromHalfFloat(data[k+n]);
+     lum+=w*(.2126*channel(0)+.7152*channel(1)+.0722*channel(2));weights+=w;
+   }
+   return lum/weights;
+ };
+ assert(Math.abs(sample('garage-bay')/sample('studio')-1)<.001);
+ assert.notDeepEqual(automotiveEnvironment('garage-bay').image.data,automotiveEnvironment('studio').image.data);
+});
+
+test('WebGL 2 accepts a half-float reflection target without full-float render targets',()=>{
+ const root=new THREE.Group(),mat=new THREE.MeshPhysicalMaterial();
+ mat.userData.automotive={reflection:1};root.userData.automotiveMaterials=[mat];
+ const gl2=names=>({capabilities:{isWebGL2:true},extensions:{has:key=>names.includes(key)}});
+ applyAutomotiveEnvironment(root,'garage-bay',gl2(['EXT_color_buffer_half_float']));
+ assert.equal(mat.envMap,automotiveEnvironment('garage-bay'));
+ assert.equal(mat.envMap.type,THREE.HalfFloatType);
+ applyAutomotiveEnvironment(root,'garage-bay',gl2([]));
+ assert.equal(mat.envMap,null);
+ applyAutomotiveEnvironment(root,'garage-bay',gl2(['EXT_color_buffer_float']));
+ assert.equal(mat.envMap,automotiveEnvironment('garage-bay'));
 });
