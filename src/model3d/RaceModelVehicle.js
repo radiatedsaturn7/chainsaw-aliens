@@ -2,6 +2,7 @@ import * as THREE from '../vendorBridge/three.js';
 import {normalizeModelBinding,modelWheelBindingForAxle,placeOutboardWheelFace} from './ModelBinding.js';
 import {automotiveTrackProfile} from './AutomotiveMaterials.js';
 import {wrxPilotPart} from './WrxVisualPilot.js';
+import {isStudioRosterWheel} from './StudioRosterModels.js';
 import {isWrxStudioDocument} from './WrxBundledModels.js';
 import {syncWrxBrakeHardware} from './WrxBrakeHardware.js';
 import {isNativeModelWheelCar,hasAuthoritativeModelWheelPose} from './ModelWheel.js';
@@ -69,7 +70,7 @@ export function updateRaceModelParts(group,car,session,{
       group.add(replacement);part=replacement;
     }
     // Race wheel IDs name -X left and +X right in the chassis frame.
-    if(wheelId)binding=placeOutboardWheelFace(modelWheelBindingForAxle(binding,wheelId),String(wheelId).toLowerCase().endsWith('l')?-1:1);
+    if(wheelId)binding=placeOutboardWheelFace(modelWheelBindingForAxle(binding,wheelId),String(wheelId).toLowerCase().endsWith('l')?-1:1,isStudioRosterWheel(model,binding.ref));
     const bindingKey=JSON.stringify(binding);
     if(instance.model!==model||instance.raceBindingKey!==bindingKey){
       instance.setModel(model,binding,{vehicleVisual:true});

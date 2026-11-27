@@ -4,8 +4,8 @@ import {createGenome as createPanel,normalizeGenome as normalizePanel,buildFende
 export const VERSION=5;
 const F=(label,min,max,step)=>({label,min,max,step});
 export const GLOBAL={
- wheelbase:F('Wheelbase (m)',2.15,3.35,.005),width:F('Body width (m)',1.52,2.24,.005),height:F('Roof height (m)',1.08,1.91,.005),
- front:F('Front overhang (m)',.68,1.16,.005),rear:F('Rear overhang (m)',.64,1.22,.005),track:F('Track / body width',.73,.89,.005),
+ wheelbase:F('Wheelbase (m)',2.15,3.35,.005),width:F('Body width (m)',1.45,2.24,.005),height:F('Roof height (m)',1.08,1.91,.005),
+ front:F('Front overhang (m)',.58,1.16,.005),rear:F('Rear overhang (m)',.47,1.22,.005),track:F('Track / body width',.73,.89,.005),
  belt:F('Beltline height',.49,.70,.005),box:F('Body boxiness',0,1,.01),stance:F('Ground clearance (m)',.095,.36,.005),
  cabin:F('Cabin position',-.10,.10,.005),cabinLength:F('Cabin length',.39,.62,.005),cabinWidth:F('Cabin width',.60,.90,.005),
  hood:F('Hood length bias',-.13,.13,.005),trunk:F('Trunk length bias',-.13,.13,.005),crown:F('Roof curvature',0,1,.01),

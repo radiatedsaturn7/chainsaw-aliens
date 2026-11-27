@@ -1,3 +1,4 @@
+import {studioRoster} from '../../model3d/studio-roster/index.mjs';
 import * as phenotype from './genome.mjs';
 import {guideModes,createFasciaOverlay} from './fasciaUi.mjs';
 import {featureControls,featureCommands,proposeFeatureEdit,dragFeature} from './features.mjs';
@@ -693,6 +694,30 @@ $('zoom').oninput=e=>viewport?.setZoom(Number(e.target.value));
 $('menu').onclick=()=>menu($('menu-sheet').hidden);$('menu-close').onclick=()=>menu(false);
 $('save').onclick=()=>{download(work.save(),work.get().name+' design.json');menu(false);announce('Design saved.');};
 $('load').onclick=()=>$('design-file').click();
+const studyToggle=$('roster-study-toggle'),studyPanel=$('roster-study'),studySelect=$('roster-study-id'),studyLoad=$('roster-study-load');
+const studyById=new Map(studioRoster.map(row=>[row.id,row]));
+for(const study of studioRoster)studySelect.add(element('option',{value:study.id,textContent:study.label+' 3D'}));
+const showStudy=()=>{$('roster-study-detail').textContent=studyById.get(studySelect.value)?.capability??'';};
+studyToggle.hidden=!studioRoster.length;
+studyToggle.onclick=()=>{studyPanel.hidden=!studyPanel.hidden;studyToggle.setAttribute('aria-expanded',String(!studyPanel.hidden));if(!studyPanel.hidden)showStudy();};
+studySelect.onchange=showStudy;
+async function loadRosterStudy(id){
+ const study=studyById.get(id);
+ if(!study||wizardPreview)throw Error('Select a roster study after finishing the current edit.');
+ const before=work.save();
+ const response=await fetch(new URL('./examples/'+study.id+'.json',import.meta.url));
+ if(!response.ok)throw Error('Could not load the roster study.');
+ const text=await response.text();
+ if(wizardPreview||work.save()!==before)throw Error('The current design changed; reopen the study to continue.');
+ work.load(text);inspector();syncPanel();schedule();menu(false);
+ announce(study.label+' opened. Undo restores your previous design.');
+ return work.get();
+}
+studyLoad.onclick=async()=>{
+ studyLoad.disabled=true;
+ try{await loadRosterStudy(studySelect.value);}catch(e){announce(e.message,true);}
+ finally{studyLoad.disabled=false;}
+};
 $('design-file').onchange=async e=>{
  const f=e.target.files[0];if(!f)return;e.target.value='';
  try{if(f.size>20*1024*1024)throw Error('Choose a design genome or game vehicle export under 20 MB.');
@@ -737,7 +762,7 @@ try{const s=localStorage.getItem(draftKey);if(s){work.replace(JSON.parse(s),{rec
 window.vehicleDesigner={
  disposePreview,getGenome:work.get,applyGenome(g,{record=false}={}){work.replace(g,{record});inspector();syncPanel();schedule();},
  restoreDraft(g){if(!hasDraft&&g){work.replace(g,{record:false});inspector();syncPanel();regenerate();}},
- createGenome:createVehicle,edit(...args){const applied=edit(...args);if(applied)inspector();return applied;},setTab,selectComponent,openSurface:openAdvanced,closeSurface:closeAdvanced,setView,
+ loadRosterStudy,createGenome:createVehicle,edit(...args){const applied=edit(...args);if(applied)inspector();return applied;},setTab,selectComponent,openSurface:openAdvanced,closeSurface:closeAdvanced,setView,
  setMaterialMode:m=>viewport?.setMode(m),setLighting:v=>viewport?.setLighting(v),setDisplay:d=>viewport?.setDisplay(d),
  undo(){afterUndo();return work.get();},redo(){afterUndo(true);return work.get();},
  duplicate(){work.duplicate();inspector();schedule();return work.get();},reset(){work.reset();inspector();syncPanel();schedule();return work.get();},

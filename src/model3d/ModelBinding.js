@@ -26,8 +26,9 @@ export function modelWheelBindingForAxle(binding, wheelID){
 // Turn JUST the model at the mirrored wheel mounts, not the spin, tyre
 // suspension or separately fitted stationary caliper. A proper rotation
 // leaves lettering and material normals readable from outside both sides.
-export function placeOutboardWheelFace(binding, side){
-  if(binding?.ref!=='Field-Forgetmenot-Wheel'||(binding.outboardFace!=='+X'&&wrxPilotPart(binding.ref)!=='wheel')||!(side<0))return binding;
+export function placeOutboardWheelFace(binding, side, studioRosterWheel=false){
+  const wrxWheel=binding?.ref==='Field-Forgetmenot-Wheel'&&(binding.outboardFace==='+X'||wrxPilotPart(binding.ref)==='wheel');
+  if(!(side<0)||!(studioRosterWheel||wrxWheel))return binding;
   const [x,y,z]=binding.rotation||[0,0,0];
   // Authored Three XYZ Euler: Rx(x) Ry(y) Rz(z) Ry(pi)
   // = Rx(x) Ry(y+pi) Rz(-z).

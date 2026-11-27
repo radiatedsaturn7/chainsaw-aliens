@@ -1,7 +1,9 @@
 import {applyAutomotiveEnvironment,automotivePilotEnabled,automotiveFleetEnabled} from './AutomotiveMaterials.js';
 import {wrxBundledModelUrl,loadWrxBundledModel,isWrxStudioDocument} from './WrxBundledModels.js';
+import {studioRosterModelUrl,loadStudioRosterModel} from './StudioRosterModels.js';
 import {wrxPilotPart} from './WrxVisualPilot.js';
 import {normalizeModelBinding} from './ModelBinding.js';
+const bundledModelUrl=ref=>wrxBundledModelUrl(ref)??studioRosterModelUrl(ref);
 export {normalizeModelBinding} from './ModelBinding.js';
 import * as THREE from '../vendorBridge/three.js';
 import {validateModelDocument} from './ModelDocument.js';
@@ -31,7 +33,7 @@ export class ModelAssetLibrary {
   get(ref){
     if(!ref)return null;
     if(this.temporary.has(ref))return this.temporary.get(ref);
-    if(this.bundled&&wrxBundledModelUrl(ref)&&!this.errors.has(ref)){
+    if(this.bundled&&bundledModelUrl(ref)&&!this.errors.has(ref)){
       if(this.entries.has(ref))return this.entries.get(ref).model;
       if(!this.pending.has(ref))void this.prepare(ref).catch(()=>{});
       return null;
@@ -48,7 +50,7 @@ export class ModelAssetLibrary {
     if(this.pending.has(ref))return this.pending.get(ref);
     const request=Promise.resolve().then(async()=>{
       let visual=null;
-      if(this.bundled&&wrxBundledModelUrl(ref)){
+      if(this.bundled&&bundledModelUrl(ref)){
         try{
           visual=await this.bundled(ref);
           if(visual)return this.adopt(ref,visual);
@@ -61,7 +63,7 @@ export class ModelAssetLibrary {
     this.pending.set(ref,request);return request;
   }
 }
-export const modelAssets=new ModelAssetLibrary({bundled:loadWrxBundledModel});
+export const modelAssets=new ModelAssetLibrary({bundled:ref=>wrxBundledModelUrl(ref)?loadWrxBundledModel(ref):loadStudioRosterModel(ref)});
 
 // Local axes: +Y up, +Z forward; wheel axle along X. The placement's parent
 // owns world position, car steering or actor facing. Binding rotation is radians.
