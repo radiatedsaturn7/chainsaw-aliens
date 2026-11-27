@@ -53,6 +53,9 @@ export const FASCIA_FIELDS={
  rearTrayWidth:{...F('Recessed rear diffuser width',.58,.94,.01),group:'intake'},
  rearTrayHeight:{...F('Recessed rear diffuser upper edge',.52,.74,.005),group:'intake'},
  tailBridge:{...F('Central rear running-light bridge',0,1,.05),group:'intake'},
+ rearSculptDepth:{...F('Swept rear bridge relief (m)',0,.052,.002),group:'intake'},
+ rearSculptSweep:{...F('Swept rear bridge rise at corners',.08,.25,.005),group:'intake'},
+ rearSculptWidth:{...F('Swept rear bridge thickness',.026,.095,.005),group:'intake'},
  hoodNoseDrop:F('Hood leading edge drop (m)',0,.085,.001),
  hoodNoseShoulder:unit('Preserve front fender crowns'),
  deckSurfaceBlend:unit('Smooth trunk face'),deckSurfaceCrown:F('Trunk face crown (m)',0,.035,.001),
@@ -91,7 +94,7 @@ function baseFascia(family,front,legacy){
  return {profile:front?legacy.profile:family==='coupe'?'square':family==='fastback'?'aero':'round',intakes:front?'single':family==='fastback'?'split':'closed',
   ...initial(FASCIA_FIELDS,front?{...legacy,insertStep:0,taper:.26,center:.82,wrap:.68,rake:.10,recess:.08,crease:.16,chin:0,boxiness:family==='coupe'?.78:.34,pointedness:0}:
   {insertStep:0,sweep:.46,taper:.37,drop:.20,rollover:.50,lowerRoll:.60,center:.78,wrap:.64,rake:.16,recess:.05,crease:.14,chin:-.12,boxiness:family==='coupe'?.77:.41,pointedness:0}),
-  insertBand:0,fogBypass:0,lowerDuctCap:0,lowerInsert:0,rearTrayDepth:0,rearTrayWidth:.84,rearTrayHeight:.58,tailBridge:0,insertWidth:.82,insertTop:.12,insertBottom:.78,insertSweep:.08,hoodNoseDrop:0,hoodNoseShoulder:.72,lowerIntakeRise:0,lowerIntakeDepth:0,fogCoverStamp:0,deckPanel:0,deckSurfaceBlend:0,deckSurfaceCrown:.012,deckLowerRoll:0,deckRailCurve:0,bumperFaceBlend:0,bumperFaceCrown:.018,valanceRise:0,upperEndSweep:0,bumperMidReach:0,quarterWaist:0,quarterBlend:0,lampShoulderRoll:0,cornerTuck:0,paintedPocket:0,terminalTuck:0,plateOpeningStretch:0,plateMount:0,platePosition:.615,bumperBeltRise:0,bumperBeltHeight:.44,bumperBeltSweep:0,bumperStation:.43,upperFasciaLift:0,outerFasciaWidth:0,grilleShape:'trapezoid',intakeShape:front?'angular':'trapezoid',curves:{plan:[0,0,0,0],vertical:[0,0,0,0],transverse:[0,0,0,0]}};
+  insertBand:0,fogBypass:0,lowerDuctCap:0,lowerInsert:0,rearTrayDepth:0,rearTrayWidth:.84,rearTrayHeight:.58,tailBridge:0,rearSculptDepth:0,rearSculptSweep:.17,rearSculptWidth:.055,insertWidth:.82,insertTop:.12,insertBottom:.78,insertSweep:.08,hoodNoseDrop:0,hoodNoseShoulder:.72,lowerIntakeRise:0,lowerIntakeDepth:0,fogCoverStamp:0,deckPanel:0,deckSurfaceBlend:0,deckSurfaceCrown:.012,deckLowerRoll:0,deckRailCurve:0,bumperFaceBlend:0,bumperFaceCrown:.018,valanceRise:0,upperEndSweep:0,bumperMidReach:0,quarterWaist:0,quarterBlend:0,lampShoulderRoll:0,cornerTuck:0,paintedPocket:0,terminalTuck:0,plateOpeningStretch:0,plateMount:0,platePosition:.615,bumperBeltRise:0,bumperBeltHeight:.44,bumperBeltSweep:0,bumperStation:.43,upperFasciaLift:0,outerFasciaWidth:0,grilleShape:'trapezoid',intakeShape:front?'angular':'trapezoid',curves:{plan:[0,0,0,0],vertical:[0,0,0,0],transverse:[0,0,0,0]}};
 }
 function baseOptic(family,front){return {
  housing:front?(family==='coupe'?'round-rect':family==='fastback'?'oval':'swept'):(family==='fastback'?'wrap':'trapezoid'),

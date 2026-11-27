@@ -2,7 +2,7 @@ import {sideDuctMask,cowlDuctMask} from './sideDuct.mjs';
 import * as T from '../../vendorBridge/three.js';
 import {createEndSurface,fasciaMesh} from './fascia.mjs';
 import {emitFlushHoodLids} from './hoodLids.mjs';
-import {makeOpenings,emitOpenings,exhaustMountOpenings} from './optics.mjs';
+import {makeOpenings,emitOpenings,exhaustMountOpenings,rearSculptOpening} from './optics.mjs';
 import {createMasterSide,buildPanelGap} from './seams.mjs';
 import {buildCabin} from './cabin9.mjs';
 import {buildStructure} from './structure9.mjs';
@@ -271,6 +271,9 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   if(!front){
    const pockets=exhaustMountOpenings(g,surf.face,openings);
    openings.push(...pockets);
+   const sculpture=rearSculptOpening(g,openings);
+   if(sculpture)openings.push(sculpture);
+   else if(g.fascia.rear.rearSculptDepth)warnings.push('Swept rear bridge cannot clear existing fascia openings.');
    if(g.construction.exhaust.some(q=>q.fasciaHeight&&!pockets.some(p=>p.opt.outlet===q.id)))warnings.push('Raised exhaust could not fit the fascia; floor mount retained.');
   }
   const wrapped=openings.some(o=>o.kind==='lamp'&&o.opt.sideWrap>.0001);
@@ -300,6 +303,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     const reach=Math.max(0,(u-cx)*side)/(far||1);
     return [toAtlas(u)+side*travel*reach*reach,v];
    });
+   if(o.kind==='sculpted-trim')for(const key of ['top','bottom'])o.opt[key]=o.opt[key].map(([u,v])=>[toAtlas(u),v]);
    o.center=[toAtlas(cx),cy];if(o.width)o.width*=(1-2*band);
   }
   if(!front)for(const o of openings.filter(o=>o.kind==='exhaust-pocket')){

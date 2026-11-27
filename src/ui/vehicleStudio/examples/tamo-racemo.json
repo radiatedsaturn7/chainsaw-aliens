@@ -388,7 +388,10 @@
           0,
           0
         ]
-      }
+      },
+      "rearSculptDepth": 0.039,
+      "rearSculptSweep": 0.235,
+      "rearSculptWidth": 0.086
     }
   },
   "optics": {
@@ -802,7 +805,7 @@
     "barrel": "#303238",
     "caliper": "#8e292e",
     "underbody": "#292c31",
-    "heatShield": "#575957",
+    "heatShield": "#7a7c80",
     "leather": "#323642",
     "cloth": "#424654",
     "stitch": "#686b71",

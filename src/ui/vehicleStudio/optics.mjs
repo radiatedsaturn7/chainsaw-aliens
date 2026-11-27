@@ -93,6 +93,31 @@ export function exhaustMountOpenings(g,face,existing){
  }
  return pockets;
 }
+// A real recess in the shell with a separate sculpted bridge inside it.
+// Clearance is fitted against existing optical/plate/exhaust openings.
+export function rearSculptOpening(g,openings){
+ const f=g.fascia.rear;
+ if(!f.rearSculptDepth)return null;
+ const limits=openings.map(o=>{
+  const x=o.outline.map(p=>p[0]),y=o.outline.map(p=>p[1]);
+  return {left:Math.min(...x)-.018,right:Math.max(...x)+.018,top:Math.min(...y),bottom:Math.max(...y)};
+ });
+ const x=[.058,.091,.145,.21,.292,.37,.445,.5,.555,.63,.708,.79,.855,.909,.942];
+ const top=[],bottom=[];
+ for(const u of x){
+  const q=Math.abs(2*u-1),rise=f.rearSculptSweep;
+  let v=.47-rise*(q**1.63)+.018*Math.exp(-((q-.37)**2)/.026);
+  for(const l of limits)if(u>=l.left&&u<=l.right&&v<l.bottom+.085&&v>l.top-.060)v=Math.max(v,l.bottom+.023);
+  const thickness=f.rearSculptWidth*mix(.68,1,Math.sin(Math.PI*(u-.058)/.884)**.55);
+  top.push([u,v]);bottom.push([u,v+thickness]);
+ }
+ for(let i=1;i<x.length;i++){
+  const lo=Math.min(top[i][1],top[i-1][1]),hi=Math.max(bottom[i][1],bottom[i-1][1]);
+  if(hi>.795||limits.some(l=>x[i]>l.left&&x[i-1]<l.right&&lo<l.bottom+.009&&hi>l.top-.009))return null;
+ }
+ return {id:'swept-rear-bridge',kind:'sculpted-trim',component:'rearBumper',
+  outline:[...top,...bottom.slice().reverse()],center:[.5,.495],opt:{depth:f.rearSculptDepth,top,bottom}};
+}
 // Solve the projected XY circle on the full curved fascia. UV circles
 // alone become tall slots where the corner compresses the horizontal axis.
 function projectRoundLamp(opening,face,diameter,lift){
@@ -369,6 +394,36 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
    if(!batches.has(key))batches.set(key,{component:a.component,material:m,geos:[]});
    batches.get(key).geos.push(q);
   };
+  if(kind==='sculpted-trim'){
+   const {top,bottom,depth}=opt;
+   // Loft strips independently over the exact same rim stations used to
+   // cut the face, so a thin deep bridge cannot float over a flat bumper.
+   const uvAt=(i,t)=>top[i].map((v,k)=>mix(v,bottom[i][k],t));
+   const section=(i,t,z)=>pt(...uvAt(i,t),z);
+   const strip=(ma,a,b,za,zb)=>{
+    const geos=[];
+    for(let i=0;i<top.length-1;i++){
+     const [A,B,C,D]=[section(i,a,za),section(i+1,a,za),section(i+1,b,zb),section(i,b,zb)];
+     const center={pos:A.pos.map((x,k)=>(x+B.pos[k]+C.pos[k]+D.pos[k])*.25),
+      uv:A.uv.map((x,k)=>(x+B.uv[k]+C.uv[k]+D.uv[k])*.25),out:A.out};
+     geos.push(makeMesh([[A,B,C,D]],sign,{disk:center}));
+    }
+    const key='rearBumper '+ma;
+    if(!batches.has(key))batches.set(key,{component:'rearBumper',material:ma,geos:[]});
+    batches.get(key).geos.push(...geos.filter(Boolean));
+   };
+   strip('seamDark',0,.19,0,.020);
+   strip('heatShield',.19,.53,.020,-depth*.72);
+   strip('heatShield',.53,.84,-depth*.72,-depth*.20);
+   strip('trim',.84,1,-depth*.20,0);
+   // End caps cover the small open sections at both tips.
+   for(const i of [0,top.length-1]){
+    const wall=[section(i,0,0),section(i,.19,.020),section(i,.53,-depth*.72),
+     section(i,.84,-depth*.20),section(i,1,0)];
+    const c=section(i,.50,.009);putGeo('trim',[wall],c);
+   }
+   continue;
+  }
   if(kind==='exhaust-pocket'){
    putGeo('paint',[ring(1,0),ring(.955,.006)]);
    putGeo('heatShield',[ring(.955,.006),ring(.88,.018)]);
