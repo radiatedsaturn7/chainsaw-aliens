@@ -1,4 +1,4 @@
-import {BODY_FIELDS,SEAM_FIELDS,FASCIA_FIELDS,FASCIA_PROFILES,OPTIC_FIELDS,OPTIC_HOUSINGS,OPTIC_LAYOUTS,COMPONENTS,COMPONENT_FIELDS,GLOBAL,DIMENSIONS,normalizeVehicle,updateDesign,math} from './genome.mjs';
+import {getSideSettings,STYLE_FIELDS,STYLE_KINDS,BODY_FIELDS,SEAM_FIELDS,FASCIA_FIELDS,FASCIA_PROFILES,OPTIC_FIELDS,OPTIC_HOUSINGS,OPTIC_LAYOUTS,COMPONENTS,COMPONENT_FIELDS,GLOBAL,DIMENSIONS,normalizeVehicle,updateDesign,math} from './genome.mjs';
 const {clamp,mix}=math;
 const options=vals=>Array.isArray(vals)?vals.map(k=>[k,k]):Object.entries(vals);
 const choice=(label,vals)=>({label,type:'select',options:options(vals)});
@@ -32,6 +32,13 @@ export function featureControls(genome,feature,level='basic'){
   entries=[...dims('crown','cabinWidth'),...body('roofEdge')];
   if(more)entries.push(...field('components','glass','depth','shape'),...field('components','pillars','size','depth','shape'));
   break;
+ case 'style-curve':{
+  const row=g.construction.features.find(r=>r.id===k);if(!row)break;
+  const d=p=>c('styleFeature',k,p,STYLE_FIELDS[p]);
+  entries=[c('styleFeature',k,'kind',choice('Styling type',STYLE_KINDS)),d('height'),d('depth'),d('width')];
+  if(more)entries.push(...['sharpness','falloff','start','end'].map(d));
+  break;
+ }
  case 'crease':
   entries=body('creaseHeight','creaseStrength');
   if(more)entries.push(...fascia(end,'crease','shoulder'),...field('components','doors','shape','depth'));
@@ -58,8 +65,12 @@ export function featureControls(genome,feature,level='basic'){
   if(name==='handles')entries.push(...body('handleRecess'));
  }
  }
+ const opticGroup=end==='front'?'headlights':'taillights';
+ if(f.type==='lamp'&&['L','R'].includes(f.side)&&g.construction.symmetry[opticGroup]==='independent')entries=entries.map(x=>
+  x.domain==='optics'?{...x,domain:'sideOptic',key:f.side+':'+end}:x);
  return entries.map(x=>{
-  const raw=x.property===undefined?g[x.domain]?.[x.key]:g[x.domain]?.[x.key]?.[x.property];
+  const raw=x.domain==='styleFeature'?g.construction.features.find(r=>r.id===x.key)?.[x.property]:
+    x.domain==='sideOptic'?getSideSettings(g,opticGroup,f.side,g.optics[end])[x.property]:x.property===undefined?g[x.domain]?.[x.key]:g[x.domain]?.[x.key]?.[x.property];
   if(raw===undefined)return null;
   if(x.domain==='seams'&&['gap','flush','radius','thickness','depth'].includes(x.property)){
    // Bounds/values stay in meters for the API and sliders, UI can display mm.
@@ -76,7 +87,7 @@ export function featureCommands(f){
  const type=f?.type;if(!type)return [];
  const seq=type==='seam'?['blend','gap','align','tangents','curvature','normalize','keep','round']:
  type==='lamp'||['headlights','tails'].includes(f.component)?['aggressive','round','flatten']:
- type==='crease'?['sharp','flatten','blend']:type==='arch'||['frontFenders','rearFenders'].includes(f.component)?['widen','round','flatten']:
+ ['crease','style-curve'].includes(type)?['sharp','flatten','blend']:type==='arch'||['frontFenders','rearFenders'].includes(f.component)?['widen','round','flatten']:
  ['roof','glass-edge'].includes(type)||['roof','glass'].includes(f.component)?['round','flatten']:
  ['silhouette','opening'].includes(type)||['frontBumper','rearBumper','grille','fogs'].includes(f.component)?['round','flatten','box']:
  type==='component'&&COMPONENTS[f.component]?['round','flatten']:[];
@@ -86,7 +97,8 @@ export function proposeFeatureEdit(genome,f,command,intensity=.65){
  if(!featureCommands(f).some(x=>x.id===command))throw Error('Operation unavailable for this feature.');
  let g=normalizeVehicle(genome);const changes=[], t=clamp(Number.isFinite(intensity)?intensity:.65);
  const set=(domain,key,property,target,label)=>{
-  const current=property===undefined?g[domain][key]:g[domain][key][property];
+  const current=domain==='styleFeature'?g.construction.features.find(x=>x.id===key)?.[property]:
+   domain==='sideOptic'?getSideSettings(g,key.endsWith('front')?'headlights':'taillights',key[0],g.optics[key.slice(2)])[property]:property===undefined?g[domain][key]:g[domain][key][property];
   const val=typeof target==='number'?(t===1?target:mix(current,target,t)):t>0?target:current;
   if(val===current)return;
   g=updateDesign(g,domain,key,val,property);changes.push({domain,key,property,from:current,to:val,label});
@@ -94,7 +106,8 @@ export function proposeFeatureEdit(genome,f,command,intensity=.65){
  const end=featureEnd(f),seam=f.key??f.id;
  const ss=(k,v)=>set('seams',seam,k,v,SEAM_FIELDS[k].label);
  const ff=(k,v)=>set('fascia',end,k,v,FASCIA_FIELDS[k]?.label??'Fascia shape');
- const oo=(k,v)=>set('optics',end,k,v,OPTIC_FIELDS[k]?.label??'Housing shape');
+ const group=end==='front'?'headlights':'taillights',independent=f.type==='lamp'&&['L','R'].includes(f.side)&&g.construction.symmetry[group]==='independent';
+ const oo=(k,v)=>set(independent?'sideOptic':'optics',independent?f.side+':'+end:end,k,v,OPTIC_FIELDS[k]?.label??'Housing shape');
  const bb=(k,v)=>set('body',k,undefined,v,BODY_FIELDS[k].label);
  const dim=(k,v)=>set('dimensions',k,undefined,v,GLOBAL[k].label);
  if(f.type==='seam'){
@@ -108,6 +121,9 @@ export function proposeFeatureEdit(genome,f,command,intensity=.65){
   if(command==='aggressive'){oo('housing','angular');oo('sweep',.92);oo('height',.30);oo('recess',.78);}
   if(command==='round'){oo('corner',.90);oo('housing','round-rect');}
   if(command==='flatten'){oo('convexity',.12);oo('protrusion',0);}
+ }else if(f.type==='style-curve'){
+  if(command==='flatten')set('styleFeature',seam,'depth',.001,'Feature depth');
+  else set('styleFeature',seam,'sharpness',command==='sharp'?.96:.14,'Feature sharpness');
  }else if(f.type==='crease'){
   bb('creaseStrength',command==='sharp'?.93:command==='blend'?.37:.10);
  }else if(f.type==='arch'||['frontFenders','rearFenders'].includes(f.component)){
@@ -129,6 +145,17 @@ export function dragFeature(input,feature,deltaWorld){
  const axis=h.axis,delta=Array.isArray(deltaWorld)?(Array.isArray(axis)?axis.reduce((s,v,i)=>s+v*deltaWorld[i],0):deltaWorld[axis]):deltaWorld;
  if(!Number.isFinite(delta))return g;
  const f=feature, k=f.key??f.id,end=featureEnd(f);
+ if(f.type==='style-curve'){
+  const row=g.construction.features.find(r=>r.id===k);
+  return row?updateDesign(g,'styleFeature',k,clamp(row.height+delta/h.scale,STYLE_FIELDS.height.min,STYLE_FIELDS.height.max),'height'):g;
+ }
+ if(f.type==='lamp'&&['L','R'].includes(f.side)){
+  const group=end==='front'?'headlights':'taillights';
+  if(g.construction.symmetry[group]==='independent'){
+   const prev=getSideSettings(g,group,f.side,g.optics[end]).width;
+   return updateDesign(g,'sideOptic',f.side+':'+end,clamp(prev+delta/h.scale),'width');
+  }
+ }
  const rule=f.type==='seam'?['seams',k,'offset',SEAM_FIELDS.offset]:
  f.type==='lamp'?['optics',end,'width',OPTIC_FIELDS.width]:
  ['roof','glass-edge'].includes(f.type)?['dimensions','crown',undefined,GLOBAL.crown]:

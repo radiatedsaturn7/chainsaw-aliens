@@ -56,7 +56,7 @@ test('dragging seams, headlight perimeter, roof rail and crease changes owned fi
 test('LOD uses thinner tessellation without changing wheel or light mounts, and v2 fascia migrates',()=>{
  const k=createFasciaDemo('hyper'),v2={...k,generatorVersion:2};delete v2.seams;delete v2.body;
  const g=loadVehicle(JSON.stringify(v2));
- assert.equal(g.generatorVersion,3);assert.deepEqual(g.fascia,k.fascia);
+ assert.equal(g.generatorVersion,4);assert.deepEqual(g.fascia,k.fascia);
  assert.deepEqual(loadVehicle(serializeVehicle(g)),g);
  build(g,hi=>build(g,low=>{
   assert.deepEqual(hi.diagnostics.issues,[]);assert.deepEqual(low.diagnostics.issues,[]);

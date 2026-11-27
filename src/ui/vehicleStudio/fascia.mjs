@@ -83,7 +83,7 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
   const u=sign>0?1:0,roof=upperPanel(z,u),b=gateBlend(z),r=smooth(v);
   const upperOld=sideAt(z,0,sign);
   return [mix(roof[0],raw[0]*(1-(.022+.15*f.taper)*b*.43),r),
-   raw[1]+(roof[1]-upperOld[1])*(1-r),mix(roof[2],raw[2],r)];
+   raw[1]+(roof[1]-upperOld[1])*(1-r),mix(roof[2],raw[2],smooth(clamp(v/.34)))];
  }
  function bumperSide(t,v,sign){
   const u=sign>0?1:0, edge=face(u,v), up=bridge(u,t);

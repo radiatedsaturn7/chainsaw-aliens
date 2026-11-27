@@ -78,6 +78,11 @@ export function updateRaceModelParts(group,car,session,{library=modelAssets,auto
       const canonical=isNativeModelWheelCar(car)&&hasAuthoritativeModelWheelPose(pose);
       part.userData.spin.rotation.x=canonical?0:Number(pose?.spinAngleRad)||0;
       syncWrxBrakeHardware(part,car,wheelId,canonical?pose.spinAngleRad:0);
+      const studioCaliper=instance.root.children.find(mesh=>mesh.material?.name?.startsWith('[studio9:static-caliper]'));
+      if(studioCaliper){
+        const spin=Number(pose?.spinAngleRad)||0;
+        studioCaliper.rotation.x=spin*(wheelId.endsWith('l')?1:-1);
+      }
     }
     return part;
   };
@@ -149,6 +154,16 @@ function rearLensMask(redState,reversing){
  map.colorSpace=THREE.SRGBColorSpace;map.magFilter=map.minFilter=THREE.LinearFilter;map.needsUpdate=true;
  wrxRearMasks.set(key,map);return map;
 }
+const studioLightColors={head:0xf5e9da,brake:0xff171a,running:0xde161b,reverse:0xebf2ff,'signal-left':0xffaa34,'signal-right':0xffaa34};
+export function studioLampLevels(session,{braking=false,reversing=false,enabled=true,defaultHeadlights=false}={}){
+ const state=session?.mechanical??{},head=Boolean(state.headlights??defaultHeadlights);
+ const power=enabled?Math.max(0,Math.min(1,state.effects?.lights??1)):0;
+ const signal=state.turnSignal??session?.turnSignal,blink=Math.floor((Number(session?.elapsedMs)||0)/380)%2===0;
+ return {head:head*power*(state.highBeams?2.1:1.35),brake:Number(braking)*power*2.7,
+  running:head*power*.75,reverse:Number(reversing)*power*1.65,
+  'signal-left':(blink&&(state.hazards||signal==='hazard'||signal==='left'))?power*1.8:0,
+  'signal-right':(blink&&(state.hazards||signal==='hazard'||signal==='right'))?power*1.8:0};
+}
 export function syncRaceModelLamps(part,session,{braking=false,reversing=false,enabled=true,defaultHeadlights=false}={}){
  const instance=part?.userData?.modelInstance;
  const root=instance?.root;
@@ -157,6 +172,12 @@ export function syncRaceModelLamps(part,session,{braking=false,reversing=false,e
  if(instance.raceLampRoot!==root){
   for(const lamp of lights?.values()||[]){instance.object.remove(lamp);lamp.geometry.dispose();lamp.material.dispose();}
   lights=new Map();
+  instance.raceStudioLights=root.children.flatMap(mesh=>{
+   const mat=mesh.material,role=/^\[studio9:([a-z-]+)\]/.exec(mat?.name??'')?.[1];
+   if(!role||!mat.emissive||studioLightColors[role]===undefined)return [];
+   mat.emissive.set(studioLightColors[role]);mat.emissiveIntensity=0;return [{role,mat}];
+  });
+  const studioFront=instance.raceStudioLights.some(x=>x.role==='head'),studioRear=instance.raceStudioLights.some(x=>x.role==='brake');
   const frames=mountedLampLocalFrames(instance.model);
   // Use the original lens as the glow surface only when the artist has explicitly
   // marked a single rear light-bar material. Standard lamp meshes remain the default.
@@ -193,7 +214,7 @@ export function syncRaceModelLamps(part,session,{braking=false,reversing=false,e
   if(rearBar)rearBar.emissive.set(0xa61117);
   for(const [name,pose] of frames){
     const isTail=name.startsWith('Tail');
-    if(isTail?rearLens:frontLens)continue;
+    if(isTail?(rearLens||studioRear):(frontLens||studioFront))continue;
     const lamp=new THREE.Mesh(new THREE.SphereGeometry(1,10,6),
       new THREE.MeshStandardMaterial({color:isTail?0xa01719:0xfff1d2,
        emissive:isTail?0xf21821:0xffe7bd,emissiveIntensity:0}));
@@ -210,6 +231,11 @@ export function syncRaceModelLamps(part,session,{braking=false,reversing=false,e
   instance.raceMountedLamps=lights;instance.raceLampRoot=root;
  }
  const headlights=Boolean(session?.mechanical?.headlights??defaultHeadlights);
+ const studio=instance.raceStudioLights??[];
+ if(studio.length){
+  const levels=studioLampLevels(session,{braking,reversing,enabled,defaultHeadlights});
+  for(const {mat,role} of studio)mat.emissiveIntensity=levels[role];
+ }
  const rearBar=instance.raceRearBarMaterial;
  const frontLens=instance.raceFrontReflectorMaterial;
  if(frontLens){
@@ -231,7 +257,7 @@ export function syncRaceModelLamps(part,session,{braking=false,reversing=false,e
   lamp.visible=enabled&&(headlights||tail&&braking)&&!(tail&&rearBar);
   lamp.material.emissiveIntensity=tail?(braking?3.1:1.05):(session?.mechanical?.highBeams?2.9:1.95);
  }
- return lights.size>0||Boolean(frontLens)||Boolean(rearLens);
+ return lights.size>0||Boolean(frontLens)||Boolean(rearLens)||studio.length>0;
 }
 
 // Build the same chassis-local placement used by the outer Three car, from

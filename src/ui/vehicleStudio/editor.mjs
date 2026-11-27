@@ -2,6 +2,7 @@ import * as phenotype from './genome.mjs';
 import {guideModes,createFasciaOverlay} from './fasciaUi.mjs';
 import {featureControls,featureCommands,proposeFeatureEdit,dragFeature} from './features.mjs';
 import {createContextualOverlay} from './contextualOverlay.mjs';
+import {CONSTRUCTION_PANELS,renderConstruction} from './constructionUi.mjs';
 import {FAMILIES,GLOBAL,DIMENSIONS,TOTAL_LENGTH,COMPONENTS,COMPONENT_FIELDS,POSITIONABLE,PATCH_PANELS,PATCH_RANGE,createDesignSession,createVehicle} from './genome.mjs';
 import {generateVehicle,disposeDesign} from './geometry.mjs';
 import {exportVehicle} from './export.mjs';
@@ -22,6 +23,7 @@ let fasciaOverlay=null,bodyOverlay=null;
 const allowedLevels=['basic','advanced','expert'];
 let editLevel='basic',featureId='',featureDirect=false,featureGesture=null,wizardPreview=null;
 let featureOverlayMode='off';
+const construct={panel:'cabin',id:null,end:'front',side:'L'};
 const wizard={command:'',intensity:.65};
 const featureItems=()=>Array.isArray(geo?.features)?geo.features:[];
 const activeFeature=()=>featureItems().find(f=>f.id===featureId)??null;
@@ -287,6 +289,7 @@ function fasciaInspector(root,g,end){
    partFields(group(root,'Fog lights',false),'fogs',['size','depth']);
   }else partFields(group(root,'Exhaust',false),'exhaust',['size','depth','shape','bias','angle']);
  }else{
+  constructionButton(root,'construction-optics','Paired lamp settings','pairs',end);
   choose('optic-housing','Housing',phenotype.OPTIC_HOUSINGS,'optics','housing');
   choose('optic-layout','Internal lamp layout',phenotype.OPTIC_LAYOUTS,'optics','layout');
   fieldsFor('optics',()=>true);
@@ -418,6 +421,8 @@ function featureInspector(root,g){
   const outline=element('button',{type:'button',id:'feature-outline',textContent:'Edit lens outline'});
   outline.onclick=()=>{setTab(f.end);setFasciaGuide('outline');};bar.append(outline);
  }
+ const construction=f.type==='lamp'?'pairs':f.type==='style'?'styling':constructionFor(f.component);
+ if(construction&&editLevel!=='basic')constructionButton(bar,'construction-feature','Construction settings',construction,f.end,f.side);
  panel.append(bar);
  const fields=featureControls(g,f,editLevel)??[];
  for(const c of fields)contextualField(root,c);
@@ -496,15 +501,38 @@ function wizardInspector(root,g){
  slider.setAttribute('aria-label','Refinement strength');slider.oninput=()=>{wizard.intensity=slider.valueAsNumber;label.firstChild.textContent='Amount · '+Math.round(wizard.intensity*100)+'%';};label.append(slider);
  const b=element('button',{type:'button',id:'wizard-preview',textContent:'Preview refinement'});b.onclick=previewFeature;root.append(b);
 }
+function constructionFor(key){
+ if(['seats','dash','steering','instruments','console','cabin','roof','glass','pillars'].includes(key))return 'cabin';
+ if(key==='exhaust'||key==='rearBumper')return 'exhaust';
+ if(key==='spoiler')return 'wing';
+ if(['headlights','tails'].includes(key))return 'pairs';
+ if(['doors','frontFenders','rearFenders','rockers','styling'].includes(key))return 'styling';
+ return null;
+}
+function openConstruction(panel='cabin',end=null,side=null){
+ if(!Object.hasOwn(CONSTRUCTION_PANELS,panel))return false;
+ construct.panel=panel;construct.id=null;
+ if(end==='front'||end==='rear')construct.end=end;
+ if(side==='L'||side==='R')construct.side=side;
+ if(editLevel==='basic')setEditLevel('advanced',{render:false});
+ setTab('construction');
+ return true;
+}
+function constructionButton(parent,id,text,panel,end=null,side=null){
+ const b=element('button',{id,type:'button',textContent:text});b.onclick=()=>openConstruction(panel,end,side);parent.append(b);
+ return b;
+}
 function inspector(){
  const root=$('inspector'),g=work.get();root.replaceChildren();fields.clear();
  const end=endOfTab();
- if(tab==='feature'){featureInspector(root,g);syncFeatureViewport();bodyOverlay?.render();}
+ if(tab==='construction'){renderConstruction(root,{state:construct,get:work.get,edit,repaint:inspector,setLevel:setEditLevel,level:editLevel,setView});}
+ else if(tab==='feature'){featureInspector(root,g);syncFeatureViewport();bodyOverlay?.render();}
  else if(tab==='wizard'){wizardInspector(root,g);syncFeatureViewport();bodyOverlay?.render();}
  else if(end){fasciaInspector(root,g,end);syncGuideUI();}
  else if(tab==='vehicle'){
   select(root,'family','Body family',Object.entries(FAMILIES).map(([k,v])=>[k,v.label]),g.family,v=>{if(edit('family','family',v)){inspector();}});
   const n=element('input',{id:'design-name',type:'text',value:g.name,maxLength:80});n.setAttribute('aria-label','Design name');n.onchange=()=>edit('name','name',n.value);fieldRow(root,'Design name').append(n);
+  constructionButton(root,'construction-tab','Construction workbench','cabin');
   for(const [label,keys] of Object.entries({'Proportions & stance':['wheelbase','width','height','front','rear','track','stance'],
    'Body profile':['belt','box','frontBox','rearBox','skirt','hood','trunk'],'Cabin':['cabin','cabinLength','cabinWidth','crown']})){
    const details=group(root,label,label==='Proportions & stance');
@@ -526,6 +554,8 @@ function inspector(){
   };
   search.onkeydown=e=>{if(e.key==='Enter'){const v=Array.from(sel.options).find(o=>!o.hidden);if(v)selectComponent(v.value);}};
   const d=COMPONENTS[part],p=g.components[part];
+  const subpanel=constructionFor(part);
+  if(subpanel)constructionButton(root,'construction-component','Open '+CONSTRUCTION_PANELS[subpanel],subpanel,part==='tails'?'rear':'front');
   if(part==='frontBumper')noseControls(root,g);
   select(root,'part-type',d.label+' type',d.types,p.type,v=>edit('components',part,v,'type'));
   for(const key of [...componentControls[part],...(POSITIONABLE.has(part)?['bias','angle']:[])])range(root,'components',part,{...COMPONENT_FIELDS[key],label:key==='shape'?d.shape[0].toUpperCase()+d.shape.slice(1):COMPONENT_FIELDS[key].label},p[key],key);
@@ -590,7 +620,7 @@ function setTab(k){
 }
 function exportForDrive(){
  if(wizardPreview)throw Error('Accept or reject the refinement before driving.');
- const detail={bundle:exportVehicle(work.get(),{id:'studio-session-'+(crypto.randomUUID?.()??Date.now().toString(36)),quality:'preview'}),handled:false,error:null};
+ const detail={bundle:exportVehicle(work.get(),{id:'studio-session-'+(crypto.randomUUID?.()??Date.now().toString(36)),quality:'drive'}),handled:false,error:null};
  document.dispatchEvent(new CustomEvent('lotg-vehicle-studio-drive',{detail}));
  if(detail.error)throw Error(detail.error);if(!detail.handled)throw Error('Open this editor from the game to test drive.');
  return true;
@@ -694,7 +724,7 @@ window.vehicleDesigner={
  undo(){afterUndo();return work.get();},redo(){afterUndo(true);return work.get();},
  duplicate(){work.duplicate();inspector();schedule();return work.get();},reset(){work.reset();inspector();syncPanel();schedule();return work.get();},
  setFasciaAdvanced,setFasciaGuide,selectGuidePoint,writeGuide,fasciaDemo,
- setEditLevel,selectFeature:selectContextFeature,projectFeature,toggleFeatureDirect,previewFeature,acceptWizard,rejectWizard,
+ openConstruction,setEditLevel,selectFeature:selectContextFeature,projectFeature,toggleFeatureDirect,previewFeature,acceptWizard,rejectWizard,
  setFeatureOverlay(mode){if(['off','all','alignment'].includes(mode)){featureOverlayMode=mode;syncFeatureViewport();}},
  save:work.save,load(text){work.load(text);inspector();syncPanel();schedule();return work.get();},
  regenerate,export:opts=>{if(wizardPreview)throw Error('Accept or reject the refinement before exporting.');return exportVehicle(work.get(),opts);},drive:exportForDrive,
@@ -704,5 +734,5 @@ window.vehicleDesigner={
   await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
   return $('scene').toDataURL('image/png');
  },
- getState:()=>({tab,part,editLevel,featureOverlayMode,features:featureItems(),featureId,featureDirect,wizardPreview:wizardPreview?{valid:wizardPreview.valid,before:wizardPreview.before,summary:wizardPreview.summary}:null,view:viewport?.state(),diagnostics:geo?.diagnostics,metadata:geo?.metadata,advanced:Boolean(advanced),fascia:endOfTab()?{...fasciaState[endOfTab()],end:endOfTab(),overlays:Boolean(overlayConfig())}:null})};
+ getState:()=>({tab,part,cabin:geo?.cabin,constructionPanel:tab==='construction'?construct.panel:null,editLevel,featureOverlayMode,features:featureItems(),featureId,featureDirect,wizardPreview:wizardPreview?{valid:wizardPreview.valid,before:wizardPreview.before,summary:wizardPreview.summary}:null,view:viewport?.state(),diagnostics:geo?.diagnostics,metadata:geo?.metadata,advanced:Boolean(advanced),fascia:endOfTab()?{...fasciaState[endOfTab()],end:endOfTab(),overlays:Boolean(overlayConfig())}:null})};
 setEditLevel('basic',{render:false});setTab('vehicle');regenerate();document.documentElement.dataset.designerReady='true';

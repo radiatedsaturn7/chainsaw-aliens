@@ -3,6 +3,20 @@ import * as T from '../../vendorBridge/three.js';
 import {automotiveMaterial,applyAutomotiveEnvironment} from '../../model3d/AutomotiveMaterials.js';
 import {materialDoc} from './export.mjs';
 const {sin,cos,PI}=Math;
+const mapTexture=(source,linear=false)=>{
+ if(!source)return null;const data=new Uint8Array(source.pixels.length*4);
+ for(let i=0;i<source.pixels.length;i++){
+  const value=source.pixels[i]??'#00000000',rgb=parseInt(value.slice(1,7),16),o=i*4;
+  data[o]=rgb>>16;data[o+1]=(rgb>>8)&255;data[o+2]=rgb&255;data[o+3]=value.length===9?parseInt(value.slice(7),16):255;
+ }
+ const map=new T.DataTexture(data,source.width,source.height,T.RGBAFormat);
+ map.colorSpace=linear?T.NoColorSpace:T.SRGBColorSpace;map.flipY=true;map.magFilter=T.LinearFilter;map.minFilter=T.LinearFilter;
+ map.needsUpdate=true;return map;
+};
+const disposeStudioMaterial=m=>{
+ for(const q of new Set([m.map,m.normalMap,m.roughnessMap,m.metalnessMap,m.aoMap]))q?.dispose();
+ m.dispose();
+};
 const views={orbit:[.72,.26],front:[0,0],rear:[PI,0],side:[PI/2,0],top:[0,PI/2]};
 const clamp=(x,a,b)=>Math.max(a,Math.min(x,b));
 const zebra=new T.ShaderMaterial({side:T.DoubleSide,
@@ -171,17 +185,19 @@ export function createViewport(canvas,{onPick=()=>{},onFeature=null,onZoom=()=>{
   shadow.visible=display==='complete';showFeatureLabels();request();
  }
  function setDesign(next){
-  world.clear();highlight.clear();batches.forEach(g=>g.dispose());batches=[];for(const m of Object.values(mats))m.dispose();mats={};
+  world.clear();highlight.clear();batches.forEach(g=>g.dispose());batches=[];for(const m of Object.values(mats))disposeStudioMaterial(m);mats={};
   geo=next;
   byFeature=Array.isArray(next.features)?next.features.filter(f=>typeof f?.id==='string'&&Array.isArray(f.points)
    &&f.points.length>=2&&f.points.every(p=>Array.isArray(p)&&p.length===3&&p.every(Number.isFinite))):[];
   if(!byFeature.some(x=>x.id===activeFeature))activeFeature='';
   const keys=new Set([...next.parts,...next.wheelParts].map(r=>r.material));
   for(const id of keys){
-   const doc=materialDoc(next.genome,id,{texture:false});
+   const doc=materialDoc(next.genome,id);
    const glass=id==='glass',optic=id==='opticCover';
-   mats[id]=automotiveMaterial({color:doc.color,side:T.DoubleSide,transparent:glass||optic,opacity:optic?.19:glass?(next.genome.components.glass.type==='tinted'?.52:.31):1},
-    doc.automotive);
+   const albedo=(!glass&&!optic)?mapTexture(doc.texture):null;
+   const ormMap=mapTexture(doc.automotive.orm,true),normalMap=mapTexture(doc.automotive.normal,true);
+   mats[id]=automotiveMaterial({color:doc.color,map:albedo,side:T.DoubleSide,transparent:glass||optic,opacity:optic?.19:glass?(next.genome.components.glass.type==='tinted'?.52:.31):1},
+    doc.automotive,{ormMap,normalMap});
    if(optic){mats[id].opacity=.19;mats[id].transparent=true;mats[id].depthWrite=false;}
   }
   world.userData.automotiveMaterials=Object.values(mats);
@@ -195,7 +211,7 @@ export function createViewport(canvas,{onPick=()=>{},onFeature=null,onZoom=()=>{
   const appendBatch=(parts,p=null)=>{
    const groups=new Map();
    for(const r of parts){
-    const id=r.component+'|'+r.material;
+    const id=r.component+'|'+r.material+'|'+Boolean(r.geometry.index)+'|'+Object.keys(r.geometry.attributes).sort().join(',');
     if(!groups.has(id))groups.set(id,[]);
     groups.get(id).push(r);
    }
@@ -296,6 +312,6 @@ export function createViewport(canvas,{onPick=()=>{},onFeature=null,onZoom=()=>{
   setFeature(id){activeFeature=typeof id==='string'?id:'';showFeatureLabels();request();},
   setFeatureOverlay(v){if(!['off','all','alignment'].includes(v))return;featureOverlay=v;showFeatureLabels();request();},
   state:()=>({mode,lift:el,az,zoom,projection,display,selected,feature:activeFeature,featureOverlay,light,view,drawCalls:renderer.info.render.calls,glError:renderer.getContext().getError()}),
-  dispose(){observer.disconnect();removeFeatureLabels();Object.values(curveStyles).forEach(x=>x.dispose());edgeDots.dispose();batches.forEach(x=>x.dispose());if(frame)cancelAnimationFrame(frame);Object.values(mats).forEach(x=>x.dispose());Object.values(diagnostic).filter(x=>x!==zebra).forEach(x=>x.dispose());mask.dispose();ground.geometry.dispose();ground.material.dispose();shadow.geometry.dispose();shadow.material.dispose();shadowTex.dispose();grid.geometry.dispose();grid.material.dispose();renderer.dispose();renderer.forceContextLoss();}
+  dispose(){observer.disconnect();removeFeatureLabels();Object.values(curveStyles).forEach(x=>x.dispose());edgeDots.dispose();batches.forEach(x=>x.dispose());if(frame)cancelAnimationFrame(frame);Object.values(mats).forEach(disposeStudioMaterial);Object.values(diagnostic).filter(x=>x!==zebra).forEach(x=>x.dispose());mask.dispose();ground.geometry.dispose();ground.material.dispose();shadow.geometry.dispose();shadow.material.dispose();shadowTex.dispose();grid.geometry.dispose();grid.material.dispose();renderer.dispose();renderer.forceContextLoss();}
  };
 }

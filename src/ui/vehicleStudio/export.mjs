@@ -1,26 +1,22 @@
+import {auditVehicleGeometry} from './audit9.mjs';
+import {studioMaps,studioTextureBytes} from './detail9.mjs';
+import {wheelTireTexture,wheelRotorTexture} from './wheels9.mjs';
 import {createModelDocument,validateModelDocument} from '../../model3d/ModelDocument.js';
 import {createBuiltInRaceCars} from '../../racing/raceData.js';
 import {generateVehicle,disposeDesign} from './geometry.mjs';
 const PALETTE={
  paint:['Coachwork paint','paint'],wheel:['Wheel alloy','alloy'],glass:['Cabin glass','glass'],rubber:['Tire rubber','rubber'],
- trim:['Exterior trim','trim'],chrome:['Machined steel','machined'],head:['Front optical lens','optic'],tail:['Rear optical lens','optic'],opticCover:['Clear optical cover','glass'],indicator:['Amber indicator','optic'],seamDark:['Recess and seam backing','trim'],projector:['Unlit projector glass','optic'],reflector:['Optical reflector','machined'],
+ trim:['Exterior trim','trim'],chrome:['Machined steel','machined'],head:['[studio9:head] Front optical lens','optic'],tail:['Rear optical lens','optic'],opticCover:['Clear optical cover','glass'],indicator:['Amber indicator','optic'],seamDark:['Recess and seam backing','trim'],projector:['[studio9:head] Projector glass','optic'],reflector:['Optical reflector','machined'],rotor:['Swept brake steel','machined'],barrel:['Wheel barrel','alloy'],caliper:['[studio9:static-caliper] Brake caliper','trim'],underbody:['Coated underbody','trim'],
+ heatShield:['Brushed heat shield','machined'],leather:['Seat leather','upholstery'],cloth:['Seat cloth','upholstery'],stitch:['Upholstery stitching','upholstery'],
+ opticRed:['[studio9:brake] Layered red lens','optic'],opticClear:['[studio9:reverse] Clear optical segment','optic'],runningRed:['[studio9:running] Rear light guide','optic'],signalL:['[studio9:signal-left] Left amber signal','optic'],signalR:['[studio9:signal-right] Right amber signal','optic'],
  interior:['Interior vinyl','trim'],seat:['Seat upholstery','upholstery'],floor:['Floor carpet','upholstery']
 };
 const solidTexture=(pixel)=>({width:1,height:1,pixels:[pixel]});
-function tireTexture(){
- const width=32,height=32,pixels=[];
- for(let y=0;y<height;y++)for(let x=0;x<width;x++){
-  const tread=y>11&&y<22,groove=tread&&((x+2*Math.floor(y/3))%8<2||y%10===0);
-  const shade=(groove?152:227)+((x*23+y*13)%17);const h=shade.toString(16).padStart(2,'0');
-  pixels.push('#'+h+h+h);
- }
- return {width,height,pixels};
-}
 export function materialDoc(g,key,{texture=true}={}){
- const [name,preset]=PALETTE[key];const rimFace=key==='wheel';
+ const [name,preset]=PALETTE[key];const rimFace=key==='wheel',maps=texture?studioMaps(key==='rubber'?'tire':key.startsWith('signal')?'indicator':key==='runningRed'?'opticRed':key):{};
  return {id:'studio-mat-'+key,name,color:g.materials[key],
-  texture:!texture?null:key==='glass'?solidTexture(g.components.glass.type==='tinted'?'#ffffff70':'#ffffff48'):key==='opticCover'?solidTexture('#ffffff31'):key==='rubber'?tireTexture():null,
-  automotive:{preset,creaseAngle:0,...(rimFace?{roughness:.27}:{}),...(key==='paint'?{paintCalibration:true}:{})}};
+  texture:!texture?null:key==='glass'?solidTexture(g.components.glass.type==='tinted'?'#ffffff70':'#ffffff48'):key==='opticCover'?solidTexture('#ffffff31'):key==='rubber'?wheelTireTexture(g.components.tires.type,g.components.tires.shape,g.components.tires.depth):key==='rotor'?wheelRotorTexture():null,
+  automotive:{preset:key==='rubber'?'rubber':preset,creaseAngle:0, ...maps,...(rimFace?{roughness:.27}:{}),...(key==='rotor'?{roughness:1,metalness:1}:{}),...(key==='barrel'?{roughness:1,metalness:1}:{}),...(key==='paint'?{paintCalibration:true}:{})}};
 }
 function encodeModel(design,parts,name,joints={}){
  const model=createModelDocument(name),used=new Set(parts.map(p=>p.material));model.materials=[...used].map(key=>materialDoc(design.genome,key));
@@ -87,8 +83,9 @@ export function exportVehicle(genome,{id=null,quality='export'}={}){
   car.art={bodyModel:{ref:body,position:[0,-cg,-cgZ],rotation:[0,0,0],scale:[1,1,1]},
    wheelModel:{ref:wheel,position:[0,0,0],rotation:[0,0,0],scale:[1,1,1]},bodyColor:g.materials.paint,cameraView:'third-person'};
   const carDocument={kind:'race-car',schemaVersion:1,car};
-  return {kind:'lotg-studio-export',schemaVersion:1,genome:g,car:carDocument,
-   models:{[body]:encodeModel(design,design.parts,g.name+' body',mounts),[wheel]:encodeModel(design,design.wheelParts,g.name+' wheel')},
-   attachments:mounts,metrics:{...d,bodyTriangles:design.diagnostics.bodyTriangles,wheelTriangles:design.diagnostics.wheelTriangles}};
+  const models={[body]:encodeModel(design,design.parts,g.name+' body',mounts),[wheel]:encodeModel(design,design.wheelParts,g.name+' wheel')};
+  return {kind:'lotg-studio-export',schemaVersion:1,genome:g,car:carDocument,models,
+   attachments:mounts,metrics:{...d,quality,bodyTriangles:design.diagnostics.bodyTriangles,wheelTriangles:design.diagnostics.wheelTriangles,
+    textureMemory:studioTextureBytes(Object.values(models).flatMap(m=>m.materials)),geometry:auditVehicleGeometry(design)}};
  }finally{disposeDesign(design);}
 }

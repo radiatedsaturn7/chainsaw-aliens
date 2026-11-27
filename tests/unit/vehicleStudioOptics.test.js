@@ -30,7 +30,7 @@ test('each rim is emitted at exactly the cap boundary, gasket/cover are independ
   const parts=[];const {mounts,issues}=emitOpenings({end,openings,surface,put:(component,material,geometry)=>parts.push({component,material,geometry})});
   assert.equal(Object.keys(mounts).length,2);assert.equal(issues.length,0);
   assert.ok(parts.filter(p=>p.material==='opticCover').length>=2);
-  if(end==='front')assert.equal(parts.filter(p=>p.material==='indicator').length,1);
+  if(end==='front')assert.equal(parts.filter(p=>p.material==='signalL'||p.material==='signalR').length,2);
   const painted=parts.filter(p=>p.material==='paint').flatMap(p=>{
    const a=p.geometry.attributes.position;
    return Array.from({length:a.count},(_,i)=>[a.getX(i),a.getY(i),a.getZ(i)]);
