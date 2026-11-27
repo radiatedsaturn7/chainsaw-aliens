@@ -63,8 +63,8 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
   const track=1-(.022+.15*f.taper)*(.82+.18*v)-.055*f.lowerRoll*v**3;
   const cross=guide(f.curves.transverse,(x+1)*.5)*transverseScale;
   const form=shoulder(b)*(.013+.085*f.shoulder)+.034*co*(1-f.boxiness);
-  const y=edge[1]-drop*(1-v)+form*(1-v)**1.8 +vOffsetGuide(v)*(.28+.72*co)*(1-v)*.65+cross*(.76+.24*hump(v))*(1-v);
-  return [x*edge[0]*track,y,s*z];
+  const y=edge[1]-drop*(1-v)+(f.upperFasciaLift??0)*(1-v)**1.65*(.63+.37*Math.sin(Math.PI*u))+form*(1-v)**1.8 +vOffsetGuide(v)*(.28+.72*co)*(1-v)*.65+cross*(.76+.24*hump(v))*(1-v);
+  return [x*edge[0]*track*(1+(f.outerFasciaWidth??0)),y,s*z];
  }
  function bridge(u,r){
   const start=upperPanel(seam,u),lead=face(u,0);

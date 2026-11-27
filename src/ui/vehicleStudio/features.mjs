@@ -25,7 +25,7 @@ export function featureControls(genome,feature,level='basic'){
   break;
  case 'lamp':
   entries=[c('optics',end,'housing',choice('Housing shape',OPTIC_HOUSINGS)),...optic(end,'width','height','recess')];
-  if(more)entries.push(...optic(end,'position','corner','angle','sweep','curvature','convexity','protrusion'),c('optics',end,'layout',choice('Optical layout',OPTIC_LAYOUTS)));
+  if(more)entries.push(...optic(end,'position','outboard','inboardReach','corner','angle','sweep','curvature','convexity','protrusion'),c('optics',end,'layout',choice('Optical layout',OPTIC_LAYOUTS)));
   break;
  case 'roof':
  case 'glass-edge':

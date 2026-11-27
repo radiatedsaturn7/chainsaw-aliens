@@ -1,7 +1,7 @@
 import {compileFormula} from './formula9.mjs';
 import {createGenome as createPanel,normalizeGenome as normalizePanel,buildFender} from '../surfaceStudio/surface.mjs';
 
-export const VERSION=4;
+export const VERSION=5;
 const F=(label,min,max,step)=>({label,min,max,step});
 export const GLOBAL={
  wheelbase:F('Wheelbase (m)',2.15,3.35,.005),width:F('Body width (m)',1.52,2.24,.005),height:F('Roof height (m)',1.08,1.91,.005),
@@ -25,7 +25,7 @@ export const COMPONENTS={
  glass:style('Windshield, rear and side glass',['clear','tinted'],'rake'),rockers:style('Rockers and side skirts',['stock','deep','blade']),
  trunk:style('Trunk / rear deck',['notch','fastback','ducktail'],'crown'),
  headlights:style('Headlights',['swept','rectangular','round']),tails:style('Taillights',['stacked','strip','round']),
- fogs:style('Fog lights',['round','strip','off']),grille:style('Grille',['mesh','bars','closed']),
+ fogs:style('Fog lights',['round','strip','blank','off']),grille:style('Grille',['mesh','bars','closed']),
  scoop:style('Scoop and vents',['scoop','vents','off']),spoiler:style('Spoiler',['wing','lip','off']),
  mirrors:style('Mirrors',['standard','aero']),handles:style('Door handles',['lever','flush']),
  wheels:style('Wheels',['6-spoke','5-spoke','mesh','10-spoke'],'dish'),tires:style('Tires',['road','rally'],'sidewall'),
@@ -40,6 +40,9 @@ export const FASCIA_PROFILES={...NOSE_PROFILES,aero:'Tapered / aero'};
 export const INTAKE_TYPES={single:'Central opening',split:'Split ducts',closed:'Closed skin'};
 const unit=label=>F(label,0,1,.01),signed=label=>F(label,-1,1,.01);
 export const FASCIA_FIELDS={
+ bumperStation:F('Bumper seam span (m)',.24,.63,.005),upperFasciaLift:F('Upper fascia elevation (m)',-.085,.14,.005),outerFasciaWidth:F('Terminal fascia width',-.09,.12,.005),
+ grilleWidth:unit('Upper grille width'),grilleHeight:unit('Upper grille height'),grilleHeightPosition:unit('Upper grille position'),
+ intakeWidth:unit('Lower intake width'),intakeHeight:unit('Lower intake height'),intakeHeightPosition:unit('Lower intake position'),
  sweep:unit('Corner sweep'),pointedness:unit('Pointedness'),center:unit('Center projection'),roundness:unit('Horizontal roundness'),
  taper:unit('Width taper'),drop:unit('End drop'),verticalRoundness:unit('Vertical roundness'),rake:signed('Fascia rake'),
  rollover:unit('Upper rollover'),lowerRoll:unit('Lower rollover'),wrap:unit('Fender wraparound'),
@@ -50,7 +53,7 @@ export const OPTIC_HOUSINGS={'circle':'Circular',oval:'Oval',rectangle:'Rectangu
 export const OPTIC_LAYOUTS={projector:'Single projector',twin:'Twin elements',led:'LED signature',mixed:'Projector + LED'};
 export const OPTIC_FIELDS={width:unit('Housing width'),height:unit('Housing height'),corner:unit('Corner radius'),angle:signed('Housing angle'),
  sweep:unit('Housing sweep'),curvature:unit('Lens curvature'),recess:unit('Recess depth'),convexity:unit('Lens convexity'),
- position:unit('Vertical position'),protrusion:unit('Lens protrusion')};
+ position:unit('Vertical position'),outboard:unit('Outboard lamp placement'),inboardReach:unit('Lens reach toward grille'),protrusion:unit('Lens protrusion')};
 export const FASCIA_DEMOS={classic:'Upright classic',rally:'Rounded sport sedan',hyper:'Pointed hypercar',compound:'Compound-curved sports car'};
 const enumValue=(v,choices,key)=>{if(typeof v!=='string'||!Object.hasOwn(choices,v))throw Error('Unknown '+key);return v;};
 const cleanList=(v,n,key)=>{if(!Array.isArray(v)||v.length!==n)throw Error('Invalid '+key);return v.map(x=>number(x,{min:-1,max:1},key));};
@@ -59,11 +62,11 @@ function baseFascia(family,front,legacy){
  return {profile:front?legacy.profile:family==='coupe'?'square':family==='fastback'?'aero':'round',intakes:front?'single':family==='fastback'?'split':'closed',
   ...initial(FASCIA_FIELDS,front?{...legacy,taper:.26,center:.82,wrap:.68,rake:.10,recess:.08,crease:.16,chin:0,boxiness:family==='coupe'?.78:.34,pointedness:0}:
   {sweep:.46,taper:.37,drop:.20,rollover:.50,lowerRoll:.60,center:.78,wrap:.64,rake:.16,recess:.05,crease:.14,chin:-.12,boxiness:family==='coupe'?.77:.41,pointedness:0}),
-  curves:{plan:[0,0,0,0],vertical:[0,0,0,0],transverse:[0,0,0,0]}};
+  bumperStation:.43,upperFasciaLift:0,outerFasciaWidth:0,grilleShape:'trapezoid',intakeShape:front?'angular':'trapezoid',curves:{plan:[0,0,0,0],vertical:[0,0,0,0],transverse:[0,0,0,0]}};
 }
 function baseOptic(family,front){return {
  housing:front?(family==='coupe'?'round-rect':family==='fastback'?'oval':'swept'):(family==='fastback'?'wrap':'trapezoid'),
- layout:front?'mixed':'led',...initial(OPTIC_FIELDS,{angle:0,width:.58,height:.54,position:.46,recess:.53,protrusion:0}),outline:Array(8).fill(0),formula:'',modules:0,spacing:.5
+ layout:front?'mixed':'led',...initial(OPTIC_FIELDS,{angle:0,width:.58,height:.54,position:.46,recess:.53,protrusion:0}),outline:Array(8).fill(0),formula:'',modules:0,spacing:.5,outboard:.5,inboardReach:.5
 };}
 export function createFasciaDemo(key){
  if(!Object.hasOwn(FASCIA_DEMOS,key))throw Error('Unknown fascia demonstration');
@@ -119,8 +122,10 @@ const defaultSeams=()=>Object.fromEntries(Object.keys(SEAM_KEYS).map(k=>[k,{...S
 export const PAIR_MODES={mirrored:'Mirrored',linked:'Linked',independent:'Independent'};
 export const PAIR_GROUPS={headlights:'Headlights',taillights:'Taillights',fogs:'Fog lights',mirrors:'Mirrors',fenders:'Fenders',doors:'Doors',wheels:'Wheels',vents:'Vents',rockers:'Side skirts'};
 export const STYLE_KINDS={ridge:'Stamped ridge',groove:'Recessed groove',crease:'Styling crease',trim:'Raised molding',shoulder:'Raised shoulder',recess:'Local recess'};
-export const BODY_EDITOR_FIELDS={bolster:F('Seat bolster',0,1,.01),lumbar:F('Lumbar curve',0,1,.01),trim:F('Interior trim',0,1,.01)};
-export const WING_FIELDS={camber:F('Airfoil camber',0,1,.01),sweep:F('Wing sweep',-1,1,.01),taper:F('Wing taper',0,1,.01),thickness:F('Airfoil thickness',.04,.24,.005),angle:F('Angle of attack',-15,15,.25),supports:F('Supports',2,4,1),spacing:F('Support spacing',.22,.88,.01),elements:F('Wing elements',1,2,1)};
+export const BODY_EDITOR_FIELDS={bolster:F('Seat bolster',0,1,.01),lumbar:F('Lumbar curve',0,1,.01),trim:F('Interior trim',0,1,.01),
+ canopyLength:F('Roof length / cabin rake',0,1,.01),canopyShoulder:F('Roof shoulder rounding',0,1,.01),glassBow:F('Side glazing outward bow',0,1,.01)
+};
+export const WING_FIELDS={elevation:F('Extra wing rise (m)',-.10,.12,.002),camber:F('Airfoil camber',0,1,.01),sweep:F('Wing sweep',-1,1,.01),taper:F('Wing taper',0,1,.01),thickness:F('Airfoil thickness',.04,.24,.005),angle:F('Angle of attack',-15,15,.25),supports:F('Supports',2,4,1),spacing:F('Support spacing',.22,.88,.01),elements:F('Wing elements',1,2,1)};
 export const EXHAUST_FIELDS={
  x:F('Side location (m)',-.95,.95,.005),y:F('Height above floor (m)',-.04,.25,.005),spacing:F('Tip spacing (m)',.045,.20,.005),count:F('Outlet count',1,6,1),
  diameter:F('Tip diameter (m)',.035,.16,.005),protrusion:F('Projection (m)',-.07,.18,.005),curvature:F('Pipe curvature',-1,1,.01),
@@ -137,8 +142,8 @@ export const newStyle=(id='styling-1')=>({id,kind:'ridge',side:'both',start:.24,
 const constructionDefaults=()=>({
  symmetry:Object.fromEntries(Object.keys(PAIR_GROUPS).map(k=>[k,'mirrored'])),
  sides:{L:{},R:{}},
- cabin:{layout:'bench',bolster:.53,lumbar:.45,trim:.54},
- wing:{camber:.34,sweep:.08,taper:.42,thickness:.097,angle:4,supports:2,spacing:.67,formula:'',elements:1},
+ cabin:{layout:'bench',bolster:.53,lumbar:.45,trim:.54,canopyLength:.5,canopyShoulder:.5,glassBow:.5},
+ wing:{elevation:0,camber:.34,sweep:.08,taper:.42,thickness:.097,angle:4,supports:2,spacing:.67,formula:'',elements:1},
  exhaust:[],features:[]
 });
 export function getSideSettings(g,key,side,common){
@@ -165,13 +170,13 @@ const number=(value,spec,key)=>{if(typeof value!=='number'||!Number.isFinite(val
 export const TOTAL_LENGTH=F('Overall length (m)',3.47,5.73,.005);
 export const PATCH_PANELS=['hood','roof','trunk'];
 export const PATCH_RANGE=F('Interior patch height (m)',-.045,.045,.001);
-export const DIMENSIONS={diameter:F('Tire diameter (m)',.54,.76,.002),tireWidth:F('Tire width (m)',.16,.33,.002),rimRatio:F('Rim / tire diameter',.55,.83,.005),gap:F('Panel gap (m)',.002,.012,.001)};
+export const DIMENSIONS={archReserve:F('Outer tire clearance (m)',.004,.024,.001),rearTrackBias:F('Rear track bias (m)',-.08,.08,.001),diameter:F('Tire diameter (m)',.54,.76,.002),tireWidth:F('Tire width (m)',.16,.33,.002),rimRatio:F('Rim / tire diameter',.55,.83,.005),gap:F('Panel gap (m)',.002,.012,.001)};
 const MAT={paint:'#164bb8',wheel:'#c69a4d',glass:'#698292',rubber:'#171a20',trim:'#22262b',chrome:'#a3abb5',head:'#d9e7fb',tail:'#b61728',interior:'#292d36',seat:'#363b48',floor:'#303843',opticCover:'#e0efff',indicator:'#f29b38',seamDark:'#141b23',projector:'#7990a0',reflector:'#a2abb1',rotor:'#64696e',barrel:'#303238',caliper:'#88643a',underbody:'#292c31',heatShield:'#575957',leather:'#323642',cloth:'#424654',stitch:'#686b71',opticRed:'#96202a',opticClear:'#8299a7',signalL:'#ef9c3e',signalR:'#ef9c3e',runningRed:'#87212b'};
 export function createVehicle(family='sedan'){
  if(!Object.hasOwn(FAMILIES,family))throw Error('Unknown body family');
  const f=FAMILIES[family];
  return {kind:'lotg-vehicle-design',schemaVersion:1,generatorVersion:VERSION,name:f.label,family,
- dimensions:{...Object.fromEntries(Object.keys(GLOBAL).map((k,i)=>[k,f.dims[i]])),diameter:family==='fastback'?.635:.634,tireWidth:family==='fastback'?.235:.225,rimRatio:.681},
+ dimensions:{...Object.fromEntries(Object.keys(GLOBAL).map((k,i)=>[k,f.dims[i]])),diameter:family==='fastback'?.635:.634,tireWidth:family==='fastback'?.235:.225,rimRatio:.681,archReserve:.011,rearTrackBias:0},
  components:Object.fromEntries(Object.entries(COMPONENTS).map(([k,c])=>[k,{type:c.types[defaults[family]?.[k]??0],size:1,shape:.5,depth:1,...(k==='frontBumper'?NOSE_DEFAULTS[family]:{}),...(POSITIONABLE.has(k)?{bias:0,angle:0}:{})}])),
  fascia:Object.fromEntries(['front','rear'].map(end=>[end,baseFascia(family,end==='front',NOSE_DEFAULTS[family])])),
  optics:Object.fromEntries(['front','rear'].map(end=>[end,baseOptic(family,end==='front')])),
@@ -180,7 +185,7 @@ export function createVehicle(family='sedan'){
  materials:{...MAT,paint:f.color,wheel:f.wheel}, attachments:{schema:'axles-and-optics-v1'}};
 }
 export function normalizeVehicle(x){
- if(!x||x.kind!=='lotg-vehicle-design'||x.schemaVersion!==1||![1,2,3,VERSION].includes(x.generatorVersion))throw Error('Unsupported vehicle design version');
+ if(!x||x.kind!=='lotg-vehicle-design'||x.schemaVersion!==1||![1,2,3,4,VERSION].includes(x.generatorVersion))throw Error('Unsupported vehicle design version');
  const g=createVehicle(x.family);
  g.name=String(x.name??g.name).trim().slice(0,80)||g.name;
  for(const [k,v] of Object.entries(x.dimensions??{})){const f=GLOBAL[k]??DIMENSIONS[k];if(!f||k==='gap')throw Error('Unknown dimension '+k);g.dimensions[k]=number(v,f,k);}
@@ -205,6 +210,7 @@ export function normalizeVehicle(x){
   if(raw){
    if(raw.profile!==undefined)f.profile=enumValue(raw.profile,FASCIA_PROFILES,end+' profile');
    if(raw.intakes!==undefined)f.intakes=enumValue(raw.intakes,INTAKE_TYPES,end+' intakes');
+   for(const shape of ['grilleShape','intakeShape'])if(raw[shape]!==undefined)f[shape]=enumValue(raw[shape],OPTIC_HOUSINGS,end+' '+shape);
    for(const [k,spec] of Object.entries(FASCIA_FIELDS))if(raw[k]!==undefined)f[k]=number(raw[k],spec,end+'.'+k);
    for(const k of ['plan','vertical','transverse'])if(raw.curves?.[k]!==undefined)f.curves[k]=cleanList(raw.curves[k],4,end+'.'+k);
   }

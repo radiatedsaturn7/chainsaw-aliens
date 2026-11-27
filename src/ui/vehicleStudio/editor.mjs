@@ -283,6 +283,8 @@ function fasciaInspector(root,g,end){
  }else if(cfg.category==='intakes'){
   choose('fascia-intakes',end==='front'?'Intake layout':'Valance opening',phenotype.INTAKE_TYPES,'fascia','intakes');
   fieldsFor('fascia',isIntake);
+  if(end==='front')choose('fascia-grille-shape','Upper grille outline',phenotype.OPTIC_HOUSINGS,'fascia','grilleShape');
+  choose('fascia-intake-shape','Lower intake outline',phenotype.OPTIC_HOUSINGS,'fascia','intakeShape');
   const bumper=group(root,'Bumper styling',false);partFields(bumper,end==='front'?'frontBumper':'rearBumper');
   if(end==='front'){
    partFields(group(root,'Grille',false),'grille',['size','depth']);
@@ -533,14 +535,14 @@ function inspector(){
   select(root,'family','Body family',Object.entries(FAMILIES).map(([k,v])=>[k,v.label]),g.family,v=>{if(edit('family','family',v)){inspector();}});
   const n=element('input',{id:'design-name',type:'text',value:g.name,maxLength:80});n.setAttribute('aria-label','Design name');n.onchange=()=>edit('name','name',n.value);fieldRow(root,'Design name').append(n);
   constructionButton(root,'construction-tab','Construction workbench','cabin');
-  for(const [label,keys] of Object.entries({'Proportions & stance':['wheelbase','width','height','front','rear','track','stance'],
+  for(const [label,keys] of Object.entries({'Proportions & stance':['wheelbase','width','height','front','rear','track','stance','archReserve','rearTrackBias'],
    'Body profile':['belt','box','frontBox','rearBox','skirt','hood','trunk'],'Cabin':['cabin','cabinLength','cabinWidth','crown']})){
    const details=group(root,label,label==='Proportions & stance');
    if(label==='Proportions & stance'){
     const d=g.dimensions;
     range(details,'dimensions','length',{...TOTAL_LENGTH,min:d.wheelbase+GLOBAL.front.min+GLOBAL.rear.min,max:d.wheelbase+GLOBAL.front.max+GLOBAL.rear.max},Number((d.wheelbase+d.front+d.rear).toFixed(4)));
    }
-   for(const key of keys)range(details,'dimensions',key,GLOBAL[key],g.dimensions[key]);
+   for(const key of keys)range(details,'dimensions',key,GLOBAL[key]??DIMENSIONS[key],g.dimensions[key]);
   }
   noseControls(group(root,'Front-end shape',true),g);
   const data=group(root,'Materials',false);color(data,'paint','Body paint',g);color(data,'wheel','Wheel finish',g);

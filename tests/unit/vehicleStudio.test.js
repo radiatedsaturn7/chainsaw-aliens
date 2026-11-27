@@ -87,9 +87,9 @@ test('temporary drive documents resolve through get and prepare without storage 
  assert.equal(lib.entries.size,0);
 });
 
-test('legacy v1 design explicitly upgrades to generator v4 with its nose settings, not frozen replay',()=>{
+test('legacy v1 design explicitly upgrades to generator v5 with its nose settings, not frozen replay',()=>{
  const g=loadVehicle(readFileSync(new URL('../fixtures/studio-genome-v1.json',import.meta.url),'utf8'));
- assert.equal(g.generatorVersion,4);assert.equal(g.schemaVersion,1);assert.equal(g.family,'coupe');
+ assert.equal(g.generatorVersion,5);assert.equal(g.schemaVersion,1);assert.equal(g.family,'coupe');
  assert.equal(g.fascia.front.profile,'v');assert.equal(g.fascia.front.sweep,.76);assert.equal(g.fascia.front.drop,.65);
  assert.deepEqual(loadVehicle(serializeVehicle(g)),g);
 });

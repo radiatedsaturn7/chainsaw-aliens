@@ -45,7 +45,7 @@ function wingGeometry({cfg,sp,put,sample,dims,evalFormula,quality}){
  const w=bounded((.66+.19*sp.size)*X,.24,X*.95,X*.8);
  const depth=bounded(sp.depth,.55,1.8,1),chord=lip?.21*depth:.31*depth;
  const z=mix(Lr,cabinRear,(lip?.14:.29)+bounded(sp.bias,-1,1,0)*.075);
- const h=lip?.042+sp.shape*.043:(.15+sp.shape*.16)*depth;
+ const h=lip?.042+sp.shape*.043:(.15+sp.shape*.16)*depth+bounded(cfg.elevation,-.10,.12,0);
  const cam=chord*bounded(cfg.camber,0,1,.34)*.21,sweep=.19*bounded(cfg.sweep,-1,1,.08);
  const taper=bounded(cfg.taper,0,.85,.22),angle=bounded(cfg.angle,-24,24,finite(sp.angle,-1.5))*rad;
  const thickness=chord*bounded(cfg.thickness,.035,.245,.10);

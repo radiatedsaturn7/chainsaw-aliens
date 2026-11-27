@@ -35,7 +35,7 @@ export function structureTireEnvelope(radius,width,yaw=0,travel=.054){
  return {lateral,fore,travel};
 }
 export function buildStructure({g,quality='preview',put,sample,dims}){
- const {X,L,Lf,Lr,floor,B,cabinFront,cabinRear,tireTrack,wheelRadius:R,archRadius}=dims;
+ const {X,L,Lf,Lr,floor,B,cabinFront,cabinRear,tireTrack,rearTireTrack=tireTrack,wheelRadius:R,archRadius}=dims;
  const W=g.dimensions.tireWidth,issues=[];
  const perf=quality==='drive',high=quality==='export';
  const envelope=(ax)=>structureTireEnvelope(R,W,ax>0?.63:.13,.054);
@@ -51,7 +51,8 @@ export function buildStructure({g,quality='preview',put,sample,dims}){
  };
  const rails=wheelZ.map(ax=>{
   const e=envelope(ax), extent=Math.max(archRadius+.018,e.fore+.032);
-  return {ax,e,extent,inside:Math.min(X*.83,tireTrack-e.lateral-.024)};
+  const track=ax>0?tireTrack:rearTireTrack;
+  return {ax,e,extent,track,inside:Math.min(X*.83,track-e.lateral-.024)};
  });
  for(const r of rails)if(r.inside<.11)issues.push('Tire sweep leaves too little room for a closed central tray.');
  const floorAt=(z,x)=>{
@@ -120,7 +121,7 @@ export function buildStructure({g,quality='preview',put,sample,dims}){
     const p=row.at(-1),q=[innerX,floorAt(z,innerX),z];
     linerRows.push(row);
     innerRows.push([p,[innerX*.997,mix(p[1],q[1],.45),z],q]);
-    if(Math.abs(z-r.ax)<=r.e.fore)clearance=Math.min(clearance,tireTrack-r.e.lateral-Math.abs(innerX));
+    if(Math.abs(z-r.ax)<=r.e.fore)clearance=Math.min(clearance,r.track-r.e.lateral-Math.abs(innerX));
    }
    // The canopy ends fade into the low front/rear skirt, and the inner
    // backwall is shared geometrically with the central floor edge.

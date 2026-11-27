@@ -56,3 +56,23 @@ test('new named material lights are independently switchable without changing pa
  const both=studioLampLevels({mechanical:{headlights:true,hazards:true},elapsedMs:0},{enabled:false});
  assert.ok(Object.values(both).every(x=>x===0));
 });
+
+test('separate axle tracks, grille and intake tuning, lamp reach and blank fog covers affect only their intended subsystems',()=>{
+ let g=createVehicle();
+ for(const [key,value] of Object.entries({width:1.728,track:1.49098/1.728,archReserve:.0045,rearTrackBias:-.00508,tireWidth:.226}))
+  g=updateDesign(g,'dimensions',key,value);
+ g=updateDesign(g,'fascia','front',.12,'upperFasciaLift');
+ g=updateDesign(g,'fascia','front','round-rect','intakeShape');
+ g=updateDesign(g,'fascia','front',.14,'intakeHeightPosition');
+ g=updateDesign(g,'components','fogs','blank','type');
+ const reach=updateDesign(g,'optics','front',.88,'inboardReach');
+ use(g,'drive',a=>use(reach,'drive',b=>{
+  assert.equal(a.metadata.trackFrontM,1.49098);
+  assert.equal(a.metadata.trackRearM,1.4859);
+  assert.deepEqual(b.diagnostics.issues,[]);
+  assert.notDeepEqual(a.fascia.front.openings,b.fascia.front.openings);
+  assert.deepEqual(a.fascia.rear.openings,b.fascia.rear.openings);
+  assert.deepEqual(a.wheels,b.wheels);
+  assert.equal(b.fascia.front.trimArea.unmatched,0);
+ }));
+});
