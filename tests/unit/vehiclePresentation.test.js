@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import * as THREE from '../../src/vendorBridge/three.js';
 import {buildModelObject} from '../../src/model3d/ModelRender.js';
-import {syncRaceModelLamps} from '../../src/model3d/RaceModelVehicle.js';
+import {raceVehicleEnvironmentProfile,syncRaceModelLamps} from '../../src/model3d/RaceModelVehicle.js';
 import {carFxDrivingState} from '../../src/racing/CarFx.js';
 import {installRaceLighting} from '../../src/racing/RaceLighting.js';
 import {automotiveEnvironment,applyAutomotiveEnvironment} from '../../src/model3d/AutomotiveMaterials.js';
@@ -80,6 +80,7 @@ test('only the matched WRX Fit 10 bundle uses the garage bay reflection profile'
  };
  assert(Math.abs(sample('garage-bay')/sample('studio')-1)<.001);
  assert.notDeepEqual(automotiveEnvironment('garage-bay').image.data,automotiveEnvironment('studio').image.data);
+ assert(Math.abs(sample('track-clear-rally')/sample('track-clear')-1)<.001);
 });
 
 test('WebGL 2 accepts a half-float reflection target without full-float render targets',()=>{
@@ -93,4 +94,16 @@ test('WebGL 2 accepts a half-float reflection target without full-float render t
  assert.equal(mat.envMap,null);
  applyAutomotiveEnvironment(root,'garage-bay',gl2(['EXT_color_buffer_float']));
  assert.equal(mat.envMap,automotiveEnvironment('garage-bay'));
+});
+
+test('clear race reflections change only for the exact Fit 10 model and preserve other light conditions',()=>{
+ const model=part=>JSON.parse(gunzipSync(readFileSync(new URL(
+   `../../src/model3d/wrx/fit10-${part}.pack`,import.meta.url))));
+ for(const part of ['body','wheel']){
+   const doc=model(part);
+   assert.equal(raceVehicleEnvironmentProfile('track-clear',doc,part),'track-clear-rally');
+   assert.equal(raceVehicleEnvironmentProfile('track-overcast',doc,part),'track-overcast');
+   assert.equal(raceVehicleEnvironmentProfile('track-night',doc,part),'track-night');
+   assert.equal(raceVehicleEnvironmentProfile('track-clear',{name:'other'},part),'track-clear');
+ }
 });

@@ -2,6 +2,7 @@ import * as THREE from '../vendorBridge/three.js';
 import {normalizeModelBinding,modelWheelBindingForAxle,placeOutboardWheelFace} from './ModelBinding.js';
 import {automotiveTrackProfile} from './AutomotiveMaterials.js';
 import {wrxPilotPart} from './WrxVisualPilot.js';
+import {isWrxFit10Document} from './WrxBundledModels.js';
 import {syncWrxBrakeHardware} from './WrxBrakeHardware.js';
 import {isNativeModelWheelCar,hasAuthoritativeModelWheelPose} from './ModelWheel.js';
 import {jointMatrices} from './ModelRig.js';
@@ -43,6 +44,9 @@ export function fitWrxFallbackVisualBody(parts,car,session){
 
 // Replace procedural parts in the existing vehicle scene. Parent transforms
 // continue to come from physics (including suspension, steering and body roll).
+export const raceVehicleEnvironmentProfile=(profile,model,part)=>
+  profile==='track-clear'&&isWrxFit10Document(model,part)?'track-clear-rally':profile;
+
 export function updateRaceModelParts(group,car,session,{library=modelAssets,automotiveProfile=null,automotiveRenderer=null}={}){
   const parts=group.userData.parts;
   const profile=automotiveProfile??automotiveTrackProfile({night:session?.night===true,weather:session?.triggerWeather??session?.weatherFxState?.weatherId});
@@ -66,7 +70,10 @@ export function updateRaceModelParts(group,car,session,{library=modelAssets,auto
       instance.setModel(model,binding,{vehicleVisual:true});
       instance.raceBindingKey=bindingKey;
     }
-    if(instance.root.userData.automotiveMaterials?.length)instance.setAutomotiveEnvironment(profile,automotiveRenderer);
+    if(instance.root.userData.automotiveMaterials?.length){
+      const environment=automotiveProfile??raceVehicleEnvironmentProfile(profile,model,wheelId?'wheel':'body');
+      instance.setAutomotiveEnvironment(environment,automotiveRenderer);
+    }
     if(instance.binding.clip&&model.animations.some(clip=>clip.id===instance.binding.clip||clip.name===instance.binding.clip)){
       instance.time=Math.max(0,Number(session?.elapsedMs)||0)/1000*instance.binding.speed;
       instance.update(0);

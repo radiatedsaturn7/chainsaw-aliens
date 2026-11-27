@@ -23,7 +23,7 @@ const PRESETS=Object.freeze({
 const validPreset=key=>Object.prototype.hasOwnProperty.call(PRESETS,key);
 const bounded=(v,f,min=0,max=1)=>typeof v==='number'&&Number.isFinite(v)?Math.max(min,Math.min(max,v)):f;
 
-const PROFILES=new Set(['studio','studio-strips','garage-bay','track-clear','track-overcast','track-night']);
+const PROFILES=new Set(['studio','studio-strips','garage-bay','track-clear','track-clear-rally','track-overcast','track-night']);
 const probes=new Map();
 const smooth=(a,b,v)=>{
  const t=Math.max(0,Math.min(1,(v-a)/(b-a)));
@@ -75,6 +75,19 @@ function garageBayRadiance(phi,y) {
    .032+doorway*1.46+overhead*1.2+side*.44,
    .043+doorway*1.95+overhead*.78+side*.21].map((c,i)=>c*1.00838*.76+studio[i]*.24);
 }
+// A broad bright cloud bank above a dark horizon, with a cooler zenith.
+// Keep the mean solid-angle luminance of the standard clear track probe;
+// concentrate it where the sky belongs rather than raising fill.
+function rallyDayRadiance(phi,y) {
+ const ridge=.040+.027*Math.sin(phi*7)+.014*Math.sin(phi*19);
+ const sky=smooth(ridge-.025,ridge+.04,y);
+ const bank=smooth(.24+.025*Math.sin(phi),.33,y)*
+   (1-smooth(.54,.65+.05*Math.cos(phi),y))*
+   (.68+.32*Math.cos(phi*.5-.38)**2);
+ const ground=(1-sky)*(1-smooth(-.20,-.029,y));
+ const base=.025+ground*.115;
+ return [base+sky*.18+bank*3.28,base+sky*.30+bank*3.85,base+sky*.54+bank*4.65].map(c=>c*.5782084);
+}
 function trackRadiance(phi,x,y,z,profile) {
  // A fixed, world-aligned HDR panorama approximation, not a dynamic probe.
  // Near-horizon features provide orientation: ground band, distant trees,
@@ -115,7 +128,7 @@ export function automotiveEnvironment(profile='studio') {
    // atan(z,x)/(2pi)+.5; vertical sample ~= asin(y)/pi+.5.
    const phi=((i+.5)/w-.5)*Math.PI*2, latitude=((j+.5)/h-.5)*Math.PI;
    const y=Math.sin(latitude),flat=Math.cos(latitude),x=Math.cos(phi)*flat,z=Math.sin(phi)*flat;
-   const radiance=profile==='studio'?studioRadiance(phi,y):profile==='studio-strips'?stripBoothRadiance(phi,y):profile==='garage-bay'?garageBayRadiance(phi,y):trackRadiance(phi,x,y,z,profile);
+   const radiance=profile==='studio'?studioRadiance(phi,y):profile==='studio-strips'?stripBoothRadiance(phi,y):profile==='garage-bay'?garageBayRadiance(phi,y):profile==='track-clear-rally'?rallyDayRadiance(phi,y):trackRadiance(phi,x,y,z,profile);
    const at=(j*w+i)*4;
    for(let k=0;k<3;k++)data[at+k]=half(radiance[k]);
    data[at+3]=half(1);
