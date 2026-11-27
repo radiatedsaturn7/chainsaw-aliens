@@ -22,6 +22,11 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
  const height=Math.max(.17,seedTop-floor);
  // Plan changes begin up on the hood/deck and quarter panels, not at the bumper seam.
  const gateBlend=z=>smooth(clamp((s*z-gate)/Math.max(.15,along-gate)));
+ const smoother=t=>(t=clamp(t),t*t*t*(10+t*(-15+t*6)));
+ const hoodDrop=end==='front'?Math.min(f.hoodNoseDrop??0,height*.12):0;
+ // Shared hood and rollover datum. The center can fall away into the
+ // grille while the top of each fender retains its headlamp shoulder.
+ const leadingDrop=u=>hoodDrop*(1-(f.hoodNoseShoulder??.72)*smoother((Math.abs(2*u-1)-.32)/.68));
  const shoulder=x=>Math.exp(-((x-.78)**2)/.034);
  function plan(u){
   const a=2*u-1, b=Math.abs(a),x=Math.sin(b*Math.PI*.5);
@@ -42,7 +47,7 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
   const y=.088*f.shoulder*shoulder(Math.abs(x))-.082*f.drop*(1-b*b)
    +.027*(bumper.shape-.5)*hump(b)+guide(f.curves.transverse,(x+1)*.5)*transverseScale*.36;
   const w=1-(.027+.11*f.taper)*blend;
-  return [raw[0]*w,raw[1]+blend*y,raw[2]-s*blend*dx*.30];
+  return [raw[0]*w,raw[1]+blend*y-leadingDrop(u)*smoother((s*z-(join-.54))/.54)*.65,raw[2]-s*blend*dx*.30];
  }
  function upperPanel(z,u){return adjustDeck(deckAt(z,u),z,u);}
  const vOffsetGuide=t=>guide(f.curves.vertical,t)*verticalScale;
@@ -74,12 +79,11 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
   const noseRake=sweepAmount*(1-smooth(clamp(v/.67)))*(.83+.17*co);
   const past=z+stamp-tucked-corner-noseRake;
   const knee=(f.bumperMidReach??0)*Math.exp(-(((v-.49)/.175)**2))*(.36+.64*Math.abs(x)**1.8);
-  return [x*edge[0]*track*(1+(f.outerFasciaWidth??0))-Math.sign(x)*corner*.72,y+lip,s*(past+Math.min(knee,Math.max(0,along-past)))];
+  return [x*edge[0]*track*(1+(f.outerFasciaWidth??0))-Math.sign(x)*corner*.72,y+lip-leadingDrop(u)*(1-smoother(v/.33)),s*(past+Math.min(knee,Math.max(0,along-past)))];
  }
  // The rear stamping and bumper are separate surfaces with their own
  // crown. A smooth corridor preserves the existing lamp/quarter shape
  // and side perimeter; the same evaluator drives the backing and trims.
- const smoother=t=>(t=clamp(t),t*t*t*(10+t*(-15+t*6)));
  const active=f.deckSurfaceBlend||f.bumperFaceBlend;
  const lampRoll=end==='rear'?(f.lampShoulderRoll??0):0;
  const topRails=active?[rawFace(.5,.065),rawFace(.5,.485)]:null;

@@ -275,7 +275,7 @@ function fasciaInspector(root,g,end){
 
  if(cfg.category==='shape'){
   choose('fascia-profile',end==='front'?'Nose profile':'Tail profile',Object.fromEntries(profileOptions()),'fascia','profile');
-  fieldsFor('fascia',(k,s)=>!isIntake(k,s)&&(end==='rear'||!k.startsWith('deck')&&!k.startsWith('bumperFace')&&k!=='lampShoulderRoll'&&!k.toLowerCase().includes('plate')&&!k.startsWith('paintedPocket'))&&(end==='front'||k!=='fogCoverHeight'));
+  fieldsFor('fascia',(k,s)=>!isIntake(k,s)&&(end==='rear'||!k.startsWith('deck')&&!k.startsWith('bumperFace')&&k!=='lampShoulderRoll'&&!k.toLowerCase().includes('plate')&&!k.startsWith('paintedPocket'))&&(end==='front'||k!=='fogCoverHeight'&&!k.startsWith('hoodNose')));
   const joining=end==='front'?'hood':'trunk', groupName=end==='front'?'Hood integration':'Trunk integration';
   const panel=group(root,groupName,false);partFields(panel,joining,['shape','depth']);
   const advancedPanel=element('button',{textContent:'Edit '+joining+' surface patch',type:'button'});
@@ -294,7 +294,7 @@ function fasciaInspector(root,g,end){
   constructionButton(root,'construction-optics','Paired lamp settings','pairs',end);
   choose('optic-housing','Housing',phenotype.OPTIC_HOUSINGS,'optics','housing');
   choose('optic-layout','Internal lamp layout',phenotype.OPTIC_LAYOUTS,'optics','layout');
-  fieldsFor('optics',k=>end==='rear'||!['silverUpper','tallHousing','rearCells'].includes(k));
+  fieldsFor('optics',k=>end==='rear'?k!=='lowerLensReach':!['silverUpper','tallHousing','rearCells'].includes(k));
   const palette=group(root,'Optic materials',true);
   for(const [key,label] of [
    [end==='front'?'head':'tail',end==='front'?'Front lamp element':'Rear lamp element'],

@@ -189,3 +189,10 @@ unchanged deck and valance edges bound the roll. **Rear → Optics → Housing
 → Upright rounded wrap** provides a taller outboard wall and a flatter lower
 edge; the contour, optics layout, and side wrap remain separately editable.
 Legacy designs default to zero shoulder roll and retain their housing.
+
+**Front → Shape → Hood leading edge drop** lowers the center of the nose
+across the hood and bumper roll. **Preserve front fender crowns** fades out
+the drop toward either side; the lower bumper and rear do not move.
+**Front → Optics → Headlight lower reach** adds depth to the light's outline
+below its fitted upper edge, including the matching cutout and gasket.
+Both changes default off in older designs.
