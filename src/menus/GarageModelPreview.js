@@ -111,6 +111,14 @@ function shadowTexture(){
  return map;
 }
 
+// Match the canvas backing pixels occupied by the car. Rendering at logical
+// layout size then enlarging it in the 2D pass softens the whole vehicle.
+export function garageModelPixelRatio(ctx,w,h){
+ const transform=ctx.getTransform?.();
+ const demand=transform?Math.max(Math.hypot(transform.a,transform.b),Math.hypot(transform.c,transform.d)):1;
+ return Math.max(1,Math.min(2,1600/Math.max(w,h),Math.ceil((demand||1)*4)/4));
+}
+
 export class GarageModelPreview {
  constructor({library=modelAssets}={}){
   this.library=library;this.scene=new THREE.Scene();this.camera=new THREE.PerspectiveCamera(35,1,.03,80);
@@ -160,12 +168,12 @@ export class GarageModelPreview {
   if(typeof document==='undefined'||!this.prepare(car))return false;
   if(!this.renderer){
    this.renderer=new THREE.WebGLRenderer({alpha:true,antialias:true});
-   this.renderer.setPixelRatio(1);
   }
   const w=Math.max(1,Math.round(b.w)),h=Math.max(1,Math.round(b.h));
-  const size=`${w}:${h}`;
+  const density=garageModelPixelRatio(ctx,w,h);
+  const size=`${w}:${h}:${density}`;
   if(this.framingSize!==size){
-   this.renderer.setSize(w,h,false);configureGarageModelCamera(this.camera,this.points,w,h);this.framingSize=size;
+   this.renderer.setDrawingBufferSize(w,h,density);configureGarageModelCamera(this.camera,this.points,w,h);this.framingSize=size;
   }
   this.instance.setAutomotiveEnvironment('studio',this.renderer);
   for(const instance of this.wheelInstances||[])instance.setAutomotiveEnvironment('studio',this.renderer);
@@ -187,3 +195,4 @@ export class GarageModelPreview {
   this.disposePlacements();this.instance.dispose();this.renderer?.dispose();this.renderer=null;this.model=null;this.wheelModel=null;this.key=null;this.framingSize=null;
  }
 }
+

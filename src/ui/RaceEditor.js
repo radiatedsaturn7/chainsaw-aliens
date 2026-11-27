@@ -24474,11 +24474,13 @@ export default class RaceEditor {
     const hasCustomShadowArt = Boolean(String(car?.art?.shadowArtRef || '').trim());
     const visibility = this.getCarArtLayerVisibility(car);
     const damage = this.getRaceSessionDamage();
+    const lampState = carFxDrivingState(session, this.raceInput);
     return {
       ...renderPose,
       car,
-      braking: Boolean(this.isCarExteriorArtPreview(session) || this.raceInput.brake || this.raceInput.handbrake
-        || this.playtestSession?.authoritativeHandbrakeActive),
+      braking: this.isCarExteriorArtPreview(session) || lampState.braking,
+      reversing: lampState.reverse,
+      headlights: this.raceHeadlightsEnabled(),
       drawBody: !hasBodyArt && visibility.body,
       drawWheels: !hasTireArt && visibility.tires,
       drawLights: (modelWheels||hasRaceModelLampMounts(car)) ? visibility.brakes : !hasBodyArt && !car.art?.brakeLightArtRef && !car.art?.fx?.length && visibility.brakes,
@@ -38191,6 +38193,8 @@ export default class RaceEditor {
     rollRad = 0,
     frontTireAngle = 0,
     braking = false,
+    reversing = null,
+    headlights = null,
     car = this.selectedCar,
     session = this.playtestSession,
     color = '#58d6ff',
@@ -38281,8 +38285,10 @@ export default class RaceEditor {
     };
     const syncModelParts=group=>{
       updateRaceModelParts(group,car,session);
-      if(hasMountedLamps)syncRaceModelLamps(group.userData.parts.body,session,
-        {enabled:mountedLights,braking,defaultHeadlights:raceStartsWithHeadlights(this.selectedRace)});
+      if(hasMountedLamps)syncRaceModelLamps(group.userData.parts.body,session,{
+        enabled:mountedLights,braking,reversing:reversing??carFxDrivingState(session).reverse,
+        headlights,defaultHeadlights:raceStartsWithHeadlights(this.selectedRace)
+      });
     };
     const updateExisting = renderer.dynamicCarGroup
       && renderer.dynamicCarGroup.userData?.structureKey === structureKey

@@ -155,8 +155,8 @@ function rearLensMask(redState,reversing){
  wrxRearMasks.set(key,map);return map;
 }
 const studioLightColors={head:0xf5e9da,brake:0xff171a,running:0xde161b,reverse:0xebf2ff,'signal-left':0xffaa34,'signal-right':0xffaa34};
-export function studioLampLevels(session,{braking=false,reversing=false,enabled=true,defaultHeadlights=false}={}){
- const state=session?.mechanical??{},head=Boolean(state.headlights??defaultHeadlights);
+export function studioLampLevels(session,{braking=false,reversing=false,enabled=true,headlights=null,defaultHeadlights=false}={}){
+ const state=session?.mechanical??{},head=Boolean(headlights??state.headlights??defaultHeadlights);
  const power=enabled?Math.max(0,Math.min(1,state.effects?.lights??1)):0;
  const signal=state.turnSignal??session?.turnSignal,blink=Math.floor((Number(session?.elapsedMs)||0)/380)%2===0;
  return {head:head*power*(state.highBeams?2.1:1.35),brake:Number(braking)*power*2.7,
@@ -164,7 +164,7 @@ export function studioLampLevels(session,{braking=false,reversing=false,enabled=
   'signal-left':(blink&&(state.hazards||signal==='hazard'||signal==='left'))?power*1.8:0,
   'signal-right':(blink&&(state.hazards||signal==='hazard'||signal==='right'))?power*1.8:0};
 }
-export function syncRaceModelLamps(part,session,{braking=false,reversing=false,enabled=true,defaultHeadlights=false}={}){
+export function syncRaceModelLamps(part,session,{braking=false,reversing=false,enabled=true,headlights=null,defaultHeadlights=false}={}){
  const instance=part?.userData?.modelInstance;
  const root=instance?.root;
  if(!root)return false;
@@ -175,6 +175,7 @@ export function syncRaceModelLamps(part,session,{braking=false,reversing=false,e
   instance.raceStudioLights=root.children.flatMap(mesh=>{
    const mat=mesh.material,role=/^\[studio9:([a-z-]+)\]/.exec(mat?.name??'')?.[1];
    if(!role||!mat.emissive||studioLightColors[role]===undefined)return [];
+   mat.userData.raceVehicleLamp=true;
    mat.emissive.set(studioLightColors[role]);mat.emissiveIntensity=0;return [{role,mat}];
   });
   const studioFront=instance.raceStudioLights.some(x=>x.role==='head'),studioRear=instance.raceStudioLights.some(x=>x.role==='brake');
@@ -230,10 +231,10 @@ export function syncRaceModelLamps(part,session,{braking=false,reversing=false,e
   }
   instance.raceMountedLamps=lights;instance.raceLampRoot=root;
  }
- const headlights=Boolean(session?.mechanical?.headlights??defaultHeadlights);
+ const headOn=Boolean(headlights??session?.mechanical?.headlights??defaultHeadlights);
  const studio=instance.raceStudioLights??[];
  if(studio.length){
-  const levels=studioLampLevels(session,{braking,reversing,enabled,defaultHeadlights});
+  const levels=studioLampLevels(session,{braking,reversing,enabled,headlights,defaultHeadlights});
   for(const {mat,role} of studio)mat.emissiveIntensity=levels[role];
  }
  const rearBar=instance.raceRearBarMaterial;
@@ -242,19 +243,19 @@ export function syncRaceModelLamps(part,session,{braking=false,reversing=false,e
    const high=Boolean(session?.mechanical?.highBeams);
    const lampPower=Math.max(0,Math.min(1,session?.mechanical?.effects?.lights??1));
    frontLens.emissiveMap=wrxReflectorMasks[high?1:0];
-   frontLens.emissiveIntensity=enabled&&headlights?lampPower*(high?1.75:1.28):0;
+   frontLens.emissiveIntensity=enabled&&headOn?lampPower*(high?1.75:1.28):0;
  }
  const rearLens=instance.raceRearLensMaterial;
  if(rearLens){
-  const redState=braking?2:headlights?1:0;
+  const redState=braking?2:headOn?1:0;
   rearLens.emissiveMap=rearLensMask(redState,reversing);
   rearLens.emissiveIntensity=enabled&&(redState||reversing)
     ?1.6*Math.max(0,Math.min(1,session?.mechanical?.effects?.lights??1)):0;
  }
- if(rearBar)rearBar.emissiveIntensity=enabled?(braking?4:headlights?2:0):0;
+ if(rearBar)rearBar.emissiveIntensity=enabled?(braking?4:headOn?2:0):0;
  for(const [name,lamp] of lights){
   const tail=name.startsWith('Tail');
-  lamp.visible=enabled&&(headlights||tail&&braking)&&!(tail&&rearBar);
+  lamp.visible=enabled&&(headOn||tail&&braking)&&!(tail&&rearBar);
   lamp.material.emissiveIntensity=tail?(braking?3.1:1.05):(session?.mechanical?.highBeams?2.9:1.95);
  }
  return lights.size>0||Boolean(frontLens)||Boolean(rearLens)||studio.length>0;
@@ -287,3 +288,4 @@ export function getRaceModelLampWorldFrames(car,{x=0,y=0,z=0,yaw=0,pitch=0,roll=
  };
  return {front:pair('Headlight'),rear:pair('Taillight')};
 }
+
