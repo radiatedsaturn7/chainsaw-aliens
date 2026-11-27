@@ -687,7 +687,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   if(!roadster)put('pillars','seamDark',patch(small(lod?12:22,7,6,5),small(3,1,1,1),(u,v)=>{
    const p=side(u,1-(.016+rs.gap*3)*v);p[0]+=s*(.003+rs.radius);p[1]-=rs.thickness*.7;return p;
   },s<0));
-  const taper=hatchFold?canopy.hatchQuarterTaper:0;
+  const taper=canopy.hatchQuarterTaper;
   if(!roadster&&taper){
    // Split side DLO on the same chart: red C-quarter mass below and aft,
    // following the narrowing rear glass contour. No coplanar overlay.

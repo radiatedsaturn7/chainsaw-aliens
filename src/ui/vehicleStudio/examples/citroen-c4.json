@@ -215,8 +215,8 @@
     "front": {
       "profile": "round",
       "intakes": "single",
-      "hoodNoseDrop": 0,
-      "hoodNoseShoulder": 0.72,
+      "hoodNoseDrop": 0.035,
+      "hoodNoseShoulder": 0.7,
       "deckSurfaceBlend": 0,
       "deckSurfaceCrown": 0.012,
       "deckLowerRoll": 0,
@@ -234,7 +234,7 @@
       "lampShoulderRoll": 0,
       "cornerTuck": 0,
       "paintedPocket": 0,
-      "upperEndSweep": 0,
+      "upperEndSweep": 0.048,
       "bumperMidReach": 0,
       "quarterWaist": 0,
       "quarterBlend": 0,
@@ -243,19 +243,19 @@
       "plateMount": 0,
       "platePosition": 0.615,
       "bumperStation": 0.43,
-      "upperFasciaLift": 0,
+      "upperFasciaLift": -0.008,
       "outerFasciaWidth": 0,
-      "grilleWidth": 0.5,
-      "grilleHeight": 0.5,
-      "grilleHeightPosition": 0.5,
+      "grilleWidth": 0.91,
+      "grilleHeight": 0.38,
+      "grilleHeightPosition": 0.36,
       "fogCoverHeight": 0.5,
       "plateHeight": 0.5,
       "plateWidth": 0.5,
-      "lowerIntakeRise": 0,
+      "lowerIntakeRise": 0.065,
       "lowerIntakeDepth": 0,
       "fogCoverStamp": 0,
-      "intakeWidth": 0.5,
-      "intakeHeight": 0.5,
+      "intakeWidth": 0.95,
+      "intakeHeight": 0.6,
       "intakeHeightPosition": 0.5,
       "sweep": 0.75,
       "pointedness": 0,
@@ -294,7 +294,9 @@
           0,
           0
         ]
-      }
+      },
+      "sideRailFairing": 0.72,
+      "lowerInsert": 0.69
     },
     "rear": {
       "profile": "square",
@@ -387,15 +389,15 @@
     "front": {
       "housing": "swept",
       "layout": "twin",
-      "width": 0.64,
+      "width": 0.75,
       "height": 0.56,
       "corner": 0.5,
       "angle": -0.33,
-      "sweep": 0.83,
+      "sweep": 0.92,
       "curvature": 0.5,
       "recess": 0.65,
       "convexity": 0.5,
-      "position": 0.46,
+      "position": 0.32,
       "outboard": 0.5,
       "sideWrap": 0,
       "tallHousing": 0,
@@ -492,20 +494,23 @@
       "hatchBridge": 0.083,
       "hatchBridgeWidth": 0.92,
       "hatchQuarterTaper": 0.92,
-      "hatchLampFill": 1
+      "hatchLampFill": 1,
+      "frontScreenRake": -0.065
     },
     "finish": {
       "paintRoughness": 0.44,
       "coatRoughness": 0.12
     },
     "hood": {
-      "shoulderRise": 0,
+      "shoulderRise": 0.013,
       "shoulderWidth": 0.087,
-      "shoulderAt": 0.65,
+      "shoulderAt": 0.73,
       "shoulderSweep": 0,
       "scoopWidth": 0,
       "scoopHeight": 0,
-      "scoopCorner": 0
+      "scoopCorner": 0,
+      "noseFairing": 0.46,
+      "crossCrown": 0.48
     },
     "wing": {
       "elevation": 0,

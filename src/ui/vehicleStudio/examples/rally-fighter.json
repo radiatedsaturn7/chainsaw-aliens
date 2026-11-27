@@ -11,12 +11,12 @@
     "front": 0.94,
     "rear": 0.939,
     "track": 0.848,
-    "belt": 0.573,
+    "belt": 0.61,
     "box": 0.32,
     "stance": 0.36,
     "cabin": -0.025,
     "cabinLength": 0.45,
-    "cabinWidth": 0.74,
+    "cabinWidth": 0.68,
     "hood": 0.015,
     "trunk": -0.018,
     "crown": 0.54,
@@ -300,7 +300,8 @@
       "insertTop": 0.084,
       "insertBottom": 0.885,
       "insertSweep": 0.24,
-      "lowerInsert": 0.57
+      "lowerInsert": 0.57,
+      "sideRailFairing": 0.92
     },
     "rear": {
       "profile": "aero",
@@ -385,7 +386,8 @@
           0
         ]
       },
-      "lowerInsert": 0.56
+      "lowerInsert": 0.56,
+      "sideRailFairing": 0.9
     }
   },
   "optics": {
@@ -493,7 +495,9 @@
       "canopyShoulder": 0.83,
       "glassBow": 0.56,
       "rallyTubework": 1,
-      "frontScreenRake": 0.17
+      "frontScreenRake": 0.23,
+      "hatchQuarterTaper": 0.91,
+      "sideGlassRise": 0.064
     },
     "finish": {
       "paintRoughness": 0.41,
@@ -704,13 +708,13 @@
     "rearFlareScale": 1.3,
     "lipScale": 0.7,
     "archFootBlend": 0.12,
-    "doorStamp": 0.007,
+    "doorStamp": 0.019,
     "doorStampFade": 0.16,
     "doorStampWidth": 0.058,
     "doorStampFront": 0.26,
     "doorStampRear": 0.26,
-    "doorStampHeight": 0.48,
-    "doorStampSweep": 0,
+    "doorStampHeight": 0.56,
+    "doorStampSweep": 0.14,
     "frontArchUpper": 0.093,
     "rearArchUpper": 0.091,
     "frontArchFore": 0.082,

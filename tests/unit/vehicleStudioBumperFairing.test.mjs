@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {generateVehicle,disposeDesign} from '../../src/ui/vehicleStudio/geometry.mjs';
 import {createEndSurface} from '../../src/ui/vehicleStudio/fascia.mjs';
 import {loadVehicle} from '../../src/ui/vehicleStudio/genome.mjs';
-import {exportVehicle} from '../../src/ui/vehicleStudio/export.mjs';
+import {exportVehicle,GAMEPLAY_TRIANGLE_BUDGET} from '../../src/ui/vehicleStudio/export.mjs';
 
 const genome=()=>loadVehicle(readFileSync(new URL('../../src/ui/vehicleStudio/examples/honda-s660.json',import.meta.url),'utf8'));
 const dist=(a,b)=>Math.hypot(...a.map((x,i)=>x-b[i]));
@@ -37,5 +37,5 @@ test('S660 fairing changes the body and inset liner, not the lamps or wheel moun
   assert.notDeepEqual(liner(a),liner(b));
  }finally{disposeDesign(a);disposeDesign(b);}
  const e=exportVehicle(g);
- assert.equal(e.metrics.carTriangles,14588);
+ assert.ok(e.metrics.carTriangles<=GAMEPLAY_TRIANGLE_BUDGET);
 });

@@ -228,16 +228,16 @@
       "deckHeight": 0.5,
       "valanceRise": 0,
       "valanceWidth": 0.5,
-      "bumperBeltRise": 0.013,
+      "bumperBeltRise": 0.022,
       "bumperBeltHeight": 0.52,
       "bumperBeltSweep": 0,
       "lampShoulderRoll": 0,
       "cornerTuck": 0.034,
       "paintedPocket": 0,
-      "upperEndSweep": 0,
+      "upperEndSweep": 0.044,
       "bumperMidReach": 0,
       "quarterWaist": 0,
-      "quarterBlend": 0,
+      "quarterBlend": 0.47,
       "terminalTuck": 0,
       "plateOpeningStretch": 0,
       "plateMount": 0,
@@ -295,7 +295,8 @@
           0
         ]
       },
-      "lowerInsert": 0.69
+      "lowerInsert": 0.69,
+      "sideRailFairing": 1
     },
     "rear": {
       "profile": "square",
@@ -380,7 +381,8 @@
           0
         ]
       },
-      "lowerInsert": 0.59
+      "lowerInsert": 0.59,
+      "sideRailFairing": 0.85
     }
   },
   "optics": {
@@ -441,6 +443,7 @@
       "roundBowls": 0,
       "silverFront": 0,
       "silverUpper": 1,
+      "silverUpperSplit": 0.175,
       "flutedBowls": 0,
       "inboardReach": 0.5,
       "protrusion": 0,
@@ -486,13 +489,16 @@
       "rearGlassArc": 0.048,
       "canopyLength": 1,
       "canopyShoulder": 0.47,
-      "glassBow": 0.2,
-      "utilityRoofRails": 0.77,
-      "rearHatchUpright": 0.85
+      "glassBow": 0.44,
+      "utilityRoofRails": 0.88,
+      "rearHatchUpright": 0.85,
+      "hatchQuarterTaper": 0.58,
+      "frontScreenRake": 0.125,
+      "sideGlassRise": 0.022
     },
     "finish": {
-      "paintRoughness": 0.36,
-      "coatRoughness": 0.076
+      "paintRoughness": 0.39,
+      "coatRoughness": 0.091
     },
     "hood": {
       "shoulderRise": 0,
@@ -686,12 +692,12 @@
     "rearFlareScale": 0.61,
     "lipScale": 0.62,
     "archFootBlend": 0.08,
-    "doorStamp": 0.018,
+    "doorStamp": 0.028,
     "doorStampFade": 0.12,
     "doorStampWidth": 0.091,
     "doorStampFront": 0.26,
     "doorStampRear": 0.26,
-    "doorStampHeight": 0.63,
+    "doorStampHeight": 0.67,
     "doorStampSweep": 0,
     "frontArchUpper": 0.052,
     "rearArchUpper": 0.053,

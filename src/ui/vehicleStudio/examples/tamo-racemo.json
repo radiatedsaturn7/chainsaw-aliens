@@ -17,7 +17,7 @@
     "cabin": -0.018,
     "cabinLength": 0.58,
     "cabinWidth": 0.713,
-    "hood": -0.047,
+    "hood": -0.074,
     "trunk": -0.028,
     "crown": 0.63,
     "skirt": 0.98,
@@ -99,7 +99,7 @@
     "trunk": {
       "type": "fastback",
       "size": 1,
-      "shape": 0.3,
+      "shape": 0.57,
       "depth": 1
     },
     "headlights": {
@@ -500,11 +500,14 @@
       "trim": 0.54,
       "rearPillarFoot": 0,
       "rearRoofShift": 0.058,
-      "rearPillarWidth": 0,
+      "rearPillarWidth": 0.072,
       "rearGlassArc": 0.036,
-      "canopyLength": 0.26,
+      "canopyLength": 0.2,
       "canopyShoulder": 0.7,
-      "glassBow": 0.5
+      "glassBow": 0.5,
+      "rearDeckButtresses": 0.055,
+      "sideGlassRise": 0.046,
+      "hatchQuarterTaper": 0.9
     },
     "finish": {
       "paintRoughness": 0.286,
@@ -688,9 +691,9 @@
     }
   },
   "body": {
-    "frontFlareScale": 0.83,
-    "rearFlareScale": 1.07,
-    "lipScale": 1,
+    "frontFlareScale": 1.21,
+    "rearFlareScale": 1.27,
+    "lipScale": 1.12,
     "archFootBlend": 0.065,
     "doorStamp": 0.018,
     "doorStampFade": 0.16,
@@ -705,7 +708,7 @@
     "rearArchFore": 0.035,
     "creaseHeight": 0.31,
     "creaseStrength": 0.51,
-    "archCrown": 0.86,
+    "archCrown": 0.97,
     "roofEdge": 0.47,
     "handleRecess": 0.49,
     "sideDuct": 1,

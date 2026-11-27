@@ -295,7 +295,7 @@ function fasciaInspector(root,g,end){
   constructionButton(root,'construction-optics','Paired lamp settings','pairs',end);
   choose('optic-housing','Housing',phenotype.OPTIC_HOUSINGS,'optics','housing');
   choose('optic-layout','Internal lamp layout',phenotype.OPTIC_LAYOUTS,'optics','layout');
-  fieldsFor('optics',k=>end==='rear'?k!=='lowerLensReach':!['silverUpper','tallHousing','rearCells'].includes(k));
+  fieldsFor('optics',k=>end==='rear'?k!=='lowerLensReach':!['silverUpper','silverUpperSplit','tallHousing','rearCells'].includes(k));
   const palette=group(root,'Optic materials',true);
   for(const [key,label] of [
    [end==='front'?'head':'tail',end==='front'?'Front lamp element':'Rear lamp element'],

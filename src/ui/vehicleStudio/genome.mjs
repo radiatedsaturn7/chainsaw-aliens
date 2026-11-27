@@ -88,7 +88,7 @@ export const OPTIC_HOUSINGS={'circle':'Circular',oval:'Oval',rectangle:'Rectangu
 export const OPTIC_LAYOUTS={projector:'Single projector',twin:'Twin elements',led:'LED signature',mixed:'Projector + LED','factory-split':'Factory split lens','round-stack':'Round rear lamp with running-light ring'};
 export const OPTIC_FIELDS={width:unit('Housing width'),height:unit('Housing height'),corner:unit('Corner radius'),angle:signed('Housing angle'),
  sweep:unit('Housing sweep'),curvature:unit('Lens curvature'),recess:unit('Recess depth'),convexity:unit('Lens convexity'),
- position:unit('Vertical position'),outboard:unit('Outboard lamp placement'),sideWrap:F('Wrap lamp into side',0,1,.01),physicalDiameter:F('Round lens diameter (m; 0 = legacy)',0,.20,.005),circleLift:F('Round lens raise on fascia',0,.14,.005),tallHousing:F('Taller rear lens',0,.42,.01),lowerLensReach:F('Headlight lower reach',0,.11,.005),rearCells:F('Molded red reflector cells (off/on)',0,1,1),roundBowls:F('Rounder reflector bowls',0,1,.01),silverFront:F('Silver headlight backing (off/on)',0,1,1),silverUpper:F('Silver upper taillight chamber (off/on)',0,1,1),flutedBowls:F('Reflector flute definition',0,1,.01),inboardReach:unit('Lens reach toward grille'),protrusion:unit('Lens protrusion')};
+ position:unit('Vertical position'),outboard:unit('Outboard lamp placement'),sideWrap:F('Wrap lamp into side',0,1,.01),physicalDiameter:F('Round lens diameter (m; 0 = legacy)',0,.20,.005),circleLift:F('Round lens raise on fascia',0,.14,.005),tallHousing:F('Taller rear lens',0,.42,.01),lowerLensReach:F('Headlight lower reach',0,.11,.005),rearCells:F('Molded red reflector cells (off/on)',0,1,1),roundBowls:F('Rounder reflector bowls',0,1,.01),silverFront:F('Silver headlight backing (off/on)',0,1,1),silverUpper:F('Silver upper taillight chamber (off/on)',0,1,1),silverUpperSplit:F('Upper silver chamber split',-.08,.20,.005),flutedBowls:F('Reflector flute definition',0,1,.01),inboardReach:unit('Lens reach toward grille'),protrusion:unit('Lens protrusion')};
 export const FASCIA_DEMOS={classic:'Upright classic',rally:'Rounded sport sedan',hyper:'Pointed hypercar',compound:'Compound-curved sports car'};
 const enumValue=(v,choices,key)=>{if(typeof v!=='string'||!Object.hasOwn(choices,v))throw Error('Unknown '+key);return v;};
 const cleanList=(v,n,key)=>{if(!Array.isArray(v)||v.length!==n)throw Error('Invalid '+key);return v.map(x=>number(x,{min:-1,max:1},key));};
@@ -101,7 +101,7 @@ function baseFascia(family,front,legacy){
 }
 function baseOptic(family,front){return {
  housing:front?(family==='coupe'?'round-rect':family==='fastback'?'oval':'swept'):(family==='fastback'?'wrap':'trapezoid'),
- layout:front?'mixed':'led',...initial(OPTIC_FIELDS,{angle:0,width:.58,height:.54,position:.46,recess:.53,protrusion:0,sideWrap:0,physicalDiameter:0,circleLift:0,roundBowls:0,flutedBowls:0,silverFront:0,silverUpper:0,tallHousing:0,lowerLensReach:0,rearCells:0}),outline:Array(8).fill(0),formula:'',modules:0,spacing:.5,outboard:.5,inboardReach:.5
+ layout:front?'mixed':'led',...initial(OPTIC_FIELDS,{angle:0,width:.58,height:.54,position:.46,recess:.53,protrusion:0,sideWrap:0,physicalDiameter:0,circleLift:0,roundBowls:0,flutedBowls:0,silverFront:0,silverUpper:0,silverUpperSplit:-.018,tallHousing:0,lowerLensReach:0,rearCells:0}),outline:Array(8).fill(0),formula:'',modules:0,spacing:.5,outboard:.5,inboardReach:.5
 };}
 export function createFasciaDemo(key){
  if(!Object.hasOwn(FASCIA_DEMOS,key))throw Error('Unknown fascia demonstration');

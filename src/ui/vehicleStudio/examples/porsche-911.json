@@ -238,13 +238,13 @@
       "bumperMidReach": 0,
       "quarterWaist": 0,
       "quarterBlend": 0,
-      "terminalTuck": 0,
+      "terminalTuck": 0.023,
       "plateOpeningStretch": 0,
       "plateMount": 0,
       "platePosition": 0.615,
       "bumperStation": 0.53,
       "upperFasciaLift": 0.132,
-      "outerFasciaWidth": 0.036,
+      "outerFasciaWidth": 0.023,
       "grilleWidth": 0.5,
       "grilleHeight": 0.5,
       "grilleHeightPosition": 0.5,
@@ -261,15 +261,15 @@
       "pointedness": 0,
       "center": 0.93,
       "roundness": 0.83,
-      "taper": 0.18,
+      "taper": 0.245,
       "drop": 0.27,
-      "verticalRoundness": 0.66,
+      "verticalRoundness": 0.76,
       "rake": 0.1,
       "rollover": 0.89,
       "lowerRoll": 0.76,
       "wrap": 0.91,
       "shoulder": 0.88,
-      "chin": 0.42,
+      "chin": 0.2,
       "recess": 0.23,
       "crease": 0.16,
       "boxiness": 0.34,
@@ -300,7 +300,8 @@
       "insertTop": 0.42,
       "insertBottom": 0.975,
       "insertSweep": -0.018,
-      "lowerDuctMatte": 0.72
+      "lowerDuctMatte": 0.72,
+      "sideRailFairing": 0.82
     },
     "rear": {
       "profile": "round",
@@ -384,7 +385,12 @@
           0,
           0
         ]
-      }
+      },
+      "tailBridge": 1,
+      "lowerInsert": 0.63,
+      "rearTrayDepth": 0.052,
+      "rearTrayWidth": 0.78,
+      "rearTrayHeight": 0.68
     }
   },
   "optics": {
@@ -485,13 +491,15 @@
       "lumbar": 0.45,
       "trim": 0.54,
       "rearPillarFoot": 0.29,
-      "rearRoofShift": 0.085,
+      "rearRoofShift": 0.18,
       "rearPillarWidth": 0.04,
-      "rearGlassArc": 0.104,
-      "canopyLength": 0.4,
+      "rearGlassArc": 0.117,
+      "canopyLength": 0.84,
       "canopyShoulder": 0.99,
       "glassBow": 0.94,
-      "frontScreenRake": 0.065
+      "frontScreenRake": 0.02,
+      "sideGlassRise": 0.03,
+      "hatchQuarterTaper": 0.64
     },
     "finish": {
       "paintRoughness": 0.29,
@@ -545,7 +553,8 @@
         "bevel": 0.004,
         "recess": 0.018,
         "finish": "steel",
-        "mirror": false
+        "mirror": false,
+        "fasciaHeight": 0
       }
     ],
     "features": []

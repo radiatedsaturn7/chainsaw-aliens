@@ -106,3 +106,23 @@ All ten remain editable through their Studio genomes. The roster bundles do not 
 | Briar (Forester) | Two-tone rear lamps, wider plate pocket and stronger rear bumper molding. |
 
 The guides are for visual comparison: these are still editable approximations. All four stock wheel mounts and the existing suspension are preserved.
+
+### Multi-view photo fitting
+
+Compare the wheel centers first, then the silhouette and panel break lines.
+A paint or lens color correction does not count as a shape correction.
+The study cars are inspired by the source bodies, not exact replicas, and
+the sourced photos are references only, not distributed game art.
+
+| Study | Additional references | What to check at the same angle |
+| --- | --- | --- |
+| WRX | [Subaru's period preview](https://www.subaru.ca/Content/7907/media/en-ca/download/SixStarReviewFall2003.pdf), [US 2004 side profile](https://www.builtforbackroads.com/listing/2004-subaru-sti-30), [low-mileage US rear gallery](https://www.autoblog.com/carbuying/2004-subaru-impreza-wrx-sti-for-sale) | Larger corner lenses with a narrow silver upper chamber, squarer plate pocket, flatter lower valance, stronger painted rocker profile. Do not change the hood crown. |
+| GT3 | [Porsche 992.1 GT3 press gallery](https://newsroom.porsche.com/de_CH/produkte/bilder-videos/porsche-911-gt3-2021.html) | Roof sweep and rear glass in profile, running light across the rear. Remaining gaps include the organic fender-to-nose transition and width of the rear light treatment. |
+| Quattro | [Ihle R44 history and images](https://www.ihle-motorsport.de/en/fahrzeuge/audi-a1-r44/), [FIA B-229](https://historicdb.fia.com/node/99611) | More upright rectangular lamps and stepped bumper. R44 went from A1 to A2 after July 1983; restored chassis photos don't date every wing or vent. Label the study R44-inspired. |
+| Racemo | [Geneva show gallery](https://auta5p.eu/vystavy/zeneva_2017/gims_049.php), [Evo show photos](https://www.evo.co.uk/news/19034/tata-motors-tamo-racemo-in-pictures) | Short hood, high rear buttresses and rear fender silhouette. The thick two-tone side intake surround is still under-modeled. |
+| S660 | [Honda 2015 S660 alpha gallery](https://global.honda/en/newsroom/news/2015/4150330eng-s660/image_download.html), [Honda fact book](https://www.honda.co.jp/factbook/auto/S660/201503/S660_201503.pdf) | Compare the hood, nose and light pockets from the front rather than against a rear reference. |
+| C4 Coupé | [Exact-year VTS gallery](https://auctions.wbandsons.com/auction/lot/lot-113---2005-citroen-c4-vts/?lot=3198&sd=1), [factory brochure, Coupé pp. 3–5](https://autocatalogarchive.com/wp-content/uploads/2023/12/Citroen-C4-2006-ES.pdf) | Hood and bumper from the front, hatch bridge and optical separation from the rear. |
+| Carnival | [US 2024 Carnival LX exterior gallery](https://www.sunsetchevrolet.com/used-Sumner-2024-Kia-Carnival-LX-KNDNB4H31R6406708) | Taller painted door sides, slimmer glass, wider rear quarter applique. |
+| Rally Fighter | [2011 Rally Fighter listing and gallery](https://www.classic.com/veh/2011-local-motors-rally-fighter-tex113889-pz5X7MW/) | Lower daylight opening and rear quarter taper; the exposed off-road stance still needs better modeling around the bumper and suspension. |
+| Miata | [Original 1990 red NA photo gallery](https://bringatrailer.com/listing/1990-mazda-mx-5-miata-122/), [Mazda 1990 brochure](https://www.motorologist.com/wp-content/uploads/1990-Mazda-Miata-MX5-brochure.pdf) | Soft rear bumper curvature and broad oval tail clusters, not a generic angular coupe tail. |
+| Forester | [Subaru's 2004 XT preview](https://www.subaru.ca/Content/7907/media/en-ca/download/SixStarReviewFall2003.pdf), [US-spec 2.5XT gallery](https://www.carfindersdenver.com/pre-owned-cars/detail/2004-Subaru-Forester/1384386) | Compare taper of the quarter light and the transition from side glazing to the rear hatch surround. |
