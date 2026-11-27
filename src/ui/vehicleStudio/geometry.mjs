@@ -266,7 +266,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    archEnd:L+Math.max(archData(sign*L,-1).fore,archData(sign*L,1).fore),floor,deckAt:front?originalHood:originalTrunk,
    sideAt:(z,v,s)=>skinPoint(z,v,s,name),bumper:c[name],upper,hoodFairing:front?hoodDesign.noseFairing:0,hoodCrown:front?hoodDesign.crossCrown:0});
   ends[end]=surf;
-  const originalOpenings=makeOpenings({end,g,segments:small(quality==='opponent'?14:lod?18:quality==='export'?32:24,13,12,9)});
+  const originalOpenings=makeOpenings({end,g,face:surf.face,segments:small(quality==='opponent'?14:lod?18:quality==='export'?32:24,13,12,9)});
   const openings=!front&&hatchLamps?originalOpenings.filter(o=>o.kind!=='lamp'):originalOpenings;
   if(!front){
    const pockets=exhaustMountOpenings(g,surf.face,openings);

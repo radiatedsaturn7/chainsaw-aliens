@@ -25,7 +25,7 @@ const profiles={
  compound:[[-1,-.36],[-.79,-.77],[-.29,-.99],[.24,-.87],[.83,-.98],[1,-.69],[.95,.33],[.72,.89],[.27,.82],[-.36,1],[-.82,.78],[-1,.31]]
 };
 export const HOUSING_FAMILIES=['round-rect','circle','oval','rectangle','trapezoid','angular','swept','wrap','upright-wrap','compound','round-twin'];
-const layouts=new Set(['projector','twin','led','mixed','factory-split']);
+const layouts=new Set(['projector','twin','led','mixed','factory-split','round-stack']);
 function curvePolygon(points,r,n){
  const controls=(p,q,t)=>p.map((x,i)=>mix(x,q[i],t));
  const list=[];
@@ -93,14 +93,45 @@ export function exhaustMountOpenings(g,face,existing){
  }
  return pockets;
 }
-export function makeOpenings({end,g,segments=32}){
+// Solve the projected XY circle on the full curved fascia. UV circles
+// alone become tall slots where the corner compresses the horizontal axis.
+function projectRoundLamp(opening,face,diameter,lift){
+ const [u,v0]=opening.center;
+ const attempt=(v,scale)=>{
+  const [X,Y]=face(u,v),radius=diameter*.5*scale;
+  let valid=true;
+  const outline=opening.outline.map((_,i,points)=>{
+   const t=i/points.length*tau,tx=X+radius*Math.cos(t),ty=Y+radius*Math.sin(t);
+   let x=u,y=v;
+   for(let k=0;k<9;k++){
+    const [px,py]=face(x,y),ex=tx-px,ey=ty-py;
+    if(Math.hypot(ex,ey)<1e-5)break;
+    const h=.00045,A=face(x+h,y),B=face(x,y+h),
+     ax=(A[0]-px)/h,ay=(A[1]-py)/h,bx=(B[0]-px)/h,by=(B[1]-py)/h,det=ax*by-ay*bx;
+    if(Math.abs(det)<1e-7){valid=false;break;}
+    x=sat(x+Math.max(-.14,Math.min(.14,(ex*by-ey*bx)/det)));
+    y=sat(y+Math.max(-.14,Math.min(.14,(ey*ax-ex*ay)/det)));
+   }
+   const [px,py]=face(x,y);
+   if(Math.hypot(tx-px,ty-py)>.0005||x<=.03||x>=.97||y<=.036||y>=.645||(u<.5?x>=.435:x<=.565))valid=false;
+   return [x,y];
+  });
+  if(!valid)return false;
+  opening.center=[u,v];opening.outline=outline;
+  opening.width=2*Math.max(...outline.map(p=>Math.abs(p[0]-u)));
+  opening.height=2*Math.max(...outline.map(p=>Math.abs(p[1]-v)));
+  return true;
+ };
+ for(let i=0;i<8;i++)if(attempt(Math.max(.10,v0-lift*(1-i*.10)),1-i*.065))return;
+}
+export function makeOpenings({end,g,segments=32,face=null}){
  const front=end==='front',c=g.components??{},legacy=c[front?'headlights':'tails']??{},base=g.optics?.[end]??{},group=front?'headlights':'taillights';
  const fascia=g.fascia?.[end]??{},mode=fascia.intakes??'single',out=[];
  for(const s of [-1,1]){
  const raw=getSideSettings(g,group,s>0?'R':'L',base);
  const housing=HOUSING_FAMILIES.includes(raw.housing)?raw.housing:
   (legacy.type==='round'?'circle':legacy.type==='rectangular'||legacy.type==='strip'?'round-rect':front?'swept':'trapezoid');
- const opt={housing,layout:layouts.has(raw.layout)?raw.layout:(legacy.type==='strip'?'led':front?'twin':'mixed'),
+ const opt={housing,layout:layouts.has(raw.layout)&&(!front||raw.layout!=='round-stack')?raw.layout:(legacy.type==='strip'?'led':front?'twin':'mixed'),
    width:sat(num(raw.width,.5)),height:sat(num(raw.height,.5)),corner:sat(num(raw.corner,.5)),
    angle:signed(num(raw.angle,(legacy.angle||0)/18)),sweep:sat(num(raw.sweep,.5)),
    curvature:sat(num(raw.curvature,.5)),recess:sat(num(raw.recess,.5)),convexity:sat(num(raw.convexity,.5)),
@@ -118,8 +149,10 @@ export function makeOpenings({end,g,segments=32}){
  // Keep a solid band to the tallest possible fog cover underneath.
  const reach=front?Math.min(.11,Math.max(0,num(raw.lowerLensReach,0)),Math.max(0,.585-(cyBase+hBase/2))):0;
  const h=hBase+reach,cy=cyBase+reach/2;
- out.push(aperture({id:(front?'head':'tail')+(s>0?'-l':'-r'),
-  component:front?'headlights':'tails',housing,cx:s>0?1-sideX:sideX,cy,width:w,height:h,side:s,opt,segments}));
+ const opening=aperture({id:(front?'head':'tail')+(s>0?'-l':'-r'),
+  component:front?'headlights':'tails',housing,cx:s>0?1-sideX:sideX,cy,width:w,height:h,side:s,opt,segments});
+ if(!front&&face&&housing==='circle'&&raw.physicalDiameter>0&&!raw.sideWrap)projectRoundLamp(opening,face,raw.physicalDiameter,raw.circleLift);
+ out.push(opening);
  }
  if(front){
   const gr=c.grille??{},fog=c.fogs??{};
@@ -484,6 +517,16 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
     putGeo(front?'projector':'opticRed',[rr(.51,bright?d*.60:d*.64),rr(.29,d*.55)],pt(x,y,d*.53));
    }
   };
+  if(!front&&oLayout==='round-stack'){
+   // A broad brake optic and independent red running ring sit behind
+   // the outer glass. The small reverse/turn elements remain functional.
+   putGeo('runningRed',[ring(.855,d*.425),ring(.705,d*.392),ring(.625,d*.41)]);
+   putGeo('opticRed',[ring(.61,d*.49),ring(.48,d*.443),ring(.20,d*.456)],pt(cx,cy,d*.47));
+   for(const [mat,sy] of [['opticClear',.264],[side>0?'signalR':'signalL',-.264]]){
+    const e=fitted(cx,cy+sy*h,w*.067,h*.047,lod?8:10);
+    putGeo(mat,[ring(1,d*.40,e.p,e.x,e.y)],pt(e.x,e.y,d*.395));
+   }
+  }
   if(oLayout==='factory-split'){
    // Inside the sealed housing, divide the lens into two shallow molded
    // sections, independently of its external profile and cavity.
@@ -542,7 +585,7 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
   if(oLayout==='projector')proj(0,.23,.29);
   if(oLayout==='twin'){proj(-.19,.159,front?.289:.255);proj(.17,.135,front?.268:.227,false);}
   if(oLayout==='mixed')proj(-.14,.16,.227);
-  if(oLayout==='led'||oLayout==='mixed'||opt.modules>0){
+  if(oLayout!=='round-stack'&&(oLayout==='led'||oLayout==='mixed'||opt.modules>0)){
    const count=opt.modules||5,spacing=(.42+.26*(opt.spacing??.5))/Math.max(count-1,1);
    for(let i=0;i<count;i++){
     const along=count===1?0:(i-(count-1)*.5)*spacing;
@@ -550,7 +593,7 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
     putGeo(front?'head':'opticRed',[ring(1,d*.66,poly,x,y),ring(.72,d*.50,poly,x,y)],pt(x,y,d*.48));
    }
   }
-  if(kind==='lamp'&&oLayout!=='factory-split'){
+  if(kind==='lamp'&&oLayout!=='factory-split'&&oLayout!=='round-stack'){
    const {x,y,p}=fitted(cx+side*w*(oLayout==='twin'?.34:.303),cy+h*.223,w*.058,h*.058,10);
    putGeo(front?(side>0?'signalR':'signalL'):'opticClear',[ring(1,d*.68,p,x,y),ring(.78,d*.54,p,x,y)],pt(x,y,d*.52));
    if(!front){
@@ -560,7 +603,7 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
   }
   // Convex lens follows parametric fascia wrap, with independent radial
   // center curvature; default is recessed and never a solid white face.
-  if(!front&&oLayout!=='factory-split'){
+  if(!front&&oLayout!=='factory-split'&&oLayout!=='round-stack'){
    const strip=fitted(cx,cy+h*.24,w*.31,h*.072,lod?10:14);
    putGeo('runningRed',[ring(1,d*.37,strip.p,strip.x,strip.y),ring(.87,d*.34,strip.p,strip.x,strip.y)],pt(strip.x,strip.y,d*.34));
   }

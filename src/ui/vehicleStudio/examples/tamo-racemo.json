@@ -325,7 +325,7 @@
       "bumperBeltRise": 0,
       "bumperBeltHeight": 0.44,
       "bumperBeltSweep": 0,
-      "lampShoulderRoll": 0,
+      "lampShoulderRoll": 0.025,
       "cornerTuck": 0,
       "paintedPocket": 0,
       "upperEndSweep": 0.032,
@@ -337,7 +337,7 @@
       "plateMount": 0.86,
       "platePosition": 0.67,
       "bumperStation": 0.4,
-      "upperFasciaLift": 0,
+      "upperFasciaLift": 0.029,
       "outerFasciaWidth": 0,
       "grilleWidth": 0.5,
       "grilleHeight": 0.5,
@@ -431,17 +431,17 @@
     },
     "rear": {
       "housing": "circle",
-      "layout": "mixed",
+      "layout": "round-stack",
       "width": 0.96,
       "height": 1,
       "corner": 0.85,
       "angle": 0,
       "sweep": 0,
-      "curvature": 0.34,
-      "recess": 0.79,
-      "convexity": 0.24,
+      "curvature": 0.26,
+      "recess": 0.49,
+      "convexity": 0.41,
       "position": 0.128,
-      "outboard": 0.88,
+      "outboard": 0.77,
       "sideWrap": 0,
       "tallHousing": 0.06,
       "lowerLensReach": 0,
@@ -464,7 +464,9 @@
       ],
       "formula": "",
       "modules": 0,
-      "spacing": 0.5
+      "spacing": 0.5,
+      "physicalDiameter": 0.139,
+      "circleLift": 0.059
     }
   },
   "construction": {
@@ -804,12 +806,12 @@
     "leather": "#323642",
     "cloth": "#424654",
     "stitch": "#686b71",
-    "opticRed": "#bd2630",
+    "opticRed": "#c62536",
     "opticClear": "#8299a7",
     "opticSilver": "#d3d7db",
     "signalL": "#ef9c3e",
     "signalR": "#ef9c3e",
-    "runningRed": "#ab1a28"
+    "runningRed": "#bf1927"
   },
   "attachments": {
     "schema": "axles-and-optics-v1"

@@ -47,7 +47,7 @@ hatch-edge optics. The WRX retains its approved hood crown and paint;
 its reshaped front lower intake and corner bypasses are editable.
 
 The current gameplay exports include all four wheels: 13,042 (Linaria),
-14,880 (Linum), 14,610 (Ember Pod), 14,588 (Kestrel), 14,978 (Flint),
+14,880 (Linum), 14,326 (Ember Pod), 14,588 (Kestrel), 14,978 (Flint),
 14,875 (Caravan), 14,316 (Dustjack), 13,938 (Lark), 13,654 (Briar), and
 14,822 (WRX). These are photo-guided approximations, not scan-accurate
 models. Each roster export is reproduced by tests that check all four
@@ -58,3 +58,8 @@ pocket. In Construction → Exhaust, **Raised fascia mount (0 = floor
 mount)** travels on the actual bumper chart. If a placement intersects a
 lamp, plate recess, or protected edge, that group keeps its floor mount
 instead of cutting an invalid opening.
+
+Raised round taillights are fitted in physical rear-view space rather
+than as circles in a compressed UV chart. The **Round lens diameter**
+and **Round lens raise on fascia** controls fit the housing; **Round
+rear lamp with running-light ring** is an independent optical layout.
