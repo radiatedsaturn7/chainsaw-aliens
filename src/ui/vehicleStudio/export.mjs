@@ -3,7 +3,7 @@ import {createBuiltInRaceCars} from '../../racing/raceData.js';
 import {generateVehicle,disposeDesign} from './geometry.mjs';
 const PALETTE={
  paint:['Coachwork paint','paint'],wheel:['Wheel alloy','alloy'],glass:['Cabin glass','glass'],rubber:['Tire rubber','rubber'],
- trim:['Exterior trim','trim'],chrome:['Machined steel','machined'],head:['Front optical lens','optic'],tail:['Rear optical lens','optic'],opticCover:['Clear optical cover','glass'],indicator:['Amber indicator','optic'],
+ trim:['Exterior trim','trim'],chrome:['Machined steel','machined'],head:['Front optical lens','optic'],tail:['Rear optical lens','optic'],opticCover:['Clear optical cover','glass'],indicator:['Amber indicator','optic'],seamDark:['Recess and seam backing','trim'],projector:['Unlit projector glass','optic'],reflector:['Optical reflector','machined'],
  interior:['Interior vinyl','trim'],seat:['Seat upholstery','upholstery'],floor:['Floor carpet','upholstery']
 };
 const solidTexture=(pixel)=>({width:1,height:1,pixels:[pixel]});

@@ -9,7 +9,7 @@ const guide=(c,t)=>{
  return a**3*c[0]+3*a*a*t*c[1]+3*a*t*t*c[2]+t**3*c[3];
 };
 
-export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,deckAt,sideAt,bumper}){
+export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,deckAt,sideAt,bumper,upper=null}){
  const s=end==='front'?1:-1,along=s*tip,join=s*seam,gate=s*cabin;
  const travel=along-join;
  const maxRetreat=Math.max(.027,along-Math.max(archEnd+.028,join+travel*.28)-.013);
@@ -69,9 +69,10 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
  function bridge(u,r){
   const start=upperPanel(seam,u),lead=face(u,0);
   const p0=upperPanel(seam-s*.010,u),z=lead[2]-start[2];
-  const roll=1.10+.92*f.rollover;
+  const roll=1.10+.92*f.rollover+(upper?.curvature??0)*.17;
   const t=smooth(r);
-  const pitch=clamp((start[1]-p0[1])/.010,-.75,.75);
+  const slope=clamp((start[1]-p0[1])/.010,-.75,.75);
+  const pitch=mix(slope*.70,slope*(1.10+.40*f.rollover),((upper?.tangent??.9)*(1-(upper?.crease??0))));
   const target=Math.min(0,(lead[1]-start[1])*1.58);
   // Cubic Hermite y with an entering hood/deck tangent and a vertical tangent at the roll.
   const y=(2*r**3-3*r*r+1)*start[1]+(r**3-2*r*r+r)*pitch*Math.abs(z)
@@ -106,7 +107,7 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
 
 // Tessellate with exact trim rings. Refinement only splits internal edges;
 // mounting walls and adjacent panels keep precisely the same boundary vertices.
-export function fasciaMesh(surface,openings,{rear=false,across=34,down=14}={}){
+export function fasciaMesh(surface,openings,{rear=false,across=34,down=14,tolerance=.103}={}){
  const outline=[];
  for(let i=0;i<=across;i++)outline.push([i/across,0]);
  for(let i=1;i<=down;i++)outline.push([1,i/down]);
@@ -166,7 +167,7 @@ export function fasciaMesh(surface,openings,{rear=false,across=34,down=14}={}){
   const changed=new Map(),out=[];
   function mid(a,b){
    const k=key(a,b),p=points[a],q=points[b];
-   if(fixed.has(k)||Math.hypot((p[0]-q[0])*1.35,(p[1]-q[1])*.80)<.095)return -1;
+   if(fixed.has(k)||Math.hypot((p[0]-q[0])*1.35,(p[1]-q[1])*.80)<tolerance)return -1;
    if(!changed.has(k)){changed.set(k,points.length);points.push([(p[0]+q[0])/2,(p[1]+q[1])/2]);}
    return changed.get(k);
   }

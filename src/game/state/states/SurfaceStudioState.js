@@ -49,7 +49,11 @@ export default class SurfaceStudioState {
     const frame = this.frame;
     if (!frame) return;
     try {
-      this.draft = frame.contentWindow?.vehicleDesigner?.getGenome() ?? this.draft;
+      const studio = frame.contentWindow?.vehicleDesigner;
+      this.draft = studio?.getGenome() ?? this.draft;
+      // An iframe detached during the switch to the 3D race does not always
+      // receive pagehide immediately. Drop the old GL context explicitly.
+      studio?.disposePreview?.();
       frame.contentDocument?.removeEventListener(EXIT_EVENT, this.onBack);
       frame.contentDocument?.removeEventListener('lotg-vehicle-studio-drive', this.onDrive);
     } finally {

@@ -13,7 +13,26 @@ const zebra=new T.ShaderMaterial({side:T.DoubleSide,
   float x=sin(32.*atan(r.y,length(r.xz))+7.*r.x);
   float a=max(0.05,0.75*fwidth(x));gl_FragColor=vec4(mix(vec3(0.023,0.030,0.041),vec3(0.95,0.97,1.),smoothstep(-a,a,x)),1.);}`,
  uniforms:{cameraWorld:{value:new T.Matrix4()},ortho:{value:false}}});
-export function createViewport(canvas,{onPick=()=>{},onZoom=()=>{},onFailure=()=>{},onRender=()=>{}}={}){
+// For a screen-space click, compare to the projected segments rather than
+// just the feature's sampled vertices. Returns a curve parameter and distance.
+export function closestFeatureSegment(x,y,points){
+ let hit=null;
+ for(let i=1;i<points.length;i++){
+  const a=points[i-1],b=points[i];
+  if(!a||!b||a.visible===false&&b.visible===false)continue;
+  const dx=b.x-a.x,dy=b.y-a.y,den=dx*dx+dy*dy;
+  const t=clamp(((x-a.x)*dx+(y-a.y)*dy)/Math.max(1e-12,den),0,1);
+  const distance=Math.hypot(x-a.x-dx*t,y-a.y-dy*t);
+  if(!hit||distance<hit.distance)hit={segment:i-1,t,distance};
+ }
+ return hit;
+}
+
+export function projectiveLineParameter(t,wStart,wEnd){
+ if(wStart<=0||wEnd<=0)return null;
+ return (t/wEnd)/((1-t)/wStart+t/wEnd);
+}
+export function createViewport(canvas,{onPick=()=>{},onFeature=null,onZoom=()=>{},onFailure=()=>{},onRender=()=>{}}={}){
  const scene=new T.Scene();scene.background=new T.Color('#243747');
  const renderer=new T.WebGLRenderer({canvas,antialias:true,preserveDrawingBuffer:true});
  renderer.setPixelRatio(Math.min(1.6,devicePixelRatio||1));renderer.outputColorSpace=T.SRGBColorSpace;
@@ -43,6 +62,78 @@ export function createViewport(canvas,{onPick=()=>{},onZoom=()=>{},onFailure=()=
   polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1});
  const ray=new T.Raycaster();let selected='',mode='production',light='studio',view='orbit',projection='perspective',display='complete',frame=0,geo=null,camActive=cam,mats={},az=.72,el=.26,zoom=1.18,pan=new T.Vector3(),batches=[],drag=new Map(),dragChanged=false;
  const highlight=new T.Group();scene.add(highlight);
+ const featuresRoot=new T.Group();scene.add(featuresRoot);
+ let activeFeature='',featureOverlay='off',byFeature=[];
+ const curveStyles={
+  selected:new T.LineBasicMaterial({color:'#ffe98a',depthTest:false,toneMapped:false}),
+  rail:new T.LineBasicMaterial({color:'#82ebff',depthTest:true,transparent:true,opacity:.78,toneMapped:false}),
+  seam:new T.LineBasicMaterial({color:'#57d4bc',depthTest:true,transparent:true,opacity:.75,toneMapped:false}),
+  lamp:new T.LineBasicMaterial({color:'#a6bcff',depthTest:true,transparent:true,opacity:.79,toneMapped:false}),
+  good:new T.LineBasicMaterial({color:'#8eff8b',depthTest:false,toneMapped:false}),
+  warning:new T.LineBasicMaterial({color:'#ff906f',depthTest:false,toneMapped:false})
+ };
+ for(const m of Object.values(curveStyles))m.depthWrite=false;
+ const edgeDots=new T.PointsMaterial({color:'#ffe98a',size:6,sizeAttenuation:false,depthTest:false,depthWrite:false,toneMapped:false});
+ function removeFeatureLabels(){
+  for(const x of featuresRoot.children)x.geometry.dispose();
+  featuresRoot.clear();
+ }
+ function getFeatureShift(feature){
+  if(display!=='exploded')return null;
+  const mid=new T.Vector3().fromArray(feature.points[feature.points.length>>1]);
+  let part=null,nearest=Infinity;
+  for(const m of world.children){
+   if(!m.visible||m.userData.component!==feature.component)continue;
+   const d=mid.distanceToSquared(m.userData.center);
+   if(d<nearest){part=m;nearest=d;}
+  }
+  return part?part.position.clone().sub(part.userData.home):null;
+ }
+ function featurePoints(feature){
+  const d=getFeatureShift(feature);
+  return feature.points.map(x=>new T.Vector3().fromArray(x)).map(x=>d?x.add(d):x);
+ }
+ function showFeatureLabels(){
+  removeFeatureLabels();
+  for(const feature of byFeature){
+   const chosen=activeFeature===feature.id;
+   if(display==='isolate'&&selected&&selected!==feature.component)continue;
+   if(!chosen&&featureOverlay==='off')continue;
+   if(!chosen&&featureOverlay==='alignment'&&!/edge|seam|rail|join|align|border|gap/.test(feature.type))continue;
+   const worldPoints=featurePoints(feature);
+   const palette=chosen?'selected':/optical|opening|lamp|head|tail|intake|grille/.test(feature.type)?'lamp':/seam|join|boundary/.test(feature.type)?'seam':'rail';
+   const line=new T.Line(new T.BufferGeometry().setFromPoints(worldPoints),curveStyles[palette]);
+   line.name='feature-'+feature.id;
+   line.renderOrder=chosen?12:8;
+   featuresRoot.add(line);
+   if(chosen){
+    const p=feature.handle?.anchor;
+    const anchors=worldPoints.length<=2?worldPoints.slice():[worldPoints[0],worldPoints.at(-1)];
+    if(Array.isArray(p)&&p.length===3&&p.every(Number.isFinite)){
+     const a=new T.Vector3().fromArray(p),d=getFeatureShift(feature);
+     anchors.push(d?a.add(d):a);
+    }
+    const dots=new T.Points(new T.BufferGeometry().setFromPoints(anchors),edgeDots);
+    dots.renderOrder=13;featuresRoot.add(dots);
+   }
+   const target=feature.metrics?.targetPoints??feature.metrics?.matchedPoints;
+   if(featureOverlay==='alignment'&&Array.isArray(target)&&target.length===worldPoints.length){
+    const good=[],bad=[],d=getFeatureShift(feature);
+    for(let i=0;i<target.length;i++){
+     if(!Array.isArray(target[i])||target[i].length!==3||!target[i].every(Number.isFinite))continue;
+     const b=new T.Vector3().fromArray(target[i]);
+     if(d)b.add(d);
+     const gap=b.distanceTo(worldPoints[i]);
+     if(gap>.00002)(gap<=.004?good:bad).push(worldPoints[i],b);
+    }
+    for(const [arr,key] of [[good,'good'],[bad,'warning']]){
+     if(!arr.length)continue;
+     const ticks=new T.LineSegments(new T.BufferGeometry().setFromPoints(arr),curveStyles[key]);
+     ticks.renderOrder=13;featuresRoot.add(ticks);
+    }
+   }
+  }
+ }
  const request=()=>{if(!frame)frame=requestAnimationFrame(render);};
  function camera(){
   const w=canvas.clientWidth,h=canvas.clientHeight,aspect=w/Math.max(1,h),dist=(geo?.metadata?.lengthM??4.4)*1.88/zoom*Math.max(1,.95/aspect);
@@ -77,11 +168,14 @@ export function createViewport(canvas,{onPick=()=>{},onZoom=()=>{},onFailure=()=
     highlight.add(outline);
    }
   }
-  shadow.visible=display==='complete';request();
+  shadow.visible=display==='complete';showFeatureLabels();request();
  }
  function setDesign(next){
   world.clear();highlight.clear();batches.forEach(g=>g.dispose());batches=[];for(const m of Object.values(mats))m.dispose();mats={};
   geo=next;
+  byFeature=Array.isArray(next.features)?next.features.filter(f=>typeof f?.id==='string'&&Array.isArray(f.points)
+   &&f.points.length>=2&&f.points.every(p=>Array.isArray(p)&&p.length===3&&p.every(Number.isFinite))):[];
+  if(!byFeature.some(x=>x.id===activeFeature))activeFeature='';
   const keys=new Set([...next.parts,...next.wheelParts].map(r=>r.material));
   for(const id of keys){
    const doc=materialDoc(next.genome,id,{texture:false});
@@ -139,14 +233,51 @@ export function createViewport(canvas,{onPick=()=>{},onZoom=()=>{},onFailure=()=
  });
  canvas.addEventListener('pointerup',e=>{
   if(drag.size===1&&!dragChanged){
-   const b=canvas.getBoundingClientRect(),x=2*(e.clientX-b.left)/b.width-1,y=1-2*(e.clientY-b.top)/b.height;
-   ray.setFromCamera(new T.Vector2(x,y),camActive);
-   const hits=ray.intersectObjects(world.children.filter(x=>x.visible));if(hits.length)onPick(hits[0].object.userData.component);
+   const b=canvas.getBoundingClientRect(),sx=e.clientX-b.left,sy=e.clientY-b.top;
+   const x=2*sx/b.width-1,y=1-2*sy/b.height;
+   const meshes=world.children.filter(x=>x.visible);
+   const feature=onFeature&&pickCurve(sx,sy,b.width,b.height,e.pointerType==='touch'?18:11,meshes);
+   if(feature){activeFeature=feature.id;showFeatureLabels();request();onFeature(feature);}
+   else {
+    ray.setFromCamera(new T.Vector2(x,y),camActive);
+    const hits=ray.intersectObjects(meshes);if(hits.length)onPick(hits[0].object.userData.component);
+   }
   }drag.delete(e.pointerId);
  });canvas.addEventListener('pointercancel',e=>drag.delete(e.pointerId));
  canvas.addEventListener('wheel',e=>{e.preventDefault();setZoom(zoom*Math.exp(-e.deltaY*.002));},{passive:false});
  canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();onFailure('3D context lost. Reopen the designer to restore the preview.');});
  const observer=new ResizeObserver(request);observer.observe(canvas);
+ function pickCurve(sx,sy,width,height,threshold,meshes){
+  if(!byFeature.length||!width||!height)return null;
+  const candidates=[],q=new T.Vector3();
+  for(const f of byFeature){
+   if(display==='isolate'&&selected&&selected!==f.component)continue;
+   const pts=featurePoints(f);
+   const projected=pts.map(p=>{
+    q.copy(p).project(camActive);
+    return {x:(q.x*.5+.5)*width,y:(1-(q.y*.5+.5))*height,visible:q.z>=-1&&q.z<=1};
+   });
+   const nearest=closestFeatureSegment(sx,sy,projected);
+   if(!nearest||nearest.distance>threshold)continue;
+   const {segment:i,t,distance}=nearest,a=pts[i],b=pts[i+1];
+   // The same screen interpolation in perspective is not affine in world
+   // coordinates. Compensate by reciprocal clip W before sampling the rail.
+   const A=camActive.isOrthographicCamera?1:-q.copy(a).applyMatrix4(camActive.matrixWorldInverse).z;
+   const B=camActive.isOrthographicCamera?1:-q.copy(b).applyMatrix4(camActive.matrixWorldInverse).z;
+   const fT=projectiveLineParameter(t,A,B);if(fT===null)continue;
+   const point=a.clone().lerp(b,fT);
+   candidates.push({f,point,distance,depth:camActive.position.distanceToSquared(point)});
+  }
+  candidates.sort((a,b)=>a.distance-b.distance||a.depth-b.depth);
+  for(const datum of candidates.slice(0,12)){
+   q.copy(datum.point).project(camActive);
+   ray.setFromCamera(new T.Vector2(q.x,q.y),camActive);
+   const hit=ray.intersectObjects(meshes,false)[0];
+   const difference=datum.point.distanceTo(ray.ray.origin)-(hit?.distance??Infinity);
+   if(difference<.035)return datum.f;
+  }
+  return null;
+ }
  function project(p){
   const [w,h]=camera();
   const q=new T.Vector3().fromArray(p).project(camActive);
@@ -162,7 +293,9 @@ export function createViewport(canvas,{onPick=()=>{},onZoom=()=>{},onFailure=()=
  return {setDesign,setView,project,unprojectAt,nudge,focusWorld(p){pan.fromArray(p);pan.y-=(geo?.metadata.heightM??1.4)*.44;request();},setZoom,setLighting,resetPan(){pan.set(0,0,0);request();},
   setProjection(p){projection=p;request();},setMode(m){if(m!=='production'&&!diagnostic[m])return;mode=m;restyle();},
   setDisplay(d){display=d;restyle();},select(s){selected=s;restyle();},
-  state:()=>({mode,lift:el,az,zoom,projection,display,selected,light,view,drawCalls:renderer.info.render.calls,glError:renderer.getContext().getError()}),
-  dispose(){observer.disconnect();batches.forEach(x=>x.dispose());if(frame)cancelAnimationFrame(frame);Object.values(mats).forEach(x=>x.dispose());Object.values(diagnostic).filter(x=>x!==zebra).forEach(x=>x.dispose());mask.dispose();ground.geometry.dispose();ground.material.dispose();shadow.geometry.dispose();shadow.material.dispose();shadowTex.dispose();grid.geometry.dispose();grid.material.dispose();renderer.dispose();}
+  setFeature(id){activeFeature=typeof id==='string'?id:'';showFeatureLabels();request();},
+  setFeatureOverlay(v){if(!['off','all','alignment'].includes(v))return;featureOverlay=v;showFeatureLabels();request();},
+  state:()=>({mode,lift:el,az,zoom,projection,display,selected,feature:activeFeature,featureOverlay,light,view,drawCalls:renderer.info.render.calls,glError:renderer.getContext().getError()}),
+  dispose(){observer.disconnect();removeFeatureLabels();Object.values(curveStyles).forEach(x=>x.dispose());edgeDots.dispose();batches.forEach(x=>x.dispose());if(frame)cancelAnimationFrame(frame);Object.values(mats).forEach(x=>x.dispose());Object.values(diagnostic).filter(x=>x!==zebra).forEach(x=>x.dispose());mask.dispose();ground.geometry.dispose();ground.material.dispose();shadow.geometry.dispose();shadow.material.dispose();shadowTex.dispose();grid.geometry.dispose();grid.material.dispose();renderer.dispose();renderer.forceContextLoss();}
  };
 }

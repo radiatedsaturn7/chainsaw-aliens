@@ -171,3 +171,31 @@ test('front and rear fascia studies, direct guides, and independent optics work 
  expect(res.optics.front.housing).toBe('angular');
  expect(res.fascia.front.profile).toBe('v');
 });
+
+test('mobile viewport seam pick discovers real controls and wizard preview does not change the saved design',async({page})=>{
+ const frame=await openDesign(page),body=frame.locator('body'),id='frontFenderSeam-R';
+ await frame.locator('#feature-tab').tap();
+ await frame.getByRole('button',{name:'Side',exact:true}).tap();
+ const stations=await body.evaluate((_,id)=>{
+  const a=vehicleDesigner,n=a.getState().features.find(f=>f.id===id).points.length;
+  return [.54,.43,.64,.34,.75].map(t=>a.projectFeature(id,Math.floor((n-1)*t))).filter(p=>p?.visible);
+ },id);
+ expect(stations.length).toBeGreaterThan(0);
+ const iframe=await page.locator('#surface-studio-frame').boundingBox();
+ for(const p of stations){
+  await page.touchscreen.tap(p.x+iframe.x,p.y+iframe.y);
+  if(await body.evaluate(()=>vehicleDesigner.getState().featureId)===id)break;
+ }
+ await expect.poll(()=>body.evaluate(()=>vehicleDesigner.getState().featureId)).toBe(id);
+ await expect(frame.getByText(/Gap width/i).first()).toBeVisible();
+ const before=await body.evaluate(()=>vehicleDesigner.save());
+ await frame.locator('#wizard-tab').tap();
+ await frame.locator('#wizard-command').selectOption('gap');
+ await frame.locator('#wizard-preview').tap();
+ await expect(frame.locator('#wizard-accept')).toBeEnabled();
+ expect(await body.evaluate(()=>vehicleDesigner.save())).toBe(before);
+ await frame.locator('#wizard-accept').tap();
+ expect(await body.evaluate(()=>vehicleDesigner.save())).not.toBe(before);
+ await frame.locator('#undo').tap();
+ expect(await body.evaluate(()=>vehicleDesigner.save())).toBe(before);
+});

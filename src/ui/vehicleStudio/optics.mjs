@@ -19,7 +19,7 @@ const profiles={
 };
 export const HOUSING_FAMILIES=['round-rect','circle','oval','rectangle','trapezoid','angular','swept','wrap','compound'];
 const layouts=new Set(['projector','twin','led','mixed']);
-function curvePolygon(points,r){
+function curvePolygon(points,r,n){
  const controls=(p,q,t)=>p.map((x,i)=>mix(x,q[i],t));
  const list=[];
  for(let i=0;i<points.length;i++){
@@ -27,10 +27,10 @@ function curvePolygon(points,r){
   list.push(...pairs(6,t=>controls(controls(a,p,t),controls(p,b,t),t)),b);
  }
  const sums=[0];for(let i=0;i<list.length;i++){const a=list[i],b=list[(i+1)%list.length];sums.push(sums.at(-1)+Math.hypot(b[0]-a[0],b[1]-a[1]));}
- return pairs(32,t=>{const target=t*sums.at(-1);let i=0;while(sums[i+1]<target)i++;return controls(list[i],list[(i+1)%list.length],(target-sums[i])/(sums[i+1]-sums[i]||1));});
+ return pairs(n,t=>{const target=t*sums.at(-1);let i=0;while(sums[i+1]<target)i++;return controls(list[i],list[(i+1)%list.length],(target-sums[i])/(sums[i+1]-sums[i]||1));});
 }
-function shape(type,{corner=.5,angle=0,sweep=.5,outline=[]}={}){
- const p=type==='circle'||type==='oval'?pairs(32,t=>[Math.cos(t*tau),Math.sin(t*tau)]):curvePolygon(profiles[type]??profiles['round-rect'],mix(.025,.38,corner));
+function shape(type,{corner=.5,angle=0,sweep=.5,outline=[],segments=32}={}){
+ const p=type==='circle'||type==='oval'?pairs(segments,t=>[Math.cos(t*tau),Math.sin(t*tau)]):curvePolygon(profiles[type]??profiles['round-rect'],mix(.025,.38,corner),segments);
  const q=p.map(([x,y])=>{
   const a=(Math.atan2(y,x)/tau+1)%1*8,i=Math.floor(a),j=(i+1)%8;
   const t=a-i,scale=1+.13*mix(signed(num(outline[i],0)),signed(num(outline[j],0)),t*t*(3-2*t));
@@ -40,11 +40,11 @@ function shape(type,{corner=.5,angle=0,sweep=.5,outline=[]}={}){
  return q.map(([x,y])=>[x/xMax,y/yMax]);
 }
 const fit=(p,cx,cy,w,h,side=1)=>p.map(([x,y])=>[cx+side*x*w/2,cy+y*h/2]);
-function aperture({id,component,housing,cx,cy,width,height,side=1,opt={},kind='lamp',style}){
- const outline=fit(shape(housing,opt),cx,cy,width,height,side);
+function aperture({id,component,housing,cx,cy,width,height,side=1,opt={},kind='lamp',style,segments=32}){
+ const outline=fit(shape(housing,{...opt,segments}),cx,cy,width,height,side);
  return {id,component,outline,kind,opt,center:[cx,cy],width,height,side,style};
 }
-export function makeOpenings({end,g}){
+export function makeOpenings({end,g,segments=32}){
  const front=end==='front',c=g.components??{},legacy=c[front?'headlights':'tails']??{},raw=g.optics?.[end]??{};
  const housing=HOUSING_FAMILIES.includes(raw.housing)?raw.housing:
   (legacy.type==='round'?'circle':legacy.type==='rectangular'||legacy.type==='strip'?'round-rect':front?'swept':'trapezoid');
@@ -58,21 +58,21 @@ export function makeOpenings({end,g}){
  // The bands are deliberately disjoint even at all slider extremes:
  // lamp inside <= .366; center grille starts >= .388; lower intakes start >= .31.
  const sideX=front?mix(.189,.231,opt.position):mix(.196,.229,opt.position);
- const h0=mix(.129,front?.290:.248,opt.height);
+ const h0=mix(.129,front?.290:.248,housing==='circle'?opt.height*.58+opt.width*.42:opt.height);
  const w=housing==='circle'?h0*.46:mix(.132,.296,opt.width);
  const h=housing==='oval'?h0*.85:h0;
  const cy=Math.max(.026+h/2,front?mix(.137,.416,opt.position):mix(.186,.472,opt.position));
  for(const s of [-1,1])out.push(aperture({id:(front?'head':'tail')+(s>0?'-l':'-r'),
-  component:front?'headlights':'tails',housing,cx:s>0?1-sideX:sideX,cy,width:w,height:h,side:s,opt}));
+  component:front?'headlights':'tails',housing,cx:s>0?1-sideX:sideX,cy,width:w,height:h,side:s,opt,segments}));
  if(front){
   const gr=c.grille??{},fog=c.fogs??{};
   if(gr.type!=='closed')out.push(aperture({id:'upper-grille',component:'grille',housing:'trapezoid',cx:.5,cy:.415,
    width:mix(.145,.223,sat(num(gr.size,1)*.60)),height:mix(.119,.191,sat(num(gr.depth,1)*.65)),
-   kind:'duct',style:gr.type==='bars'?'bars':'mesh'}));
+   kind:'duct',segments,style:gr.type==='bars'?'bars':'mesh'}));
   if(fog.type!=='off')for(const s of [-1,1])out.push(aperture({id:'fog'+(s>0?'-l':'-r'),component:'fogs',
    housing:fog.type==='strip'?'round-rect':'oval',cx:.5+s*.277,cy:.765,
    width:mix(.065,.151,sat(num(fog.size,1)*.53)),height:fog.type==='strip'?.070:mix(.107,.174,sat(num(fog.depth,1)*.52)),
-   kind:'fog',side:s,opt:{...opt,layout:'projector'}}));
+   kind:'fog',segments,side:s,opt:{...opt,layout:'projector'}}));
  }
  if(mode!=='closed'){
   const grp=front?'frontBumper':'rearBumper',iMode=mode==='split'?'split':'single';
@@ -81,7 +81,7 @@ export function makeOpenings({end,g}){
   for(const k of iMode==='split'?pair:[.5])out.push(aperture({
    id:(front?'lower-':'rear-')+'duct'+(k<.48?'-r':k>.52?'-l':''),component:grp,
    housing:front?'angular':'trapezoid',cx:k,cy:front?.789:.78,width:iMode==='split'?(wideDucts?.24:.17):.365,
-   height:front?(wideDucts&&iMode==='split'?.23:.19):.14,kind:'duct',style:g.fascia?.[end]?.ductStyle??'mesh'}));
+   height:front?(wideDucts&&iMode==='split'?.23:.19):.14,kind:'duct',segments,style:g.fascia?.[end]?.ductStyle??'mesh'}));
  }
  return out;
 }
@@ -135,7 +135,7 @@ function makeMesh(rows,sign,{disk=null}={}){
  geom.setAttribute('uv',new T.Float32BufferAttribute(uv,2));
  geom.setIndex(fs);geom.computeVertexNormals();return geom;
 }
-export function emitOpenings({end,openings,surface,put}){
+export function emitOpenings({end,openings,surface,put,lod=false}){
  const front=end==='front',sign=front?1:-1,mounts={},issues=[],batches=new Map();
  for(const a of openings){
   const {outline,center:[cx,cy],opt,kind,width:w,height:h,side}=a;
@@ -183,10 +183,10 @@ export function emitOpenings({end,openings,surface,put}){
    return {x,y,p};
   }
   const proj=(offset,rx,ry,bright=true)=>{
-   const {x,y,p}=fitted(cx+side*offset*w,cy+.015*h,w*rx,h*ry,18);
+   const {x,y,p}=fitted(cx+side*offset*w,cy+.015*h,w*rx,h*ry,lod?12:18);
    const rr=(k,depth)=>ring(k,depth,p,x,y);
-   putGeo('chrome',[rr(1,d*.65),rr(.82,d*.73),rr(.47,d*.80)],pt(x,y,d*.81));
-   putGeo(front?'head':'tail',[rr(.51,bright?d*.60:d*.64),rr(.29,d*.55)],pt(x,y,d*.53));
+   putGeo('reflector',[rr(1,d*.65),rr(.82,d*.73),rr(.47,d*.80)],pt(x,y,d*.81));
+   putGeo(front?'projector':'tail',[rr(.51,bright?d*.60:d*.64),rr(.29,d*.55)],pt(x,y,d*.53));
   };
   if(oLayout==='projector')proj(0,.23,.29);
   if(oLayout==='twin'){proj(-.19,.145,.255);proj(.17,.128,.227,false);}

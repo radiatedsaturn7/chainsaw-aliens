@@ -1,6 +1,6 @@
 import {createGenome as createPanel,normalizeGenome as normalizePanel,buildFender} from '../surfaceStudio/surface.mjs';
 
-export const VERSION=2;
+export const VERSION=3;
 const F=(label,min,max,step)=>({label,min,max,step});
 export const GLOBAL={
  wheelbase:F('Wheelbase (m)',2.15,3.35,.005),width:F('Body width (m)',1.52,2.24,.005),height:F('Roof height (m)',1.08,1.91,.005),
@@ -95,6 +95,26 @@ export function createFasciaDemo(key){
  return normalizeVehicle(g);
 }
 
+export const SEAM_KEYS={
+ rearFenderSeam:'Rear bumper to quarter',rearDoorSeam:'Rear door to quarter',centerDoorSeam:'Door center line',
+ frontDoorSeam:'Front door to fender',frontFenderSeam:'Front bumper to fender',hoodSeam:'Hood leading edge',
+ trunkSeam:'Trunk trailing edge',roofSeam:'Roof to glass surround'
+};
+export const SEAM_FIELDS={
+ gap:F('Gap width (mm)',.0015,.012,.0005),offset:F('Seam position (m)',-.04,.04,.001),
+ flush:F('Panel flushness (mm)',-.006,.006,.00025),radius:F('Edge rollover (mm)',.0005,.005,.0005),
+ thickness:F('Panel thickness (mm)',.0008,.004,.0002),depth:F('Recess depth (mm)',.004,.028,.001),
+ flange:F('Return flange',0,1,.05),seal:F('Rubber seal',0,1,.05),align:F('Boundary alignment',0,1,.025),
+ tangent:F('Match tangents',0,1,.025),curvature:F('Match curvature',0,1,.025),crease:F('Keep an intentional crease',0,1,.025)
+};
+export const BODY_FIELDS={
+ creaseHeight:F('Crease height',.14,.59,.005),creaseStrength:F('Crease definition',0,1,.01),
+ archCrown:F('Wheel-arch crown',0,1,.01),roofEdge:F('Roof-edge radius',0,1,.01),
+ handleRecess:F('Door-handle recess',0,1,.01)
+};
+const SEAM_DEFAULT={gap:.0045,offset:0,flush:0,radius:.0016,thickness:.0012,depth:.012,flange:.82,seal:0,align:1,tangent:.92,curvature:.84,crease:0};
+const defaultSeams=()=>Object.fromEntries(Object.keys(SEAM_KEYS).map(k=>[k,{...SEAM_DEFAULT,...(k==='roofSeam'?{gap:.0032,seal:.88}:{}),...(k==='hoodSeam'||k==='trunkSeam'?{seal:.55}:{})}]));
+
 export const POSITIONABLE=new Set(['headlights','tails','fogs','scoop','spoiler','mirrors','exhaust']);
 export const COMPONENT_FIELDS={bias:F('Mount position bias',-1,1,.025),angle:F('Pitch or rake (°)',-12,12,.5),size:F('Size',.72,1.28,.01),shape:F('Shape',0,1,.01),depth:F('Depth',.72,1.28,.01),...NOSE_FIELDS};
 const defaults={coupe:{doors:1,headlights:1,trunk:0,roof:1,wheels:2,spoiler:1,grille:1,scoop:2},fastback:{doors:1,headlights:2,tails:1,trunk:1,roof:2,wheels:1,frontBumper:1,scoop:1,spoiler:1}};
@@ -103,7 +123,7 @@ export const TOTAL_LENGTH=F('Overall length (m)',3.47,5.73,.005);
 export const PATCH_PANELS=['hood','roof','trunk'];
 export const PATCH_RANGE=F('Interior patch height (m)',-.045,.045,.001);
 export const DIMENSIONS={diameter:F('Tire diameter (m)',.54,.76,.002),tireWidth:F('Tire width (m)',.16,.33,.002),rimRatio:F('Rim / tire diameter',.55,.83,.005),gap:F('Panel gap (m)',.002,.012,.001)};
-const MAT={paint:'#164bb8',wheel:'#c69a4d',glass:'#698292',rubber:'#171a20',trim:'#22262b',chrome:'#a3abb5',head:'#d9e7fb',tail:'#b61728',interior:'#292d36',seat:'#363b48',floor:'#303843',opticCover:'#e0efff',indicator:'#f29b38'};
+const MAT={paint:'#164bb8',wheel:'#c69a4d',glass:'#698292',rubber:'#171a20',trim:'#22262b',chrome:'#a3abb5',head:'#d9e7fb',tail:'#b61728',interior:'#292d36',seat:'#363b48',floor:'#303843',opticCover:'#e0efff',indicator:'#f29b38',seamDark:'#141b23',projector:'#7990a0',reflector:'#a2abb1'};
 export function createVehicle(family='sedan'){
  if(!Object.hasOwn(FAMILIES,family))throw Error('Unknown body family');
  const f=FAMILIES[family];
@@ -112,11 +132,12 @@ export function createVehicle(family='sedan'){
  components:Object.fromEntries(Object.entries(COMPONENTS).map(([k,c])=>[k,{type:c.types[defaults[family]?.[k]??0],size:1,shape:.5,depth:1,...(k==='frontBumper'?NOSE_DEFAULTS[family]:{}),...(POSITIONABLE.has(k)?{bias:0,angle:0}:{})}])),
  fascia:Object.fromEntries(['front','rear'].map(end=>[end,baseFascia(family,end==='front',NOSE_DEFAULTS[family])])),
  optics:Object.fromEntries(['front','rear'].map(end=>[end,baseOptic(family,end==='front')])),
+ seams:defaultSeams(),body:{creaseHeight:.31,creaseStrength:.40,archCrown:.52,roofEdge:.47,handleRecess:.49},
  surfaces:{frontFenders:createPanel(f.panel),...Object.fromEntries(PATCH_PANELS.map(key=>[key,{kind:'bicubic-interior-v1',points:[0,0,0,0]}]))}, constraints:{gap:.005,archClearance:.045,partition:'shared-stations-v1'},
  materials:{...MAT,paint:f.color,wheel:f.wheel}, attachments:{schema:'axles-and-optics-v1'}};
 }
 export function normalizeVehicle(x){
- if(!x||x.kind!=='lotg-vehicle-design'||x.schemaVersion!==1||![1,VERSION].includes(x.generatorVersion))throw Error('Unsupported vehicle design version');
+ if(!x||x.kind!=='lotg-vehicle-design'||x.schemaVersion!==1||![1,2,VERSION].includes(x.generatorVersion))throw Error('Unsupported vehicle design version');
  const g=createVehicle(x.family);
  g.name=String(x.name??g.name).trim().slice(0,80)||g.name;
  for(const [k,v] of Object.entries(x.dimensions??{})){const f=GLOBAL[k]??DIMENSIONS[k];if(!f||k==='gap')throw Error('Unknown dimension '+k);g.dimensions[k]=number(v,f,k);}
@@ -163,6 +184,12 @@ export function normalizeVehicle(x){
   g.surfaces[key]={kind:p.kind,points:p.points.map(v=>number(v,PATCH_RANGE,key))};
  }
  if(x.constraints?.gap!==undefined)g.constraints.gap=number(x.constraints.gap,DIMENSIONS.gap,'gap');
+ for(const key of Object.keys(SEAM_KEYS)){
+  const row=x.seams?.[key];
+  if(!row&&x.constraints?.gap!==undefined&&key!=='roofSeam')g.seams[key].gap=g.constraints.gap;
+  if(row)for(const [k,spec] of Object.entries(SEAM_FIELDS))if(row[k]!==undefined)g.seams[key][k]=number(row[k],spec,key+'.'+k);
+ }
+ for(const [k,spec] of Object.entries(BODY_FIELDS))if(x.body?.[k]!==undefined)g.body[k]=number(x.body[k],spec,k);
  return g;
 }
 export function evaluateInteriorPatch(points,u,v){
@@ -189,6 +216,8 @@ export function updateDesign(x,domain,key,value,property){
   g[domain][key][property]=value;
   if(domain==='fascia'&&key==='front'&&['profile','sweep','rollover','drop'].includes(property))g.components.frontBumper[property]=property==='profile'&&value==='aero'?'round':value;
  }
+ else if(domain==='seams'&&Object.hasOwn(SEAM_KEYS,key)&&Object.hasOwn(SEAM_FIELDS,property))g.seams[key][property]=value;
+ else if(domain==='body'&&Object.hasOwn(BODY_FIELDS,key))g.body[key]=value;
  else if(domain==='surfaces'&&Object.hasOwn(g.surfaces,key))g.surfaces[key]=value;
  else if(domain==='dimensions'&&key==='length'){
   const v=number(value,TOTAL_LENGTH,key),d=g.dimensions,sum=v-d.wheelbase;
@@ -196,7 +225,13 @@ export function updateDesign(x,domain,key,value,property){
   if(lo>hi)throw Error('Overall length is outside the available overhangs at this wheelbase.');
   d.front=Math.max(lo,Math.min(hi,sum*d.front/(d.front+d.rear)));d.rear=sum-d.front;
  }
- else if(['dimensions','materials','constraints'].includes(domain)&&Object.hasOwn(g[domain],key))g[domain][key]=value;
+ else if(['dimensions','materials','constraints'].includes(domain)&&Object.hasOwn(g[domain],key)){
+  if(domain==='constraints'&&key==='gap'){
+   const old=g.constraints.gap;
+   for(const [seam,s] of Object.entries(g.seams))if(seam!=='roofSeam'&&(s.gap===old||s.gap===.0045))s.gap=value;
+  }
+  g[domain][key]=value;
+ }
  else throw Error('Unknown design property');
  return normalizeVehicle(g);
 }
