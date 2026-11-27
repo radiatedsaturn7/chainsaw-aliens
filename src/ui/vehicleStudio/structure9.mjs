@@ -119,8 +119,15 @@ export function buildStructure({g,quality='preview',compact=0,put,sample,dims}){
      const x=mix(ox-s*.003,innerX,u);
      // Only the source edge (u=0) remains on the hem. Raise inward along most
      // of the vault before flattening into the protected inner wall.
-     const y=mix(oy-.002,top,smooth(u*4))+(isOpening?guard*Math.sin(Math.PI*u):0);
-     return [x,y,mix(oz,z,smooth(u))];
+     let y=mix(oy-.002,top,smooth(u*4))+(isOpening?guard*Math.sin(Math.PI*u):0);
+     const station=mix(oz,z,smooth(u));
+     // Keep the visible arch rail untouched, but cap the hidden vault under
+     // a low hood before opaque liner trim can punch through the paint.
+     if(u>0&&sample.upperSkin){
+      const upper=sample.upperSkin(station,x);
+      if(Number.isFinite(upper))y=mix(y,Math.min(y,upper-.011),smooth(u*9));
+     }
+     return [x,y,station];
     });
     const p=row.at(-1),q=[innerX,floorAt(z,innerX),z];
     linerRows.push(row);

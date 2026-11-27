@@ -214,7 +214,7 @@
   "fascia": {
     "front": {
       "profile": "round",
-      "intakes": "split",
+      "intakes": "single",
       "hoodNoseDrop": 0.035,
       "hoodNoseShoulder": 0.72,
       "deckSurfaceBlend": 0,
@@ -251,12 +251,12 @@
       "fogCoverHeight": 0.5,
       "plateHeight": 0.5,
       "plateWidth": 0.5,
-      "lowerIntakeRise": 0,
-      "lowerIntakeDepth": 0,
+      "lowerIntakeRise": 0.075,
+      "lowerIntakeDepth": 0.038,
       "fogCoverStamp": 0,
-      "intakeWidth": 0.88,
-      "intakeHeight": 0.67,
-      "intakeHeightPosition": 0.47,
+      "intakeWidth": 1,
+      "intakeHeight": 0.85,
+      "intakeHeightPosition": 0.51,
       "sweep": 0.86,
       "pointedness": 0,
       "center": 0.93,
@@ -294,7 +294,12 @@
           0.03,
           0.19
         ]
-      }
+      },
+      "insertBand": 1,
+      "insertWidth": 0.86,
+      "insertTop": 0.42,
+      "insertBottom": 0.975,
+      "insertSweep": -0.018
     },
     "rear": {
       "profile": "round",
@@ -385,7 +390,7 @@
     "front": {
       "housing": "oval",
       "layout": "projector",
-      "width": 0.66,
+      "width": 0.74,
       "height": 1,
       "corner": 0.74,
       "angle": -0.42,
@@ -394,7 +399,7 @@
       "recess": 0.23,
       "convexity": 0.58,
       "position": 0,
-      "outboard": 0.63,
+      "outboard": 0.72,
       "sideWrap": 0.14,
       "tallHousing": 0,
       "lowerLensReach": 0.01,
@@ -658,7 +663,7 @@
     }
   },
   "body": {
-    "frontFlareScale": 0.52,
+    "frontFlareScale": 0.68,
     "rearFlareScale": 0.89,
     "lipScale": 0.46,
     "archFootBlend": 0.065,

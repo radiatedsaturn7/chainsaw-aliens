@@ -95,8 +95,42 @@ export function makeOpenings({end,g,segments=32}){
    width:mix(.065,.151,sat(num(sideFog.size,1)*.53)),height:sideFog.type==='strip'?.070:mix(.107,.174,sat(num(sideFog.depth,1)*.52))*(sideFog.type==='blank'?mix(.60,1.75,num(fascia.fogCoverHeight,.5))/1.175:1),
    kind:sideFog.type==='blank'?'blank':'fog',segments,side:s,opt:{layout:'projector',protrusion:0,fogCoverStamp:fascia.fogCoverStamp}}));
   }
+  // A blank-cover sport bumper may have dedicated smaller breaths just
+  // below each cover. Derive space from that side's actual aperture so
+  // alternate cover sizes can neither overlap it nor cut the lower rim.
+  const bypass=num(fascia.fogBypass,0);
+  if(bypass>0)for(const cover of out.filter(x=>x.kind==='blank')){
+   const bottom=Math.max(...cover.outline.map(p=>p[1]));
+   const height=Math.min(.063*bypass,.966-bottom-.017);
+   if(height<.018)continue;
+   const side=cover.side,cx=cover.center[0]+side*.018;
+   out.push(aperture({id:'lower-corner-bypass-'+(side<0?'r':'l'),component:'frontBumper',kind:'bypass',
+    housing:'angular',cx,cy:bottom+.014+height/2,width:.083+.024*bypass,height,segments:Math.min(8,segments),
+    opt:{angle:.16*side,corner:.63}}));
+  }
  }
- if(!front&&g.construction){
+ if(!front&&fascia.tailBridge>0&&!(g.construction?.cabin.rearHatchFold&&g.construction?.cabin.hatchEdgeLamps)){
+  const lamps=out.filter(o=>o.kind==='lamp');
+  const low=Math.max(...lamps.filter(o=>o.center[0]<.5).flatMap(o=>o.outline.map(p=>p[0])));
+  const high=Math.min(...lamps.filter(o=>o.center[0]>.5).flatMap(o=>o.outline.map(p=>p[0])));
+  const reach=(Math.min(.5-low,high-.5)-.014)*fascia.tailBridge;
+  const y=Math.max(.09,Math.min(.32,lamps.reduce((sum,o)=>sum+o.center[1],0)/lamps.length-.031));
+  if(reach>.028)out.push(aperture({id:'rear-running-bridge',component:'tails',housing:'round-rect',
+   cx:.5,cy:y,width:2*reach,height:.020,kind:'light-guide',segments:8}));
+ }
+ if(!front&&g.construction&&fascia.rearTrayDepth>0){
+  const width=fascia.rearTrayWidth;
+  const top=Math.max(fascia.rearTrayHeight,...out.filter(o=>o.kind==='lamp').flatMap(o=>o.outline.map(p=>p[1]+.055)));
+  if(top<.79){
+   const l=.5-width/2,r=1-l,b=.985,d=.035;
+   // The painted bumper surrounds one physical opening. Plate mount and
+   // side vents are carried inside it, not separate coplanar cutouts.
+   const outline=[[l+d,top+.05],[l+d+.028,top+.009],[.5,top],[r-d-.028,top+.009],[r-d,top+.05],
+    [r,b-.025],[r-.028,b],[l+.028,b],[l,b-.025]];
+   out.push({id:'rear-recessed-valance',component:'rearBumper',kind:'valance',outline,
+    center:[.5,(b+top)/2],width,height:b-top,opt:{depth:fascia.rearTrayDepth}});
+  }
+ }else if(!front&&g.construction){
   const height=(.125+(num(fascia.plateHeight,.5)-.5)*.214)*(1+num(fascia.plateOpeningStretch,0));
   const y=Math.max(.18+height/2,Math.min(num(fascia.platePosition,.615),.955-height/2));
   out.push(aperture({id:'rear-plate-recess',component:'rearBumper',housing:'round-rect',cx:.5,cy:y,
@@ -145,7 +179,7 @@ export function makeOpenings({end,g,segments=32}){
    out.push({id:'rear-deck-insert',component:'trunk',kind:'deck',outline:[...side(1),...side(-1).reverse()],center:[.5,(top+bottom)/2],opt:{depth:fascia.deckPanel,soft:fascia.deckSurfaceBlend}});
   }
  }
- if(mode!=='closed'){
+ if(mode!=='closed'&&(front||!fascia.rearTrayDepth)){
   const grp=front?'frontBumper':'rearBumper',iMode=mode==='split'?'split':'single';
   const wideDucts=front&&c.fogs?.type==='off';
   const pair=wideDucts?[.285,.715]:[.395,.605];
@@ -173,7 +207,7 @@ export function makeOpenings({end,g,segments=32}){
    }
    if(width<.032)continue;
    out.push(aperture({id:(front?'lower-':'rear-')+'duct'+(k<.48?'-r':k>.52?'-l':''),component:grp,
-    housing:fascia.intakeShape??(front?'angular':'trapezoid'),cx:k,cy,width,height,kind:'duct',segments,style:fascia.ductStyle??'mesh',opt:{throatDepth:front?num(fascia.lowerIntakeDepth,0):0}}));
+    housing:fascia.intakeShape??(front?'angular':'trapezoid'),cx:k,cy,width,height,kind:'duct',segments,style:fascia.ductStyle??'mesh',opt:{throatDepth:front?num(fascia.lowerIntakeDepth,0):0,upperBar:front&&iMode==='single'?num(fascia.lowerDuctCap,0):0}}));
   }
  }
  return out;
@@ -263,6 +297,36 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
    if(!batches.has(key))batches.set(key,{component:a.component,material:m,geos:[]});
    batches.get(key).geos.push(q);
   };
+  if(kind==='light-guide'){
+   putGeo('seamDark',[ring(1,0),ring(.93,.004)]);
+   putGeo('runningRed',[ring(.93,.004),ring(.78,.002)],pt(cx,cy,.002));
+   continue;
+  }
+  if(kind==='valance'){
+   const d=Math.max(.026,opt.depth), face=ring(.924,d);
+   putGeo('paint',[ring(1,0),ring(.976,.008)]);
+   putGeo('trim',[ring(.976,.008),ring(.947,d*.57),face],pt(cx,cy,d));
+   const plateW=w*.143,plateH=h*.23;
+   const yPanel=cy-.013;
+   const rect=[[cx-plateW,yPanel-plateH],[cx+plateW,yPanel-plateH],
+    [cx+plateW,yPanel+plateH],[cx-plateW,yPanel+plateH]];
+   putGeo('seamDark',[ring(1,d-.008,rect,cx,yPanel),ring(.955,d-.018,rect,cx,yPanel)]);
+   putGeo('heatShield',[ring(.955,d-.018,rect,cx,yPanel)],pt(cx,yPanel,d-.018));
+   for(const k of [-1,1]){
+    const x=cx+k*w*.312,y=cy+.025,r=w*.058,v=h*.33;
+    const p=[[x-r*.78,y-v],[x+r*.76,y-v*.91],[x+r*1.06,y+v],[x-r,y+v*.91]];
+    putGeo('seamDark',[ring(1,d-.010,p,x,y),ring(.83,d-.012,p,x,y)],pt(x,y,d-.011));
+    for(const t of [.18,.43,.68]){
+     const b=y-v+2*v*t,l=x-r*.69,p0=x+r*.69;
+     const bars=[[l,b],[p0,b],[p0,b+.006],[l,b+.006]];
+     putGeo('trim',[bars.map(([u,v])=>pt(u,v,d-.016))],pt(x,b+.003,d-.016));
+    }
+    const a=cx+k*w*.392,s=.009,t=h*.28;
+    const reflector=[[a-k*s,y-t],[a+k*s,y-t],[a+k*s*1.44,y+t],[a-k*s*.58,y+t]];
+    putGeo('opticRed',[reflector.map(([u,v])=>pt(u,v,d-.016))],pt(a,y,d-.016));
+   }
+   continue;
+  }
   if(kind==='deck'){
    // Closed return under the panel: a physical narrow seam, never a slit through the car.
    const soft=num(opt.soft,0),d=mix(.002,.009,num(opt.depth,0));
@@ -271,6 +335,10 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
    putGeo('seamDark',[ring(wall,.001),ring(gap,d+.002),ring(back,d+.002)]);
    putGeo('paint',[ring(back,d+.002),ring(panel,d),ring(.72,d),ring(.44,d),ring(.18,d)],pt(cx,cy,d));
    continue;
+  }
+  if(kind==='bypass'){
+   const rim=ring(1,0),ledge=ring(.90,.004),back=ring(.77,.027);
+   putGeo('paint',[rim,ledge]);putGeo('seamDark',[ledge,back],pt(cx,cy,.029));continue;
   }
   const mouth=ring(1,0); const lip=ring(.965,.005), seat=ring(.912,.015);
   // Shared rim exactly duplicated at d=0 (no opening exists behind a closed slab).
@@ -303,15 +371,27 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
   if(kind==='duct'){
    const extra=Math.min(.055,Math.max(0,num(opt.throatDepth,0)));
    const d=.047+extra, back=ring(mix(.79,.88,extra/.055),d);
-   putGeo('trim',[seat,ring(mix(.857,.90,extra/.055),.028+extra*.36),back],pt(cx,cy,d-.002));
+   const ductMaterial=opt.upperBar?'seamDark':'trim';
+   putGeo(ductMaterial,[seat,ring(mix(.857,.90,extra/.055),.028+extra*.36),back],pt(cx,cy,d-.002));
    const n=compact?(a.style==='bars'?3:4):a.style==='bars'?4:7, inset=outline.map(([x,y])=>[mix(cx,x,.74),mix(cy,y,.73)]);
+   // Join a recessed inlet cap to the inner outline, not over the rim.
+   // Matching widths at the top/bottom keep the bar inside rounded corners.
+   if(opt.upperBar){
+    const top=cy-h*.315,bottom=top+h*(.060+.145*opt.upperBar);
+    const [tl,tr]=spanAt(inset,top),[bl,br]=spanAt(inset,bottom);
+    if(tr>tl&&br>bl){
+     const path=[[tl,top],[tr,top],[br,bottom],[bl,bottom]],depth=.018;
+     putGeo('seamDark',[path.map(([x,y])=>pt(x,y,depth)),path.map(([x,y])=>pt(x,y,depth+.006))],
+      pt(cx,(top+bottom)*.5,depth));
+    }
+   }
    for(let j=0;j<n;j++){
     const y=cy+h*.52*((j+.5)/n-.5),r=h*(a.style==='bars'?.025:.014);
     const [l,rr]=spanAt(inset,y-r*.6),[l2,r2]=spanAt(inset,y+r*.6);
     const lo=Math.max(l,l2),hi=Math.min(rr,r2);
     if(!(hi>lo))continue;
     const bars=[[lo,y-r],[hi,y-r],[hi,y+r],[lo,y+r]];
-    putGeo(a.style==='bars'?'chrome':'trim',[bars.map(([x,v])=>pt(x,v,.034+extra*.91)),bars.map(([x,v])=>pt(x,v,.038+extra*.91))],pt((lo+hi)/2,y,.033+extra*.91));
+    putGeo(a.style==='bars'?'chrome':ductMaterial,[bars.map(([x,v])=>pt(x,v,.034+extra*.91)),bars.map(([x,v])=>pt(x,v,.038+extra*.91))],pt((lo+hi)/2,y,.033+extra*.91));
    }
    continue;
   }

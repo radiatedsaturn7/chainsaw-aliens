@@ -108,6 +108,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  
  if(floor>R-.03)warnings.push('Rocker sits above the hub; this is an elevated stance.');
  const hatchUpright=g.construction.cabin.rearHatchUpright;
+ const targaBulk=c.roof.type==='targa fabric'?g.construction.cabin.targaRearBulkhead:0;
  const hatchLamps=g.construction.cabin.rearHatchFold&&c.roof.type!=='roadster open'?g.construction.cabin.hatchEdgeLamps:0;
  const seamSpan=(end,overhang)=>Math.min(overhang*.69,g.fascia[end].bumperStation===.43?Math.min(overhang*.49,.43):g.fascia[end].bumperStation);
  const bumperFront=Lf-seamSpan('front',d.front),bumperRear=Lr+seamSpan('rear',d.rear);
@@ -137,10 +138,11 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   return clamp(offset,-.06,.075);
  }
  const canopy=g.construction.cabin,extension=(canopy.canopyLength-.5)*.15;
- const roofFront=mix(cabinFront,doorRear,.37+.10*c.glass.shape-extension);
+ const nominalRoofFront=mix(cabinFront,doorRear,.37+.10*c.glass.shape-extension);
+ const roofFront=canopy.frontScreenRake?clamp(nominalRoofFront-canopy.frontScreenRake,cabinRear+.48,cabinFront-.14):nominalRoofFront;
  const rearFraction=(g.family==='fastback'?.45:.22+.10*c.glass.shape)-extension;
  const rearDatum=mix(cabinRear,doorFront,rearFraction);
- const roofRear=canopy.rearPillarFoot||canopy.rearRoofShift||hatchUpright?clamp(rearDatum+canopy.rearPillarFoot*(1-rearFraction)-canopy.rearRoofShift-.38*hatchUpright,cabinRear+mix(.18,.078,hatchUpright),roofFront-.34):rearDatum;
+ const roofRear=canopy.rearPillarFoot||canopy.rearRoofShift||hatchUpright||targaBulk?clamp(rearDatum+canopy.rearPillarFoot*(1-rearFraction)-canopy.rearRoofShift-.38*hatchUpright-.24*targaBulk,cabinRear+mix(.18,.078,hatchUpright),roofFront-.34):rearDatum;
  const nose=B-(.14+.10*(1-wide))*c.frontBumper.depth,deck=B-(c.trunk.type==='fastback'?.13:.065)*c.rearBumper.depth;
  const skinY=z=>z>cabinFront?mix(B,nose,((z-cabinFront)/(Lf-cabinFront))**1.4):z<cabinRear?mix(B,deck,((cabinRear-z)/(cabinRear-Lr))**1.38):B;
  const regionalBox=z=>clamp(wide+(z>0?d.frontBox:d.rearBox)*clamp(Math.abs(z)/L));
@@ -166,8 +168,17 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  const stampStation=z=>clamp((z-(doorRear-doorStampRear))/(doorFront-doorRear+doorStampFront+doorStampRear));
  const stampLine=z=>doorStampHeight+doorStampSweep*(stampStation(z)-.5);
  const stampFade=z=>unitSmooth(clamp(stampStation(z)/doorStampFade))*unitSmooth(clamp((1-stampStation(z))/doorStampFade));
+ // Visual side-sill clearance: the true side and rocker follow the same rail.
+ // Fades into both arch feet and never changes the wheel or suspension datum.
+ function sillLift(z){
+  if(!g.body.sillRelief)return 0;
+  const extent=L-radius-.010;
+  if(Math.abs(z)>=extent||extent<=.01)return 0;
+  const u=(z+extent)/(extent*2),h=unitSmooth(clamp(u/.22))*unitSmooth(clamp((1-u)/.23));
+  return g.body.sillRelief*h*(.60+.40*Math.sin(Math.PI*u)**.72);
+ }
  function skinPoint(z,v,sgn,comp){
-  const side=skinX(z), localBox=regionalBox(z), bottom=Math.min(skinY(z)-.022,lipHeight(z,sgn)),archAt=z>0?L:-L,
+  const side=skinX(z), localBox=regionalBox(z), bottom=Math.min(skinY(z)-.022,lipHeight(z,sgn)+sillLift(z)),archAt=z>0?L:-L,
       flare=clamp(1-Math.abs(z-archAt)/(radius+.25))**1.65;
   const lower=floor-.013;
   const source=c[comp], group=comp.endsWith('Fenders')?'fenders':comp==='doors'?'doors':null;
@@ -204,7 +215,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    if(g.body.sideDuct)x-=g.body.sideDuctDepth*sideDuctMask(g.body,(z-doorRear)/(doorFront-doorRear),v);
    for(const hz of handleStations)x-=(.002+.013*g.body.handleRecess)*Math.exp(-((v-.22)**2)/.0034-((z-hz)**2)/.008);
   }
-  x+=stamped(z,v,sgn);
+  x+=stamped(z,v,sgn)-sillLift(z)*.68*v**3;
   if(bottom<=lower+.007)y=Math.max(y,lower+.007);
   return [sgn*x,y,z];
  }
@@ -457,7 +468,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   const sillHeight=(p.type==='blade'?.052:p.type==='deep'?.14:.089)*p.size*d.skirt;
   addModelPart(parts,'rockers',p.type==='blade'?'trim':'paint',patch(small(16,9,7,6),small(5,2,2,2),(u,v)=>{
    const z=mix(-L+radius+.011,L-radius-.011,u);
-   return [master.at(z,.99)[0]+s*(.008*p.depth+.020*bell(v)*p.shape),floor-.019+sillHeight*v,z];
+   return [master.at(z,.99)[0]+s*(.008*p.depth+.020*bell(v)*p.shape),floor+sillLift(z)-.019+sillHeight*v,z];
   },s>0));
   const mirror=getSideSettings(g,'mirrors',letter,c.mirrors),sx=X*.87,sy=B+.105*mirror.depth,mz=cabinFront-.19+mirror.bias*.08;
   if(mirror.type==='folded rectangle'){
@@ -539,6 +550,23 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  for(const s of [-1,1]){
   if(s<0&&roadster){
    // Lower door belt still samples the nominal canopy chart below.
+  }else if(s<0&&targaBulk){
+   // Use the rear glazing chart as the layup surface for three fixed panes
+   // and the surrounding roll-hoop skin. Shared strip edges meet the roof
+   // and deck; there is no frame model floating over a full-width pane.
+   const bands=[0,.067,.338,.385,.615,.662,.933,1];
+   const lo=mix(.035,.19,targaBulk),hi=mix(.965,.833,targaBulk);
+   const tall=(x,a,b)=>Math.min(1,Math.abs((2*x-a-b)/(b-a)))**5;
+   for(let j=0;j<bands.length-1;j++){
+    const a=bands[j],b=bands[j+1],window=j%2===1,n=window?small(9,6,5,4):1;
+    const strip=(mat,low,high,m=2)=>put('glass',mat,patch(m,n,(v,u)=>{
+     const x=mix(a,b,u),edge=window?.046*targaBulk*tall(x,a,b):.046*targaBulk;
+     return glassPoint(-1,mix(low(edge),high(edge),v),x);
+    }));
+    strip('trim',()=>0,e=>lo+e);
+    strip(window?'glass':'trim',e=>lo+e,e=>hi-e,3);
+    strip('trim',e=>hi-e,()=>1);
+   }
   }else if(s<0&&hatchFold){
    const halfBand=.019+.014*hatchFold;
    const lo=hatchSplit-halfBand,hi=hatchSplit+halfBand,n=small(16,10,9,8);
@@ -550,14 +578,40 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    emit('glass','lower-hatch-pane',0,lo,small(6,3,2,2));
    emit('seamDark','hatch-glass-divider',lo,hi,2);
    emit('glass','upper-hatch-pane',hi,1,small(10,5,4,3));
+   const raised=canopy.hatchBridge;
+   if(raised){
+    // Bridge the existing hatch hinge line with a closed, thin section.
+    // Ruled feet meet the outer hatch rail rather than sinking into glass.
+    const x0=.5-canopy.hatchBridgeWidth*.5,x1=1-x0;
+    const root=(u)=>glassPoint(-1,hatchSplit,mix(x0,x1,u));
+    const section=(u,v)=>{
+     const p=root(u), a=2*u-1,edge=Math.abs(a)**9;
+     const angle=2*Math.PI*v;
+     return [p[0],p[1]+raised*(1-.46*edge)+.014*Math.sin(angle)+.009*Math.cos(angle),p[2]-.054-.049*Math.cos(angle)];
+    };
+    put('spoiler','trim',patch(small(15,9,8,7),6,section,true));
+    for(const side of [0,1]){
+     put('spoiler','trim',patch(1,6,(t,v)=>lerp3(section(side,v),section(side,.5),t),side>0));
+     const a=side===0?0:.948,b=side===0?.052:1;
+     for(const u of [a,b])put('spoiler','trim',patch(2,1,(t,v)=>{
+      const q=root(u),p=section(u,mix(.56,.95,v));
+      return lerp3([q[0],q[1]-.022,q[2]+mix(.026,-.046,v)],p,t);
+     },side>0));
+     put('spoiler','trim',patch(3,2,(u,t)=>{
+      const x=mix(a,b,u),q=root(x),p=section(x,.80);
+      return lerp3([q[0],q[1]-.018,q[2]+.009],p,t);
+     },side===0));
+    }
+   }
    if(hatchLamps)for(const side of [-1,1]){
     const right=side>0,letter=right?'R':'L';
     const opt=getSideSettings(g,'taillights',letter,g.optics.rear);
     const t0=.032+.032*opt.position,tip=.22+.34*hatchLamps*(.78+.22*opt.height),mid=clamp(lo,t0+.035,tip-.055),
      split=clamp(hi+.025,mid+.009,tip-.025);
+    const fill=canopy.hatchLampFill;
     const keys=[
-     [0,.067,.068],[t0,.067,.068],[mix(t0,mid,.40),.019,rail-.022],[mid,.012,rail-.013],
-     [split,.024,rail-.018],[mix(split,tip,.63),.027,.079],[tip,.044,.045],[1,.044,.045]
+     [0,.067,.068],[t0,.067-.045*fill,.068+.034*fill],[mix(t0,mid,.40),.019-.009*fill,rail-.022+.008*fill],[mid,.012,rail-.013],
+     [split,.024-.012*fill,rail-.018+.004*fill],[mix(split,tip,.63),.027-.013*fill,.079+.018*fill],[tip,.044,.045],[1,.044,.045]
     ];
     const shape=(i,u,v,inner,offset)=>{
      const A=keys[i],B=keys[i+1],t=mix(A[0],B[0],v);
@@ -602,6 +656,9 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    const f=glassPoint(1,v,roofSide),r=glassPoint(-1,v,roofSide),a=lerp3(f,r,u),
     line=lerp3(A,C,u),actual=roofPoint(mix(roofFront,roofRear,u),roofSide);
    a[0]+=s*.030*canopy.glassBow*bell(u)*bell(v)*c.glass.depth;
+   // Raise the glazing sill progressively without separating the A/D pillars.
+   // The painted bridge below uses this same chart, so it stays gap-free.
+   a[1]+=canopy.sideGlassRise*bell(u)*unitSmooth(u)*(1-v)**2;
    return a.map((x,i)=>x+(actual[i]-line[i])*v*v);
   }
   glassSides[s]=side;
@@ -612,7 +669,17 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   if(!roadster)put('pillars','seamDark',patch(small(lod?12:22,7,6,5),small(3,1,1,1),(u,v)=>{
    const p=side(u,1-(.016+rs.gap*3)*v);p[0]+=s*(.003+rs.radius);p[1]-=rs.thickness*.7;return p;
   },s<0));
-  if(!roadster)put('glass','glass',patch(small(20,12,10,9),small(9,5,4,3),side,s<0));
+  const taper=hatchFold?canopy.hatchQuarterTaper:0;
+  if(!roadster&&taper){
+   // Split side DLO on the same chart: red C-quarter mass below and aft,
+   // following the narrowing rear glass contour. No coplanar overlay.
+   const end=t=>1-taper*(.044+.260*Math.abs(t-.52)**1.66);
+   const panel=(mat,a,b,m)=>put(mat==='glass'?'glass':'pillars',mat,
+    patch(m,small(10,7,6,5),(u,t)=>side(mix(a(t),b(t),u),t),s<0));
+   panel('glass',()=>0,t=>end(t)-.013,small(22,12,10,9));
+   panel('trim',t=>end(t)-.013,end,1);
+   panel('paint',end,()=>1,small(6,3,2,2));
+  }else if(!roadster)put('glass','glass',patch(small(20,12,10,9),small(9,5,4,3),side,s<0));
   const vanTrim=canopy.vanSideTrim;
   if(vanTrim&&!roadster){
    // Follow the current side glazing surface rather than a flat applique.
@@ -627,9 +694,9 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    return [s*mix(Math.abs(q[0]),outer,v),q[1]+(skinY(q[2])-q[1])*v,q[2]];
   },s<0));
   const framed=c.pillars.type==='painted frame';
-  for(const u of roadster?[0]:[0,c.doors.type==='four door'?.50:.65,1]){
+  for(const u of roadster?[0]:taper?[0,c.doors.type==='four door'?.50:.65]:[0,c.doors.type==='four door'?.50:.65,1]){
    const outer=u===0||u===1;
-   const mat=c.pillars.type==='painted'||framed&&outer?'paint':'trim',w=(.013+.027*c.pillars.shape)*c.pillars.size+(u===1?canopy.rearPillarWidth:0);
+   const mat=(c.pillars.type==='painted'||framed&&outer)&&!(u===0&&canopy.darkWindscreenFrame)?'paint':'trim',w=(.013+.027*c.pillars.shape)*c.pillars.size+(u===1?canopy.rearPillarWidth:0);
    const pillar=(v,j)=>{
     const q=side(clamp(u+(j-.5)*w*(u===.5?2:3)),v);q[0]+=s*(.007+.011*bell(j))*c.pillars.depth;return q;
    };
@@ -696,7 +763,14 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   side:(z,v,s)=>glassSides[s](clamp((cabinFront-z)/(cabinFront-cabinRear)),v),roof:roofPoint,
   frontGlass:(t,u)=>glassPoint(1,t,u),rearGlass:(t,u)=>glassPoint(-1,t,u)
  }});
- const structure=buildStructure({g,compact,quality:lod?'drive':quality,put,dims,sample:{side:bodySide,arch:(z,s)=>sampleLowerRail(lowerPanelRails[s],z)??bodySide(z,1,s),front:ends.front.face,rear:ends.rear.face}});
+ const upperSkin=roadster?(z,x)=>{
+  if(z<cabinFront||z>hoodEdge)return Infinity;
+  // Invert the actual hood chart's transverse X before evaluating its height.
+  let a=0,b=1;
+  for(let i=0;i<12;i++){const m=(a+b)*.5;if(hoodPoint(z,m)[0]<x)a=m;else b=m;}
+  return hoodPoint(z,(a+b)*.5)[1];
+ }:null;
+ const structure=buildStructure({g,compact,quality:lod?'drive':quality,put,dims,sample:{side:bodySide,arch:(z,s)=>sampleLowerRail(lowerPanelRails[s],z)??bodySide(z,1,s),front:ends.front.face,rear:ends.rear.face,upperSkin}});
  issues.push(...(structure.issues??[]));
  buildUtilitySuspension({put,dims,compact,amount:canopy.rallyTubework,tireWidth:d.tireWidth});
  const aero=buildAero({g,compact,quality:lod?'lod':quality,put,sample:{trunk:trunkPoint,rear:ends.rear.face},dims,evalFormula});

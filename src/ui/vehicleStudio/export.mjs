@@ -27,7 +27,7 @@ function fasciaInsertTexture(g,end){
   // Model data textures flip on upload, as do the Studio preview's maps.
   const u=(x+.5)/width,v=1-(y+.5)/height,q=Math.abs(2*u-1)/f.insertWidth;
   const corner=Math.min(1,q)**2,top=f.insertTop+f.insertSweep*.34*corner,
-   bottom=f.insertBottom-f.insertSweep*.80*corner;
+   bottom=f.insertBottom-f.insertSweep*.80*corner+(f.insertStep??0)*(1-smooth(.49,.62,q));
   const upper=f.insertBand?(1-smooth(.975,1.005,q))*smooth(top-.014,top+.014,v)*(1-smooth(bottom-.014,bottom+.014,v)):0;
   const xEdge=Math.abs(2*u-1),amount=f.lowerInsert??0,lowerWidth=.64+.24*amount;
   const lowerTop=.90-.26*amount+.060*(xEdge/lowerWidth)**3;

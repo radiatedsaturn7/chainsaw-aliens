@@ -32,9 +32,23 @@ headlamp/grille band. The optional hatch-edge lamp control lives on the
 split-hatch chart, not as a second lamp laid over the original bumper lens.
 The C4 placement was checked against [photos of a 2005 C4 VTS](https://auctions.wbandsons.com/auction/lot/lot-113---2005-citroen-c4-vts/?lot=3198&sd=1).
 
-The matched exports are 13,204 (Linaria), 14,902 (Linum),
-13,976 (Ember Pod), 14,526 (Kestrel), 14,994 (Flint), 14,991 (Caravan),
-14,266 (Dustjack), 14,092 (Lark), and 13,664 (Briar) triangles including
-four wheels. The WRX stays at 14,764 with the previous hood and paint.
-Roster unit tests regenerate the exact packaged exports and verify
-all four stock hardpoints and the headlight, brake and reverse roles.
+## Second reference-angle pass
+
+Match cameras to the features being fitted. For the C4 and S660, compare
+a true rear view as well as rear three-quarter; do not draw conclusions
+about the rear fascia from front or overhead views. The S660 rear was
+checked using the [New Atlas road test](https://newatlas.com/honda-s660-review/40407/)
+straight-rear and rear three-quarter photos. The recessed diffuser,
+center running strip and framed targa rear glass remain editable.
+The Caravan now has an independently adjustable windshield rake,
+swept glazing sill and stepped lamp/grille trim. The C4 adds an
+editable raised split-glass bridge, quarter-window taper and fuller
+hatch-edge optics. The WRX retains its approved hood crown and paint;
+its reshaped front lower intake and corner bypasses are editable.
+
+The current gameplay exports include all four wheels: 13,042 (Linaria),
+14,880 (Linum), 14,012 (Ember Pod), 14,588 (Kestrel), 14,978 (Flint),
+14,875 (Caravan), 14,316 (Dustjack), 13,938 (Lark), 13,654 (Briar), and
+14,822 (WRX). These are photo-guided approximations, not scan-accurate
+models. Each roster export is reproduced by tests that check all four
+stock hardpoints and the headlight, brake and reverse roles.

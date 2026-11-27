@@ -566,6 +566,7 @@ function inspector(){
   if(part==='wheels'||part==='tires')for(const k of ['diameter','tireWidth','rimRatio'])range(root,'dimensions',k,DIMENSIONS[k],g.dimensions[k]);
  if(['wheels','tires','frontFenders','rearFenders'].includes(part)){
   const arch=group(root,'Wheel opening fit',true);
+  range(arch,'body','sillRelief',phenotype.BODY_FIELDS.sillRelief,g.body.sillRelief);
   range(arch,'body','darkArchLips',phenotype.BODY_FIELDS.darkArchLips,g.body.darkArchLips);
   for(const [k,spec] of Object.entries(phenotype.ARCH_FIELDS)){
    if(part==='frontFenders'&&k.startsWith('rear')||part==='rearFenders'&&k.startsWith('front'))continue;

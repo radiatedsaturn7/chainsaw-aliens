@@ -33,8 +33,8 @@
     "hood": {
       "type": "crowned",
       "size": 1,
-      "shape": 0.41,
-      "depth": 1
+      "shape": 0.57,
+      "depth": 0.98
     },
     "frontFenders": {
       "type": "swept",
@@ -51,7 +51,7 @@
     "frontBumper": {
       "type": "rally",
       "size": 1,
-      "shape": 0.5,
+      "shape": 0.37,
       "depth": 1.15,
       "profile": "round",
       "sweep": 0.93,
@@ -89,10 +89,10 @@
       "depth": 0.86
     },
     "rockers": {
-      "type": "stock",
-      "size": 1,
+      "type": "blade",
+      "size": 0.78,
       "shape": 0.5,
-      "depth": 1
+      "depth": 0.72
     },
     "trunk": {
       "type": "notch",
@@ -232,9 +232,9 @@
       "bumperBeltHeight": 0.46,
       "bumperBeltSweep": 0,
       "lampShoulderRoll": 0,
-      "cornerTuck": 0,
+      "cornerTuck": 0.036,
       "paintedPocket": 0,
-      "upperEndSweep": 0.1,
+      "upperEndSweep": 0.088,
       "bumperMidReach": 0,
       "quarterWaist": 0,
       "quarterBlend": 0,
@@ -246,8 +246,8 @@
       "upperFasciaLift": 0.028,
       "outerFasciaWidth": -0.026,
       "grilleWidth": 0.99,
-      "grilleHeight": 0.88,
-      "grilleHeightPosition": 0.53,
+      "grilleHeight": 0.97,
+      "grilleHeightPosition": 0.59,
       "fogCoverHeight": 0.5,
       "plateHeight": 0.5,
       "plateWidth": 0.5,
@@ -257,13 +257,13 @@
       "intakeWidth": 0.78,
       "intakeHeight": 0.43,
       "intakeHeightPosition": 0.5,
-      "sweep": 0.83,
+      "sweep": 0.88,
       "pointedness": 0.18,
       "center": 0.82,
       "roundness": 0.63,
-      "taper": 0.12,
+      "taper": 0.03,
       "drop": 0.16,
-      "verticalRoundness": 0.57,
+      "verticalRoundness": 0.56,
       "rake": 0.1,
       "rollover": 0.61,
       "lowerRoll": 0.93,
@@ -296,10 +296,11 @@
         ]
       },
       "insertBand": 1,
-      "insertWidth": 0.89,
-      "insertTop": 0.095,
-      "insertBottom": 0.76,
-      "insertSweep": 0.19
+      "insertWidth": 0.94,
+      "insertTop": 0.084,
+      "insertBottom": 0.885,
+      "insertSweep": 0.24,
+      "lowerInsert": 0.57
     },
     "rear": {
       "profile": "aero",
@@ -323,14 +324,14 @@
       "lampShoulderRoll": 0,
       "cornerTuck": 0.041,
       "paintedPocket": 0,
-      "upperEndSweep": 0.09,
+      "upperEndSweep": 0.145,
       "bumperMidReach": 0,
       "quarterWaist": 0,
       "quarterBlend": 0.49,
-      "terminalTuck": 0.029,
-      "plateOpeningStretch": 0.16,
+      "terminalTuck": 0.052,
+      "plateOpeningStretch": 0.05,
       "plateMount": 1,
-      "platePosition": 0.55,
+      "platePosition": 0.5,
       "bumperStation": 0.43,
       "upperFasciaLift": 0,
       "outerFasciaWidth": 0,
@@ -383,23 +384,24 @@
           0,
           0
         ]
-      }
+      },
+      "lowerInsert": 0.56
     }
   },
   "optics": {
     "front": {
       "housing": "circle",
       "layout": "projector",
-      "width": 0.84,
-      "height": 0.84,
+      "width": 0.89,
+      "height": 0.95,
       "corner": 0.5,
       "angle": 0,
       "sweep": 0,
       "curvature": 0.54,
       "recess": 0.49,
       "convexity": 0.5,
-      "position": 0.53,
-      "outboard": 0.89,
+      "position": 0.54,
+      "outboard": 0.85,
       "sideWrap": 0,
       "tallHousing": 0,
       "lowerLensReach": 0,
@@ -493,8 +495,8 @@
       "rallyTubework": 1
     },
     "finish": {
-      "paintRoughness": 0.42,
-      "coatRoughness": 0.13
+      "paintRoughness": 0.41,
+      "coatRoughness": 0.111
     },
     "hood": {
       "shoulderRise": 0,
@@ -701,12 +703,12 @@
     "rearFlareScale": 1.3,
     "lipScale": 0.7,
     "archFootBlend": 0.12,
-    "doorStamp": 0,
+    "doorStamp": 0.007,
     "doorStampFade": 0.16,
-    "doorStampWidth": 0.066,
+    "doorStampWidth": 0.058,
     "doorStampFront": 0.26,
     "doorStampRear": 0.26,
-    "doorStampHeight": 0.47,
+    "doorStampHeight": 0.48,
     "doorStampSweep": 0,
     "frontArchUpper": 0.093,
     "rearArchUpper": 0.091,
@@ -716,7 +718,9 @@
     "creaseStrength": 0.64,
     "archCrown": 0.87,
     "roofEdge": 0.47,
-    "handleRecess": 0.49
+    "handleRecess": 0.49,
+    "sillRelief": 0.126,
+    "darkArchLips": 1
   },
   "surfaces": {
     "frontFenders": {
