@@ -37,3 +37,24 @@ test('independent optional inserts remain continuous between apertures without c
  assert.equal(createVehicle('sedan').fascia.front.insertBand,0);
  assert.equal(createVehicle('sedan').fascia.rear.insertBand,0);
 });
+
+test('S660 uses a narrow tail band with a satin center, body-color lower edge and unchanged optical geometry',()=>{
+ const g=loadVehicle(readFileSync(new URL('../../src/ui/vehicleStudio/examples/honda-s660.json',import.meta.url),'utf8'));
+ const matte=updateDesign(g,'fascia','rear',0,'insertSatinCenter');
+ const look=(g,u,v)=>{
+  const {pixels,width,height}=materialDoc(g,'fascia-rear').texture;
+  return pixels[Math.floor((1-v)*height)*width+Math.floor(u*width)];
+ };
+ assert.notEqual(look(g,.5,.24),look(matte,.5,.24));
+ assert.equal(look(g,.75,.24),g.materials.trim);
+ assert.equal(look(g,.76,.377),g.materials.paint);
+ assert.equal(look(g,.5,.346),g.materials.trim);
+ const a=exportVehicle(g),b=exportVehicle(matte);
+ const [bodyA,wheelA]=Object.values(a.models),[bodyB,wheelB]=Object.values(b.models);
+ assert.deepEqual(bodyA.vertices,bodyB.vertices);
+ assert.deepEqual(bodyA.faces,bodyB.faces);
+ assert.deepEqual(bodyA.joints,bodyB.joints);
+ assert.deepEqual(wheelA,wheelB);
+ assert.equal(loadVehicle(serializeVehicle(g)).fascia.rear.insertSatinCenter,.93);
+ assert.equal(a.metrics.carTriangles,14588);
+});

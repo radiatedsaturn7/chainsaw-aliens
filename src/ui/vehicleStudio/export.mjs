@@ -33,7 +33,13 @@ function fasciaInsertTexture(g,end){
   const lowerTop=.90-.26*amount+.060*(xEdge/lowerWidth)**3;
   const lower=amount>0?(1-smooth(lowerWidth-.025,lowerWidth+.015,xEdge))*smooth(lowerTop-.018,lowerTop+.018,v):0;
   const a=Math.max(upper,lower);
-  pixels[y*width+x]='#'+paint.map((p,k)=>Math.round(p+(trim[k]-p)*a).toString(16).padStart(2,'0')).join('');
+  const t=Math.max(.0001,bottom-top), h=(v-top)/t;
+  const span=(f.insertSatinWidth??.37)*(1-.29*smooth(.42,.86,h));
+  // A satin insert on the existing surface, separate from the
+  // optical lenses / real running-light aperture. Keep its bottom vent dark.
+  const satin=(f.insertSatinCenter??0)*upper*(1-smooth(span-.019,span+.019,q))
+   *smooth(.065,.15,h)*(1-smooth(.69,.82,h));
+  pixels[y*width+x]='#'+paint.map((p,k)=>Math.round(p+(trim[k]-p)*a+([116,124,132][k]-trim[k])*satin).toString(16).padStart(2,'0')).join('');
  }
  return {width,height,pixels};
 }
