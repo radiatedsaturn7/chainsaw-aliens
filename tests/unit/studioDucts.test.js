@@ -39,6 +39,23 @@ test('duct edits change the body skin, not wheel positions, physics or polygon b
  assert.deepEqual(x.attachments,y.attachments);
  assert.deepEqual(x.car.tuning,y.car.tuning);
  assert.equal(x.metrics.carTriangles,x.metrics.bodyTriangles+4*x.metrics.wheelTriangles);
- assert.equal(x.metrics.carTriangles,y.metrics.carTriangles);
+ assert.ok(Math.abs(x.metrics.carTriangles-y.metrics.carTriangles)<=180);
+ assert.ok(y.metrics.carTriangles<=15000);
  assert.ok(x.metrics.carTriangles<=15000);
+});
+
+test('crescent sweeps upward toward the front without erasing the painted center shoulder',()=>{
+ const {body}=example(),crescent={...body,pairedSideDucts:0,sideDuctCrescent:1,sideDuctWidth:.80,sideDuctHeight:.036,sideDuctSweep:.12};
+ const legacy={...crescent,sideDuctCrescent:0};
+ // Most of the door remains painted high; the recess runs under it before
+ // switching to the forward rising arm next to the windshield.
+ assert.equal(sideDuctMask(crescent,.55,.26),0);
+ assert.ok(sideDuctMask(legacy,.55,.32)>.96);
+ assert.ok(sideDuctMask(crescent,.55,.62)>.96);
+ assert.ok(sideDuctMask(crescent,.89,.25)>.96);
+ for(const sideDuctHeight of [.02,.30])for(const sideDuctSweep of [-.18,.18])
+  for(let i=0;i<=100;i++){
+   const p={...crescent,sideDuctHeight,sideDuctSweep},u=i/100;
+   for(const q of [[u,0],[u,1],[0,u],[1,u]])assert.equal(sideDuctMask(p,...q),0);
+  }
 });

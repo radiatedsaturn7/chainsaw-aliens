@@ -217,7 +217,7 @@
     "front": {
       "profile": "aero",
       "intakes": "single",
-      "hoodNoseDrop": 0.029,
+      "hoodNoseDrop": 0.039,
       "hoodNoseShoulder": 0.72,
       "deckSurfaceBlend": 0,
       "deckSurfaceCrown": 0.012,
@@ -236,7 +236,7 @@
       "lampShoulderRoll": 0,
       "cornerTuck": 0.018,
       "paintedPocket": 0,
-      "upperEndSweep": 0.057,
+      "upperEndSweep": 0.086,
       "bumperMidReach": 0,
       "quarterWaist": 0,
       "quarterBlend": 0,
@@ -245,7 +245,7 @@
       "plateMount": 0,
       "platePosition": 0.615,
       "bumperStation": 0.43,
-      "upperFasciaLift": -0.021,
+      "upperFasciaLift": -0.041,
       "outerFasciaWidth": 0,
       "grilleWidth": 0.91,
       "grilleHeight": 0.34,
@@ -709,7 +709,7 @@
     "frontFlareScale": 0.58,
     "rearFlareScale": 0.76,
     "lipScale": 0.66,
-    "archFootBlend": 0.1,
+    "archFootBlend": 0.141,
     "doorStamp": 0.031,
     "doorStampFade": 0.31,
     "doorStampWidth": 0.056,
@@ -725,7 +725,13 @@
     "creaseStrength": 0.4,
     "archCrown": 0.29,
     "roofEdge": 0.41,
-    "handleRecess": 0.49
+    "handleRecess": 0.49,
+    "sideDuct": 1,
+    "pairedSideDucts": 1,
+    "sideDuctDepth": 0.019,
+    "sideDuctWidth": 0.48,
+    "sideDuctSweep": 0.024,
+    "sideDuctHeight": 0.18
   },
   "surfaces": {
     "frontFenders": {

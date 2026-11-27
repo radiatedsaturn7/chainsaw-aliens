@@ -20,7 +20,10 @@ for(const id of ['honda-s660','kia-carnival','rally-fighter'])test(id+' arch hem
   const hems=d.parts.filter(p=>p.geometry.userData.constructionRole==='wheel arches / folded hem');
   const segments=[];
   for(const p of d.parts){
-   if(p.material!=='paint'||p.geometry.userData.constructionRole||
+   // The optional duct finish replaces paint on the original door shell;
+   // the lower rail must match that exact shell, not a hidden duplicate.
+   const shellPaint=p.material==='paint'||p.component==='doors'&&p.material==='side-duct';
+   if(!shellPaint||p.geometry.userData.constructionRole||
      !['frontFenders','rearFenders','frontBumper','rearBumper','doors'].includes(p.component))continue;
    const v=edges(p),uv=p.geometry.attributes.uv;
    const points=v.filter((_,i)=>uv.getY(i)===1);

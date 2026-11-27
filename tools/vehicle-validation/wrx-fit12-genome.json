@@ -89,10 +89,10 @@
       "depth": 1
     },
     "rockers": {
-      "type": "deep",
-      "size": 0.89,
-      "shape": 0.82,
-      "depth": 1.24
+      "type": "stock",
+      "size": 0.93,
+      "shape": 1,
+      "depth": 1.25
     },
     "trunk": {
       "type": "notch",
@@ -232,19 +232,19 @@
       "bumperBeltHeight": 0.539,
       "bumperBeltSweep": 0.029,
       "lampShoulderRoll": 0,
-      "cornerTuck": 0.053,
+      "cornerTuck": 0.059,
       "paintedPocket": 0,
       "upperEndSweep": 0.052,
       "bumperMidReach": 0.041,
-      "quarterWaist": 0.013,
-      "quarterBlend": 0.15,
+      "quarterWaist": 0.018,
+      "quarterBlend": 0.43,
       "terminalTuck": 0,
       "plateOpeningStretch": 0,
       "plateMount": 0,
       "platePosition": 0.615,
       "bumperStation": 0.41,
       "upperFasciaLift": 0.051,
-      "outerFasciaWidth": 0.069,
+      "outerFasciaWidth": 0.053,
       "grilleWidth": 1,
       "grilleHeight": 0.7,
       "grilleHeightPosition": 0.15,
@@ -297,7 +297,8 @@
           0.1,
           -0.11
         ]
-      }
+      },
+      "sideRailFairing": 0.93
     },
     "rear": {
       "profile": "round",
@@ -308,7 +309,7 @@
       "deckSurfaceCrown": 0.009,
       "deckLowerRoll": 0.71,
       "deckRailCurve": 0.39,
-      "bumperFaceBlend": 0.88,
+      "bumperFaceBlend": 0.94,
       "bumperFaceCrown": 0.022,
       "deckPanel": 0.25,
       "deckWidth": 0.91,
@@ -319,13 +320,13 @@
       "bumperBeltHeight": 0.48,
       "bumperBeltSweep": 0.07,
       "lampShoulderRoll": 0.038,
-      "cornerTuck": 0.067,
+      "cornerTuck": 0.05,
       "paintedPocket": 1,
       "upperEndSweep": 0.077,
       "bumperMidReach": 0.076,
       "quarterWaist": 0.044,
-      "quarterBlend": 0.33,
-      "terminalTuck": 0.094,
+      "quarterBlend": 0.43,
+      "terminalTuck": 0.062,
       "plateOpeningStretch": 0.35,
       "plateMount": 0.87,
       "platePosition": 0.648,
@@ -381,7 +382,8 @@
           0,
           0
         ]
-      }
+      },
+      "sideRailFairing": 0.88
     }
   },
   "optics": {
@@ -544,17 +546,17 @@
   },
   "seams": {
     "rearFenderSeam": {
-      "gap": 0.0045,
+      "gap": 0.0029,
       "offset": 0,
       "flush": 0,
-      "radius": 0.0016,
+      "radius": 0.0018,
       "thickness": 0.0012,
       "depth": 0.012,
       "flange": 0.82,
-      "seal": 0,
+      "seal": 0.33,
       "align": 1,
-      "tangent": 0.92,
-      "curvature": 0.84,
+      "tangent": 1,
+      "curvature": 0.96,
       "crease": 0
     },
     "rearDoorSeam": {
@@ -600,17 +602,17 @@
       "crease": 0
     },
     "frontFenderSeam": {
-      "gap": 0.0045,
+      "gap": 0.0029,
       "offset": 0,
       "flush": 0,
-      "radius": 0.0016,
+      "radius": 0.0018,
       "thickness": 0.0012,
       "depth": 0.012,
       "flange": 0.82,
-      "seal": 0,
+      "seal": 0.33,
       "align": 1,
-      "tangent": 0.92,
-      "curvature": 0.84,
+      "tangent": 1,
+      "curvature": 0.96,
       "crease": 0
     },
     "hoodSeam": {
@@ -660,14 +662,14 @@
     "frontFlareScale": 0.38,
     "rearFlareScale": 0.34,
     "lipScale": 0.53,
-    "archFootBlend": 0.105,
-    "doorStamp": 0.028,
-    "doorStampFade": 0.13,
-    "doorStampWidth": 0.045,
-    "doorStampFront": 0.16,
-    "doorStampRear": 0.08,
-    "doorStampHeight": 0.445,
-    "doorStampSweep": 0.007,
+    "archFootBlend": 0.11,
+    "doorStamp": 0.03,
+    "doorStampFade": 0.095,
+    "doorStampWidth": 0.048,
+    "doorStampFront": 0.04,
+    "doorStampRear": 0.18,
+    "doorStampHeight": 0.614,
+    "doorStampSweep": 0.028,
     "frontArchUpper": 0.024,
     "rearArchUpper": 0.022,
     "frontArchFore": 0.027,
@@ -676,7 +678,8 @@
     "creaseStrength": 0.44,
     "archCrown": 0.38,
     "roofEdge": 0.64,
-    "handleRecess": 0.49
+    "handleRecess": 0.49,
+    "sillRelief": 0.022
   },
   "surfaces": {
     "frontFenders": {

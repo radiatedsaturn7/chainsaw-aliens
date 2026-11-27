@@ -47,3 +47,25 @@ test('each rim is emitted at exactly the cap boundary, gasket/cover are independ
   }
  }
 });
+
+test('Forester receives one continuous upright corner aperture per side, with no extra lens cutouts',async()=>{
+ const {readFile}=await import('node:fs/promises');
+ const {loadVehicle}=await import('../../src/ui/vehicleStudio/genome.mjs');
+ const g=loadVehicle(await readFile(new URL('../../src/ui/vehicleStudio/examples/subaru-forester.json',import.meta.url),'utf8'));
+ const lenses=()=>makeOpenings({end:'rear',g}).filter(o=>o.kind==='lamp');
+ const apertureBounds=o=>{
+  const ys=o.outline.map(p=>p[1]),xs=o.outline.map(p=>p[0]);
+  return {span:Math.max(...ys)-Math.min(...ys),width:Math.max(...xs)-Math.min(...xs),top:Math.min(...ys)};
+ };
+ const taller=lenses();
+ g.optics.rear.tallHousing=.42;
+ const standard=lenses();
+ assert.equal(taller.length,2);
+ assert.deepEqual(taller.map(x=>x.id),standard.map(x=>x.id));
+ for(let i=0;i<2;i++){
+  const a=apertureBounds(taller[i]),b=apertureBounds(standard[i]);
+  assert.ok(a.span>b.span*1.25);
+  assert.ok(Math.abs(a.width-b.width)<1e-9);
+  assert.ok(Math.abs(a.top-b.top)<1e-9);
+ }
+});

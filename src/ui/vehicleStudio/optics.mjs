@@ -168,7 +168,7 @@ export function makeOpenings({end,g,segments=32,face=null}){
  const sideX=sideBase-(num(raw.outboard,.5)-.5)*.092;
  const h0=mix(.129,front?.347:.295,housing==='circle'?opt.height*.58+opt.width*.42:opt.height);
  const w=Math.min(housing==='circle'?h0*.46:mix(.132,.308,opt.width),2*(sideX-.025));
- const hBase=(housing==='oval'?h0*.85:h0)*(front?1:1+Math.max(0,Math.min(.42,num(raw.tallHousing,0))));
+ const hBase=(housing==='oval'?h0*.85:h0)*(front?1:1+Math.max(0,Math.min(housing==='upright-wrap'?.88:.42,num(raw.tallHousing,0))));
  const cyBase=Math.max(.022+hBase/2,Math.min(front?mix(.127,.408,opt.position):mix(.176,.462,opt.position),1-hBase*.5-.045));
  // Make the headlight body taller without moving the fitted hood edge.
  // Keep a solid band to the tallest possible fog cover underneath.

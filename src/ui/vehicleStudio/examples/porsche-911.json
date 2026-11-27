@@ -83,7 +83,7 @@
       "depth": 1
     },
     "glass": {
-      "type": "clear",
+      "type": "tinted",
       "size": 1,
       "shape": 0.6,
       "depth": 1.18
@@ -494,11 +494,11 @@
       "rearRoofShift": 0.18,
       "rearPillarWidth": 0.04,
       "rearGlassArc": 0.117,
-      "canopyLength": 0.84,
+      "canopyLength": 0.91,
       "canopyShoulder": 0.99,
       "glassBow": 0.94,
-      "frontScreenRake": 0.02,
-      "sideGlassRise": 0.03,
+      "frontScreenRake": -0.04,
+      "sideGlassRise": 0.018,
       "hatchQuarterTaper": 0.64
     },
     "finish": {
@@ -514,11 +514,12 @@
       "scoopHeight": 0,
       "scoopCorner": 0,
       "lampLids": "inset",
-      "lidWidth": 0.255,
-      "lidLength": 0.388,
+      "lidWidth": 0.248,
+      "lidLength": 0.36,
       "lidSpread": 0.35,
       "lidSetback": 0.045,
-      "lidGap": 0.006
+      "lidGap": 0.006,
+      "lampPodRise": 0.087
     },
     "wing": {
       "supportMount": "top",
@@ -674,8 +675,8 @@
     }
   },
   "body": {
-    "frontFlareScale": 1.04,
-    "rearFlareScale": 1.06,
+    "frontFlareScale": 1.22,
+    "rearFlareScale": 1.18,
     "lipScale": 0.46,
     "archFootBlend": 0.065,
     "doorStamp": 0,
@@ -691,7 +692,7 @@
     "rearArchFore": 0.025,
     "creaseHeight": 0.35,
     "creaseStrength": 0.43,
-    "archCrown": 0.67,
+    "archCrown": 0.77,
     "roofEdge": 0.88,
     "handleRecess": 0.49
   },

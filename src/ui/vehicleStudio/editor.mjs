@@ -579,7 +579,7 @@ function inspector(){
  }
  if(part==='doors'){
   const duct=group(root,'Side duct / door insert',true);
-  for(const k of ['sideDuct','sideDuctDepth','sideDuctWidth','sideDuctSweep','sideDuctHeight'])range(duct,'body',k,phenotype.BODY_FIELDS[k],g.body[k]);
+  for(const k of ['sideDuct','pairedSideDucts','sideDuctDepth','sideDuctWidth','sideDuctSweep','sideDuctHeight','sideDuctCrescent'])range(duct,'body',k,phenotype.BODY_FIELDS[k],g.body[k]);
   const stamp=group(root,'Door character line',true);
   for(const k of ['doorStamp','doorStampHeight','doorStampSweep','doorStampWidth','doorStampFade','doorStampFront','doorStampRear'])range(stamp,'body',k,phenotype.BODY_FIELDS[k],g.body[k]);
  }

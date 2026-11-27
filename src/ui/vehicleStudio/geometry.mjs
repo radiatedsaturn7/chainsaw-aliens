@@ -242,8 +242,20 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   const crown=(1-Math.tanh(q))*0.5;
   return hoodDesign.shoulderRise*blend*edge*(crown-.22*Math.exp(-((q-.74)**2)));
  };
+ const insetLampPod=(z,u)=>{
+  if(!hoodDesign.lampPodRise||hoodDesign.lampLids!=='inset')return 0;
+  const length=Math.max(.1,bumperFront-cabinFront),t=clamp((z-cabinFront)/length),a=Math.abs(2*u-1);
+  const half=clamp(hoodDesign.lidLength/length*.5,.044,.22);
+  const lid=1-clamp(hoodDesign.lidSetback/length+half,.045+half,.92-half);
+  const along=Math.exp(-(((t-(lid-.18))/.39)**2));
+  const across=Math.exp(-(((a-hoodDesign.lidSpread*2)/.23)**2));
+  // Raise the shoulder just behind the oval. The bowl, ring and cover all
+  // sample this surface, and its lift fades to zero at shared panel rails.
+  const fades=unitSmooth(clamp(t/.16))*unitSmooth(clamp((1-t)/.14))*unitSmooth(clamp((1-a)/.14));
+  return hoodDesign.lampPodRise*along*across*fades;
+ };
  const originalHood=(z,v)=>{const p=top(z,v,mix(hoodC,.019*c.frontBumper.size,clamp((z-(bumperFront-.28))/.28)**2),'hood');
-  p[1]+=UP_PATCH(g,'hood',z,v,cabinFront,bumperFront)+hoodShoulder(z,v);return p;};
+  p[1]+=UP_PATCH(g,'hood',z,v,cabinFront,bumperFront)+hoodShoulder(z,v)+insetLampPod(z,v);return p;};
  const trunkC=(c.trunk.type==='fastback'?.034:c.trunk.type==='ducktail'?.064:.047)*(.68+c.trunk.shape)*c.trunk.depth;
  const originalTrunk=(z,v)=>{const p=top(z,v,mix(trunkC,.019*c.rearBumper.size,clamp((bumperRear+.28-z)/.28)**2),'trunk');
   const rise=canopy.rearDeckButtresses;

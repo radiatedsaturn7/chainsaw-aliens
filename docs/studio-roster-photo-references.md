@@ -126,3 +126,14 @@ the sourced photos are references only, not distributed game art.
 | Rally Fighter | [2011 Rally Fighter listing and gallery](https://www.classic.com/veh/2011-local-motors-rally-fighter-tex113889-pz5X7MW/) | Lower daylight opening and rear quarter taper; the exposed off-road stance still needs better modeling around the bumper and suspension. |
 | Miata | [Original 1990 red NA photo gallery](https://bringatrailer.com/listing/1990-mazda-mx-5-miata-122/), [Mazda 1990 brochure](https://www.motorologist.com/wp-content/uploads/1990-Mazda-Miata-MX5-brochure.pdf) | Soft rear bumper curvature and broad oval tail clusters, not a generic angular coupe tail. |
 | Forester | [Subaru's 2004 XT preview](https://www.subaru.ca/Content/7907/media/en-ca/download/SixStarReviewFall2003.pdf), [US-spec 2.5XT gallery](https://www.carfindersdenver.com/pre-owned-cars/detail/2004-Subaru-Forester/1384386) | Compare taper of the quarter light and the transition from side glazing to the rear hatch surround. |
+
+### Signature geometry pass
+
+- The WRX uses a rounded painted rocker and lower door stamp, with tighter closed fender seams and fairer bumper transitions. The approved hood, wheels and lamp mounts are untouched.
+- The GT3 uses optional **Raised inset lamp pods**. The outer ring and bowl sample the raised fender surface, and the lift returns to zero at the hood rails. The Quattro uses wider boxed arches and a stepped bumper.
+- Both side intake styles are editable. Racemo uses the swept crescent carved into the door carrier; S660 uses separate diagonal and rear triangular recesses. The original duct profile remains the default.
+- C4 gains a longer swept nose lens and softer wheel-arch returns. The Miata's rear lens footprint is elongated and its rear bumper and arches have rounder corners.
+- The Carnival's nose is squarer with a more sculpted lower section. Rally Fighter's roof is lower and wider in the visual model, with stock wheel hardpoints and suspension.
+- The Forester uses taller **Upright wrap** lenses cut into one surface, not supplemental strips over the glass. The real lenses still start higher than these.
+
+The remaining gaps include GT3 fender-to-nose continuity, the Quattro's period-specific rear profile, and the Forester's continuous lens placement relative to its rear glass. Matched renders are a visual check, not a claim of exact likeness.

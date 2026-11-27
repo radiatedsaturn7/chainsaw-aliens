@@ -49,3 +49,27 @@ test('upper lamps cut two hood apertures and suppress bumper-face lenses without
  assert.deepEqual(x.car,y.car);assert.deepEqual(x.attachments,y.attachments);assert.ok(x.metrics.carTriangles<=15000);
  assert.deepEqual(x,exportVehicle(loadVehicle(serializeVehicle(q))));
 });
+
+test('paired raised lamp pods raise both inset projectors without changing wheel or beam mounts',()=>{
+ const g=createFasciaDemo('compound');
+ g.construction.hood={...g.construction.hood,lampLids:'inset',lidWidth:.245,lidLength:.37,lidSpread:.35,lidSetback:.06};
+ const stock=run(g),raised=run(updateDesign(g,'construction','hood',{...g.construction.hood,lampPodRise:.108}));
+ try{
+  assert.deepEqual(raised.diagnostics.issues,[]);
+  const lenses=q=>of(q,'headlights','opticCover').map(bound);
+  const a=lenses(stock),b=lenses(raised);
+  assert.equal(b.length,2);
+  for(let i=0;i<2;i++)assert.ok(b[i].max.y-a[i].max.y>.035);
+  assert.deepEqual(raised.wheels,stock.wheels);
+  assert.deepEqual(raised.lampMounts,stock.lampMounts);
+  const position=p=>p.geometry.attributes.position;
+  const key=(x,i)=>[x.getX(i),x.getY(i),x.getZ(i)].map(v=>v.toFixed(5)).join(',');
+  const skin=new Set(of(raised,'hood','paint').flatMap(p=>{
+   const a=position(p);return Array.from({length:a.count},(_,i)=>key(a,i));
+  }));
+  for(const p of of(raised,'headlights','seamDark')){
+   const ring=position(p);
+   assert.ok(Array.from({length:ring.count/3},(_,i)=>key(ring,i)).every(k=>skin.has(k)));
+  }
+ }finally{disposeDesign(stock);disposeDesign(raised);}
+});

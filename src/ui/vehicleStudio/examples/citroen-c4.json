@@ -215,7 +215,7 @@
     "front": {
       "profile": "round",
       "intakes": "single",
-      "hoodNoseDrop": 0.035,
+      "hoodNoseDrop": 0.041,
       "hoodNoseShoulder": 0.7,
       "deckSurfaceBlend": 0,
       "deckSurfaceCrown": 0.012,
@@ -234,7 +234,7 @@
       "lampShoulderRoll": 0,
       "cornerTuck": 0,
       "paintedPocket": 0,
-      "upperEndSweep": 0.048,
+      "upperEndSweep": 0.078,
       "bumperMidReach": 0,
       "quarterWaist": 0,
       "quarterBlend": 0,
@@ -243,7 +243,7 @@
       "plateMount": 0,
       "platePosition": 0.615,
       "bumperStation": 0.43,
-      "upperFasciaLift": -0.008,
+      "upperFasciaLift": -0.044,
       "outerFasciaWidth": 0,
       "grilleWidth": 0.91,
       "grilleHeight": 0.38,
@@ -296,7 +296,7 @@
         ]
       },
       "sideRailFairing": 0.72,
-      "lowerInsert": 0.69
+      "lowerInsert": 0.55
     },
     "rear": {
       "profile": "square",
@@ -389,25 +389,25 @@
     "front": {
       "housing": "swept",
       "layout": "twin",
-      "width": 0.75,
+      "width": 1,
       "height": 0.56,
       "corner": 0.5,
-      "angle": -0.33,
+      "angle": -0.52,
       "sweep": 0.92,
       "curvature": 0.5,
-      "recess": 0.65,
-      "convexity": 0.5,
-      "position": 0.32,
+      "recess": 0.28,
+      "convexity": 0.78,
+      "position": 0.25,
       "outboard": 0.5,
-      "sideWrap": 0,
+      "sideWrap": 0.45,
       "tallHousing": 0,
       "lowerLensReach": 0,
       "rearCells": 0,
       "roundBowls": 0,
-      "silverFront": 0,
+      "silverFront": 0.82,
       "silverUpper": 0,
       "flutedBowls": 0,
-      "inboardReach": 0.5,
+      "inboardReach": 0.77,
       "protrusion": 0,
       "outline": [
         0,
@@ -502,15 +502,15 @@
       "coatRoughness": 0.12
     },
     "hood": {
-      "shoulderRise": 0.013,
+      "shoulderRise": 0.019,
       "shoulderWidth": 0.087,
-      "shoulderAt": 0.73,
+      "shoulderAt": 0.69,
       "shoulderSweep": 0,
       "scoopWidth": 0,
       "scoopHeight": 0,
       "scoopCorner": 0,
-      "noseFairing": 0.46,
-      "crossCrown": 0.48
+      "noseFairing": 0.68,
+      "crossCrown": 0.65
     },
     "wing": {
       "elevation": 0,
@@ -644,10 +644,10 @@
     }
   },
   "body": {
-    "frontFlareScale": 1,
-    "rearFlareScale": 1,
+    "frontFlareScale": 0.89,
+    "rearFlareScale": 0.94,
     "lipScale": 1,
-    "archFootBlend": 0.065,
+    "archFootBlend": 0.116,
     "doorStamp": 0.014,
     "doorStampFade": 0.17,
     "doorStampWidth": 0.061,
