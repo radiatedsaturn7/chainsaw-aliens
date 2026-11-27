@@ -73,8 +73,11 @@ export function renderConstruction(root,{state,get,edit,repaint,setLevel,level,s
   root.append(node('p',{textContent:'Shoulder changes are formed into the hood surface. The scoop width and height can be edited separately; zero preserves the existing Size or Shape behavior.'}));
   button(root,'build-show-hood','Frame elevated front',()=>setView('frontElevated'));
  }else if(state.panel==='wing'){
-  select(root,'build-spoiler-style','Spoiler style',{wing:'Airfoil wing',lip:'Deck lip',off:'Off'},initial.components.spoiler.type,v=>edit('components','spoiler',v,'type'));
-  sectionNumbers('wing',WING_FIELDS);
+  select(root,'build-spoiler-style','Spoiler style',{wing:'Airfoil wing','boxed wing':'Boxed wing',lip:'Deck lip',off:'Off'},initial.components.spoiler.type,v=>{
+   const ok=edit('components','spoiler',v,'type');if(ok!==false)repaint();return ok;
+  });
+  const boxed=initial.components.spoiler.type==='boxed wing';
+  sectionNumbers('wing',Object.fromEntries(Object.entries(WING_FIELDS).filter(([k])=>boxed?!['elements','spacing','supports'].includes(k):!k.startsWith('boxWall'))));
   if(level==='expert')formula(root,'build-wing-formula','Span profile formula',()=>sectionValue('wing','formula'),(v,o)=>sectionSet('wing','formula',v,o),'0.08*sin(pi*u)');
   else promote();
   button(root,'build-show-wing','Frame rear view',()=>setView('rear'));

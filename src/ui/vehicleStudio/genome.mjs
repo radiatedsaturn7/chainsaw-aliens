@@ -26,7 +26,7 @@ export const COMPONENTS={
  trunk:style('Trunk / rear deck',['notch','fastback','ducktail'],'crown'),
  headlights:style('Headlights',['swept','rectangular','round']),tails:style('Taillights',['stacked','strip','round']),
  fogs:style('Fog lights',['round','strip','blank','off']),grille:style('Grille',['mesh','bars','closed']),
- scoop:style('Scoop and vents',['scoop','vents','off']),spoiler:style('Spoiler',['wing','lip','off']),
+ scoop:style('Scoop and vents',['scoop','vents','off']),spoiler:style('Spoiler',['wing','lip','off','boxed wing']),
  mirrors:style('Mirrors',['standard','aero','folded rectangle'],'corner radius'),handles:style('Door handles',['lever','flush','painted lever']),
  wheels:style('Wheels',['6-spoke','5-spoke','mesh','10-spoke'],'dish'),tires:style('Tires',['road','rally'],'sidewall'),
  exhaust:style('Exhaust',['single','dual','quad']),dash:style('Dashboard',['road','sport']),
@@ -43,6 +43,7 @@ export const FASCIA_FIELDS={
  deckPanel:unit('Trunk panel recess / seam'),deckWidth:unit('Trunk panel width'),deckHeight:unit('Trunk panel depth'),
  valanceRise:F('Lower valance rise (m)',0,.18,.005),valanceWidth:unit('Width of raised valance'),
  bumperBeltRise:F('Stamped bumper line depth (m)',0,.026,.001),bumperBeltHeight:F('Stamped bumper line height',.24,.78,.01),bumperBeltSweep:F('Stamped line rise at corners',-.17,.17,.01),
+ terminalTuck:F('Bumper tuck (m)',0,.12,.005),plateMount:unit('Visible rear plate mount'),platePosition:F('Rear plate height position',.50,.75,.005),
  bumperStation:F('Bumper seam span (m)',.24,.63,.005),upperFasciaLift:F('Upper fascia elevation (m)',-.085,.14,.005),outerFasciaWidth:F('Terminal fascia width',-.09,.12,.005),
  grilleWidth:unit('Upper grille width'),grilleHeight:unit('Upper grille height'),grilleHeightPosition:unit('Upper grille position'),
  fogCoverHeight:unit('Fog cover height'),plateHeight:unit('Rear plate pocket height'),plateWidth:unit('Rear plate pocket width'),
@@ -66,7 +67,7 @@ function baseFascia(family,front,legacy){
  return {profile:front?legacy.profile:family==='coupe'?'square':family==='fastback'?'aero':'round',intakes:front?'single':family==='fastback'?'split':'closed',
   ...initial(FASCIA_FIELDS,front?{...legacy,taper:.26,center:.82,wrap:.68,rake:.10,recess:.08,crease:.16,chin:0,boxiness:family==='coupe'?.78:.34,pointedness:0}:
   {sweep:.46,taper:.37,drop:.20,rollover:.50,lowerRoll:.60,center:.78,wrap:.64,rake:.16,recess:.05,crease:.14,chin:-.12,boxiness:family==='coupe'?.77:.41,pointedness:0}),
-  deckPanel:0,valanceRise:0,bumperBeltRise:0,bumperBeltHeight:.44,bumperBeltSweep:0,bumperStation:.43,upperFasciaLift:0,outerFasciaWidth:0,grilleShape:'trapezoid',intakeShape:front?'angular':'trapezoid',curves:{plan:[0,0,0,0],vertical:[0,0,0,0],transverse:[0,0,0,0]}};
+  deckPanel:0,valanceRise:0,terminalTuck:0,plateMount:0,platePosition:.615,bumperBeltRise:0,bumperBeltHeight:.44,bumperBeltSweep:0,bumperStation:.43,upperFasciaLift:0,outerFasciaWidth:0,grilleShape:'trapezoid',intakeShape:front?'angular':'trapezoid',curves:{plan:[0,0,0,0],vertical:[0,0,0,0],transverse:[0,0,0,0]}};
 }
 function baseOptic(family,front){return {
  housing:front?(family==='coupe'?'round-rect':family==='fastback'?'oval':'swept'):(family==='fastback'?'wrap':'trapezoid'),
@@ -115,7 +116,11 @@ export const SEAM_FIELDS={
  flange:F('Return flange',0,1,.05),seal:F('Rubber seal',0,1,.05),align:F('Boundary alignment',0,1,.025),
  tangent:F('Match tangents',0,1,.025),curvature:F('Match curvature',0,1,.025),crease:F('Keep an intentional crease',0,1,.025)
 };
-export const BODY_FIELDS={
+export const ARCH_FIELDS={
+ frontArchUpper:F('Front arch crown gap (m)',.016,.105,.002),rearArchUpper:F('Rear arch crown gap (m)',.016,.105,.002),
+ frontArchFore:F('Front arch fore/aft gap (m)',.022,.105,.002),rearArchFore:F('Rear arch fore/aft gap (m)',.022,.105,.002)
+};
+export const BODY_FIELDS={...ARCH_FIELDS,
  creaseHeight:F('Crease height',.14,.59,.005),creaseStrength:F('Crease definition',0,1,.01),
  archCrown:F('Wheel-arch crown',0,1,.01),roofEdge:F('Roof-edge radius',0,1,.01),
  handleRecess:F('Door-handle recess',0,1,.01)
@@ -127,6 +132,7 @@ export const PAIR_MODES={mirrored:'Mirrored',linked:'Linked',independent:'Indepe
 export const PAIR_GROUPS={headlights:'Headlights',taillights:'Taillights',fogs:'Fog lights',mirrors:'Mirrors',fenders:'Fenders',doors:'Doors',wheels:'Wheels',vents:'Vents',rockers:'Side skirts'};
 export const STYLE_KINDS={ridge:'Stamped ridge',groove:'Recessed groove',crease:'Styling crease',trim:'Raised molding',shoulder:'Raised shoulder',recess:'Local recess'};
 export const BODY_EDITOR_FIELDS={bolster:F('Seat bolster',0,1,.01),lumbar:F('Lumbar curve',0,1,.01),trim:F('Interior trim',0,1,.01),
+ rearPillarFoot:F('C-pillar base sweep aft (m)',0,.35,.005),rearRoofShift:F('Rear roof edge aft (m)',-.20,.22,.005),rearPillarWidth:F('Rear pillar frame width boost',0,.12,.005),
  rearGlassArc:F('Rear glass upper sweep (m)',0,.12,.002),canopyLength:F('Roof length / cabin rake',0,1,.01),canopyShoulder:F('Roof shoulder rounding',0,1,.01),glassBow:F('Side glazing outward bow',0,1,.01)
 };
 export const HOOD_CONSTRUCTION_FIELDS={
@@ -138,7 +144,7 @@ export const HOOD_CONSTRUCTION_FIELDS={
  scoopHeight:F('Intake mouth height (m, 0 = linked to shape)',0,.20,.005),
  scoopCorner:F('Intake corner shape',0,1,.01)
 };
-export const WING_FIELDS={elevation:F('Extra wing rise (m)',-.10,.12,.002),camber:F('Airfoil camber',0,1,.01),sweep:F('Wing sweep',-1,1,.01),taper:F('Wing taper',0,1,.01),thickness:F('Airfoil thickness',.04,.24,.005),angle:F('Angle of attack',-15,15,.25),supports:F('Supports',2,4,1),spacing:F('Support spacing',.22,.88,.01),elements:F('Wing elements',1,2,1)};
+export const WING_FIELDS={elevation:F('Extra wing rise (m)',-.10,.12,.002),boxWallWidth:F('Box wing end-frame width (m)',.020,.075,.002),boxWallRake:F('Box wing end-frame rake',-.50,.50,.01),camber:F('Airfoil camber',0,1,.01),sweep:F('Wing sweep',-1,1,.01),taper:F('Wing taper',0,1,.01),thickness:F('Airfoil thickness',.04,.24,.005),angle:F('Angle of attack',-15,15,.25),supports:F('Supports',2,4,1),spacing:F('Support spacing',.22,.88,.01),elements:F('Wing elements',1,2,1)};
 export const EXHAUST_FIELDS={
  x:F('Side location (m)',-.95,.95,.005),y:F('Height above floor (m)',-.04,.25,.005),spacing:F('Tip spacing (m)',.045,.20,.005),count:F('Outlet count',1,6,1),
  diameter:F('Tip diameter (m)',.035,.16,.005),protrusion:F('Projection (m)',-.07,.18,.005),curvature:F('Pipe curvature',-1,1,.01),
@@ -155,9 +161,9 @@ export const newStyle=(id='styling-1')=>({id,kind:'ridge',side:'both',start:.24,
 const constructionDefaults=()=>({
  symmetry:Object.fromEntries(Object.keys(PAIR_GROUPS).map(k=>[k,'mirrored'])),
  sides:{L:{},R:{}},
- cabin:{layout:'bench',bolster:.53,lumbar:.45,trim:.54,rearGlassArc:0,canopyLength:.5,canopyShoulder:.5,glassBow:.5},
+ cabin:{layout:'bench',bolster:.53,lumbar:.45,trim:.54,rearPillarFoot:0,rearRoofShift:0,rearPillarWidth:0,rearGlassArc:0,canopyLength:.5,canopyShoulder:.5,glassBow:.5},
  hood:{shoulderRise:0,shoulderWidth:.087,shoulderAt:.65,shoulderSweep:0,scoopWidth:0,scoopHeight:0,scoopCorner:0},
- wing:{elevation:0,camber:.34,sweep:.08,taper:.42,thickness:.097,angle:4,supports:2,spacing:.67,formula:'',elements:1},
+ wing:{elevation:0,boxWallWidth:.041,boxWallRake:0,camber:.34,sweep:.08,taper:.42,thickness:.097,angle:4,supports:2,spacing:.67,formula:'',elements:1},
  exhaust:[],features:[]
 });
 export function getSideSettings(g,key,side,common){
@@ -194,7 +200,7 @@ export function createVehicle(family='sedan'){
  components:Object.fromEntries(Object.entries(COMPONENTS).map(([k,c])=>[k,{type:c.types[defaults[family]?.[k]??0],size:1,shape:.5,depth:1,...(k==='frontBumper'?NOSE_DEFAULTS[family]:{}),...(POSITIONABLE.has(k)?{bias:0,angle:0}:{})}])),
  fascia:Object.fromEntries(['front','rear'].map(end=>[end,baseFascia(family,end==='front',NOSE_DEFAULTS[family])])),
  optics:Object.fromEntries(['front','rear'].map(end=>[end,baseOptic(family,end==='front')])),
- construction:constructionDefaults(),seams:defaultSeams(),body:{creaseHeight:.31,creaseStrength:.40,archCrown:.52,roofEdge:.47,handleRecess:.49},
+ construction:constructionDefaults(),seams:defaultSeams(),body:{frontArchUpper:.045,rearArchUpper:.045,frontArchFore:.045,rearArchFore:.045,creaseHeight:.31,creaseStrength:.40,archCrown:.52,roofEdge:.47,handleRecess:.49},
  surfaces:{frontFenders:createPanel(f.panel),...Object.fromEntries(PATCH_PANELS.map(key=>[key,{kind:'bicubic-interior-v1',points:[0,0,0,0]}]))}, constraints:{gap:.005,archClearance:.045,partition:'shared-stations-v1'},
  materials:{...MAT,paint:f.color,wheel:f.wheel}, attachments:{schema:'axles-and-optics-v1'}};
 }

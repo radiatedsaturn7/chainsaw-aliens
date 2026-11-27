@@ -35,7 +35,7 @@ export function structureTireEnvelope(radius,width,yaw=0,travel=.054){
  return {lateral,fore,travel};
 }
 export function buildStructure({g,quality='preview',put,sample,dims}){
- const {X,L,Lf,Lr,floor,B,cabinFront,cabinRear,tireTrack,rearTireTrack=tireTrack,wheelRadius:R,archRadius}=dims;
+ const {X,L,Lf,Lr,floor,B,cabinFront,cabinRear,tireTrack,rearTireTrack=tireTrack,wheelRadius:R,archRadius,frontArchRadius=archRadius,rearArchRadius=archRadius}=dims;
  const W=g.dimensions.tireWidth,issues=[];
  const perf=quality==='drive',high=quality==='export';
  const envelope=(ax)=>structureTireEnvelope(R,W,ax>0?.63:.13,.054);
@@ -50,9 +50,9 @@ export function buildStructure({g,quality='preview',put,sample,dims}){
   return p;
  };
  const rails=wheelZ.map(ax=>{
-  const e=envelope(ax), extent=Math.max(archRadius+.018,e.fore+.032);
+  const e=envelope(ax),openingRadius=ax>0?frontArchRadius:rearArchRadius,extent=Math.max(openingRadius+.018,e.fore+.032);
   const track=ax>0?tireTrack:rearTireTrack;
-  return {ax,e,extent,track,inside:Math.min(X*.83,track-e.lateral-.024)};
+  return {ax,e,extent,track,openingRadius,inside:Math.min(X*.83,track-e.lateral-.024)};
  });
  for(const r of rails)if(r.inside<.11)issues.push('Tire sweep leaves too little room for a closed central tray.');
  const floorAt=(z,x)=>{
@@ -105,7 +105,7 @@ export function buildStructure({g,quality='preview',put,sample,dims}){
    const linerRows=[],innerRows=[];
    for(const z of r.zs){
     const [ox,oy,oz]=edge(z,s),innerX=s*widthAt(z,s);
-    const isOpening=Math.abs(z-r.ax)<Math.min(archRadius,r.e.fore);
+    const isOpening=Math.abs(z-r.ax)<Math.min(r.openingRadius,r.e.fore);
     const th=cap(1-Math.abs(z-r.ax)/(r.e.fore+.019));
     const targetTop=R+r.e.travel+Math.sqrt(Math.max(0,(r.e.fore+.012)**2-(z-r.ax)**2))+.014;
     // The perforated opening stays visible, but surfaces wrap up and back

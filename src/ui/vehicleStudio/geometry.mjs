@@ -53,7 +53,14 @@ export function generateVehicle(input,{quality='preview'}={}){
  const g=normalizeVehicle(input),d=g.dimensions,c=g.components,G=g.constraints.gap*.5;
  const parts=[],issues=[],warnings=[], joins=[],features=[],seamChecks=[],masters={},glassSides={};
  const X=d.width/2,R=d.diameter/2,L=d.wheelbase/2,Lf=L+d.front,Lr=-L-d.rear,length=Lf-Lr;
- const floor=d.stance, B=d.height*d.belt,radius=R+g.constraints.archClearance;
+ const floor=d.stance, B=d.height*d.belt;
+ const customArches=['frontArchFore','rearArchFore','frontArchUpper','rearArchUpper'].some(k=>g.body[k]!==.045);
+ const archData=(ax,s=null)=>{
+  const front=ax>0,k=front?'frontFenders':'rearFenders',root=front?'front':'rear';
+  const style=s===null||!customArches?c[k]:getSideSettings(g,'fenders',s>0?'R':'L',c[k]),scale=.025*(style.size-1);
+  return {fore:Math.max(R+.014,R+g.body[root+'ArchFore']+scale),upper:Math.max(R+.012,R+g.body[root+'ArchUpper']+scale)};
+ };
+ const radius=R+Math.max(g.body.frontArchFore,g.body.rearArchFore);
  let t=(X*d.track),clearance=X-t-d.tireWidth/2;
  if(clearance<d.archReserve){t=X-d.tireWidth/2-d.archReserve;warnings.push('Track narrowed to keep tires inside the arch lips.');}
  const rearTrack=Math.min(X-d.tireWidth/2-d.archReserve,t+d.rearTrackBias*.5);
@@ -62,7 +69,7 @@ export function generateVehicle(input,{quality='preview'}={}){
  if(floor>R-.03)warnings.push('Rocker sits above the hub; this is an elevated stance.');
  const wide=clamp(d.box),zC=(Lf+Lr)*.5+length*d.cabin;
  let cabinFront=zC+length*(d.cabinLength/2-d.hood),cabinRear=zC-length*(d.cabinLength/2-d.trunk);
- cabinFront=clamp(cabinFront,Lr+.9,Lf-.53);cabinRear=clamp(cabinRear,Lr+.50,cabinFront-1.52);
+ cabinFront=clamp(cabinFront,Lr+.9,Lf-.53);cabinRear=clamp(cabinRear-g.construction.cabin.rearPillarFoot,Lr+(g.construction.cabin.rearPillarFoot?.40:.50),cabinFront-1.52);
  const doorFront=clamp(cabinFront+.12,-.15,L-.26),doorRear=clamp(cabinRear-.17,-L+.23,doorFront-.65);
  const seamSpan=(end,overhang)=>Math.min(overhang*.69,g.fascia[end].bumperStation===.43?Math.min(overhang*.49,.43):g.fascia[end].bumperStation);
  const bumperFront=Lf-seamSpan('front',d.front),bumperRear=Lr+seamSpan('rear',d.rear);
@@ -88,22 +95,24 @@ export function generateVehicle(input,{quality='preview'}={}){
   return clamp(offset,-.06,.075);
  }
  const canopy=g.construction.cabin,extension=(canopy.canopyLength-.5)*.15;
- const roofFront=mix(cabinFront,doorRear,.37+.10*c.glass.shape-extension),roofRear=mix(cabinRear,doorFront,
-  (g.family==='fastback'?.45:.22+.10*c.glass.shape)-extension);
+ const roofFront=mix(cabinFront,doorRear,.37+.10*c.glass.shape-extension);
+ const rearFraction=(g.family==='fastback'?.45:.22+.10*c.glass.shape)-extension;
+ const rearDatum=mix(cabinRear,doorFront,rearFraction);
+ const roofRear=canopy.rearPillarFoot||canopy.rearRoofShift?clamp(rearDatum+canopy.rearPillarFoot*(1-rearFraction)-canopy.rearRoofShift,cabinRear+.18,roofFront-.34):rearDatum;
  const nose=B-(.14+.10*(1-wide))*c.frontBumper.depth,deck=B-(c.trunk.type==='fastback'?.13:.065)*c.rearBumper.depth;
  const skinY=z=>z>cabinFront?mix(B,nose,((z-cabinFront)/(Lf-cabinFront))**1.4):z<cabinRear?mix(B,deck,((cabinRear-z)/(cabinRear-Lr))**1.38):B;
  const regionalBox=z=>clamp(wide+(z>0?d.frontBox:d.rearBox)*clamp(Math.abs(z)/L));
  function skinX(z){const noseT=clamp((Math.abs(z-(Lf+Lr)*.5)/(.5*length)-.70)/.30);return X*(1-(.058+.13*(1-regionalBox(z)))*noseT**2);}
- const lipHeight=z=>{
-  const p=z>0?c.frontFenders:c.rearFenders,dist=Math.min(Math.abs(z-L),Math.abs(z+L));
-  const r=radius+.025*(p.size-1);if(dist>=r)return floor;
-  const s=dist/r,a=clamp((1-s)/.065),curved=R+r*Math.sqrt(Math.max(0,1-s*s));
+ const lipHeight=(z,side)=>{
+  const ax=z>0?L:-L,dist=Math.abs(z-ax),a0=archData(ax,side);
+  if(dist>=a0.fore)return floor;
+  const s=dist/a0.fore,a=clamp((1-s)/.065),curved=R+a0.upper*Math.sqrt(Math.max(0,1-s*s));
   return mix(floor,curved,a*a*(3-2*a));
  };
  for(const [component,axle] of [['frontFenders',L],['rearFenders',-L]]){
-  const r=radius+.025*(c[component].size-1);
+  const {fore,upper}=archData(axle);
   for(const trial of [-.55,-.30,0,.30,.55]){
-   const z=axle+r*trial,needed=R+Math.sqrt(Math.max(0,r*r-(z-axle)**2));
+   const z=axle+fore*trial,needed=R+upper*Math.sqrt(1-trial*trial);
    if(skinY(z)-needed<.025){issues.push('Beltline intersects the '+(axle>0?'front':'rear')+' wheel opening; raise the beltline or fit smaller tires.');break;}
   }
  }
@@ -112,7 +121,7 @@ export function generateVehicle(input,{quality='preview'}={}){
  const frontPanelSamples=Array.from({length:21},(_,i)=>Array.from({length:11},(_,j)=>surface.eval(i/20,j/10)));
  const panelSample=(u,v)=>{const a=clamp(u)*20,b=clamp(v)*10,i=Math.min(19,Math.floor(a)),j=Math.min(9,Math.floor(b));return lerp3(lerp3(frontPanelSamples[i][j],frontPanelSamples[i+1][j],a-i),lerp3(frontPanelSamples[i][j+1],frontPanelSamples[i+1][j+1],a-i),b-j);};
  function skinPoint(z,v,sgn,comp){
-  const side=skinX(z), localBox=regionalBox(z), bottom=Math.min(skinY(z)-.022,lipHeight(z)),archAt=z>0?L:-L,
+  const side=skinX(z), localBox=regionalBox(z), bottom=Math.min(skinY(z)-.022,lipHeight(z,sgn)),archAt=z>0?L:-L,
       flare=clamp(1-Math.abs(z-archAt)/(radius+.25))**1.65;
   const lower=floor-.013;
   const source=c[comp], group=comp.endsWith('Fenders')?'fenders':comp==='doors'?'doors':null;
@@ -184,7 +193,7 @@ export function generateVehicle(input,{quality='preview'}={}){
    fender=front?'frontFenders':'rearFenders',tip=(front?Lf:Lr)-sign*G,upper=g.seams[front?'hoodSeam':'trunkSeam'],
    seam=(front?bumperFront:bumperRear)+upper.offset;
   const surf=createEndSurface({settings:g.fascia[end],end,tip,seam,cabin:front?cabinFront:cabinRear,
-   archEnd:L+radius+.025*(c[fender].size-1),floor,deckAt:front?originalHood:originalTrunk,
+   archEnd:L+Math.max(archData(sign*L,-1).fore,archData(sign*L,1).fore),floor,deckAt:front?originalHood:originalTrunk,
    sideAt:(z,v,s)=>skinPoint(z,v,s,name),bumper:c[name],upper});
   ends[end]=surf;
   const openings=makeOpenings({end,g,segments:quality==='opponent'?14:lod?18:quality==='export'?32:24});
@@ -326,10 +335,10 @@ export function generateVehicle(input,{quality='preview'}={}){
    {side:letter,view:'side',axis:1,scale:-.56}));
   for(const [comp,axle] of [['rearFenders',-L],['frontFenders',L]]){
    put(comp,'paint',patch(30,4,(u,v)=>{
-    const z=axle-(radius+.025*(c[comp].size-1))*Math.cos(u*Math.PI),p=master.at(z,1),r=.0045+c[comp].shape*.004+g.body.archCrown*.004;
+    const z=axle-archData(axle,s).fore*Math.cos(u*Math.PI),p=master.at(z,1),r=.0045+c[comp].shape*.004+g.body.archCrown*.004;
     return [p[0]-s*r*(1-Math.cos(v*2.1)),p[1]-r*Math.sin(v*2.1),p[2]];
    }));
-   const arc=curvePoints(u=>master.at(axle-(radius+.025*(c[comp].size-1))*Math.cos(u*Math.PI),1));
+   const arc=curvePoints(u=>master.at(axle-archData(axle,s).fore*Math.cos(u*Math.PI),1));
    features.push(guideFeature(comp+'-arch-'+letter,'arch',(axle>0?'Front':'Rear')+' wheel arch · '+letter,comp,arc,{end:axle>0?'front':'rear',side:letter,view:'side',axis:1,scale:.12}));
 
   }
@@ -413,7 +422,7 @@ export function generateVehicle(input,{quality='preview'}={}){
   const framed=c.pillars.type==='painted frame';
   for(const u of [0,c.doors.type==='four door'?.50:.65,1]){
    const outer=u===0||u===1;
-   const mat=c.pillars.type==='painted'||framed&&outer?'paint':'trim',w=(.013+.027*c.pillars.shape)*c.pillars.size;
+   const mat=c.pillars.type==='painted'||framed&&outer?'paint':'trim',w=(.013+.027*c.pillars.shape)*c.pillars.size+(u===1?canopy.rearPillarWidth:0);
    const pillar=(v,j)=>{
     const q=side(clamp(u+(j-.5)*w*(u===.5?2:3)),v);q[0]+=s*(.007+.011*bell(j))*c.pillars.depth;return q;
    };
@@ -474,7 +483,7 @@ export function generateVehicle(input,{quality='preview'}={}){
    }
   }else for(const s of [-1,1])for(let i=0;i<3;i++)put('scoop','trim',ellipsoid(w*.33,.014,.042),[s*w*.26,p[1]-.008,z+l*(i-1)*.3]);
  }
- const dims={X,L,Lf,Lr,floor,B,cabinFront,cabinRear,roofFront,roofRear,tireTrack:t,rearTireTrack:rearTrack,wheelRadius:R,archRadius:radius};
+ const dims={X,L,Lf,Lr,floor,B,cabinFront,cabinRear,roofFront,roofRear,tireTrack:t,rearTireTrack:rearTrack,wheelRadius:R,archRadius:radius,frontArchRadius:customArches?Math.max(archData(L,1).fore,archData(L,-1).fore):radius,rearArchRadius:customArches?Math.max(archData(-L,1).fore,archData(-L,-1).fore):radius};
  const bodySide=(z,v,s)=>masters[s].at(z,v);
  const cabin=buildCabin({g,quality:lod?'lod':quality,put,dims,sample:{
   side:(z,v,s)=>glassSides[s](clamp((cabinFront-z)/(cabinFront-cabinRear)),v),roof:roofPoint,

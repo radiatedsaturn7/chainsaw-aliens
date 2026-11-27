@@ -115,3 +115,18 @@ adds a separate rolled bowl, bezel and projector plus reusable radial material
 detail. It does not change the lamp perimeter or lighting channel.
 The **Stamped bumper line** controls under Shape form a raised shoulder with a
 shallow return in the bumper surface, with independent height and corner sweep.
+
+### Cabin sweep, boxed wing, and wheel opening fit
+
+- **Cabin** has separate rear pillar base sweep, rear roof edge position and
+  painted pillar frame width. The matching rear glazing and upper trunk are
+  built from the resulting boundaries.
+- **Parts → Wheels / Tires / Fenders → Wheel opening fit** adjusts the visual
+  front and rear arch crown and fore/aft gaps independently. Wheel joints and
+  tire dimensions remain fixed; the internal wheel-well liner continues to
+  protect the swept envelope, separately from the painted opening.
+- **Wing → Boxed wing** builds a flat section with two wide wraparound end
+  frames. The frame width and rake and the wing height are adjustable.
+- **Rear → Shape** has a bumper tuck and a visible plate mount with its own
+  height position. An active mount has a painted recess, blank insert and
+  fasteners; the legacy plain recess is retained when the mount is at zero.

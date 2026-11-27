@@ -275,7 +275,7 @@ function fasciaInspector(root,g,end){
 
  if(cfg.category==='shape'){
   choose('fascia-profile',end==='front'?'Nose profile':'Tail profile',Object.fromEntries(profileOptions()),'fascia','profile');
-  fieldsFor('fascia',(k,s)=>!isIntake(k,s)&&(end==='rear'||!k.startsWith('deck'))&&(end==='front'||k!=='fogCoverHeight'));
+  fieldsFor('fascia',(k,s)=>!isIntake(k,s)&&(end==='rear'||!k.startsWith('deck')&&!k.startsWith('plate'))&&(end==='front'||k!=='fogCoverHeight'));
   const joining=end==='front'?'hood':'trunk', groupName=end==='front'?'Hood integration':'Trunk integration';
   const panel=group(root,groupName,false);partFields(panel,joining,['shape','depth']);
   const advancedPanel=element('button',{textContent:'Edit '+joining+' surface patch',type:'button'});
@@ -563,6 +563,13 @@ function inspector(){
   select(root,'part-type',d.label+' type',d.types,p.type,v=>edit('components',part,v,'type'));
   for(const key of [...componentControls[part],...(POSITIONABLE.has(part)?['bias','angle']:[])])range(root,'components',part,{...COMPONENT_FIELDS[key],label:key==='shape'?d.shape[0].toUpperCase()+d.shape.slice(1):COMPONENT_FIELDS[key].label},p[key],key);
   if(part==='wheels'||part==='tires')for(const k of ['diameter','tireWidth','rimRatio'])range(root,'dimensions',k,DIMENSIONS[k],g.dimensions[k]);
+ if(['wheels','tires','frontFenders','rearFenders'].includes(part)){
+  const arch=group(root,'Wheel opening fit',true);
+  for(const [k,spec] of Object.entries(phenotype.ARCH_FIELDS)){
+   if(part==='frontFenders'&&k.startsWith('rear')||part==='rearFenders'&&k.startsWith('front'))continue;
+   range(arch,'body',k,spec,g.body[k]);
+  }
+ }
   if(part==='frontFenders'){const b=element('button',{textContent:'Open Surface Studio'});b.onclick=()=>openAdvanced();root.append(b);}
   else if(PATCH_PANELS.includes(part)){const b=element('button',{textContent:'Edit surface patch'});b.onclick=()=>setTab('surface');root.append(b);}
  }else if(tab==='view'){

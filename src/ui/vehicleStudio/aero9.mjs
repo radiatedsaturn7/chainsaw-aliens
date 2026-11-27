@@ -41,16 +41,16 @@ function boxMesh(x,y,z,p){return new T.BoxGeometry(x,y,z).translate(...p);}
 
 function wingGeometry({cfg,sp,put,sample,dims,evalFormula,quality}){
  if(sp.type==='off'||sp.type==='none')return {elements:0,supports:0};
- const {X,Lr,cabinRear}=dims,lip=sp.type==='lip'||sp.type==='ducktail';
+ const {X,Lr,cabinRear}=dims,lip=sp.type==='lip'||sp.type==='ducktail',boxed=sp.type==='boxed wing';
  const w=bounded((.66+.19*sp.size)*X,.24,X*.95,X*.8);
  const depth=bounded(sp.depth,.55,1.8,1),chord=lip?.21*depth:.31*depth;
- const z=mix(Lr,cabinRear,(lip?.14:.29)+bounded(sp.bias,-1,1,0)*.075);
+ const z=mix(Lr,cabinRear,(boxed?.46:lip?.14:.29)+bounded(sp.bias,-1,1,0)*.075);
  const h=lip?.042+sp.shape*.043:(.15+sp.shape*.16)*depth+bounded(cfg.elevation,-.10,.12,0);
  const cam=chord*bounded(cfg.camber,0,1,.34)*.21,sweep=.19*bounded(cfg.sweep,-1,1,.08);
  const taper=bounded(cfg.taper,0,.85,.22),angle=bounded(cfg.angle,-24,24,finite(sp.angle,-1.5))*rad;
  const thickness=chord*bounded(cfg.thickness,.035,.245,.10);
- const elements=lip?1:Math.round(bounded(cfg.elements,1,3,1));
- const supports=lip?0:Math.round(bounded(cfg.supports,1,4,2));
+ const elements=lip||boxed?1:Math.round(bounded(cfg.elements,1,3,1));
+ const supports=lip?0:boxed?2:Math.round(bounded(cfg.supports,1,4,2));
  const reach=(x,at)=>sample.trunk(at,bounded((1+x/X)*.5,0,1,.5))[1];
  const base=reach(0,z);
  const section=quality==='lod'?12:20,span=quality==='lod'?10:18;
@@ -62,7 +62,8 @@ function wingGeometry({cfg,sp,put,sample,dims,evalFormula,quality}){
    const u=i/span,a=2*u-1,x=w*a,ab=Math.abs(a),c=C*(1-taper*ab**1.5),rake=sweep*ab**1.7;
    return Array.from({length:section},(_,j)=>{
     const theta=j/section*Math.PI*2,v=(1-Math.cos(theta))*.5,d=.5-v;
-    const yt=thickness*1.48*(.2969*Math.sqrt(v)-.126*v-.3516*v*v+.2843*v**3-.1015*v**4)*5;
+    const sign=Math.sign(Math.sin(theta));
+    const yt=boxed?thickness*.56*Math.max(0,Math.sin(theta)*sign)**.57:thickness*1.48*(.2969*Math.sqrt(v)-.126*v-.3516*v*v+.2843*v**3-.1015*v**4)*5;
     const y=lip
      ?reach(x,z+rake+c*d)+h*(.35+.65*ab**.42)*v+Math.sign(Math.sin(theta))*yt
      :base+h+rise+cam*Math.sin(Math.PI*v)+Math.sign(Math.sin(theta))*yt;
@@ -77,6 +78,33 @@ function wingGeometry({cfg,sp,put,sample,dims,evalFormula,quality}){
    if(r===rows.at(-1)){const arr=geo.getAttribute('position');for(let k=0;k<arr.count;k+=3){const x=arr.getX(k+1),y=arr.getY(k+1),z=arr.getZ(k+1);arr.setXYZ(k+1,arr.getX(k+2),arr.getY(k+2),arr.getZ(k+2));arr.setXYZ(k+2,x,y,z);}geo.computeVertexNormals();}
    put('spoiler','paint',geo);
   }
+ }
+ if(boxed){
+  const plate=bounded(cfg.boxWallWidth,.020,.075,.041),rake=bounded(cfg.boxWallRake,-.50,.50,0),corner=w*.955;
+  for(const s of [-1,1]){
+   const baseZ=z+.015,atTop=z+sweep*Math.pow(.955,1.7)+rake*h,y=reach(s*corner,baseZ)-.012,top=base+h+.003;
+   if(top<=y+.012)continue;
+   const shapes=[
+    [y,w*.84,baseZ,.46*chord,plate*.60],[y+.031,w*.889,baseZ-.012,.57*chord,plate*.64],
+    [mix(y,top,.24),w*.938,mix(baseZ,atTop,.24),.53*chord,plate*.53],
+    [mix(y,top,.78),w*.975,mix(baseZ,atTop,.78),.44*chord,plate*.48],
+    [top,w*.968,atTop,.49*chord,plate*.50],
+    [top+thickness*.44,w*.96,atTop,.37*chord,plate*.31]
+   ];
+   const rows=shapes.map(([height,x,c,span,wide])=>ring([s*x,height,c],wide,span,12,'rectangle',[1,0,0],[0,0,-1]));
+   put('spoiler','paint',loft(rows,true));
+   const first=rows[0],last=rows.at(-1);
+   for(const [section,flip] of [[first,true],[last,false]]){
+    const mid=section.reduce((a,p)=>add(a,mul(p,1/section.length)),[0,0,0]),pos=[],tris=[];
+    for(let i=0;i<section.length;i++){
+     const j=(i+1)%section.length;const a=pos.length/3;
+     pos.push(...mid,...section[i],...section[j]);tris.push(a,flip?a+2:a+1,flip?a+1:a+2);
+    }
+    const t=new T.BufferGeometry();t.setAttribute('position',new T.Float32BufferAttribute(pos,3));t.setIndex(tris);t.computeVertexNormals();
+    put('spoiler','paint',t);
+   }
+  }
+  return {elements:1,supports:2,boxed:true};
  }
  for(let i=0;i<supports;i++){
   const a=supports===1?0:(2*i/(supports-1)-1)*bounded(cfg.spacing,.18,.95,.68),x=w*a;

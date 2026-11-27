@@ -87,8 +87,8 @@ export function makeOpenings({end,g,segments=32}){
    kind:sideFog.type==='blank'?'blank':'fog',segments,side:s,opt:{layout:'projector',protrusion:0}}));
   }
  }
- if(!front&&g.construction)out.push(aperture({id:'rear-plate-recess',component:'rearBumper',housing:'round-rect',cx:.5,cy:.615,
-  width:mix(.155,.291,num(fascia.plateWidth,.5)),height:.125+(num(fascia.plateHeight,.5)-.5)*.214,kind:'plate',segments}));
+ if(!front&&g.construction)out.push(aperture({id:'rear-plate-recess',component:'rearBumper',housing:'round-rect',cx:.5,cy:Math.max(num(fascia.platePosition,.615),.18+(.125+(num(fascia.plateHeight,.5)-.5)*.214)/2),
+  width:mix(.155,.291,num(fascia.plateWidth,.5)),height:.125+(num(fascia.plateHeight,.5)-.5)*.214,kind:'plate',opt:{mount:num(fascia.plateMount,0),corner:num(fascia.plateMount,0)>0?.23:.5},segments}));
  if(!front&&(fascia.deckPanel??0)>0){
   const plate=out.find(o=>o.kind==='plate');
   const hi=Math.min(.483,plate?Math.min(...plate.outline.map(p=>p[1]))-.02:.483);
@@ -239,6 +239,18 @@ export function emitOpenings({end,openings,surface,put,lod=false,spatialDepth=fa
    putGeo('paint',[seat,ring(.88,.013),ring(.84,.010)],pt(cx,cy,.009));continue;
   }
   if(kind==='plate'){
+   const show=num(opt.mount,0);
+   if(show>0){
+    const D=.022+show*.015,innerW=.34*w,innerH=.365*h;
+    const rect=[[cx-innerW,cy-innerH],[cx+innerW,cy-innerH],[cx+innerW,cy+innerH],[cx-innerW,cy+innerH]];
+    putGeo('paint',[seat,ring(.87,.014),ring(.82,D)],pt(cx,cy,D+.001));
+    putGeo('trim',[ring(1,D-.002,rect),ring(.95,D-.007,rect)],pt(cx,cy,D-.007));
+    putGeo('floor',[ring(.90,D-.008,rect)],pt(cx,cy,D-.008));
+    for(const k of [-1,1]){const x=cx+k*innerW*.74,y=cy-innerH*.73,vs=pairs(8,t=>[x+w*.018*Math.cos(t*tau),y+h*.024*Math.sin(t*tau)]);
+     putGeo('chrome',[ring(1,D-.010,vs,x,y)],pt(x,y,D-.011));
+    }
+    continue;
+   }
    putGeo('trim',[seat,ring(.87,.020),ring(.82,.031)],pt(cx,cy,.032));
    putGeo('seamDark',[ring(.78,.024),ring(.75,.022)],pt(cx,cy,.021));continue;
   }
