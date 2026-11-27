@@ -46,7 +46,7 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
  }
  function upperPanel(z,u){return adjustDeck(deckAt(z,u),z,u);}
  const vOffsetGuide=t=>guide(f.curves.vertical,t)*verticalScale;
- function face(u,v){
+ function rawFace(u,v){
   const {x,b,dx}=plan(u),edge=sideAt(tip,v,1),co=1-x*x;
   const sport=bumper.type==='rally'?1:bumper.type==='diffuser'?-.80:bumper.type==='smooth'?-.45:0;
   const rollOff=(.016+.092*f.rollover)*(1-v)**4;
@@ -75,6 +75,26 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
   const past=z+stamp-tucked-corner-noseRake;
   const knee=(f.bumperMidReach??0)*Math.exp(-(((v-.49)/.175)**2))*(.36+.64*Math.abs(x)**1.8);
   return [x*edge[0]*track*(1+(f.outerFasciaWidth??0))-Math.sign(x)*corner*.72,y+lip,s*(past+Math.min(knee,Math.max(0,along-past)))];
+ }
+ // The rear stamping and bumper are separate surfaces with their own
+ // crown. A smooth corridor preserves the existing lamp/quarter shape
+ // and side perimeter; the same evaluator drives the backing and trims.
+ const smoother=t=>(t=clamp(t),t*t*t*(10+t*(-15+t*6)));
+ const active=f.deckSurfaceBlend||f.bumperFaceBlend;
+ const topRails=active?[rawFace(.5,.065),rawFace(.5,.485)]:null;
+ const lowerRails=active?[rawFace(.5,.49),rawFace(.5,.86)]:null;
+ const blendZ=(rails,v,a,b)=>mix(rails[0][2],rails[1][2],clamp((v-a)/(b-a),-.18,1.18));
+ function face(u,v){
+  const p=rawFace(u,v);
+  if(!active||end!=='rear')return p;
+  const q=Math.abs(2*u-1);
+  const cross=1-smoother((q-.37)/.43);
+  const upperBand=smoother(v/.063)*(1-smoother((v-.47)/.102));
+  const lowerBand=smoother((v-.475)/.095)*(1-smoother((v-.83)/.143));
+  const edge=q*q*.88;
+  let z=mix(p[2],blendZ(topRails,v,.065,.485)-s*f.deckSurfaceCrown*edge,cross*upperBand*f.deckSurfaceBlend);
+  z=mix(z,blendZ(lowerRails,v,.49,.86)-s*f.bumperFaceCrown*edge,cross*lowerBand*f.bumperFaceBlend);
+  return [p[0],p[1],z];
  }
  function bridge(u,r){
   const start=upperPanel(seam,u),lead=face(u,0);

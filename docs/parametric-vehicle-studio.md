@@ -170,3 +170,15 @@ colors and the physical mounting opening. Door character-line width, front
 and rear extension, and fade are editable; the contextual drag and Wizard
 edit the visible stamp when it is enabled, rather than the legacy crease
 underneath. These edits do not increase the gameplay triangle cap.
+
+### Rear surface matching
+
+**Rear → Shape** exposes separate Trunk and Bumper face blending plus their
+cross-crowns. The softened center surfaces retain the outside shoulder
+and are sampled by the body shell, attachments and opening boundaries.
+Trunk taper and corner radius shape the fitted seam without intersecting the
+lenses; the plate recess has an independent vertical-stretch adjustment.
+All modifiers are optional, and the 15,000-triangle drive cap is unchanged.
+Rear Optics also has **Molded red reflector cells** for the split lens. The
+reflector rims sit inside the red chamber and retain the separately wired
+running, brake, and reverse materials.

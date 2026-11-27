@@ -60,7 +60,7 @@ export function makeOpenings({end,g,segments=32}){
    width:sat(num(raw.width,.5)),height:sat(num(raw.height,.5)),corner:sat(num(raw.corner,.5)),
    angle:signed(num(raw.angle,(legacy.angle||0)/18)),sweep:sat(num(raw.sweep,.5)),
    curvature:sat(num(raw.curvature,.5)),recess:sat(num(raw.recess,.5)),convexity:sat(num(raw.convexity,.5)),
-   sideWrap:sat(num(raw.sideWrap,0)),silverUpper:sat(num(raw.silverUpper,0)),roundBowls:sat(num(raw.roundBowls,0)),flutedBowls:sat(num(raw.flutedBowls,0)),position:sat(num(raw.position,.5)),protrusion:sat(num(raw.protrusion,0)),formula:raw.formula??'',modules:Math.max(0,Math.min(8,Math.round(raw.modules??0))),spacing:sat(num(raw.spacing,.5)),inboardReach:sat(num(raw.inboardReach,.5)),formulaSide:g.construction?.symmetry?.[group]==='linked'?s:1,outline:Array.isArray(raw.outline)?raw.outline:[]};
+   sideWrap:sat(num(raw.sideWrap,0)),silverUpper:sat(num(raw.silverUpper,0)),rearCells:sat(num(raw.rearCells,0)),roundBowls:sat(num(raw.roundBowls,0)),flutedBowls:sat(num(raw.flutedBowls,0)),position:sat(num(raw.position,.5)),protrusion:sat(num(raw.protrusion,0)),formula:raw.formula??'',modules:Math.max(0,Math.min(8,Math.round(raw.modules??0))),spacing:sat(num(raw.spacing,.5)),inboardReach:sat(num(raw.inboardReach,.5)),formulaSide:g.construction?.symmetry?.[group]==='linked'?s:1,outline:Array.isArray(raw.outline)?raw.outline:[]};
 
  // The bands are deliberately disjoint even at all slider extremes:
  // lamp inside <= .366; center grille starts >= .388; lower intakes start >= .31.
@@ -87,8 +87,12 @@ export function makeOpenings({end,g,segments=32}){
    kind:sideFog.type==='blank'?'blank':'fog',segments,side:s,opt:{layout:'projector',protrusion:0}}));
   }
  }
- if(!front&&g.construction)out.push(aperture({id:'rear-plate-recess',component:'rearBumper',housing:'round-rect',cx:.5,cy:Math.max(num(fascia.platePosition,.615),.18+(.125+(num(fascia.plateHeight,.5)-.5)*.214)/2),
-  width:mix(.155,.291,num(fascia.plateWidth,.5)),height:.125+(num(fascia.plateHeight,.5)-.5)*.214,kind:'plate',opt:{mount:num(fascia.plateMount,0),painted:num(fascia.paintedPocket,0),corner:num(fascia.plateMount,0)>0?.23:.5},segments}));
+ if(!front&&g.construction){
+  const height=(.125+(num(fascia.plateHeight,.5)-.5)*.214)*(1+num(fascia.plateOpeningStretch,0));
+  const y=Math.max(.18+height/2,Math.min(num(fascia.platePosition,.615),.955-height/2));
+  out.push(aperture({id:'rear-plate-recess',component:'rearBumper',housing:'round-rect',cx:.5,cy:y,
+   width:mix(.155,.291,num(fascia.plateWidth,.5)),height,kind:'plate',opt:{mount:num(fascia.plateMount,0),painted:num(fascia.paintedPocket,0),corner:num(fascia.plateMount,0)>0?.23:.5},segments}));
+ }
  if(!front&&(fascia.deckPanel??0)>0){
   const plate=out.find(o=>o.kind==='plate');
   const hi=Math.min(.483,plate?Math.min(...plate.outline.map(p=>p[1]))-.02:.483);
@@ -117,14 +121,19 @@ export function makeOpenings({end,g,segments=32}){
    // Use straight draft rails across the whole drop. A footprint can
    // never follow the light's scallops and double back through itself.
    const bound=Array.from({length:count+1},(_,i)=>outer(mix(top,bottom,i/count)));
+   const drafting=t=>(1-t)**(1+2.2*num(fascia.deckRailCurve,0));
    const lower=Math.min(...bound)*.978;
-   const upper=Math.min(width,...bound.slice(0,-1).map((q,i)=>(q-lower*i/count)/(1-i/count)));
+   const upper=Math.min(width,...bound.slice(0,-1).map((q,i)=>{
+    const a=drafting(i/count);return lower+(q-lower)/a;
+   }));
    const side=sign=>Array.from({length:count+1},(_,i)=>{
     const t=i/count,y=mix(top,bottom,t);
-    const bevel=i===0||i===count?.965:1;
-    return [.5+sign*mix(upper,lower,t)*bevel,y];
+    const radius=num(fascia.deckLowerRoll,0);
+    const tip=t>.76?(t-.76)/.24:0;
+    const bevel=(i===0||i===count?.965:1)*(1-.13*radius*tip**2);
+    return [.5+sign*mix(lower,upper,drafting(t))*bevel,y];
    });
-   out.push({id:'rear-deck-insert',component:'trunk',kind:'deck',outline:[...side(1),...side(-1).reverse()],center:[.5,(top+bottom)/2],opt:{depth:fascia.deckPanel}});
+   out.push({id:'rear-deck-insert',component:'trunk',kind:'deck',outline:[...side(1),...side(-1).reverse()],center:[.5,(top+bottom)/2],opt:{depth:fascia.deckPanel,soft:fascia.deckSurfaceBlend}});
   }
  }
  if(mode!=='closed'){
@@ -225,11 +234,11 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
   };
   if(kind==='deck'){
    // Closed return under the panel: a physical narrow seam, never a slit through the car.
-   const d=mix(.002,.009,num(opt.depth,0));
-   putGeo('paint',[ring(1,0),ring(.997,.001)]);
-   putGeo('seamDark',[ring(.997,.001),ring(.980,d+.002),ring(.970,d+.002)]);
-   // Preserve the face shape inside the cut; ordinary rings fan to the center.
-   putGeo('paint',[ring(.970,d+.002),ring(.967,d),ring(.72,d),ring(.44,d),ring(.18,d)],pt(cx,cy,d));
+   const soft=num(opt.soft,0),d=mix(.002,.009,num(opt.depth,0));
+   const wall=mix(.997,.993,soft),gap=mix(.980,.986,soft),back=mix(.970,.978,soft),panel=mix(.967,.975,soft);
+   putGeo('paint',[ring(1,0),ring(wall,.001)]);
+   putGeo('seamDark',[ring(wall,.001),ring(gap,d+.002),ring(back,d+.002)]);
+   putGeo('paint',[ring(back,d+.002),ring(panel,d),ring(.72,d),ring(.44,d),ring(.18,d)],pt(cx,cy,d));
    continue;
   }
   const mouth=ring(1,0); const lip=ring(.965,.005), seat=ring(.912,.015);
@@ -335,14 +344,34 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
     if(opt.flutedBowls){proj(-.34,.200,.38);proj(.072,.177,.358,false);}
     else{proj(-.21,.164,.315);proj(.165,.154,.29,false);}
    }else{
-    plate(clip(zones,q=>line(q)-.0009,1),'opticRed',d*.46);
+    const redZone=clip(zones,q=>line(q)-.0009,1);
+    plate(redZone,'opticRed',d*.46);
     plate(clip(zones,q=>line(q)+.0009,-1),opt.silverUpper>0?'opticSilver':'opticClear',d*.46);
     if(opt.silverUpper>0){
      const lens=fitted(cx-side*w*.09,cy-h*.225,w*.060,h*.066,lod?10:14),lr=(k,dep)=>ring(k,dep,lens.p,lens.x,lens.y);
      putGeo('opticClear',[lr(1,d*.414),lr(.77,d*.392)],pt(lens.x,lens.y,d*.389));
     }
-    const t=fitted(cx+side*w*.12,cy+h*.19,w*.24,h*.106,lod?12:16);
-    putGeo('runningRed',[ring(1,d*.40,t.p,t.x,t.y),ring(.87,d*.36,t.p,t.x,t.y)],pt(t.x,t.y,d*.35));
+    if(opt.rearCells&&redZone.length>2){
+     const center=redZone.reduce(([x,y],p)=>[x+p[0]/redZone.length,y+p[1]/redZone.length],[0,0]);
+     const rx0=w*.139,ry0=h*.16;
+     for(const slot of [-1,1]){
+      // Lens ribs stay inside the red chamber even on extreme swept housings.
+      // Both optical functions remain behind the common transparent cover.
+      let x=center[0]+side*w*slot*.157,y=center[1]+h*.025,rx=rx0,ry=ry0,poly;
+      for(let i=0;i<9;i++){
+       poly=ellipse(x,y,rx,ry,compact?10:lod?14:22);
+       if(poly.every(p=>contains(redZone,p[0],p[1])))break;
+       rx*=.86;ry*=.86;x=mix(center[0],x,.91);y=mix(center[1],y,.93);
+      }
+      if(rx<rx0*.39||!poly.every(p=>contains(redZone,p[0],p[1])))continue;
+      const rr=(k,dep)=>ring(k,dep,poly,x,y);
+      putGeo('opticRed',[rr(1,d*.413),rr(.79,d*.306),rr(.57,d*.327)]);
+      putGeo('runningRed',[rr(.57,d*.327),rr(.44,d*.343)],pt(x,y,d*.378));
+     }
+    }else{
+     const t=fitted(cx+side*w*.12,cy+h*.19,w*.24,h*.106,lod?12:16);
+     putGeo('runningRed',[ring(1,d*.40,t.p,t.x,t.y),ring(.87,d*.36,t.p,t.x,t.y)],pt(t.x,t.y,d*.35));
+    }
    }
   }
   if(oLayout==='projector')proj(0,.23,.29);
