@@ -202,7 +202,7 @@ function makeMesh(rows,sign,{disk=null}={}){
  geom.setAttribute('uv',new T.Float32BufferAttribute(uv,2));
  geom.setIndex(fs);geom.computeVertexNormals();return geom;
 }
-export function emitOpenings({end,openings,surface,put,lod=false,spatialDepth=false}){
+export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spatialDepth=false}){
  const front=end==='front',sign=front?1:-1,mounts={},issues=[],batches=new Map();
  for(const a of openings){
   const {outline,center:[cx,cy],opt,kind,width:w,height:h,side}=a;
@@ -259,7 +259,7 @@ export function emitOpenings({end,openings,surface,put,lod=false,spatialDepth=fa
   if(kind==='duct'){
    const d=.047;const back=ring(.79,d);
    putGeo('trim',[seat,ring(.857,.028),back],pt(cx,cy,d-.002));
-   const n=a.style==='bars'?4:7, inset=outline.map(([x,y])=>[mix(cx,x,.74),mix(cy,y,.73)]);
+   const n=compact?(a.style==='bars'?3:4):a.style==='bars'?4:7, inset=outline.map(([x,y])=>[mix(cx,x,.74),mix(cy,y,.73)]);
    for(let j=0;j<n;j++){
     const y=cy+h*.52*((j+.5)/n-.5),r=h*(a.style==='bars'?.025:.014);
     const [l,rr]=spanAt(inset,y-r*.6),[l2,r2]=spanAt(inset,y+r*.6);
@@ -295,14 +295,14 @@ export function emitOpenings({end,openings,surface,put,lod=false,spatialDepth=fa
     const auto=Math.max(ry*.75,Math.min(.50,rx*w*dx/(Math.max(1e-7,dy)*h)));
     ry=mix(ry,auto,round);rx*=mix(1,1.08,round);y0+=h*.015*round;
    }
-   const {x,y,p}=fitted(x0,y0,w*rx,h*ry,lod?12:18);
+   const {x,y,p}=fitted(x0,y0,w*rx,h*ry,compact?9:lod?12:18);
    const rr=(k,depth)=>ring(k,depth,p,x,y).map((q,i)=>{
     if(!flute)return q;
     const a=2*Math.PI*i/p.length;q.uv=[.5+.49*k*Math.cos(a),.5+.49*k*Math.sin(a)];return q;
    });
    if(flute){
     const fg=flute*.12;
-    putGeo('reflectorFluted',[rr(1,d*.42),rr(.92,d*.43),rr(.79,d*(.54+fg)),rr(.58,d*(.68+fg)),rr(.39,d*(.77+fg))]);
+    putGeo('reflectorFluted',[rr(1,d*.42),...(compact?[rr(.76,d*(.54+fg)),rr(.39,d*(.77+fg))]:[rr(.92,d*.43),rr(.79,d*(.54+fg)),rr(.58,d*(.68+fg)),rr(.39,d*(.77+fg))])]);
     putGeo('trim',[rr(.54,d*.65),rr(.47,d*.59),rr(.39,d*.60)]);
     putGeo('projector',[rr(.40,d*.581),rr(.29,d*.535),rr(.13,d*.506)],pt(x,y,d*.502));
    }else{
@@ -373,8 +373,7 @@ export function emitOpenings({end,openings,surface,put,lod=false,spatialDepth=fa
   const coverOuter=mix(.010,.017,num(opt.curvature,.5))-maxProtrusion*.010;
   const convex=mix(.002,.012,num(opt.convexity,.5));
   const coverCenter=coverOuter-convex;
-  putGeo('opticCover',[ring(.925,coverOuter),ring(.68,coverOuter-convex*.53),
-   ring(.31,coverOuter-convex*.89)],pt(cx,cy,coverCenter));
+  putGeo('opticCover',[ring(.925,coverOuter),...(compact?[ring(.48,coverOuter-convex*.76)]:[ring(.68,coverOuter-convex*.53),ring(.31,coverOuter-convex*.89)])],pt(cx,cy,coverCenter));
   if(kind==='lamp'){
    const x=cx+(oLayout==='twin'||oLayout==='factory-split'&&front?-.19:oLayout==='mixed'?-.14:0)*side*w;
    mounts[(front?'HeadlightMount_':'TaillightMount_')+(side>0?'L':'R')]=pt(x,cy,d*.47).pos;

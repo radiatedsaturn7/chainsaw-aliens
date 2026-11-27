@@ -61,7 +61,7 @@ function regenerate(){
   if(geo)disposeDesign(geo);geo=design;viewport?.setDesign(geo);syncFeatureViewport();fasciaOverlay?.render();bodyOverlay?.render();
   const {metadata:m,diagnostics:d}=geo,ms=Math.round(performance.now()-started);
   $('name-tag').textContent=geo.genome.name;
-  $('metrics').textContent=[m.lengthM,m.widthM,m.heightM].map(n=>n.toFixed(2)).join(' × ')+' m · '+(d.bodyTriangles+4*d.wheelTriangles).toLocaleString()+' tris';
+  $('metrics').textContent=[m.lengthM,m.widthM,m.heightM].map(n=>n.toFixed(2)).join(' × ')+' m · '+(d.bodyTriangles+4*d.wheelTriangles).toLocaleString()+' edit tris';
   $('metrics').title='Generated in '+ms+' ms (preview mesh generation and upload scheduling, not GPU frame time).';
   $('drive').disabled=$('export').disabled=Boolean(wizardPreview||d.issues.length);
   if(wizardPreview&&!wizardPreview.before){wizardPreview.valid=!d.issues.length;wizardPreview.reason=d.issues[0];}
@@ -708,7 +708,7 @@ $('duplicate').onclick=()=>{work.duplicate();inspector();schedule();menu(false);
 $('reset').onclick=()=>{work.reset();inspector();syncPanel();schedule();menu(false);announce('Preset restored. Undo is available.');};
 $('export').onclick=()=>perform(()=>{
  if(wizardPreview)throw Error('Accept or reject the refinement before exporting.');
- const b=exportVehicle(work.get());download(JSON.stringify(b),work.get().name+' game vehicle.json');menu(false);announce('Game vehicle bundle exported.');
+ const b=exportVehicle(work.get(),{quality:'drive'});download(JSON.stringify(b),work.get().name+' game vehicle.json');menu(false);announce('Game vehicle exported: '+b.metrics.carTriangles.toLocaleString()+' / '+b.metrics.triangleBudget.toLocaleString()+' triangles, including four wheels.');
 });
 $('undo').onclick=()=>afterUndo();$('redo').onclick=()=>afterUndo(true);
 $('back').onclick=()=>document.dispatchEvent(new Event('lotg-surface-studio-exit'));

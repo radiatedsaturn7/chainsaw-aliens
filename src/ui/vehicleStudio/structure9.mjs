@@ -34,7 +34,8 @@ export function structureTireEnvelope(radius,width,yaw=0,travel=.054){
  const fore=Math.hypot(radius,width/2); // upper bound for any steering angle
  return {lateral,fore,travel};
 }
-export function buildStructure({g,quality='preview',put,sample,dims}){
+export function buildStructure({g,quality='preview',compact=0,put,sample,dims}){
+ const small=(a,...cuts)=>compact?cuts[compact-1]:a;
  const {X,L,Lf,Lr,floor,B,cabinFront,cabinRear,tireTrack,rearTireTrack=tireTrack,wheelRadius:R,archRadius,frontArchRadius=archRadius,rearArchRadius=archRadius}=dims;
  const W=g.dimensions.tireWidth,issues=[];
  const perf=quality==='drive',high=quality==='export';
@@ -73,17 +74,17 @@ export function buildStructure({g,quality='preview',put,sample,dims}){
  const rearApron=Math.max(...exact(0,1,14).map(u=>sample.rear(u,1)[2]))+.024;
  const trayFront=Math.max(rails[1].ax+rails[1].extent+.004,frontApron);
  const trayRear=Math.min(rails[0].ax-rails[0].extent-.004,rearApron);
- const zz=new Set(exact(trayRear,trayFront,perf?19:high?42:28).filter(z=>!inWell(z)));
+ const zz=new Set(exact(trayRear,trayFront,small(perf?19:high?42:28,13,11,9)).filter(z=>!inWell(z)));
  const stations=[];
  for(const r of rails){
-  r.zs=exact(r.ax-r.extent,r.ax+r.extent,perf?17:high?36:24)
+  r.zs=exact(r.ax-r.extent,r.ax+r.extent,small(perf?17:high?36:24,12,10,9))
    .map(z=>Math.min(Lf-.04,Math.max(Lr+.04,z)));
   r.zs=[...new Set(r.zs)];
   r.zs.forEach(z=>zz.add(z));
  }
  for(const z of [cabinRear,cabinFront])if(z>trayRear&&z<trayFront&&!inWell(z))zz.add(z);
  stations.push(...[...zz].sort((a,b)=>a-b));
- const ns=perf?7:high?12:9;
+ const ns=small(perf?7:high?12:9,5,5,4);
  function tray(z,u){
   const span=u<.5?widthAt(z,-1):widthAt(z,1);
   const x=(2*u-1)*span;return [x,floorAt(z,x),z];
@@ -111,7 +112,7 @@ export function buildStructure({g,quality='preview',put,sample,dims}){
     // The perforated opening stays visible, but surfaces wrap up and back
     // from that exterior flange so the open bay doesn't reveal another wheel.
     const guard=.032*smooth(th*6), top=Math.max(oy-.002,Math.min(B+.021,targetTop));
-    const row=exact(0,1,perf?4:high?7:5).map(u=>{
+    const row=exact(0,1,small(perf?4:high?7:5,3,3,3)).map(u=>{
      const x=mix(ox,innerX,u);
      // Only the source edge (u=0) remains on the hem. Raise inward along most
      // of the vault before flattening into the protected inner wall.

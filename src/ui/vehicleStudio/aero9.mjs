@@ -39,7 +39,7 @@ function arc(p0,p1,p2,p3,t){
 }
 function boxMesh(x,y,z,p){return new T.BoxGeometry(x,y,z).translate(...p);}
 
-function wingGeometry({cfg,sp,put,sample,dims,evalFormula,quality}){
+function wingGeometry({cfg,sp,put,sample,dims,evalFormula,quality,compact=0}){
  if(sp.type==='off'||sp.type==='none')return {elements:0,supports:0};
  const {X,Lr,cabinRear}=dims,lip=sp.type==='lip'||sp.type==='ducktail',boxed=sp.type==='boxed wing';
  const w=bounded((.66+.19*sp.size)*X,.24,X*.95,X*.8);
@@ -53,7 +53,7 @@ function wingGeometry({cfg,sp,put,sample,dims,evalFormula,quality}){
  const supports=lip?0:boxed?2:Math.round(bounded(cfg.supports,1,4,2));
  const reach=(x,at)=>sample.trunk(at,bounded((1+x/X)*.5,0,1,.5))[1];
  const base=reach(0,z);
- const section=quality==='lod'?12:20,span=quality==='lod'?10:18;
+ const section=compact?10:quality==='lod'?12:20,span=compact?6:quality==='lod'?10:18;
  const formula=(u,v,x)=>{if(!cfg.formula||typeof evalFormula!=='function')return 0;
   try{return bounded(evalFormula(cfg.formula,{u,v,x,y:base,z,chord,span:w*2}),-.08,.08,0);}catch{return 0;}};
  for(let element=0;element<elements;element++){
@@ -91,7 +91,7 @@ function wingGeometry({cfg,sp,put,sample,dims,evalFormula,quality}){
     [top,w*.968,atTop,.49*chord,plate*.50],
     [top+thickness*.44,w*.96,atTop,.37*chord,plate*.31]
    ];
-   const rows=shapes.map(([height,x,c,span,wide])=>ring([s*x,height,c],wide,span,12,'rectangle',[1,0,0],[0,0,-1]));
+   const rows=shapes.map(([height,x,c,span,wide])=>ring([s*x,height,c],wide,span,compact?8:12,'rectangle',[1,0,0],[0,0,-1]));
    put('spoiler','paint',loft(rows,true));
    const first=rows[0],last=rows.at(-1);
    for(const [section,flip] of [[first,true],[last,false]]){
@@ -125,9 +125,9 @@ function wingGeometry({cfg,sp,put,sample,dims,evalFormula,quality}){
  return {elements,supports};
 }
 
-export function buildAero({g,quality='preview',put,sample,dims,evalFormula}){
+export function buildAero({g,quality='preview',compact=0,put,sample,dims,evalFormula}){
  const construction=g.construction??{}, ex=g.components.exhaust;
- const result={wing:wingGeometry({cfg:construction.wing??{},sp:g.components.spoiler,put,sample,dims,evalFormula,quality}),outlets:[]};
+ const result={wing:wingGeometry({cfg:construction.wing??{},sp:g.components.spoiler,put,sample,dims,evalFormula,quality,compact}),outlets:[]};
  const {X,floor,Lr}=dims,groups=Array.isArray(construction.exhaust)?construction.exhaust:null;
  const n=ex.type==='quad'?4:ex.type==='dual'?2:ex.type==='off'?0:1;
  const inferred=Array.from({length:n},(_,i)=>{
@@ -136,7 +136,7 @@ export function buildAero({g,quality='preview',put,sample,dims,evalFormula}){
    count:1,protrusion:.028,curvature:.32,finish:'chrome'};
  });
  const chosen=groups?.length?groups:inferred;
- const rings=quality==='lod'?12:quality==='export'?24:18,pathSteps=quality==='lod'?5:9;
+ const rings=compact?8:quality==='lod'?12:quality==='export'?24:18,pathSteps=quality==='lod'?5:9;
  function atX(x,v){
   let a=0,b=1;
   for(let i=0;i<20;i++){const t=(a+b)*.5;if(sample.rear(t,v)[0]>x)b=t;else a=t;}

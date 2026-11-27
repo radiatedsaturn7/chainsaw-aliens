@@ -64,7 +64,7 @@ export function wheelRotorTexture(){
 }
 
 const tireBands=[0,.105,.215,.325,.390,.610,.675,.785,.895,1];
-function tire(r,c,rim,shape,depth,size,rally,n){
+function tire(r,c,rim,shape,depth,size,rally,n,compact=0){
  const bulk=r*(rally?.023:.011)*(1+.37*(depth-1));
  const shoulder=clamp(.77+shape*.13+(size-1)*.12,.71,.93);
 
@@ -78,9 +78,10 @@ function tire(r,c,rim,shape,depth,size,rally,n){
   [rim*.988,-c*.74]
  ];
  // Preserve the true outside radius at the crown.
- const geom=lathe(p,n),uv=geom.attributes.uv;
+ const rows=compact?[0,1,2,4,5,7,8,9,10]:p.map((_,i)=>i);
+ const geom=lathe(rows.map(i=>p[i]),n),uv=geom.attributes.uv;
  for(let k=0;k<uv.count;k++){
-  const row=k%p.length;
+  const row=rows[k%rows.length];
   uv.setY(k,tireBands[row]??1);
  }
  return geom;
@@ -143,44 +144,47 @@ function caliper(rotor,thick,low){
  const g=mesh(p,tri,uv);g.userData.nonSpinning=true;return g;
 }
 
-export function buildWheels(g,{quality='preview',emit}={}){
+export function buildWheels(g,{quality='preview',compact=0,emit}={}){
  const out=[];
  const put=(k,m,x)=>{if(emit)emit(k,m,x);else out.push({component:k,material:m,geometry:x});};
  const {diameter,tireWidth,rimRatio}=g.dimensions;
  const r=diameter/2,c=tireWidth/2,w=g.components.wheels,t=g.components.tires;
  const detail=quality==='export'||quality==='preview'||quality==='garage';
- const low=quality==='opponent'||quality==='lod';
- const n=detail?24:low?16:20,innerN=detail?20:low?12:16;
+ const low=quality==='opponent'||quality==='lod'||compact>0;
+ const n=compact?[0,20,20,16][compact]:detail?24:low?16:20,innerN=compact?[0,12,10,9][compact]:detail?20:low?12:16;
  const rim=r*clamp(rimRatio*w.size,.44,.883);
  const face=c*.969,inner=c*.68;
  const lip=rim*(.043+.010*w.shape);
  const autoDish=(.008+w.shape*.037)*clamp(c/.108,.71,1.49);
  const dish=clamp(autoDish,.006,c*.53);
- put('tires','rubber',tire(r,c,rim,t.shape,t.depth,t.size,t.type==='rally',n));
+ put('tires','rubber',tire(r,c,rim,t.shape,t.depth,t.size,t.type==='rally',n,compact));
  // The barrel is hollow and dark: separate alloy face from the cast cavity.
  const tube=[
   [rim*.965,-inner],[rim*.861,-inner],[rim*.874,-inner+.006],
   [rim*.894,face-.020],[rim*.924,face-.011],[rim*.977,face-.015]
  ];
- put('wheels','barrel',lathe(tube,n));
- put('wheels','wheel',lathe([
+ put('wheels','barrel',lathe(compact?[tube[0],tube[1],tube[3],tube[5]]:tube,n));
+ const rimProfile=[
   [rim*.922,face-.014],[rim-lip*1.20,face-.006],[rim-lip*.69,face+.001],
   [rim-lip*.16,face+.001],[rim,face-.005]
- ],n));
+ ];
+ put('wheels','wheel',lathe(compact?rimProfile.filter((p,i)=>i!==1&&i!==3):rimProfile,n));
  const hub=Math.min(face-dish+r*.017,c-.0048);
- put('wheels','wheel',lathe([
+ const hubProfile=[
   [rim*.239,hub-.012],[rim*.221,hub-.004],[rim*.202,hub+.002],
   [rim*.188,hub+.004],[0,hub+.004]
- ],innerN));
+ ];
+ put('wheels','wheel',lathe(compact?hubProfile.filter((p,i)=>i!==1&&i!==3):hubProfile,innerN));
  const nSpokes=w.type==='6-spoke'?6:w.type==='5-spoke'?5:w.type==='10-spoke'?10:low?8:12;
  for(let k=0;k<nSpokes;k++)put('wheels','wheel',spoke(rim,face,dish,k,nSpokes,w.type,w.depth,low||nSpokes>7&&!detail));
  if(!low)for(let k=0;k<5;k++)put('wheels','trim',boltSocket(hub+.0042,rim*.134,k));
  const disk=Math.max(.053,rim*.743),rotorX=Math.min(-.004,face-dish-.026),panel=.027+clamp(tireWidth-.225,-.045,.07)*.14;
- const rotor=lathe([
+ const rotorProfile=[
   [disk*.433,rotorX-panel*.44],[disk*.970,rotorX-panel*.44],[disk,rotorX-panel*.34],
   [disk,rotorX+panel*.39],[disk*.975,rotorX+panel*.48],[disk*.433,rotorX+panel*.48],
   [disk*.417,rotorX+panel*.28],[0,rotorX+panel*.28]
- ],innerN);
+ ];
+ const rotor=lathe(compact?rotorProfile.filter((p,i)=>[1,2,3,6,7].includes(i)):rotorProfile,innerN);
  put('wheels','rotor',radial(rotor,disk));
  const cal=caliper(disk,Math.min(c*1.02,panel*3.12),low);cal.translate(rotorX+.008,0,0);
  put('wheels','caliper',cal);

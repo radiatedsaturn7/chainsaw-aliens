@@ -147,3 +147,15 @@ for inspecting curvature. **View → Adjust paint finish** edits paint and
 clearcoat roughness. Those values are shared by the editor and runtime export
 and do not require stronger direct light or turning the paint metallic.
 Existing designs retain their original finish by default.
+
+### Hard 15,000-triangle gameplay budget
+
+Test Drive and **Menu → Export** both use the capped gameplay build. The limit
+includes the body, cabin and all four wheels, even though the wheel mesh is
+stored once. Tessellation is reduced before export: each cutout still shares
+its opening boundary, and the lower-detail interior and chassis remain
+enclosed. The exporter verifies the count of actual emitted triangles after
+removing zero-area faces, and rejects any over-budget gameplay build rather
+than dropping arbitrary triangles. It reports body, individual wheel and
+complete car counts. Editing and explicit authoring previews remain detailed;
+their displayed count is marked **edit tris** and is not the in-game budget.

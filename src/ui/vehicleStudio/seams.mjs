@@ -85,7 +85,7 @@ function seamShell(rows,normalAt){
 
 const tessCount=(quality)=>quality==='export'?32:quality==='lod'?10:22;
 const arcSamples=(quality)=>quality==='export'?[Math.PI/7,2*Math.PI/7,Math.PI*.5]
- :quality==='lod'?[Math.PI*.5]:[Math.PI*.25,Math.PI*.5];
+ :quality==='compact'?[]:quality==='lod'?[Math.PI*.5]:[Math.PI*.25,Math.PI*.5];
 function gapParts(frames,cfg,half,quality='preview'){
   const parts=[];
   const lipRadius=Math.max(.00010,Math.min(cfg.radius,half*.57));
@@ -109,7 +109,7 @@ function gapParts(frames,cfg,half,quality='preview'){
     const inside=scaled(S.normal,-Math.max(cfg.depth,thickness+lipRadius+.0006));
     const margin=cfg.flange>0?cfg.flange*(.003+.004*cfg.flange):.001;
     const A=add(add(S.pa,scaled(across,-margin)),inside),B=add(add(S.pb,scaled(across,margin)),inside);
-    return cfg.flange>0?[add(A,scaled(S.normal,-.0014*cfg.flange)),A,B,add(B,scaled(S.normal,-.0014*cfg.flange))]:[A,B];
+    return cfg.flange>0&&quality!=='compact'?[add(A,scaled(S.normal,-.0014*cfg.flange)),A,B,add(B,scaled(S.normal,-.0014*cfg.flange))]:[A,B];
    });
    parts.push({material:'seamDark',geometry:seamShell(rows,mid.normal),kind:'backing'});
   }
@@ -119,7 +119,7 @@ function gapParts(frames,cfg,half,quality='preview'){
     const span=length(minus(S.pb,S.pa));
     const inset=Math.max(.0035,cfg.depth*(.69+.13*(1-cfg.seal)),lipRadius+thickness+.00025);
     const level=add(S.cp,scaled(S.normal,-inset));
-    return (quality==='lod'?[-1,0,1]:[-1,-.65,0,.65,1]).map(x=>add(add(level,scaled(across,x*span*(.33+.21*cfg.seal))),
+    return (quality==='compact'?[-1,1]:quality==='lod'?[-1,0,1]:[-1,-.65,0,.65,1]).map(x=>add(add(level,scaled(across,x*span*(.33+.21*cfg.seal))),
      scaled(S.normal,cfg.seal*.00085*(1-x*x))));
    });
    parts.push({material:'rubber',geometry:seamShell(rows,mid.normal),kind:'seal'});

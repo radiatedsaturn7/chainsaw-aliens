@@ -20,26 +20,48 @@ export function materialDoc(g,key,{texture=true}={}){
     ...(g.construction.finish.paintRoughness!==.44?{roughness:g.construction.finish.paintRoughness}:{}),
     ...(g.construction.finish.coatRoughness!==.12?{paintClearcoatRoughness:g.construction.finish.coatRoughness}:{})}:{} )}};
 }
+export const GAMEPLAY_TRIANGLE_BUDGET=15000;
+const gameQualities=new Set(['drive','opponent','lod']);
+function triangles(geometry,visit){
+ const a=geometry.attributes.position,idx=geometry.index;
+ const count=idx?.count??a.count,at=i=>[a.getX(i),a.getY(i),a.getZ(i)];let valid=0;
+ for(let j=0;j<count;j+=3){
+  const k=idx?[idx.getX(j),idx.getX(j+1),idx.getX(j+2)]:[j,j+1,j+2];
+  const [p,q,r]=k.map(at),u=p.map((v,i)=>q[i]-v),v=p.map((v,i)=>r[i]-v);
+  if(Math.hypot(u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0])<1e-10)continue;
+  valid++;if(visit)visit(k);
+ }
+ return valid;
+}
+const emitted=parts=>parts.reduce((n,p)=>n+triangles(p.geometry),0);
+function gameplayDesign(genome,quality){
+ if(!gameQualities.has(quality))return {design:generateVehicle(genome,{quality}),tier:0};
+ let last=null;
+ // Reduce independently tessellated parts before writing any document. Never
+ // drop arbitrary faces: the apertures, seams and all wheel copies survive.
+ for(const tier of quality==='drive'?[1,2,3]:[2,3]){
+  const design=generateVehicle(genome,{quality,compact:tier});
+  const total=emitted(design.parts)+4*emitted(design.wheelParts);
+  if(!design.diagnostics.issues.length&&total<=GAMEPLAY_TRIANGLE_BUDGET)return {design,tier};
+  last=design.diagnostics.issues.length?design.diagnostics.issues.join(' '):
+   'Vehicle requires '+total.toLocaleString('en-US')+' triangles. Gameplay limit is '+GAMEPLAY_TRIANGLE_BUDGET.toLocaleString('en-US')+' including the four wheels.';
+  disposeDesign(design);
+ }
+ throw Error(last??'Unable to fit the gameplay triangle budget.');
+}
 function encodeModel(design,parts,name,joints={}){
  const model=createModelDocument(name),used=new Set(parts.map(p=>p.material));model.materials=[...used].map(key=>materialDoc(design.genome,key));
  for(const {geometry,material,component} of parts){
-  const a=geometry.attributes.position,n=geometry.attributes.normal,uv=geometry.attributes.uv,idx=geometry.index,ids=[];
+  const a=geometry.attributes.position,n=geometry.attributes.normal,uv=geometry.attributes.uv,ids=[];
   for(let j=0;j<a.count;j++){
    const position=[a.getX(j),a.getY(j),a.getZ(j)];const id='v-'+model.nextId++;
    model.vertices.push({id,position,weights:[]});ids.push(id);
   }
-  const count=idx?.count??a.count;
-  for(let j=0;j<count;j+=3){
-   const k=[0,1,2].map(offset=>idx?idx.getX(j+offset):j+offset);
-   // Primitive poles and closed lathe-axis faces can contain coincident corners.
-   // Do not ship zero-area triangles to the native document renderer.
-   const [p,q,r]=k.map(i=>[a.getX(i),a.getY(i),a.getZ(i)]);
-   const u=p.map((v,i)=>q[i]-v),v=p.map((v,i)=>r[i]-v);
-   if(Math.hypot(u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0])<1e-10)continue;
+  triangles(geometry,k=>{
    model.faces.push({id:'f-'+model.nextId++,vertices:k.map(i=>ids[i]),
     uv:k.map(i=>uv?[uv.getX(i),uv.getY(i)]:[0,0]),
     cornerNormals:k.map(i=>[n.getX(i),n.getY(i),n.getZ(i)]),material:'studio-mat-'+material,component});
-  }
+  });
  }
  for(const [name,position] of Object.entries(joints)){
   const rot=name.startsWith('Taillight')?[0,1,0,0]:[0,0,0,1];
@@ -47,8 +69,8 @@ function encodeModel(design,parts,name,joints={}){
  }
  return validateModelDocument(model);
 }
-export function exportVehicle(genome,{id=null,quality='export'}={}){
- const design=generateVehicle(genome,{quality});
+export function exportVehicle(genome,{id=null,quality='drive'}={}){
+ const {design,tier}=gameplayDesign(genome,quality);
  try{
   if(design.diagnostics.issues.length)throw Error(design.diagnostics.issues.join(' '));
   const g=design.genome,d=design.metadata,slug=g.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,49)||'design';
@@ -86,8 +108,10 @@ export function exportVehicle(genome,{id=null,quality='export'}={}){
    wheelModel:{ref:wheel,position:[0,0,0],rotation:[0,0,0],scale:[1,1,1]},bodyColor:g.materials.paint,cameraView:'third-person'};
   const carDocument={kind:'race-car',schemaVersion:1,car};
   const models={[body]:encodeModel(design,design.parts,g.name+' body',mounts),[wheel]:encodeModel(design,design.wheelParts,g.name+' wheel')};
+  const carTriangles=models[body].faces.length+4*models[wheel].faces.length;
+  if(gameQualities.has(quality)&&carTriangles>GAMEPLAY_TRIANGLE_BUDGET)throw Error('Gameplay mesh exceeded the triangle budget.');
   return {kind:'lotg-studio-export',schemaVersion:1,genome:g,car:carDocument,models,
-   attachments:mounts,metrics:{...d,quality,bodyTriangles:design.diagnostics.bodyTriangles,wheelTriangles:design.diagnostics.wheelTriangles,
+   attachments:mounts,metrics:{...d,quality,tier,triangleBudget:gameQualities.has(quality)?GAMEPLAY_TRIANGLE_BUDGET:null,carTriangles,bodyTriangles:models[body].faces.length,wheelTriangles:models[wheel].faces.length,
     textureMemory:studioTextureBytes(Object.values(models).flatMap(m=>m.materials)),geometry:auditVehicleGeometry(design)}};
  }finally{disposeDesign(design);}
 }

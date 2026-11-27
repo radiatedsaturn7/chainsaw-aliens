@@ -31,11 +31,11 @@ test('garage/drive/opponent budgets, real cabin layout/structure and all export 
  const g=createFasciaDemo('rally');
  const a=exportVehicle(g,{quality:'drive'}),b=exportVehicle(loadVehicle(serializeVehicle(g)),{quality:'drive'});
  assert.equal(a.metrics.quality,'drive');assert.deepEqual(a,b);
- assert.ok(a.metrics.geometry.totals.triangles>=25000&&a.metrics.geometry.totals.triangles<=35000);
+ assert.equal(a.metrics.triangleBudget,15000);assert.ok(a.metrics.carTriangles<=15000);
  assert.ok(a.metrics.textureMemory.dataBytes>10000);
  assert.ok(Object.keys(a.metrics.geometry.groups).some(k=>k.includes('panel seams')));
  assert.ok(Object.values(a.models).some(m=>m.materials.some(t=>t.automotive?.normal&&t.automotive?.orm)));
- use(g,'opponent',d=>assert.ok(auditVehicleGeometry(d).totals.triangles<a.metrics.geometry.totals.triangles));
+ assert.ok(exportVehicle(g,{quality:'opponent'}).metrics.carTriangles<=15000);
  use(g,'drive',d=>{assert.ok(d.structure.triangles>1000&&d.cabin.rows.length>=1);assert.equal(d.diagnostics.issues.length,0);});
 });
 test('custom exhaust group and styling curve persist, affect the mesh, and do not modify wheel mounts',()=>{

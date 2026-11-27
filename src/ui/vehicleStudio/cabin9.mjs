@@ -62,7 +62,8 @@ function sweptTube(points,r,segments=7){
  return new T.TubeGeometry(new T.CatmullRomCurve3(p),Math.max(4,p.length*2),r,segments,false);
 }
 
-export function buildCabin({g,quality='preview',put,sample,dims}){
+export function buildCabin({g,quality='preview',compact=0,put,sample,dims}){
+ const small=(a,...cuts)=>compact?cuts[compact-1]:a;
  const lod=quality==='lod',high=['export','cockpit'].includes(quality);
  const c=g.components, cfg=g.construction?.cabin??{};
  const layout=cfg.layout??(c.doors.type==='four door'?'bench':'front-only');
@@ -87,7 +88,7 @@ export function buildCabin({g,quality='preview',put,sample,dims}){
  const xBound=z=>Math.max(X*.45,Math.min(widthAt(z),X*.78));
  const rear=cabinRear+.016, front=cabinFront-.026;
  const floorFront=Math.max(rear+.3,front-.085);
- const floorSamples=lod?7:high?17:12;
+ const floorSamples=small(lod?7:high?17:12,4,3,3);
  // Shaped interior floor, floating above the separately owned chassis
  // undertray. The small lobes are floor mats and footwells, not rocker skin.
  const floorPoint=(s,u)=>{
@@ -96,7 +97,7 @@ export function buildCabin({g,quality='preview',put,sample,dims}){
   const tunnel=.078*Math.exp(-((x/Math.max(.12,X*.145))**4));
   return [x,floorY+tunnel+.048*Math.abs(a)**8+.075*toe**2,z];
  };
- add('seats','floor',patch(floorSamples,8,floorPoint));
+ add('seats','floor',patch(floorSamples,small(8,5,4,4),floorPoint));
  const upperZ=s=>mix(rear+.012,front-.018,s);
  const beltInner=(s,sign)=>{
   const z=upperZ(s),p=sideAt(z,0,sign);
@@ -106,7 +107,7 @@ export function buildCabin({g,quality='preview',put,sample,dims}){
  // this closes the tub rather than just hiding its axle-facing silhouettes.
  for(const end of ['front','rear']){
   const isFront=end==='front',s=isFront?1:0;
-  add(isFront?'dash':'seats','interior',patch(lod?5:11,8,(t,u)=>{
+  add(isFront?'dash':'seats','interior',patch(small(lod?5:11,3,2,2),small(8,5,4,4),(t,u)=>{
    const a=2*u-1,side=u<.5?-1:1,low=floorPoint(s,u), rail=beltInner(s,side);
    const hi=[Math.abs(a)*rail[0],rail[1]+.013*(1-a*a),rail[2]];
    const p=ip(low,hi,t),camber=.020*(1-a*a)*Math.sin(pi*t);
@@ -114,7 +115,7 @@ export function buildCabin({g,quality='preview',put,sample,dims}){
   },!isFront));
  }
  const shelfB=rear+Math.min(.24,cabinDepth*.16);
- if(layout!=='three-row')add('seats','floor',patch(lod?4:8,7,(t,u)=>{
+ if(layout!=='three-row')add('seats','floor',patch(small(lod?4:8,2,2,2),small(7,5,4,4),(t,u)=>{
   const z=mix(rear,shelfB,t),a=2*u-1;
   return [a*xBound(z),baseY(z)-.071-.038*t+.016*(1-a*a),z];
  }));
@@ -129,8 +130,8 @@ export function buildCabin({g,quality='preview',put,sample,dims}){
    p[0]-=s*.029*midside*Math.sin(pi*a)**2;
    return p;
   };
-  add('doors','interior',patch(floorSamples,lod?4:7,(u,v)=>inner(mix(rear,floorFront,u),v),s<0));
-  add('doors','seat',patch(lod?6:12,3,(u,v)=>{
+  add('doors','interior',patch(floorSamples,small(lod?4:7,3,2,2),(u,v)=>inner(mix(rear,floorFront,u),v),s<0));
+  add('doors','seat',patch(small(lod?6:12,4,3,3),small(3,2,1,1),(u,v)=>{
    const z=mix(rear+.11,front-.17,u),drop=.020*((2*u-1)**4);
    const p=inner(z,mix(.55,.77,v)-drop);p[0]-=s*(.006+.010*Math.sin(pi*u)*Math.sin(pi*v));return p;
   },s<0));
@@ -148,7 +149,7 @@ export function buildCabin({g,quality='preview',put,sample,dims}){
  }
  // Inner roof headliner and windshield/corner returns remain opaque, but the
  // actual glass is still exterior geometry controlled by the sheet shader.
- add('pillars','interior',patch(lod?7:13,lod?6:11,(u,v)=>{
+ add('pillars','interior',patch(small(lod?7:13,4,3,3),small(lod?6:11,4,3,3),(u,v)=>{
   const z=mix(roofRear+.008,roofFront-.008,u),p=roofAt(z,v);
   return [p[0]*.984,p[1]-.033-.021*Math.abs(2*v-1)**5,p[2]];
  },true));
@@ -163,12 +164,12 @@ export function buildCabin({g,quality='preview',put,sample,dims}){
  }
  for(const end of ['front','rear']){
   const s=end==='front'?1:-1;
-  add('pillars','trim',patch(3,lod?8:14,(v,u)=>{
+  add('pillars','trim',patch(small(3,2,1,1),small(lod?8:14,6,5,4),(v,u)=>{
    const p=glassAt(end,mix(.91,.998,v),u);p[0]*=.987;p[1]-=.017+.025*v;p[2]-=s*.016;return p;
   },s<0));
   for(const sign of [-1,1]){
    const side=sign<0?0:1;
-   add('pillars','interior',patch(lod?5:10,3,(v,u)=>{
+   add('pillars','interior',patch(small(lod?5:10,3,2,2),small(3,1,1,1),(v,u)=>{
     const p=glassAt(end,v,mix(side,.5,u*.060));p[0]-=sign*.012;p[1]-=.008*v;p[2]-=s*(.014+.012*Math.sin(pi*u));return p;
    },sign===s));
   }
@@ -197,7 +198,7 @@ export function buildCabin({g,quality='preview',put,sample,dims}){
   const cushionH=(bench?.098:.106)*clamp(c.seats.depth,.80,1.2);
   const tilt=.084+.062*clamp(c.seats.shape,0,1)+(row?.017:0);
   const sec=[[-.5,.78,.24],[-.39,.94,.78],[-.16,1,1],[.09,1,.98],[.30,.99,.83],[.48,.86,.43]];
-  add('seats','seat',closedLoft(lod?5:high?11:8,lod?10:18,(u,a)=>{
+  add('seats','seat',closedLoft(small(lod?5:high?11:8,3,3,2),small(lod?10:18,8,6,6),(u,a)=>{
    const [zc,width,h]=shellProfile(sec,u), ac=f(Math.cos(a),.65), sn=f(Math.sin(a),.68),ed=Math.abs(ac);
    const rail=Math.max(0,sn)*Math.max(0,(ed-.54)/.46)**1.5*(bench?.008:.017+.017*bolster);
    return [x+ac*w*.5*width,y+cushionH*.30+sn*cushionH*.58*h+rail,z+zc*l];
@@ -207,7 +208,7 @@ export function buildCabin({g,quality='preview',put,sample,dims}){
   ];
   const hBack=hh*.82;
   const up=y+cushionH*.62;
-  add('seats','seat',closedLoft(lod?6:high?14:10,lod?10:18,(u,a)=>{
+  add('seats','seat',closedLoft(small(lod?6:high?14:10,4,3,3),small(lod?10:18,8,6,6),(u,a)=>{
    const [t,wi,dd]=shellProfile(backs,u), ac=f(Math.cos(a),.62), sn=f(Math.sin(a),.69);
    const wing=bench?.010:.055*bolster;
    const panel=Math.max(0,sn)*(wing*Math.abs(ac)**1.9+.019*lumbar*Math.sin(pi*t)**2);
@@ -237,7 +238,7 @@ export function buildCabin({g,quality='preview',put,sample,dims}){
   for(const s of headrests){
    const hx=x+s*w*.28,hy=up+hBack-.009,hz=rearZ+.028-tilt;
    if(!lod)for(const sign of [-1,1])add('seats','chrome',rod([hx+sign*headW*.24,hy-.036,hz],[hx+sign*headW*.24,hy+.065,hz],.005,6));
-   add('seats','seat',closedLoft(lod?4:7,lod?8:12,(u,a)=>{
+   add('seats','seat',closedLoft(small(lod?4:7,4,4,3),small(lod?8:12,8,8,6),(u,a)=>{
     const sw=.76+.24*Math.sin(pi*u);return [hx+headW*.5*sw*f(Math.cos(a),.59),hy+.040+headH*u,hz+headL*.5*sw*f(Math.sin(a),.57)];
    },true));
   }
@@ -268,8 +269,8 @@ export function buildCabin({g,quality='preview',put,sample,dims}){
   const a=2*u-1, bulge=(1-a*a), z=mix(dashZ-dashD,dashZ+.042,v);
   return [a*dw*.5*(.97+.03*v),dashY+.018*bulge-.072*(1-v)**3-.022*Math.abs(a)**3,z+.044*(1-bulge)*(1-v)];
  };
- add('dash','interior',patch(lod?8:18,lod?4:9,dash,true));
- add('dash','interior',patch(lod?8:18,lod?4:8,(u,v)=>{
+ add('dash','interior',patch(small(lod?8:18,6,5,4),small(lod?4:9,3,2,2),dash,true));
+ add('dash','interior',patch(small(lod?8:18,6,5,4),small(lod?4:8,3,2,2),(u,v)=>{
   const p=dash(u,0), a=2*u-1;
   return [p[0]*(1-.071*v),p[1]-(.115+.033*Math.abs(a))*v,p[2]+.044*v+.015*Math.sin(pi*v)];
  }));
@@ -281,7 +282,7 @@ export function buildCabin({g,quality='preview',put,sample,dims}){
  const st=c.steering, sr=.153*clamp(st.size,.82,1.22);
  const steeringAngle=-.32;
  {
-  const wheel=new T.TorusGeometry(sr,.013*st.depth,lod?5:8,lod?22:high?46:36);
+  const wheel=new T.TorusGeometry(sr,.013*st.depth,small(lod?5:8,4,4,4),small(lod?22:high?46:36,16,14,12));
   if(st.type==='flat-bottom'){
    const attr=wheel.attributes.position;for(let i=0;i<attr.count;i++)attr.setY(i,Math.max(-sr*(.72+.14*st.shape),attr.getY(i)));wheel.computeVertexNormals();
   }
@@ -307,7 +308,7 @@ export function buildCabin({g,quality='preview',put,sample,dims}){
    if(!lod)for(const s of [-1,0,1])add('instruments','chrome',box(.041,.006,.002),[px+s*.056,py+.007,pz-.006]);
   }else{
    const r=.027+instr.shape*.006;
-   add('instruments','trim',new T.CylinderGeometry(r,r,.010,lod?10:17).rotateX(pi/2),[px,py,pz]);
+   add('instruments','trim',new T.CylinderGeometry(r,r,.010,small(lod?10:17,8,7,6)).rotateX(pi/2),[px,py,pz]);
    if(!lod){
     add('instruments','chrome',new T.TorusGeometry(r,.0016,5,18),[px,py,pz-.006]);
     add('instruments','chrome',rod([px,py,pz-.007],[px-r*.36,py+r*.69,pz-.007],.0015,5));
