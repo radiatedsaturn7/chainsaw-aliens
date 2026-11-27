@@ -196,3 +196,13 @@ the drop toward either side; the lower bumper and rear do not move.
 **Front → Optics → Headlight lower reach** adds depth to the light's outline
 below its fitted upper edge, including the matching cutout and gasket.
 Both changes default off in older designs.
+
+**Front → Intakes** now includes **Lower intake upper edge rise** for a
+single central opening, as well as **Lower intake extra throat depth**
+for single or split front ducts. Rise keeps the lower edge fixed, leaves
+room for the upper-grille
+bridge (0.032 in normalized fascia coordinates), and respects lamp and fog-cover width
+limits. Depth moves existing throat surfaces and the ribs, not the mouth
+or the upper grille. **Fog cover inset stamping** forms a pressed rim on
+blank covers with existing geometry. Leave the new values at zero to
+retain previous designs.

@@ -89,7 +89,7 @@ export function makeOpenings({end,g,segments=32}){
    out.push(aperture({id:'fog'+(s>0?'-l':'-r'),component:'fogs',
    housing:sideFog.type==='strip'||sideFog.type==='blank'?'round-rect':'oval',cx:.5+s*.277,cy:.765,
    width:mix(.065,.151,sat(num(sideFog.size,1)*.53)),height:sideFog.type==='strip'?.070:mix(.107,.174,sat(num(sideFog.depth,1)*.52))*(sideFog.type==='blank'?mix(.60,1.75,num(fascia.fogCoverHeight,.5))/1.175:1),
-   kind:sideFog.type==='blank'?'blank':'fog',segments,side:s,opt:{layout:'projector',protrusion:0}}));
+   kind:sideFog.type==='blank'?'blank':'fog',segments,side:s,opt:{layout:'projector',protrusion:0,fogCoverStamp:fascia.fogCoverStamp}}));
   }
  }
  if(!front&&g.construction){
@@ -147,9 +147,18 @@ export function makeOpenings({end,g,segments=32}){
   const pair=wideDucts?[.285,.715]:[.395,.605];
   for(const k of iMode==='split'?pair:[.5]){
    let cy=(front?.789:.78)+(num(fascia.intakeHeightPosition,.5)-.5)*.29;
-   const height=(front?(wideDucts&&iMode==='split'?.23:.19):.14)*(.57+.86*num(fascia.intakeHeight,.5));
+   let height=(front?(wideDucts&&iMode==='split'?.23:.19):.14)*(.57+.86*num(fascia.intakeHeight,.5));
    if(!front)cy=Math.max(cy,.685+height*.5);
    cy=Math.min(cy,.975-height*.5);
+   const lowerRise=front&&iMode==='single'?num(fascia.lowerIntakeRise,0):0;
+   if(lowerRise>0){
+    const upper=out.find(o=>o.id==='upper-grille');
+    const stop=Math.max(.07,upper?Math.max(...upper.outline.map(p=>p[1]))+.032:0);
+    const rise=Math.min(lowerRise,Math.max(0,cy-height/2-stop));
+    // Shift only the upper edge. Retain the original chin rail and the
+    // width-clearance checks against fog covers/lamp apertures.
+    height+=rise;cy-=rise*.5;
+   }
    let width=(iMode==='split'?(wideDucts?.24:.17):.365)*(.63+.74*num(fascia.intakeWidth,.5));
    if(iMode==='split')width=Math.min(width,pair[1]-pair[0]-.014);
    for(const aperture of out){
@@ -160,7 +169,7 @@ export function makeOpenings({end,g,segments=32}){
    }
    if(width<.032)continue;
    out.push(aperture({id:(front?'lower-':'rear-')+'duct'+(k<.48?'-r':k>.52?'-l':''),component:grp,
-    housing:fascia.intakeShape??(front?'angular':'trapezoid'),cx:k,cy,width,height,kind:'duct',segments,style:fascia.ductStyle??'mesh'}));
+    housing:fascia.intakeShape??(front?'angular':'trapezoid'),cx:k,cy,width,height,kind:'duct',segments,style:fascia.ductStyle??'mesh',opt:{throatDepth:front?num(fascia.lowerIntakeDepth,0):0}}));
   }
  }
  return out;
@@ -250,7 +259,11 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
   // Shared rim exactly duplicated at d=0 (no opening exists behind a closed slab).
   putGeo('paint',[mouth,lip]);putGeo('trim',[lip,seat]);
   if(kind==='blank'){
-   putGeo('paint',[seat,ring(.88,.013),ring(.84,.010)],pt(cx,cy,.009));continue;
+   const stamp=sat(num(opt.fogCoverStamp,0));
+   // Retain existing loops; the opposing return slope catches highlights
+   // at the rim of the pressed insert instead of adding a coplanar decal.
+   putGeo('paint',[seat,ring(mix(.88,.84,stamp),mix(.013,.026,stamp)),
+    ring(mix(.84,.74,stamp),mix(.010,.021,stamp))],pt(cx,cy,mix(.009,.016,stamp)));continue;
   }
   if(kind==='plate'){
    const show=num(opt.mount,0);
@@ -271,8 +284,9 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
    putGeo('seamDark',[ring(.78,.024),ring(.75,.022)],pt(cx,cy,.021));continue;
   }
   if(kind==='duct'){
-   const d=.047;const back=ring(.79,d);
-   putGeo('trim',[seat,ring(.857,.028),back],pt(cx,cy,d-.002));
+   const extra=Math.min(.055,Math.max(0,num(opt.throatDepth,0)));
+   const d=.047+extra, back=ring(mix(.79,.88,extra/.055),d);
+   putGeo('trim',[seat,ring(mix(.857,.90,extra/.055),.028+extra*.36),back],pt(cx,cy,d-.002));
    const n=compact?(a.style==='bars'?3:4):a.style==='bars'?4:7, inset=outline.map(([x,y])=>[mix(cx,x,.74),mix(cy,y,.73)]);
    for(let j=0;j<n;j++){
     const y=cy+h*.52*((j+.5)/n-.5),r=h*(a.style==='bars'?.025:.014);
@@ -280,7 +294,7 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
     const lo=Math.max(l,l2),hi=Math.min(rr,r2);
     if(!(hi>lo))continue;
     const bars=[[lo,y-r],[hi,y-r],[hi,y+r],[lo,y+r]];
-    putGeo(a.style==='bars'?'chrome':'trim',[bars.map(([x,v])=>pt(x,v,.034)),bars.map(([x,v])=>pt(x,v,.038))],pt((lo+hi)/2,y,.033));
+    putGeo(a.style==='bars'?'chrome':'trim',[bars.map(([x,v])=>pt(x,v,.034+extra*.91)),bars.map(([x,v])=>pt(x,v,.038+extra*.91))],pt((lo+hi)/2,y,.033+extra*.91));
    }
    continue;
   }

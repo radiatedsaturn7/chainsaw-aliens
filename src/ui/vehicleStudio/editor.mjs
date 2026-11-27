@@ -282,7 +282,7 @@ function fasciaInspector(root,g,end){
   advancedPanel.onclick=()=>{part=joining;setTab('surface');};panel.append(advancedPanel);
  }else if(cfg.category==='intakes'){
   choose('fascia-intakes',end==='front'?'Intake layout':'Valance opening',phenotype.INTAKE_TYPES,'fascia','intakes');
-  fieldsFor('fascia',isIntake);
+  fieldsFor('fascia',(k,s)=>isIntake(k,s)&&(end==='front'||!['lowerIntakeRise','lowerIntakeDepth','fogCoverStamp'].includes(k)));
   if(end==='front')choose('fascia-grille-shape','Upper grille outline',phenotype.OPTIC_HOUSINGS,'fascia','grilleShape');
   choose('fascia-intake-shape','Lower intake outline',phenotype.OPTIC_HOUSINGS,'fascia','intakeShape');
   const bumper=group(root,'Bumper styling',false);partFields(bumper,end==='front'?'frontBumper':'rearBumper');
