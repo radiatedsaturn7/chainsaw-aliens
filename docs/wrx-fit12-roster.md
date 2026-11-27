@@ -15,3 +15,9 @@ Compare the previous appearance with `?wrxLook=fit10`; `wrxLook=legacy` and
 `wrxLook=showcase` retain their earlier behavior. Fall back to an older pair
 as a unit if the current one cannot load. This does not change physics, saves,
 or the player's car selection. The source genome contains no reference photos.
+
+The hood uses the Studio's optional **Smooth longitudinal hood sweep** control.
+It replaces the stacked shaping fades across the middle rails with a single
+curvature ramp between the stock cowl and nose edges. The outer fender rails,
+hood scoop settings, headlight mounts, paint and triangle budget are unchanged.
+Old genomes default to zero and retain their original geometry.

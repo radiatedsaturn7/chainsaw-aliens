@@ -152,6 +152,7 @@ export const BODY_EDITOR_FIELDS={bolster:F('Seat bolster',0,1,.01),lumbar:F('Lum
  rearGlassArc:F('Rear glass upper sweep (m)',0,.12,.002),canopyLength:F('Roof length / cabin rake',0,1,.01),canopyShoulder:F('Roof shoulder rounding',0,1,.01),glassBow:F('Side glazing outward bow',0,1,.01)
 };
 export const HOOD_CONSTRUCTION_FIELDS={
+ noseFairing:F('Smooth longitudinal hood sweep',0,1,.01),
  shoulderRise:F('Shoulder drop (m)',0,.055,.001),
  shoulderWidth:F('Shoulder blend width (m)',.045,.18,.001),
  shoulderAt:F('Shoulder position across hood',.43,.90,.01),
@@ -179,7 +180,7 @@ const constructionDefaults=()=>({
  sides:{L:{},R:{}},
  cabin:{layout:'bench',bolster:.53,lumbar:.45,trim:.54,rearPillarFoot:0,rearRoofShift:0,rearPillarWidth:0,rearGlassArc:0,canopyLength:.5,canopyShoulder:.5,glassBow:.5},
  finish:{paintRoughness:.44,coatRoughness:.12},
- hood:{shoulderRise:0,shoulderWidth:.087,shoulderAt:.65,shoulderSweep:0,scoopWidth:0,scoopHeight:0,scoopCorner:0},
+ hood:{noseFairing:0,shoulderRise:0,shoulderWidth:.087,shoulderAt:.65,shoulderSweep:0,scoopWidth:0,scoopHeight:0,scoopCorner:0},
  wing:{elevation:0,boxWallWidth:.041,boxWallRake:0,camber:.34,sweep:.08,taper:.42,thickness:.097,angle:4,supports:2,spacing:.67,formula:'',elements:1},
  exhaust:[],features:[]
 });

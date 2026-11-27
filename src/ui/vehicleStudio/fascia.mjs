@@ -9,7 +9,7 @@ const guide=(c,t)=>{
  return a**3*c[0]+3*a*a*t*c[1]+3*a*t*t*c[2]+t**3*c[3];
 };
 
-export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,deckAt,sideAt,bumper,upper=null}){
+export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,deckAt,sideAt,bumper,upper=null,hoodFairing=0}){
  const s=end==='front'?1:-1,along=s*tip,join=s*seam,gate=s*cabin;
  const travel=along-join;
  const maxRetreat=Math.max(.027,along-Math.max(archEnd+.028,join+travel*.28)-.013);
@@ -49,7 +49,19 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
   const w=1-(.027+.11*f.taper)*blend;
   return [raw[0]*w,raw[1]+blend*y-leadingDrop(u)*smoother((s*z-(join-.54))/.54)*.65,raw[2]-s*blend*dx*.30];
  }
- function upperPanel(z,u){return adjustDeck(deckAt(z,u),z,u);}
+ const stockDeck=(z,u)=>adjustDeck(deckAt(z,u),z,u);
+ function upperPanel(z,u){
+  const p=stockDeck(z,u);
+  if(end!=='front'||hoodFairing<=0||z<=cabin||z>=seam)return p;
+  // The stock crown, shoulder and leading-edge drop have independent fades.
+  // Fair the middle rails into one log-shaped nose sweep, retaining both
+  // existing seam heights and leaving the outer fender rails alone.
+  const t=(z-cabin)/(seam-cabin),k=2.0;
+  const progress=1-Math.log1p(k*(1-t))/Math.log1p(k);
+  const blend=hoodFairing*(1-smoother((Math.abs(2*u-1)-.53)/.47));
+  p[1]=mix(p[1],mix(stockDeck(cabin,u)[1],stockDeck(seam,u)[1],progress),blend);
+  return p;
+ }
  const vOffsetGuide=t=>guide(f.curves.vertical,t)*verticalScale;
  function rawFace(u,v){
   const {x,b,dx}=plan(u),edge=sideAt(tip,v,1),co=1-x*x;

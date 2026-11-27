@@ -491,6 +491,7 @@
       "coatRoughness": 0.077
     },
     "hood": {
+      "noseFairing": 1,
       "shoulderRise": 0.043,
       "shoulderWidth": 0.083,
       "shoulderAt": 0.65,
