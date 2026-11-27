@@ -160,7 +160,18 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
   // Retain the trimmed wheel envelope; redirect the lower skin only as it
   // approaches the terminal rail. This avoids closing short front wheel arches.
   const raw=seed.map((x,i)=>x+(edge[i]-last[i])*smooth(t));
-  return [mix(up[0],raw[0],w),mix(up[1],raw[1],w),mix(up[2],raw[2],w)];
+  const legacy=[mix(up[0],raw[0],w),mix(up[1],raw[1],w),mix(up[2],raw[2],w)];
+  if(!f.sideRailFairing)return legacy;
+  // Extend the formed quarter rather than blending every height toward
+  // a single deck point. Correct only the upper rail to meet the deck:
+  // the correction vanishes at both ends and cannot pull down the arch.
+  const seedTop=quarter(z,0,sign,sideAt(z,0,sign));
+  const lastTop=quarter(tip,0,sign,sideAt(tip,0,sign));
+  const lead=face(u,0), weight=(1-smooth(v))**2;
+  return raw.map((x,i)=>{
+   const formedTop=seedTop[i]+(lead[i]-lastTop[i])*smooth(t);
+   return mix(legacy[i],x+(up[i]-formedTop)*weight,f.sideRailFairing);
+  });
  }
  const times=[.12,.34,.66,.88];
  const guides={

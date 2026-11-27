@@ -20,7 +20,7 @@ export function featureControls(genome,feature,level='basic'){
  case 'seam':
   if(!seam)break;
   entries=field('seams',k,'gap','flush','radius');
-  if(more)entries.push(...field('seams',k,'offset','thickness','depth','flange','seal'),...fascia(end,'wrap','rollover','shoulder'));
+  if(more)entries.push(...field('seams',k,'offset','thickness','depth','flange','seal'),...fascia(end,'wrap','rollover','shoulder',...(k.endsWith('FenderSeam')?['sideRailFairing']:[])));
   if(expert)entries.push(...field('seams',k,'align','tangent','curvature','crease'));
   break;
  case 'lamp':

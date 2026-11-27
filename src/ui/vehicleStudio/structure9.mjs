@@ -113,11 +113,16 @@ export function buildStructure({g,quality='preview',compact=0,put,sample,dims}){
     // The perforated opening stays visible, but surfaces wrap up and back
     // from that exterior flange so the open bay doesn't reveal another wheel.
     const guard=.032*smooth(th*6), top=Math.max(oy-.002,Math.min(B+.021,targetTop));
+    // Beyond the actual opening the aft liner closes inside the painted
+    // bumper. Carrying the lip width all the way to the liner end cap
+    // could expose the black cap through a tightly swept bumper corner.
+    const aft=Math.max(0,r.ax-r.openingRadius-z);
+    const endInset=r.ax<0?.096*(g.fascia.rear.sideRailFairing??0)*smooth(aft/.026):0;
     const row=exact(0,1,small(perf?4:high?7:5,3,3,3)).map(u=>{
      // Seat the liner just behind the painted hem. Using the sampled
      // panel rail prevents a higher-resolution liner slicing through
      // low-detail body panels on a short quarter or wide swept arch.
-     const x=mix(ox-s*.003,innerX,u);
+     const x=mix(ox-s*(.003+endInset),innerX,u);
      // Only the source edge (u=0) remains on the hem. Raise inward along most
      // of the vault before flattening into the protected inner wall.
      let y=mix(oy-.002,top,smooth(u*4))+(isOpening?guard*Math.sin(Math.PI*u):0);

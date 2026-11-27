@@ -330,6 +330,7 @@
       "bumperMidReach": 0,
       "quarterWaist": 0,
       "quarterBlend": 0.65,
+      "sideRailFairing": 1,
       "terminalTuck": 0.019,
       "plateOpeningStretch": 0,
       "plateMount": 0.81,
