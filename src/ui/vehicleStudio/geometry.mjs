@@ -1,3 +1,4 @@
+import {sideDuctMask,cowlDuctMask} from './sideDuct.mjs';
 import * as T from '../../vendorBridge/three.js';
 import {createEndSurface,fasciaMesh} from './fascia.mjs';
 import {emitFlushHoodLids} from './hoodLids.mjs';
@@ -163,6 +164,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    x+=doorStamp*stampFade(z)*(Math.exp(-p*p)-.48*Math.exp(-((p+.99)**2)));
   }
   if(comp==='doors'){
+   if(g.body.sideDuct)x-=g.body.sideDuctDepth*sideDuctMask(g.body,(z-doorRear)/(doorFront-doorRear),v);
    for(const hz of handleStations)x-=(.002+.013*g.body.handleRecess)*Math.exp(-((v-.22)**2)/.0034-((z-hz)**2)/.008);
   }
   x+=stamped(z,v,sgn);
@@ -195,6 +197,13 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   p[1]+=UP_PATCH(g,'hood',z,v,cabinFront,bumperFront)+hoodShoulder(z,v);return p;};
  const trunkC=(c.trunk.type==='fastback'?.034:c.trunk.type==='ducktail'?.064:.047)*(.68+c.trunk.shape)*c.trunk.depth;
  const originalTrunk=(z,v)=>{const p=top(z,v,mix(trunkC,.019*c.rearBumper.size,clamp((bumperRear+.28-z)/.28)**2),'trunk');
+  const rise=canopy.rearDeckButtresses;
+  if(rise>0){
+   // Shape the existing deck sheet to avoid overlapping panels and retain the side join.
+   const t=clamp((z-bumperRear)/Math.max(.10,cabinRear-bumperRear)),x=Math.abs(v*2-1);
+   const bell=Math.exp(-(((x-.46)/.21)**2))*(1-unitSmooth(clamp((x-.69)/.31)));
+   p[1]+=rise*unitSmooth(clamp(t/.86))*bell;
+  }
   p[1]+=UP_PATCH(g,'trunk',z,v,bumperRear,cabinRear);return p;};
  const ends={},fascia={},lampMounts={};
  const runtime=['drive','lod','opponent'].includes(quality),lod=runtime;
@@ -239,10 +248,12 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    });
    o.center=[toAtlas(cx),cy];if(o.width)o.width*=(1-2*band);
   }
-  const shellMaterial=g.fascia[end].insertBand?'fascia-'+end:'paint';
-  const shell=put(name,shellMaterial,fasciaMesh(chart,openings,{rear:!front,across,down,columns,tolerance:small(wrapped?(lod?.097:.067):lod?.155:quality==='export'?.092:.115,.163,.178,.216)}));
+  const shellMaterial=g.fascia[end].insertBand||g.fascia[end].lowerInsert?'fascia-'+end:'paint';
+  const suppressHeadlamps=front&&hoodDesign.lampLids==='inset';
+  const faceOpenings=suppressHeadlamps?openings.filter(o=>o.kind!=='lamp'):openings;
+  const shell=put(name,shellMaterial,fasciaMesh(chart,faceOpenings,{rear:!front,across,down,columns,tolerance:small(wrapped?(lod?.097:.067):lod?.155:quality==='export'?.092:.115,.163,.178,.216)}));
   const faceColumns=columns?columns.length-1:across;
-  for(const opening of openings){
+  for(const opening of faceOpenings){
    const right=opening.center[0]>.5,p=opening.outline.map(uv=>chart(...uv)),letter=right?'R':'L';
    const id=opening.kind==='lamp'?end+'-lamp-'+letter:opening.id;
    const xSide=right?1:-1;
@@ -250,13 +261,13 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     {end,side:letter,closed:true,view:end,axis:0,scale:.18*xSide,anchor:p.reduce((a,b)=>xSide*b[0]>xSide*a[0]?b:a)}));
   }
   features.push(guideFeature(end+'-silhouette','silhouette',front?'Nose silhouette':'Tail silhouette',name,curvePoints(u=>surf.face(u,.13)),{end,view:'top',axis:2,scale:sign*.28}));
-  const mounted=emitOpenings({end,openings,surface:chart,put,lod,compact,spatialDepth:wrapped,shellMaterial});
+  const mounted=emitOpenings({end,openings,surface:chart,put,lod,compact,spatialDepth:wrapped,shellMaterial,suppressHeadlamps});
   Object.assign(lampMounts,mounted.mounts);
   issues.push(...(mounted.issues??[]));
   fascia[end]={guides:surf.guides,trimArea:shell.userData.trimArea,wrapped,
    samples:[0,.15,.30,.45,.5,.55,.70,.85,1].map(u=>surf.face(u,.13)),
-   openings:openings.map(({id,component,outline})=>({id,component,outline:cloneJSON(outline)}))};
-  const lamp=openings.find(x=>x.kind==='lamp'&&x.center[0]>.5);
+   openings:faceOpenings.map(({id,component,outline})=>({id,component,outline:cloneJSON(outline)}))};
+  const lamp=faceOpenings.find(x=>x.kind==='lamp'&&x.center[0]>.5);
   if(lamp){const ring=lamp.outline;fascia[end].guides.outline={points:Array.from({length:8},(_,i)=>chart(...ring[Math.floor(i*ring.length/8)])),axis:1,scale:.05};}
   if(Math.abs(shell.userData.trimArea.mesh-shell.userData.trimArea.expected)>1e-6||shell.userData.trimArea.unmatched)issues.push('Overlapping or invalid '+end+' cutouts.');
   const roll=put(name,'paint',patch(along,across,(t,u)=>{
@@ -272,11 +283,14 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  };
  const hoodStart=cabinFront+G,hoodAlong=small(lod?8:14,5,4,4);
  const hoodCover=(z,u)=>coverPoint(hoodPoint,hoodEdge,g.seams.hoodSeam,z,u);
- if(hoodDesign.lampLids==='flush'){
+ if(hoodDesign.lampLids!=='off'){
   const bounds=emitFlushHoodLids({cover:(u,v)=>hoodCover(mix(hoodEdge,hoodStart,v),u),hoodLength:hoodEdge-hoodStart,
    settings:hoodDesign,across,along:hoodAlong,compact,put});
   if(Math.abs(bounds.mesh-bounds.expected)>1e-6||bounds.unmatched)issues.push('Overlapping or invalid hood cover cutouts.');
- }else sheet('hood','paint',hoodStart,hoodEdge,hoodCover,hoodAlong,across);
+ }else if(g.body.cowlDuct)sheet('hood','cowl-duct',hoodStart,hoodEdge,(z,u)=>{
+  const p=hoodCover(z,u);p[1]-=g.body.cowlDuctDepth*cowlDuctMask(g.body,(z-hoodStart)/(hoodEdge-hoodStart),u);return p;
+ },hoodAlong,across);
+ else sheet('hood','paint',hoodStart,hoodEdge,hoodCover,hoodAlong,across);
  sheet('trunk','paint',trunkEdge,cabinRear-G,(z,u)=>coverPoint(trunkPoint,trunkEdge,g.seams.trunkSeam,z,u),small(lod?8:14,5,4,4),across);
  for(const end of ['front','rear']){
   const front=end==='front',name=front?'hood':'trunk',k=front?'hoodSeam':'trunkSeam';
@@ -338,17 +352,22 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     }
    }else{
     const stations=adaptiveStations(sampler,{lod,compact});
-    put(key,'paint',patch(stations.length-1,down,(u,v)=>{
+    const duct=key==='doors'&&g.body.sideDuct;
+    const doorUvs=[];
+    const panel=patch(stations.length-1,down,(u,v)=>{
      const t=stations[Math.round(u*(stations.length-1))];
-     if(!doorStamp||key!=='doors')return sampler(t,v);
+     if(!doorStamp||key!=='doors'){if(duct)doorUvs.push((mix(a,b,t)-doorRear)/(doorFront-doorRear),v);return sampler(t,v);}
      const q=stampLine(mix(a,b,t)),base=Math.round(q*down),row=clamp(base,2,down-2);
      const k=Math.round(v*down),wanted=k===row-1?q-.071*(doorStampWidth/.066):k===row?q-.007:k===row+1?q+.053*(doorStampWidth/.066):null;
      const fade=unitSmooth(clamp(t/.10))*unitSmooth(clamp((1-t)/.10));
      // Keep shared seam samples in place. Move only the neighboring rows,
      // enough to capture the crest and the return without extra triangles.
      const j=wanted===null?v:mix(v,clamp(wanted,Math.max(.025,(row-2)/down+.008),Math.min(.975,(row+2)/down-.008)),fade);
+     if(duct)doorUvs.push((mix(a,b,t)-doorRear)/(doorFront-doorRear),j);
      return sampler(t,j);
-    },s<0));
+    },s<0);
+    if(duct)panel.setAttribute('uv',new T.Float32BufferAttribute(doorUvs,2));
+    put(key,duct?'side-duct':'paint',panel);
    }
    joins.push({a,b,component:key,side:s});
   }
@@ -360,6 +379,16 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    features.push(guideFeature(k+'-'+letter,'seam',SEAM_KEYS[k]+' · '+letter,component,seam.points,
     {key:k,side:letter,end:k.startsWith('rear')?'rear':'front',view:'side',axis:2,scale:1,metrics}));
   }
+  if(canopy.vanSideTrim){
+   const amount=canopy.vanSideTrim;
+   const z0=mix(bumperRear,doorRear,.20),z1=doorRear-.025;
+   // Exposed sliding track just under the belt at the rear quarter. Sample
+   // the formed surface, leaving the genuine door shut line intact.
+   put('rearFenders','seamDark',patch(small(8,5,4,4),1,(u,v)=>{
+    const p=master.at(mix(z0,z1,u),.132+.017*amount*v);
+    p[0]+=s*.004;return p;
+   },s<0));
+  }
   features.push(guideFeature('door-crease-'+letter,'crease','Door character line · '+letter,'doors',
    curvePoints(u=>{
     const z=mix(doorRear+.12,doorFront-.12,u);
@@ -367,7 +396,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    }),
    {side:letter,view:'side',axis:1,scale:-.56}));
   for(const [comp,axle] of [['rearFenders',-L],['frontFenders',L]]){
-   put(comp,'paint',patch(small(30,18,15,13),small(4,2,2,1),(u,v)=>{
+   put(comp,g.body.darkArchLips?'trim':'paint',patch(small(30,18,15,13),small(4,2,2,1),(u,v)=>{
     const z=axle-archData(axle,s).fore*Math.cos(u*Math.PI),p=master.at(z,1),r=(.0045+c[comp].shape*.004+g.body.archCrown*.004)*g.body.lipScale;
     return [p[0]-s*r*(1-Math.cos(v*2.1)),p[1]-r*Math.sin(v*2.1),p[2]];
    }));
@@ -415,7 +444,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   }
  }
  // Shared q(u,v) cabin envelope consumed by all glazing, pillars and roof.
- const coveredTarga=c.roof.type==='targa fabric';
+ const coveredTarga=c.roof.type==='targa fabric',roadster=c.roof.type==='roadster open';
  const roofW=Math.min(X*.91,X*d.cabinWidth*c.roof.size*.94),glassBaseW=X*d.cabinWidth*1.12,
   roofC=(.023+.068*d.crown)*(.60+c.roof.shape)*((c.roof.type==='flat'||coveredTarga)?.40:1)*c.roof.depth;
  const baseW=z=>Math.min(skinX(z)-.035,glassBaseW);
@@ -440,10 +469,28 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    q[2]-=Math.max(0,reach)*hatchFold*tent;
   }
   return q;};
- sheet('roof',coveredTarga?'trim':'paint',roofRear,roofFront,roofPoint,small(17,9,8,7),small(12,9,8,7));
- buildRoofRails({put,roof:roofPoint,front:roofFront,rear:roofRear,amount:canopy.utilityRoofRails,compact});
+ if(!roadster){
+  sheet('roof',coveredTarga?'trim':'paint',roofRear,roofFront,roofPoint,small(17,9,8,7),small(12,9,8,7));
+  buildRoofRails({put,roof:roofPoint,front:roofFront,rear:roofRear,amount:canopy.utilityRoofRails,compact});
+ }else{
+  // Roadster's fixed windscreen header and a restrained tonneau over the
+  // folded roof. The rear cowl, open side windows and seats are not deleted.
+  put('pillars','trim',patch(2,small(16,8,7,6),(v,u)=>{
+   const p=glassPoint(1,.954+.049*v,u);
+   return [p[0]*1.011,p[1]+.010,p[2]+.005];
+  }));
+  const aft=cabinRear-.002,dW=baseW(cabinRear);
+  put('roof','trim',patch(small(9,5,4,3),small(16,9,8,7),(t,u)=>{
+   const k=2*u-1,z=aft+(.205-.044*Math.abs(k)**2)*t;
+   const w=dW*(.95-.08*t),x=k*w;
+   return [x,skinY(cabinRear)+.004+.052*bell(t)*Math.max(0,1-Math.abs(k)**5)+.013*t,z];
+  }));
+ }
+
  for(const s of [-1,1]){
-  if(s<0&&hatchFold){
+  if(s<0&&roadster){
+   // Lower door belt still samples the nominal canopy chart below.
+  }else if(s<0&&hatchFold){
    const halfBand=.019+.014*hatchFold;
    const emit=(material,tag,a,b,n)=>{
     const geo=patch(n,small(16,10,9,8),(v,u)=>glassPoint(-1,mix(a,b,v),u),true);
@@ -473,19 +520,28 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   }
   glassSides[s]=side;
   const roofRail=curvePoints(u=>side(u,1));
-  features.push(guideFeature('roof-'+letter,'roof','Roof edge · '+letter,'roof',roofRail,{key:'roofSeam',side:letter,view:'side',axis:1,scale:-.08}));
+  if(!roadster)features.push(guideFeature('roof-'+letter,'roof','Roof edge · '+letter,'roof',roofRail,{key:'roofSeam',side:letter,view:'side',axis:1,scale:-.08}));
   features.push(guideFeature('glass-base-'+letter,'glass-edge','Lower glazing edge · '+letter,'glass',curvePoints(u=>side(u,.02)),{side:letter,view:'side',axis:1,scale:-.08}));
   const rs=g.seams.roofSeam;
-  put('pillars','seamDark',patch(small(lod?12:22,7,6,5),small(3,1,1,1),(u,v)=>{
+  if(!roadster)put('pillars','seamDark',patch(small(lod?12:22,7,6,5),small(3,1,1,1),(u,v)=>{
    const p=side(u,1-(.016+rs.gap*3)*v);p[0]+=s*(.003+rs.radius);p[1]-=rs.thickness*.7;return p;
   },s<0));
-  put('glass','glass',patch(small(20,12,10,9),small(9,5,4,3),side,s<0));
+  if(!roadster)put('glass','glass',patch(small(20,12,10,9),small(9,5,4,3),side,s<0));
+  const vanTrim=canopy.vanSideTrim;
+  if(vanTrim&&!roadster){
+   // Follow the current side glazing surface rather than a flat applique.
+   // The DLO's vertical window equipment and track remain separate from the doors.
+   put('pillars','chrome',patch(small(8,3,3,3),1,(v,j)=>{
+    const t=mix(.045,.941,v),end=.786+.067*t,span=vanTrim*(.067-.024*t);
+    const p=side(end-span*(1-j),t);p[0]+=s*.0045;return p;
+   },s<0));
+  }
   put('doors','paint',patch(small(20,12,10,9),small(4,2,2,1),(u,v)=>{
    const q=side(u,0),outer=skinX(q[2]);
    return [s*mix(Math.abs(q[0]),outer,v),q[1]+(skinY(q[2])-q[1])*v,q[2]];
   },s<0));
   const framed=c.pillars.type==='painted frame';
-  for(const u of [0,c.doors.type==='four door'?.50:.65,1]){
+  for(const u of roadster?[0]:[0,c.doors.type==='four door'?.50:.65,1]){
    const outer=u===0||u===1;
    const mat=c.pillars.type==='painted'||framed&&outer?'paint':'trim',w=(.013+.027*c.pillars.shape)*c.pillars.size+(u===1?canopy.rearPillarWidth:0);
    const pillar=(v,j)=>{
@@ -497,7 +553,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     q[0]+=s*.0012;return q;
    },(s<0)!==(u===1)));
   }
-  if(framed)put('pillars','paint',patch(small(20,12,10,9),small(3,1,1,1),(u,j)=>{
+  if(framed&&!roadster)put('pillars','paint',patch(small(20,12,10,9),small(3,1,1,1),(u,j)=>{
    const q=side(u,1-j*.046);q[0]+=s*.006;return q;
   },s<0));
   put('pillars','trim',patch(small(18,10,9,8),small(3,1,1,1),(u,v)=>{const q=side(u,v*.060);q[0]+=s*.010;return q;}));

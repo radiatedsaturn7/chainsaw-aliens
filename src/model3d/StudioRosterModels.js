@@ -1,4 +1,4 @@
-import {studioRoster} from './studio-roster/index.mjs';
+import {studioRoster} from './studio-roster/index.js';
 
 const parts=new Map(studioRoster.flatMap(entry=>[
  [entry.bodyRef,{entry,key:'body'}],[entry.wheelRef,{entry,key:'wheel'}]

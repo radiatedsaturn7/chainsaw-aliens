@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
-import {studioRoster} from '../../src/model3d/studio-roster/index.mjs';
+import {studioRoster} from '../../src/model3d/studio-roster/index.js';
 import {placeOutboardWheelFace} from '../../src/model3d/ModelBinding.js';
 import {studioRosterModelUrl,createStudioRosterLoader,isStudioRosterWheel} from '../../src/model3d/StudioRosterModels.js';
 import {buildStudioRoster} from '../../tools/vehicle-validation/build-studio-roster.mjs';

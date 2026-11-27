@@ -497,7 +497,13 @@
       "shoulderSweep": -0.048,
       "scoopWidth": 0,
       "scoopHeight": 0,
-      "scoopCorner": 0
+      "scoopCorner": 0,
+      "lampLids": "inset",
+      "lidWidth": 0.194,
+      "lidLength": 0.368,
+      "lidSpread": 0.35,
+      "lidSetback": 0.045,
+      "lidGap": 0.004
     },
     "wing": {
       "supportMount": "top",

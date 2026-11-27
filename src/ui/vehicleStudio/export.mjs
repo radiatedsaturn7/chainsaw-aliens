@@ -1,3 +1,4 @@
+import {sideDuctMask,cowlDuctMask} from './sideDuct.mjs';
 import {auditVehicleGeometry} from './audit9.mjs';
 import {studioMaps,studioTextureBytes} from './detail9.mjs';
 import {wheelTireTexture,wheelRotorTexture} from './wheels9.mjs';
@@ -5,6 +6,8 @@ import {createModelDocument,validateModelDocument} from '../../model3d/ModelDocu
 import {createBuiltInRaceCars} from '../../racing/raceData.js';
 import {generateVehicle,disposeDesign} from './geometry.mjs';
 const PALETTE={
+ 'cowl-duct':['Twin hood cowl ducts','paint'],
+ 'side-duct':['Sculpted door-side duct','paint'],
  'fascia-front':['Front fascia insert skin','paint'],'fascia-rear':['Rear fascia insert skin','paint'],
  paint:['Coachwork paint','paint'],wheel:['Wheel alloy','alloy'],glass:['Cabin glass','glass'],rubber:['Tire rubber','rubber'],
  trim:['Exterior trim','trim'],chrome:['Machined steel','machined'],head:['[studio9:head] Front optical lens','optic'],tail:['Rear optical lens','optic'],opticCover:['Clear optical cover','glass'],indicator:['Amber indicator','optic'],seamDark:['Recess and seam backing','trim'],projector:['[studio9:head] Projector glass','optic'],reflector:['Optical reflector','machined'],reflectorFluted:['Fluted optical reflector','machined'],rotor:['Swept brake steel','machined'],barrel:['Wheel barrel','alloy'],caliper:['[studio9:static-caliper] Brake caliper','trim'],underbody:['Coated underbody','trim'],
@@ -25,7 +28,22 @@ function fasciaInsertTexture(g,end){
   const u=(x+.5)/width,v=1-(y+.5)/height,q=Math.abs(2*u-1)/f.insertWidth;
   const corner=Math.min(1,q)**2,top=f.insertTop+f.insertSweep*.34*corner,
    bottom=f.insertBottom-f.insertSweep*.80*corner;
-  const a=(1-smooth(.975,1.005,q))*smooth(top-.014,top+.014,v)*(1-smooth(bottom-.014,bottom+.014,v));
+  const upper=f.insertBand?(1-smooth(.975,1.005,q))*smooth(top-.014,top+.014,v)*(1-smooth(bottom-.014,bottom+.014,v)):0;
+  const xEdge=Math.abs(2*u-1),amount=f.lowerInsert??0,lowerWidth=.64+.24*amount;
+  const lowerTop=.90-.26*amount+.060*(xEdge/lowerWidth)**3;
+  const lower=amount>0?(1-smooth(lowerWidth-.025,lowerWidth+.015,xEdge))*smooth(lowerTop-.018,lowerTop+.018,v):0;
+  const a=Math.max(upper,lower);
+  pixels[y*width+x]='#'+paint.map((p,k)=>Math.round(p+(trim[k]-p)*a).toString(16).padStart(2,'0')).join('');
+ }
+ return {width,height,pixels};
+}
+
+function ductTexture(g,mask){
+ const width=128,height=64,pixels=new Array(width*height);
+ const bytes=hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
+ const paint=bytes(g.materials.paint),trim=bytes(g.materials.trim);
+ for(let y=0;y<height;y++)for(let x=0;x<width;x++){
+  const a=mask(g.body,(x+.5)/width,1-(y+.5)/height);
   pixels[y*width+x]='#'+paint.map((p,k)=>Math.round(p+(trim[k]-p)*a).toString(16).padStart(2,'0')).join('');
  }
  return {width,height,pixels};
@@ -33,8 +51,8 @@ function fasciaInsertTexture(g,end){
 
 export function materialDoc(g,key,{texture=true}={}){
  const [name,preset]=PALETTE[key];const fascia=key.startsWith('fascia-')?key.slice(7):null;const rimFace=key==='wheel',maps=texture?studioMaps(key==='rubber'?'tire':key.startsWith('signal')?'indicator':key==='runningRed'?'opticRed':key):{};
- return {id:'studio-mat-'+key,name,color:fascia?'#ffffff':g.materials[key],
-  texture:!texture?null:fascia?fasciaInsertTexture(g,fascia):key==='glass'?solidTexture(g.components.glass.type==='tinted'?'#ffffff70':'#ffffff48'):key==='opticCover'?solidTexture('#ffffff31'):key==='rubber'?wheelTireTexture(g.components.tires.type,g.components.tires.shape,g.components.tires.depth):key==='rotor'?wheelRotorTexture():null,
+ return {id:'studio-mat-'+key,name,color:fascia||key.endsWith('-duct')?'#ffffff':g.materials[key],
+  texture:!texture?null:fascia?fasciaInsertTexture(g,fascia):key==='side-duct'?ductTexture(g,sideDuctMask):key==='cowl-duct'?ductTexture(g,cowlDuctMask):key==='glass'?solidTexture(g.components.glass.type==='tinted'?'#ffffff70':'#ffffff48'):key==='opticCover'?solidTexture('#ffffff31'):key==='rubber'?wheelTireTexture(g.components.tires.type,g.components.tires.shape,g.components.tires.depth):key==='rotor'?wheelRotorTexture():null,
   automotive:{preset:key==='rubber'?'rubber':preset,creaseAngle:0, ...maps,...(rimFace?{roughness:.27}:{}),...(key==='rotor'?{roughness:1,metalness:1}:{}),...(key==='barrel'?{roughness:1,metalness:1}:{}),...(key==='opticSilver'?{metalness:.86,roughness:.26}:{}),...(preset==='paint'?{paintCalibration:true,
     ...(g.construction.finish.paintRoughness!==.44?{roughness:g.construction.finish.paintRoughness}:{}),
     ...(g.construction.finish.coatRoughness!==.12?{paintClearcoatRoughness:g.construction.finish.coatRoughness}:{})}:{} )}};

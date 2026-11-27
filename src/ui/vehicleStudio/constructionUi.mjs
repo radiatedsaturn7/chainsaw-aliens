@@ -73,10 +73,10 @@ export function renderConstruction(root,{state,get,edit,repaint,setLevel,level,s
   root.append(node('p',{textContent:'Clearcoat roughness controls reflection sharpness in the editor and exported vehicle. Lower values sharpen the reflected environment without turning paint metallic.'}));
  }else if(state.panel==='hood'){
   select(root,'build-hood-intake','Hood intake',{scoop:'Raised scoop',vents:'Vents',off:'Off'},initial.components.scoop.type,v=>edit('components','scoop',v,'type'));
-  select(root,'build-hood-lids','Headlamp covers',HOOD_LIDS,data.hood.lampLids,v=>{
+  select(root,'build-hood-lids','Hood headlamp layout',HOOD_LIDS,data.hood.lampLids,v=>{
    const ok=sectionSet('hood','lampLids',v);if(ok!==false)repaint();return ok;
   });
-  if(data.hood.lampLids==='flush')sectionNumbers('hood',HOOD_LID_FIELDS);
+  if(data.hood.lampLids!=='off')sectionNumbers('hood',HOOD_LID_FIELDS);
   sectionNumbers('hood',HOOD_CONSTRUCTION_FIELDS);
   root.append(node('p',{textContent:'Shoulder changes are formed into the hood surface. The scoop width and height can be edited separately; zero preserves the existing Size or Shape behavior.'}));
   button(root,'build-show-hood','Frame elevated front',()=>setView('frontElevated'));

@@ -1,4 +1,4 @@
-import {studioRoster} from '../../model3d/studio-roster/index.mjs';
+import {studioRoster} from '../../model3d/studio-roster/index.js';
 import * as phenotype from './genome.mjs';
 import {guideModes,createFasciaOverlay} from './fasciaUi.mjs';
 import {featureControls,featureCommands,proposeFeatureEdit,dragFeature} from './features.mjs';
@@ -566,12 +566,19 @@ function inspector(){
   if(part==='wheels'||part==='tires')for(const k of ['diameter','tireWidth','rimRatio'])range(root,'dimensions',k,DIMENSIONS[k],g.dimensions[k]);
  if(['wheels','tires','frontFenders','rearFenders'].includes(part)){
   const arch=group(root,'Wheel opening fit',true);
+  range(arch,'body','darkArchLips',phenotype.BODY_FIELDS.darkArchLips,g.body.darkArchLips);
   for(const [k,spec] of Object.entries(phenotype.ARCH_FIELDS)){
    if(part==='frontFenders'&&k.startsWith('rear')||part==='rearFenders'&&k.startsWith('front'))continue;
    range(arch,'body',k,spec,g.body[k]);
   }
  }
+ if(part==='hood'){
+  const duct=group(root,'Twin cowl ducts',true);
+  for(const k of ['cowlDuct','cowlDuctWidth','cowlDuctLength','cowlDuctDepth'])range(duct,'body',k,phenotype.BODY_FIELDS[k],g.body[k]);
+ }
  if(part==='doors'){
+  const duct=group(root,'Side duct / door insert',true);
+  for(const k of ['sideDuct','sideDuctDepth','sideDuctWidth','sideDuctSweep','sideDuctHeight'])range(duct,'body',k,phenotype.BODY_FIELDS[k],g.body[k]);
   const stamp=group(root,'Door character line',true);
   for(const k of ['doorStamp','doorStampHeight','doorStampSweep','doorStampWidth','doorStampFade','doorStampFront','doorStampRear'])range(stamp,'body',k,phenotype.BODY_FIELDS[k],g.body[k]);
  }

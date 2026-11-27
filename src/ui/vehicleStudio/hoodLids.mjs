@@ -10,6 +10,10 @@ const ch=.22,profile=[
 // recessed backing. There is no painted line or floating piece to z-fight.
 export function emitFlushHoodLids({cover,hoodLength,settings,across,along,compact,put}){
  const surface=(u,v)=>cover(u,v);
+ const inset=settings.lampLids==='inset';
+ const section=inset?Array.from({length:compact?12:20},(_,i)=>{
+  const a=i/(compact?12:20)*Math.PI*2;return [Math.cos(a),Math.sin(a)];
+ }):profile;
  const wide=surface(1,.14)[0]-surface(0,.14)[0];
  const yLen=hoodLength;
  const hw=clamp(settings.lidWidth/wide*.5,.031,.128),hv=clamp(settings.lidLength/yLen*.5,.044,.22);
@@ -18,14 +22,14 @@ export function emitFlushHoodLids({cover,hoodLength,settings,across,along,compac
  const insetU=clamp(settings.lidGap/wide,.001,.012),insetV=clamp(settings.lidGap/yLen,.001,.020);
  const paired=[-1,1].map(side=>{
   const u=.5+side*center,v=v0;
-  const loop=(w,h)=>profile.map(([x,y])=>[u+x*w,v+y*h]);
+  const loop=(w,h)=>section.map(([x,y])=>[u+x*w-(inset?side*y*w*.13:0),v+y*h]);
   return {outline:loop(hw,hv),lip:loop(hw-insetU*.52,hv-insetV*.52),
    inner:loop(hw-insetU,hv-insetV),center:[u,v]};
  });
  const hood=fasciaMesh(surface,paired,{rear:true,across,down:along,tolerance:compact?.21:.114});
  put('hood','paint',hood);
  function strip(rings,drop,center=null){
-  const steps=profile.length;
+  const steps=section.length;
   const positions=rings.flatMap((r,j)=>r.flatMap(([u,v])=>surface(u,v).map((n,k)=>k===1?n-drop[j]:n)));
   const uv=rings.flat(1).flat(),index=[];
   for(let j=0;j<rings.length-1;j++)for(let k=0;k<steps;k++){
@@ -33,7 +37,7 @@ export function emitFlushHoodLids({cover,hoodLength,settings,across,along,compac
   }
   if(center){
    const at=positions.length/3,tail=at-steps,p=surface(...center);
-   positions.push(p[0],p[1]-.001,p[2]);uv.push(...center);
+   positions.push(p[0],p[1]-drop.at(-1),p[2]);uv.push(...center);
    for(let k=0;k<steps;k++)index.push(tail+k,tail+(k+1)%steps,at);
   }
   const geo=new T.BufferGeometry();
@@ -42,6 +46,15 @@ export function emitFlushHoodLids({cover,hoodLength,settings,across,along,compac
   return geo;
  }
  for(const lid of paired){
+  if(inset){
+   const blend=(k)=>lid.inner.map(p=>p.map((n,j)=>lid.center[j]+(n-lid.center[j])*k));
+   const bezel=blend(.89), bowl=blend(.50), core=blend(.27), cover=blend(.68);
+   put('headlights','seamDark',strip([lid.outline,lid.inner,bezel],[0,.008,.026]));
+   put('headlights','reflector',strip([bezel,bowl,core],[.026,.030,.035]));
+   put('headlights','projector',strip([core,blend(.14)],[.034,.024],lid.center));
+   put('headlights','opticCover',strip([lid.inner,cover],[.006,.004],lid.center));
+   continue;
+  }
   const seam=strip([lid.outline,lid.lip,lid.inner],[0,.006,.001]);
   seam.userData.constructionRole='headlamp covers / recessed shutline';
   put('hood','seamDark',seam);

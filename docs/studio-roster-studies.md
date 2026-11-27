@@ -33,9 +33,18 @@ These editable studies are not photo-accurate replicas. This pass adds:
 - **Lark:** two flush headlamp lids with recessed shutlines.
 - **Briar:** longer roof, upright framed hatch, rails and taller tail lamps.
 
-The Honda roof and Miata roof/headlamp lids are not animated. The Carnival
-still uses the shared door/glass layout rather than modeled sliding doors.
-The Rally Fighter suspension geometry is a visual approximation.
+The following photo-reference pass moved the Linaria's headlamps into the
+hood shoulders and opened the Lark's cabin with a fixed windshield and
+folded top cover. The Linum got the black rally fascia and period wheel
+colors; the Kestrel got darker end bands and a reshaped aft deck. The
+Ember Pod got sculpted side and hood recesses. The Flint's rear optics
+were raised and wrapped; Caravan-9 got a taller grille, rear window trim
+and a sliding-door track. The Dustjack got round headlamps and a larger
+dark mouth, and the Briar got a wider grille and more accurate lamps.
+
+The Honda fabric roof and Miata top/headlamp lids are not animated. The
+Carnival still uses the common door shut-lines rather than modeled
+sliding doors. Some trim and optical outlines remain approximations.
 
 Run `node tools/vehicle-validation/build-studio-roster.mjs --write` to
 regenerate the bundled model pairs from the editable genes. Append study IDs
@@ -43,3 +52,5 @@ to re-export only those packs without dropping the other registry entries.
 The packs bind only to those existing model references. Compact geometry is capped at
 15,000 triangles with four wheels and fitted to existing wheel hardpoints.
 If a pair fails to load, the game uses that car's earlier assets.
+
+See [the exact variants and photo sources](studio-roster-photo-references.md).

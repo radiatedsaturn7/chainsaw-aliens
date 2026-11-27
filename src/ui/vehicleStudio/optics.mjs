@@ -229,7 +229,7 @@ function makeMesh(rows,sign,{disk=null}={}){
  geom.setAttribute('uv',new T.Float32BufferAttribute(uv,2));
  geom.setIndex(fs);geom.computeVertexNormals();return geom;
 }
-export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spatialDepth=false,shellMaterial='paint'}){
+export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spatialDepth=false,shellMaterial='paint',suppressHeadlamps=false}){
  const front=end==='front',sign=front?1:-1,mounts={},issues=[],batches=new Map();
  for(const a of openings){
   const {outline,center:[cx,cy],opt,kind,width:w,height:h,side}=a;
@@ -241,6 +241,13 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
    const out=b.cross(a).normalize().multiplyScalar(sign).toArray();
    return {pos:p.map((k,i)=>k-out[i]*d),out,uv};
   };
+  const mount=(layout,d)=>{
+   const x=cx+(layout==='twin'||layout==='factory-split'&&front?-.19:layout==='mixed'?-.14:0)*side*w;
+   mounts[(front?'HeadlightMount_':'TaillightMount_')+(side>0?'L':'R')]=pt(x,cy,d*.47).pos;
+  };
+  if(front&&kind==='lamp'&&suppressHeadlamps){
+   mount(opt.layout,mix(.044,.084,num(opt.recess,.5)));continue;
+  }
   const ring=(k,d,poly=outline,x=cx,y=cy)=>poly.map(([u,v])=>pt(mix(x,u,k),mix(y,v,k),d));
   const putGeo=(m,rows,disk=null)=>{
    const q=makeMesh(rows,sign,{disk});
@@ -436,10 +443,7 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
   const convex=mix(.002,.012,num(opt.convexity,.5));
   const coverCenter=coverOuter-convex;
   putGeo('opticCover',[ring(.925,coverOuter),...(compact?[ring(.48,coverOuter-convex*.76)]:[ring(.68,coverOuter-convex*.53),ring(.31,coverOuter-convex*.89)])],pt(cx,cy,coverCenter));
-  if(kind==='lamp'){
-   const x=cx+(oLayout==='twin'||oLayout==='factory-split'&&front?-.19:oLayout==='mixed'?-.14:0)*side*w;
-   mounts[(front?'HeadlightMount_':'TaillightMount_')+(side>0?'L':'R')]=pt(x,cy,d*.47).pos;
-  }
+  if(kind==='lamp')mount(oLayout,d);
  }
  for(const {component,material,geos} of batches.values())put(component,material,together(geos));
  return {mounts,issues};

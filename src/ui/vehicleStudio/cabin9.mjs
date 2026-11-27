@@ -65,7 +65,7 @@ function sweptTube(points,r,segments=7){
 export function buildCabin({g,quality='preview',compact=0,put,sample,dims}){
  const small=(a,...cuts)=>compact?cuts[compact-1]:a;
  const lod=quality==='lod',high=['export','cockpit'].includes(quality);
- const c=g.components, cfg=g.construction?.cabin??{};
+ const c=g.components, cfg=g.construction?.cabin??{},roadster=c.roof.type==='roadster open';
  const layout=cfg.layout??(c.doors.type==='four door'?'bench':'front-only');
  const bolster=clamp(safe(cfg.bolster,.55),0,1),lumbar=clamp(safe(cfg.lumbar,.52),0,1),trim=clamp(safe(cfg.trim,.54),0,1);
  const {X,L,cabinFront,cabinRear,roofFront,roofRear}=dims;
@@ -149,6 +149,7 @@ export function buildCabin({g,quality='preview',compact=0,put,sample,dims}){
  }
  // Inner roof headliner and windshield/corner returns remain opaque, but the
  // actual glass is still exterior geometry controlled by the sheet shader.
+ if(!roadster){
  add('pillars','interior',patch(small(lod?7:13,4,3,3),small(lod?6:11,4,3,3),(u,v)=>{
   const z=mix(roofRear+.008,roofFront-.008,u),p=roofAt(z,v);
   return [p[0]*.984,p[1]-.033-.021*Math.abs(2*v-1)**5,p[2]];
@@ -162,7 +163,8 @@ export function buildCabin({g,quality='preview',compact=0,put,sample,dims}){
    return [edge[0]*(.984+.013*u),edge[1]-(.054-.041*u),z];
   },s<0));
  }
- for(const end of ['front','rear']){
+ }
+ for(const end of roadster?['front']:['front','rear']){
   const s=end==='front'?1:-1;
   add('pillars','trim',patch(small(3,2,1,1),small(lod?8:14,6,5,4),(v,u)=>{
    const p=glassAt(end,mix(.91,.998,v),u);p[0]*=.987;p[1]-=.017+.025*v;p[2]-=s*.016;return p;

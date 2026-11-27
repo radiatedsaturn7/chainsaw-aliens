@@ -1,0 +1,31 @@
+# Photo references for the nine 3D roster studies
+
+Fit the silhouette first, then the glass, optical outlines and panel
+breaks. Compare front three-quarter, side profile and rear views, and
+scale by the wheelbase where the photo permits. Match features in 3D, not
+baked shadows or a single screen-space outline.
+
+| Study | Variant and primary reference | What distinguishes it |
+| --- | --- | --- |
+| Linaria 2021 | [Porsche 911 GT3 (992.1), 2021 launch](https://newsroom.porsche.com/en_US/2021/products/porsche-911-gt3-world-premiere-livestream-23626.html) · [Porsche dimensions](https://newsroom.porsche.com/dam/jcr%3A15fa49de-7fc3-4770-a09d-1b8bf451ddbd/PAG-992-911GT3-PDK-EN.pdf) | Raised front fenders, swept clear headlight lenses above the nose, short rounded greenhouse, wing supported from above |
+| Linum 1983 | [John Buffum competition car photos, SCCA rulebook covers](https://historicdb.fia.com/sites/default/files/regulations/1467811594/1984_pro_rally_rules.pdf) · [R44 builder's gallery](https://www.ihle-motorsport.de/en/fahrzeuge/audi-a1-r44/) | Long-wheelbase A1 rally shape, straight hood edge, continuous black strip through rectangular lamps and grille, squared arch flares |
+| Ember Pod Prototype | [Tata TAMO Racemo Geneva debut specifications](https://www.tatamotors.com/wp-content/uploads/2025/06/7feb18-product-note-Racemo.pdf) · [Tata Motors photo](https://www.tatamotors.com/press-releases/racing-its-way-to-glory-tamos-racemo-bags-the-german-design-award-2018/) | Tiny mid-engine two-seater, cabin forward, short hood, dark connected fascia and strongly sculpted sides |
+| 2018 Kestrel 660 | [Honda S660 Factbook](https://www.honda.co.jp/factbook/auto/S660/201503/) · [Honda MY18 dimensions](https://www.honda.co.jp/auto-archive/s660/2018/common/pdf/s660_spec_list_201804.pdf) | Narrow 3,395 × 1,475 mm kei footprint, short nose, dark lamp band, two rear deck shoulders, removable fabric roof |
+| 2005 Flint Coupe | [Citroën UK product and technical brochure (mirror)](https://xr793.com/wp-content/uploads/2022/09/2006-Citroen-C4-Tech-Specs-UK.pdf) · [Citroën Australia launch materials (mirror)](https://www.australiancar.reviews/_pdfs/Citroen_C4-C4Coupe_Mk1Hatch-Mk1Coupe_PressKit_200504.pdf) | First-gen VTS coupe: glass bends at the tail, with tall hooked lamps outboard of both glazing planes |
+| 2024 Caravan-9 | [Kia US 2024 Carnival LX specifications](https://www.kiamedia.com/us/en/models/carnival/2024/specifications) · [MY24 side profile and gallery](https://www.kiamedia.com/us/es/models/carnival/2024/gallery) | Pre-refresh LX: wide horizontal grille and optics, long sliding-door side, large rear-quarter glazing with a distinctive pillar applique, 2+2+3 layout |
+| Dustjack V8 | [2011 Gen 2 Local Motors Rally Fighter, actual car photos](https://rmsothebys.com/auctions/ca15/lots/r0112-2011-local-motors-rally-fighter/) · [Local Motors brochure designer gallery](https://magnetry.com/project/rallyfighter) | Wide high-clearance coupe with large round main lamps flanking a dark mouth and scalloped bodywork above exposed suspension |
+| Lark 1600 1990 | [1990 Mazda MX-5 Miata NA, actual car photos](https://www.audrainautomuseum.org/collecting-moving-forward-exhibition/1990-mazda-miata) · [1990 US Mazda brochure (mirror)](https://www.motorologist.com/wp-content/uploads/1990-Mazda-Miata-MX5-brochure.pdf) | NA 1.6: compact open roadster, thin front bumper mouth, closed pop-up lamp lids and low, short tail |
+| Briar XT 2004 | [Subaru US 2004 Forester brochure (mirror)](https://xr793.com/wp-content/uploads/2020/02/2004-Subaru-Forester.pdf) | Pre-facelift SG 2.5XT, body-color bumpers, hood scoop, silver rectangular lamps, wide dark grille and upright hatch |
+
+References are for looking and measuring only; no logos or OEM photo pixels
+are included in the runtime assets. Production roster identifiers, physical
+tuning, and wheel hardpoints are unchanged. A reference fit is not a claim
+of exact factory tolerances, identical tires, or moving assemblies.
+
+## Budget verification
+
+The matched photo-fit exports are 13,252 (Linaria), 13,428 (Linum),
+14,016 (Ember Pod), 14,626 (Kestrel), 13,964 (Flint), 13,560 (Caravan),
+14,298 (Dustjack), 14,204 (Lark), and 13,728 (Briar) triangles including four
+wheels. Roster unit tests regenerate the exact packaged exports and verify
+all four stock hardpoints and lamp material roles.
