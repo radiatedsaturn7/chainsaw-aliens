@@ -21,3 +21,7 @@ It replaces the stacked shaping fades across the middle rails with a single
 curvature ramp between the stock cowl and nose edges. The outer fender rails,
 hood scoop settings, headlight mounts, paint and triangle budget are unchanged.
 Old genomes default to zero and retain their original geometry.
+
+**Smooth arch across the hood** replaces the double shoulder wave with a
+shallow crown across each section. It retains the longitudinal centerline and
+outer fender rails. Like the forward sweep, it is opt-in per genome.

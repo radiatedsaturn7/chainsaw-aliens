@@ -58,3 +58,27 @@ test('longitudinal hood fairing removes the center hump while keeping the stock 
   }
  }finally{disposeDesign(a);disposeDesign(b);}
 });
+
+test('cross-crown keeps the longitudinal and fender rails and removes the transverse wave',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const current=loadVehicle(readFileSync(new URL('../../tools/vehicle-validation/wrx-fit12-genome.json',import.meta.url),'utf8'));
+ const old=structuredClone(current);old.construction.hood.crossCrown=0;
+ const a=generateVehicle(old,{quality:'preview'}),b=generateVehicle(current,{quality:'preview'});
+ try{
+  assert.deepEqual(a.wheels,b.wheels);assert.deepEqual(a.lampMounts,b.lampMounts);
+  assert.deepEqual(b.diagnostics.issues,[]);
+  const get=d=>d.parts.find(p=>p.component==='hood').geometry.attributes.position;
+  const A=get(a),B=get(b),n=33;
+  let oldWaves=0;
+  for(let start=0;start<B.count;start+=n){
+   for(const c of [0,16,32])assert.equal(A.getY(start+c),B.getY(start+c));
+   for(let c=1;c<n-1;c++){
+    const y=B.getY(start+c),l=B.getY(start+c-1),r=B.getY(start+c+1);
+    assert.ok(r-2*y+l<1e-6,'one continuous convex arch');
+    assert.ok(c<16?y>=l:y>=r,'height falls steadily from center to fender');
+    if(c>16&&A.getY(start+c+1)-A.getY(start+c)>1e-4)oldWaves++;
+   }
+  }
+  assert.ok(oldWaves>0,'old geometry demonstrated the outward rebound');
+ }finally{disposeDesign(a);disposeDesign(b);}
+});

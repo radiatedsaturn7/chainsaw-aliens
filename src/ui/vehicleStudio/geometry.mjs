@@ -204,7 +204,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    seam=(front?bumperFront:bumperRear)+upper.offset;
   const surf=createEndSurface({settings:g.fascia[end],end,tip,seam,cabin:front?cabinFront:cabinRear,
    archEnd:L+Math.max(archData(sign*L,-1).fore,archData(sign*L,1).fore),floor,deckAt:front?originalHood:originalTrunk,
-   sideAt:(z,v,s)=>skinPoint(z,v,s,name),bumper:c[name],upper,hoodFairing:front?hoodDesign.noseFairing:0});
+   sideAt:(z,v,s)=>skinPoint(z,v,s,name),bumper:c[name],upper,hoodFairing:front?hoodDesign.noseFairing:0,hoodCrown:front?hoodDesign.crossCrown:0});
   ends[end]=surf;
   const openings=makeOpenings({end,g,segments:small(quality==='opponent'?14:lod?18:quality==='export'?32:24,13,12,9)});
   const wrapped=openings.some(o=>o.kind==='lamp'&&o.opt.sideWrap>.0001);

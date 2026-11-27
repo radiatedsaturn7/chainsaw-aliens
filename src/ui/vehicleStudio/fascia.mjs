@@ -9,7 +9,7 @@ const guide=(c,t)=>{
  return a**3*c[0]+3*a*a*t*c[1]+3*a*t*t*c[2]+t**3*c[3];
 };
 
-export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,deckAt,sideAt,bumper,upper=null,hoodFairing=0}){
+export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,deckAt,sideAt,bumper,upper=null,hoodFairing=0,hoodCrown=0}){
  const s=end==='front'?1:-1,along=s*tip,join=s*seam,gate=s*cabin;
  const travel=along-join;
  const maxRetreat=Math.max(.027,along-Math.max(archEnd+.028,join+travel*.28)-.013);
@@ -50,7 +50,7 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
   return [raw[0]*w,raw[1]+blend*y-leadingDrop(u)*smoother((s*z-(join-.54))/.54)*.65,raw[2]-s*blend*dx*.30];
  }
  const stockDeck=(z,u)=>adjustDeck(deckAt(z,u),z,u);
- function upperPanel(z,u){
+ function sweptDeck(z,u){
   const p=stockDeck(z,u);
   if(end!=='front'||hoodFairing<=0||z<=cabin||z>=seam)return p;
   // The stock crown, shoulder and leading-edge drop have independent fades.
@@ -60,6 +60,17 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
   const progress=1-Math.log1p(k*(1-t))/Math.log1p(k);
   const blend=hoodFairing*(1-smoother((Math.abs(2*u-1)-.53)/.47));
   p[1]=mix(p[1],mix(stockDeck(cabin,u)[1],stockDeck(seam,u)[1],progress),blend);
+  return p;
+ }
+ function upperPanel(z,u){
+  const p=sweptDeck(z,u);
+  if(end!=='front'||hoodCrown<=0||z<cabin||z>seam||u===0||u===.5||u===1)return p;
+  // Interpolate the measured shoulder and center rails across each row.
+  // The parabolic height field has one broad crown, no intermediate trough.
+  const a=2*u-1;
+  const center=sweptDeck(z,.5)[1],left=sweptDeck(z,0)[1],right=sweptDeck(z,1)[1];
+  const arch=center+(right-left)*.5*a+((left+right)*.5-center)*a*a;
+  p[1]=mix(p[1],arch,hoodCrown);
   return p;
  }
  const vOffsetGuide=t=>guide(f.curves.vertical,t)*verticalScale;
