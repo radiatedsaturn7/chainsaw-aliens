@@ -60,7 +60,7 @@ export function makeOpenings({end,g,segments=32}){
    width:sat(num(raw.width,.5)),height:sat(num(raw.height,.5)),corner:sat(num(raw.corner,.5)),
    angle:signed(num(raw.angle,(legacy.angle||0)/18)),sweep:sat(num(raw.sweep,.5)),
    curvature:sat(num(raw.curvature,.5)),recess:sat(num(raw.recess,.5)),convexity:sat(num(raw.convexity,.5)),
-   sideWrap:sat(num(raw.sideWrap,0)),roundBowls:sat(num(raw.roundBowls,0)),flutedBowls:sat(num(raw.flutedBowls,0)),position:sat(num(raw.position,.5)),protrusion:sat(num(raw.protrusion,0)),formula:raw.formula??'',modules:Math.max(0,Math.min(8,Math.round(raw.modules??0))),spacing:sat(num(raw.spacing,.5)),inboardReach:sat(num(raw.inboardReach,.5)),formulaSide:g.construction?.symmetry?.[group]==='linked'?s:1,outline:Array.isArray(raw.outline)?raw.outline:[]};
+   sideWrap:sat(num(raw.sideWrap,0)),silverUpper:sat(num(raw.silverUpper,0)),roundBowls:sat(num(raw.roundBowls,0)),flutedBowls:sat(num(raw.flutedBowls,0)),position:sat(num(raw.position,.5)),protrusion:sat(num(raw.protrusion,0)),formula:raw.formula??'',modules:Math.max(0,Math.min(8,Math.round(raw.modules??0))),spacing:sat(num(raw.spacing,.5)),inboardReach:sat(num(raw.inboardReach,.5)),formulaSide:g.construction?.symmetry?.[group]==='linked'?s:1,outline:Array.isArray(raw.outline)?raw.outline:[]};
 
  // The bands are deliberately disjoint even at all slider extremes:
  // lamp inside <= .366; center grille starts >= .388; lower intakes start >= .31.
@@ -88,7 +88,7 @@ export function makeOpenings({end,g,segments=32}){
   }
  }
  if(!front&&g.construction)out.push(aperture({id:'rear-plate-recess',component:'rearBumper',housing:'round-rect',cx:.5,cy:Math.max(num(fascia.platePosition,.615),.18+(.125+(num(fascia.plateHeight,.5)-.5)*.214)/2),
-  width:mix(.155,.291,num(fascia.plateWidth,.5)),height:.125+(num(fascia.plateHeight,.5)-.5)*.214,kind:'plate',opt:{mount:num(fascia.plateMount,0),corner:num(fascia.plateMount,0)>0?.23:.5},segments}));
+  width:mix(.155,.291,num(fascia.plateWidth,.5)),height:.125+(num(fascia.plateHeight,.5)-.5)*.214,kind:'plate',opt:{mount:num(fascia.plateMount,0),painted:num(fascia.paintedPocket,0),corner:num(fascia.plateMount,0)>0?.23:.5},segments}));
  if(!front&&(fascia.deckPanel??0)>0){
   const plate=out.find(o=>o.kind==='plate');
   const hi=Math.min(.483,plate?Math.min(...plate.outline.map(p=>p[1]))-.02:.483);
@@ -244,8 +244,10 @@ export function emitOpenings({end,openings,surface,put,lod=false,spatialDepth=fa
     const D=.022+show*.015,innerW=.34*w,innerH=.365*h;
     const rect=[[cx-innerW,cy-innerH],[cx+innerW,cy-innerH],[cx+innerW,cy+innerH],[cx-innerW,cy+innerH]];
     putGeo('paint',[seat,ring(.87,.014),ring(.82,D)],pt(cx,cy,D+.001));
-    putGeo('trim',[ring(1,D-.002,rect),ring(.95,D-.007,rect)],pt(cx,cy,D-.007));
-    putGeo('floor',[ring(.90,D-.008,rect)],pt(cx,cy,D-.008));
+    if(!opt.painted){
+     putGeo('trim',[ring(1,D-.002,rect),ring(.95,D-.007,rect)],pt(cx,cy,D-.007));
+     putGeo('floor',[ring(.90,D-.008,rect)],pt(cx,cy,D-.008));
+    }
     for(const k of [-1,1]){const x=cx+k*innerW*.74,y=cy-innerH*.73,vs=pairs(8,t=>[x+w*.018*Math.cos(t*tau),y+h*.024*Math.sin(t*tau)]);
      putGeo('chrome',[ring(1,D-.010,vs,x,y)],pt(x,y,D-.011));
     }
@@ -325,7 +327,7 @@ export function emitOpenings({end,openings,surface,put,lod=false,spatialDepth=fa
     const x=poly.reduce((p,q)=>p+q[0],0)/poly.length,y=poly.reduce((p,q)=>p+q[1],0)/poly.length;
     putGeo(m,[ring(1,depth+.004,poly,x,y),ring(.94,depth,poly,x,y)],pt(x,y,depth-.002));
    };
-   const line=front?([x,y])=>(y-cy)+.20*(x-cx)*side+h*.17:([x,y])=>y-cy+(x-cx)*side*.13+h*.13;
+   const line=front?([x,y])=>(y-cy)+.20*(x-cx)*side+h*.17:([x,y])=>y-cy+(x-cx)*side*.13+h*(opt.silverUpper>0?-.018:.13);
    const zones=outline.map(([x,y])=>[mix(cx,x,.89),mix(cy,y,.88)]);
    if(front){
     const outer=clip(zones,([x])=>(x-cx)*side+w*.12,1);
@@ -334,7 +336,11 @@ export function emitOpenings({end,openings,surface,put,lod=false,spatialDepth=fa
     else{proj(-.21,.164,.315);proj(.165,.154,.29,false);}
    }else{
     plate(clip(zones,q=>line(q)-.0009,1),'opticRed',d*.46);
-    plate(clip(zones,q=>line(q)+.0009,-1),'opticClear',d*.46);
+    plate(clip(zones,q=>line(q)+.0009,-1),opt.silverUpper>0?'opticSilver':'opticClear',d*.46);
+    if(opt.silverUpper>0){
+     const lens=fitted(cx-side*w*.09,cy-h*.225,w*.060,h*.066,lod?10:14),lr=(k,dep)=>ring(k,dep,lens.p,lens.x,lens.y);
+     putGeo('opticClear',[lr(1,d*.414),lr(.77,d*.392)],pt(lens.x,lens.y,d*.389));
+    }
     const t=fitted(cx+side*w*.12,cy+h*.19,w*.24,h*.106,lod?12:16);
     putGeo('runningRed',[ring(1,d*.40,t.p,t.x,t.y),ring(.87,d*.36,t.p,t.x,t.y)],pt(t.x,t.y,d*.35));
    }

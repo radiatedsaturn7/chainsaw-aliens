@@ -1,10 +1,10 @@
 import {
- BODY_EDITOR_FIELDS,HOOD_CONSTRUCTION_FIELDS,WING_FIELDS,EXHAUST_FIELDS,STYLE_FIELDS,STYLE_KINDS,PAIR_MODES,CABIN_LAYOUTS,
+ BODY_EDITOR_FIELDS,HOOD_CONSTRUCTION_FIELDS,FINISH_FIELDS,WING_FIELDS,EXHAUST_FIELDS,STYLE_FIELDS,STYLE_KINDS,PAIR_MODES,CABIN_LAYOUTS,
  EXHAUST_SHAPES,EXHAUST_FINISHES,OPTIC_HOUSINGS,OPTIC_LAYOUTS,OPTIC_FIELDS,
  getSideSettings,newOutlet,newStyle
 } from './genome.mjs';
 
-export const CONSTRUCTION_PANELS={cabin:'Cabin and seating',hood:'Hood shoulders and scoop',exhaust:'Exhaust outlets',wing:'Wing and supports',styling:'Panel styling curves',pairs:'Paired lamps'};
+export const CONSTRUCTION_PANELS={cabin:'Cabin and seating',finish:'Paint finish',hood:'Hood shoulders and scoop',exhaust:'Exhaust outlets',wing:'Wing and supports',styling:'Panel styling curves',pairs:'Paired lamps'};
 const node=(tag,props={})=>Object.assign(document.createElement(tag),props);
 const choices={L:'Left',R:'Right',both:'Both sides'};
 function nextId(rows,prefix){
@@ -67,6 +67,9 @@ export function renderConstruction(root,{state,get,edit,repaint,setLevel,level,s
   select(root,'build-cabin-layout','Seating layout',CABIN_LAYOUTS,data.cabin.layout,v=>sectionSet('cabin','layout',v));
   sectionNumbers('cabin',BODY_EDITOR_FIELDS);
   root.append(node('p',{textContent:'Seats and interior panels fit the body dimensions. A lightweight cabin is exported for the drive preview.'}));
+ }else if(state.panel==='finish'){
+  sectionNumbers('finish',FINISH_FIELDS);
+  root.append(node('p',{textContent:'Clearcoat roughness controls reflection sharpness in the editor and exported vehicle. Lower values sharpen the reflected environment without turning paint metallic.'}));
  }else if(state.panel==='hood'){
   select(root,'build-hood-intake','Hood intake',{scoop:'Raised scoop',vents:'Vents',off:'Off'},initial.components.scoop.type,v=>edit('components','scoop',v,'type'));
   sectionNumbers('hood',HOOD_CONSTRUCTION_FIELDS);

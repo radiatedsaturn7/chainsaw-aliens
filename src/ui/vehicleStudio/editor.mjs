@@ -275,7 +275,7 @@ function fasciaInspector(root,g,end){
 
  if(cfg.category==='shape'){
   choose('fascia-profile',end==='front'?'Nose profile':'Tail profile',Object.fromEntries(profileOptions()),'fascia','profile');
-  fieldsFor('fascia',(k,s)=>!isIntake(k,s)&&(end==='rear'||!k.startsWith('deck')&&!k.startsWith('plate'))&&(end==='front'||k!=='fogCoverHeight'));
+  fieldsFor('fascia',(k,s)=>!isIntake(k,s)&&(end==='rear'||!k.startsWith('deck')&&!k.toLowerCase().includes('plate')&&!k.startsWith('paintedPocket'))&&(end==='front'||k!=='fogCoverHeight'));
   const joining=end==='front'?'hood':'trunk', groupName=end==='front'?'Hood integration':'Trunk integration';
   const panel=group(root,groupName,false);partFields(panel,joining,['shape','depth']);
   const advancedPanel=element('button',{textContent:'Edit '+joining+' surface patch',type:'button'});
@@ -294,7 +294,7 @@ function fasciaInspector(root,g,end){
   constructionButton(root,'construction-optics','Paired lamp settings','pairs',end);
   choose('optic-housing','Housing',phenotype.OPTIC_HOUSINGS,'optics','housing');
   choose('optic-layout','Internal lamp layout',phenotype.OPTIC_LAYOUTS,'optics','layout');
-  fieldsFor('optics',()=>true);
+  fieldsFor('optics',k=>end==='rear'||k!=='silverUpper');
   const palette=group(root,'Optic materials',true);
   for(const [key,label] of [
    [end==='front'?'head':'tail',end==='front'?'Front lamp element':'Rear lamp element'],
@@ -570,6 +570,10 @@ function inspector(){
    range(arch,'body',k,spec,g.body[k]);
   }
  }
+ if(part==='doors'){
+  const stamp=group(root,'Door character line',true);
+  for(const k of ['doorStamp','doorStampHeight','doorStampSweep'])range(stamp,'body',k,phenotype.BODY_FIELDS[k],g.body[k]);
+ }
   if(part==='frontFenders'){const b=element('button',{textContent:'Open Surface Studio'});b.onclick=()=>openAdvanced();root.append(b);}
   else if(PATCH_PANELS.includes(part)){const b=element('button',{textContent:'Edit surface patch'});b.onclick=()=>setTab('surface');root.append(b);}
  }else if(tab==='view'){
@@ -579,7 +583,8 @@ function inspector(){
   select(root,'projection','Camera projection',[['perspective','Perspective'],['ortho','Orthographic']],s.projection??'perspective',v=>viewport?.setProjection(v));
   select(root,'display','Assembly',[['complete','Complete vehicle'],['isolate','Isolate selected part'],['exploded','Exploded']],s.display??'complete',v=>viewport?.setDisplay(v));
   select(root,'feature-overlay-mode','Feature overlays',[['off','Off'],['all','All editable features'],['alignment','Panel alignment']],featureOverlayMode,v=>{featureOverlayMode=v;syncFeatureViewport();});
-  select(root,'lighting','Lighting',[['studio','Automotive studio'],['track-clear','Outdoor daylight']],s.light??'studio',v=>viewport?.setLighting(v));
+  select(root,'lighting','Lighting',[['studio','Automotive studio'],['studio-strips','Gloss booth'],['track-clear','Outdoor daylight']],s.light??'studio',v=>viewport?.setLighting(v));
+  constructionButton(root,'open-paint-finish','Adjust paint finish','finish');
   const d=group(root,'Reference overlay',true),btn=element('button',{textContent:reference?'Replace image':'Choose local reference image'});d.append(btn);
   btn.onclick=()=>{$('reference-file').click();};
   select(d,'ref-view','Reference angle',[['front','Front'],['frontElevated','Front • slightly above'],['rear','Rear'],['rearElevated','Rear • slightly above'],['side','Side'],['top','Top'],['orbit','Three-quarter']],refView,v=>{refView=v;setView(v);});

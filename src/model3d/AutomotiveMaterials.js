@@ -23,7 +23,7 @@ const PRESETS=Object.freeze({
 const validPreset=key=>Object.prototype.hasOwnProperty.call(PRESETS,key);
 const bounded=(v,f,min=0,max=1)=>typeof v==='number'&&Number.isFinite(v)?Math.max(min,Math.min(max,v)):f;
 
-const PROFILES=new Set(['studio','track-clear','track-overcast','track-night']);
+const PROFILES=new Set(['studio','studio-strips','track-clear','track-overcast','track-night']);
 const probes=new Map();
 const smooth=(a,b,v)=>{
  const t=Math.max(0,Math.min(1,(v-a)/(b-a)));
@@ -46,6 +46,20 @@ function studioRadiance(phi,y) {
  return [v,v,v];
 }
 
+function stripBoothRadiance(phi,y){
+ // Narrow neutral light banks with finite apertures. A different booth
+ // deliberately changes what the surface reflects, not its paint gain.
+ const panel=(az,span,lo,hi)=>{
+  const d=Math.abs(angularDelta(phi,az));
+  return (1-smooth(span*.90,span,d))*smooth(lo-.017,lo,y)*(1-smooth(hi,hi+.017,y));
+ };
+ const horizon=.042+.10*smooth(-.11,.25,y);
+ const front=panel(1.71,.62,.338,.374)*2.25+panel(1.52,.48,.600,.626)*1.95;
+ const rear=panel(-1.96,.55,.08,.137)*2.55+panel(-1.42,.68,.241,.292)*3.95+panel(-1.37,.61,.451,.503)*2.8;
+ const side=panel(.10,.80,.12,.215)*3.65+panel(.20,.75,.42,.50)*3.5+panel(-2.94,.49,.22,.33)*2.6;
+ const v=horizon+front*.58+rear*.70+side*.37;
+ return [v*.975,v*.989,v];
+}
 function trackRadiance(phi,x,y,z,profile) {
  // A fixed, world-aligned HDR panorama approximation, not a dynamic probe.
  // Near-horizon features provide orientation: ground band, distant trees,
@@ -86,7 +100,7 @@ export function automotiveEnvironment(profile='studio') {
    // atan(z,x)/(2pi)+.5; vertical sample ~= asin(y)/pi+.5.
    const phi=((i+.5)/w-.5)*Math.PI*2, latitude=((j+.5)/h-.5)*Math.PI;
    const y=Math.sin(latitude),flat=Math.cos(latitude),x=Math.cos(phi)*flat,z=Math.sin(phi)*flat;
-   const radiance=profile==='studio'?studioRadiance(phi,y):trackRadiance(phi,x,y,z,profile);
+   const radiance=profile==='studio'?studioRadiance(phi,y):profile==='studio-strips'?stripBoothRadiance(phi,y):trackRadiance(phi,x,y,z,profile);
    const at=(j*w+i)*4;
    for(let k=0;k<3;k++)data[at+k]=half(radiance[k]);
    data[at+3]=half(1);

@@ -106,7 +106,7 @@ export function generateVehicle(input,{quality='preview'}={}){
  const lipHeight=(z,side)=>{
   const ax=z>0?L:-L,dist=Math.abs(z-ax),a0=archData(ax,side);
   if(dist>=a0.fore)return floor;
-  const s=dist/a0.fore,a=clamp((1-s)/.065),curved=R+a0.upper*Math.sqrt(Math.max(0,1-s*s));
+  const s=dist/a0.fore,a=clamp((1-s)/g.body.archFootBlend),curved=R+a0.upper*Math.sqrt(Math.max(0,1-s*s));
   return mix(floor,curved,a*a*(3-2*a));
  };
  for(const [component,axle] of [['frontFenders',L],['rearFenders',-L]]){
@@ -120,6 +120,10 @@ export function generateVehicle(input,{quality='preview'}={}){
  if(!surface.diagnostics.valid)issues.push(...surface.diagnostics.issues.map(s=>'Front fender: '+s));
  const frontPanelSamples=Array.from({length:21},(_,i)=>Array.from({length:11},(_,j)=>surface.eval(i/20,j/10)));
  const panelSample=(u,v)=>{const a=clamp(u)*20,b=clamp(v)*10,i=Math.min(19,Math.floor(a)),j=Math.min(9,Math.floor(b));return lerp3(lerp3(frontPanelSamples[i][j],frontPanelSamples[i+1][j],a-i),lerp3(frontPanelSamples[i][j+1],frontPanelSamples[i+1][j+1],a-i),b-j);};
+ const {doorStamp,doorStampHeight,doorStampSweep}=g.body;
+ const stampStation=z=>clamp((z-(doorRear-.26))/(doorFront-doorRear+.52));
+ const stampLine=z=>doorStampHeight+doorStampSweep*(stampStation(z)-.5);
+ const stampFade=z=>unitSmooth(clamp(stampStation(z)/.16))*unitSmooth(clamp((1-stampStation(z))/.16));
  function skinPoint(z,v,sgn,comp){
   const side=skinX(z), localBox=regionalBox(z), bottom=Math.min(skinY(z)-.022,lipHeight(z,sgn)),archAt=z>0?L:-L,
       flare=clamp(1-Math.abs(z-archAt)/(radius+.25))**1.65;
@@ -127,11 +131,12 @@ export function generateVehicle(input,{quality='preview'}={}){
   const source=c[comp], group=comp.endsWith('Fenders')?'fenders':comp==='doors'?'doors':null;
   const p=group?getSideSettings(g,group,sgn>0?'R':'L',source):source;
   const shape=comp==='doors'?p.shape*(.46+.54*wide):p.shape;
+  const flareScale=archAt>0?g.body.frontFlareScale:g.body.rearFlareScale;
   const profile=comp==='frontFenders'||comp==='rearFenders'?
-   (p.type==='boxed'?.055:p.type==='integrated'||p.type==='wide'?.072:.045)*p.depth*flare*Math.sin(v*Math.PI*.75):0;
+   (p.type==='boxed'?.055:p.type==='integrated'||p.type==='wide'?.072:.045)*p.depth*flare*flareScale*Math.sin(v*Math.PI*.75):0;
   let x=side- .023*v-(.012+.035*(1-localBox))*v**3+profile+(.008+.027*shape)*Math.sin(v*Math.PI*1.5);
   const edgePull=clamp((v-.72)/.28)*clamp((flare-.18)/.65);
-  x=mix(x,Math.max(x,t+d.tireWidth/2+.018),edgePull);
+  x=mix(x,Math.max(x,t+d.tireWidth/2+.018*(.6+.4*flareScale)),edgePull);
   let y=mix(skinY(z),bottom,v);
   if(comp==='frontFenders'){
    const u=clamp((z-doorFront)/(bumperFront-doorFront)),q=panelSample(u,v),edge=lerp3(panelSample(u,0),panelSample(u,1),v);
@@ -142,13 +147,17 @@ export function generateVehicle(input,{quality='preview'}={}){
    z+=(q[2]-edge[2])*.15*influence;
    if(v>.68){
     const t=(v-.68)/.32;
-    x+=sp.lipRadius*.7*influence*t;
+    x+=sp.lipRadius*.7*influence*t*g.body.lipScale;
    }
   }
   const creaseWidth=.028+.06*(1-g.body.creaseStrength);
   const crease=(z>doorRear-.38&&z<doorFront+.42)?Math.min(1,(z-doorRear+.38)/.18,(doorFront+.42-z)/.20):0;
   x+=(.003+.014*g.body.creaseStrength)*crease*Math.exp(-((v-g.body.creaseHeight)**2)/(creaseWidth**2));
-  x+=(.004+.018*g.body.archCrown)*flare*Math.sin(Math.PI*v)**2;
+  x+=(.004+.018*g.body.archCrown)*flare*flareScale*Math.sin(Math.PI*v)**2;
+  if(doorStamp){
+   const p=(v-stampLine(z))/.066;
+   x+=doorStamp*stampFade(z)*(Math.exp(-p*p)-.48*Math.exp(-((p+.99)**2)));
+  }
   if(comp==='doors'){
    for(const hz of handleStations)x-=(.002+.013*g.body.handleRecess)*Math.exp(-((v-.22)**2)/.0034-((z-hz)**2)/.008);
   }
@@ -318,7 +327,17 @@ export function generateVehicle(input,{quality='preview'}={}){
     }
    }else{
     const stations=adaptiveStations(sampler,{lod});
-    put(key,'paint',patch(stations.length-1,down,(u,v)=>sampler(stations[Math.round(u*(stations.length-1))],v),s<0));
+    put(key,'paint',patch(stations.length-1,down,(u,v)=>{
+     const t=stations[Math.round(u*(stations.length-1))];
+     if(!doorStamp||key!=='doors')return sampler(t,v);
+     const q=stampLine(mix(a,b,t)),base=Math.round(q*down),row=clamp(base,2,down-2);
+     const k=Math.round(v*down),wanted=k===row-1?q-.071:k===row?q-.007:k===row+1?q+.053:null;
+     const fade=unitSmooth(clamp(t/.10))*unitSmooth(clamp((1-t)/.10));
+     // Keep shared seam samples in place. Move only the neighboring rows,
+     // enough to capture the crest and the return without extra triangles.
+     const j=wanted===null?v:mix(v,clamp(wanted,Math.max(.025,(row-2)/down+.008),Math.min(.975,(row+2)/down-.008)),fade);
+     return sampler(t,j);
+    },s<0));
    }
    joins.push({a,b,component:key,side:s});
   }
@@ -335,7 +354,7 @@ export function generateVehicle(input,{quality='preview'}={}){
    {side:letter,view:'side',axis:1,scale:-.56}));
   for(const [comp,axle] of [['rearFenders',-L],['frontFenders',L]]){
    put(comp,'paint',patch(30,4,(u,v)=>{
-    const z=axle-archData(axle,s).fore*Math.cos(u*Math.PI),p=master.at(z,1),r=.0045+c[comp].shape*.004+g.body.archCrown*.004;
+    const z=axle-archData(axle,s).fore*Math.cos(u*Math.PI),p=master.at(z,1),r=(.0045+c[comp].shape*.004+g.body.archCrown*.004)*g.body.lipScale;
     return [p[0]-s*r*(1-Math.cos(v*2.1)),p[1]-r*Math.sin(v*2.1),p[2]];
    }));
    const arc=curvePoints(u=>master.at(axle-archData(axle,s).fore*Math.cos(u*Math.PI),1));

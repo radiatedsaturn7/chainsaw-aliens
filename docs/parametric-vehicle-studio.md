@@ -130,3 +130,20 @@ shallow return in the bumper surface, with independent height and corner sweep.
 - **Rear → Shape** has a bumper tuck and a visible plate mount with its own
   height position. An active mount has a painted recess, blank insert and
   fasteners; the legacy plain recess is retained when the mount is at zero.
+
+### Flare profile, door stamping, and gloss finish
+
+**Parts → Wheels, Tires, or Fenders → Wheel opening fit** now separates
+the arch's folded lip, shoulder flare, sill return and tire gap. Reduce the
+flare without shrinking or moving the tire itself. **Parts → Doors → Door
+character line** forms a raised body line with an undercut; the edge and
+door gaps are preserved. **Rear → Shape** includes a tighter corner
+turn-under profile and a body-color plate pocket without a dummy plate.
+**Rear → Optics → Factory split lens** supports a silver upper reflector and
+red lower lens with a separate functioning reverse lamp.
+
+**View → Lighting → Gloss booth** is an optional strip-light reflection rig
+for inspecting curvature. **View → Adjust paint finish** edits paint and
+clearcoat roughness. Those values are shared by the editor and runtime export
+and do not require stronger direct light or turning the paint metallic.
+Existing designs retain their original finish by default.

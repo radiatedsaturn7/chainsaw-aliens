@@ -160,8 +160,8 @@ export function createViewport(canvas,{onPick=()=>{},onFeature=null,onZoom=()=>{
  }
  function render(){frame=0;const [w,h]=camera();if(!w||!h)return;const size=renderer.getSize(new T.Vector2());if(size.x!==w||size.y!==h)renderer.setSize(w,h,false);renderer.render(scene,camActive);onRender();}
  function setLighting(k){
-  light=k;const outdoor=k==='track-clear';scene.background.set(outdoor?'#6c91b3':'#263a4b');ground.material.color.set(outdoor?'#46535e':'#223445');
-  key.intensity=outdoor?3.4:2.38;fill.intensity=outdoor?.30:.88;ambient.intensity=outdoor?1.48:1.24;
+  light=k;const outdoor=k==='track-clear',booth=k==='studio-strips';scene.background.set(outdoor?'#6c91b3':booth?'#77838d':'#263a4b');ground.material.color.set(outdoor?'#46535e':booth?'#6b757d':'#223445');
+  key.intensity=outdoor?3.4:booth?1.42:2.38;fill.intensity=outdoor?.30:booth?.58:.88;ambient.intensity=outdoor?1.48:booth?1.32:1.24;
   applyAutomotiveEnvironment(world,k,renderer);
   diagnostic.glossy.envMap=Object.values(mats).find(m=>m.envMap)?.envMap||null;diagnostic.glossy.needsUpdate=true;request();
  }

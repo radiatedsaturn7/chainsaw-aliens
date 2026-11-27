@@ -69,7 +69,8 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
   const q=(v-beltV)/.050;
   const stamp=(f.bumperBeltRise??0)*(Math.exp(-q*q)-.42*Math.exp(-((q+.91)**2)))*(1-.33*Math.abs(x)**8);
   const tucked=(f.terminalTuck??0)*smooth(clamp((v-.13)/.73))*(.66+.34*co);
-  return [x*edge[0]*track*(1+(f.outerFasciaWidth??0)),y+lip,s*(z+stamp-tucked)];
+  const corner=(f.cornerTuck??0)*Math.abs(x)**1.75*smooth(clamp((v-.16)/.75));
+  return [x*edge[0]*track*(1+(f.outerFasciaWidth??0))-Math.sign(x)*corner*.72,y+lip,s*(z+stamp-tucked-corner)];
  }
  function bridge(u,r){
   const start=upperPanel(seam,u),lead=face(u,0);
