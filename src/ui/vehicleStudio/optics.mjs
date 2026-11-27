@@ -18,9 +18,13 @@ const profiles={
  angular:[[-.92,-.63],[-.48,-1],[.7,-1],[1,-.43],[.81,.68],[.38,1],[-.78,.85],[-1,.22]],
  swept:[[-1,-.41],[-.64,-.78],[.84,-1],[1,-.68],[.81,.28],[.49,.98],[-.8,1],[-1,.41]],
  wrap:[[-1,-.31],[-.88,-.72],[.43,-1],[.94,-.88],[1,-.45],[.8,.28],[.41,.84],[-.69,1],[-1,.70]],
+ // Round-ended two-reflector envelope: broad inner shoulder, deeper outer
+ // bowl, and a higher outer tip where the lens meets the front fender.
+ 'round-twin':[[-1,-.47],[-.71,-.72],[-.25,-.82],[.23,-1],[.75,-.99],[.98,-.61],
+  [1,-.25],[.95,.39],[.70,.83],[.34,1],[-.08,.91],[-.38,.79],[-.72,.86],[-.94,.62],[-1,.22]],
  compound:[[-1,-.36],[-.79,-.77],[-.29,-.99],[.24,-.87],[.83,-.98],[1,-.69],[.95,.33],[.72,.89],[.27,.82],[-.36,1],[-.82,.78],[-1,.31]]
 };
-export const HOUSING_FAMILIES=['round-rect','circle','oval','rectangle','trapezoid','angular','swept','wrap','upright-wrap','compound'];
+export const HOUSING_FAMILIES=['round-rect','circle','oval','rectangle','trapezoid','angular','swept','wrap','upright-wrap','compound','round-twin'];
 const layouts=new Set(['projector','twin','led','mixed','factory-split']);
 function curvePolygon(points,r,n){
  const controls=(p,q,t)=>p.map((x,i)=>mix(x,q[i],t));

@@ -65,7 +65,7 @@ export const FASCIA_FIELDS={
  shoulder:unit('Shoulder crown'),chin:signed('Chin / diffuser projection'),recess:unit('Center recess'),crease:unit('Character crease'),boxiness:unit('Regional boxiness')
 };
 export const OPTIC_HOUSINGS={'circle':'Circular',oval:'Oval',rectangle:'Rectangular','upright-wrap':'Upright rounded wrap','round-rect':'Rounded rectangle',
- trapezoid:'Trapezoidal',angular:'Angular',swept:'Swept',wrap:'Wraparound',compound:'Compound'};
+ trapezoid:'Trapezoidal',angular:'Angular',swept:'Swept',wrap:'Wraparound',compound:'Compound','round-twin':'Rounded twin-bowl'};
 export const OPTIC_LAYOUTS={projector:'Single projector',twin:'Twin elements',led:'LED signature',mixed:'Projector + LED','factory-split':'Factory split lens'};
 export const OPTIC_FIELDS={width:unit('Housing width'),height:unit('Housing height'),corner:unit('Corner radius'),angle:signed('Housing angle'),
  sweep:unit('Housing sweep'),curvature:unit('Lens curvature'),recess:unit('Recess depth'),convexity:unit('Lens convexity'),
