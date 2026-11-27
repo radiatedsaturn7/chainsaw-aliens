@@ -54,6 +54,45 @@ function aperture({id,component,housing,cx,cy,width,height,side=1,opt={},kind='l
  const outline=base.map(([x,y])=>[cx+side*(x*width/2+(x<0?x*(num(opt.inboardReach,.5)-.5)*.15:0)),cy+y*height/2]);
  return {id,component,outline,kind,opt,center:[cx,cy],width,height,side,style};
 }
+// Physical outlet positions are mapped into the same face chart as the
+// central pocket. The rolled opening, capped heat shield and pipe axes
+// therefore travel together as the fascia or exhaust parameters change.
+export function exhaustMountOpenings(g,face,existing){
+ const halfTrack=g.dimensions.width*.5;
+ const bound=(x,a,b)=>Math.min(b,Math.max(a,x));
+ const inverse=(x,v)=>{
+  let a=0,b=1;
+  for(let i=0;i<24;i++){const t=(a+b)*.5;if(face(t,v)[0]>x)b=t;else a=t;}
+  return (a+b)*.5;
+ };
+ const bands=existing.map(o=>{
+  const xs=o.outline.map(p=>p[0]),ys=o.outline.map(p=>p[1]);
+  return [Math.min(...xs),Math.max(...xs),Math.min(...ys),Math.max(...ys)];
+ });
+ const pockets=[];
+ for(const q of g.construction.exhaust){
+  if(!q.fasciaHeight)continue;
+  const gx=bound(q.x,-halfTrack,halfTrack);
+  const sx=q.shape==='oval'?1.22:1;
+  const rx=q.diameter*.5*sx;
+  const spacing=bound(q.spacing,q.diameter*.85,.28);
+  for(const sign of q.mirror&&Math.abs(gx)>.002?[1,-1]:[1]){
+   const span=(q.count-1)*spacing*.5+rx+.035,x=gx*sign;
+   const v=mix(.83,.235,q.fasciaHeight);
+   const mid=inverse(x,v), localH=Math.hypot(...face(mid,v+.02).map((c,k)=>c-face(mid,v-.02)[k]))/.04;
+   const dy=bound((q.diameter*.5+.025)/Math.max(.21,localH),.048,.19);
+   const low=v-dy,high=v+dy;
+   if(low<.034||high>.963)continue;
+   const u0=Math.min(...[low,v,high].map(t=>inverse(x-span,t)));
+   const u1=Math.max(...[low,v,high].map(t=>inverse(x+span,t)));
+   if(u0<.035||u1>.965||bands.some(([a,b,c,d])=>u0<b+.010&&u1>a-.010&&low<d+.012&&high>c-.012))continue;
+   const o=aperture({id:'raised-exhaust-'+q.id+(sign<0?'-mirror':''),kind:'exhaust-pocket',component:'exhaust',
+    housing:'trapezoid',cx:(u0+u1)*.5,cy:v,width:u1-u0,height:dy*2,segments:12,opt:{corner:.44,outlet:q.id,sign}});
+   pockets.push(o);bands.push([u0,u1,low,high]);
+  }
+ }
+ return pockets;
+}
 export function makeOpenings({end,g,segments=32}){
  const front=end==='front',c=g.components??{},legacy=c[front?'headlights':'tails']??{},base=g.optics?.[end]??{},group=front?'headlights':'taillights';
  const fascia=g.fascia?.[end]??{},mode=fascia.intakes??'single',out=[];
@@ -297,6 +336,12 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
    if(!batches.has(key))batches.set(key,{component:a.component,material:m,geos:[]});
    batches.get(key).geos.push(q);
   };
+  if(kind==='exhaust-pocket'){
+   putGeo('paint',[ring(1,0),ring(.955,.006)]);
+   putGeo('heatShield',[ring(.955,.006),ring(.88,.018)]);
+   putGeo('seamDark',[ring(.88,.018),ring(.82,.049),ring(.72,.061)],pt(cx,cy,.062));
+   continue;
+  }
   if(kind==='light-guide'){
    putGeo('seamDark',[ring(1,0),ring(.93,.004)]);
    putGeo('runningRed',[ring(.93,.004),ring(.78,.002)],pt(cx,cy,.002));

@@ -2,7 +2,7 @@ import {sideDuctMask,cowlDuctMask} from './sideDuct.mjs';
 import * as T from '../../vendorBridge/three.js';
 import {createEndSurface,fasciaMesh} from './fascia.mjs';
 import {emitFlushHoodLids} from './hoodLids.mjs';
-import {makeOpenings,emitOpenings} from './optics.mjs';
+import {makeOpenings,emitOpenings,exhaustMountOpenings} from './optics.mjs';
 import {createMasterSide,buildPanelGap} from './seams.mjs';
 import {buildCabin} from './cabin9.mjs';
 import {buildStructure} from './structure9.mjs';
@@ -253,7 +253,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    p[1]+=rise*unitSmooth(clamp(t/.86))*bell;
   }
   p[1]+=UP_PATCH(g,'trunk',z,v,bumperRear,cabinRear);return p;};
- const ends={},fascia={},lampMounts={};
+ const ends={},fascia={},lampMounts={},exhaustMounts=new Map();
  const runtime=['drive','lod','opponent'].includes(quality),lod=runtime;
  const across=small(quality==='export'?42:quality==='opponent'?18:lod?22:32,16,16,12),down=small(quality==='export'?16:quality==='opponent'?7:lod?9:13,6,6,6),along=small(quality==='export'?17:lod?8:12,5,5,4);
  const hoodPoint=(z,u)=>ends.front.upperPanel(z,u);
@@ -268,6 +268,11 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   ends[end]=surf;
   const originalOpenings=makeOpenings({end,g,segments:small(quality==='opponent'?14:lod?18:quality==='export'?32:24,13,12,9)});
   const openings=!front&&hatchLamps?originalOpenings.filter(o=>o.kind!=='lamp'):originalOpenings;
+  if(!front){
+   const pockets=exhaustMountOpenings(g,surf.face,openings);
+   openings.push(...pockets);
+   if(g.construction.exhaust.some(q=>q.fasciaHeight&&!pockets.some(p=>p.opt.outlet===q.id)))warnings.push('Raised exhaust could not fit the fascia; floor mount retained.');
+  }
   const wrapped=openings.some(o=>o.kind==='lamp'&&o.opt.sideWrap>.0001);
   const trail=wrapped?Math.ceil(along*.56):along, wingSteps=along-trail;
   const band=.125, t0=trail/along;
@@ -296,6 +301,14 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     return [toAtlas(u)+side*travel*reach*reach,v];
    });
    o.center=[toAtlas(cx),cy];if(o.width)o.width*=(1-2*band);
+  }
+  if(!front)for(const o of openings.filter(o=>o.kind==='exhaust-pocket')){
+   const v=o.center[1];
+   exhaustMounts.set(o.opt.outlet+':'+o.opt.sign,x=>{
+    let a=wrapped?band:0,b=wrapped?1-band:1;
+    for(let i=0;i<24;i++){const t=(a+b)*.5;if(chart(t,v)[0]>x)b=t;else a=t;}
+    return chart((a+b)*.5,v);
+   });
   }
   const shellMaterial=g.fascia[end].insertBand||g.fascia[end].lowerInsert?'fascia-'+end:'paint';
   const suppressHeadlamps=front&&hoodDesign.lampLids==='inset';
@@ -773,7 +786,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  const structure=buildStructure({g,compact,quality:lod?'drive':quality,put,dims,sample:{side:bodySide,arch:(z,s)=>sampleLowerRail(lowerPanelRails[s],z)??bodySide(z,1,s),front:ends.front.face,rear:ends.rear.face,upperSkin}});
  issues.push(...(structure.issues??[]));
  buildUtilitySuspension({put,dims,compact,amount:canopy.rallyTubework,tireWidth:d.tireWidth});
- const aero=buildAero({g,compact,quality:lod?'lod':quality,put,sample:{trunk:trunkPoint,rear:ends.rear.face},dims,evalFormula});
+ const aero=buildAero({g,compact,quality:lod?'lod':quality,put,sample:{trunk:trunkPoint,rear:ends.rear.face,exhaustMount:(id,side)=>exhaustMounts.get(id+':'+side)},dims,evalFormula});
  for(const f of styleCurves)for(const side of (f.side==='both'?['L','R']:[f.side])){
   const sign=side==='R'?1:-1;
   const points=curvePoints(u=>{const z=mix(Lr,Lf,mix(f.start,f.end,u));return bodySide(z,featureHeight(f,z),sign);});

@@ -172,18 +172,19 @@ export function buildAero({g,quality='preview',compact=0,put,sample,dims,evalFor
   const rx=radius*(shape==='oval'?1.22:1),ry=radius*(shape==='oval'?.76:shape==='rectangle'||shape==='rectangular'||shape==='trapezoid'||shape==='trapezoidal'?.72:1);
   const Y=floor+bounded(q.y,-.045,.36,.020);
   for(const mirror of q.mirror&&Math.abs(gx)>.002?[1,-1]:[1]){
+   const fascia=sample.exhaustMount?.(q.id,mirror);
    const outlets=[];
    for(let i=0;i<num;i++){
     const x=bounded(mirror*(gx+(i-(num-1)*.5)*spacing),-X+rx+.012,X-rx-.012,0);
-    const edge=atX(x,1), y=Math.max(ry+.018,Y);
-    const profile=atX(x,1-bounded((y-edge[1])/.43,0,.8,0)),rear=profile[2];
+    const edge=atX(x,1), fitted=fascia?.(x), y=fitted?fitted[1]:Math.max(ry+.018,Y);
+    const profile=fitted??atX(x,1-bounded((y-edge[1])/.43,0,.8,0)),rear=profile[2];
     const recess=bounded(q.recess,0,.16,0),pro=bounded(q.protrusion,-.025,.19,.028);
     const pitch=bounded(q.pitch,-35,35,0)*rad,yaw=mirror*bounded(q.yaw,-38,38,0)*rad,roll=mirror*bounded(q.roll,-180,180,0)*rad;
     const F=[Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),-Math.cos(yaw)*Math.cos(pitch)];
     const U0=unit(cross(F,[0,1,0])),V0=unit(cross(U0,F));
     const U=add(mul(U0,Math.cos(roll)),mul(V0,Math.sin(roll))),V=add(mul(V0,Math.cos(roll)),mul(U0,-Math.sin(roll)));
     // The view-facing ring remains in front of the bumper skin unless a caller cuts its opening.
-    const C=[x,y,rear-Math.max(.006,pro-recess*.40)],D=a=>add(C,mul(F,a));
+    const C=[x,y,fitted?rear+Math.max(.010,.033+recess-pro):rear-Math.max(.006,pro-recess*.40)],D=a=>add(C,mul(F,a));
     const bevel=bounded(q.bevel,.001,.021,.004);
     const lip=(nc,a,b)=>ring(nc,a,b,rings,shape,U,V);
     put('exhaust',finish,loft([lip(D(-.083),rx*.84,ry*.84),lip(D(-bevel),rx,ry),lip(C,rx-bevel*.45,ry-bevel*.45),lip(D(-bevel*.33),rx-wall,ry-wall)],true));

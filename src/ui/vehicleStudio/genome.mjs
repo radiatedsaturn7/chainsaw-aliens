@@ -189,7 +189,7 @@ export const HOOD_CONSTRUCTION_FIELDS={
 export const WING_MOUNTS={under:'Under-wing uprights',top:'Over-wing swan neck'};
 export const WING_FIELDS={elevation:F('Extra wing rise (m)',-.10,.12,.002),boxWallWidth:F('Box wing end-frame width (m)',.020,.075,.002),boxWallRake:F('Box wing end-frame rake',-.50,.50,.01),camber:F('Airfoil camber',0,1,.01),sweep:F('Wing sweep',-1,1,.01),taper:F('Wing taper',0,1,.01),thickness:F('Airfoil thickness',.04,.24,.005),angle:F('Angle of attack',-15,15,.25),supports:F('Supports',2,4,1),spacing:F('Support spacing',.22,.88,.01),elements:F('Wing elements',1,2,1)};
 export const EXHAUST_FIELDS={
- x:F('Side location (m)',-.95,.95,.005),y:F('Height above floor (m)',-.04,.25,.005),spacing:F('Tip spacing (m)',.045,.20,.005),count:F('Outlet count',1,6,1),
+ x:F('Side location (m)',-.95,.95,.005),y:F('Height above floor (m)',-.04,.25,.005),fasciaHeight:F('Raised fascia mount (0 = floor mount)',0,1,.01),spacing:F('Tip spacing (m)',.045,.20,.005),count:F('Outlet count',1,6,1),
  diameter:F('Tip diameter (m)',.035,.16,.005),protrusion:F('Projection (m)',-.07,.18,.005),curvature:F('Pipe curvature',-1,1,.01),
  pitch:F('Pitch (°)',-35,35,1),yaw:F('Yaw (°)',-42,42,1),roll:F('Roll (°)',-90,90,1),wall:F('Wall thickness (m)',.002,.013,.001),
  bevel:F('Tip edge radius (m)',.001,.015,.001),recess:F('Recess depth (m)',0,.09,.005)
@@ -198,7 +198,7 @@ export const STYLE_FIELDS={start:F('Start station',0,1,.01),end:F('End station',
 export const EXHAUST_SHAPES={round:'Round',oval:'Oval',rect:'Rectangular',square:'Square'};
 export const EXHAUST_FINISHES={steel:'Brushed steel',polished:'Polished',dark:'Dark coated'};
 export const CABIN_LAYOUTS={bench:'Rear bench',individual:'Separate rear seats','three-row':'Three rows','front-only':'Front seats only'};
-export const newOutlet=(id='outlet-left',x=-.51,count=1,mirror=false)=>({id,x,y:.022,spacing:.091,count,diameter:.084,shape:'round',protrusion:.026,
+export const newOutlet=(id='outlet-left',x=-.51,count=1,mirror=false)=>({id,x,y:.022,fasciaHeight:0,spacing:.091,count,diameter:.084,shape:'round',protrusion:.026,
  curvature:.21,pitch:0,yaw:0,roll:0,wall:.0035,bevel:.004,recess:.018,finish:'steel',mirror});
 export const newStyle=(id='styling-1')=>({id,kind:'ridge',side:'both',start:.24,end:.74,height:.33,width:.029,depth:.009,sharpness:.49,falloff:.17,formula:'0.04*sin(pi*u)'});
 const constructionDefaults=()=>({
