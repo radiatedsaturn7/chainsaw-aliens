@@ -108,3 +108,10 @@ floating skirt. These are geometry controls, not baked-on highlights.
 **Parts → Mirrors → Folded rectangle** gives the mirror housing its own
 rolled painted shell, dark base and separate inset mirror glass. Existing
 elliptical mirror variants are unchanged.
+
+In Front → Optics, **Rounder reflector bowls** adjusts the internal reflector's
+physical aspect using the local surface dimensions. **Reflector flute definition**
+adds a separate rolled bowl, bezel and projector plus reusable radial material
+detail. It does not change the lamp perimeter or lighting channel.
+The **Stamped bumper line** controls under Shape form a raised shoulder with a
+shallow return in the bumper surface, with independent height and corner sweep.

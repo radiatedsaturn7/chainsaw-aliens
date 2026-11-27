@@ -42,6 +42,7 @@ const unit=label=>F(label,0,1,.01),signed=label=>F(label,-1,1,.01);
 export const FASCIA_FIELDS={
  deckPanel:unit('Trunk panel recess / seam'),deckWidth:unit('Trunk panel width'),deckHeight:unit('Trunk panel depth'),
  valanceRise:F('Lower valance rise (m)',0,.18,.005),valanceWidth:unit('Width of raised valance'),
+ bumperBeltRise:F('Stamped bumper line depth (m)',0,.026,.001),bumperBeltHeight:F('Stamped bumper line height',.24,.78,.01),bumperBeltSweep:F('Stamped line rise at corners',-.17,.17,.01),
  bumperStation:F('Bumper seam span (m)',.24,.63,.005),upperFasciaLift:F('Upper fascia elevation (m)',-.085,.14,.005),outerFasciaWidth:F('Terminal fascia width',-.09,.12,.005),
  grilleWidth:unit('Upper grille width'),grilleHeight:unit('Upper grille height'),grilleHeightPosition:unit('Upper grille position'),
  fogCoverHeight:unit('Fog cover height'),plateHeight:unit('Rear plate pocket height'),plateWidth:unit('Rear plate pocket width'),
@@ -56,7 +57,7 @@ export const OPTIC_HOUSINGS={'circle':'Circular',oval:'Oval',rectangle:'Rectangu
 export const OPTIC_LAYOUTS={projector:'Single projector',twin:'Twin elements',led:'LED signature',mixed:'Projector + LED','factory-split':'Factory split lens'};
 export const OPTIC_FIELDS={width:unit('Housing width'),height:unit('Housing height'),corner:unit('Corner radius'),angle:signed('Housing angle'),
  sweep:unit('Housing sweep'),curvature:unit('Lens curvature'),recess:unit('Recess depth'),convexity:unit('Lens convexity'),
- position:unit('Vertical position'),outboard:unit('Outboard lamp placement'),sideWrap:F('Wrap lamp into side',0,1,.01),inboardReach:unit('Lens reach toward grille'),protrusion:unit('Lens protrusion')};
+ position:unit('Vertical position'),outboard:unit('Outboard lamp placement'),sideWrap:F('Wrap lamp into side',0,1,.01),roundBowls:F('Rounder reflector bowls',0,1,.01),flutedBowls:F('Reflector flute definition',0,1,.01),inboardReach:unit('Lens reach toward grille'),protrusion:unit('Lens protrusion')};
 export const FASCIA_DEMOS={classic:'Upright classic',rally:'Rounded sport sedan',hyper:'Pointed hypercar',compound:'Compound-curved sports car'};
 const enumValue=(v,choices,key)=>{if(typeof v!=='string'||!Object.hasOwn(choices,v))throw Error('Unknown '+key);return v;};
 const cleanList=(v,n,key)=>{if(!Array.isArray(v)||v.length!==n)throw Error('Invalid '+key);return v.map(x=>number(x,{min:-1,max:1},key));};
@@ -65,11 +66,11 @@ function baseFascia(family,front,legacy){
  return {profile:front?legacy.profile:family==='coupe'?'square':family==='fastback'?'aero':'round',intakes:front?'single':family==='fastback'?'split':'closed',
   ...initial(FASCIA_FIELDS,front?{...legacy,taper:.26,center:.82,wrap:.68,rake:.10,recess:.08,crease:.16,chin:0,boxiness:family==='coupe'?.78:.34,pointedness:0}:
   {sweep:.46,taper:.37,drop:.20,rollover:.50,lowerRoll:.60,center:.78,wrap:.64,rake:.16,recess:.05,crease:.14,chin:-.12,boxiness:family==='coupe'?.77:.41,pointedness:0}),
-  deckPanel:0,valanceRise:0,bumperStation:.43,upperFasciaLift:0,outerFasciaWidth:0,grilleShape:'trapezoid',intakeShape:front?'angular':'trapezoid',curves:{plan:[0,0,0,0],vertical:[0,0,0,0],transverse:[0,0,0,0]}};
+  deckPanel:0,valanceRise:0,bumperBeltRise:0,bumperBeltHeight:.44,bumperBeltSweep:0,bumperStation:.43,upperFasciaLift:0,outerFasciaWidth:0,grilleShape:'trapezoid',intakeShape:front?'angular':'trapezoid',curves:{plan:[0,0,0,0],vertical:[0,0,0,0],transverse:[0,0,0,0]}};
 }
 function baseOptic(family,front){return {
  housing:front?(family==='coupe'?'round-rect':family==='fastback'?'oval':'swept'):(family==='fastback'?'wrap':'trapezoid'),
- layout:front?'mixed':'led',...initial(OPTIC_FIELDS,{angle:0,width:.58,height:.54,position:.46,recess:.53,protrusion:0,sideWrap:0}),outline:Array(8).fill(0),formula:'',modules:0,spacing:.5,outboard:.5,inboardReach:.5
+ layout:front?'mixed':'led',...initial(OPTIC_FIELDS,{angle:0,width:.58,height:.54,position:.46,recess:.53,protrusion:0,sideWrap:0,roundBowls:0,flutedBowls:0}),outline:Array(8).fill(0),formula:'',modules:0,spacing:.5,outboard:.5,inboardReach:.5
 };}
 export function createFasciaDemo(key){
  if(!Object.hasOwn(FASCIA_DEMOS,key))throw Error('Unknown fascia demonstration');
@@ -184,7 +185,7 @@ export const TOTAL_LENGTH=F('Overall length (m)',3.47,5.73,.005);
 export const PATCH_PANELS=['hood','roof','trunk'];
 export const PATCH_RANGE=F('Interior patch height (m)',-.045,.045,.001);
 export const DIMENSIONS={archReserve:F('Outer tire clearance (m)',.004,.024,.001),rearTrackBias:F('Rear track bias (m)',-.08,.08,.001),diameter:F('Tire diameter (m)',.54,.76,.002),tireWidth:F('Tire width (m)',.16,.33,.002),rimRatio:F('Rim / tire diameter',.55,.83,.005),gap:F('Panel gap (m)',.002,.012,.001)};
-const MAT={paint:'#164bb8',wheel:'#c69a4d',glass:'#698292',rubber:'#171a20',trim:'#22262b',chrome:'#a3abb5',head:'#d9e7fb',tail:'#b61728',interior:'#292d36',seat:'#363b48',floor:'#303843',opticCover:'#e0efff',indicator:'#f29b38',seamDark:'#141b23',projector:'#7990a0',reflector:'#a2abb1',rotor:'#64696e',barrel:'#303238',caliper:'#88643a',underbody:'#292c31',heatShield:'#575957',leather:'#323642',cloth:'#424654',stitch:'#686b71',opticRed:'#96202a',opticClear:'#8299a7',signalL:'#ef9c3e',signalR:'#ef9c3e',runningRed:'#87212b'};
+const MAT={paint:'#164bb8',wheel:'#c69a4d',glass:'#698292',rubber:'#171a20',trim:'#22262b',chrome:'#a3abb5',head:'#d9e7fb',tail:'#b61728',interior:'#292d36',seat:'#363b48',floor:'#303843',opticCover:'#e0efff',indicator:'#f29b38',seamDark:'#141b23',projector:'#7990a0',reflector:'#a2abb1',reflectorFluted:'#b3bac1',rotor:'#64696e',barrel:'#303238',caliper:'#88643a',underbody:'#292c31',heatShield:'#575957',leather:'#323642',cloth:'#424654',stitch:'#686b71',opticRed:'#96202a',opticClear:'#8299a7',signalL:'#ef9c3e',signalR:'#ef9c3e',runningRed:'#87212b'};
 export function createVehicle(family='sedan'){
  if(!Object.hasOwn(FAMILIES,family))throw Error('Unknown body family');
  const f=FAMILIES[family];

@@ -60,7 +60,7 @@ export function makeOpenings({end,g,segments=32}){
    width:sat(num(raw.width,.5)),height:sat(num(raw.height,.5)),corner:sat(num(raw.corner,.5)),
    angle:signed(num(raw.angle,(legacy.angle||0)/18)),sweep:sat(num(raw.sweep,.5)),
    curvature:sat(num(raw.curvature,.5)),recess:sat(num(raw.recess,.5)),convexity:sat(num(raw.convexity,.5)),
-   sideWrap:sat(num(raw.sideWrap,0)),position:sat(num(raw.position,.5)),protrusion:sat(num(raw.protrusion,0)),formula:raw.formula??'',modules:Math.max(0,Math.min(8,Math.round(raw.modules??0))),spacing:sat(num(raw.spacing,.5)),inboardReach:sat(num(raw.inboardReach,.5)),formulaSide:g.construction?.symmetry?.[group]==='linked'?s:1,outline:Array.isArray(raw.outline)?raw.outline:[]};
+   sideWrap:sat(num(raw.sideWrap,0)),roundBowls:sat(num(raw.roundBowls,0)),flutedBowls:sat(num(raw.flutedBowls,0)),position:sat(num(raw.position,.5)),protrusion:sat(num(raw.protrusion,0)),formula:raw.formula??'',modules:Math.max(0,Math.min(8,Math.round(raw.modules??0))),spacing:sat(num(raw.spacing,.5)),inboardReach:sat(num(raw.inboardReach,.5)),formulaSide:g.construction?.symmetry?.[group]==='linked'?s:1,outline:Array.isArray(raw.outline)?raw.outline:[]};
 
  // The bands are deliberately disjoint even at all slider extremes:
  // lamp inside <= .366; center grille starts >= .388; lower intakes start >= .31.
@@ -273,10 +273,28 @@ export function emitOpenings({end,openings,surface,put,lod=false,spatialDepth=fa
    return {x,y,p};
   }
   const proj=(offset,rx,ry,bright=true)=>{
-   const {x,y,p}=fitted(cx+side*offset*w,cy+.015*h,w*rx,h*ry,lod?12:18);
-   const rr=(k,depth)=>ring(k,depth,p,x,y);
-   putGeo('reflector',[rr(1,d*.65),rr(.82,d*.73),rr(.47,d*.80)],pt(x,y,d*.81));
-   putGeo(front?'projector':'opticRed',[rr(.51,bright?d*.60:d*.64),rr(.29,d*.55)],pt(x,y,d*.53));
+   let x0=cx+side*offset*w,y0=cy+.015*h;
+   const round=front?num(opt.roundBowls,0):0,flute=front?num(opt.flutedBowls,0):0;
+   if(round){
+    const probe=(a,b)=>Math.hypot(...a.map((x,i)=>x-b[i]));
+    const dx=probe(surface(x0+.002,y0),surface(x0-.002,y0)),dy=probe(surface(x0,y0+.002),surface(x0,y0-.002));
+    const auto=Math.max(ry*.75,Math.min(.50,rx*w*dx/(Math.max(1e-7,dy)*h)));
+    ry=mix(ry,auto,round);rx*=mix(1,1.08,round);y0+=h*.015*round;
+   }
+   const {x,y,p}=fitted(x0,y0,w*rx,h*ry,lod?12:18);
+   const rr=(k,depth)=>ring(k,depth,p,x,y).map((q,i)=>{
+    if(!flute)return q;
+    const a=2*Math.PI*i/p.length;q.uv=[.5+.49*k*Math.cos(a),.5+.49*k*Math.sin(a)];return q;
+   });
+   if(flute){
+    const fg=flute*.12;
+    putGeo('reflectorFluted',[rr(1,d*.42),rr(.92,d*.43),rr(.79,d*(.54+fg)),rr(.58,d*(.68+fg)),rr(.39,d*(.77+fg))]);
+    putGeo('trim',[rr(.54,d*.65),rr(.47,d*.59),rr(.39,d*.60)]);
+    putGeo('projector',[rr(.40,d*.581),rr(.29,d*.535),rr(.13,d*.506)],pt(x,y,d*.502));
+   }else{
+    putGeo('reflector',[rr(1,d*.65),rr(.82,d*.73),rr(.47,d*.80)],pt(x,y,d*.81));
+    putGeo(front?'projector':'opticRed',[rr(.51,bright?d*.60:d*.64),rr(.29,d*.55)],pt(x,y,d*.53));
+   }
   };
   if(oLayout==='factory-split'){
    // Inside the sealed housing, divide the lens into two shallow molded
@@ -300,7 +318,8 @@ export function emitOpenings({end,openings,surface,put,lod=false,spatialDepth=fa
    if(front){
     const outer=clip(zones,([x])=>(x-cx)*side+w*.12,1);
     plate(clip(outer,line,-1),side>0?'signalR':'signalL',d*.60);
-    proj(-.21,.164,.315);proj(.165,.154,.29,false);
+    if(opt.flutedBowls){proj(-.34,.200,.38);proj(.072,.177,.358,false);}
+    else{proj(-.21,.164,.315);proj(.165,.154,.29,false);}
    }else{
     plate(clip(zones,q=>line(q)-.0009,1),'opticRed',d*.46);
     plate(clip(zones,q=>line(q)+.0009,-1),'opticClear',d*.46);
