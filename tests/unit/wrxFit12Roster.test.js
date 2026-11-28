@@ -7,6 +7,11 @@ import {garageEnvironmentProfile} from '../../src/menus/GarageModelPreview.js';
 import {isWrxStudioDocument} from '../../src/model3d/WrxBundledModels.js';
 
 const pack=(fit,part)=>JSON.parse(gunzipSync(readFileSync(new URL('../../src/model3d/wrx/'+fit+'-'+part+'.pack',import.meta.url))));
+test('The editor WRX study is the exact source for the bundled Fit 12',()=>{
+ const working=readFileSync(new URL('../../tools/vehicle-validation/wrx-fit12-genome.json',import.meta.url));
+ const current=readFileSync(new URL('../../src/ui/vehicleStudio/examples/wrx-sti.json',import.meta.url));
+ assert.deepEqual(working,current);
+});
 test('Fit 12: reproducible roster pair, original hubs, gold alloy and isolated functional optics',()=>{
  const body=pack('fit12','body'),wheel=pack('fit12','wheel'),baseBody=pack('fit10','body'),baseWheel=pack('fit10','wheel');
  assert.equal(JSON.stringify({body,wheel}),JSON.stringify(buildFit12()));

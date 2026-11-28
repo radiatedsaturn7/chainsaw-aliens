@@ -69,3 +69,36 @@ test('Forester receives one continuous upright corner aperture per side, with no
   assert.ok(Math.abs(a.top-b.top)<1e-9);
  }
 });
+
+test('opt-in vertical grille has tall, separate aperture and modeled slats',async()=>{
+ const {readFile}=await import('node:fs/promises');
+ const {loadVehicle}=await import('../../src/ui/vehicleStudio/genome.mjs');
+ const g=loadVehicle(await readFile(new URL('../../src/ui/vehicleStudio/examples/mercedes-amg-gt-r.json',import.meta.url),'utf8'));
+ const openings=makeOpenings({end:'front',g});
+ const grill=openings.find(a=>a.id==='upper-grille');
+ assert.equal(grill.style,'vertical');
+ const bounds=(a,k)=>[Math.min(...a.outline.map(p=>p[k])),Math.max(...a.outline.map(p=>p[k]))];
+ for(const a of openings.filter(a=>a!==grill)){
+  assert.ok([0,1].some(k=>{const x=bounds(a,k),y=bounds(grill,k);return x[0]>y[1]||y[0]>x[1];}),a.id);
+ }
+ const vertical=bounds(grill,1);
+ const parts=[];
+ emitOpenings({end:'front',openings:[grill],surface:(u,v)=>[(u-.5)*1.8,1-v*.65,2-v*.025],put:(part,material,geometry)=>parts.push({part,material,geometry})});
+ const slats=parts.filter(p=>p.material==='chrome');
+ assert.equal(slats.length,1); // the production emitter batches by material
+ const {position}=slats[0].geometry.attributes;
+ const strips=new Map();
+ for(let i=0;i<position.count;i++){
+  const x=position.getX(i).toFixed(5),y=position.getY(i);
+  const ys=strips.get(x)??[];
+  ys.push(y);strips.set(x,ys);
+ }
+ assert.ok([...strips.values()].filter(ys=>Math.max(...ys)-Math.min(...ys)>.07).length>=18);
+ g.fascia.front.intakes='single';
+ g.fascia.front.intakeHeightPosition=0;
+ const center=makeOpenings({end:'front',g});
+ assert.ok(!center.some(a=>a.id==='lower-duct'),'do not cut through the grille with a centered lower duct');
+ g.components.grille.type='bars';
+ const horizontal=bounds(makeOpenings({end:'front',g}).find(o=>o.id==='upper-grille'),1);
+ assert.ok(vertical[1]-vertical[0]>horizontal[1]-horizontal[0]+.12);
+});

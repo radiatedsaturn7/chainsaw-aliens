@@ -187,5 +187,215 @@
         "z": -1.2625000476837158
       }
     ]
+  },
+  {
+    "id": "audi-rs2-avant",
+    "label": "Alder RS 1994",
+    "capability": "Low square performance wagon",
+    "carId": "3d-alder-rs-1994-3d-2a3c0d790abd",
+    "bodyRef": "Alder-RS-1994-body",
+    "wheelRef": "Alder-RS-1994-wheel",
+    "radius": 0.3139,
+    "axles": [
+      {
+        "track": 1.4479999542236328,
+        "y": 0.3138999938964844,
+        "z": 1.3654999732971191
+      },
+      {
+        "track": 1.4739999771118164,
+        "y": 0.3138999938964844,
+        "z": -1.2315000295639038
+      }
+    ]
+  },
+  {
+    "id": "buick-gnx",
+    "label": "Ashbaron 1987",
+    "capability": "Long-hood notchback muscle coupe",
+    "carId": "3d-ashbaron-1987-3d-f8482675a9fd",
+    "bodyRef": "Ashbaron-1987",
+    "wheelRef": "Ashbaron-1987-Wheel",
+    "radius": 0.3307,
+    "axles": [
+      {
+        "track": 1.5089999437332153,
+        "y": 0.33070001006126404,
+        "z": 1.3730000257492065
+      },
+      {
+        "track": 1.50600004196167,
+        "y": 0.33070001006126404,
+        "z": -1.3730000257492065
+      }
+    ]
+  },
+  {
+    "id": "cadillac-ct5-blackwing",
+    "label": "Greater Celandine 2022",
+    "capability": "Modern angular sports sedan",
+    "carId": "3d-greater-celandine-2022-3d-bb17c322af6d",
+    "bodyRef": "Greater-Celandine-2022-body",
+    "wheelRef": "Greater-Celandine-2022-wheel",
+    "radius": 0.33755,
+    "axles": [
+      {
+        "track": 1.5951199531555176,
+        "y": 0.33755001425743103,
+        "z": 1.5455000400543213
+      },
+      {
+        "track": 1.6078200340270996,
+        "y": 0.33755001425743103,
+        "z": -1.4014999866485596
+      }
+    ]
+  },
+  {
+    "id": "datsun-520",
+    "label": "Mirabelle Clover 1966",
+    "capability": "Small regular-cab pickup, separate open bed",
+    "carId": "3d-mirabelle-clover-1966-3d-9a230e2c7e91",
+    "bodyRef": "Mirabelle-Clover-1966-finished",
+    "wheelRef": "Mirabelle-Clover-1966-wheel",
+    "radius": 0.30979999999999996,
+    "axles": [
+      {
+        "track": 1.2000000476837158,
+        "y": 0.30935800075531006,
+        "z": 1.1384999752044678
+      },
+      {
+        "track": 1.2000000476837158,
+        "y": 0.30940499901771545,
+        "z": -1.3914999961853027
+      }
+    ]
+  },
+  {
+    "id": "dodge-durango-srt",
+    "label": "Bitter Dock 2018",
+    "capability": "Three-row V8 performance SUV",
+    "carId": "3d-bitter-dock-2018-3d-bd9fe0dd03a5",
+    "bodyRef": "Bitter-Dock-2018-body",
+    "wheelRef": "Bitter-Dock-2018-wheel",
+    "radius": 0.38675000000000004,
+    "axles": [
+      {
+        "track": 1.635759949684143,
+        "y": 0.3867500126361847,
+        "z": 1.5564600229263306
+      },
+      {
+        "track": 1.643380045890808,
+        "y": 0.3867500126361847,
+        "z": -1.4864599704742432
+      }
+    ]
+  },
+  {
+    "id": "fiat-124-abarth",
+    "label": "Nettle Turbo 2017",
+    "capability": "Long hood, short-deck open roadster",
+    "carId": "3d-nettle-turbo-2017-3d-a470b0dc9245",
+    "bodyRef": "Nettle-Turbo",
+    "wheelRef": "Nettle-Turbo-Wheel",
+    "radius": 0.30815,
+    "axles": [
+      {
+        "track": 1.496000051498413,
+        "y": 0.3081499934196472,
+        "z": 1.0852299928665161
+      },
+      {
+        "track": 1.503000020980835,
+        "y": 0.3079510033130646,
+        "z": -1.223770022392273
+      }
+    ]
+  },
+  {
+    "id": "kia-ev6-gt",
+    "label": "2023 Volt-Hound GT",
+    "capability": "Long-wheelbase electric crossover",
+    "carId": "3d-2023-volt-hound-gt-3d-b041999c31c6",
+    "bodyRef": "Volt-Hound-GT",
+    "wheelRef": "Volt-Hound-GT-Wheel",
+    "radius": 0.368,
+    "axles": [
+      {
+        "track": 1.6281399726867676,
+        "y": 0.36800000071525574,
+        "z": 1.4503400325775146
+      },
+      {
+        "track": 1.635759949684143,
+        "y": 0.36800000071525574,
+        "z": -1.4503400325775146
+      }
+    ]
+  },
+  {
+    "id": "mercedes-amg-gt-r",
+    "label": "Bee Clover 2017",
+    "capability": "Long hood, cab-back GT with wing",
+    "carId": "3d-bee-clover-2017-3d-6650716cbe55",
+    "bodyRef": "Bee-Clover-2017",
+    "wheelRef": "Bee-Clover-2017-Wheel",
+    "radius": 0.33755,
+    "axles": [
+      {
+        "track": 1.6799999475479126,
+        "y": 0.33755001425743103,
+        "z": 1.315000057220459
+      },
+      {
+        "track": 1.690000057220459,
+        "y": 0.33755001425743103,
+        "z": -1.315000057220459
+      }
+    ]
+  },
+  {
+    "id": "pontiac-gto-judge",
+    "label": "Desert Clover 1969",
+    "capability": "Late-1960s muscle, split grille and raised scoop",
+    "carId": "3d-desert-clover-1969-3d-d0df31d6ebba",
+    "bodyRef": "Desert Clover 1969 Body",
+    "wheelRef": "Desert Clover 1969 Wheel",
+    "radius": 0.3353,
+    "axles": [
+      {
+        "track": 1.5240000486373901,
+        "y": 0.3352999985218048,
+        "z": 1.4223999977111816
+      },
+      {
+        "track": 1.5240000486373901,
+        "y": 0.3352999985218048,
+        "z": -1.4223999977111816
+      }
+    ]
+  },
+  {
+    "id": "toyota-gr-yaris",
+    "label": "Bramble 2021",
+    "capability": "Short wide three-door hot hatch",
+    "carId": "3d-bramble-2021-3d-556c58e1cc2f",
+    "bodyRef": "Bramble-2021-finished",
+    "wheelRef": "Bramble-2021-wheel",
+    "radius": 0.3186,
+    "axles": [
+      {
+        "track": 1.5360000133514404,
+        "y": 0.31859999895095825,
+        "z": 1.2799999713897705
+      },
+      {
+        "track": 1.5720000267028809,
+        "y": 0.31859999895095825,
+        "z": -1.2799999713897705
+      }
+    ]
   }
 ]

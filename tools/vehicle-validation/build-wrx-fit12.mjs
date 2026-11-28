@@ -30,6 +30,9 @@ export function buildFit12(){
  return {body,wheel};
 }
 if(process.argv.includes('--write')){
+ const src=new URL('./wrx-fit12-genome.json',import.meta.url);
+ const study=new URL('../../src/ui/vehicleStudio/examples/wrx-sti.json',import.meta.url);
+ writeFileSync(study,readFileSync(src));
  for(const [part,doc] of Object.entries(buildFit12()))
   writeFileSync(pack('fit12',part),gzipSync(JSON.stringify(doc),{level:9}));
 }

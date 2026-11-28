@@ -8,5 +8,15 @@ export const studioRoster=[
  {"id":"kia-carnival","label":"2024 Caravan-9","bodyRef":"Caravan-9-2024-body","wheelRef":"Caravan-9-2024-wheel","capability":"Three-row interior packaging",pack:new URL('./kia-carnival.pack',import.meta.url)},
  {"id":"rally-fighter","label":"Dustjack V8","bodyRef":"Dustjack-V8","wheelRef":"Dustjack-V8-Wheel","capability":"High ride height and underbody",pack:new URL('./rally-fighter.pack',import.meta.url)},
  {"id":"mazda-miata","label":"Lark 1600 1990","bodyRef":"Lark-1600","wheelRef":"Lark-1600-Wheel","capability":"Roadster proportions and fixtures",pack:new URL('./mazda-miata.pack',import.meta.url)},
- {"id":"subaru-forester","label":"Briar XT 2004","bodyRef":"Briar-XT","wheelRef":"Briar-XT-Wheel","capability":"Boxy utility bodywork",pack:new URL('./subaru-forester.pack',import.meta.url)}
+ {"id":"subaru-forester","label":"Briar XT 2004","bodyRef":"Briar-XT","wheelRef":"Briar-XT-Wheel","capability":"Boxy utility bodywork",pack:new URL('./subaru-forester.pack',import.meta.url)},
+ {"id":"audi-rs2-avant","label":"Alder RS 1994","bodyRef":"Alder-RS-1994-body","wheelRef":"Alder-RS-1994-wheel","capability":"Low square performance wagon",pack:new URL('./audi-rs2-avant.pack',import.meta.url)},
+ {"id":"buick-gnx","label":"Ashbaron 1987","bodyRef":"Ashbaron-1987","wheelRef":"Ashbaron-1987-Wheel","capability":"Long-hood notchback muscle coupe",pack:new URL('./buick-gnx.pack',import.meta.url)},
+ {"id":"cadillac-ct5-blackwing","label":"Greater Celandine 2022","bodyRef":"Greater-Celandine-2022-body","wheelRef":"Greater-Celandine-2022-wheel","capability":"Modern angular sports sedan",pack:new URL('./cadillac-ct5-blackwing.pack',import.meta.url)},
+ {"id":"datsun-520","label":"Mirabelle Clover 1966","bodyRef":"Mirabelle-Clover-1966-finished","wheelRef":"Mirabelle-Clover-1966-wheel","capability":"Small regular-cab pickup, separate open bed",pack:new URL('./datsun-520.pack',import.meta.url)},
+ {"id":"dodge-durango-srt","label":"Bitter Dock 2018","bodyRef":"Bitter-Dock-2018-body","wheelRef":"Bitter-Dock-2018-wheel","capability":"Three-row V8 performance SUV",pack:new URL('./dodge-durango-srt.pack',import.meta.url)},
+ {"id":"fiat-124-abarth","label":"Nettle Turbo 2017","bodyRef":"Nettle-Turbo","wheelRef":"Nettle-Turbo-Wheel","capability":"Long hood, short-deck open roadster",pack:new URL('./fiat-124-abarth.pack',import.meta.url)},
+ {"id":"kia-ev6-gt","label":"2023 Volt-Hound GT","bodyRef":"Volt-Hound-GT","wheelRef":"Volt-Hound-GT-Wheel","capability":"Long-wheelbase electric crossover",pack:new URL('./kia-ev6-gt.pack',import.meta.url)},
+ {"id":"mercedes-amg-gt-r","label":"Bee Clover 2017","bodyRef":"Bee-Clover-2017","wheelRef":"Bee-Clover-2017-Wheel","capability":"Long hood, cab-back GT with wing",pack:new URL('./mercedes-amg-gt-r.pack',import.meta.url)},
+ {"id":"pontiac-gto-judge","label":"Desert Clover 1969","bodyRef":"Desert Clover 1969 Body","wheelRef":"Desert Clover 1969 Wheel","capability":"Late-1960s muscle, split grille and raised scoop",pack:new URL('./pontiac-gto-judge.pack',import.meta.url)},
+ {"id":"toyota-gr-yaris","label":"Bramble 2021","bodyRef":"Bramble-2021-finished","wheelRef":"Bramble-2021-wheel","capability":"Short wide three-door hot hatch",pack:new URL('./toyota-gr-yaris.pack',import.meta.url)}
 ];

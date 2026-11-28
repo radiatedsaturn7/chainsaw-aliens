@@ -370,7 +370,41 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   const p=hoodCover(z,u);p[1]-=g.body.cowlDuctDepth*cowlDuctMask(g.body,(z-hoodStart)/(hoodEdge-hoodStart),u);return p;
  },hoodAlong,across);
  else sheet('hood','paint',hoodStart,hoodEdge,hoodCover,hoodAlong,across);
- sheet('trunk','paint',trunkEdge,cabinRear-G,(z,u)=>coverPoint(trunkPoint,trunkEdge,g.seams.trunkSeam,z,u),small(lod?8:14,5,4,4),across);
+ const trunkCover=(z,u)=>coverPoint(trunkPoint,trunkEdge,g.seams.trunkSeam,z,u);
+ const bedEnd=cabinRear-G, pickupDepth=g.body.pickupBedDepth;
+ let pickupWellCeiling=null;
+ if(pickupDepth>0&&bedEnd-trunkEdge>.45){
+  const aft=trunkEdge+.087,fore=bedEnd-.067,l=.073,r=1-l,steps=small(18,10,9,7);
+  const rim=(z,u)=>trunkCover(z,u);
+  // A single open cargo well replaces the deck. Integral rails meet the
+  // unchanged tailgate and cabin seams; the floor retains wheel housings.
+  const bedMid=(aft+fore)/2, refY=rim(bedMid,.5)[1],baseY=Math.max(floor+.12,refY-pickupDepth);
+  const bottom=(z,u)=>{
+   const q=rim(z,u), arch=Math.max(0,1-((z+L)/(R+.075))**2);
+   const bulge=unitSmooth(clamp((Math.abs(u-.5)-.235)/.138))*arch;
+   return [q[0],baseY+Math.max(0,R*2+.067-baseY)*bulge,q[2]];
+  };
+  // Stock liner geometry is retained under the bed, and cannot protrude
+  // through the painted tub where its suspension vault crosses the deck.
+  pickupWellCeiling=(z,x)=>{
+   if(z<aft||z>fore)return Infinity;
+   let a=l,b=r;
+   for(let i=0;i<10;i++){const m=(a+b)*.5;if(rim(z,m)[0]<x)a=m;else b=m;}
+   return bottom(z,(a+b)*.5)[1]-.018;
+  };
+  const mark=(mat,geo)=>{geo.userData.section='pickup-bed';put('trunk',mat,geo);};
+  for(const [z0,z1] of [[trunkEdge,aft],[fore,bedEnd]])for(const [u0,u1,n] of [[0,l,1],[l,r,across],[r,1,1]]){
+   mark('paint',patch(1,n,(t,u)=>rim(mix(z0,z1,t),mix(u0,u1,u))));
+  }
+  for(const [a,b] of [[0,l],[r,1]])mark('paint',patch(steps,1,(t,u)=>rim(mix(aft,fore,t),mix(a,b,u))));
+  mark('paint',patch(steps,across,(t,u)=>bottom(mix(aft,fore,t),mix(l,r,u))));
+  for(const [u,flip] of [[l,false],[r,true]])mark('paint',patch(steps,1,(t,h)=>{
+   const z=mix(aft,fore,t);return lerp3(rim(z,u),bottom(z,u),h);
+  },flip));
+  for(const [z,flip] of [[aft,true],[fore,false]])mark('paint',patch(across,1,(t,h)=>{
+   const u=mix(l,r,t);return lerp3(rim(z,u),bottom(z,u),h);
+  },flip));
+ }else sheet('trunk','paint',trunkEdge,bedEnd,trunkCover,small(lod?8:14,5,4,4),across);
  for(const end of ['front','rear']){
   const front=end==='front',name=front?'hood':'trunk',k=front?'hoodSeam':'trunkSeam';
   const raw=front?hoodPoint:trunkPoint,settings=g.seams[k],sign=front?1:-1;
@@ -793,8 +827,9 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   side:(z,v,s)=>glassSides[s](clamp((cabinFront-z)/(cabinFront-cabinRear)),v),roof:roofPoint,
   frontGlass:(t,u)=>glassPoint(1,t,u),rearGlass:(t,u)=>glassPoint(-1,t,u)
  }});
- const upperSkin=roadster?(z,x)=>{
-  if(z<cabinFront||z>hoodEdge)return Infinity;
+ const upperSkin=roadster||pickupWellCeiling?(z,x)=>{
+  if(pickupWellCeiling){const y=pickupWellCeiling(z,x);if(Number.isFinite(y))return y;}
+  if(!roadster||z<cabinFront||z>hoodEdge)return Infinity;
   // Invert the actual hood chart's transverse X before evaluating its height.
   let a=0,b=1;
   for(let i=0;i<12;i++){const m=(a+b)*.5;if(hoodPoint(z,m)[0]<x)a=m;else b=m;}

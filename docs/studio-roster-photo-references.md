@@ -137,3 +137,30 @@ the sourced photos are references only, not distributed game art.
 - The Forester uses taller **Upright wrap** lenses cut into one surface, not supplemental strips over the glass. The real lenses still start higher than these.
 
 The remaining gaps include GT3 fender-to-nose continuity, the Quattro's period-specific rear profile, and the Forester's continuous lens placement relative to its rear glass. Matched renders are a visual check, not a claim of exact likeness.
+
+## Twenty editable studies
+
+Open **Graphics → 3D Car Design → Menu → Roster studies**. The menu
+contains the independently routed WRX plus nineteen studies from existing
+3D roster entries. Selecting a study replaces only the editor's current
+working design and can be undone. The ten earlier designs remain available.
+
+| Added roster study | Reference | What it exercises |
+| --- | --- | --- |
+| Alder RS 1994 | [Audi RS2 Avant B4](https://www.audi-mediacenter.com/en/photos/detail/audi-avant-rs-2-b4-model-year-1994-37228) | Low long-roof wagon, period rectangular optics, rear light bridge |
+| Ashbaron 1987 | [Buick Regal GNX](https://www.gm.com/heritage/collection/buick/1987-buick-regal-gnx) | Upright notchback, long hood and squared arches |
+| Bee Clover 2017 | [Mercedes-AMG GT R brochure](https://www.autonewspress.com/wp-content/uploads/2017/08/Mercedes-AMG-GT-R-and-GT-Roadster-Brochure.pdf) | Cab-back GT, tall vertical-slat grille and rear wing |
+| Bitter Dock 2018 | [Dodge Durango SRT](https://www.caranddriver.com/reviews/a15090514/2018-dodge-durango-srt-test-review/) | Tall three-row SUV, hood intake and broad lamp band |
+| Bramble 2021 | [Toyota GR Yaris](https://www.toyota.co.uk/content/dam/toyota/nmsc/united-kingdom/brochure-archive/gr-yaris/gr-yaris-jan-21.pdf) | Short narrow-window hatch with wide rear quarters |
+| Desert Clover 1969 | [Pontiac GTO Judge photo tour](https://silodrome.com/pontiac-gto-judge-car/) | Period muscle coupe, open quad lamps and split-style grille |
+| Greater Celandine 2022 | [CT5-V Blackwing walkaround](https://www.consumerreports.org/cars/cadillac/ct5/2022/photos-and-video/) | Modern angular sedan, deep lower fascia and quad outlets |
+| Mirabelle Clover 1966 | [Nissan Heritage Datsun 520](https://www.nissan-global.com/EN/HERITAGE_COLLECTION/datsuntruck1300.html) | Short regular cab and a real recessed open pickup bed |
+| Nettle Turbo 2017 | [Abarth 124 Spider](https://www.media.stellantis.com/uk-en/abarth/abarth-124-spider-2016-2019) | Open cockpit, long hood, rounded period-inspired fascia |
+| Volt-Hound GT 2023 | [Kia EV6 GT](https://www.kiamedia.com/us/en/models/ev6/2023) | Long-wheelbase crossover, swept lights and compact fastback roof |
+
+The roster exports are generated from the editable sources, not from an
+image-to-3D service. Runtime packs preserve the stock visual wheel-center
+measurements in the renderer's axes and physics rolling radius. They do not
+edit the car documents, vehicle physics, or suspension setup. All four
+wheel meshes count toward the 15,000-triangle limit. The previous nine
+roster exports and the separately bound WRX remain available.

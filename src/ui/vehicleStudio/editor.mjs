@@ -561,6 +561,7 @@ function inspector(){
   const subpanel=constructionFor(part);
   if(subpanel)constructionButton(root,'construction-component','Open '+CONSTRUCTION_PANELS[subpanel],subpanel,part==='tails'?'rear':'front');
   if(part==='frontBumper')noseControls(root,g);
+  if(part==='trunk')range(root,'body','pickupBedDepth',phenotype.BODY_FIELDS.pickupBedDepth,g.body.pickupBedDepth);
   select(root,'part-type',d.label+' type',d.types,p.type,v=>edit('components',part,v,'type'));
   for(const key of [...componentControls[part],...(POSITIONABLE.has(part)?['bias','angle']:[])])range(root,'components',part,{...COMPONENT_FIELDS[key],label:key==='shape'?d.shape[0].toUpperCase()+d.shape.slice(1):COMPONENT_FIELDS[key].label},p[key],key);
   if(part==='wheels'||part==='tires')for(const k of ['diameter','tireWidth','rimRatio','rearTireWidthOffset','rearRimRatioOffset'])range(root,'dimensions',k,DIMENSIONS[k],g.dimensions[k]);
@@ -703,10 +704,11 @@ $('menu').onclick=()=>menu($('menu-sheet').hidden);$('menu-close').onclick=()=>m
 $('save').onclick=()=>{download(work.save(),work.get().name+' design.json');menu(false);announce('Design saved.');};
 $('load').onclick=()=>$('design-file').click();
 const studyToggle=$('roster-study-toggle'),studyPanel=$('roster-study'),studySelect=$('roster-study-id'),studyLoad=$('roster-study-load');
-const studyById=new Map(studioRoster.map(row=>[row.id,row]));
-for(const study of studioRoster)studySelect.add(element('option',{value:study.id,textContent:study.label+' 3D'}));
+const editorStudies=[{id:'wrx-sti',label:'Field Forgetmenot 2004',capability:'2004 rally sedan and recessed optical assemblies'},...studioRoster];
+const studyById=new Map(editorStudies.map(row=>[row.id,row]));
+for(const study of editorStudies)studySelect.add(element('option',{value:study.id,textContent:study.label+' 3D'}));
 const showStudy=()=>{$('roster-study-detail').textContent=studyById.get(studySelect.value)?.capability??'';};
-studyToggle.hidden=!studioRoster.length;
+studyToggle.hidden=!editorStudies.length;
 studyToggle.onclick=()=>{studyPanel.hidden=!studyPanel.hidden;studyToggle.setAttribute('aria-expanded',String(!studyPanel.hidden));if(!studyPanel.hidden)showStudy();};
 studySelect.onchange=showStudy;
 async function loadRosterStudy(id){

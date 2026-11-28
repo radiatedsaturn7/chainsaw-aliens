@@ -10,10 +10,10 @@ import {buildStudioRoster} from '../../tools/vehicle-validation/build-studio-ros
 const json=path=>JSON.parse(readFileSync(new URL(path,import.meta.url)));
 const hardpoints=json('../../tools/vehicle-validation/studio-roster-hardpoints.json');
 const packed=e=>JSON.parse(gunzipSync(readFileSync(e.pack)));
-test('only the nine enumerated 3D roster pairs route to the Studio studies',()=>{
+test('only the nineteen enumerated 3D roster pairs route to the Studio studies',()=>{
  const refs=studioRoster.flatMap(r=>[r.bodyRef,r.wheelRef]);
- assert.equal(studioRoster.length,9);
- assert.equal(new Set(refs).size,18);
+ assert.equal(studioRoster.length,19);
+ assert.equal(new Set(refs).size,38);
  for(const ref of refs)assert.ok(studioRosterModelUrl(ref));
  assert.equal(studioRosterModelUrl('Field-Forgetmenot'),null);
  assert.equal(studioRosterModelUrl('RTG-001'),null);

@@ -182,8 +182,8 @@ export function makeOpenings({end,g,segments=32,face=null}){
  if(front){
   const gr=c.grille??{},fog=c.fogs??{};
   if(gr.type!=='closed')out.push(aperture({id:'upper-grille',component:'grille',housing:fascia.grilleShape??'trapezoid',cx:.5,cy:.415+(num(fascia.grilleHeightPosition,.5)-.5)*.43,
-   width:Math.min(mix(.155,.256,sat((num(gr.size,1)-.68)/.60))*(.56+.88*num(fascia.grilleWidth,.5)),2*(.49-Math.max(...out.filter(o=>o.center[0]<.5).flatMap(o=>o.outline.map(p=>p[0])))),2*(Math.min(...out.filter(o=>o.center[0]>.5).flatMap(o=>o.outline.map(p=>p[0])))-.51)),height:mix(.13,.238,sat((num(gr.depth,1)-.68)/.60))*(.58+.84*num(fascia.grilleHeight,.5)),
-   kind:'duct',segments,style:gr.type==='bars'?'bars':'mesh'}));
+   width:Math.min(mix(.155,.256,sat((num(gr.size,1)-.68)/.60))*(.56+.88*num(fascia.grilleWidth,.5)),2*(.49-Math.max(...out.filter(o=>o.center[0]<.5).flatMap(o=>o.outline.map(p=>p[0])))),2*(Math.min(...out.filter(o=>o.center[0]>.5).flatMap(o=>o.outline.map(p=>p[0])))-.51)),height:mix(.13,gr.type==='vertical slats'?.35:.238,sat((num(gr.depth,1)-.68)/.60))*(.58+.84*num(fascia.grilleHeight,.5)),
+   kind:'duct',segments,style:gr.type==='vertical slats'?'vertical':gr.type==='bars'?'bars':'mesh'}));
   for(const s of [-1,1]){
    const sideFog=getSideSettings(g,'fogs',s>0?'R':'L',fog);
    if(sideFog.type==='off')continue;
@@ -301,6 +301,7 @@ export function makeOpenings({end,g,segments=32,face=null}){
     const xs=aperture.outline.map(p=>p[0]);
     if(aperture.center[0]<k)width=Math.min(width,2*(k-Math.max(...xs)-.008));
     else if(aperture.center[0]>k)width=Math.min(width,2*(Math.min(...xs)-k-.008));
+    else if(aperture.style==='vertical')width=0; // Centered tall grille already occupies this portion of fascia.
    }
    if(width<.032)continue;
    out.push(aperture({id:(front?'lower-':'rear-')+'duct'+(k<.48?'-r':k>.52?'-l':''),component:grp,
@@ -517,6 +518,20 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
      putGeo(opt.matte?'ductMatte':'seamDark',[path.map(([x,y])=>pt(x,y,depth)),path.map(([x,y])=>pt(x,y,depth+.006))],
       pt(cx,(top+bottom)*.5,depth));
     }
+   }
+   if(a.style==='vertical'){
+    const inner=outline.map(([x,y])=>[mix(cy,y,.86),mix(cx,x,.91)]);
+    const slats=compact?9:11;
+    for(let j=0;j<slats;j++){
+     const x=cx+w*.82*((j+.5)/slats-.5),r=w*.012;
+     const [low,high]=spanAt(inner,x-r),[low2,high2]=spanAt(inner,x+r);
+     const lo=Math.max(low,low2),hi=Math.min(high,high2);
+     if(hi<=lo)continue;
+     const blade=[[x-r,lo],[x+r,lo],[x+r,hi],[x-r,hi]];
+     const bladeDepth=v=>blade.map(([u,y])=>pt(u,y,v));
+     putGeo('chrome',[bladeDepth(.029),bladeDepth(.035)],pt(x,(lo+hi)/2,.028));
+    }
+    continue;
    }
    for(let j=0;j<n;j++){
     const y=cy+h*.52*((j+.5)/n-.5),r=h*(a.style==='bars'?.025:.014);
