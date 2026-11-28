@@ -17938,5 +17938,167 @@
     ],
     "reference": "2012 United States Chrysler 200, LX2.4 gasoline non-PZEV sedan, package24H, four-speed automatic, standard17-inch wheelcovers; not convertible,200S,V6 orsecond-generation9AT",
     "canonicalLampSides": true
+  },
+  {
+    "id": "acura-nsx-na1-us-1991",
+    "label": "Lunaria 30 1991",
+    "capability": "US NA1 with fixed black roof, parked painted pop-up lids, five-spoke stagger and continuous rear light panel",
+    "reference": "Stock US1991 Acura NSX3.0 five-speed manual LHD coupe",
+    "carId": "3d-lunaria-30-1991-3d-9b452241a7c9",
+    "bodyRef": "Lunaria-30",
+    "wheelRef": "Lunaria-30-Wheel",
+    "radius": 0.3157,
+    "axles": [
+      {
+        "track": 1.5099999904632568,
+        "y": 0.3156999945640564,
+        "z": 1.4673999547958374
+      },
+      {
+        "track": 1.5299999713897705,
+        "y": 0.33702799677848816,
+        "z": -1.062600016593933
+      }
+    ],
+    "stockWheelPositions": {
+      "FL": [
+        -0.7549999952316284,
+        0.3156999945640564,
+        1.4673999547958374
+      ],
+      "FR": [
+        0.7549999952316284,
+        0.3156999945640564,
+        1.4673999547958374
+      ],
+      "RL": [
+        -0.7649999856948853,
+        0.33702799677848816,
+        -1.062600016593933
+      ],
+      "RR": [
+        0.7649999856948853,
+        0.33702799677848816,
+        -1.062600016593933
+      ]
+    },
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "+z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            0.5410000085830688,
+            0.335999995470047,
+            2.178499937057495
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            -0.5410000085830688,
+            0.335999995470047,
+            2.178499937057495
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            0.5659999847412109,
+            0.5519999861717224,
+            -2.192500114440918
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            -0.5659999847412109,
+            0.5519999861717224,
+            -2.192500114440918
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            0.7549999952316284,
+            0.3156999945640564,
+            1.4673999547958374
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            -0.7549999952316284,
+            0.3156999945640564,
+            1.4673999547958374
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            0.7649999856948853,
+            0.33702799677848816,
+            -1.062600016593933
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            -0.7649999856948853,
+            0.33702799677848816,
+            -1.062600016593933
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
   }
 ]

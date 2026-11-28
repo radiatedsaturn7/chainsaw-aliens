@@ -14,12 +14,12 @@ const get=(body,key)=>body.joints.find(j=>j.name==='WheelMount_'+key).position;
 const mean=(a,b)=>a.map((n,i)=>(n+b[i])/2);
 const unit=(x,y,z)=>{const l=Math.hypot(x,y,z)||1;return [x/l,y/l,z/l];};
 
-// A few stock source models were authored looking down -Z despite an identity
-// runtime binding. Record raw anchors before half-turning them; side is a
-// physical signed chassis slot, never inferred from the legacy source suffix.
+// Stock anchors may be +Z-forward or need the existing -Z half-turn. Borrows
+// raw model coordinates, with sides inferred from signed chassis X, not names.
 export function normalizeStockFrame(frame){
  if(frame===undefined)return null;
- assert.equal(frame.forward,'-z');
+ assert.ok(frame.forward==='+z'||frame.forward==='-z','Unsupported stock frame axis');
+ const direction=frame.forward==='+z'?1:-1;
  assert.equal(frame.basis,'raw-stock-model');
  assert.equal(frame.joints.length,8);
  const destination=new Map();
@@ -29,11 +29,11 @@ export function normalizeStockFrame(frame){
   assert.ok(rotation.length===4&&rotation.every(Number.isFinite)&&Math.abs(Math.hypot(...rotation)-1)<1e-6);
   const [x,y,z]=position,[qx,qy,qz,qw]=rotation;
   const front=parts[1]==='WheelMount_F'||parts[1]==='HeadlightMount_';
-  assert.equal(Math.sign(z),front?-1:1,'Raw axle/light end disagrees with frame: '+name);
-  const key=parts[1]+(-x<0?'L':'R');
+  assert.equal(Math.sign(z),front?direction:-direction,'Raw axle/light end disagrees with frame: '+name);
+  const key=parts[1]+(direction*x<0?'L':'R');
   assert.ok(!destination.has(key),'Duplicate stock anchor destination: '+key);
   // Canonicalize signed zeros so a JSON round-trip preserves exact joints.
-  destination.set(key,{source:name,position:[-x,y,-z],rotation:[qz,qw,-qx,-qy].map(v=>v===0?0:v)});
+  destination.set(key,{source:name,position:[direction*x,y,direction*z],rotation:(direction>0?rotation:[qz,qw,-qx,-qy]).map(v=>v===0?0:v)});
  }
  return destination;
 }

@@ -949,3 +949,8 @@ The Tipo, Idea, Espace and all contemporary Acura/Infiniti/Lexus studies from th
 - Chrysler [official 2012 US sedan specifications](https://s3.amazonaws.com/chryslermedia.iconicweb.com/mediasite/specs/2012_CH_200_Specs.pdf), [2012 brochure with standard LX 17-inch steel wheel cover](https://www.auto-brochures.com/makes/Chrysler/200/Chrysler_US%20200_2012.pdf), [actual 2012 LX photo gallery](https://www.crainhyundailittlerock.com/used-Little%2BRock-2012-Chrysler-200-LX-1C3CCBAB3CN105062). Chrome horizontal bar opening, swept lamp envelopes, covered steel wheel material rather than alloys. Native chrome perimeter and lamps do not reproduce the actual upper aperture/lenses precisely.
 
 The DTS remains held: its headlight/grille and rear proportions depart too far from the photographed car. No vehicle dynamics or shared editor changes.
+
+### Full-roster rollout: first-year US Acura NSX
+
+- Lunaria 30 1991: US 3.0-liter NA1 five-speed coupe with Formula Red body, black fixed roof, short integrated rear wing, staggered five-spoke wheels and black left-hand-drive cabin. [Acura factory press kit](https://acuranews.com/en-US/releases/release-4edb8848ab8a9f2f9a24ee004c34ca7a-1991-acura-nsx-introduction) includes parked and raised headlamp photos, front and rear three-quarter views, and side profile. Not a Japanese Type R or the later fixed-light facelift.
+- Studio keeps the original stock wheel and beam pivots and does not change the cockpit camera or handling. In this first pass the painted pop-up covers stay parked; the bumper contains the powered beam elements and narrow separate marker apertures. The nose and rear light bar remain approximations of the reference.

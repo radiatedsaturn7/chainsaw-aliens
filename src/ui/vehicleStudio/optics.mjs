@@ -178,7 +178,7 @@ export function makeOpenings({end,g,segments=32,face=null}){
  if(parked){
   // This prototype keeps the rectangular upper lids closed at rest and
   // does not animate them. Reuse the active optics as lower bank lamps.
-  const cy=.728;
+  const cy=.728-Math.max(0,Math.min(.24,num(g.construction.hood.parkedLampRaise,0)));
   out.push(aperture({id:'head'+(s>0?'-l':'-r'),component:'headlights',
    housing:'round-rect',cx:s>0?1-sideX:sideX,cy,width:Math.min(.154,w*.64),height:.088,
    side:s,opt:{...opt,angle:0,sweep:.5,sideWrap:0,silverFront:0},segments}));

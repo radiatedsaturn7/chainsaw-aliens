@@ -38,3 +38,26 @@ test('opt-in beam anchor sides follow physical chassis X and preserve all lamp t
  }
  assert.deepEqual(old.faces,body.faces);
 });
+
+test('explicit +Z factory frames keep measured lamp and wheel anchors without rotating them',()=>{
+ const base=JSON.parse(fs.readFileSync(new URL('../../tools/vehicle-validation/studio-roster-hardpoints.json',import.meta.url)))
+   .find(row=>row.id==='mini-r56-jcw-2009');
+ const from=buildStudioRoster(base).pair.body.joints;
+ const selected=from.filter(j=>/^(WheelMount_[FR]|HeadlightMount_|TaillightMount_)[LR]$/.test(j.name));
+ const canonical=selected.map(({name,position,rotation})=>({name,position:[...position],rotation:[...rotation]}));
+ const raw=canonical.map(j=>({...j,name:j.name.slice(0,-1)+(j.name.endsWith('L')?'R':'L')}));
+ const input={basis:'raw-stock-model',forward:'+z',joints:raw},before=structuredClone(input);
+ const normalized=normalizeStockFrame(input);
+ for(const j of canonical){
+  assert.deepEqual(normalized.get(j.name).position,j.position);
+  assert.deepEqual(normalized.get(j.name).rotation,j.rotation.map(v=>v===0?0:v));
+  assert.equal(normalized.get(j.name).source.at(-1),j.name.endsWith('L')?'R':'L');
+ }
+ const built=buildStudioRoster({...base,stockFrame:input}).pair.body;
+ for(const j of canonical){
+  const actual=built.joints.find(k=>k.name===j.name);
+  assert.deepEqual(actual.position,j.position);
+  assert.deepEqual(actual.rotation,j.rotation.map(v=>v===0?0:v));
+ }
+ assert.deepEqual(input,before);
+});

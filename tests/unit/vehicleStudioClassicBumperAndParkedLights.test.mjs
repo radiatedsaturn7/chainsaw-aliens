@@ -47,3 +47,19 @@ test('parked covers retain functional lower headlights without altering default 
  assert(exp.metrics.carTriangles<=15000);
  assert.deepEqual(exportVehicle(loadVehicle(serializeVehicle(g)),{quality:'drive'}),exp);
 });
+
+test('raising lamps with parked covers is opt-in and leaves the painted cover geometry fixed',()=>{
+ const normal=load('pontiac-firebird-ws6');
+ const raised=structuredClone(normal);
+ raised.construction.hood.parkedLampRaise=.095;
+ const a=generateVehicle(normal,{quality:'drive',compact:1}),b=generateVehicle(raised,{quality:'drive',compact:1});
+ try{
+  const head=p=>p.fascia.front.openings.filter(o=>o.component==='headlights');
+  const covers=p=>p.parts.filter(q=>q.geometry.userData.constructionRole==='headlamp covers / painted lid');
+  assert.equal(head(a).length,2);assert.equal(head(b).length,2);
+  assert(head(b).every((o,i)=>Math.min(...head(a)[i].outline.map(v=>v[1]))-Math.min(...o.outline.map(v=>v[1]))>.09));
+  assert.equal(covers(a).length,2);assert.equal(covers(b).length,2);
+  assert.deepEqual(covers(a).map(p=>p.geometry.attributes.position.array),covers(b).map(p=>p.geometry.attributes.position.array));
+  assert.deepEqual(b.diagnostics.issues,[]);
+ }finally{disposeDesign(a);disposeDesign(b);}
+});
