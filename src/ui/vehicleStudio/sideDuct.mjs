@@ -41,3 +41,11 @@ export function cowlDuctMask(body,u,v){
  return smooth(0,.11,a)*(1-smooth(.92,1,a))*smooth(0,.13,aligned)*
   (1-smooth(.90,1,aligned))*smooth(.19,.31,a+aligned*.63);
 }
+
+// A short upright inlet on the leading rear quarter, ahead of the wheel.
+export function quarterDuctMask(body,u,v){
+ const end=.968,start=end-body.quarterDuctWidth,t=(u-start)/(end-start);
+ const top=.255-.063*t,bottom=.743-.085*t;
+ const edge=.031;
+ return smooth(0,.125,t)*(1-smooth(.89,1,t))*smooth(top,top+edge,v)*(1-smooth(bottom-edge,bottom,v));
+}

@@ -253,3 +253,35 @@ and compound curvature on all three need further refinement.
 Painted pickup cab frames and inset window seals are distinct native surfaces.
 The Frontier's grille cheeks and King Cab door shutline need refinement.
 The CTS-V needs a deeper, more tapered hood-to-lamp transition.
+
+### Full-roster rollout, MR2, Porsche, and US sedan trims
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Glimmer 1986 | US Toyota MR2 AW11 naturally aspirated 5MT, solid roof and early bumpers. [Factory brochure](https://importarchive.com/brochure/toyotamr21986_01). |
+| Glowmoth SC 1988 | US Toyota MR2 Supercharged AW11 5MT with closed T-bar and raised engine-deck louvers. [Original trim gallery](https://bringatrailer.com/listing/1988-toyota-mr2-supercharged-14/). |
+| Scarlet Pimpernel 1995 | UK Toyota MR2 GT SW20 naturally aspirated 5MT with single glazed sunroof. [Toyota UK revision press kit](https://media.toyota.co.uk/wp-content/uploads/sites/5/pdf/MR2-Gen2-new-engine.pdf); [UK car gallery](https://www.carandclassic.com/car/C1738137). |
+| Harebell RS 1973 | Porsche 911 Carrera RS 2.7 M471 Sport. [Porsche Museum](https://newsroom.porsche.com/en/press-kits/Porsche-Museum/Porsche-911-Carrera-RS-2.7.html); [M471 gallery](https://www.elferspot.com/en/car/porsche-911-carrera-rs-1973-4815469/). |
+| Heatherbell S 1987 | Porsche 959 Sport road car. [Factory line drawings](https://files.porsche.com/f/332100/9d047328aa/kat010-e-959-88-katalog.pdf); [Sport-specific hardware gallery](https://backoffice.rmsothebys.com/auctions/mi25/lots/r0090-1988-porsche-959-sport/) (1988 example). |
+| Sainfoin 1985 | Porsche 944 Turbo, European launch model. [Porsche Classic](https://www.porsche.com/germany/accessoriesandservice/classic/models/944/944-turbo/); [period launch brochure](https://porschecarshistory.com/wp-content/old/brochures5/11/1985%20944%20Turbo.pdf). |
+| Ironwood V8 2004 | US Mercury Marauder, distinct black grille, exhaust, and staggered wheel treatment. [Period Mercury brochure](https://www.auto-brochures.com/makes/Mercury/Marauder/Mercury_US%20Marauder_2004.pdf); [trim gallery](https://journal.classiccars.com/2024/07/08/PICK-OF-THE-DAY-2004-MERCURY-MARAUDER-2/). |
+| Skullcap 2001 | US Mercury Grand Marquis GS, upright chrome grille and covered wheels. [Factory brochure](https://xr793.com/wp-content/uploads/2023/02/2001-Mercury-Grand-Marquis.pdf); [exact GS trim specifications](https://www.edmunds.com/mercury/grand-marquis/2001/sedan/st-100001496/features-specs/). |
+| Snowberry Clover 2005 | US Lincoln LS V8 Sport, not the optional LSE body kit. [Factory brochure](https://xr793.com/wp-content/uploads/2016/10/2005-Lincoln-LS.pdf); [vehicle gallery](https://bringatrailer.com/listing/2005-lincoln-ls/). |
+
+The MR2s use model-specific roof panels and engine decks; the SW20 still
+needs its rear buttresses and side opening refined. The 959's wing is
+simplified and the 944's parked covers remain static. The Grand Marquis
+wheel-cover ornament and greenhouse need a closer fit.
+
+### Full-roster rollout, two Clio variants
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Graceful Clover 2000 | German-market 2000 Renault Clio II Renault Sport 172 Phase I. [2000 build, matched exterior gallery](https://auctions.wbandsons.com/auction/lot/lot-103---2000-renault-clio-172/?lot=2532&sd=1) (UK RHD). |
+| Vesper V6 2003 | German-market 2003 Renault Clio V6 Phase II 255. [Silver 2003 Phase II exterior](https://collectingcars.com/for-sale/2003-renault-clio-v6-phase-2-3) (UK RHD); [matched period exterior](https://www.iconicauctioneers.com/2003-renault-clio-v6-recc32164-6-tatton-0624). |
+
+The V6 has wider shoulders and independent recessed rear-quarter intakes.
+The 172's rear roof and the V6's fascia transitions still need attention.
+The Clio Williams study is not registered: its old model is authored
+nose-toward-negative-Z with an identity body binding. Its frame needs
+separate verification before releasing the new visual.

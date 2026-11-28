@@ -240,10 +240,18 @@ export function makeOpenings({end,g,segments=32,face=null}){
     opt:{corner:.74},kind:'duct',segments,style:'vertical'}));
   }else if(gr.type!=='closed')out.push(aperture({id:'upper-grille',component:'grille',housing:fascia.grilleShape??'trapezoid',cx:.5,cy:.415+(num(fascia.grilleHeightPosition,.5)-.5)*.43,
    width:Math.min(mix(.155,.256,sat((num(gr.size,1)-.68)/.60))*(.56+.88*num(fascia.grilleWidth,.5)),2*(.49-Math.max(...out.filter(o=>o.center[0]<.5).flatMap(o=>o.outline.map(p=>p[0])))),2*(Math.min(...out.filter(o=>o.center[0]>.5).flatMap(o=>o.outline.map(p=>p[0])))-.51)),height:mix(.13,(gr.type==='vertical slats'||gr.type==='seven-slot')?.35:.238,sat((num(gr.depth,1)-.68)/.60))*(.58+.84*num(fascia.grilleHeight,.5)),
-   kind:'duct',segments,style:gr.type==='crosshair'?'crosshair':gr.type==='seven-slot'?'seven-slot':gr.type==='vertical slats'?'vertical':gr.type==='bars'?'bars':'mesh'}));
+   kind:'duct',segments,opt:{bezel:num(fascia.grilleBezel,0)},style:gr.type==='crosshair'?'crosshair':gr.type==='seven-slot'?'seven-slot':gr.type==='vertical slats'?'vertical':gr.type==='bars'?'bars':'mesh'}));
   for(const s of [-1,1]){
    const sideFog=getSideSettings(g,'fogs',s>0?'R':'L',fog);
    if(sideFog.type==='off')continue;
+   if(sideFog.type==='amber strip'){
+    // This low-voltage indicator keeps its own recessed fascia opening
+    // when the main beam moves to a fender pod or configurable hood chart.
+    out.push(aperture({id:'signal'+(s>0?'-l':'-r'),component:'fogs',housing:'round-rect',
+     cx:.5+s*.319,cy:.47,width:.085*num(sideFog.size,1),height:.065*num(sideFog.depth,1),
+     kind:'signal',segments:Math.min(12,segments),side:s,opt:{corner:.31}}));
+    continue;
+   }
    out.push(aperture({id:'fog'+(s>0?'-l':'-r'),component:'fogs',
    housing:sideFog.type==='strip'||sideFog.type==='blank'?'round-rect':'oval',cx:.5+s*.277,cy:.765,
    width:mix(.065,.151,sat(num(sideFog.size,1)*.53)),height:sideFog.type==='strip'?.070:mix(.107,.174,sat(num(sideFog.depth,1)*.52))*(sideFog.type==='blank'?mix(.60,1.75,num(fascia.fogCoverHeight,.5))/1.175:1),
@@ -533,7 +541,16 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
   }
   const mouth=ring(1,0); const lip=ring(.965,.005), seat=ring(.912,.015);
   // Shared rim exactly duplicated at d=0 (no opening exists behind a closed slab).
-  putGeo('paint',[mouth,lip]);putGeo('trim',[lip,seat]);
+  const grilleBezel=a.id==='upper-grille'?sat(num(opt.bezel,0)):0;
+  if(grilleBezel>0){
+   const outer=ring(.986,.0018),inner=ring(mix(.967,.931,grilleBezel),.0068);
+   putGeo('paint',[mouth,outer]);putGeo('chrome',[outer,inner]);putGeo('trim',[inner,seat]);
+  }else{putGeo('paint',[mouth,lip]);putGeo('trim',[lip,seat]);}
+  if(kind==='signal'){
+   putGeo('reflector',[seat,ring(.86,.023)],pt(cx,cy,.023));
+   putGeo(side>0?'signalR':'signalL',[ring(.895,.012),ring(.78,.009)],pt(cx,cy,.009));
+   continue;
+  }
   if(kind==='blank'){
    const stamp=sat(num(opt.fogCoverStamp,0));
    // Retain existing loops; the opposing return slope catches highlights

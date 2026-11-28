@@ -1,4 +1,4 @@
-import {sideDuctMask,cowlDuctMask} from './sideDuct.mjs';
+import {sideDuctMask,cowlDuctMask,quarterDuctMask} from './sideDuct.mjs';
 import {auditVehicleGeometry} from './audit9.mjs';
 import {studioMaps,studioTextureBytes} from './detail9.mjs';
 import {wheelTireTexture,wheelRotorTexture} from './wheels9.mjs';
@@ -9,6 +9,7 @@ const PALETTE={
  'bonnet-stripes':['Twin bonnet stripes','paint'],
  'cowl-duct':['Twin hood cowl ducts','paint'],
  'side-duct':['Sculpted door-side duct','paint'],
+ 'quarter-duct':['Sculpted rear-quarter cooling intake','paint'],
  'fascia-front':['Front fascia insert skin','paint'],'fascia-rear':['Rear fascia insert skin','paint'],
  ductMatte:['Matte intake backing','trim'],
  roofPaint:['Contrast hardtop paint','paint'],paint:['Coachwork paint','paint'],wheel:['Wheel alloy','alloy'],glass:['Cabin glass','glass'],rubber:['Tire rubber','rubber'],
@@ -72,7 +73,7 @@ function stripeTexture(g){
 export function materialDoc(g,key,{texture=true}={}){
  const [name,preset]=PALETTE[key];const fascia=key.startsWith('fascia-')?key.slice(7):null;const rimFace=key==='wheel',maps=texture?studioMaps(key==='rubber'?'tire':key.startsWith('signal')?'indicator':key==='runningRed'?'opticRed':key):{};
  return {id:'studio-mat-'+key,name,color:fascia||key==='bonnet-stripes'||key.endsWith('-duct')?'#ffffff':g.materials[key],
-  texture:!texture?null:fascia?fasciaInsertTexture(g,fascia):key==='bonnet-stripes'?stripeTexture(g):key==='side-duct'?ductTexture(g,sideDuctMask):key==='cowl-duct'?ductTexture(g,cowlDuctMask):key==='glass'?solidTexture(g.components.glass.type==='tinted'?'#ffffff70':'#ffffff48'):key==='opticCover'?solidTexture('#ffffff31'):key==='rubber'?wheelTireTexture(g.components.tires.type,g.components.tires.shape,g.components.tires.depth):key==='rotor'?wheelRotorTexture():null,
+  texture:!texture?null:fascia?fasciaInsertTexture(g,fascia):key==='bonnet-stripes'?stripeTexture(g):key==='quarter-duct'?ductTexture(g,quarterDuctMask):key==='side-duct'?ductTexture(g,sideDuctMask):key==='cowl-duct'?ductTexture(g,cowlDuctMask):key==='glass'?solidTexture(g.components.glass.type==='tinted'?'#ffffff70':'#ffffff48'):key==='opticCover'?solidTexture('#ffffff31'):key==='rubber'?wheelTireTexture(g.components.tires.type,g.components.tires.shape,g.components.tires.depth):key==='rotor'?wheelRotorTexture():null,
   automotive:{preset:key==='rubber'?'rubber':preset,creaseAngle:0, ...maps,...(rimFace?{roughness:.27}:{}),...(key==='ductMatte'?{roughness:.97,metalness:0}:{}),...(key==='rotor'?{roughness:1,metalness:1}:{}),...(key==='barrel'?{roughness:1,metalness:1}:{}),...(key==='opticSilver'?{metalness:.86,roughness:.26}:{}),...(preset==='paint'?{paintCalibration:true,
     ...(g.construction.finish.paintRoughness!==.44?{roughness:g.construction.finish.paintRoughness}:{}),
     ...(g.construction.finish.coatRoughness!==.12?{paintClearcoatRoughness:g.construction.finish.coatRoughness}:{})}:{} )}};

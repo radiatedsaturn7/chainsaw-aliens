@@ -51,7 +51,7 @@ export function emitFlushHoodLids({cover,hoodLength,settings,across,along,compac
  }
  for(const lid of paired){
   if(inset){
-   if(settings.bonnetStripes&&lampMounts){
+   if((settings.insetLampMounts||settings.bonnetStripes)&&lampMounts){
     const p=surface(...lid.center);p[1]-=.023;
     lampMounts['HeadlightMount_'+(lid.center[0]>.5?'L':'R')]=p;
    }

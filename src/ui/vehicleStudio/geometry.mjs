@@ -1,4 +1,4 @@
-import {sideDuctMask,cowlDuctMask} from './sideDuct.mjs';
+import {sideDuctMask,cowlDuctMask,quarterDuctMask} from './sideDuct.mjs';
 import * as T from '../../vendorBridge/three.js';
 import {createEndSurface,fasciaMesh} from './fascia.mjs';
 import {emitFlushHoodLids} from './hoodLids.mjs';
@@ -225,6 +225,8 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    const p=(v-stampLine(z))/doorStampWidth;
    x+=doorStamp*stampFade(z)*(Math.exp(-p*p)-.48*Math.exp(-((p+.99)**2)));
   }
+  if(comp==='rearFenders'&&g.body.quarterDuct)
+   x-=g.body.quarterDuctDepth*quarterDuctMask(g.body,(z-bumperRear)/Math.max(.11,doorRear-bumperRear),v);
   if(comp==='doors'){
    if(g.body.sideDuct)x-=g.body.sideDuctDepth*sideDuctMask(g.body,(z-doorRear)/(doorFront-doorRear),v);
    for(const hz of handleStations)x-=(.002+.013*g.body.handleRecess)*Math.exp(-((v-.22)**2)/.0034-((z-hz)**2)/.008);
@@ -277,6 +279,12 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    const t=clamp((z-bumperRear)/Math.max(.10,cabinRear-bumperRear)),x=Math.abs(v*2-1);
    const bell=Math.exp(-(((x-.46)/.21)**2))*(1-unitSmooth(clamp((x-.69)/.31)));
    p[1]+=rise*unitSmooth(clamp(t/.86))*bell;
+  }
+  if(canopy.raisedEngineLid){
+   const t=clamp((z-bumperRear)/Math.max(.10,cabinRear-bumperRear)),u=Math.abs(2*v-1);
+   const longitudinal=unitSmooth(clamp((t-.11)/.22))*unitSmooth(clamp((.94-t)/.19));
+   const shoulders=unitSmooth(clamp((u-.08)/.19))*unitSmooth(clamp((.83-u)/.24));
+   p[1]+=.071*canopy.raisedEngineLid*longitudinal*shoulders;
   }
   p[1]+=UP_PATCH(g,'trunk',z,v,bumperRear,cabinRear);return p;};
  const ends={},fascia={},lampMounts={},exhaustMounts=new Map();
@@ -453,6 +461,21 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    const u=mix(l,r,t);return lerp3(rim(z,u),bottom(z,u),h);
   },flip));
  }else sheet('trunk','paint',trunkEdge,bedEnd,trunkCover,small(lod?8:14,5,4,4),across);
+ if(canopy.raisedEngineLid&&pickupDepth===0&&bedEnd-trunkEdge>.16){
+  const amount=canopy.raisedEngineLid;
+  for(const side of [-1,1])for(let i=0;i<4;i++){
+   const frac=.32+i*.118;
+   const a=mix(.50,.89,amount),z=mix(trunkEdge,bedEnd,frac);
+   const row=patch(1,small(9,6,5,4),(t,u)=>{
+    const spread=mix(.12,.33,u)*a;
+    const p=trunkCover(z+(.003+.011*amount)*t,.50+side*spread);
+    p[1]+=.0028;
+    return p;
+   },side<0);
+   row.userData.constructionRole='raised engine-deck louver';
+   put('trunk','seamDark',row);
+  }
+ }
  for(const end of ['front','rear']){
   const front=end==='front',name=front?'hood':'trunk',k=front?'hoodSeam':'trunkSeam';
   const raw=front?hoodPoint:trunkPoint,settings=g.seams[k],sign=front?1:-1;
@@ -514,7 +537,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     }
    }else{
     const stations=adaptiveStations(sampler,{lod,compact});
-    const duct=key==='doors'&&g.body.sideDuct;
+    const duct=key==='doors'&&g.body.sideDuct,quarter=key==='rearFenders'&&g.body.quarterDuct;
     const doorUvs=[];
     const panel=patch(stations.length-1,down,(u,v)=>{
      const t=stations[Math.round(u*(stations.length-1))];
@@ -530,7 +553,14 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     },s<0);
     lowerRails.push(readLowerRail(panel,stations.length-1,down,i=>mix(a,b,stations[i])));
     if(duct)panel.setAttribute('uv',new T.Float32BufferAttribute(doorUvs,2));
-    put(key,duct?'side-duct':'paint',panel);
+    if(quarter){
+     const uv=panel.attributes.uv;
+     for(let i=0;i<uv.count;i++){
+      const t=stations[Math.round(uv.getX(i)*(stations.length-1))];
+      uv.setX(i,(mix(a,b,t)-bumperRear)/Math.max(.11,doorRear-bumperRear));
+     }
+    }
+    put(key,duct?'side-duct':quarter?'quarter-duct':'paint',panel);
    }
    joins.push({a,b,component:key,side:s});
   }
@@ -654,7 +684,25 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   }
   return q;};
  if(!roadster){
-  sheet('roof',coveredTarga?'trim':canopy.hardtopContrast?'roofPaint':'paint',roofRear,roofFront,canopyRoof,small(17,9,8,7),small(12,9,8,7));
+  const roofMode=coveredTarga?0:Math.round(canopy.roofGlazing);
+  const roofFinish=coveredTarga?'trim':canopy.hardtopContrast?'roofPaint':'paint';
+  if(!roofMode)sheet('roof',roofFinish,roofRear,roofFront,canopyRoof,small(17,9,8,7),small(12,9,8,7));
+  else{
+   // The glass and weatherstrips partition the same master surface; no
+   // duplicate paint underneath panes, including underneath the T-bar.
+   const tbar=roofMode===2, zStops=tbar?[0,.155,.172,.862,.879,1]:[0,.305,.322,.826,.843,1];
+   const uStops=tbar?[0,.018,.448,.464,.536,.552,.982,1]:[0,.158,.175,.825,.842,1];
+   for(let iz=0;iz<zStops.length-1;iz++)for(let iu=0;iu<uStops.length-1;iu++){
+    const pane=iz===2&&(tbar?iu===1||iu===5:iu===2);
+    const seal=iz>=1&&iz<=3&&(tbar?iu===0||iu===2||iu===4||iu===6||(iz!==2&&(iu===1||iu===5)):iu>=1&&iu<=3);
+    const z1=zStops[iz],z2=zStops[iz+1],u1=uStops[iu],u2=uStops[iu+1];
+    const n=Math.max(1,Math.round((z2-z1)*small(25,12,11,9))),m=Math.max(1,Math.round((u2-u1)*small(22,13,11,9)));
+    const mesh=patch(n,m,(t,u)=>canopyRoof(mix(roofRear,roofFront,mix(z1,z2,t)),mix(u1,u2,u)));
+    mesh.userData.constructionRole=pane?'roof glazing':seal?'roof seal':'roof frame';
+    put('roof',pane?'glass':seal?'seamDark':roofFinish,mesh);
+   }
+  }
+
   buildRoofRails({put,roof:roofPoint,front:roofFront,rear:roofRear,amount:canopy.utilityRoofRails,compact});
  }else{
   // Roadster's fixed windscreen header and a restrained tonneau over the
