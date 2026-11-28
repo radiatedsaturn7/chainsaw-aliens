@@ -254,16 +254,17 @@ export function makeOpenings({end,g,segments=32,face=null}){
  }
  if(front){
   const gr=c.grille??{},fog=c.fogs??{};
-  if(gr.type==='deep mesh frame'||gr.type==='deep vertical frame'){
+  const broadBars=gr.type==='broad chrome bars';
+  if(gr.type==='deep mesh frame'||gr.type==='deep vertical frame'||broadBars){
    const winged=fascia.grilleShape==='winged';
-   const cy=winged?.25+num(fascia.grilleHeightPosition,.5)*.26:.479+(num(fascia.grilleHeightPosition,.5)-.5)*.27;
-   const h=Math.min(mix(winged?.26:.360,winged?.49:.681,num(fascia.grilleHeight,.5)),2*(cy-.096),2*(.933-cy));
+   const cy=broadBars?.243+num(fascia.grilleHeightPosition,.5)*.27:winged?.25+num(fascia.grilleHeightPosition,.5)*.26:.479+(num(fascia.grilleHeightPosition,.5)-.5)*.27;
+   const h=Math.min(mix(broadBars?.21:winged?.26:.360,broadBars?.54:winged?.49:.681,num(fascia.grilleHeight,.5)),2*(cy-.096),2*(.933-cy));
    const free=Math.min(.49-Math.max(...out.filter(o=>o.center[0]<.5).flatMap(o=>o.outline.map(p=>p[0]))),
     Math.min(...out.filter(o=>o.center[0]>.5).flatMap(o=>o.outline.map(p=>p[0])))-.51);
-   const w=Math.min(mix(.234,.475,num(fascia.grilleWidth,.5)),2*free);
+   const w=Math.min(mix(.234,broadBars?.545:.475,num(fascia.grilleWidth,.5)),2*free);
    if(w>.075)out.push(aperture({id:'upper-grille',component:'grille',kind:'duct',
     housing:fascia.grilleShape??'trapezoid',cx:.5,cy,width:w,height:h,
-    opt:{corner:.58,bezel:num(fascia.grilleBezel,0),throatDepth:num(fascia.lowerIntakeDepth,0)},segments,style:gr.type==='deep vertical frame'?'vertical':'mesh'}));
+    opt:{corner:.58,bezel:num(fascia.grilleBezel,0),throatDepth:num(fascia.lowerIntakeDepth,0)},segments,style:broadBars?'broad-bars':gr.type==='deep vertical frame'?'vertical':'mesh'}));
   }else if(gr.type==='twin deep mesh'){
    const cy=.488+(num(fascia.grilleHeightPosition,.5)-.5)*.32;
    const h=mix(.16,.44,num(fascia.grilleHeight,.5))*num(gr.depth,1);
@@ -704,7 +705,8 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
    const d=.047+extra, back=ring(mix(.79,.88,extra/.055),d);
    const ductMaterial=opt.matte?'ductMatte':opt.upperBar?'seamDark':'trim';
    putGeo(ductMaterial,[seat,ring(mix(.857,.90,extra/.055),.028+extra*.36),back],pt(cx,cy,d-.002));
-   const n=compact?(a.style==='bars'?3:4):a.style==='bars'?4:7, inset=outline.map(([x,y])=>[mix(cx,x,.74),mix(cy,y,.73)]);
+   const broad=a.style==='broad-bars';
+   const n=broad?3:compact?(a.style==='bars'?3:4):a.style==='bars'?4:7, inset=outline.map(([x,y])=>[mix(cx,x,broad?.86:.74),mix(cy,y,broad?.83:.73)]);
    // Join a recessed inlet cap to the inner outline, not over the rim.
    // Matching widths at the top/bottom keep the bar inside rounded corners.
    if(opt.upperBar){
@@ -757,12 +759,13 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
     continue;
    }
    for(let j=0;j<n;j++){
-    const y=cy+h*.52*((j+.5)/n-.5),r=h*(a.style==='bars'?.025:.014);
-    const [l,rr]=spanAt(inset,y-r*.6),[l2,r2]=spanAt(inset,y+r*.6);
+    const y=cy+h*(broad?.67:.52)*((j+.5)/n-.5),r=h*(broad?.074:a.style==='bars'?.025:.014);
+    const spanInset=broad?1:.6;
+    const [l,rr]=spanAt(inset,y-r*spanInset),[l2,r2]=spanAt(inset,y+r*spanInset);
     const lo=Math.max(l,l2),hi=Math.min(rr,r2);
     if(!(hi>lo))continue;
     const bars=[[lo,y-r],[hi,y-r],[hi,y+r],[lo,y+r]];
-    putGeo(a.style==='bars'?'chrome':ductMaterial,[bars.map(([x,v])=>pt(x,v,.034+extra*.91)),bars.map(([x,v])=>pt(x,v,.038+extra*.91))],pt((lo+hi)/2,y,.033+extra*.91));
+    putGeo(a.style==='bars'||broad?'chrome':ductMaterial,[bars.map(([x,v])=>pt(x,v,.034+extra*.91)),bars.map(([x,v])=>pt(x,v,.038+extra*.91))],pt((lo+hi)/2,y,.033+extra*.91));
    }
    continue;
   }

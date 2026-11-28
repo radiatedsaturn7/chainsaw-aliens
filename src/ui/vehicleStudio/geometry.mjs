@@ -416,7 +416,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     return chart((a+b)*.5,v);
    });
   }
-  const shellMaterial=g.fascia[end].insertBand||g.fascia[end].lowerInsert?'fascia-'+end:'paint';
+  const shellMaterial=g.body.polymerUtilityWings&&front?'trim':g.fascia[end].insertBand||g.fascia[end].lowerInsert?'fascia-'+end:'paint';
   const pods=front&&g.body.raisedLampPods;
   const suppressHeadlamps=front&&(hoodDesign.lampLids==='inset'||pods);
   const faceOpenings=suppressHeadlamps?openings.filter(o=>o.kind!=='lamp'):openings;
@@ -689,7 +689,8 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     const front=key==='frontBumper',surf=ends[front?'front':'rear'],col=s<0?0:across,{shell,roll,trail,faceColumns}=surf.geometries;
     const fraction=trail/along;
     const face=patch(trail,down,(u,v)=>sampler(front?u*fraction:1-(1-u)*fraction,v),s<0);
-    const side=put(key,g.body.lowerCladding?'lower-clad':'paint',g.body.lowerCladding?claddingUV(face):face);
+    const polymer=g.body.polymerUtilityWings&&front;
+    const side=put(key,polymer?'trim':g.body.lowerCladding?'lower-clad':'paint',!polymer&&g.body.lowerCladding?claddingUV(face):face);
     lowerRails.push(readLowerRail(side,trail,down,i=>mix(a,b,front?i/along:1-(trail-i)/along)));
     const tipIndex=front?trail:0, at=i=>front?i:trail-i;
     for(let i=0;i<=trail;i++)weldNormals([roll,i*(across+1)+col],[side,at(i)*(down+1)]);
@@ -734,8 +735,9 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
       uv.setX(i,(mix(a,b,t)-bumperRear)/Math.max(.11,doorRear-bumperRear));
      }
     }
-    const clad=g.body.lowerCladding&&!duct&&!quarter&&!gill;
-    put(key,duct?'side-duct':quarter?'quarter-duct':gill?'fender-duct':clad?'lower-clad':'paint',clad?claddingUV(panel):panel);
+    const polymer=g.body.polymerUtilityWings&&key.endsWith('Fenders')&&!duct&&!quarter&&!gill;
+    const clad=g.body.lowerCladding&&!polymer&&!duct&&!quarter&&!gill;
+    put(key,duct?'side-duct':quarter?'quarter-duct':gill?'fender-duct':polymer?'trim':clad?'lower-clad':'paint',clad?claddingUV(panel):panel);
    }
    if(g.body.sideRubStrip&&['rearFenders','doors','frontFenders'].includes(key)){
     // Use the same authored panel chart as body paint and seams. Roll the
@@ -1330,7 +1332,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   },s<0));
   const framed=c.pillars.type==='painted frame';
   const windowPillar=c.doors.type==='four door'?.50:asymDoors&&s>0?.605:.65;
-  for(const u of roadster?[0]:split>=.25?[]:taper?(halfDoors?[0]:[0,windowPillar]):halfDoors?[0,1]:[0,windowPillar,1]){
+  for(const u of roadster?[0]:split>=.25?[]:taper?(halfDoors||canopy.pillarlessHardtop?[0]:[0,windowPillar]):halfDoors||canopy.pillarlessHardtop?[0,1]:[0,windowPillar,1]){
    const outer=u===0||u===1;
    const mat=roofStrake&&outer?'roofPaint':(c.pillars.type==='painted'||framed&&outer)&&!(u===0&&canopy.darkWindscreenFrame)?'paint':'trim',w=(.013+.027*c.pillars.shape)*c.pillars.size+(u===1?canopy.rearPillarWidth:0);
    const pillar=(v,j)=>{

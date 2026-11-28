@@ -14563,5 +14563,421 @@
     ],
     "reference": "2011 US Buick Regal CXL, naturally aspirated 2.4-liter direct-injection FWD, six-speed automatic and standard 18-inch alloys, not Turbo/GS/eAssist.",
     "canonicalLampSides": true
+  },
+  {
+    "id": "ford-fusion-s-2012",
+    "label": "Aspen Clover 2012",
+    "capability": "First-generation facelift sedan with three chrome grille bars, narrow profile and 16-inch painted five-spokes",
+    "carId": "3d-aspen-clover-2012-3d-439fe0b19e13",
+    "bodyRef": "Aspen-Clover-2012",
+    "wheelRef": "Aspen-Clover-2012-Wheel",
+    "radius": 0.3262,
+    "axles": [
+      {
+        "track": 1.5671800374984741,
+        "y": 0.326200008392334,
+        "z": 1.3639800548553467
+      },
+      {
+        "track": 1.5570199489593506,
+        "y": 0.326200008392334,
+        "z": -1.3639800548553467
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2012 US Ford Fusion S 2.5 FWD 6MT"
+  },
+  {
+    "id": "ford-flex-se-fwd-2010",
+    "label": "Woad 2010",
+    "capability": "Long low flat wagon roof, deeply squared fascia, vertical segmented rear optics and 17-inch eight-spoke alloy",
+    "carId": "3d-woad-2010-3d-43c21640c9ad",
+    "bodyRef": "Woad-2010-body",
+    "wheelRef": "Woad-2010-wheel",
+    "radius": 0.3569,
+    "axles": [
+      {
+        "track": 1.6611599922180176,
+        "y": 0.35690000653266907,
+        "z": 1.5343300104141235
+      },
+      {
+        "track": 1.6611599922180176,
+        "y": 0.35690000653266907,
+        "z": -1.4603300094604492
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2010 US Ford Flex SE 101A FWD 7-seat 6AT",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.7450000047683716,
+            0.6629999876022339,
+            -2.6648600101470947
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.7450000047683716,
+            0.6629999876022339,
+            -2.6648600101470947
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.796999990940094,
+            0.7129999995231628,
+            2.645859956741333
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.796999990940094,
+            0.7129999995231628,
+            2.645859956741333
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.8305799961090088,
+            0.35690000653266907,
+            -1.5343300104141235
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.8305799961090088,
+            0.35690000653266907,
+            -1.5343300104141235
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.8305799961090088,
+            0.35690000653266907,
+            1.4603300094604492
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.8305799961090088,
+            0.35690000653266907,
+            1.4603300094604492
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "toyota-sequoia-sr5-2005",
+    "label": "Alder Clover 2005",
+    "carId": "3d-alder-clover-2005-3d-e9a86556a4c2",
+    "capability": "2005 United States Toyota Sequoia, SR5rear-wheel-drive4.7VVT-iV8 five-speed automatic,eightseats,standard24570R16,nooptionalrack orSportPackage; not4WD/Limited",
+    "bodyRef": "Alder-Clover-2005",
+    "wheelRef": "Alder-Clover-2005-Wheel",
+    "radius": 0.37470000000000003,
+    "axles": [
+      {
+        "track": 1.67385995388031,
+        "y": 0.37470000982284546,
+        "z": 1.4998699426651
+      },
+      {
+        "track": 1.7094199657440186,
+        "y": 0.37470000982284546,
+        "z": -1.4998699426651
+      }
+    ],
+    "reference": "https://www.ms-auto.co.jp/wp-content/catalog/sequoia/sequoia_2005.pdf"
+  },
+  {
+    "id": "toyota-highlander-base-2004",
+    "label": "Birch Clover 2004",
+    "carId": "3d-birch-clover-2004-3d-09a1aef05039",
+    "capability": "2004 United States Toyota Highlander, base2.4four-cylinder front-wheel-drive four-speed automatic,five seats,nooptionalroofrack or3rdrow; not3.3V6,Limited,4WD orhybrid",
+    "bodyRef": "Birch Clover 2004 Body",
+    "wheelRef": "Birch Clover 2004 Wheel",
+    "radius": 0.3607,
+    "axles": [
+      {
+        "track": 1.5798799991607666,
+        "y": 0.36070001125335693,
+        "z": 1.3576300144195557
+      },
+      {
+        "track": 1.5646400451660156,
+        "y": 0.36070001125335693,
+        "z": -1.3576300144195557
+      }
+    ],
+    "reference": "https://www.edmunds.com/toyota/highlander/2004/st-100339428/features-specs/"
+  },
+  {
+    "id": "honda-element-ex-2006",
+    "label": "Stonepod 2006",
+    "carId": "3d-stonepod-2006-3d-7bf794d43dab",
+    "capability": "2006 US Honda Element EX 2WD 2.4L five-speed manual. Four seats and true rear-hinged half doors on both sides, standard metallic polymer fenders and 16-inch alloy wheels, without the EX-P body-color plastic or AWD glass roof.",
+    "bodyRef": "Stonepod",
+    "wheelRef": "Stonepod-Wheel",
+    "radius": 0.3537,
+    "axles": [
+      {
+        "track": 1.577340006828308,
+        "y": 0.35370001196861267,
+        "z": 1.0817352533340454
+      },
+      {
+        "track": 1.582419991493225,
+        "y": 0.3541730046272278,
+        "z": -1.49382483959198
+      }
+    ],
+    "reference": "https://hondanews.com/en-US/releases/release-8493873629d176ff002ee9004c34c10f-2006-honda-element-specifications"
+  },
+  {
+    "id": "oldsmobile-toronado-1966",
+    "label": "Sweetbriar 1966",
+    "capability": "1966 US Oldsmobile Toronado base solid-roof 425 V8 3AT, not Deluxe",
+    "carId": "3d-sweetbriar-1966-3d-14a2dd4e9e94",
+    "bodyRef": "Sweetbriar-1966-body",
+    "wheelRef": "Sweetbriar-1966-wheel",
+    "radius": 0.36675,
+    "axles": [
+      {
+        "track": 1.6129000186920166,
+        "y": 0.36675000190734863,
+        "z": 1.618299961090088
+      },
+      {
+        "track": 1.6002000570297241,
+        "y": 0.36675000190734863,
+        "z": -1.4042999744415283
+      }
+    ],
+    "reference": "1966 US Oldsmobile Toronado standard two-door hardtop,425cu.in premium-fuel Quadrajet V8, front drive, standard variable-pitch three-speed Turbo Hydra-Matic, solid roof,LHD. Standard model rather than Deluxe; generic published Toronado curb weight used as documented approximation, not trim-specific weighing.",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6759999990463257,
+            0.39500001072883606,
+            -2.7397000789642334
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6759999990463257,
+            0.39500001072883606,
+            -2.7397000789642334
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6470000147819519,
+            0.5759999752044678,
+            2.759700059890747
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6470000147819519,
+            0.5759999752044678,
+            2.759700059890747
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.8064500093460083,
+            0.36675000190734863,
+            -1.618299961090088
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.8064500093460083,
+            0.36675000190734863,
+            -1.618299961090088
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.8001000285148621,
+            0.36675000190734863,
+            1.4042999744415283
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.8001000285148621,
+            0.36675000190734863,
+            1.4042999744415283
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "oldsmobile-ciera-1995",
+    "label": "Avens 1995",
+    "capability": "1995 US Oldsmobile Ciera Series I four-door 2.2 LN2 3AT, not Cutlass Supreme",
+    "carId": "3d-avens-1995-3d-2026f2729d70",
+    "bodyRef": "Avens",
+    "wheelRef": "Avens-Wheel",
+    "radius": 0.31655,
+    "axles": [
+      {
+        "track": 1.4909800291061401,
+        "y": 0.31654998660087585,
+        "z": 1.065783977508545
+      },
+      {
+        "track": 1.4478000402450562,
+        "y": 0.3173600137233734,
+        "z": -1.5986759662628174
+      }
+    ],
+    "reference": "1995 US Oldsmobile Ciera Sedan Series I, GM A-body four-door, 2.2 LN2 inline-four / Hydra-Matic 3T40 MD9 3AT, FWD, LHD. Not Cutlass Supreme, N-body, wagon or V6.",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "oldsmobile-alero-gls-2004",
+    "label": "Marionberry Clover 2004",
+    "capability": "2004 US Oldsmobile Alero GLS 3.4 coupe 4AT, factory alloys; not sedan or Final 500",
+    "carId": "3d-marionberry-clover-2004-3d-99d2f655e2bf",
+    "bodyRef": "Marionberry-Clover-2004",
+    "wheelRef": "Marionberry-Clover-2004-Wheel",
+    "radius": 0.3157,
+    "axles": [
+      {
+        "track": 1.5011399984359741,
+        "y": 0.3156999945640564,
+        "z": 1.3588999509811401
+      },
+      {
+        "track": 1.5062199831008911,
+        "y": 0.3156999945640564,
+        "z": -1.3588999509811401
+      }
+    ],
+    "reference": "2004 United States Oldsmobile Alero, GLS two-doorcoupe3.4SFI V6 four-speedautomatic, standard16-inchpolishedwheels; notGXfour-cylinder,sedan orFinal500",
+    "canonicalLampSides": true
   }
 ]
