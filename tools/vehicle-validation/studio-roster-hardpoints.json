@@ -17756,5 +17756,73 @@
         }
       ]
     }
+  },
+  {
+    "id": "buick-enclave-cx-2008",
+    "label": "Huckleberry Clover 2008",
+    "carId": "3d-huckleberry-clover-2008-3d-a9868bb17384",
+    "capability": "2008 United States Buick Enclave, CX3.6VVT port-injectedV6 FWD six-speedautomatic, standard18-inchwheels, seven-seatcloth; notAWD,CXL orlaterdirectinjection",
+    "bodyRef": "Huckleberry Clover 2008 Body",
+    "wheelRef": "Huckleberry Clover 2008 Wheel",
+    "radius": 0.39435,
+    "axles": [
+      {
+        "track": 1.7094199657440186,
+        "y": 0.39434999227523804,
+        "z": 1.5100300312042236
+      },
+      {
+        "track": 1.7094199657440186,
+        "y": 0.39434999227523804,
+        "z": -1.5100300312042236
+      }
+    ],
+    "reference": "https://www.motorologist.com/wp-content/uploads/2008-BUICK-Enclave-Brochure.pdf"
+  },
+  {
+    "id": "renault-5-turbo-monte-1981",
+    "label": "Larkspur 1981",
+    "capability": "1981 Renault 5 Turbo Group 4 Monte Carlo winner short pre-Maxi",
+    "carId": "3d-larkspur-1981-3d-8ea951fe3409",
+    "bodyRef": "Larkspur-1981",
+    "wheelRef": "Larkspur-1981-Wheel",
+    "radius": 0.3135,
+    "axles": [
+      {
+        "track": 1.350000023841858,
+        "y": 0.31349998712539673,
+        "z": 1.215000033378601
+      },
+      {
+        "track": 1.4800000190734863,
+        "y": 0.31349998712539673,
+        "z": -1.215000033378601
+      }
+    ],
+    "reference": "1981 Renault 5 Turbo Group 4, Jean Ragnotti / Jean-Marc Andrié, Monte Carlo winner. Not later Maxi, Group B Tour de Corse, or road Turbo 2.",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "fiat-coupe-20vt-plus-1999",
+    "label": "Chokeberry Clover 1999",
+    "capability": "1999 Italy Fiat Coupe 20V Turbo Plus",
+    "carId": "3d-chokeberry-clover-1999-3d-e07fc5bf6123",
+    "bodyRef": "Chokeberry-Clover-1999-finished",
+    "wheelRef": "Chokeberry-Clover-1999-wheel",
+    "radius": 0.30445,
+    "axles": [
+      {
+        "track": 1.4986000061035156,
+        "y": 0.30445000529289246,
+        "z": 1.2699999809265137
+      },
+      {
+        "track": 1.4859000444412231,
+        "y": 0.30557599663734436,
+        "z": -1.2699999809265137
+      }
+    ],
+    "reference": "1999 Fiat Coupe20V TurboPlus, Italy November1999 two-door four-seat front-drive2.0turbo inline-five six-speedmanual225/45R16, standardPlusbrace/Recaroseats; not16VTurbo,NAorLimitedEdition",
+    "canonicalLampSides": true
   }
 ]
