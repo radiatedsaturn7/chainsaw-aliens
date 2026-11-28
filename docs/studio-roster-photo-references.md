@@ -509,3 +509,27 @@ changes to handling. The 128i pins the exact stock wheel positions within
 a one-millimeter export guard; the actual asymmetry is under one micron.
 Lexus light signatures and the LFA exhaust height, Corvair cooling vents,
 BMW rear glass and lens shapes, and the Type 181 folded top remain stylized.
+
+### Full-roster rollout, Alfa Romeo, Fiat, Volvo, and Lotus
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Marsh Woundwort 1968 | Original Alfa Romeo 33 Stradale production coupe, not the Tipo racer or revival. [Alfa Romeo history](https://www.media.stellantis.com/em-en/heritage-hub-italy/press/alfa-romeo-celebrates-the-50th-birthday-of-the-legendary-33-stradale); [original cars, multiple angles](https://commons.wikimedia.org/wiki/Category:Alfa_Romeo_33_Stradale). |
+| Horseshoe Vetch 1992 | UK-market Alfa Romeo 155 Q4 road sedan, pre-widebody. [Period brochure archive](https://www.archives-catalogues-automobiles.fr/shop/en/italian-brands/12974-AL559014-01.html). |
+| Field Gentian 2017 | US Alfa Romeo Giulia Quadrifoglio 2.9 RWD eight-speed. [US period brochure](https://autocatalogarchive.com/wp-content/uploads/2017/06/Alfa-Romeo-Giulia-2017-USA.pdf). |
+| Broadleaf Dock 2011 | French Alfa Romeo Giulietta Quadrifoglio Verde 1750 TBi six-speed. [Alfa Romeo France](https://www.media.stellantis.com/fr-fr/alfa-romeo/press/alfa-giulietta-quadrifoglio-verde). |
+| Strawberry Clover 1965 | Alfa Romeo Giulia TZ2 competition coupe, not TZ1. [Alfa Romeo Heritage](https://www.heritagehubitaly.com/it-it/heritage/storie/alfa-romeo-giulia-tz-tz2). |
+| Hairy Tare 1969 | Italian Fiat Dino 2400 Bertone coupe, not Spider or 2.0. [Fiat Heritage](https://dev-heritagehubitaly-com.aem.stellantis.com/en-uk/heritage/stories/fiat-dino-2400-coupe); [1969 exterior](https://commons.wikimedia.org/wiki/File:1969_Fiat_Dino_2400.jpg). |
+| Bistort 1986 | Continental European Volvo 480 ES launch model, five-speed, solid roof. [Volvo launch packet](https://www.volvoclub.org.uk/press/pdf/480ES-PressRelease.pdf); [Volvo archive](https://www.volvocars.com/intl/media/press-releases/3913CEEFE92AC367/). |
+| Haresfoot Clover 1997 | Canadian Volvo 850R sedan five-speed manual, not US automatic or wagon. [Canadian period brochures](https://www.geocities.ws/ozbrick850/brochures.html); [period 850R brochure](https://www.matthewsvolvosite.com/volvo-850-r-brochure/). |
+| Stitchwort 1965 | US Volvo PV544 Sports Sedan type 11244, manual B18D. [Volvo heritage](https://www.volvocars.com/us/cars/legacy-models/pv544/); [same B18 body in period brochure](https://viaretro.com/wp-content/uploads/2021/07/PV544BrochureDecember1961.pdf). |
+| Mulberry Clover 2008 | US Volvo XC90 3.2 FWD base, not Sport or V8. [Volvo USA model-year specs](https://www.volvocars.com/us/media/press-releases/1503728965E53363/). |
+| Sloe Clover 2010 | US Volvo XC60 T6 AWD non-R-Design. [Volvo USA introduction](https://www.volvocars.com/us/media/press-releases/9DF97C0DFED0B8A2/); [US brochure](https://www.volvoclub.org.uk/pdf/xc60/Volvo-2010-XC60-brochure-USA.pdf). |
+| Raspberry Clover 2008 | US Volvo S80 V8 AWD passive chassis. [Volvo USA model-year overview](https://www.volvocars.com/us/media/press-releases/3512721DDE6F3F30/). |
+| Red Trefoil 2000 | Road Lotus 340R 177 bhp, open wheel-forward body. [Lotus history](https://www.lotuscars.com/en/lotus-story/road-cars/340r). |
+| Purple Trefoil 2009 | UK road-going supercharged Lotus 2-Eleven SVA, not GT4. [Lotus period brochure](https://www.allcarcentral.com/lotus_pdf/Lotus_2_Eleven_2009.pdf). |
+| Snow Clover 2011 | Early UK Lotus Evora S 2+2 six-speed, not 400 or later fascia. [Same-generation Lotus brochure](https://www.lotusdriversguide.com/Downloads/Brochures/Evora-Brochure-ENG%202012.pdf); [period Evora S photography](https://www.asphalte.ch/news/2011/08/road-test-lotus-evora-s/2/). |
+
+The Lotus 340R uses a separate narrow tub and four individual cycle guards.
+The Volvo lamp tower-to-fascia junction and fixed pop-up shapes are
+simplified, along with the TZ2's inset optics and Giulietta's rear hatch.

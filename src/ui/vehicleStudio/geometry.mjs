@@ -146,7 +146,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  const roofRear=canopy.rearPillarFoot||canopy.rearRoofShift||hatchUpright||targaBulk?clamp(rearDatum+canopy.rearPillarFoot*(1-rearFraction)-canopy.rearRoofShift-.38*hatchUpright-.24*targaBulk,cabinRear+mix(.18,.078,hatchUpright),roofFront-.34):rearDatum;
  const nose=B-(.14+.10*(1-wide))*c.frontBumper.depth,deck=B-(c.trunk.type==='fastback'?.13:.065)*c.rearBumper.depth;
  const standardY=z=>z>cabinFront?mix(B,nose,((z-cabinFront)/(Lf-cabinFront))**1.4):z<cabinRear?mix(B,deck,((cabinRear-z)/(cabinRear-Lr))**1.38):B;
- const vintage=g.body.vintageFenders;
+ const vintage=g.body.vintageFenders,cycles=g.body.cycleGuardPull;
  const skinY=z=>vintage
   ?standardY(z)-vintage*.132*clamp((Math.abs(z)-L*.43)/Math.max(.29,(z>0?Lf:-Lr)-L*.43))**2.3
   :standardY(z);
@@ -159,6 +159,12 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    const edge=step(0,.20,cabinRear-z)*step(0,.19,z-bumperRear);
    const offArch=step(.25,.75,Math.abs(z+L));
    plain-=g.body.pickupBedStep*edge*offArch;
+  }
+  if(cycles){
+   // Draw in the tub at both axle stations. The independent wheel guards
+   // remain centered on the same suspension axes and do not alter track.
+   const envelope=Math.exp(-((Math.abs(Math.abs(z)-L)/.47)**2));
+   plain-=cycles*(.48+.52*envelope);
   }
   if(!vintage)return plain;
   const taper=clamp((Math.abs(z)-L*.86)/Math.max(.28,(z>0?Lf:-Lr)-L*.86));
@@ -211,7 +217,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    (p.type==='boxed'?.055:p.type==='integrated'||p.type==='wide'?.072:.045)*p.depth*flare*flareScale*Math.sin(v*Math.PI*.75):0;
   let x=side- .023*v-(.012+.035*(1-localBox))*v**3+profile+(.008+.027*shape)*Math.sin(v*Math.PI*1.5);
   const edgePull=clamp((v-.72)/.28)*clamp((flare-.18)/.65);
-  x=mix(x,Math.max(x,(archAt<0&&staggered?rearTrack+rearFit.tireWidth/2:t+d.tireWidth/2)+.018*(.6+.4*flareScale)),edgePull);
+  if(!cycles)x=mix(x,Math.max(x,(archAt<0&&staggered?rearTrack+rearFit.tireWidth/2:t+d.tireWidth/2)+.018*(.6+.4*flareScale)),edgePull);
   let y=mix(skinY(z),bottom,v);
   if(vintage){
    // Separate upright tub from the bolt-on fender envelope. The rounded
@@ -732,7 +738,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   put('mirrors',g.construction.cabin.contrastMirrorCaps?'roofPaint':'paint',ellipsoid(.25*mirror.size,.115*mirror.depth,.185*mirror.size*(mirror.type==='aero'?1.42:1)),[s*(sx+.19),sy,mz],[mirror.angle*RAD,s*(mirror.shape-.5)*.52,0]);
   put('mirrors','chrome',ellipsoid(.19*mirror.size,.087,.019),[s*(sx+.20),sy,mz-.081*mirror.size]);
   }
-  for(const z of handleStations){
+  if(!canopy.noDoorHandles)for(const z of handleStations){
    const hp=c.handles,q=master.at(z,.22);
    if(hp.type==='painted lever'){
     const span=.132*hp.size, height=.025+hp.shape*.014, rise=.009*hp.depth;
@@ -766,8 +772,11 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  const hatchSplit=.26,hatchFold=canopy.rearHatchFold;
  const glassPoint=(sgn,t,u)=>{const edge=sgn>0?roofFront:roofRear,gate=sgn>0?cabinFront:cabinRear;
   const w=baseW(gate),x=(2*u-1)*w,k=(x/skinX(gate)+1)/2;
-  const q=lerp3([x,(sgn>0?hoodPoint:trunkPoint)(gate,k)[1]+.004,gate],canopyRoof(edge,u),t);
-  const zBow=sgn<0&&hatchUpright?Math.min(.045*c.glass.depth,(edge-gate)*.28):.045*c.glass.depth+bubbleRoof*.11;
+  const boot=[x,(sgn>0?hoodPoint:trunkPoint)(gate,k)[1]+.004,gate],header=canopyRoof(edge,u);
+  const open=roadster&&sgn>0?canopy.openScreenRatio:0;
+  if(open){header[1]=mix(boot[1],header[1],open);header[2]=mix(boot[2],header[2],open*.73);}
+  const q=lerp3(boot,header,t);
+  const zBow=sgn<0&&hatchUpright?Math.min(.045*c.glass.depth,(edge-gate)*.28):(.045*c.glass.depth+bubbleRoof*.11)*(open?open:1);
   q[2]+=sgn*zBow*bell(t)*bell(u);
   if(sgn<0&&canopy.rearGlassArc){
    const round=bell(t)**1.35;
@@ -783,6 +792,12 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    q[2]-=Math.max(0,reach)*hatchFold*tent;
   }
   return q;};
+ if(roadster&&canopy.openRollHoop>.01){
+  const z=cabinRear+.125, y=skinY(z)+.016, span=Math.min(.555,skinX(z)*.78),rise=canopy.openRollHoop;
+  const tube=new T.CatmullRomCurve3([[-span,y,z],[-span*.93,y+rise*.73,z],[-span*.59,y+rise,z],
+   [span*.59,y+rise,z],[span*.93,y+rise*.73,z],[span,y,z]].map(point=>new T.Vector3(...point)));
+  put('pillars','trim',new T.TubeGeometry(tube,small(18,10,8,7),.021,6,false));
+ }
  if(!roadster&&canopy.roofLipReach>.01){
   // A roof-hinge spoiler not the decklid aerodynamics primitive. Airfoil
   // and faying feet follow the shared roof and hatch charts as rake changes.
@@ -1217,6 +1232,18 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  buildUtilitySuspension({put,dims,compact,amount:canopy.rallyTubework,tireWidth:d.tireWidth});
  buildUtilityBumper({put,dims,cfg:canopy});
  buildRearSpare({put,dims,compact,cfg:canopy,finish:c.wheels.type==='stamped steel'?'wheel':'trim',tireWidth:d.tireWidth});
+ if(cycles)for(const axle of [-L,L])for(const side of [-1,1]){
+  // A slim formed mudguard with wrapped outer hems, visibly detached
+  // from the midbody. Its radius clears the stock steering/tire envelope.
+  const xf=side*(axle>0?t:rearTrack), width=(axle>0?d.tireWidth:rearFit.tireWidth)*1.17;
+  const chart=(z,v,rise=.0)=>{
+   const th=mix(-1.05,1.05,z), edge=(2*v-1), rr=R+.053-.016*Math.abs(edge)**4+rise;
+   return [xf+edge*width*.5,R+rr*Math.cos(th),axle+rr*Math.sin(th)];
+  };
+  const tag=axle>0?'frontFenders':'rearFenders';
+  put(tag,'trim',patch(small(18,9,8,7),4,chart,side>0));
+  for(const edge of [0,1])put(tag,'seamDark',patch(small(18,9,8,7),1,(u,v)=>chart(u,edge,-.009*v),edge===1));
+ }
  const aero=buildAero({g,compact,quality:lod?'lod':quality,put,sample:{trunk:trunkPoint,rear:ends.rear.face,sideExhaust:(sign,z)=>skinPoint(z,.98,sign,z>doorRear?'doors':'rearFenders'),exhaustMount:(id,side)=>exhaustMounts.get(id+':'+side)},dims:{...dims,axleHalf:L},evalFormula});
  for(const f of styleCurves)for(const side of (f.side==='both'?['L','R']:[f.side])){
   const sign=side==='R'?1:-1;

@@ -5962,5 +5962,602 @@
         }
       ]
     }
+  },
+  {
+    "id": "alfa-33-stradale-1968",
+    "label": "Marsh Woundwort 1968",
+    "capability": "1968 production Stradale single-lamp low mid-engine bubble cockpit",
+    "carId": "3d-marsh-woundwort-1968-3d-fa8698dd3653",
+    "bodyRef": "Marsh-Woundwort",
+    "wheelRef": "Marsh-Woundwort-Wheel",
+    "radius": 0.2946,
+    "axles": [
+      {
+        "track": 1.3487399816513062,
+        "y": 0.2946000099182129,
+        "z": 1.409999966621399
+      },
+      {
+        "track": 1.4452600479125977,
+        "y": 0.2932319939136505,
+        "z": -0.9399999976158142
+      }
+    ],
+    "reference": "1968 Alfa Romeo 33 Stradale original production coupe"
+  },
+  {
+    "id": "alfa-155-q4-1992",
+    "label": "Horseshoe Vetch 1992",
+    "capability": "1992 road 155 Q4 original narrow angular four-door without touring aero",
+    "carId": "3d-horseshoe-vetch-1992-3d-ced0658a7e1f",
+    "bodyRef": "Horseshoe Vetch 1992 Body",
+    "wheelRef": "Horseshoe Vetch 1992 Wheel",
+    "radius": 0.293,
+    "axles": [
+      {
+        "track": 1.4769999980926514,
+        "y": 0.2930000126361847,
+        "z": 1.2699999809265137
+      },
+      {
+        "track": 1.4019999504089355,
+        "y": 0.2930000126361847,
+        "z": -1.2699999809265137
+      }
+    ],
+    "reference": "1992 UK Alfa Romeo 155 Q4 narrow road sedan"
+  },
+  {
+    "id": "alfa-giulia-quadrifoglio-us-2017",
+    "label": "Field Gentian 2017",
+    "capability": "2017 Giulia Quadrifoglio US sedan with shield and factory dual tips per side",
+    "carId": "3d-field-gentian-2017-3d-e7ff94961314",
+    "bodyRef": "Field-Gentian-2017-body",
+    "wheelRef": "Field-Gentian-2017-wheel",
+    "radius": 0.32705,
+    "axles": [
+      {
+        "track": 1.5549880266189575,
+        "y": 0.32705000042915344,
+        "z": 1.4929540157318115
+      },
+      {
+        "track": 1.607058048248291,
+        "y": 0.32705000042915344,
+        "z": -1.3269540071487427
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7774940133094788,
+            0.32705000042915344,
+            -1.4929540157318115
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7774940133094788,
+            0.32705000042915344,
+            -1.4929540157318115
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.8035290241241455,
+            0.32705000042915344,
+            1.3269540071487427
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.8035290241241455,
+            0.32705000042915344,
+            1.3269540071487427
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6010000109672546,
+            0.7239999771118164,
+            -2.383000135421753
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6010000109672546,
+            0.7239999771118164,
+            -2.383000135421753
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6460000276565552,
+            0.7559999823570251,
+            2.431999921798706
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6460000276565552,
+            0.7559999823570251,
+            2.431999921798706
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "2017 US Alfa Romeo Giulia Quadrifoglio RWD eight-speed"
+  },
+  {
+    "id": "volvo-480-es",
+    "label": "Bistort 1986",
+    "capability": "Angular compact coupe, front popups and upright glass hatch",
+    "carId": "3d-bistort-1986-3d-b41136ed9e23",
+    "bodyRef": "Bistort",
+    "wheelRef": "Bistort-Wheel",
+    "radius": 0.2888,
+    "axles": [
+      {
+        "track": 1.409999966621399,
+        "y": 0.2888000011444092,
+        "z": 0.97605299949646
+      },
+      {
+        "track": 1.409999966621399,
+        "y": 0.28956401348114014,
+        "z": -1.5266469717025757
+      }
+    ],
+    "reference": "Late 1986 continental European launch Volvo 480 ES, 1721cc naturally aspirated 10.5:1 engine, 80kW ECE, FWD five-speed manual, LHD, standard 185/60HR14 alloy wheels, solid roof. Original Volvo E10829-01 Paris introduction press pack. Not Turbo, later catalyst B18F/EP, 2.0, automatic, US prototype or convertible. Non-catalyst launch interpretation; no catalyst output mixed in.",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "volvo-850r-sedan",
+    "label": "Haresfoot Clover 1997",
+    "capability": "Square sport sedan with period boxed optics and rear spoiler",
+    "carId": "3d-haresfoot-clover-1997-3d-f1caf3c749c4",
+    "bodyRef": "Haresfoot-Clover-1997-body",
+    "wheelRef": "Haresfoot-Clover-1997-wheel",
+    "radius": 0.30815,
+    "axles": [
+      {
+        "track": 1.5189199447631836,
+        "y": 0.3081499934196472,
+        "z": 1.3940000534057617
+      },
+      {
+        "track": 1.4706599712371826,
+        "y": 0.3081499934196472,
+        "z": -1.2660000324249268
+      }
+    ],
+    "reference": "1997 Canada Volvo850R sedan five-speed manual,184kW350Nm2.3turbo FWD; not USautomatic,T-5R orwagon",
+    "canonicalLampSides": true,
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.5860000252723694,
+            0.6119999885559082,
+            -2.434000015258789
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.5860000252723694,
+            0.6119999885559082,
+            -2.434000015258789
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6549999713897705,
+            0.6439999938011169,
+            2.4059998989105225
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6549999713897705,
+            0.6439999938011169,
+            2.4059998989105225
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7594599723815918,
+            0.3081499934196472,
+            -1.3940000534057617
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7594599723815918,
+            0.3081499934196472,
+            -1.3940000534057617
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7353299856185913,
+            0.3081499934196472,
+            1.2660000324249268
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7353299856185913,
+            0.3081499934196472,
+            1.2660000324249268
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "volvo-pv544-sports",
+    "label": "Stitchwort 1965",
+    "capability": "Rounded US two-door fenders, upright grille and chrome bumpers",
+    "carId": "3d-stitchwort-1965-3d-5c26ccc10ac5",
+    "bodyRef": "Stitchwort 1965 Body",
+    "wheelRef": "Stitchwort 1965 Wheel",
+    "radius": 0.3225,
+    "axles": [
+      {
+        "track": 1.2949999570846558,
+        "y": 0.32249999046325684,
+        "z": 1.2999999523162842
+      },
+      {
+        "track": 1.315000057220459,
+        "y": 0.32249999046325684,
+        "z": -1.2999999523162842
+      }
+    ],
+    "reference": "1965 US Volvo PV544 two-door Sports Sedan11244, B18D1778cc twin-carburetor8.5:1, LHD RWD four-speed manual. US brochure printed9/64 specifically90SAEbhp, not later95hp/8.7compression, PV444, Amazon, Duett, rally build or B16.",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "volvo-xc90-32-fwd-2008",
+    "label": "Mulberry Clover 2008",
+    "carId": "3d-mulberry-clover-2008-3d-c90e5a332e19",
+    "capability": "2008 United States Volvo XC90 3.2 naturally aspirated transverse inline-six FWD six-speed Geartronic, standard non-Sport chassis; not AWD or V8",
+    "bodyRef": "Mulberry-Clover-2008",
+    "wheelRef": "Mulberry-Clover-2008-Wheel",
+    "radius": 0.36865,
+    "axles": [
+      {
+        "track": 1.6332199573516846,
+        "y": 0.36864998936653137,
+        "z": 1.4290000200271606
+      },
+      {
+        "track": 1.6230599880218506,
+        "y": 0.36864998936653137,
+        "z": -1.4290000200271606
+      }
+    ],
+    "reference": "https://www.volvocars.com/us/media/press-releases/1503728965E53363/"
+  },
+  {
+    "id": "volvo-xc60-t6-awd-2010",
+    "label": "Sloe Clover 2010",
+    "carId": "3d-sloe-clover-2010-3d-05bb0140d927",
+    "capability": "2010 United States Volvo XC60 T6 turbocharged inline-six AWD six-speedGeartronic standardnonRDesign chassis; not3.2FWD orPolestar",
+    "bodyRef": "Sloe Clover 2010 Body",
+    "wheelRef": "Sloe Clover 2010 Wheel",
+    "radius": 0.3696,
+    "axles": [
+      {
+        "track": 1.6332199573516846,
+        "y": 0.36959999799728394,
+        "z": 1.3869999647140503
+      },
+      {
+        "track": 1.5849599838256836,
+        "y": 0.36959999799728394,
+        "z": -1.3869999647140503
+      }
+    ],
+    "reference": "https://www.volvocars.com/us/media/press-releases/9DF97C0DFED0B8A2/"
+  },
+  {
+    "id": "volvo-s80-v8-awd-2008",
+    "label": "Raspberry Clover 2008",
+    "carId": "3d-raspberry-clover-2008-3d-b5291f670fd7",
+    "capability": "2008 United States Volvo S80 second-generation V8 AWD4.4 naturally aspirated transverse V8 six-speed Geartronic, standard passive chassis; not T6,3.2 or optional FOUR-C",
+    "bodyRef": "Raspberry-Clover-2008",
+    "wheelRef": "Raspberry-Clover-2008-Wheel",
+    "radius": 0.3266,
+    "axles": [
+      {
+        "track": 1.577340006828308,
+        "y": 0.32659998536109924,
+        "z": 1.4175000190734863
+      },
+      {
+        "track": 1.5748000144958496,
+        "y": 0.32659998536109924,
+        "z": -1.4175000190734863
+      }
+    ],
+    "reference": "https://www.volvocars.com/us/media/press-releases/3512721DDE6F3F30/"
+  },
+  {
+    "id": "alfa-giulietta-qv-2011",
+    "label": "Broadleaf Dock 2011",
+    "capability": "Upright five-door body, shield grille, swept lens housings",
+    "carId": "3d-broadleaf-dock-2011-3d-f556f6905849",
+    "bodyRef": "Broadleaf Dock 2011 Body",
+    "wheelRef": "Broadleaf Dock 2011 Wheel",
+    "radius": 0.31715,
+    "axles": [
+      {
+        "track": 1.5519399642944336,
+        "y": 0.3171499967575073,
+        "z": 1.3170000314712524
+      },
+      {
+        "track": 1.549399971961975,
+        "y": 0.3171499967575073,
+        "z": -1.3170000314712524
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2011 French Alfa Romeo Giulietta Quadrifoglio Verde 1750 TBi 235",
+    "stockWheelPositions": {
+      "FL": [
+        -0.7759701013565063,
+        0.3171499967575073,
+        1.316999912261963
+      ],
+      "FR": [
+        0.7759698629379272,
+        0.3171499967575073,
+        1.317000150680542
+      ],
+      "RL": [
+        -0.774699866771698,
+        0.3171499967575073,
+        -1.317000150680542
+      ],
+      "RR": [
+        0.7747001051902771,
+        0.3171499967575073,
+        -1.316999912261963
+      ]
+    }
+  },
+  {
+    "id": "alfa-giulia-tz2-1965",
+    "label": "Strawberry Clover 1965",
+    "capability": "Low Zagato fastback, small shield and cut-off Kamm tail",
+    "carId": "3d-strawberry-clover-1965-3d-d399bc582b37",
+    "bodyRef": "Strawberry-Clover-1965-finished",
+    "wheelRef": "Strawberry-Clover-1965-wheel",
+    "radius": 0.2946,
+    "axles": [
+      {
+        "track": 1.2903200387954712,
+        "y": 0.2946000099182129,
+        "z": 1.1440000534057617
+      },
+      {
+        "track": 1.3004800081253052,
+        "y": 0.2938379943370819,
+        "z": -1.055999994277954
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "1965 Italian Alfa Romeo Giulia TZ2 competition coupe"
+  },
+  {
+    "id": "fiat-dino-2400-coupe-1969",
+    "label": "Hairy Tare 1969",
+    "capability": "Long coupe hood, big four lamp face and formed chrome bumpers",
+    "carId": "3d-hairy-tare-1969-3d-eabca78fd036",
+    "bodyRef": "Hairy-Tare-1969-finished",
+    "wheelRef": "Hairy-Tare-1969-wheel",
+    "radius": 0.3213,
+    "axles": [
+      {
+        "track": 1.4020800590515137,
+        "y": 0.3212999999523163,
+        "z": 1.274999976158142
+      },
+      {
+        "track": 1.3868399858474731,
+        "y": 0.320935994386673,
+        "z": -1.274999976158142
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "1969 Italian Fiat Dino 2400 Bertone Series II coupe"
+  },
+  {
+    "id": "lotus-340r-2000",
+    "label": "Red Trefoil 2000",
+    "capability": "Open doorless 340R with separate carbon-like mudguards, silver tub and hoop",
+    "carId": "3d-red-trefoil-2000-3d-778b78e04b50",
+    "bodyRef": "red-trefoil-finished",
+    "wheelRef": "red-trefoil-wheel",
+    "radius": 0.28800000000000003,
+    "axles": [
+      {
+        "track": 1.4478000402450562,
+        "y": 0.2881009876728058,
+        "z": 1.402999997138977
+      },
+      {
+        "track": 1.4986000061035156,
+        "y": 0.3032520115375519,
+        "z": -0.8970000147819519
+      }
+    ],
+    "reference": "2000 Lotus 340R, standard road177bhp RoverK-series1.8 five-speed,openbody;not190bhptrackupgradeorExpose",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "lotus-2-eleven-2009",
+    "label": "Purple Trefoil 2009",
+    "capability": "Road-legal 2-Eleven with small deflector, separate hoop, open cockpit and enclosed wheels",
+    "carId": "3d-purple-trefoil-2009-3d-aa31d6300163",
+    "bodyRef": "Purple Trefoil 2009 Body",
+    "wheelRef": "Purple Trefoil 2009 Wheel",
+    "radius": 0.30069999999999997,
+    "axles": [
+      {
+        "track": 1.4579600095748901,
+        "y": 0.30070000886917114,
+        "z": 1.149999976158142
+      },
+      {
+        "track": 1.5062199831008911,
+        "y": 0.30070000886917114,
+        "z": -1.149999976158142
+      }
+    ],
+    "reference": "2009 Lotus 2-Eleven, standard252bhp supercharged1796ccToyota road-goingUKSVA six-speed,original2007–2010spec;notGT4,NAorCircuitCarprototype",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "lotus-evora-s-2011",
+    "label": "Snow Clover 2011",
+    "capability": "Original 2+2 Evora S coupe with curved glass and central rear outlet",
+    "carId": "3d-snow-clover-2011-3d-82699a383014",
+    "bodyRef": "Snow Clover 2011 Body",
+    "wheelRef": "Snow Clover 2011 Wheel",
+    "radius": 0.3186,
+    "axles": [
+      {
+        "track": 1.5646400451660156,
+        "y": 0.31859999895095825,
+        "z": 1.287500023841858
+      },
+      {
+        "track": 1.5748000144958496,
+        "y": 0.31859999895095825,
+        "z": -1.287500023841858
+      }
+    ],
+    "reference": "2011 Lotus Evora S, UK/European original3.456superchargedV6 six-speedmanual2+2GT standard18/19wheels;notIPS,400,GT430orGTE",
+    "canonicalLampSides": true
   }
 ]

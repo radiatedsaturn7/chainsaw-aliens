@@ -1,0 +1,23 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {test} from 'node:test';
+import {createVehicle,loadVehicle,normalizeVehicle} from '../../src/ui/vehicleStudio/genome.mjs';
+import {generateVehicle} from '../../src/ui/vehicleStudio/geometry.mjs';
+import {exportVehicle} from '../../src/ui/vehicleStudio/export.mjs';
+test('0.99m vintage coupe height is native and physically separates the roof and floor',()=>{
+ const g=loadVehicle(readFileSync(new URL('../../src/ui/vehicleStudio/examples/alfa-33-stradale-1968.json',import.meta.url),'utf8'));
+ assert.equal(g.dimensions.height,.99);
+ const design=generateVehicle(g,{quality:'drive',compact:2});
+ assert.deepEqual(design.diagnostics.issues,[]);
+ const bbox=part=>{part.geometry.computeBoundingBox();return part.geometry.boundingBox;};
+ const roof=design.parts.filter(p=>p.component==='roof');
+ assert.ok(roof.length>1);
+ assert.ok(Math.min(...roof.map(bbox).map(b=>b.min.y))>.73);
+ assert.ok(Math.max(...roof.map(bbox).map(b=>b.max.y))<=.99+.001);
+ const final=exportVehicle(g,{quality:'drive'});
+ const [body,wheel]=Object.values(final.models);
+ assert.ok(body.faces.length+2*(wheel.faces.length+(wheel.rearAxleModel?.faces.length??wheel.faces.length))<=15000);
+ const tooLow=structuredClone(g);tooLow.dimensions.height=.98;
+ assert.throws(()=>normalizeVehicle(tooLow),/Out of range: height/);
+ assert.equal(createVehicle('fastback').dimensions.height,1.24);
+});

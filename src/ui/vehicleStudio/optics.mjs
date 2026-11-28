@@ -241,7 +241,7 @@ export function makeOpenings({end,g,segments=32,face=null}){
  }
  const opening=aperture({id:(front?'head':'tail')+(s>0?'-l':'-r'),
   component:front?'headlights':'tails',housing,cx:s>0?1-sideX:sideX,cy,width:w,height:h,side:s,opt,segments});
- if(!front&&face&&housing==='circle'&&raw.physicalDiameter>0&&!raw.sideWrap)projectRoundLamp(opening,face,raw.physicalDiameter,raw.circleLift);
+ if((!front||raw.frontPhysicalCircle===1)&&face&&housing==='circle'&&raw.physicalDiameter>0&&!raw.sideWrap)projectRoundLamp(opening,face,raw.physicalDiameter,raw.circleLift);
  out.push(opening);
  }
  if(front){
