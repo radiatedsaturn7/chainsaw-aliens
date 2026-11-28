@@ -160,7 +160,7 @@ export function makeOpenings({end,g,segments=32,face=null}){
    width:sat(num(raw.width,.5)),height:sat(num(raw.height,.5)),corner:sat(num(raw.corner,.5)),
    angle:signed(num(raw.angle,(legacy.angle||0)/18)),sweep:sat(num(raw.sweep,.5)),
    curvature:sat(num(raw.curvature,.5)),recess:sat(num(raw.recess,.5)),convexity:sat(num(raw.convexity,.5)),
-   sideWrap:sat(num(raw.sideWrap,0)),silverFront:sat(num(raw.silverFront,0)),silverUpper:sat(num(raw.silverUpper,0)),silverUpperSplit:Math.max(-.08,Math.min(.20,num(raw.silverUpperSplit,-.018))),rearCells:sat(num(raw.rearCells,0)),roundBowls:sat(num(raw.roundBowls,0)),flutedBowls:sat(num(raw.flutedBowls,0)),position:sat(num(raw.position,.5)),protrusion:sat(num(raw.protrusion,0)),formula:raw.formula??'',modules:Math.max(0,Math.min(8,Math.round(raw.modules??0))),spacing:sat(num(raw.spacing,.5)),inboardReach:sat(num(raw.inboardReach,.5)),formulaSide:g.construction?.symmetry?.[group]==='linked'?s:1,outline:Array.isArray(raw.outline)?raw.outline:[]};
+   sideWrap:sat(num(raw.sideWrap,0)),silverFront:sat(num(raw.silverFront,0)),silverUpper:sat(num(raw.silverUpper,0)),silverUpperSplit:Math.max(-.08,Math.min(.20,num(raw.silverUpperSplit,-.018))),rearCells:sat(num(raw.rearCells,0)),rearTriBars:sat(num(raw.rearTriBars,0)),roundBowls:sat(num(raw.roundBowls,0)),flutedBowls:sat(num(raw.flutedBowls,0)),position:sat(num(raw.position,.5)),protrusion:sat(num(raw.protrusion,0)),formula:raw.formula??'',modules:Math.max(0,Math.min(8,Math.round(raw.modules??0))),spacing:sat(num(raw.spacing,.5)),inboardReach:sat(num(raw.inboardReach,.5)),formulaSide:g.construction?.symmetry?.[group]==='linked'?s:1,outline:Array.isArray(raw.outline)?raw.outline:[]};
 
  // The bands are deliberately disjoint even at all slider extremes:
  // lamp inside <= .366; center grille starts >= .388; lower intakes start >= .31.
@@ -229,7 +229,16 @@ export function makeOpenings({end,g,segments=32,face=null}){
  }
  if(front){
   const gr=c.grille??{},fog=c.fogs??{};
-  if(gr.type==='twin vertical slats'||gr.type==='twin mesh'){
+  if(gr.type==='deep mesh frame'){
+   const cy=.479+(num(fascia.grilleHeightPosition,.5)-.5)*.27;
+   const h=Math.min(mix(.360,.681,num(fascia.grilleHeight,.5)),2*(cy-.096),2*(.933-cy));
+   const free=Math.min(.49-Math.max(...out.filter(o=>o.center[0]<.5).flatMap(o=>o.outline.map(p=>p[0]))),
+    Math.min(...out.filter(o=>o.center[0]>.5).flatMap(o=>o.outline.map(p=>p[0])))-.51);
+   const w=Math.min(mix(.234,.475,num(fascia.grilleWidth,.5)),2*free);
+   if(w>.075)out.push(aperture({id:'upper-grille',component:'grille',kind:'duct',
+    housing:fascia.grilleShape??'trapezoid',cx:.5,cy,width:w,height:h,
+    opt:{corner:.58,bezel:num(fascia.grilleBezel,0),throatDepth:num(fascia.lowerIntakeDepth,0)},segments,style:'mesh'}));
+  }else if(gr.type==='twin vertical slats'||gr.type==='twin mesh'){
    const mesh=gr.type==='twin mesh';
    // Keep a painted center ligament and derive both recesses from the
    // lamp apertures so changing headlamp width cannot create an overlap.
@@ -241,7 +250,7 @@ export function makeOpenings({end,g,segments=32,face=null}){
     opt:mesh?{corner:.64,angle:.42,sweep:.67}:{corner:.74},kind:'duct',segments,style:mesh?'mesh':'vertical'}));
   }else if(gr.type!=='closed')out.push(aperture({id:'upper-grille',component:'grille',housing:fascia.grilleShape??'trapezoid',cx:.5,cy:.415+(num(fascia.grilleHeightPosition,.5)-.5)*.43,
    width:Math.min(mix(.155,.256,sat((num(gr.size,1)-.68)/.60))*(.56+.88*num(fascia.grilleWidth,.5)),2*(.49-Math.max(...out.filter(o=>o.center[0]<.5).flatMap(o=>o.outline.map(p=>p[0])))),2*(Math.min(...out.filter(o=>o.center[0]>.5).flatMap(o=>o.outline.map(p=>p[0])))-.51)),height:mix(.13,(gr.type==='vertical slats'||gr.type==='seven-slot')?.35:.238,sat((num(gr.depth,1)-.68)/.60))*(.58+.84*num(fascia.grilleHeight,.5)),
-   kind:'duct',segments,opt:{bezel:num(fascia.grilleBezel,0)},style:gr.type==='crosshair'?'crosshair':gr.type==='seven-slot'?'seven-slot':gr.type==='vertical slats'?'vertical':gr.type==='bars'?'bars':'mesh'}));
+   kind:'duct',segments,opt:{bezel:num(fascia.grilleBezel,0),lampPair:num(fascia.grilleLampPair,0)},style:gr.type==='crosshair'?'crosshair':gr.type==='seven-slot'?'seven-slot':gr.type==='vertical slats'?'vertical':gr.type==='bars'?'bars':'mesh'}));
   for(const s of [-1,1]){
    const sideFog=getSideSettings(g,'fogs',s>0?'R':'L',fog);
    if(sideFog.type==='off')continue;
@@ -346,7 +355,8 @@ export function makeOpenings({end,g,segments=32,face=null}){
   const grp=front?'frontBumper':'rearBumper',triple=front&&mode==='triple',iMode=mode==='split'?'split':'single';
   const wideDucts=front&&c.fogs?.type==='off';
   const pair=wideDucts?[.285,.715]:[.395,.605];
-  for(const k of triple?[.5,.183,.817]:iMode==='split'?pair:[.5]){
+  const deepFrame=front&&c.grille?.type==='deep mesh frame';
+  for(const k of deepFrame?(mode==='triple'||mode==='split'?[.183,.817]:[]):triple?[.5,.183,.817]:iMode==='split'?pair:[.5]){
    let cy=(front?.789:.78)+(num(fascia.intakeHeightPosition,.5)-.5)*.29;
    let height=(front?(wideDucts&&iMode==='split'?.23:.19):.14)*(.57+.86*num(fascia.intakeHeight,.5));
    if(!front)cy=Math.max(cy,.685+height*.5);
@@ -610,6 +620,17 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
     }
     continue;
    }
+   if(a.id==='upper-grille'&&opt.lampPair>0)for(const s of [-1,1]){
+    const x=cx+s*w*.245,y=cy,r=w*(.068+.041*opt.lampPair),v=h*(.15+.21*opt.lampPair);
+    const chart=(n)=>pairs(compact?10:16,t=>[x+r*n*Math.cos(t*tau),y+v*n*Math.sin(t*tau)]);
+    let size=1,p=chart(size);
+    for(let i=0;i<6&&!p.every(([u,v])=>contains(inset,u,v));i++)p=chart(size*=.88);
+    if(p.every(([u,v])=>contains(inset,u,v))){
+     putGeo('trim',[ring(1,.023,p,x,y),ring(.9,.010,p,x,y)]);
+     putGeo('chrome',[ring(.9,.010,p,x,y),ring(.76,.008,p,x,y)]);
+     putGeo('head',[ring(.76,.008,p,x,y),ring(.57,.007,p,x,y)],pt(x,y,.006));
+    }
+   }
    if(a.style==='vertical'||a.style==='seven-slot'){
     const inner=outline.map(([x,y])=>[mix(cy,y,.86),mix(cx,x,.91)]);
     const jeep=a.style==='seven-slot',slats=jeep?6:compact?9:11;
@@ -678,7 +699,7 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
     putGeo(front?'projector':'opticRed',[rr(.51,bright?d*.60:d*.64),rr(.29,d*.55)],pt(x,y,d*.53));
    }
   };
-  if(!front&&oLayout==='round-stack'){
+  if(!front&&!opt.rearTriBars&&oLayout==='round-stack'){
    // A broad brake optic and independent red running ring sit behind
    // the outer glass. The small reverse/turn elements remain functional.
    putGeo('runningRed',[ring(.855,d*.425),ring(.705,d*.392),ring(.625,d*.41)]);
@@ -688,7 +709,29 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
     putGeo(mat,[ring(1,d*.40,e.p,e.x,e.y)],pt(e.x,e.y,d*.395));
    }
   }
-  if(oLayout==='factory-split'){
+  const triBars=!front&&opt.rearTriBars>0;
+  if(triBars){
+   // Three individually molded red lenses in the factory recess. Leave
+   // a lower strip for discreet independent reverse and turn optics.
+   const poly=(x,y,rx,ry)=>[[x-rx*.76,y-ry],[x+rx*.76,y-ry],[x+rx,y-ry*.84],[x+rx,y+ry*.84],
+    [x+rx*.76,y+ry],[x-rx*.76,y+ry],[x-rx,y+ry*.84],[x-rx,y-ry*.84]];
+   for(const n of [-1,0,1]){
+    const x=cx+n*w*.247,y=cy-.048*h;
+    let scale=1,q=poly(x,y,w*.103,h*.279);
+    for(let i=0;i<8&&!q.every(([u,v])=>contains(outline,u,v));i++){
+     scale*=.85;q=poly(x,y,w*.103*scale,h*.279*scale);
+    }
+    if(!q.every(([u,v])=>contains(outline,u,v)))continue;
+    putGeo('trim',[ring(1,d*.58,q,x,y),ring(.866,d*.51,q,x,y)]);
+    putGeo('runningRed',[ring(.866,d*.51,q,x,y),ring(.79,d*.417,q,x,y)]);
+    putGeo('opticRed',[ring(.79,d*.417,q,x,y),ring(.64,d*.385,q,x,y)],pt(x,y,d*.375));
+   }
+   for(const [m,s] of [['opticClear',-1],[side>0?'signalR':'signalL',1]]){
+    const p=fitted(cx+s*w*.18,cy+h*.33,w*.058,h*.042,8);
+    putGeo(m,[ring(1,d*.52,p.p,p.x,p.y)],pt(p.x,p.y,d*.51));
+   }
+  }
+  if(oLayout==='factory-split'&&!triBars){
    // Inside the sealed housing, divide the lens into two shallow molded
    // sections, independently of its external profile and cavity.
    const clip=(pol,line,keep)=>{
@@ -743,10 +786,10 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
     }
    }
   }
-  if(oLayout==='projector')proj(0,.23,.29);
-  if(oLayout==='twin'){proj(-.19,.159,front?.289:.255);proj(.17,.135,front?.268:.227,false);}
-  if(oLayout==='mixed')proj(-.14,.16,.227);
-  if(oLayout!=='round-stack'&&(oLayout==='led'||oLayout==='mixed'||opt.modules>0)){
+  if(!triBars&&oLayout==='projector')proj(0,.23,.29);
+  if(!triBars&&oLayout==='twin'){proj(-.19,.159,front?.289:.255);proj(.17,.135,front?.268:.227,false);}
+  if(!triBars&&oLayout==='mixed')proj(-.14,.16,.227);
+  if(!triBars&&oLayout!=='round-stack'&&(oLayout==='led'||oLayout==='mixed'||opt.modules>0)){
    const count=opt.modules||5,spacing=(.42+.26*(opt.spacing??.5))/Math.max(count-1,1);
    for(let i=0;i<count;i++){
     const along=count===1?0:(i-(count-1)*.5)*spacing;
@@ -754,7 +797,7 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
     putGeo(front?'head':'opticRed',[ring(1,d*.66,poly,x,y),ring(.72,d*.50,poly,x,y)],pt(x,y,d*.48));
    }
   }
-  if(kind==='lamp'&&oLayout!=='factory-split'&&oLayout!=='round-stack'){
+  if(!triBars&&kind==='lamp'&&oLayout!=='factory-split'&&oLayout!=='round-stack'){
    const {x,y,p}=fitted(cx+side*w*(oLayout==='twin'?.34:.303),cy+h*.223,w*.058,h*.058,10);
    putGeo(front?(side>0?'signalR':'signalL'):'opticClear',[ring(1,d*.68,p,x,y),ring(.78,d*.54,p,x,y)],pt(x,y,d*.52));
    if(!front){
@@ -764,7 +807,7 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
   }
   // Convex lens follows parametric fascia wrap, with independent radial
   // center curvature; default is recessed and never a solid white face.
-  if(!front&&oLayout!=='factory-split'&&oLayout!=='round-stack'){
+  if(!triBars&&!front&&oLayout!=='factory-split'&&oLayout!=='round-stack'){
    const strip=fitted(cx,cy+h*.24,w*.31,h*.072,lod?10:14);
    putGeo('runningRed',[ring(1,d*.37,strip.p,strip.x,strip.y),ring(.87,d*.34,strip.p,strip.x,strip.y)],pt(strip.x,strip.y,d*.34));
   }

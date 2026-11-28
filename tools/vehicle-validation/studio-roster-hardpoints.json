@@ -2236,5 +2236,741 @@
       }
     ],
     "reference": "2010 Germany Volkswagen Golf VI R German three-door EA1132.0TSI6MT"
+  },
+  {
+    "id": "toyota-celica-gt-ra21",
+    "label": "Heath Violet 1974",
+    "capability": "First-gen US coupe with quad circular lamps and separate chrome blades",
+    "carId": "3d-heath-violet-1974-3d-1f9667b7ec59",
+    "bodyRef": "Heath-Violet",
+    "wheelRef": "Heath-Violet-Wheel",
+    "radius": 0.2946,
+    "axles": [
+      {
+        "track": 1.3004800081253052,
+        "y": 0.2946000099182129,
+        "z": 1.1158219575881958
+      },
+      {
+        "track": 1.3055599927902222,
+        "y": 0.2945370078086853,
+        "z": -1.3098779916763306
+      }
+    ],
+    "reference": "1974 Toyota Celica GT first-generation RA21 hardtop, US"
+  },
+  {
+    "id": "toyota-celica-st185-gt-four-rc",
+    "label": "Red Deadnettle 1992",
+    "capability": "ST185 RC road homologation: parked pop-ups, large intake and vented hood",
+    "carId": "3d-red-deadnettle-1992-3d-13eade214641",
+    "bodyRef": "Red-Deadnettle-1992-body",
+    "wheelRef": "Red-Deadnettle-1992-wheel",
+    "radius": 0.298,
+    "axles": [
+      {
+        "track": 1.475000023841858,
+        "y": 0.2980000078678131,
+        "z": 1.3265000581741333
+      },
+      {
+        "track": 1.4450000524520874,
+        "y": 0.2980000078678131,
+        "z": -1.1985000371932983
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.737500011920929,
+            0.2980000078678131,
+            -1.3265000581741333
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.737500011920929,
+            0.2980000078678131,
+            -1.3265000581741333
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7225000262260437,
+            0.2980000078678131,
+            1.1985000371932983
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7225000262260437,
+            0.2980000078678131,
+            1.1985000371932983
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6159999966621399,
+            0.492000013589859,
+            -2.244999885559082
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6159999966621399,
+            0.492000013589859,
+            -2.244999885559082
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6259999871253967,
+            0.6259999871253967,
+            2.2899999618530273
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6259999871253967,
+            0.6259999871253967,
+            2.2899999618530273
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "1992 Toyota Celica GT-Four RC ST185, JDM"
+  },
+  {
+    "id": "toyota-celica-gt-s-t230",
+    "label": "Moonpetal GT 2000",
+    "capability": "Seventh-gen pointed GT-S with short liftback tail and tall lens corners",
+    "carId": "3d-moonpetal-gt-2000-3d-d510b336eac5",
+    "bodyRef": "Moonpetal-GT",
+    "wheelRef": "Moonpetal-GT-Wheel",
+    "radius": 0.30325,
+    "axles": [
+      {
+        "track": 1.4900000095367432,
+        "y": 0.3032500147819519,
+        "z": 1.0399999618530273
+      },
+      {
+        "track": 1.4800000190734863,
+        "y": 0.30406299233436584,
+        "z": -1.559999942779541
+      }
+    ],
+    "reference": "2000 Toyota Celica GT-S 6MT, US"
+  },
+  {
+    "id": "lamborghini-miura-p400",
+    "label": "Berseem Clover 1967",
+    "capability": "P400 curved nose, low eyelash-covered circular lamps and louvred deck",
+    "carId": "3d-berseem-clover-1967-3d-8e113bcd6a30",
+    "bodyRef": "Berseem Clover 1967 Body",
+    "wheelRef": "Berseem Clover 1967 Wheel",
+    "radius": 0.33399999999999996,
+    "axles": [
+      {
+        "track": 1.4199999570846558,
+        "y": 0.33399999141693115,
+        "z": 1.25
+      },
+      {
+        "track": 1.4199999570846558,
+        "y": 0.33399999141693115,
+        "z": -1.25
+      }
+    ],
+    "reference": "1967 Lamborghini Miura P400"
+  },
+  {
+    "id": "lamborghini-diablo-sv",
+    "label": "Cup Clover 1997",
+    "capability": "Pre-facelift SV wedge, pop-up covers, twin rear-roof intakes and wing",
+    "carId": "3d-cup-clover-1997-3d-1ed8facf7381",
+    "bodyRef": "Cup-Clover-1997",
+    "wheelRef": "Cup-Clover-1997-Wheel",
+    "radius": 0.31389999999999996,
+    "axles": [
+      {
+        "track": 1.5392400026321411,
+        "y": 0.3138999938964844,
+        "z": 1.3250000476837158
+      },
+      {
+        "track": 1.6408400535583496,
+        "y": 0.3138999938964844,
+        "z": -1.3250000476837158
+      }
+    ],
+    "reference": "1997 Lamborghini Diablo SV, pre-facelift"
+  },
+  {
+    "id": "lamborghini-aventador-lp700",
+    "label": "Longstalk Clover 2012",
+    "capability": "Launch LP700 sharp chin, compound lights, deep side intake, hex rear exhaust",
+    "carId": "3d-longstalk-clover-2012-3d-9ec88467ba98",
+    "bodyRef": "Longstalk-Clover-2012",
+    "wheelRef": "Longstalk-Clover-2012-Wheel",
+    "radius": 0.33055,
+    "axles": [
+      {
+        "track": 1.7200000286102295,
+        "y": 0.3305499851703644,
+        "z": 1.350000023841858
+      },
+      {
+        "track": 1.7000000476837158,
+        "y": 0.3305499851703644,
+        "z": -1.350000023841858
+      }
+    ],
+    "reference": "2012 Lamborghini Aventador LP700-4 launch coupe"
+  },
+  {
+    "id": "ford-mustang-gt-1965",
+    "label": "Pygmy Clover 1965",
+    "carId": "3d-pygmy-clover-1965-3d-2e9c23d79611",
+    "capability": "1965 United States Ford Mustang GT Coupe, GT equipment group hardtop,225-hp-reference289four-barrel,standard synchronized3MT;not271HiPo",
+    "bodyRef": "Pygmy-Clover-1965-body",
+    "wheelRef": "Pygmy-Clover-1965-wheel",
+    "radius": 0.32404999999999995,
+    "axles": [
+      {
+        "track": 1.4223999977111816,
+        "y": 0.32405000925064087,
+        "z": 1.4706000089645386
+      },
+      {
+        "track": 1.4223999977111816,
+        "y": 0.32405000925064087,
+        "z": -1.2726000547409058
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.5849999785423279,
+            0.6069999933242798,
+            -2.409320116043091
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.5849999785423279,
+            0.6069999933242798,
+            -2.409320116043091
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6359999775886536,
+            0.6190000176429749,
+            2.397320032119751
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6359999775886536,
+            0.6190000176429749,
+            2.397320032119751
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7111999988555908,
+            0.32405000925064087,
+            -1.4706000089645386
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7111999988555908,
+            0.32405000925064087,
+            -1.4706000089645386
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7111999988555908,
+            0.32405000925064087,
+            1.2726000547409058
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7111999988555908,
+            0.32405000925064087,
+            1.2726000547409058
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "1965 Ford Mustang GT hardtop coupe, US"
+  },
+  {
+    "id": "ford-mustang-boss-302-1969",
+    "label": "Hop Clover 1969",
+    "carId": "3d-hop-clover-1969-3d-ca726f5994f6",
+    "capability": "1969 United States Ford Mustang Boss 302, SportsRoof, standard four-speed ratios, standard 3.50 conventional axle, manual steering",
+    "bodyRef": "Hop-Clover-1969-body",
+    "wheelRef": "Hop-Clover-1969-wheel",
+    "radius": 0.3255,
+    "axles": [
+      {
+        "track": 1.511299967765808,
+        "y": 0.3255000114440918,
+        "z": 1.475600004196167
+      },
+      {
+        "track": 1.511299967765808,
+        "y": 0.3255000114440918,
+        "z": -1.2676000595092773
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.625,
+            0.5860000252723694,
+            -2.4949800968170166
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.625,
+            0.5860000252723694,
+            -2.4949800968170166
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6119999885559082,
+            0.5569999814033508,
+            2.47898006439209
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6119999885559082,
+            0.5569999814033508,
+            2.47898006439209
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.755649983882904,
+            0.3255000114440918,
+            -1.475600004196167
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.755649983882904,
+            0.3255000114440918,
+            -1.475600004196167
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.755649983882904,
+            0.3255000114440918,
+            1.2676000595092773
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.755649983882904,
+            0.3255000114440918,
+            1.2676000595092773
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "1969 Ford Mustang Boss 302 SportsRoof, US"
+  },
+  {
+    "id": "ford-mustang-gt-deluxe-2005",
+    "label": "Ironbloom GT 2005",
+    "carId": "3d-ironbloom-gt-2005-3d-8bdbe8c5fbdd",
+    "capability": "2005 US Ford Mustang GT Deluxe Coupe T82/130A TR3650 5MT 17-inch standard wheels",
+    "bodyRef": "Ironbloom-GT",
+    "wheelRef": "Ironbloom-GT-Wheel",
+    "radius": 0.34515,
+    "axles": [
+      {
+        "track": 1.5820000171661377,
+        "y": 0.3451499938964844,
+        "z": 1.258558750152588
+      },
+      {
+        "track": 1.5880000591278076,
+        "y": 0.3451409935951233,
+        "z": -1.461441159248352
+      }
+    ],
+    "reference": "2005 Ford Mustang GT Deluxe manual coupe, US"
+  },
+  {
+    "id": "audi-s1-2015",
+    "label": "Alkanet 2015",
+    "capability": "Vegas-yellow three-door quattro hatch, angular singleframe and four tips",
+    "carId": "3d-alkanet-2015-3d-8e9b08e47afb",
+    "bodyRef": "Alkanet",
+    "wheelRef": "Alkanet-Wheel",
+    "radius": 0.30189999999999995,
+    "axles": [
+      {
+        "track": 1.4739999771118164,
+        "y": 0.3018999993801117,
+        "z": 0.9876000285148621
+      },
+      {
+        "track": 1.4520000219345093,
+        "y": 0.3024289906024933,
+        "z": -1.4814000129699707
+      }
+    ],
+    "reference": "2015 UK Audi S1 quattro UK three-door6MT standard17-inch wheels"
+  },
+  {
+    "id": "audi-rs4-b7-2006",
+    "label": "Great Willowherb 2006",
+    "capability": "Wide B7 four-door sedan, trapezoid singleframe and two outboard outlets",
+    "carId": "3d-great-willowherb-2006-3d-1b908e9123a7",
+    "bodyRef": "Great-Willowherb-2006",
+    "wheelRef": "Great-Willowherb-2006-Wheel",
+    "radius": 0.3306,
+    "axles": [
+      {
+        "track": 1.559000015258789,
+        "y": 0.33059999346733093,
+        "z": 1.3240000009536743
+      },
+      {
+        "track": 1.569000005722046,
+        "y": 0.33059999346733093,
+        "z": -1.3240000009536743
+      }
+    ],
+    "reference": "2006 Germany Audi RS 4, B7 standard naturallyaspirated4.2FSIV8 quattro sedan6MT; notAvant/Cabriolet orUSMY2007"
+  },
+  {
+    "id": "audi-tt-rs-8j-2010",
+    "label": "Clary Sage 2010",
+    "capability": "Domed 8J 2+2 coupe, 5-arm wheels and fixed rear wing",
+    "carId": "3d-clary-sage-2010-3d-ba189235ca2f",
+    "bodyRef": "Clary-Sage-2010-body",
+    "wheelRef": "Clary-Sage-2010-wheel",
+    "radius": 0.3266,
+    "axles": [
+      {
+        "track": 1.5549999475479126,
+        "y": 0.32659998536109924,
+        "z": 1.2660000324249268
+      },
+      {
+        "track": 1.5460000038146973,
+        "y": 0.32659998536109924,
+        "z": -1.2020000219345093
+      }
+    ],
+    "reference": "2010 UK Audi TT RS Coupe 2.5 TFSI quattro 6MT, standard 18-inch wheels",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7774999737739563,
+            0.32659998536109924,
+            -1.2660000324249268
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7774999737739563,
+            0.32659998536109924,
+            -1.2660000324249268
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7730000019073486,
+            0.32659998536109924,
+            1.2020000219345093
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7730000019073486,
+            0.32659998536109924,
+            1.2020000219345093
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6240000128746033,
+            0.6209999918937683,
+            -2.127000093460083
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.5299999713897705,
+            0.7070000171661377,
+            2.1600000858306885
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6240000128746033,
+            0.6209999918937683,
+            -2.127000093460083
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.5299999713897705,
+            0.7070000171661377,
+            2.1600000858306885
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
   }
 ]

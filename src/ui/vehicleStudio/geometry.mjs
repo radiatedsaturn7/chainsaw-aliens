@@ -897,6 +897,42 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    const t=s>0?.966-.054*pickupFrame:.932-.095*pickupFrame;
    framePickupGlazing((u,v)=>glassPoint(s,v,u),[{l:edge,r:1-edge,b,t}],s>0);
   }else put('glass','glass',patch(small(12,6,5,4),small(16,10,9,8),(v,u)=>glassPoint(s,v,u),s<0));
+  if(s<0&&!roadster&&canopy.rearDeckVents){
+   // Sample the rear canopy rather than fitting a detached box in world
+   // coords. Vents follow roof slope, taper and size for every genome.
+   const deck=(t,u,lift=0)=>{const p=glassPoint(-1,t,u);p[1]+=lift;return p;};
+   if(canopy.rearDeckVents===1){
+    const n=small(9,6,5,4);
+    // Each stamped dark blade has a lip and a vertical return.  A small
+    // gap between blades lets the backing remain visible from oblique views.
+    for(let k=0;k<7;k++){
+     const from=.079+k*.123, width=.392-.09*(k/6);
+     const skin=(v,u,d)=>deck(from+.097*v,.5+(u*2-1)*width,.006+d+.021*(1-v));
+     const roll=patch(2,n,(v,u)=>skin(v,u,0),true);
+     roll.userData.constructionRole='rear canopy / rolled louver';
+     put('trunk','trim',roll);
+     put('trunk','seamDark',patch(1,n,(v,u)=>skin(0,1-u,-.024*v),true));
+    }
+   }else if(canopy.rearDeckVents===2){
+    const n=small(10,6,5,4);
+    for(const x of [.235,.765]){
+     const u0=.32,u1=.86,wide=.107;
+     const hoop=(t,a)=>{
+      const w=mix(wide*.52,wide,t),rise=mix(.004,.099,t**.64);
+      const p=deck(mix(u0,u1,t),x+w*Math.cos(Math.PI*a),.004+rise*Math.sin(Math.PI*a)**.72);
+      return p;
+     };
+     const shell=patch(n,7,(t,v)=>hoop(t,v),true);
+     shell.userData.constructionRole='rear canopy / formed ram intake';
+     put('trunk','paint',shell);
+     const mouth=(a,b)=>{
+      const p=hoop(1,a),q=deck(u1,x+wide*Math.cos(Math.PI*a),.005);
+      p[1]=mix(q[1],p[1],b);p[2]-=.007;return p;
+     };
+     put('trunk','seamDark',patch(6,2,(u,v)=>mouth(u,v),true));
+    }
+   }
+  }
   const roofSide=s>0?1:0,letter=s>0?'R':'L', A=canopyRoof(roofFront,roofSide),C=canopyRoof(roofRear,roofSide);
   function side(u,v){
    const f=glassPoint(1,v,roofSide),r=glassPoint(-1,v,roofSide),a=lerp3(f,r,u),

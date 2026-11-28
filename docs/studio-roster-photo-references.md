@@ -348,3 +348,25 @@ the normalized pack reproduces those chassis-space coordinates without
 rewriting the stock binding. The Lotus cockpits are right-hand drive in
 the editable model; existing production camera settings are untouched.
 The S209's sharp canards and the 4G Eclipse's rear shoulder are simplified.
+
+### Full-roster rollout, Celica, Lamborghini, Mustang, and Audi
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Heath Violet 1974 | US Toyota Celica GT first-generation RA21 hardtop. [US brochure](https://importarchive.com/brochure/toyotacelica1974_01); [period body comparison](https://ateupwithmotor.com/model-histories/toyota-celica-first-gen/view-all/). |
+| Red Deadnettle 1992 | Japanese Toyota Celica GT-Four RC ST185 homologation model. [Toyota archive](https://media.toyota.co.uk/toyota-celica-gt-four-st185/); [FIA homologation record](https://rallybodykits.com/pdf/fia-homologation-papers-toyota-celica-2000gt-four-rc-st185-group-a-number-5451.pdf). |
+| Moonpetal GT 2000 | US Toyota Celica GT-S 6MT. [Toyota factory gallery](https://pressroom.toyota.com/album/2000-2002-toyota-celica-seventh-7th-generation/); [period test gallery](https://www.caranddriver.com/photos/g69122829/2000-toyota-celica-gt-s-archive-test-gallery/). |
+| Berseem Clover 1967 | Lamborghini Miura P400 original. [Lamborghini history](https://www.lamborghini.com/en-en/history/miura); [1967 archive](https://preview.thenewsmarket.com/Previews/lamb/DocumentAssets/499357.pdf). |
+| Cup Clover 1997 | Lamborghini Diablo SV with parked original pop-ups. [Trim gallery](https://www.amarisupercars.com/stock/details/1997-lamborghini-diablo-sv/1241814); [rear engine-side intakes](https://lemacc.com/client/1997-lamborghini-diablo-sv). |
+| Longstalk Clover 2012 | European Lamborghini Aventador LP700-4 launch coupe. [Launch archive](https://preview.thenewsmarket.com/Previews/lamb/DocumentAssets/266952.pdf); [2012 exterior](https://carsandbids.com/auctions/rGeAadM2/2012-lamborghini-aventador-lp700-4-coupe). |
+| Pygmy Clover 1965 | US Ford Mustang GT hardtop. [Period Ford ad](https://www.usmodernist.org/AR/AR-1965-05.pdf); [GT trim details](https://www.hagerty.com/valuation-tools/ford/mustang/1965/1965-ford-mustang-gt). |
+| Hop Clover 1969 | US Ford Mustang Boss 302 SportsRoof. [Original matching trim](https://davidsclassiccars.com/ford/183816-1969-boss-302-calypso-coral-numbers-matching.html). |
+| Ironbloom GT 2005 | US Ford Mustang GT Coupe Deluxe manual, 130A. [Period Ford ordering guide](https://themustangsource.com/timeline/05/05/OrderGuide-ORIGINAL.pdf). |
+| Alkanet 2015 | UK Audi S1 quattro three-door 6MT. [UK factory brochure](https://xr793.com/wp-content/uploads/2022/10/2015-Audi-A1-S1-UK.pdf). |
+| Great Willowherb 2006 | German Audi RS4 B7 sedan 6MT. [Dated exact generation photo](https://commons.wikimedia.org/wiki/File:Audi_RS4_2006_Avus_vl.jpg). |
+| Clary Sage 2010 | UK Audi TT RS 8J coupe, six-speed. [Period Audi catalogue](https://xr793.com/wp-content/uploads/2023/04/2010-Audi-TT-RS-AUS.pdf) (other right-hand-drive market). |
+
+The Celica RC and 1965/1969 Mustangs opt into source-frame normalization
+without modifying their car documents, tuning or original bindings. The
+Miura's fine lamp lashes, GT-S lamp outline, Aventador Y signature, and
+Boss side stripes remain simplified or omitted.
