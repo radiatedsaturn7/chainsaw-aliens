@@ -575,7 +575,15 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   // Continuous dark backing closes every panel gap rather than exposing
   // the suspension or leaving a painted faux deck across the textured seam.
   tag('seamDark',patch(6,across,(u,v)=>sample(mix(za-.002,zb+.002,u),mix(e-.002,1-e+.002,v),true)),'pickup cover closed backing');
-  for(let k=0;k<3;k++){
+  if(g.body.pickupSoftCover){
+   // One stock snap-on flexible sheet rides just above the same
+   // leak-proof bed return, instead of stamped tri-fold panels.
+   tag('trim',patch(10,across,(u,v)=>{
+    const p=sample(mix(za+.0026,zb-.0026,u),mix(e,1-e,v));
+    p[1]+=.007*Math.sin(Math.PI*u)*Math.sin(Math.PI*v);
+    return p;
+   }),'pickup continuous soft tonneau');
+  }else for(let k=0;k<3;k++){
    const a=za+k*span/3+.0026,b=za+(k+1)*span/3-.0026;
    tag('trim',patch(5,across,(u,v)=>sample(mix(a,b,u),mix(e,1-e,v))),'pickup cover removable leaf');
   }

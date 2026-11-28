@@ -15928,5 +15928,329 @@
     ],
     "reference": "1988 France Peugeot405Mi16 Phase1 four-door saloon,1905cc high-compression10.4:1 naturally aspirated16-valve multipoint-injection engine,FWD5MT,LHD,early14inch wheels. French160chDIN specification interpreted as non-catalyst,not US150hp export,Swiss catalyst,1990wheel update,Mi16x4,1992two-litre,LeMans orT16.",
     "canonicalLampSides": true
+  },
+  {
+    "id": "gmc-syclone-1991",
+    "label": "Orange Hawkweed 1991",
+    "carId": "3d-orange-hawkweed-1991-3d-3a6aac1c739a",
+    "capability": "1991 US GMC Syclone 4.3 turbo/intercooled V6 regular-cab pickup,4AT,full-time road AWD",
+    "bodyRef": "Orange-Hawkweed",
+    "wheelRef": "Orange-Hawkweed-Wheel",
+    "radius": 0.3257,
+    "axles": [
+      {
+        "track": 1.4376399517059326,
+        "y": 0.3257000148296356,
+        "z": 1.2654600143432617
+      },
+      {
+        "track": 1.3995399475097656,
+        "y": 0.3256379961967468,
+        "z": -1.4855400323867798
+      }
+    ],
+    "reference": "https://sportmachines.com/wp-content/uploads/1991/01/Syclone-Brochure.pdf"
+  },
+  {
+    "id": "gmc-typhoon-1992",
+    "label": "Fragrant Agrimony 1992",
+    "carId": "3d-fragrant-agrimony-1992-3d-874c37f7212e",
+    "capability": "1992 US GMC Typhoon three-door enclosed sport-utility wagon,4.3 turbo/intercooled V6,4-speed automatic,35:65 full-time AWD,3.42 rear LSD,stock245/50VR16; originalGMC/PAS launch brochure basis",
+    "bodyRef": "Fragrant Agrimony 1992 Body",
+    "wheelRef": "Fragrant Agrimony 1992 Wheel",
+    "radius": 0.3257,
+    "axles": [
+      {
+        "track": 1.4681199789047241,
+        "y": 0.3257000148296356,
+        "z": 1.2763500213623047
+      },
+      {
+        "track": 1.4731999635696411,
+        "y": 0.3257000148296356,
+        "z": -1.2763500213623047
+      }
+    ],
+    "reference": "https://www.auto-brochures.com/makes/GMC/Jimmy/GMC_US%20Jimmy_1992.pdf"
+  },
+  {
+    "id": "fiat-128-berlina-1969",
+    "label": "Madder 1969",
+    "capability": "1969 Italian Fiat 128 standard 1116cc two-door Berlina first series, not Rally",
+    "carId": "3d-madder-1969-3d-396822bc2351",
+    "bodyRef": "Madder-1969-body",
+    "wheelRef": "Madder-1969-wheel",
+    "radius": 0.2811,
+    "axles": [
+      {
+        "track": 1.3079999685287476,
+        "y": 0.28110000491142273,
+        "z": 1.2710000276565552
+      },
+      {
+        "track": 1.305999994277954,
+        "y": 0.28110000491142273,
+        "z": -1.1770000457763672
+      }
+    ],
+    "reference": "1969 Italian Fiat 128 standard two-door berlina, 1116cc 128A.000 8.8:1 engine, front-wheel drive, standard four-speed manual, left-hand drive. Original Group1 series-production specification; not a competition conversion, Rally, Sport Coupe, Familiare, four-door, US emissions variant or later 1290cc.",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.5699999928474426,
+            0.5569999814033508,
+            -2.0139999389648438
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.5699999928474426,
+            0.5569999814033508,
+            -2.0139999389648438
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.5649999976158142,
+            0.5659999847412109,
+            2.010999917984009
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.5649999976158142,
+            0.5659999847412109,
+            2.010999917984009
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.6539999842643738,
+            0.28110000491142273,
+            -1.2710000276565552
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.6539999842643738,
+            0.28110000491142273,
+            -1.2710000276565552
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.652999997138977,
+            0.28110000491142273,
+            1.1770000457763672
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.652999997138977,
+            0.28110000491142273,
+            1.1770000457763672
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "fiat-131-abarth-1000lakes-1978",
+    "label": "Navelwort 1978",
+    "capability": "1978 1000 Lakes-winning Fiat 131 Abarth Group 4 Alen/Kivimaki body, no sponsors",
+    "carId": "3d-navelwort-1978-3d-50798cbcc8ec",
+    "bodyRef": "Navelwort-1978-body",
+    "wheelRef": "Navelwort-1978-wheel",
+    "radius": 0.32,
+    "axles": [
+      {
+        "track": 1.4700000286102295,
+        "y": 0.3199999928474426,
+        "z": 1.2929999828338623
+      },
+      {
+        "track": 1.4900000095367432,
+        "y": 0.3199999928474426,
+        "z": -1.1970000267028809
+      }
+    ],
+    "reference": "Markku Alén / Ilkka Kivimäki, 1978 1000 Lakes Rally-winning Fiat 131 Abarth Rally Group 4. Not road Stradale or later evolution calibration.",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.5889999866485596,
+            0.6190000176429749,
+            -2.181999921798706
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.5889999866485596,
+            0.6190000176429749,
+            -2.181999921798706
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6259999871253967,
+            0.6150000095367432,
+            2.1730000972747803
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6259999871253967,
+            0.6150000095367432,
+            2.1730000972747803
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7350000143051147,
+            0.3199999928474426,
+            -1.2929999828338623
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7350000143051147,
+            0.3199999928474426,
+            -1.2929999828338623
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7450000047683716,
+            0.3199999928474426,
+            1.1970000267028809
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7450000047683716,
+            0.3199999928474426,
+            1.1970000267028809
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
   }
 ]
