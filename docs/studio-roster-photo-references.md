@@ -713,3 +713,28 @@ functional gameplay lamps are intentionally nonhistorical. Vulcan rear
 blades are native separate red elements; ECHO instruments moved to
 center without moving steering or the driver. Vintage sheet metal,
 Flying Spur brightwork, and Nissan lamp contours remain simplified.
+
+### Full-roster rollout, Lamborghini, Honda, Chevrolet pickups, and Maserati
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Arrowleaf Clover 1972 | European Lamborghini Jarama S/GTS 365 CV 5MT, not modified. [Lamborghini archive](https://www.lamborghini.com/en-en/history/jarama). |
+| Buffalo Clover 2011 | European Lamborghini Gallardo LP 570-4 Superleggera coupé e-gear. [Lamborghini archive](https://www.lamborghini.com/en-en/history/gallardo-lp-570-4-superleggera). |
+| Dwarf Clover 2008 | European Lamborghini Reventón 650 CV closed coupé, not roadster. [Lamborghini archive](https://www.lamborghini.com/en-en/history/few-off/reventon); [exact model photos](https://rmsothebys.com/auctions/mu22/lots/r0001-2008-lamborghini-reventon-coupe/). |
+| Marestail 2003 | US Honda Accord DX four-door 2.4 5MT. [Honda sedan features](https://hondanews.com/en-US/releases/release-e9f432bd4dd807d4c1fc34004c34c6eb-2003-honda-accord-sedan-features). |
+| Redbud V6 2007 | US Honda Accord EX-L V6 coupé six-speed manual, non-navigation. [Honda specifications](https://hondanews.com/en-US/honda-automobiles/releases/release-15abafe6d87b2a69ba8d7d004c34bfbd-2007-honda-accord-coupe-specifications). |
+| Hollyleaf Clover 2006 | US Honda Civic DX four-door R18 five-speed, steel rims with covers. [Honda sedan specifications](https://hondanews.com/en-US/releases/release-591334b5ff2cd7fdfabb17004c34c1b5-2006-honda-civic-sedan-and-civic-hybrid-specifications). |
+| Common Toadflax 1972 | US Chevrolet K10 Custom short Fleetside, 250 inline-six. [GM factory truck packet](https://news.chevrolet.com/content/dam/company/no_search/heritage-archive-docs/vehicle-information-kits/chevrolet-trucks/1972-Chevrolet-Truck.pdf). |
+| Coralberry Clover 2004 | Canada Chevrolet Colorado Z85 Base regular cab 2WD 2.8 manual. [Canadian brochure archive](https://storm.oldcarmanualproject.com/chevroletcolorado2004.htm). |
+| Feverfew 2005 | US cladded Chevrolet Avalanche 1500 LS 2WD with closed cargo cover and six seats. [GM factory packet](https://www.gm.com/content/dam/company/no_search/heritage-archive-docs/vehicle-information-kits/chevrolet/2005-Chevrolet-Avalanche.pdf). |
+| Heal-all 1994 | Japanese Honda Prelude Si BA8 non-VTEC 2WS, F22B 5MT. [1994 Japan model listing](https://toyota.jp/ucar/catalog/brand-HONDA/car-PRELUDE/199409/2003150/). |
+| Iris 22 2001 | US Honda Prelude base manual, not Type SH. [Honda body description](https://hondanews.com/en-US/releases/release-e261b4b649cb8d11273122004c34c876-honda-prelude-body). |
+| Clover Sport 2007 | US Honda Fit Sport first-generation 5MT, not Base or automatic. [Honda body description](https://hondanews.com/en-US/releases/2007-honda-fit-body). |
+| Field Bindweed 1997 | Italian Maserati Ghibli Cup AM336 2.0 330 CV, not ordinary Ghibli. [Maserati archive](https://www.maserati.com/ca/en/brand/maserati-classic-cars/biturbo-and-derivates/ghibli-cup). |
+| Hedge Bindweed 2004 | European Maserati MC12 Stradale with closed hardtop, not GT1. [Maserati archive](https://www.maserati.com/tr/tr/brand/maserati-classic-cars/specials/mc12). |
+| Hedge Woundwort 1953 | Closed Maserati A6GCS/53 Pinin Farina Berlinetta, not roadster. [Maserati archive](https://www.maserati.com/ca/en/brand/maserati-classic-cars/post-war-racing-cars/a6gcs); [Berlinetta example](https://commons.wikimedia.org/wiki/Category:1953_Maserati_A6GCS/53_Berlinetta_Pininfarina_s/n_2056). |
+
+The Jarama lens brows and Reventón chevron internals are separate native
+options. The Avalanche has physically backed cover leaves, without animated
+Midgate. Fit optical sweep, Prelude glass transitions, and Maserati
+window surrounds are still simplified.

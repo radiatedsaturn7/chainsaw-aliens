@@ -161,7 +161,7 @@ export function makeOpenings({end,g,segments=32,face=null}){
    width:sat(num(raw.width,.5)),height:sat(num(raw.height,.5)),corner:sat(num(raw.corner,.5)),
    angle:signed(num(raw.angle,(legacy.angle||0)/18)),sweep:sat(num(raw.sweep,.5)),
    curvature:sat(num(raw.curvature,.5)),recess:sat(num(raw.recess,.5)),convexity:sat(num(raw.convexity,.5)),
-   sideWrap:sat(num(raw.sideWrap,0)),silverFront:sat(num(raw.silverFront,0)),silverUpper:sat(num(raw.silverUpper,0)),silverUpperSplit:Math.max(-.08,Math.min(.20,num(raw.silverUpperSplit,-.018))),tripleBowls:sat(num(raw.tripleBowls,0)),rearLightBlades:Math.max(0,Math.min(27,Math.round(num(raw.rearLightBlades,0)))),rearCells:sat(num(raw.rearCells,0)),rearClearNotch:sat(num(raw.rearClearNotch,0)),rearTriBars:sat(num(raw.rearTriBars,0)),roundBowls:sat(num(raw.roundBowls,0)),flutedBowls:sat(num(raw.flutedBowls,0)),position:sat(num(raw.position,.5)),protrusion:sat(num(raw.protrusion,0)),formula:raw.formula??'',modules:Math.max(0,Math.min(8,Math.round(raw.modules??0))),spacing:sat(num(raw.spacing,.5)),inboardReach:sat(num(raw.inboardReach,.5)),formulaSide:g.construction?.symmetry?.[group]==='linked'?s:1,outline:Array.isArray(raw.outline)?raw.outline:[]};
+   sideWrap:sat(num(raw.sideWrap,0)),silverFront:sat(num(raw.silverFront,0)),silverUpper:sat(num(raw.silverUpper,0)),silverUpperSplit:Math.max(-.08,Math.min(.20,num(raw.silverUpperSplit,-.018))),tripleBowls:sat(num(raw.tripleBowls,0)),rearLightBlades:Math.max(0,Math.min(27,Math.round(num(raw.rearLightBlades,0)))),rearCells:sat(num(raw.rearCells,0)),rearClearNotch:sat(num(raw.rearClearNotch,0)),headlampBrow:Math.max(0,Math.min(.36,num(raw.headlampBrow,0))),rearTriBars:Math.max(0,Math.min(2,num(raw.rearTriBars,0))),roundBowls:sat(num(raw.roundBowls,0)),flutedBowls:sat(num(raw.flutedBowls,0)),position:sat(num(raw.position,.5)),protrusion:sat(num(raw.protrusion,0)),formula:raw.formula??'',modules:Math.max(0,Math.min(8,Math.round(raw.modules??0))),spacing:sat(num(raw.spacing,.5)),inboardReach:sat(num(raw.inboardReach,.5)),formulaSide:g.construction?.symmetry?.[group]==='linked'?s:1,outline:Array.isArray(raw.outline)?raw.outline:[]};
 
  // The bands are deliberately disjoint even at all slider extremes:
  // lamp inside <= .366; center grille starts >= .388; lower intakes start >= .31.
@@ -278,7 +278,7 @@ export function makeOpenings({end,g,segments=32,face=null}){
     housing:mesh?(fascia.grilleShape??'round-rect'):'round-rect',cx:.5+side*((mesh?.019:.012)+w/2),cy:.415+(num(fascia.grilleHeightPosition,.5)-.5)*.43,width:mesh?Math.max(.025,w-.014):w,height:h,...(mesh?{side}:{}),
     opt:mesh?{corner:.64,angle:.42,sweep:.67}:{corner:.74},kind:'duct',segments,style:mesh?'mesh':'vertical'}));
   }else if(gr.type!=='closed')out.push(aperture({id:'upper-grille',component:'grille',housing:fascia.grilleShape??'trapezoid',cx:.5,cy:.415+(num(fascia.grilleHeightPosition,.5)-.5)*.43,
-   width:Math.min(mix(.155,.256,sat((num(gr.size,1)-.68)/.60))*(.56+.88*num(fascia.grilleWidth,.5)),2*(.49-Math.max(...out.filter(o=>o.center[0]<.5).flatMap(o=>o.outline.map(p=>p[0])))),2*(Math.min(...out.filter(o=>o.center[0]>.5).flatMap(o=>o.outline.map(p=>p[0])))-.51)),height:mix(.13,(gr.type==='vertical slats'||gr.type==='seven-slot'||gr.type==='five-slot')?.35:.238,sat((num(gr.depth,1)-.68)/.60))*(.58+.84*num(fascia.grilleHeight,.5)),
+   width:Math.min(mix(.155,.256,sat((num(gr.size,1)-.68)/.60))*(.56+.88*num(fascia.grilleWidth,.5))*(1+.87*num(fascia.wideTruckGrille,0)),2*(.49-Math.max(...out.filter(o=>o.center[0]<.5).flatMap(o=>o.outline.map(p=>p[0])))),2*(Math.min(...out.filter(o=>o.center[0]>.5).flatMap(o=>o.outline.map(p=>p[0])))-.51)),height:mix(.13,(gr.type==='vertical slats'||gr.type==='seven-slot'||gr.type==='five-slot')?.35:.238,sat((num(gr.depth,1)-.68)/.60))*(.58+.84*num(fascia.grilleHeight,.5)),
    kind:'duct',segments,opt:{bezel:num(fascia.grilleBezel,0),lampPair:num(fascia.grilleLampPair,0)},style:gr.type==='crosshair'?'crosshair':gr.type==='seven-slot'?'seven-slot':gr.type==='five-slot'?'five-slot':gr.type==='vertical slats'?'vertical':gr.type==='bars'?'bars':'mesh'}));
   for(const s of [-1,1]){
    const sideFog=getSideSettings(g,'fogs',s>0?'R':'L',fog);
@@ -791,7 +791,10 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
   if(triBars){
    // Three individually molded red lenses in the factory recess. Leave
    // a lower strip for discreet independent reverse and turn optics.
-   const poly=(x,y,rx,ry)=>[[x-rx*.76,y-ry],[x+rx*.76,y-ry],[x+rx,y-ry*.84],[x+rx,y+ry*.84],
+   const arrow=opt.rearTriBars>1;
+   const poly=(x,y,rx,ry)=>arrow?[[x+side*rx,y],[x-side*rx*.72,y-ry],[x-side*rx*.95,y-ry*.53],
+    [x+side*rx*.002,y],[x-side*rx*.95,y+ry*.53],[x-side*rx*.72,y+ry]]:
+    [[x-rx*.76,y-ry],[x+rx*.76,y-ry],[x+rx,y-ry*.84],[x+rx,y+ry*.84],
     [x+rx*.76,y+ry],[x-rx*.76,y+ry],[x-rx,y+ry*.84],[x-rx,y-ry*.84]];
    for(const n of [-1,0,1]){
     const x=cx+n*w*.247,y=cy-.048*h;
@@ -800,9 +803,10 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
      scale*=.85;q=poly(x,y,w*.103*scale,h*.279*scale);
     }
     if(!q.every(([u,v])=>contains(outline,u,v)))continue;
-    putGeo('trim',[ring(1,d*.58,q,x,y),ring(.866,d*.51,q,x,y)]);
-    putGeo('runningRed',[ring(.866,d*.51,q,x,y),ring(.79,d*.417,q,x,y)]);
-    putGeo('opticRed',[ring(.79,d*.417,q,x,y),ring(.64,d*.385,q,x,y)],pt(x,y,d*.375));
+    putGeo('trim',[ring(1,d*.58,q,arrow?x+side*w*.103*scale*.32:x,y),ring(.866,d*.51,q,arrow?x+side*w*.103*scale*.32:x,y)]);
+    const px=arrow?x+side*w*.103*scale*.32:x;
+    putGeo('runningRed',[ring(.866,d*.51,q,px,y),ring(.79,d*.417,q,px,y)]);
+    putGeo('opticRed',[ring(.79,d*.417,q,px,y),ring(.64,d*.385,q,px,y)],pt(px,y,d*.375));
    }
    for(const [m,s] of [['opticClear',-1],[side>0?'signalR':'signalL',1]]){
     const p=fitted(cx+s*w*.18,cy+h*.33,w*.058,h*.042,8);
@@ -929,6 +933,23 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
   if(!triBars&&!front&&oLayout!=='factory-split'&&oLayout!=='round-stack'){
    const strip=fitted(cx,cy+h*.24,w*.31,h*.072,lod?10:14);
    putGeo('runningRed',[ring(1,d*.37,strip.p,strip.x,strip.y),ring(.87,d*.34,strip.p,strip.x,strip.y)],pt(strip.x,strip.y,d*.34));
+  }
+  if(front&&kind==='lamp'&&opt.headlampBrow>0&&opt.housing==='dual-round'){
+   // A closed-position cosmetic eyelid shares the actual aperture rim.
+   // An inward gap stays visible above the glass; no covering the beam
+   // anchor or altering the electrical roles of either bowl.
+   const low=Math.min(...outline.map(q=>q[1])),high=Math.max(...outline.map(q=>q[1]));
+   const y0=low+opt.headlampBrow*(high-low),poly=[];
+   for(let i=0;i<outline.length;i++){
+    const a=outline[i],b=outline[(i+1)%outline.length];
+    if(a[1]<=y0)poly.push(a);
+    if((a[1]<y0)!==(b[1]<y0))poly.push([mix(a[0],b[0],(y0-a[1])/(b[1]-a[1])),y0]);
+   }
+   if(poly.length>=3){
+    const x=poly.reduce((v,q)=>v+q[0],0)/poly.length,y=poly.reduce((v,q)=>v+q[1],0)/poly.length;
+    const brow=makeMesh([ring(.982,.0018,poly,x,y),ring(.94,.0004,poly,x,y)],sign,{disk:pt(x,y,.0004)});
+    if(brow)put(a.component,'paint',brow);
+   }
   }
   const coverOuter=mix(.010,.017,num(opt.curvature,.5))-maxProtrusion*.010;
   const convex=mix(.002,.012,num(opt.convexity,.5));

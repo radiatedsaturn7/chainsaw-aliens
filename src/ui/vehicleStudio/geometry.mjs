@@ -541,7 +541,37 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  const trunkCover=(z,u)=>coverPoint(trunkPoint,trunkEdge,g.seams.trunkSeam,z,u);
  const bedEnd=cabinRear-G, pickupDepth=g.body.pickupBedDepth;
  let pickupWellCeiling=null;
- if(pickupDepth>0&&bedEnd-trunkEdge>.45){
+ if(g.body.pickupBedCover&&bedEnd-trunkEdge>.45){
+  const za=trunkEdge+.071,zb=bedEnd-.046,span=zb-za,e=.075;
+  const tag=(mat,geo,name)=>{geo.userData.section=name;put('trunk',mat,geo);};
+  const base=(z,u)=>trunkCover(z,u);
+  for(const [a,b] of [[trunkEdge,za],[zb,bedEnd]])tag('paint',patch(2,across,(u,v)=>base(mix(a,b,u),v)),'pickup cover painted end rail');
+  for(const [a,b] of [[0,e],[1-e,1]])tag('paint',patch(10,3,(u,v)=>base(mix(za,zb,u),mix(a,b,v))),'pickup cover painted outer rail');
+  const sample=(z,u,back=false)=>{const p=base(z,u);p[1]+=back?-.004:.008;return p;};
+  // Continuous dark backing closes every panel gap rather than exposing
+  // the suspension or leaving a painted faux deck across the textured seam.
+  tag('seamDark',patch(6,across,(u,v)=>sample(mix(za-.002,zb+.002,u),mix(e-.002,1-e+.002,v),true)),'pickup cover closed backing');
+  for(let k=0;k<3;k++){
+   const a=za+k*span/3+.0026,b=za+(k+1)*span/3-.0026;
+   tag('trim',patch(5,across,(u,v)=>sample(mix(a,b,u),mix(e,1-e,v))),'pickup cover removable leaf');
+  }
+  pickupWellCeiling=(z,x)=>z<za||z>zb?Infinity:sample(z,.5,true)[1]-.018;
+  if(g.body.pickupSailRise)for(const s of [-1,1]){
+   const a=.5+s*.365,b=.5+s*.489;
+   const fore=bedEnd+.021,aft=mix(za,zb,.18);
+   const foot=(z,u)=>{const p=base(clamp(z,trunkEdge,bedEnd),u);p[1]-=.024;return p;};
+   const surf=(u,v)=>{
+    const z=mix(aft,fore,u),p=foot(z,mix(a,b,v)),rise=g.body.pickupSailRise*u**1.68;
+    p[1]+=rise*(.84+.16*Math.sin(Math.PI*v));
+    p[2]+=clamp(roofRear-bedEnd-.024,.04,.37)*u**3.8;
+    p[0]*=1-.138*u**2;
+    return p;
+   };
+   tag('trim',patch(12,6,surf,s<0),'pickup molded sail buttress');
+   for(const [v,flip] of [[0,s<0],[1,s>0]])tag('trim',patch(12,2,(u,h)=>lerp3(foot(mix(aft,fore,u),mix(a,b,v)),surf(u,v),h),flip),'pickup sail return');
+   tag('trim',patch(1,6,(h,v)=>lerp3(foot(fore,mix(a,b,v)),surf(1,v),h),s>0),'pickup sail cab-facing backing');
+  }
+ }else if(pickupDepth>0&&bedEnd-trunkEdge>.45){
   const aft=trunkEdge+.087,fore=bedEnd-.067,l=.073,r=1-l,steps=small(18,10,9,7);
   const rim=(z,u)=>trunkCover(z,u);
   // A single open cargo well replaces the deck. Integral rails meet the
