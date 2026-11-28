@@ -25,7 +25,7 @@ const profiles={
  shield:[[-.91,-.78],[-.54,-1],[.54,-1],[.91,-.78],[.75,-.19],[.43,.48],[.11,.96],[0,1],[-.11,.96],[-.43,.48],[-.75,-.19]],
  compound:[[-1,-.36],[-.79,-.77],[-.29,-.99],[.24,-.87],[.83,-.98],[1,-.69],[.95,.33],[.72,.89],[.27,.82],[-.36,1],[-.82,.78],[-1,.31]]
 };
-export const HOUSING_FAMILIES=['round-rect','circle','oval','rectangle','trapezoid','shield','angular','swept','wrap','upright-wrap','compound','round-twin','dual-round','stacked-round'];
+export const HOUSING_FAMILIES=['round-rect','circle','oval','rectangle','trapezoid','shield','angular','swept','wrap','upright-wrap','compound','round-twin','dual-round','dual-trapezoid','stacked-round'];
 const layouts=new Set(['projector','twin','led','mixed','factory-split','round-stack']);
 function curvePolygon(points,r,n){
  const controls=(p,q,t)=>p.map((x,i)=>mix(x,q[i],t));
@@ -121,13 +121,13 @@ export function rearSculptOpening(g,openings){
 }
 // Solve the projected XY circle on the full curved fascia. UV circles
 // alone become tall slots where the corner compresses the horizontal axis.
-function projectRoundLamp(opening,face,diameter,lift){
+function projectRoundLamp(opening,face,diameter,lift,aspect=1){
  const [u,v0]=opening.center;
  const attempt=(v,scale)=>{
   const [X,Y]=face(u,v),radius=diameter*.5*scale;
   let valid=true;
   const outline=opening.outline.map((_,i,points)=>{
-   const t=i/points.length*tau,tx=X+radius*Math.cos(t),ty=Y+radius*Math.sin(t);
+   const t=i/points.length*tau,tx=X+radius*Math.cos(t),ty=Y+radius*aspect*Math.sin(t);
    let x=u,y=v;
    for(let k=0;k<9;k++){
     const [px,py]=face(x,y),ex=tx-px,ey=ty-py;
@@ -198,25 +198,26 @@ export function makeOpenings({end,g,segments=32,face=null}){
   }
   continue;
  }
- if(front&&housing==='dual-round'){
+ if(front&&(housing==='dual-round'||housing==='dual-trapezoid')){
+  const angled=housing==='dual-trapezoid',aspect=num(raw.pairedOvalAspect,1);
   // A pair of physically separate front projector recesses, with a painted
   // web between them. Keep both in the existing side tiles and end the
   // circles above the lowest available bumper intake station.
   const ratio=num(raw.innerRoundRatio,0),fitInner=ratio?Math.max(.42,ratio):.88;
   // Unequal round pairs: use the same editable aperture and keep a painted
   // ligament between a larger main lamp and separate inboard driving lamp.
-  const hw=(ratio?.047:.032)+.014*opt.width,hh=(ratio?.090:.077)+.056*opt.height;
+  const hw=(ratio?.047:.032)+.014*opt.width,hh=angled?.074+.046*opt.height:(ratio?.090:.077)+.056*opt.height;
   const outer=Math.max(.097,Math.min(.175,sideX-(hw+.005)));
   const inner=outer+hw*(ratio?1+fitInner:2)+.020;
   const y=Math.max(.130+hh,Math.min(.402,cyBase+.034));
   for(let i=0;i<2;i++){
    const cx=s>0?1-(i?inner:outer):(i?inner:outer),cy=y+(i?.018:0);
-   const fit=i?fitInner:1, roundOpt={...opt,angle:0,sweep:.5,inboardReach:.5,outline:[],formula:'',layout:'projector',sideWrap:0,secondaryLamp:i>0};
+   const fit=i?fitInner:1, roundOpt={...opt,angle:angled?(i?.04:.15):0,sweep:angled?.65:.5,inboardReach:.5,outline:[],formula:'',layout:'projector',sideWrap:0,secondaryLamp:i>0};
    const portMode=num(raw.roundInnerPort,0);
    const activeInlet=i>0&&(portMode===2||portMode===1&&s===(g.construction?.cabin?.driverSide==='right'?1:-1));
    const opening=aperture({id:'head-'+(s>0?'l':'r')+(i?'-inner':''),component:'headlights',
-    kind:activeInlet?'air-port':'lamp',housing:'circle',cx,cy,width:hw*2*fit,height:hh*2*fit,side:s,opt:roundOpt,segments});
-   if(face&&raw.physicalDiameter>0)projectRoundLamp(opening,face,Math.min(raw.physicalDiameter,g.dimensions.width*hw*1.7)*fit,0);
+    kind:activeInlet?'air-port':'lamp',housing:angled?'trapezoid':'circle',cx,cy,width:hw*2*fit,height:hh*2*fit,side:s,opt:roundOpt,segments});
+   if(!angled&&face&&raw.physicalDiameter>0)projectRoundLamp(opening,face,Math.min(raw.physicalDiameter,g.dimensions.width*hw*1.7)*fit,aspect===1?0:num(raw.circleLift,0),aspect);
    out.push(opening);
   }
   continue;

@@ -112,6 +112,28 @@ function spoke(r,face,dish,i,count,style,depth,low){
  return mesh(P,I,U);
 }
 
+// The wire center is not a cast face: two axial banks of slender
+// tensioned rods cross in projection but on separate dish depths.
+function crossLacedWheel(rim,c,face,hub,compact,detail,depth){
+ const n=compact?12:detail?24:16, sides=compact?3:detail?5:4;
+ const result=[], Y=new T.Vector3(0,1,0);
+ const radius=clamp(.00165*depth,.0012,.0022);
+ for(const bank of [-1,1])for(let i=0;i<n;i++){
+  const angle=(i+.21*bank)*TAU/n;
+  const a=new T.Vector3(...vec(hub-.009+.012*(bank+1)/2,rim*.198,angle+bank*.63));
+  const b=new T.Vector3(...vec(face-.013-(bank+1)*.005,rim*.926,angle));
+  const v=b.clone().sub(a);
+  const rod=new T.CylinderGeometry(radius,radius,v.length(),sides,1,true);
+  rod.applyQuaternion(new T.Quaternion().setFromUnitVectors(Y,v.normalize()));
+  rod.translate((a.x+b.x)/2,(a.y+b.y)/2,(a.z+b.z)/2);
+  result.push(rod);
+ }
+ // Rolled center-lock cap. Ends stay inside the physical tire half width.
+ const h=Math.min(c-.006,hub+.021);
+ result.push(lathe([[rim*.191,hub-.003],[rim*.178,hub+.002],[rim*.133,h-.003],[rim*.094,h],[0,h]],compact?8:14));
+ return result;
+}
+
 function boltSocket(x,r,i){
  const a=TAU*i/5,y=Math.cos(a)*r,z=Math.sin(a)*r,R=r*.19;
  const p=[[x,y,z]],u=[[.5,.5]],tri=[];
@@ -187,9 +209,25 @@ export function buildWheels(g,{quality='preview',compact=0,emit,rear=false}={}){
   [rim*.239,hub-.012],[rim*.221,hub-.004],[rim*.202,hub+.002],
   [rim*.188,hub+.004],[0,hub+.004]
  ];
- put('wheels','wheel',lathe(compact?hubProfile.filter((p,i)=>i!==1&&i!==3):hubProfile,innerN));
+ const cover=w.type==='interface cover'||w.type==='swept steel cover';
+ if(!cover)put('wheels','wheel',lathe(compact?hubProfile.filter((p,i)=>i!==1&&i!==3):hubProfile,innerN));
 
- if(w.type==='pentagonal cast pockets'){
+ if(w.type==='wire cross-laced'){
+  for(const part of crossLacedWheel(rim,c,face,hub,compact,detail,w.depth))put('wheels','wheel',part);
+ }else if(cover){
+  const dodge=w.type==='interface cover',s=dodge?6:7,al=TAU/s,x=face-.006;
+  // Clip-on convex painted cap, with low molded shoulder and smooth center
+  // concealing the studs. The trim slots use real formed surface relief.
+  put('wheels','wheel',lathe([[rim*.954,x-.007],[rim*.919,x+.002],[rim*.78,x+.004],[rim*.33,x+.008],[rim*.22,x+.009],[0,x+.010]],n));
+  for(let i=0;i<s;i++){
+   const a=i*al,pt=(p,b,h)=>[x+h,Math.cos(a+b)*rim*p,Math.sin(a+b)*rim*p];
+   const outer=dodge?.90:.895,inner=dodge?.61:.49,tw=dodge?.05:.19;
+   const poly=[pt(inner,-.11-tw,.0075),pt(outer,-.12,.0045),pt(outer,.114,.0045),pt(inner,.079-tw,.0075)];
+   put('wheels','seamDark',mesh(poly,[0,1,2,0,2,3],[[0,0],[0,1],[1,1],[1,0]]));
+   const rib=[pt(inner,-.16-tw,.010),pt(outer,-.145,.0068),pt(outer,-.115,.0068),pt(inner,-.08-tw,.010)];
+   put('wheels','wheel',mesh(rib,[0,1,2,0,2,3],[[0,0],[0,1],[1,1],[1,0]]));
+  }
+ }else if(w.type==='pentagonal cast pockets'){
   // Low, broad cast alloy face with five genuine pentagonal recesses.
   // Openings share the same triangulated boundary as the wall and floor.
   const x=face-.010,pent=5,pockets=5;
@@ -230,7 +268,7 @@ export function buildWheels(g,{quality='preview',compact=0,emit,rear=false}={}){
  const nSpokes=w.type==='7 twin spoke'?14:w.type==='9-spoke'?9:w.type==='3-spoke sweep'?3:w.type==='4-spoke'?4:w.type==='6-spoke'?6:w.type==='5-spoke'?5:w.type==='15-spoke'?15:w.type==='10-spoke'?10:w.type==='8-spoke'?8:w.type==='7-spoke'?7:low?8:12;
  for(let k=0;k<nSpokes;k++)put('wheels','wheel',spoke(rim,face,dish,k,nSpokes,w.type,w.depth,low||nSpokes>7&&!detail));
   }
- if(!low)for(let k=0;k<5;k++)put('wheels','trim',boltSocket(hub+.0042,rim*.134,k));
+ if(!low&&!cover&&w.type!=='wire cross-laced')for(let k=0;k<5;k++)put('wheels','trim',boltSocket(hub+.0042,rim*.134,k));
  const disk=Math.max(.053,rim*.743),rotorX=Math.min(-.004,face-dish-.026),panel=.027+clamp(tireWidth-.225,-.045,.07)*.14;
  const rotorProfile=[
   [disk*.433,rotorX-panel*.44],[disk*.970,rotorX-panel*.44],[disk,rotorX-panel*.34],

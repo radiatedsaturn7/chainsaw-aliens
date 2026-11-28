@@ -9352,5 +9352,814 @@
         }
       ]
     }
+  },
+  {
+    "id": "aston-martin-db5-uk-1964",
+    "label": "Herb Bennet 1964",
+    "capability": "standard DB5 saloon oval faired round lights and wheelbase",
+    "carId": "3d-herb-bennet-1964-3d-671cd2d2e06d",
+    "bodyRef": "Herb-Bennet-1964",
+    "wheelRef": "Herb-Bennet-1964-Wheel",
+    "radius": 0.3385,
+    "axles": [
+      {
+        "track": 1.3716000318527222,
+        "y": 0.3384999930858612,
+        "z": 1.2445000410079956
+      },
+      {
+        "track": 1.3588999509811401,
+        "y": 0.3384999930858612,
+        "z": -1.2445000410079956
+      }
+    ],
+    "reference": "1964 UK Aston Martin DB5 standard saloon manual"
+  },
+  {
+    "id": "aston-martin-db4-gt-zagato-1960",
+    "label": "Common Figwort 1960",
+    "capability": "original Zagato teardrop headlight pods and compact greenhouse",
+    "carId": "3d-common-figwort-1960-3d-cb0fafe258f9",
+    "bodyRef": "Common Figwort 1960 Body",
+    "wheelRef": "Common Figwort 1960 Wheel",
+    "radius": 0.35119999999999996,
+    "axles": [
+      {
+        "track": 1.3716000318527222,
+        "y": 0.35120001435279846,
+        "z": 1.180999994277954
+      },
+      {
+        "track": 1.3588999509811401,
+        "y": 0.35120001435279846,
+        "z": -1.180999994277954
+      }
+    ],
+    "reference": "1960 Aston Martin DB4 GT Zagato original 3.7 twin-plug"
+  },
+  {
+    "id": "aston-martin-dbs-1967",
+    "label": "Bur Medick 1967",
+    "capability": "straight six DBS four-round grille and wire wheel profile",
+    "carId": "3d-bur-medick-1967-3d-5d845664d584",
+    "bodyRef": "Bur-Medick-1967-finished",
+    "wheelRef": "Bur-Medick-1967-wheel",
+    "radius": 0.33399999999999996,
+    "axles": [
+      {
+        "track": 1.4605000019073486,
+        "y": 0.33399999141693115,
+        "z": 1.3049999475479126
+      },
+      {
+        "track": 1.4605000019073486,
+        "y": 0.3337169885635376,
+        "z": -1.3049999475479126
+      }
+    ],
+    "reference": "1967 Aston Martin DBS standard 4.0 six-cylinder manual"
+  },
+  {
+    "reference": "2009 Renault Modus Avantage1.2 16V75, Germany faceliftshort-body five-door miniMPV standardfive-speedmanual, naturallyaspiratedpetrol; notGrandlongbody,Quickshift78PS,TCe100or1.6",
+    "canonicalLampSides": true,
+    "id": "renault-modus-avantage-2009",
+    "label": "Creek Clover 2009",
+    "capability": "Short facelift five-door with compact bubble greenhouse, swept chrome-front optics and tall rear stacks",
+    "carId": "3d-creek-clover-2009-3d-abc93dfdd2c7",
+    "bodyRef": "Creek Clover 2009 Body",
+    "wheelRef": "Creek Clover 2009 Wheel",
+    "radius": 0.29775,
+    "axles": [
+      {
+        "track": 1.4731999635696411,
+        "y": 0.29774999618530273,
+        "z": 1.2410000562667847
+      },
+      {
+        "track": 1.4503400325775146,
+        "y": 0.29774999618530273,
+        "z": -1.2410000562667847
+      }
+    ]
+  },
+  {
+    "reference": "2009 Renault Laguna Grandtour Emotion2.0 16V140, Germany June2009 five-door estate specialedition basedExpression, naturallyaspiratedpetrol six-speedmanual, ordinarytwo-wheelsteering; notGT4Control,coupe,hatch orlaterE85",
+    "canonicalLampSides": true,
+    "id": "renault-laguna-grandtour-2009",
+    "label": "Hill Trefoil 2009",
+    "capability": "Long phase I five-door estate body with near-level roof, rear-quarter glazing and swept low fascias",
+    "carId": "3d-hill-trefoil-2009-3d-2554764dd1ee",
+    "bodyRef": "Hill Trefoil 2009 Body",
+    "wheelRef": "Hill Trefoil 2009 Wheel",
+    "radius": 0.3262,
+    "axles": [
+      {
+        "track": 1.4986000061035156,
+        "y": 0.326200008392334,
+        "z": 1.378999948501587
+      },
+      {
+        "track": 1.4859000444412231,
+        "y": 0.326200008392334,
+        "z": -1.378999948501587
+      }
+    ]
+  },
+  {
+    "reference": "2009 Citroen C3 Picasso VT1.4 VTi95, UK April2009 entry VT five-door miniMPV five-speed manual15inch wheels, nooptionalESP assumed; notVTR+,Exclusive or1.6",
+    "canonicalLampSides": true,
+    "id": "citroen-c3-picasso-vt-2009",
+    "label": "Poplar Clover 2009",
+    "capability": "UK VT base MPV with rounded nose, dark tall pillars, box hatch and upright rear lamps",
+    "carId": "3d-poplar-clover-2009-3d-1c9430638ef0",
+    "bodyRef": "Poplar-Clover-2009-finished",
+    "wheelRef": "Poplar-Clover-2009-wheel",
+    "radius": 0.3075,
+    "axles": [
+      {
+        "track": 1.4986000061035156,
+        "y": 0.3075000047683716,
+        "z": 1.2699999809265137
+      },
+      {
+        "track": 1.4859000444412231,
+        "y": 0.308104008436203,
+        "z": -1.2699999809265137
+      }
+    ]
+  },
+  {
+    "id": "honda-odyssey-ex-2005",
+    "label": "Lungwort 2005",
+    "carId": "3d-lungwort-2005-3d-569259735245",
+    "capability": "2005 US Honda Odyssey EX eight-passenger minivan,3471cc SOHC24V VTEC V6 without VCM, FWD5AT,LHD,standard16inchalloys androofrails,solidroof. NotEX-L/Touring,i-VTEC/VCM,PAXtires,LX,JapaneseOdyssey,2006SAErerating or2008facelift.",
+    "bodyRef": "Lungwort-2005-body",
+    "wheelRef": "Lungwort-2005-wheel",
+    "radius": 0.35595,
+    "axles": [
+      {
+        "track": 1.6941800117492676,
+        "y": 0.3559499979019165,
+        "z": 1.5658700466156006
+      },
+      {
+        "track": 1.696720004081726,
+        "y": 0.3559499979019165,
+        "z": -1.4338699579238892
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6919999718666077,
+            0.6499999761581421,
+            -2.636699914932251
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6919999718666077,
+            0.6499999761581421,
+            -2.636699914932251
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.8180000185966492,
+            0.9110000133514404,
+            2.635699987411499
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.8180000185966492,
+            0.9110000133514404,
+            2.635699987411499
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.8470900058746338,
+            0.3559499979019165,
+            -1.5658700466156006
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.8470900058746338,
+            0.3559499979019165,
+            -1.5658700466156006
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.848360002040863,
+            0.3559499979019165,
+            1.4338699579238892
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.848360002040863,
+            0.3559499979019165,
+            1.4338699579238892
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "https://hondanews.com/en-US/releases/release-6f58edbf0f0b1cb5f5713f004c34c39d-2005-honda-odyssey-press-kit"
+  },
+  {
+    "id": "dodge-grand-caravan-se-2005",
+    "label": "Selfheal 2005",
+    "carId": "3d-selfheal-2005-3d-70d11ab5e4a2",
+    "capability": "2005 US Dodge Grand Caravan SE long-wheelbase,3301cc OHV12V V6 gasoline,FWD4AT,seven seats with basic cloth second/third-row removable benches,15-inch steel wheel covers,no roof rack. Not short Caravan,SE Plus,Stow n Go,SXT3.8,C/V or Honda Odyssey.",
+    "bodyRef": "Selfheal-2005-body",
+    "wheelRef": "Selfheal-2005-wheel",
+    "radius": 0.341,
+    "axles": [
+      {
+        "track": 1.600000023841858,
+        "y": 0.3409999907016754,
+        "z": 1.597000002861023
+      },
+      {
+        "track": 1.6260000467300415,
+        "y": 0.3409999907016754,
+        "z": -1.4329999685287476
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.7009999752044678,
+            0.6320000290870667,
+            -2.630500078201294
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.7009999752044678,
+            0.6320000290870667,
+            -2.630500078201294
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.8270000219345093,
+            0.9290000200271606,
+            2.627500057220459
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.8270000219345093,
+            0.9290000200271606,
+            2.627500057220459
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.800000011920929,
+            0.3409999907016754,
+            -1.597000002861023
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.800000011920929,
+            0.3409999907016754,
+            -1.597000002861023
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.8130000233650208,
+            0.3409999907016754,
+            1.4329999685287476
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.8130000233650208,
+            0.3409999907016754,
+            1.4329999685287476
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "https://www.auto-brochures.com/makes/Dodge/Grand%20Caravan/Dodge_US%20GrandCaravan_2005.pdf"
+  },
+  {
+    "id": "mazda-mpv-lx-sv-2006",
+    "label": "Laurel Clover 2006",
+    "carId": "3d-laurel-clover-2006-3d-dd831955eb35",
+    "capability": "2006 United States Mazda MPV, LX-SV3.0V6 front-wheel-drive five-speed torque-converterautomatic,sevenseats,15-inchcoveredsteelwheels,noGFX/towingpackage; notLX/ES orMazda5",
+    "bodyRef": "Laurel-Clover-2006-finished",
+    "wheelRef": "Laurel-Clover-2006-wheel",
+    "radius": 0.32375,
+    "axles": [
+      {
+        "track": 1.5392400026321411,
+        "y": 0.32374998927116394,
+        "z": 1.4198600053787231
+      },
+      {
+        "track": 1.549399971961975,
+        "y": 0.32430601119995117,
+        "z": -1.4198600053787231
+      }
+    ],
+    "reference": "https://news.mazdausa.com/vehicles-2006-Mazda-MPV"
+  },
+  {
+    "id": "mercedes-c32-amg-w203-2004",
+    "label": "White Clover 2004",
+    "capability": "Peanut-shaped lamps, trapezoid bright-bar grille, 17-inch staggered alloys and paired left tips",
+    "carId": "3d-white-clover-2004-3d-de46da7cc486",
+    "bodyRef": "White-Clover-2004",
+    "wheelRef": "White-Clover-2004-Wheel",
+    "radius": 0.31715,
+    "axles": [
+      {
+        "track": 1.4930000305175781,
+        "y": 0.3171499967575073,
+        "z": 1.3574999570846558
+      },
+      {
+        "track": 1.4780000448226929,
+        "y": 0.3171499967575073,
+        "z": -1.3574999570846558
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "Early 2004 German Mercedes-Benz C32 AMG W203 sedan 203.065"
+  },
+  {
+    "id": "mercedes-e55-amg-s211-2006",
+    "label": "Sea Campion 2006",
+    "capability": "Long estate roof, four independent oval lamps, AMG 18-inch alloys and quad paired outlets",
+    "carId": "3d-sea-campion-2006-3d-199e1488ffc3",
+    "bodyRef": "Sea Campion 2006 Body",
+    "wheelRef": "Sea Campion 2006 Wheel",
+    "radius": 0.3266,
+    "axles": [
+      {
+        "track": 1.559000015258789,
+        "y": 0.32659998536109924,
+        "z": 1.4270000457763672
+      },
+      {
+        "track": 1.5520000457763672,
+        "y": 0.32659998536109924,
+        "z": -1.4270000457763672
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "Early 2006 German Mercedes-Benz E55 AMG S211 Kompressor estate 211.276"
+  },
+  {
+    "id": "mercedes-e350-bluetec-w212-2011",
+    "label": "Tayberry Clover 2011",
+    "capability": "Angular paired lamp housings, upright chrome grille, non-Sport bumper and split-spoke 17-inch look",
+    "carId": "3d-tayberry-clover-2011-3d-89b55d5fc080",
+    "bodyRef": "Tayberry-Clover-2011",
+    "wheelRef": "Tayberry-Clover-2011-Wheel",
+    "radius": 0.32615,
+    "axles": [
+      {
+        "track": 1.5798799991607666,
+        "y": 0.32615000009536743,
+        "z": 1.4376399517059326
+      },
+      {
+        "track": 1.6002000570297241,
+        "y": 0.32615000009536743,
+        "z": -1.4376399517059326
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2011 US Mercedes-Benz E350 BlueTEC W212 Luxury diesel sedan"
+  },
+  {
+    "id": "jaguar-xj6-series3-1986",
+    "label": "Blackthorn 1986",
+    "capability": "US Series III XJ6 base with staggered quad round optics, vertical grille and base sedan roof",
+    "carId": "3d-blackthorn-1986-3d-b21ab4d6b339",
+    "bodyRef": "Blackthorn",
+    "wheelRef": "Blackthorn-Wheel",
+    "radius": 0.34099999999999997,
+    "axles": [
+      {
+        "track": 1.4808199405670166,
+        "y": 0.3409999907016754,
+        "z": 1.3776960372924805
+      },
+      {
+        "track": 1.4960600137710571,
+        "y": 0.3407660126686096,
+        "z": -1.4925040006637573
+      }
+    ],
+    "reference": "1986 US Jaguar XJ6 SeriesIII base4.2 EFI8:1 catalytic3AT LHD,standard15alloys,electricmetal sunroof closed; NOTVandenPlas,XJ40,UK205PSorV12",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "jaguar-e-type-ots-1961",
+    "label": "Spotted Medick 1961",
+    "capability": "1961 standard E-Type two-seat open roadster with long bonnet and glass covers",
+    "carId": "3d-spotted-medick-1961-3d-3f15b63eda71",
+    "bodyRef": "Spotted-Medick-1961-body",
+    "wheelRef": "Spotted-Medick-1961-wheel",
+    "radius": 0.3385,
+    "axles": [
+      {
+        "track": 1.2699999809265137,
+        "y": 0.3384999930858612,
+        "z": 1.3489999771118164
+      },
+      {
+        "track": 1.2699999809265137,
+        "y": 0.3384999930858612,
+        "z": -1.0889999866485596
+      }
+    ],
+    "reference": "1961 Jaguar E-type, Series1 3.8 open two-seater standard road car, Moss4MT; not4.2,Lightweight or tuned77RW replica",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6439999938011169,
+            0.5509999990463257,
+            -2.2755000591278076
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6439999938011169,
+            0.5509999990463257,
+            -2.2755000591278076
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6140000224113464,
+            0.4869999885559082,
+            2.313499927520752
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6140000224113464,
+            0.4869999885559082,
+            2.313499927520752
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.6349999904632568,
+            0.3384999930858612,
+            -1.3489999771118164
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.6349999904632568,
+            0.3384999930858612,
+            -1.3489999771118164
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.6349999904632568,
+            0.3384999930858612,
+            1.0889999866485596
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.6349999904632568,
+            0.3384999930858612,
+            1.0889999866485596
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "jaguar-xj13-1966",
+    "label": "Kidney Vetch 1966",
+    "capability": "original XJ13 mid-engine prototype with wrap screen, long rear engine deck and fairings",
+    "carId": "3d-kidney-vetch-1966-3d-1c1d43189ed7",
+    "bodyRef": "Kidney-Vetch-1966-body",
+    "wheelRef": "Kidney-Vetch-1966-wheel",
+    "radius": 0.33399999999999996,
+    "axles": [
+      {
+        "track": 1.4223999977111816,
+        "y": 0.33399999141693115,
+        "z": 1.3029999732971191
+      },
+      {
+        "track": 1.4223999977111816,
+        "y": 0.33399999141693115,
+        "z": -1.1069999933242798
+      }
+    ],
+    "reference": "1966 Jaguar XJ13, solemid-engine5.0DOHCV12 prototype,ZF5MT; neverraced, notroadproduction orreplica",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6449999809265137,
+            0.5490000247955322,
+            -2.2939999103546143
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6449999809265137,
+            0.5490000247955322,
+            -2.2939999103546143
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6050000190734863,
+            0.4740000069141388,
+            2.309000015258789
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6050000190734863,
+            0.4740000069141388,
+            2.309000015258789
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7111999988555908,
+            0.33399999141693115,
+            -1.3029999732971191
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7111999988555908,
+            0.33399999141693115,
+            -1.3029999732971191
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7111999988555908,
+            0.33399999141693115,
+            1.1069999933242798
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7111999988555908,
+            0.33399999141693115,
+            1.1069999933242798
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
   }
 ]

@@ -635,3 +635,29 @@ The Lexus IS guide is a separate passive optical element. Sprinter
 cargo rear transitions and the race prototypes' airflow surfaces and
 light internals remain simplified. Sampled steering clearance at nominal
 height is not a full suspension-travel test.
+
+### Full-roster rollout, Aston Martin, European compacts, minivans, Mercedes, and Jaguar
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Herb Bennet 1964 | UK Aston Martin DB5 standard saloon 4.0 ZF manual, not Vantage. [Aston Martin archive](https://media.astonmartin.com/db5/?lang=eng); [1964 example](https://rmsothebys.com/auctions/az13/lots/r173-1964-aston-martin-db5/). |
+| Common Figwort 1960 | Original Aston Martin DB4 GT Zagato twin-plug 3.7, not continuation. [Aston Martin archive](https://media.astonmartin.com/db4-gt-zagato/?lang=eng). |
+| Bur Medick 1967 | Original Aston Martin DBS 4.0 six-cylinder ZF manual, not Vantage or V8. [Aston Martin history](https://www.astonmartin.com/en/models/past-models/dbs). |
+| Creek Clover 2009 | German Renault Modus Avantage 1.2 short-body manual facelift. [Renault Germany](https://presse.renault.de/modus-jetzt-mit-esp-in-serie/?lang=deu); [facelift rear](https://commons.wikimedia.org/wiki/File:Renault_Modus_Facelift_20090808_rear.JPG). |
+| Hill Trefoil 2009 | German Renault Laguna Grandtour Emotion 2.0 petrol estate, standard steering. [Renault Germany](https://presse.renault.de/fuhrend-bei-qualitat-umweltschutz-und-sicherheit-in-der-mittelklasse/?lang=deu); [period Emotion](https://www.autobild.de/artikel/renault-laguna-emotion-915705.html). |
+| Poplar Clover 2009 | UK Citroën C3 Picasso VT 1.4 VTi 95 base. [UK factory brochure](https://xr793.com/wp-content/uploads/2022/09/2009-Citroen-C3-Picasso-UK.pdf). |
+| Lungwort 2005 | US Honda Odyssey EX eight seats, solid roof and rails, no VCM package. [Honda press kit](https://hondanews.com/en-US/releases/release-6f58edbf0f0b1cb5f5713f004c34c39d-2005-honda-odyssey-press-kit). |
+| Selfheal 2005 | US Dodge Grand Caravan SE long-wheelbase, removable cloth benches. [US factory brochure](https://www.auto-brochures.com/makes/Dodge/Grand%20Caravan/Dodge_US%20GrandCaravan_2005.pdf). |
+| Laurel Clover 2006 | US Mazda MPV LX-SV seven seats, no GFX package. [Mazda USA](https://news.mazdausa.com/vehicles-2006-Mazda-MPV). |
+| White Clover 2004 | Early-2004 German Mercedes-Benz C32 AMG W203 5AT sedan. [Mercedes archive](https://media.mercedes-benz.com/article/3c077846-2100-4fbd-ba93-b1c15e9d33dd). |
+| Sea Campion 2006 | Early-2006 German Mercedes-Benz E55 AMG S211 estate, not E63. [Mercedes archive](https://media.mercedes-benz.com/en/article/80c034f7-82c7-4232-8530-f6176b63405c); [estate photos](https://commons.wikimedia.org/wiki/Category:Mercedes-Benz_S211_E_55_AMG). |
+| Tayberry Clover 2011 | US Mercedes-Benz E350 BlueTEC W212 Luxury sedan, not Sport. [US factory brochure](https://www.auto-brochures.com/makes/Mercedes_Benz/E-Class/Mercedes%20Benz_US%20E-Class_2011.pdf). |
+| Blackthorn 1986 | US Jaguar XJ6 Series III base 4.2 with closed sunroof, not Vanden Plas. [Original brochure](https://jaguarrules.ru/wp-content/uploads/2019/03/Jaguar-small-range-brochure-1986.pdf). |
+| Spotted Medick 1961 | UK Jaguar E-Type Series I 3.8 OTS, original car reference. [Jaguar Heritage 77 RW](https://www.jaguarheritage.com/vehicle-collection/1961-jaguar-e-type-series-1-3-8-litre-77-rw/). |
+| Kidney Vetch 1966 | Jaguar XJ13 original prototype, not a replica. [Jaguar Heritage](https://www.jaguarheritage.com/vehicle-collection/1966-jaguar-xj13/). |
+
+The Astons and E-Type share native cross-laced wheels. The Odyssey has
+a genuine separate middle jumper, and the Caravan has two-place middle
+bench and three-place rear bench. Minivan hatch ends remain simplified;
+Mercedes lamp envelopes and classic wing-to-glass transitions are not
+yet photo-exact.
