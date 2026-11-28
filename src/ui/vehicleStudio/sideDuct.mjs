@@ -49,3 +49,12 @@ export function quarterDuctMask(body,u,v){
  const edge=.031;
  return smooth(0,.125,t)*(1-smooth(.89,1,t))*smooth(top,top+edge,v)*(1-smooth(bottom-edge,bottom,v));
 }
+
+// Narrow cooling gill behind the front axle. Same smooth stadium chart is
+// evaluated by the side skin and its dark cavity finish, not a floating decal.
+export function fenderGillMask(body,u,v){
+ if(!body.fenderGill)return 0;
+ const a=(u-.155)/.101,b=(v-.277-body.fenderGillRake*(u-.155))/.049;
+ const r=Math.hypot(Math.max(0,Math.abs(a)-.53)/.47,b);
+ return 1-smooth(.53,1,r);
+}

@@ -285,3 +285,43 @@ The 172's rear roof and the V6's fascia transitions still need attention.
 The Clio Williams study is not registered: its old model is authored
 nose-toward-negative-Z with an identity body binding. Its frame needs
 separate verification before releasing the new visual.
+
+### Full-roster rollout, Nissan Silvia family
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Brooklime 1994 | JDM Nissan Silvia K’s Type S, S14. [Nissan Heritage](https://www.nissan-global.com/EN/HERITAGE_COLLECTION/silvia_ks_s14.html); [matched original angle](https://rhdspecialties.com/products/1994-nissan-silvia-s14-ks-5). |
+| Birdsfoot Trefoil 1995 | US Nissan 240SX base S14, solid rear deck and covered steel wheels. [Period US brochure](https://importarchive.com/brochure/nissan240sx1995_01); [Nissan base wheel specification](https://parts.nissanusa.com/v-1995-nissan-240sx--base--2-4l-l4-gas/suspension--wheels). |
+| Yellow Archangel 1992 | JDM Nissan Silvia K’s Club Selection PS13. [Nissan Heritage body chronology](https://www.nissan-global.com/EN/HERITAGE_COLLECTION/silvia_ks.html) (early outer-shell example, not Club Selection). |
+
+The JDM S14 still needs a closer lamp-wrap and bumper fit. The base 240SX
+uses a distinct fascia, wheel and unwinged deck, not just a recolor.
+
+### Full-roster rollout, BMW M3 generations
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Red Clover 1997 | German BMW M3 E36 3.2 coupe. [BMW history](https://www.bmw-m.com/en/topics/magazine-article-pool/bmw-m3-e36-portraet.html); [original German 1997 example](https://benzin.fr/index.php/de/auctions/show/m3-e36-32-1997-67ec0f1c44afd). |
+| Bellheather 2005 | European BMW M3 E46 standard coupe, six-speed. [BMW history](https://www.bmw-m.com/en/topics/magazine-article-pool/bmw-m3-e46-portraet.html); [standard 2005 manual gallery](https://www.pistonheads.com/buy/auction/20107817). |
+| Wall Speedwell 2008 | US BMW M3 E92 coupe standard six-speed. [BMW USA technical data](https://www.press.bmwgroup.com/usa/article/attachment/T0017997EN_US/35557); [trim gallery](https://bringatrailer.com/listing/2008-bmw-m3-coupe-69/) (optional wheels differ). |
+
+The newer two use true recessed fender gills; lamp contours, greenhouse
+curvature, and gill finish remain simplified.
+
+### Full-roster rollout, Corvette and French hot hatch fits
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Creeping Buttercup 1953 | Chevrolet Corvette 2934, Polo White and Sportsman Red. [GM Heritage](https://www.gm.com/heritage/collection/chevrolet/1953-chevrolet-corvette). |
+| Common Birdsfoot 1960 | Chevrolet Corvette C1 with raised soft top, 283 four-barrel 230 hp. [GM Heritage](https://www.gm.com/heritage/collection/chevrolet/1960-chevrolet-corvette); [1960 coachwork gallery](https://macswebs.com/corvetteworld/c1/1960.html). |
+| Ball Clover 1967 | Chevrolet Corvette Sting Ray C2 427/390 hp Sport Coupe, not Tri-Power. [Factory information kit](https://news.chevrolet.com/content/dam/company/no_search/heritage-archive-docs/vehicle-information-kits/chevrolet/1967-Chevrolet-Corvette.pdf); [matched trim gallery](https://www.sportscarmarket.com/profile/1967-chevrolet-corvette-427-390-coupe-2). |
+| Thistle 190 1990 | French Peugeot 205 GTI 1.9 non-catalyst. [Matched 1990 trim](https://www.classic.com/a/aguttes-collector-cars-la-vente-dautomne-2025-anOqBgp/lots/1990-peugeot-205-gti-19-WkBexon). |
+| Pennyroyal 1994 | French Peugeot 106 Rallye S1 1.3. [1994 French Series 1 gallery](https://www.carandclassic.com/fr/voiture/C2002856). |
+| Goldentuft 1993 | First-series French Renault Clio Williams. [Renault collection](https://theoriginals.renault.com/clio-williams). |
+
+The first two Corvettes use distinct matte whitewall bands. The C2 closed
+covers are static and the working headlight signal is on a lower lamp pair.
+The 205 wheel cutouts and side strips, 106 lamp outlines, and Williams
+roof/glazing need more reference fitting. For the Williams, an explicit
+stock-frame half-turn now normalizes its legacy rear-facing visual anchors
+to the unchanged chassis. No source car or handling values are edited.

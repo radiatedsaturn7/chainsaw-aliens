@@ -161,6 +161,14 @@ export function buildWheels(g,{quality='preview',compact=0,emit,rear=false}={}){
  const autoDish=(.008+w.shape*.037)*clamp(c/.108,.71,1.49);
  const dish=clamp(autoDish,.006,c*.53);
  put('tires','rubber',tire(r,c,rim,t.shape,t.depth,t.size,t.type==='rally',n,compact));
+ if(g.dimensions.whitewallWidth>0){
+  // Inlaid matte sidewall on the original outboard sidewall chart. Ends
+  // remain below the shoulder; wheel radius, tire width and hub stay fixed.
+  const outer=r-(r-rim)*(.15-.06*t.shape),inner=rim+(r-rim)*.35;
+  const reach=Math.min((outer-inner)*.83,g.dimensions.whitewallWidth);
+  const center=mix(inner,outer,.53),at=radius=>[radius,mix(c*(.966-.032*t.shape),c,(radius-inner)/(outer-inner))+.00055];
+  put('tires','whitewall',lathe([at(center-reach*.5),at(center+reach*.5)],n));
+ }
  // The barrel is hollow and dark: separate alloy face from the cast cavity.
  const tube=[
   [rim*.965,-inner],[rim*.861,-inner],[rim*.874,-inner+.006],

@@ -565,11 +565,12 @@ function inspector(){
   if(part==='trunk')range(root,'body','pickupBedDepth',phenotype.BODY_FIELDS.pickupBedDepth,g.body.pickupBedDepth);
   select(root,'part-type',d.label+' type',d.types,p.type,v=>edit('components',part,v,'type'));
   for(const key of [...componentControls[part],...(POSITIONABLE.has(part)?['bias','angle']:[])])range(root,'components',part,{...COMPONENT_FIELDS[key],label:key==='shape'?d.shape[0].toUpperCase()+d.shape.slice(1):COMPONENT_FIELDS[key].label},p[key],key);
-  if(part==='wheels'||part==='tires')for(const k of ['diameter','tireWidth','rimRatio','rearTireWidthOffset','rearRimRatioOffset'])range(root,'dimensions',k,DIMENSIONS[k],g.dimensions[k]);
+  if(part==='wheels'||part==='tires')for(const k of ['diameter','tireWidth','rimRatio','rearTireWidthOffset','rearRimRatioOffset','whitewallWidth'])range(root,'dimensions',k,DIMENSIONS[k],g.dimensions[k]);
  if(['wheels','tires','frontFenders','rearFenders'].includes(part)){
   const arch=group(root,'Wheel opening fit',true);
   range(arch,'body','sillRelief',phenotype.BODY_FIELDS.sillRelief,g.body.sillRelief);
   range(arch,'body','darkArchLips',phenotype.BODY_FIELDS.darkArchLips,g.body.darkArchLips);
+  if(part==='frontFenders')for(const k of ['fenderGill','fenderGillDepth','fenderGillRake'])range(arch,'body',k,phenotype.BODY_FIELDS[k],g.body[k]);
   for(const [k,spec] of Object.entries(phenotype.ARCH_FIELDS)){
    if(part==='frontFenders'&&k.startsWith('rear')||part==='rearFenders'&&k.startsWith('front'))continue;
    range(arch,'body',k,spec,g.body[k]);

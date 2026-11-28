@@ -1,4 +1,4 @@
-import {sideDuctMask,cowlDuctMask,quarterDuctMask} from './sideDuct.mjs';
+import {sideDuctMask,cowlDuctMask,quarterDuctMask,fenderGillMask} from './sideDuct.mjs';
 import * as T from '../../vendorBridge/three.js';
 import {createEndSurface,fasciaMesh} from './fascia.mjs';
 import {emitFlushHoodLids} from './hoodLids.mjs';
@@ -207,6 +207,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   }
   if(comp==='frontFenders'){
    const u=clamp((z-doorFront)/(bumperFront-doorFront)),q=panelSample(u,v),edge=lerp3(panelSample(u,0),panelSample(u,1),v);
+   if(g.body.fenderGill)x-=g.body.fenderGillDepth*fenderGillMask(g.body,u,v);
    const influence=Math.sin(Math.PI*u)*Math.sin(Math.PI*v)**.64;
    x+=(q[0]-edge[0])*influence*p.size;
    const sp=g.surfaces.frontFenders.parameters;
@@ -536,11 +537,23 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
      weldNormals([shell,row],[side,tipIndex*(down+1)+j]);
     }
    }else{
-    const stations=adaptiveStations(sampler,{lod,compact});
+    const gill=key==='frontFenders'&&g.body.fenderGill;
+    const baseStations=adaptiveStations(sampler,{lod,compact});
+    const stations=gill?[...new Set([...baseStations,.054,.094,.155,.218,.256])].sort((a,b)=>a-b):baseStations;
     const duct=key==='doors'&&g.body.sideDuct,quarter=key==='rearFenders'&&g.body.quarterDuct;
     const doorUvs=[];
     const panel=patch(stations.length-1,down,(u,v)=>{
      const t=stations[Math.round(u*(stations.length-1))];
+     if(gill){
+      const row=Math.round(v*down),middle=Math.round((.277+g.body.fenderGillRake*(t-.155))*down);
+      const center=.277+g.body.fenderGillRake*(t-.155);
+      const near=Math.max(.05,Math.min(.85,center));
+      const y=row===middle-1?near-.049:row===middle?near:row===middle+1?near+.049:v;
+      // Avoid row inversion at distant stations and keep top/lower rails.
+      const nearGill=(t>.038&&t<.275&&row>0&&row<down);
+      doorUvs.push(t,nearGill?y:v);
+      return sampler(t,nearGill?y:v);
+     }
      if(!doorStamp||key!=='doors'){if(duct)doorUvs.push((mix(a,b,t)-doorRear)/(doorFront-doorRear),v);return sampler(t,v);}
      const q=stampLine(mix(a,b,t)),base=Math.round(q*down),row=clamp(base,2,down-2);
      const k=Math.round(v*down),wanted=k===row-1?q-.071*(doorStampWidth/.066):k===row?q-.007:k===row+1?q+.053*(doorStampWidth/.066):null;
@@ -552,7 +565,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
      return sampler(t,j);
     },s<0);
     lowerRails.push(readLowerRail(panel,stations.length-1,down,i=>mix(a,b,stations[i])));
-    if(duct)panel.setAttribute('uv',new T.Float32BufferAttribute(doorUvs,2));
+    if(duct||gill)panel.setAttribute('uv',new T.Float32BufferAttribute(doorUvs,2));
     if(quarter){
      const uv=panel.attributes.uv;
      for(let i=0;i<uv.count;i++){
@@ -560,7 +573,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
       uv.setX(i,(mix(a,b,t)-bumperRear)/Math.max(.11,doorRear-bumperRear));
      }
     }
-    put(key,duct?'side-duct':quarter?'quarter-duct':'paint',panel);
+    put(key,duct?'side-duct':quarter?'quarter-duct':gill?'fender-duct':'paint',panel);
    }
    joins.push({a,b,component:key,side:s});
   }

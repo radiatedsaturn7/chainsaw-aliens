@@ -1472,5 +1472,387 @@
       }
     ],
     "reference": "2003 German Renault Clio V6 Phase II 255"
+  },
+  {
+    "id": "nissan-silvia-s14-kstype-s",
+    "label": "Brooklime 1994",
+    "capability": "Early Japanese S14, swept clear lamps with dark center and factory rear spoiler",
+    "carId": "3d-brooklime-1994-3d-df20e16b7ddc",
+    "bodyRef": "Brooklime-1994-finished",
+    "wheelRef": "Brooklime-1994-wheel",
+    "radius": 0.31595,
+    "axles": [
+      {
+        "track": 1.4800000190734863,
+        "y": 0.3159500062465668,
+        "z": 1.2625000476837158
+      },
+      {
+        "track": 1.4700000286102295,
+        "y": 0.3158990144729614,
+        "z": -1.2625000476837158
+      }
+    ],
+    "reference": "1994 Nissan Silvia K’s Type S S14, JDM"
+  },
+  {
+    "id": "nissan-240sx-s14-base",
+    "label": "Birdsfoot Trefoil 1995",
+    "capability": "US base S14 with pressed-steel wheels, no wing, distinct reflector and bumper",
+    "carId": "3d-birdsfoot-trefoil-1995-3d-904150b56d03",
+    "bodyRef": "Birdsfoot Trefoil 1995 Body",
+    "wheelRef": "Birdsfoot Trefoil 1995 Wheel",
+    "radius": 0.3075,
+    "axles": [
+      {
+        "track": 1.4808199405670166,
+        "y": 0.3075000047683716,
+        "z": 1.2623800039291382
+      },
+      {
+        "track": 1.4706599712371826,
+        "y": 0.3075000047683716,
+        "z": -1.2623800039291382
+      }
+    ],
+    "reference": "1995 Nissan 240SX base S14, US"
+  },
+  {
+    "id": "nissan-silvia-ps13-club",
+    "label": "Yellow Archangel 1992",
+    "capability": "Boxy PS13 notch coupe with paired projector clusters and dark fascia ribbon",
+    "carId": "3d-yellow-archangel-1992-3d-993f222f71d9",
+    "bodyRef": "Yellow-Archangel",
+    "wheelRef": "Yellow-Archangel-Wheel",
+    "radius": 0.3135,
+    "axles": [
+      {
+        "track": 1.465000033378601,
+        "y": 0.31349998712539673,
+        "z": 1.1384999752044678
+      },
+      {
+        "track": 1.4600000381469727,
+        "y": 0.3134540021419525,
+        "z": -1.3365000486373901
+      }
+    ],
+    "reference": "1992 Nissan Silvia K’s Club Selection PS13, JDM"
+  },
+  {
+    "id": "bmw-e36-m3",
+    "label": "Red Clover 1997",
+    "capability": "Nineties upright 3.2 M3 coupe, rectangular lamps, thin kidney openings",
+    "carId": "3d-red-clover-1997-3d-546057f36f58",
+    "bodyRef": "Red-Clover-1997-finished",
+    "wheelRef": "Red-Clover-1997-wheel",
+    "radius": 0.31715,
+    "axles": [
+      {
+        "track": 1.4220000505447388,
+        "y": 0.3171499967575073,
+        "z": 1.3550000190734863
+      },
+      {
+        "track": 1.437999963760376,
+        "y": 0.3168869912624359,
+        "z": -1.3550000190734863
+      }
+    ],
+    "reference": "1997 BMW M3 E36 S50B32 6MT, Germany"
+  },
+  {
+    "id": "bmw-e46-m3",
+    "label": "Bellheather 2005",
+    "capability": "European six-speed M3 with twin curved projectors, power dome and quad pipes",
+    "carId": "3d-bellheather-2005-3d-8fd767b49d29",
+    "bodyRef": "Bellheather",
+    "wheelRef": "Bellheather-Wheel",
+    "radius": 0.32985,
+    "axles": [
+      {
+        "track": 1.5062199831008911,
+        "y": 0.3298499882221222,
+        "z": 1.3654999732971191
+      },
+      {
+        "track": 1.5240000486373901,
+        "y": 0.3293670117855072,
+        "z": -1.3654999732971191
+      }
+    ],
+    "reference": "2005 BMW M3 E46 standard 6MT, Europe"
+  },
+  {
+    "id": "bmw-e92-m3",
+    "label": "Wall Speedwell 2008",
+    "capability": "U.S. six-speed M3 coupe, broad swept projectors and carbon-look roof",
+    "carId": "3d-wall-speedwell-2008-3d-19c7d58026c7",
+    "bodyRef": "Wall Speedwell 2008 Body",
+    "wheelRef": "Wall Speedwell 2008 Wheel",
+    "radius": 0.3266,
+    "axles": [
+      {
+        "track": 1.5399999618530273,
+        "y": 0.32659998536109924,
+        "z": 1.3804999589920044
+      },
+      {
+        "track": 1.5390000343322754,
+        "y": 0.32659998536109924,
+        "z": -1.3804999589920044
+      }
+    ],
+    "reference": "2008 BMW M3 E92 coupe 6MT, US"
+  },
+  {
+    "id": "chevrolet-corvette-c1-1953",
+    "label": "Creeping Buttercup 1953",
+    "carId": "3d-creeping-buttercup-1953-3d-a9693063a4d6",
+    "capability": "1953 US Chevrolet Corvette model2934, Blue Flame235.5cuin naturally aspirated inline-six, Powerglide2AT RWD roadster, top down",
+    "bodyRef": "Creeping Buttercup 1953 Body",
+    "wheelRef": "Creeping Buttercup 1953 Wheel",
+    "radius": 0.34775,
+    "axles": [
+      {
+        "track": 1.4478000402450562,
+        "y": 0.3477500081062317,
+        "z": 1.2954000234603882
+      },
+      {
+        "track": 1.4986000061035156,
+        "y": 0.3477500081062317,
+        "z": -1.2954000234603882
+      }
+    ],
+    "reference": "1953 Chevrolet Corvette 2934 Polo White"
+  },
+  {
+    "id": "chevrolet-corvette-c1-1960",
+    "label": "Common Birdsfoot 1960",
+    "carId": "3d-common-birdsfoot-1960-3d-4c1c4ac76d35",
+    "capability": "1960 United States Chevrolet Corvette, standard 283 four-barrel 230-hp reference engine, standard three-speed manual and3.70 axle, soft top raised",
+    "bodyRef": "Common-Birdsfoot-1960",
+    "wheelRef": "Common-Birdsfoot-1960-Wheel",
+    "radius": 0.34425,
+    "axles": [
+      {
+        "track": 1.4478000402450562,
+        "y": 0.34424999356269836,
+        "z": 1.2954000234603882
+      },
+      {
+        "track": 1.4986000061035156,
+        "y": 0.34424999356269836,
+        "z": -1.2954000234603882
+      }
+    ],
+    "reference": "1960 Chevrolet Corvette C1 283 four-barrel 230 hp"
+  },
+  {
+    "id": "chevrolet-corvette-c2-427-1967",
+    "label": "Ball Clover 1967",
+    "carId": "3d-ball-clover-1967-3d-1b00935bb57c",
+    "capability": "1967 United States Chevrolet Corvette Sting Ray427, Sport Coupe,390-hp-reference427four-barrel hydraulic-lifter engine, wide-ratio4MT,standard3.08Positraction; not435TriPower",
+    "bodyRef": "Ball Clover 1967 Body",
+    "wheelRef": "Ball Clover 1967 Wheel",
+    "radius": 0.34425,
+    "axles": [
+      {
+        "track": 1.4630399942398071,
+        "y": 0.34424999356269836,
+        "z": 1.2446000576019287
+      },
+      {
+        "track": 1.4808199405670166,
+        "y": 0.34424999356269836,
+        "z": -1.2446000576019287
+      }
+    ],
+    "reference": "1967 Chevrolet Corvette Sting Ray C2 427 L36 390 hp Coupe"
+  },
+  {
+    "id": "renault-clio-williams",
+    "label": "Goldentuft 1993",
+    "capability": "Square low nose, black grille insert and gold wheels",
+    "carId": "3d-goldentuft-1993-3d-d10599f6bca9",
+    "bodyRef": "Goldentuft-1993-body",
+    "wheelRef": "Goldentuft-1993-wheel",
+    "radius": 0.29225,
+    "axles": [
+      {
+        "track": 1.4097000360488892,
+        "y": 0.29225000739097595,
+        "z": 1.2719999551773071
+      },
+      {
+        "track": 1.3690600395202637,
+        "y": 0.29225000739097595,
+        "z": -1.2000000476837158
+      }
+    ],
+    "reference": "1993 France Renault Clio Williams, first-series European 2.0 naturally aspirated three-door road car, five-speed manual; not rally Group A/N",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.5580000281333923,
+            0.5529999732971191,
+            -1.9539999961853027
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.5580000281333923,
+            0.5529999732971191,
+            -1.9539999961853027
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.7070000171661377,
+            0.6850000023841858,
+            1.9479999542236328
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.7070000171661377,
+            0.6850000023841858,
+            1.9479999542236328
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7048500180244446,
+            0.29225000739097595,
+            -1.2719999551773071
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7048500180244446,
+            0.29225000739097595,
+            -1.2719999551773071
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.6845300197601318,
+            0.29225000739097595,
+            1.2000000476837158
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.6845300197601318,
+            0.29225000739097595,
+            1.2000000476837158
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "peugeot-205-gti-19",
+    "label": "Thistle 190 1990",
+    "capability": "Italianate square nose, broad 1.9 arch trim and period alloy",
+    "carId": "3d-thistle-190-1990-3d-19a725f911a9",
+    "bodyRef": "Thistle-190-1990",
+    "wheelRef": "Thistle-190-1990-Wheel",
+    "radius": 0.29225,
+    "axles": [
+      {
+        "track": 1.3830000162124634,
+        "y": 0.29225000739097595,
+        "z": 1.2100000381469727
+      },
+      {
+        "track": 1.343999981880188,
+        "y": 0.29225000739097595,
+        "z": -1.2100000381469727
+      }
+    ],
+    "reference": null
+  },
+  {
+    "id": "peugeot-106-rallye-s1",
+    "label": "Pennyroyal 1994",
+    "capability": "Series 1 short chin, painted bumper and white steel wheels",
+    "carId": "3d-pennyroyal-1994-3d-a17210629f6e",
+    "bodyRef": "Pennyroyal",
+    "wheelRef": "Pennyroyal-Wheel",
+    "radius": 0.2828,
+    "axles": [
+      {
+        "track": 1.3949999809265137,
+        "y": 0.28279998898506165,
+        "z": 0.8824499845504761
+      },
+      {
+        "track": 1.3170000314712524,
+        "y": 0.28363698720932007,
+        "z": -1.5025500059127808
+      }
+    ],
+    "reference": "1994 France Peugeot106 Rallye Series1 1294cc catalyst five-speed manual, base unassisted steering/no optional ABS or radio. October/December1993 French brochure specification. Not UK825kg, Series2 1.6, XSi or competition kit."
   }
 ]
