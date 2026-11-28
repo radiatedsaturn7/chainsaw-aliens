@@ -934,3 +934,11 @@ Both use unchanged named raw −Z stock datums canonicalized by the existing fra
 - Huckleberry Clover 2008: US Buick Enclave CX FWD seven-seat, not CXL or AWD. [Exact US 2008 Buick brochure](https://www.motorologist.com/wp-content/uploads/2008-BUICK-Enclave-Brochure.pdf), [period exterior angles](https://www.edmunds.com/buick/enclave/2008/pictures/). Factory examples with option wheels constrain sheet metal only; standard CX equipment is preserved.
 
 The R5's stock authored rear track is 0.130 m wider than its front track. The design input ceiling was extended to 0.131 m for this model, without altering road binding tolerances, authored defaults or vehicle physics. Hold Avantime, Acura sedan and utility drafts, and the 850CSi/Z3 M/650i family for shape and optical fit. Reference images are not distributed.
+
+### Full-roster rollout: Fiat family proportions
+
+- Yates Clover 2009: UK Fiat Qubo Active 1.4 8v, standard five-seat passenger car, not Fiorino cargo van. [UK Fiat launch](https://www.media.stellantis.com/uk-en/fiat/press/fiat-qubo-stylish-family-motoring-made-simple-press-pack), black bumpers/mirrors, covered 15-inch wheels, two sliding-door details and upright tail-light towers. Hatch and hood curves are simplified.
+- Reed Clover 2003: UK Fiat Stilo MultiWagon Dynamic 1.8 16V 5MT, factory fixed roof and 16-inch wheels. [Exact factory UK launch](https://www.media.stellantis.com/uk-en/fiat/press/fiat-stilo-multi-wagon), upright, largely separate rear cargo side panes and no copied option roof.
+- Lush Clover 2005: UK Fiat Croma Dynamic 2.2 16V petrol manual, not diesel or automatic. [Exact UK launch](https://www.media.stellantis.com/uk-en/fiat/press/new-fiat-croma-in-uk), taller curved roof and rounded rear hatch distinguish it from the Stilo.
+
+The Tipo, Idea, Espace and all contemporary Acura/Infiniti/Lexus studies from this batch remain held for distinctive front, glazing or rear fit. No shared software or stock dynamics changes.
