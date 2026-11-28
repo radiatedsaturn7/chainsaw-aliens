@@ -17014,5 +17014,259 @@
         }
       ]
     }
+  },
+  {
+    "id": "fiat-ulysse-dynamic-2003",
+    "label": "Moss Clover 2003",
+    "carId": "3d-moss-clover-2003-3d-6f67b13d41ed",
+    "capability": "2003 Fiat Ulysse Dynamic2.0 16V, UK February2003secondgenerationseven-seatpassengerMPV petrolBE4five-speedmanual, standard15inchsteelwheels/nooptionalroofbars; notautomatic,diesel,Prestigio6-seat orbadgeclones807/C8/Phedra",
+    "bodyRef": "Moss-Clover-2003-body",
+    "wheelRef": "Moss-Clover-2003-wheel",
+    "radius": 0.32375,
+    "axles": [
+      {
+        "track": 1.5700000524520874,
+        "y": 0.32374998927116394,
+        "z": 1.4785000085830688
+      },
+      {
+        "track": 1.5479999780654907,
+        "y": 0.32374998927116394,
+        "z": -1.344499945640564
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6510000228881836,
+            0.6539999842643738,
+            -2.422499895095825
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6510000228881836,
+            0.6539999842643738,
+            -2.422499895095825
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.7260000109672546,
+            1.0230000019073486,
+            2.439500093460083
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.7260000109672546,
+            1.0230000019073486,
+            2.439500093460083
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7850000262260437,
+            0.32374998927116394,
+            -1.4785000085830688
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7850000262260437,
+            0.32374998927116394,
+            -1.4785000085830688
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7739999890327454,
+            0.32374998927116394,
+            1.344499945640564
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7739999890327454,
+            0.32374998927116394,
+            1.344499945640564
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "https://www.media.stellantis.com/uk-en/fiat/press/new-fiat-ulysse"
+  },
+  {
+    "id": "renault-kangoo-authentique-2012",
+    "label": "Water Trefoil 2012",
+    "carId": "3d-water-trefoil-2012-3d-80f00112c440",
+    "capability": "2012 Renault Kangoo Authentique1.6 16V105, Germany standard-length five-seat passenger MPV five-speedmanual, Euro5petrol, single right slidingdoor; notGrand7-seat,Rapidcargo,be-bop,automatic or1.6 8V90",
+    "bodyRef": "Water-Trefoil-2012",
+    "wheelRef": "Water-Trefoil-2012-Wheel",
+    "radius": 0.31725000000000003,
+    "axles": [
+      {
+        "track": 1.5214600563049316,
+        "y": 0.31725001335144043,
+        "z": 1.3485000133514404
+      },
+      {
+        "track": 1.5316200256347656,
+        "y": 0.31725001335144043,
+        "z": -1.3485000133514404
+      }
+    ],
+    "reference": "https://media1.autohaus.de/fm/3576/Renault-Kangoo-Preise_1112.pdf"
+  },
+  {
+    "id": "audi-sport-quattro-road-1984",
+    "label": "Lesser Knapweed 1984",
+    "capability": "Short 1984 homologation B2, white mesh 15-inch, broad flat hood and squared reflector fascia, 2+2 and discrete low lip",
+    "carId": "3d-lesser-knapweed-1984-3d-3ec10f1355c5",
+    "bodyRef": "Lesser-Knapweed",
+    "wheelRef": "Lesser-Knapweed-Wheel",
+    "radius": 0.29625,
+    "axles": [
+      {
+        "track": 1.516126036643982,
+        "y": 0.29624998569488525,
+        "z": 0.9122499823570251
+      },
+      {
+        "track": 1.4919960498809814,
+        "y": 0.29665398597717285,
+        "z": -1.312749981880188
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "1984 German Audi Sport quattro B2 road homologation"
+  },
+  {
+    "id": "bmw-2002-turbo-1974",
+    "label": "Cairn 1974",
+    "capability": "1974 European BMW 2002 turbo unbadged front lip",
+    "carId": "3d-cairn-1974-3d-64b2e2d39eb3",
+    "bodyRef": "Cairn-1974",
+    "wheelRef": "Cairn-1974-Wheel",
+    "radius": 0.2946,
+    "axles": [
+      {
+        "track": 1.375,
+        "y": 0.2946000099182129,
+        "z": 1.25
+      },
+      {
+        "track": 1.3619999885559082,
+        "y": 0.2946000099182129,
+        "z": -1.25
+      }
+    ],
+    "reference": "1974 European BMW 2002 turbo (E20), short production two-door as documented by BMW Group Classic; unbadged",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "bmw-e28-m5-eu-1988",
+    "label": "Rosebay Willowherb 1988",
+    "capability": "1988 European BMW E28 M5 M88/3 non-cat 5MT",
+    "carId": "3d-rosebay-willowherb-1988-3d-7a747f749a4c",
+    "bodyRef": "Rosebay Willowherb 1988 Body",
+    "wheelRef": "Rosebay Willowherb 1988 Wheel",
+    "radius": 0.3157,
+    "axles": [
+      {
+        "track": 1.4299999475479126,
+        "y": 0.3156999945640564,
+        "z": 1.3125
+      },
+      {
+        "track": 1.465000033378601,
+        "y": 0.3156999945640564,
+        "z": -1.3125
+      }
+    ],
+    "reference": "1988 Europe BMW M5, E28 M88/3 non-catalyst European six-cylinder sedan5MT, final-production reference; not US S38 or E34",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "bmw-e24-m635csi-uk-1986",
+    "label": "Water Dock 1986",
+    "capability": "1986 UK BMW E24 M635CSi M88/3 non-cat 5MT and factory right-hand drive",
+    "carId": "3d-water-dock-1986-3d-1fb845b50a4c",
+    "bodyRef": "Water-Dock",
+    "wheelRef": "Water-Dock-Wheel",
+    "radius": 0.316,
+    "axles": [
+      {
+        "track": 1.4299999475479126,
+        "y": 0.3160000145435333,
+        "z": 1.2337499856948853
+      },
+      {
+        "track": 1.4639999866485596,
+        "y": 0.3158310055732727,
+        "z": -1.3912500143051147
+      }
+    ],
+    "reference": "1986 UK BMW M635CSi E24 M88/3 non-catalyst3.453L naturally aspirated inline-six five-speed manual;not US S38 catalyst M6",
+    "canonicalLampSides": true
   }
 ]
