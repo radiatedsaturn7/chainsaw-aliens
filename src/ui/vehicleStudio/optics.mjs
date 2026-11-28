@@ -168,12 +168,40 @@ export function makeOpenings({end,g,segments=32,face=null}){
  const sideX=sideBase-(num(raw.outboard,.5)-.5)*.092;
  const h0=mix(.129,front?.347:.295,housing==='circle'?opt.height*.58+opt.width*.42:opt.height);
  const w=Math.min(housing==='circle'?h0*.46:mix(.132,.308,opt.width),2*(sideX-.025));
+ const parked=front&&g.construction?.hood?.lampLids==='flush'&&g.construction.hood.parkedPopups;
+ if(parked){
+  // This prototype keeps the rectangular upper lids closed at rest and
+  // does not animate them. Reuse the active optics as lower bank lamps.
+  const cy=.728;
+  out.push(aperture({id:'head'+(s>0?'-l':'-r'),component:'headlights',
+   housing:'round-rect',cx:s>0?1-sideX:sideX,cy,width:Math.min(.154,w*.64),height:.088,
+   side:s,opt:{...opt,angle:0,sweep:.5,sideWrap:0,silverFront:0},segments}));
+  continue;
+ }
  const hBase=(housing==='oval'?h0*.85:h0)*(front?1:1+Math.max(0,Math.min(housing==='upright-wrap'?.88:.42,num(raw.tallHousing,0))));
  const cyBase=Math.max(.022+hBase/2,Math.min(front?mix(.127,.408,opt.position):mix(.176,.462,opt.position),1-hBase*.5-.045));
  // Make the headlight body taller without moving the fitted hood edge.
  // Keep a solid band to the tallest possible fog cover underneath.
  const reach=front?Math.min(.11,Math.max(0,num(raw.lowerLensReach,0)),Math.max(0,.585-(cyBase+hBase/2))):0;
  const h=hBase+reach,cy=cyBase+reach/2;
+ if(front&&housing==='dual-round'){
+  // A pair of physically separate front projector recesses, with a painted
+  // web between them. Keep both in the existing side tiles and end the
+  // circles above the lowest available bumper intake station.
+  const hw=.032+.014*opt.width,hh=.077+.056*opt.height;
+  const outer=Math.max(.097,Math.min(.175,sideX-(hw+.005)));
+  const inner=outer+hw*2+.020;
+  const y=Math.max(.130+hh,Math.min(.402,cyBase+.034));
+  for(let i=0;i<2;i++){
+   const cx=s>0?1-(i?inner:outer):(i?inner:outer),cy=y+(i?.018:0);
+   const fit=i?.88:1, roundOpt={...opt,angle:0,sweep:.5,inboardReach:.5,outline:[],formula:'',layout:'projector',sideWrap:0,secondaryLamp:i>0};
+   const opening=aperture({id:'head-'+(s>0?'l':'r')+(i?'-inner':''),component:'headlights',
+    housing:'circle',cx,cy,width:hw*2*fit,height:hh*2*fit,side:s,opt:roundOpt,segments});
+   if(face&&raw.physicalDiameter>0)projectRoundLamp(opening,face,Math.min(raw.physicalDiameter,g.dimensions.width*hw*1.7)*fit,0);
+   out.push(opening);
+  }
+  continue;
+ }
  if(!front&&housing==='dual-round'){
   // Two independent recesses per side. Keep a physical painted land between
   // lenses and reserve the middle third for a plate, handle or deck badge.
@@ -201,7 +229,16 @@ export function makeOpenings({end,g,segments=32,face=null}){
  }
  if(front){
   const gr=c.grille??{},fog=c.fogs??{};
-  if(gr.type!=='closed')out.push(aperture({id:'upper-grille',component:'grille',housing:fascia.grilleShape??'trapezoid',cx:.5,cy:.415+(num(fascia.grilleHeightPosition,.5)-.5)*.43,
+  if(gr.type==='twin vertical slats'){
+   // Keep a painted center ligament and derive both recesses from the
+   // lamp apertures so changing headlamp width cannot create an overlap.
+   const free=Math.min(.140,.48-Math.max(...out.filter(o=>o.center[0]<.5).flatMap(o=>o.outline.map(p=>p[0]))),
+    Math.min(...out.filter(o=>o.center[0]>.5).flatMap(o=>o.outline.map(p=>p[0])))-.52);
+   const w=Math.min(free,.077+.061*num(fascia.grilleWidth,.5)),h=(.10+.133*num(fascia.grilleHeight,.5))*num(gr.depth,1);
+   if(w>.025)for(const side of [-1,1])out.push(aperture({id:'upper-grille-'+(side<0?'r':'l'),component:'grille',
+    housing:'round-rect',cx:.5+side*(.012+w/2),cy:.415+(num(fascia.grilleHeightPosition,.5)-.5)*.43,width:w,height:h,
+    opt:{corner:.74},kind:'duct',segments,style:'vertical'}));
+  }else if(gr.type!=='closed')out.push(aperture({id:'upper-grille',component:'grille',housing:fascia.grilleShape??'trapezoid',cx:.5,cy:.415+(num(fascia.grilleHeightPosition,.5)-.5)*.43,
    width:Math.min(mix(.155,.256,sat((num(gr.size,1)-.68)/.60))*(.56+.88*num(fascia.grilleWidth,.5)),2*(.49-Math.max(...out.filter(o=>o.center[0]<.5).flatMap(o=>o.outline.map(p=>p[0])))),2*(Math.min(...out.filter(o=>o.center[0]>.5).flatMap(o=>o.outline.map(p=>p[0])))-.51)),height:mix(.13,(gr.type==='vertical slats'||gr.type==='seven-slot')?.35:.238,sat((num(gr.depth,1)-.68)/.60))*(.58+.84*num(fascia.grilleHeight,.5)),
    kind:'duct',segments,style:gr.type==='seven-slot'?'seven-slot':gr.type==='vertical slats'?'vertical':gr.type==='bars'?'bars':'mesh'}));
   for(const s of [-1,1]){

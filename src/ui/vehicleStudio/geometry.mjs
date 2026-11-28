@@ -145,9 +145,16 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  const rearDatum=mix(cabinRear,doorFront,rearFraction);
  const roofRear=canopy.rearPillarFoot||canopy.rearRoofShift||hatchUpright||targaBulk?clamp(rearDatum+canopy.rearPillarFoot*(1-rearFraction)-canopy.rearRoofShift-.38*hatchUpright-.24*targaBulk,cabinRear+mix(.18,.078,hatchUpright),roofFront-.34):rearDatum;
  const nose=B-(.14+.10*(1-wide))*c.frontBumper.depth,deck=B-(c.trunk.type==='fastback'?.13:.065)*c.rearBumper.depth;
- const skinY=z=>z>cabinFront?mix(B,nose,((z-cabinFront)/(Lf-cabinFront))**1.4):z<cabinRear?mix(B,deck,((cabinRear-z)/(cabinRear-Lr))**1.38):B;
+ const standardY=z=>z>cabinFront?mix(B,nose,((z-cabinFront)/(Lf-cabinFront))**1.4):z<cabinRear?mix(B,deck,((cabinRear-z)/(cabinRear-Lr))**1.38):B;
+ const vintage=g.body.vintageFenders;
+ const skinY=z=>vintage
+  ?standardY(z)-vintage*.132*clamp((Math.abs(z)-L*.43)/Math.max(.29,(z>0?Lf:-Lr)-L*.43))**2.3
+  :standardY(z);
  const regionalBox=z=>clamp(wide+(z>0?d.frontBox:d.rearBox)*clamp(Math.abs(z)/L));
- function skinX(z){const noseT=clamp((Math.abs(z-(Lf+Lr)*.5)/(.5*length)-.70)/.30);return X*(1-(.058+.13*(1-regionalBox(z)))*noseT**2);}
+ function skinX(z){const noseT=clamp((Math.abs(z-(Lf+Lr)*.5)/(.5*length)-.70)/.30);const plain=X*(1-(.058+.13*(1-regionalBox(z)))*noseT**2);
+  if(!vintage)return plain;
+  const taper=clamp((Math.abs(z)-L*.86)/Math.max(.28,(z>0?Lf:-Lr)-L*.86));
+  return plain-vintage*.17*taper**1.55;}
  const lipHeight=(z,side)=>{
   const ax=z>0?L:-L,dist=Math.abs(z-ax),a0=archData(ax,side);
   if(dist>=a0.fore)return floor;
@@ -192,6 +199,12 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   const edgePull=clamp((v-.72)/.28)*clamp((flare-.18)/.65);
   x=mix(x,Math.max(x,(archAt<0&&staggered?rearTrack+rearFit.tireWidth/2:t+d.tireWidth/2)+.018*(.6+.4*flareScale)),edgePull);
   let y=mix(skinY(z),bottom,v);
+  if(vintage){
+   // Separate upright tub from the bolt-on fender envelope. The rounded
+   // flare fades into the arch hem rather than stopping at door stations.
+   const near=Math.exp(-(((z-archAt)/(g.dimensions.diameter*.76))**2));
+   x+=vintage*(.077*near*Math.sin(Math.PI*v)**1.82-.040*(1-near)*Math.sin(Math.PI*v)**1.32);
+  }
   if(comp==='frontFenders'){
    const u=clamp((z-doorFront)/(bumperFront-doorFront)),q=panelSample(u,v),edge=lerp3(panelSample(u,0),panelSample(u,1),v);
    const influence=Math.sin(Math.PI*u)*Math.sin(Math.PI*v)**.64;
@@ -342,6 +355,23 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   features.push(guideFeature(end+'-silhouette','silhouette',front?'Nose silhouette':'Tail silhouette',name,curvePoints(u=>surf.face(u,.13)),{end,view:'top',axis:2,scale:sign*.28}));
   const mounted=emitOpenings({end,openings,surface:chart,put,lod,compact,spatialDepth:wrapped,shellMaterial,suppressHeadlamps});
   Object.assign(lampMounts,mounted.mounts);
+  const {chromeBumperBand:bandDepth,chromeBandHeight,chromeBandPosition}=g.fascia[end];
+  if(bandDepth>0){
+   // A formed metal crossbar follows the fascia envelope, including a
+   // tighter-radius return at its corners. Its sides vanish into the skin.
+   const hw=.474, steps=small(lod?28:40,20,18,14);
+   const beam=patch(steps,4,(u,v)=>{
+    const inboard=Math.min(1,Math.min(u,1-u)*10);
+    const bend=Math.sin(Math.PI*v)**.56;
+    const center=chromeBandPosition+.046*(2*u-1)**4;
+    const station=center+(v-.5)*chromeBandHeight/Math.max(.40,B-floor);
+    const q=chart(.5+(u*2-1)*(wrapped?.426:hw),clamp(station));
+    q[2]+=sign*(bandDepth*inboard*(.48+.52*bend)-.003);
+    return q;
+   },!front);
+   beam.userData.constructionRole='formed chrome bumper / separate component';
+   put(name,'chrome',beam);
+  }
   issues.push(...(mounted.issues??[]));
   fascia[end]={guides:surf.guides,trimArea:shell.userData.trimArea,wrapped,
    samples:[0,.15,.30,.45,.5,.55,.70,.85,1].map(u=>surf.face(u,.13)),
@@ -369,7 +399,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  }else if(g.body.cowlDuct)sheet('hood','cowl-duct',hoodStart,hoodEdge,(z,u)=>{
   const p=hoodCover(z,u);p[1]-=g.body.cowlDuctDepth*cowlDuctMask(g.body,(z-hoodStart)/(hoodEdge-hoodStart),u);return p;
  },hoodAlong,across);
- else sheet('hood','paint',hoodStart,hoodEdge,hoodCover,hoodAlong,across);
+ else sheet('hood',hoodDesign.bonnetStripes?'bonnet-stripes':'paint',hoodStart,hoodEdge,hoodCover,hoodAlong,across);
  const trunkCover=(z,u)=>coverPoint(trunkPoint,trunkEdge,g.seams.trunkSeam,z,u);
  const bedEnd=cabinRear-G, pickupDepth=g.body.pickupBedDepth;
  let pickupWellCeiling=null;
@@ -573,11 +603,23 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   roofC=(.023+.068*d.crown)*(.60+c.roof.shape)*((c.roof.type==='flat'||coveredTarga)?.40:1)*c.roof.depth;
  const baseW=z=>Math.min(skinX(z)-.035,glassBaseW);
  const roofPoint=(z,u)=>{const k=2*u-1,edge=g.body.roofEdge;return [k*roofW*(1-(.067+.12*(canopy.canopyShoulder-.5))*Math.abs(2*(z-roofRear)/Math.max(.15,roofFront-roofRear)-1)**2),d.height+UP_PATCH(g,'roof',z,u,roofRear,roofFront)-roofC*Math.abs(k)**(2.28-.68*edge-.60*(canopy.canopyShoulder-.5))-.014*edge*Math.abs(k)**11-roofC*.45*Math.abs(2*(z-roofRear)/Math.max(.15,roofFront-roofRear)-1)**2,z];};
+ const bubbleRoof=canopy.bubbleCanopy;
+ function canopyRoof(z,u){
+  const p=roofPoint(z,u);
+  if(!bubbleRoof)return p;
+  const t=clamp((z-roofRear)/Math.max(.15,roofFront-roofRear)),k=Math.abs(2*u-1);
+  // Longitudinal bulb: shoulder radius grows near center then shrinks
+  // into the rounded windscreen and engine-cover glass.
+  const end=Math.abs(2*t-1)**2,corner=k**3.0;
+  p[0]*=1-bubbleRoof*(.135*end+.040*corner);
+  p[1]-=bubbleRoof*(.083*end+.055*corner+.017*end*corner);
+  return p;
+ }
  const hatchSplit=.26,hatchFold=canopy.rearHatchFold;
  const glassPoint=(sgn,t,u)=>{const edge=sgn>0?roofFront:roofRear,gate=sgn>0?cabinFront:cabinRear;
   const w=baseW(gate),x=(2*u-1)*w,k=(x/skinX(gate)+1)/2;
-  const q=lerp3([x,(sgn>0?hoodPoint:trunkPoint)(gate,k)[1]+.004,gate],roofPoint(edge,u),t);
-  const zBow=sgn<0&&hatchUpright?Math.min(.045*c.glass.depth,(edge-gate)*.28):.045*c.glass.depth;
+  const q=lerp3([x,(sgn>0?hoodPoint:trunkPoint)(gate,k)[1]+.004,gate],canopyRoof(edge,u),t);
+  const zBow=sgn<0&&hatchUpright?Math.min(.045*c.glass.depth,(edge-gate)*.28):.045*c.glass.depth+bubbleRoof*.11;
   q[2]+=sgn*zBow*bell(t)*bell(u);
   if(sgn<0&&canopy.rearGlassArc){
    const round=bell(t)**1.35;
@@ -594,7 +636,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   }
   return q;};
  if(!roadster){
-  sheet('roof',coveredTarga?'trim':canopy.hardtopContrast?'roofPaint':'paint',roofRear,roofFront,roofPoint,small(17,9,8,7),small(12,9,8,7));
+  sheet('roof',coveredTarga?'trim':canopy.hardtopContrast?'roofPaint':'paint',roofRear,roofFront,canopyRoof,small(17,9,8,7),small(12,9,8,7));
   buildRoofRails({put,roof:roofPoint,front:roofFront,rear:roofRear,amount:canopy.utilityRoofRails,compact});
  }else{
   // Roadster's fixed windscreen header and a restrained tonneau over the
@@ -715,10 +757,10 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    f('paint',0,left,lo,hi,n,1);f('paint',right,1,lo,hi,n,1);
    f('glass',left,right,lo,hi,n,m);
   }else put('glass','glass',patch(small(12,6,5,4),small(16,10,9,8),(v,u)=>glassPoint(s,v,u),s<0));
-  const roofSide=s>0?1:0,letter=s>0?'R':'L', A=roofPoint(roofFront,roofSide),C=roofPoint(roofRear,roofSide);
+  const roofSide=s>0?1:0,letter=s>0?'R':'L', A=canopyRoof(roofFront,roofSide),C=canopyRoof(roofRear,roofSide);
   function side(u,v){
    const f=glassPoint(1,v,roofSide),r=glassPoint(-1,v,roofSide),a=lerp3(f,r,u),
-    line=lerp3(A,C,u),actual=roofPoint(mix(roofFront,roofRear,u),roofSide);
+    line=lerp3(A,C,u),actual=canopyRoof(mix(roofFront,roofRear,u),roofSide);
    a[0]+=s*.030*canopy.glassBow*bell(u)*bell(v)*c.glass.depth;
    // Raise the glazing sill progressively without separating the A/D pillars.
    // The painted bridge below uses this same chart, so it stays gap-free.

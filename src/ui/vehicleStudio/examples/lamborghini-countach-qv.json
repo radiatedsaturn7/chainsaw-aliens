@@ -119,7 +119,7 @@
       "angle": 0
     },
     "fogs": {
-      "type": "strip",
+      "type": "off",
       "size": 0.79,
       "shape": 0.5,
       "depth": 1,
@@ -555,9 +555,9 @@
       "coatRoughness": 0.12
     },
     "hood": {
-      "lampLids": "inset",
-      "lidWidth": 0.29,
-      "lidLength": 0.27,
+      "lampLids": "flush",
+      "lidWidth": 0.285,
+      "lidLength": 0.248,
       "lidSpread": 0.32,
       "lidSetback": 0.07,
       "lidGap": 0.004,
@@ -570,7 +570,8 @@
       "shoulderSweep": 0,
       "scoopWidth": 0,
       "scoopHeight": 0,
-      "scoopCorner": 0
+      "scoopCorner": 0,
+      "parkedPopups": 1
     },
     "wing": {
       "supportMount": "under",

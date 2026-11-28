@@ -680,5 +680,291 @@
       }
     ],
     "reference": "2012 Jeep Wrangler Rubicon JK two-door 6-speed"
+  },
+  {
+    "id": "honda-nsx-type-r-na1",
+    "label": "Adderstongue 1992",
+    "capability": "NA1 black canopy, flush lamps and long tail",
+    "carId": "3d-adderstongue-1992-3d-b5c9add99d57",
+    "bodyRef": "adderstongue-finished",
+    "wheelRef": "adderstongue-wheel",
+    "radius": 0.293,
+    "axles": [
+      {
+        "track": 1.5099999904632568,
+        "y": 0.293069988489151,
+        "z": 1.4673999547958374
+      },
+      {
+        "track": 1.5299999713897705,
+        "y": 0.31453898549079895,
+        "z": -1.062600016593933
+      }
+    ],
+    "reference": "1992 Honda NSX Type R NA1"
+  },
+  {
+    "id": "mazda-rx7-fd",
+    "label": "Rotorveil 1993",
+    "capability": "Unwinged U.S. base FD, recessed tail fascia and flush lamp lids",
+    "carId": "3d-rotorveil-1993-3d-6fb1bce50ddb",
+    "bodyRef": "Rotorveil",
+    "wheelRef": "Rotorveil-Wheel",
+    "radius": 0.3157,
+    "axles": [
+      {
+        "track": 1.4605000019073486,
+        "y": 0.3156999945640564,
+        "z": 1.2128499746322632
+      },
+      {
+        "track": 1.4605000019073486,
+        "y": 0.3150629997253418,
+        "z": -1.2128499746322632
+      }
+    ],
+    "reference": "1993 Mazda RX-7 FD, US base"
+  },
+  {
+    "id": "acura-integra-type-r-dc2",
+    "label": "Greater Stitchwort 2001",
+    "capability": "US quad-optic fastback and compact wing",
+    "carId": "3d-greater-stitchwort-2001-3d-1271dfc658de",
+    "bodyRef": "Greater Stitchwort 2001 Body",
+    "wheelRef": "Greater Stitchwort 2001 Wheel",
+    "radius": 0.29775,
+    "axles": [
+      {
+        "track": 1.4808199405670166,
+        "y": 0.29774999618530273,
+        "z": 1.284999966621399
+      },
+      {
+        "track": 1.4757399559020996,
+        "y": 0.29774999618530273,
+        "z": -1.284999966621399
+      }
+    ],
+    "reference": "2001 Acura Integra Type R, US DC2"
+  },
+  {
+    "id": "bmw-e39-m5",
+    "label": "Meadowrue 2003",
+    "capability": "Refined sports sedan with halo projectors and quad pipes",
+    "carId": "3d-meadowrue-2003-3d-b7efacc36068",
+    "bodyRef": "Meadowrue-2003",
+    "wheelRef": "Meadowrue-2003-Wheel",
+    "radius": 0.3266,
+    "axles": [
+      {
+        "track": 1.5138399600982666,
+        "y": 0.32659998536109924,
+        "z": 1.4149999618530273
+      },
+      {
+        "track": 1.5240000486373901,
+        "y": 0.32659998536109924,
+        "z": -1.4149999618530273
+      }
+    ],
+    "reference": "2003 BMW M5 E39"
+  },
+  {
+    "id": "mercedes-190e-evo2",
+    "label": "Wood Speedwell 1990",
+    "capability": "Blister-arch homologation sedan with tall boxed deck wing",
+    "carId": "3d-wood-speedwell-1990-3d-487b18567596",
+    "bodyRef": "Wood Speedwell 1990 Body",
+    "wheelRef": "Wood Speedwell 1990 Wheel",
+    "radius": 0.31389999999999996,
+    "axles": [
+      {
+        "track": 1.4739999771118164,
+        "y": 0.3138999938964844,
+        "z": 1.3324999809265137
+      },
+      {
+        "track": 1.4529999494552612,
+        "y": 0.3138999938964844,
+        "z": -1.3324999809265137
+      }
+    ],
+    "reference": "1990 Mercedes-Benz 190 E 2.5-16 Evolution II"
+  },
+  {
+    "id": "renault-5-turbo",
+    "label": "Vipers Bugloss 1980",
+    "capability": "Short two-seat homologation hatchback with outsized rear haunches",
+    "carId": "3d-vipers-bugloss-1980-3d-d153c1824a6e",
+    "bodyRef": "Vipers-Bugloss",
+    "wheelRef": "Vipers-Bugloss-Wheel",
+    "radius": 0.2745,
+    "axles": [
+      {
+        "track": 1.3480000495910645,
+        "y": 0.2745000123977661,
+        "z": 1.4579999446868896
+      },
+      {
+        "track": 1.4739999771118164,
+        "y": 0.2733210027217865,
+        "z": -0.972000002861023
+      }
+    ],
+    "reference": "1980 Renault 5 Turbo"
+  },
+  {
+    "id": "chevrolet-camaro-ss350",
+    "label": "Rose Clover 1969",
+    "carId": "3d-rose-clover-1969-3d-d2905efd8b49",
+    "capability": "1969 United States Chevrolet Camaro Super Sport Coupe, SS350 four-barrel300-hp reference, special heavy-duty three-speed floor-shift,3.31axle, non-RallySport",
+    "bodyRef": "Rose-Clover-1969-body",
+    "wheelRef": "Rose-Clover-1969-wheel",
+    "radius": 0.3283,
+    "axles": [
+      {
+        "track": 1.5138399600982666,
+        "y": 0.32829999923706055,
+        "z": 1.4586000442504883
+      },
+      {
+        "track": 1.4960600137710571,
+        "y": 0.32829999923706055,
+        "z": -1.284600019454956
+      }
+    ],
+    "reference": "1969 Chevrolet Camaro SS 350"
+  },
+  {
+    "id": "chevrolet-chevelle-ss454",
+    "label": "Spring Vetch 1970",
+    "carId": "3d-spring-vetch-1970-3d-64f6ddc88649",
+    "capability": "1970 United States Chevrolet Chevelle SS454, SportCoupe,LS5-type360-hp454four-barrelV8,4MT,standardclosedhood,noLS6",
+    "bodyRef": "Spring-Vetch-1970-body",
+    "wheelRef": "Spring-Vetch-1970-wheel",
+    "radius": 0.3283,
+    "axles": [
+      {
+        "track": 1.549399971961975,
+        "y": 0.32829999923706055,
+        "z": 1.5154000520706177
+      },
+      {
+        "track": 1.5417799949645996,
+        "y": 0.32829999923706055,
+        "z": -1.3293999433517456
+      }
+    ],
+    "reference": "1970 Chevrolet Chevelle SS 454 LS5"
+  },
+  {
+    "id": "pontiac-firebird-ws6",
+    "label": "Buckshorn Plantain 2002",
+    "carId": "3d-buckshorn-plantain-2002-3d-d89a5a4d6127",
+    "capability": "2002 Canadian Pontiac Firebird Trans Am coupe with RamAirPerformanceandHandlingPackage(WS6),5.7LS1V8,optional six-speedmanualwithHurstshifter,3.42LSD,P275/40ZR17,closedT-top;notCollectorEdition,convertible,SLPFirehawkorbase310hp",
+    "bodyRef": "Buckshorn Plantain 2002 Body",
+    "wheelRef": "Buckshorn Plantain 2002 Wheel",
+    "radius": 0.32589999999999997,
+    "axles": [
+      {
+        "track": 1.5420000553131104,
+        "y": 0.32589998841285706,
+        "z": 1.2829999923706055
+      },
+      {
+        "track": 1.5399999618530273,
+        "y": 0.32589998841285706,
+        "z": -1.2829999923706055
+      }
+    ],
+    "reference": "2002 Pontiac Firebird Trans Am WS6"
+  },
+  {
+    "id": "ct86-mr2-roadster",
+    "label": "CT-86",
+    "reference": "Toyota MR2 Roadster (W30 facelift)",
+    "capability": "Short nose, two open seats, tall triangular lenses and rear-side intake",
+    "carId": "3d-ct-86-3d-b47dfbae69a4",
+    "bodyRef": "CT-86 Body",
+    "wheelRef": "CT-86 Wheel",
+    "radius": 0.337,
+    "axles": [
+      {
+        "track": 1.559999942779541,
+        "y": 0.3370000123977661,
+        "z": 1.3350000381469727
+      },
+      {
+        "track": 1.5700000524520874,
+        "y": 0.3370000123977661,
+        "z": -1.3350000381469727
+      }
+    ]
+  },
+  {
+    "id": "rover-mini-cooper-mpi",
+    "label": "Periwinkle 1998",
+    "capability": "Compact notch-shell, contrast roof, chrome blades and round lamps",
+    "carId": "3d-periwinkle-1998-3d-a5781e4a3d0e",
+    "bodyRef": "Periwinkle 1998 Body",
+    "wheelRef": "Periwinkle 1998 Wheel",
+    "radius": 0.2539,
+    "axles": [
+      {
+        "track": 1.2400000095367432,
+        "y": 0.2538999915122986,
+        "z": 1.0499999523162842
+      },
+      {
+        "track": 1.2100000381469727,
+        "y": 0.2538999915122986,
+        "z": -1.0499999523162842
+      }
+    ],
+    "reference": "1998 UK Rover Mini Cooper 1.3i MPi standard 12-inch"
+  },
+  {
+    "id": "volkswagen-beetle-1200",
+    "label": "Chickweed 1200 1963",
+    "capability": "Domed cab, raised inset lamp fenders, sloped engine deck and steel wheels",
+    "carId": "3d-chickweed-1200-1963-3d-4dadf624ec30",
+    "bodyRef": "Chickweed 1200 1963 Body",
+    "wheelRef": "Chickweed 1200 1963 Wheel",
+    "radius": 0.3145,
+    "axles": [
+      {
+        "track": 1.3055599927902222,
+        "y": 0.31450000405311584,
+        "z": 1.2000000476837158
+      },
+      {
+        "track": 1.2903200387954712,
+        "y": 0.31450000405311584,
+        "z": -1.2000000476837158
+      }
+    ],
+    "reference": "1963 European Volkswagen Beetle 1200 Export saloon solid roof"
+  },
+  {
+    "id": "suzuki-cappuccino",
+    "label": "Sundew 660 1991",
+    "capability": "Short kei roadster with long bonnet and closed targa roof",
+    "carId": "3d-sundew-660-1991-3d-64c08d1fdf06",
+    "bodyRef": "Sundew-660",
+    "wheelRef": "Sundew-660-Wheel",
+    "radius": 0.28505,
+    "axles": [
+      {
+        "track": 1.2100000381469727,
+        "y": 0.28505000472068787,
+        "z": 1.0290000438690186
+      },
+      {
+        "track": 1.2100000381469727,
+        "y": 0.2846220135688782,
+        "z": -1.0709999799728394
+      }
+    ],
+    "reference": "1991 Suzuki Cappuccino EA11R 660cc"
   }
 ]

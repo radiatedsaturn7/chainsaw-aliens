@@ -49,7 +49,10 @@ export function emitFlushHoodLids({cover,hoodLength,settings,across,along,compac
   if(inset){
    const blend=(k)=>lid.inner.map(p=>p.map((n,j)=>lid.center[j]+(n-lid.center[j])*k));
    const bezel=blend(.89), bowl=blend(.50), core=blend(.27), cover=blend(.68);
-   put('headlights','seamDark',strip([lid.outline,lid.inner,bezel],[0,.008,.026]));
+   if(settings.classicLampBezel){
+    put('headlights','chrome',strip([lid.outline,lid.inner],[0,.004]));
+    put('headlights','seamDark',strip([lid.inner,bezel],[.004,.018]));
+   }else put('headlights','seamDark',strip([lid.outline,lid.inner,bezel],[0,.008,.026]));
    put('headlights','reflector',strip([bezel,bowl,core],[.026,.030,.035]));
    put('headlights','projector',strip([core,blend(.14)],[.034,.024],lid.center));
    put('headlights','opticCover',strip([lid.inner,cover],[.006,.004],lid.center));

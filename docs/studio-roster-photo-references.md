@@ -189,3 +189,27 @@ layout is approximate. The standard-aero Viper lacks a dedicated rocker
 exhaust, and the Mustang light signature is simplified. The utility cars
 have distinct roof finishes, spare tires and bumpers, but their seals,
 exterior hinges and fine fascia detailing are not complete.
+
+### Full-roster rollout, second expansion
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Adderstongue 1992 | NA1 NSX Type R, with its black roof and fixed headlamps closed. [Honda archive](https://global.honda/jp/news/1992/4921126/image_download.html) |
+| Rotorveil 1993 | US base FD Mazda RX-7, no R1 rear wing. [Period US brochure](https://www.auto-brochures.com/makes/Mazda/RX-7/Mazda_US%20RX-7_1993.pdf) |
+| Greater Stitchwort 2001 | US Integra Type R, with separate four front lamp cavities, not the Japanese rectangular fascia. [Acura Integra media archive](https://hondanews.com/en-US/channels/integra) |
+| Meadowrue 2003 | European facelift E39 M5. [Multi-view European car](https://www.themarket.co.uk/listings/bmw/m5-e39/1c6dc0cc-e7e5-4974-bbbb-803ae0af222d) |
+| Wood Speedwell 1990 | W201 190 E 2.5-16 Evo II road car. [Mercedes-Benz archive](https://media.mercedes-benz.com/en/article/4e61dcd8-fd75-47ca-830c-056734a165c2) |
+| Vipers Bugloss 1980 | First Renault 5 Turbo road homologation car. [1980 production car archive](https://www.artcurial.com/ventes/M1076/lots/646-a) |
+| Rose Clover 1969 | Camaro SS 350 coupe; split grille, full chrome bumper. [GM Heritage archive](https://www.gm.com/heritage/archive/vehicle-information-kits) |
+| Spring Vetch 1970 | Closed-hood Chevelle SS 454 LS5. [GM Heritage archive](https://www.gm.com/heritage/archive/vehicle-information-kits) |
+| Buckshorn Plantain 2002 | Firebird Trans Am WS6. Closed painted pop-ups are static; the functional beam is assigned to the lower lamp bank. [GM Heritage archive](https://www.gm.com/heritage/archive/vehicle-information-kits) |
+| CT-86 | In-game proportions/handling with the final W30 Toyota MR2 Roadster 1.8 as visual inspiration, not a new vehicle or a physics conversion. [Toyota UK exterior gallery](https://media.toyota.co.uk/images/mr2-roadster-special-collections-red-2004-2006/) |
+| Periwinkle 1998 | British Rover Mini Cooper 1.3i MPi on 12-inch wheels. [Original example](https://www.manorparkclassics.com/auction/lot/lot-138---1998-rover-mini-cooper-13i/?lot=1762&sd=1) |
+| Chickweed 1200 1963 | European VW Beetle 1200 Export, solid roof. [Period-spec car gallery](https://www.automobile-lopp.de/Blog/1071/vw-kaefer-1200-export-1963/) |
+| Sundew 660 1991 | Suzuki Cappuccino EA11R with the targa closed. [Suzuki digital archive](https://www.suzuki.co.jp/suzuki_digital_library/1_auto/cappuccino.html) |
+
+The Beetle in particular needs a taller, longer dome and better separated
+fenders. The CT-86 uses the original wider track and game wheelbase; it is
+a visual study, not a dimensional replica. All studies keep functional front,
+brake, reverse, running, left and right signal geometry; the closed Countach
+headlamp covers, like those on the WS6, do not animate.

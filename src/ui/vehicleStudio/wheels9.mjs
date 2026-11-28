@@ -95,7 +95,7 @@ function spoke(r,face,dish,i,count,style,depth,low){
  const radii=low?[0,1]:[0,.46,1];
  for(const s of radii){
   const rr=mix(.212,.968,s)*r;
-  const fullWidth=(style==='5-spoke'?mix(.159,.111,s):style==='mesh'?mix(.072,.052,s):style==='10-spoke'?mix(.099,.060,s):mix(.122,.070,s))*depth;
+  const fullWidth=(style==='5-spoke'?mix(.159,.111,s):style==='mesh'?mix(.072,.052,s):style==='10-spoke'?mix(.099,.060,s):style==='8-spoke'?mix(.145,.112,s):mix(.122,.070,s))*depth;
   const angle=a+lean*s*s;
   for(const [side,b] of section){
    const x=face-(.005+dish*(1-s)**1.45)+b*r*(.043-.010*s);
@@ -191,7 +191,7 @@ export function buildWheels(g,{quality='preview',compact=0,emit,rear=false}={}){
    put('wheels','seamDark',recess);
   }
  }else{
- const nSpokes=w.type==='6-spoke'?6:w.type==='5-spoke'?5:w.type==='10-spoke'?10:low?8:12;
+ const nSpokes=w.type==='6-spoke'?6:w.type==='5-spoke'?5:w.type==='10-spoke'?10:w.type==='8-spoke'?8:low?8:12;
  for(let k=0;k<nSpokes;k++)put('wheels','wheel',spoke(rim,face,dish,k,nSpokes,w.type,w.depth,low||nSpokes>7&&!detail));
   }
  if(!low)for(let k=0;k<5;k++)put('wheels','trim',boltSocket(hub+.0042,rim*.134,k));

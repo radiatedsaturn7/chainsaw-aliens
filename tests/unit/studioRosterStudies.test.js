@@ -58,7 +58,10 @@ for(const r of studioRoster)test(r.label+' keeps exact hubs and builds a determi
  }
  const wheels=wheel.vertices.map(({position:[,y,z]})=>Math.hypot(y,z));
  assert.ok(Math.abs(Math.max(...wheels)-t.radius)<.005);
- for(const role of ['head','brake','reverse'])assert.ok(body.materials.some(m=>m.name.startsWith('[studio9:'+role+']')));
+ const usedMaterials=new Set(body.faces.map(face=>face.material));
+ for(const role of ['head','brake','reverse','running','signal-left','signal-right']){
+  assert.ok(body.materials.some(m=>usedMaterials.has(m.id)&&m.name.startsWith('[studio9:'+role+']')),'Missing functional geometry for '+role);
+ }
 });
 
 function assertCompactEquivalent(before, after){
