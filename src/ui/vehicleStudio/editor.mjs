@@ -548,7 +548,7 @@ function inspector(){
    for(const key of keys)range(details,'dimensions',key,GLOBAL[key]??DIMENSIONS[key],g.dimensions[key]);
   }
   noseControls(group(root,'Front-end shape',true),g);
-  const data=group(root,'Materials',false);color(data,'paint','Body paint',g);if(g.construction.cabin.hardtopContrast)color(data,'roofPaint','Hardtop paint',g);color(data,'wheel','Wheel finish',g);
+  const data=group(root,'Materials',false);color(data,'paint','Body paint',g);if(g.construction.cabin.hardtopContrast||g.construction.hood.contrastBonnet||g.body.lowerCladding)color(data,'roofPaint','Secondary paint',g);if(g.body.waistStripe)color(data,'stripePaint','Beltline stripe',g);color(data,'wheel','Wheel finish',g);
   color(data,'glass','Glass tint',g);color(data,'seat','Seat upholstery',g);
   root.append(element('p',{id:'setup-status',textContent:geo?.diagnostics.warnings.join(' ')||'Shared body stations and suspension mounts update together.'}));
  }else if(tab==='parts'){

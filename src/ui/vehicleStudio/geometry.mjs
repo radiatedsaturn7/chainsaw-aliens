@@ -699,7 +699,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     const fraction=trail/along;
     const face=patch(trail,down,(u,v)=>sampler(front?u*fraction:1-(1-u)*fraction,v),s<0);
     const polymer=g.body.polymerUtilityWings&&front;
-    const side=put(key,polymer?'trim':g.body.lowerCladding?'lower-clad':'paint',!polymer&&g.body.lowerCladding?claddingUV(face):face);
+    const side=put(key,polymer?'trim':(g.body.lowerCladding||g.body.waistStripe)?'lower-clad':'paint',!polymer&&(g.body.lowerCladding||g.body.waistStripe)?claddingUV(face):face);
     lowerRails.push(readLowerRail(side,trail,down,i=>mix(a,b,front?i/along:1-(trail-i)/along)));
     const tipIndex=front?trail:0, at=i=>front?i:trail-i;
     for(let i=0;i<=trail;i++)weldNormals([roll,i*(across+1)+col],[side,at(i)*(down+1)]);
@@ -745,7 +745,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
      }
     }
     const polymer=g.body.polymerUtilityWings&&key.endsWith('Fenders')&&!duct&&!quarter&&!gill;
-    const clad=g.body.lowerCladding&&!polymer&&!duct&&!quarter&&!gill;
+    const clad=(g.body.lowerCladding||g.body.waistStripe)&&!polymer&&!duct&&!quarter&&!gill;
     put(key,duct?'side-duct':quarter?'quarter-duct':gill?'fender-duct':polymer?'trim':clad?'lower-clad':'paint',clad?claddingUV(panel):panel);
    }
    if(g.body.sideRubStrip&&['rearFenders','doors','frontFenders'].includes(key)){
@@ -1420,7 +1420,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     const cross=Math.max(0,1-Math.abs(a)**(8+12*hoodDesign.scoopCorner))**(.64-.30*hoodDesign.scoopCorner);
     return [x,base+ht*cross*(b*b*(3-2*b))-.001,sz];
    }
-   put('scoop','paint',patch(small(lod?8:16,6,5,4),small(8,7,6,5),(b,u)=>surface(2*u-1,b)));
+   put('scoop',g.construction.hood.scoopMatchBonnet?'roofPaint':'paint',patch(small(lod?8:16,6,5,4),small(8,7,6,5),(b,u)=>surface(2*u-1,b)));
    // A real open sleeve with painted lip, black inside walls and a recessed
    // termination; shadows have physical depth, not a floating black oval.
    if(hoodDesign.scoopWidth||hoodDesign.scoopHeight||hoodDesign.scoopCorner||shift){

@@ -74,8 +74,11 @@ function ductTexture(g,mask,centerAccent=false){
 
 function claddingTexture(g){
  const width=2,height=128,stop=1-g.body.lowerCladding;
- return {width,height,pixels:Array.from({length:width*height},(_,i)=>
-  1-(Math.floor(i/width)+.5)/height>stop?g.materials.roofPaint:g.materials.paint)};
+ return {width,height,pixels:Array.from({length:width*height},(_,i)=>{
+  const y=(Math.floor(i/width)+.5)/height;
+  return g.body.waistStripe&&Math.abs(y-.83)<g.body.waistStripe/2?g.materials.stripePaint:
+   1-y>stop?g.materials.roofPaint:g.materials.paint;
+ })};
 }
 function stripeTexture(g){
  const width=64,height=128,pixels=[];
