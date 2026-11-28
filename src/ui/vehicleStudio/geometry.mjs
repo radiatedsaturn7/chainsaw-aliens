@@ -167,6 +167,12 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   const ax=z>0?L:-L,dist=Math.abs(z-ax),a0=archData(ax,side);
   if(dist>=a0.fore)return floor;
   const s=dist/a0.fore,a=clamp((1-s)/g.body.archFootBlend),curved=R+a0.upper*Math.sqrt(Math.max(0,1-s*s));
+  if(ax<0&&g.body.rearWheelSkirt){
+   // Lower the exterior opening without altering the original arch radius
+   // used by inner liners or suspension; the stamped paint remains one skin.
+   const top=Math.max(floor+.025,Math.min(curved,R*.91));
+   return mix(floor,mix(curved,top,g.body.rearWheelSkirt),a*a*(3-2*a));
+  }
   return mix(floor,curved,a*a*(3-2*a));
  };
  for(const [component,axle] of [['frontFenders',L],['rearFenders',-L]]){
@@ -241,6 +247,13 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    for(const hz of handleStations)x-=(.002+.013*g.body.handleRecess)*Math.exp(-((v-.22)**2)/.0034-((z-hz)**2)/.008);
   }
   x+=stamped(z,v,sgn)-sillLift(z)*.68*v**3;
+  if(archAt<0&&g.body.rearWheelSkirt){
+   const rr=archData(-L,sgn).fore,q=clamp((rr-Math.abs(z+L))/.025);
+   // Keep the outer skin clear of the exact rear tire sidewall, including
+   // the inside return at the opening's lower perimeter.
+   const minX=rearTrack+rearFit.tireWidth*.5+.018;
+   x=mix(x,Math.max(x,minX),unitSmooth(q));
+  }
   if(bottom<=lower+.007)y=Math.max(y,lower+.007);
   return [sgn*x,y,z];
  }
@@ -376,7 +389,8 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    });
   }
   const shellMaterial=g.fascia[end].insertBand||g.fascia[end].lowerInsert?'fascia-'+end:'paint';
-  const suppressHeadlamps=front&&hoodDesign.lampLids==='inset';
+  const pods=front&&g.body.raisedLampPods;
+  const suppressHeadlamps=front&&(hoodDesign.lampLids==='inset'||pods);
   const faceOpenings=suppressHeadlamps?openings.filter(o=>o.kind!=='lamp'):openings;
   const shell=put(name,shellMaterial,fasciaMesh(chart,faceOpenings,{rear:!front,across,down,columns,tolerance:small(wrapped?(lod?.097:.067):lod?.155:quality==='export'?.092:.115,.163,.178,.216)}));
   const faceColumns=columns?columns.length-1:across;
@@ -390,6 +404,27 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   features.push(guideFeature(end+'-silhouette','silhouette',front?'Nose silhouette':'Tail silhouette',name,curvePoints(u=>surf.face(u,.13)),{end,view:'top',axis:2,scale:sign*.28}));
   const mounted=emitOpenings({end,openings,surface:chart,put,lod,compact,spatialDepth:wrapped,shellMaterial,suppressHeadlamps});
   Object.assign(lampMounts,mounted.mounts);
+  if(pods){
+   // Period sealed beams on posts use a separate round face chart and the
+   // same active optics/material/mount path as an integrated headlight.
+   const r=(g.optics.front.physicalDiameter||.14)*.5;
+   for(const source of openings.filter(o=>o.kind==='lamp')){
+    const s=source.side;
+    const x=s*(t-.17*d.width),z=Lf-.13;
+    const y=originalHood(z,clamp(x/X*.5+.5))[1]+pods;
+    const forward=z+r*.59;
+    const podFace=(u,v)=>[x+(u-.5)*r*2.2,y-(v-.5)*r*2.2,forward];
+    const o={...source,center:[.5,.5],width:.88,height:.88,
+     outline:curvePoints(h=>[.5+.44*Math.cos(h*2*Math.PI),.5+.44*Math.sin(h*2*Math.PI)],small(24,17,15,13)).slice(0,-1),
+     opt:{...source.opt,layout:'projector',sideWrap:0,protrusion:.1}};
+    const h=pods+.063;
+    const post=new T.CylinderGeometry(r*.18,r*.22,h,small(10,7,7,6));
+    put('headlights','chrome',post,[x,y-h*.5-.017,z-.022]);
+    const cup=new T.SphereGeometry(1,small(18,12,12,10),small(11,7,6,5)).scale(r*1.09,r*1.09,r*.71);
+    put('headlights','paint',cup,[x,y,z-.058]);
+    Object.assign(lampMounts,emitOpenings({end,openings:[o],surface:podFace,put,lod,compact}).mounts);
+   }
+  }
   if(front&&g.fascia.front.pairedLampSurround&&g.optics.front.housing==='dual-round'){
    // Derive both chrome bezels from the corresponding actual twin apertures.
    // Proud polished centers with body-level returns; no overlap with either lens.
@@ -783,7 +818,8 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
      return p;
     });
     mesh.userData.constructionRole=seal?'gullwing / recessed roof seal':'gullwing / closed roof section';
-    put('roof',seal?'seamDark':roofFinish,mesh);
+    const leaf=canopy.gullwingRoofGlass&&(a===0||b===1);
+    put('roof',seal?'seamDark':leaf?'glass':roofFinish,mesh);
    }
   }else if(!roofMode)sheet('roof',roofFinish,roofRear,roofFront,canopyRoof,small(17,9,8,7),small(12,9,8,7));
   else{

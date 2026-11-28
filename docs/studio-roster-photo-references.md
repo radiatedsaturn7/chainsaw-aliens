@@ -439,3 +439,26 @@ of the rear axle. The MINI GP has a roof-mounted wing. Its signed beam
 anchors are explicit in the exported studies; this does not alter the
 studio's visible optical mesh. Remaining first-pass gaps include 350Z
 lamp wrap, R56 lamp height, and F-100 bolt-on fender details.
+
+### Full-roster rollout, Toyota, Citroën, Cadillac, and Suzuki
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Dittany 1967 | Japanese Toyota 2000GT MF10 early coupe. [Toyota Museum](https://toyota-automobile-museum.jp/en/archives/car-database/detail.html?id=113); [factory views](https://global.toyota/en/downloadable-assets/corporate-archives/toyota-museum/collection/2000gt.html). |
+| Flax 1965 | Japanese Toyota Sports 800 UP15 launch model with removable top fitted. [Toyota Museum](https://toyota-automobile-museum.jp/archives/car-database/detail.html?id=55); [Toyota history](https://mag.toyota.co.uk/toyota-sports-800-history/). |
+| Glasswing 1990 | Japanese Toyota Sera EXY10 base 5MT. [Original Toyota release](https://global.toyota/en/detail/7829393); [Toyota Sera history](https://mag.toyota.co.uk/history-of-the-toyota-sera/). |
+| Chervil 1973 | European Citroën SM Injection 2.7. [Period European six-lamp gallery](https://citroenet.org.uk/passenger-cars/michelin/sm/sm-01.html); [1973 Injection reference](https://www.youtube.com/watch?v=YLaYMPBDx9I). |
+| Camomile 1988 | French Citroën 2CV6 Spécial with roof closed. [Exact-year reference gallery](https://www.autobelle.it/en/price-observatory/citroen_2_cv6_special.xhtml); [same-trim archive photography](https://docs.les-renault-d-avant-guerre.com/4014_Vente_Andre_Trigano.pdf) (1985). |
+| Balm 2006 | UK Citroën C6 base 2.7 HDi. [Factory period UK brochure](https://www.citroenet.org.uk/publicity-brochures/c6/c6gb/c6-gb-0806/c6-gb06-1.html); [period front and rear](https://www.autozine.co.uk/cache/text/pdf/gb_en/Autozine_Citroen_C6.pdf). |
+| Hawthorn V 2005 | US Cadillac CTS-V LS6 6MT. [Cadillac specification sheet](https://xr793.com/wp-content/uploads/2021/11/2005-Cadillac-CTS-V-Spec-Sheet.pdf). |
+| Sweet Violet 2016 | US Cadillac CTS-V LT4 automatic. [Cadillac gallery](https://media.cadillac.com/Pages/galleries/ME/EN/cadillac/passenger-cars/2016/2016-cadillac-cts-v.html). |
+| Lesser Celandine 2022 | US Cadillac CT4-V Blackwing manual standard trim. [Factory trim guide](https://brochures.cadillac.com/2022/ct4-v-series/specs-trims/). |
+| Agrimony 1988 | JDM Suzuki Escudo TA01W hardtop. [Suzuki factory library](https://www.suzuki.co.jp/suzuki_digital_library/1_auto/escudo.html). |
+| Mossling 2019 | UK Suzuki Jimny SZ5 5MT. [UK specification and photos](https://www.thecarexpert.co.uk/suzuki-jimny-uk-prices-and-specs-announced/). |
+| Bent Clover 2010 | US Suzuki SX4 Crossover, i-AWD 6MT. [US factory brochure](https://www.auto-brochures.com/makes/Suzuki/SX4/Suzuki_US%20SX4_2010.pdf). |
+
+Stock game authority keeps the C6's 18-inch setup even though the base
+UK brochure shows a 17-inch option. The Sports 800 has an inherited
+2.100 m visual mount span and 2.000 m handling wheelbase; both are
+unchanged, and the live rim-to-joint fit was verified. The Sera uses
+transparent door-roof leaves and a painted spine, not animated doors.

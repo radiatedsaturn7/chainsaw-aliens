@@ -7,6 +7,9 @@ import {placeOutboardWheelFace} from '../../src/model3d/ModelBinding.js';
 import {studioRosterModelUrl,createStudioRosterLoader,isStudioRosterWheel} from '../../src/model3d/StudioRosterModels.js';
 import {decodeStudioRosterPair,encodeStudioRosterPair} from '../../src/model3d/StudioRosterPack.js';
 import {buildStudioRoster} from '../../tools/vehicle-validation/build-studio-roster.mjs';
+import * as THREE from '../../src/vendorBridge/three.js';
+import {buildModelObject,disposeModelObject} from '../../src/model3d/ModelRender.js';
+import {syncRaceModelLamps} from '../../src/model3d/RaceModelVehicle.js';
 
 const json=path=>JSON.parse(readFileSync(new URL(path,import.meta.url)));
 const hardpoints=json('../../tools/vehicle-validation/studio-roster-hardpoints.json');
@@ -62,6 +65,17 @@ for(const r of studioRoster)test(r.label+' keeps exact hubs and builds a determi
  for(const role of ['head','brake','reverse','running','signal-left','signal-right']){
   assert.ok(body.materials.some(m=>usedMaterials.has(m.id)&&m.name.startsWith('[studio9:'+role+']')),'Missing functional geometry for '+role);
  }
+ // A model can have all six named roles and still light the wrong flank.
+ const indicatorSides=new Map(body.materials.flatMap(m=>{
+  const role=/^\[studio9:signal-(left|right)\]/.exec(m.name)?.[1];
+  return role?[[m.id,role==='left'?-1:1]]:[];
+ }));
+ const byId=new Map(body.vertices.map(v=>[v.id,v.position[0]]));
+ for(const face of body.faces){
+  const sign=indicatorSides.get(face.material);
+  if(sign)assert.ok(sign*face.vertices.reduce((sum,id)=>sum+byId.get(id),0)>=-.0001*face.vertices.length,
+   'Indicator geometry is on the wrong signed chassis side: '+face.id);
+ }
 });
 
 function assertCompactEquivalent(before, after){
@@ -111,4 +125,26 @@ test('a rejected shared pair can recover without reloading the page',async()=>{
  assert.equal(body.name,r.label+' · Studio body');
  assert.equal(wheel.name,r.label+' · Studio wheel');
  assert.equal(calls,2);
+});
+
+test('left-only and right-only commands illuminate the corresponding physical sides in the race renderer',()=>{
+ const entry=studioRoster.find(r=>r.id==='mini-r56-jcw-2009');
+ const model=packed(entry).body,root=buildModelObject(model),object=new THREE.Group();
+ object.add(root);
+ const instance={model,root,object,binding:{ref:entry.bodyRef}},part={userData:{modelInstance:instance}};
+ try{
+  for(const [side,sign] of [['left',-1],['right',1]]){
+   assert.equal(syncRaceModelLamps(part,{mechanical:{turnSignal:side,headlights:false},elapsedMs:0}),true);
+   const lit=instance.raceStudioLights.filter(lamp=>lamp.mat.emissiveIntensity>0);
+   assert.ok(lit.length>0);
+   for(const {mat,role} of lit){
+    assert.equal(role,'signal-'+side);
+    const meshes=root.children.filter(mesh=>mesh.material===mat);
+    assert.ok(meshes.length>0);
+    for(const mesh of meshes)assert.ok(new THREE.Box3().setFromObject(mesh).getCenter(new THREE.Vector3()).x*sign>0);
+   }
+   syncRaceModelLamps(part,{mechanical:{turnSignal:side,headlights:false},elapsedMs:400});
+   assert.ok(instance.raceStudioLights.every(lamp=>lamp.mat.emissiveIntensity===0));
+  }
+ }finally{disposeModelObject(root);}
 });

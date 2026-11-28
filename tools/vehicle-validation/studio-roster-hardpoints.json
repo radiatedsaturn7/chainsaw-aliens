@@ -4711,5 +4711,390 @@
     ],
     "reference": "2018 Mexico MINI John Cooper Works Countryman ALL4 secondgenerationF60 1998cc turbo four-cylinder8-speedSteptronic;notR56hatch,R60firstgeneration orlater306PScar",
     "canonicalLampSides": true
+  },
+  {
+    "id": "toyota-2000gt-mf10",
+    "label": "Dittany 1967",
+    "capability": "MF10 long nose with separate chrome inset driving lights and fixed coupe",
+    "carId": "3d-dittany-1967-3d-27e7aee4c881",
+    "bodyRef": "Dittany-1967-finished",
+    "wheelRef": "Dittany-1967-wheel",
+    "radius": 0.3225,
+    "axles": [
+      {
+        "track": 1.2999999523162842,
+        "y": 0.32249999046325684,
+        "z": 1.1649999618530273
+      },
+      {
+        "track": 1.2999999523162842,
+        "y": 0.3217970132827759,
+        "z": -1.1649999618530273
+      }
+    ],
+    "reference": "1967 Toyota 2000GT MF10 early coupe, JDM"
+  },
+  {
+    "id": "toyota-sports-800-up15",
+    "label": "Flax 1965",
+    "capability": "UP15 compact round nose, bucket lamps and closed detachable roof",
+    "carId": "3d-flax-1965-3d-1099975e41c3",
+    "bodyRef": "Flax",
+    "wheelRef": "Flax-Wheel",
+    "radius": 0.2764,
+    "axles": [
+      {
+        "track": 1.2029999494552612,
+        "y": 0.27639999985694885,
+        "z": 0.9869999885559082
+      },
+      {
+        "track": 1.2000000476837158,
+        "y": 0.276295006275177,
+        "z": -1.1130000352859497
+      }
+    ],
+    "reference": "1965 Toyota Sports 800 UP15 launch, JDM"
+  },
+  {
+    "id": "toyota-sera-exy10-base",
+    "label": "Glasswing 1990",
+    "capability": "EXY10 tall glass canopy, butterfly-door roof seams and base stamped wheels",
+    "carId": "3d-glasswing-1990-3d-675d332e34be",
+    "bodyRef": "Glasswing",
+    "wheelRef": "Glasswing-Wheel",
+    "radius": 0.29155,
+    "axles": [
+      {
+        "track": 1.4049999713897705,
+        "y": 0.29155001044273376,
+        "z": 1.149999976158142
+      },
+      {
+        "track": 1.4049999713897705,
+        "y": 0.29155001044273376,
+        "z": -1.149999976158142
+      }
+    ],
+    "reference": "1990 Toyota Sera EXY10 base 5MT, JDM"
+  },
+  {
+    "id": "cadillac-cts-v-2005",
+    "label": "Hawthorn V 2005",
+    "carId": "3d-hawthorn-v-2005-3d-aaa0d98d22f7",
+    "capability": "2005 US Cadillac CTS-V first-generation LS6 5.7L T56 6MT sedan",
+    "bodyRef": "Hawthorn-V",
+    "wheelRef": "Hawthorn-V-Wheel",
+    "radius": 0.33885,
+    "axles": [
+      {
+        "track": 1.5520000457763672,
+        "y": 0.3388499915599823,
+        "z": 1.3248000144958496
+      },
+      {
+        "track": 1.559000015258789,
+        "y": 0.33888500928878784,
+        "z": -1.5551999807357788
+      }
+    ],
+    "reference": "2005 Cadillac CTS-V LS6 6MT, US"
+  },
+  {
+    "id": "cadillac-cts-v-2016",
+    "label": "Sweet Violet 2016",
+    "carId": "3d-sweet-violet-2016-3d-74f32df26491",
+    "capability": "2016 US Cadillac CTS-V third-generation sedan, LT4 6.2 supercharged V8, RWD 8L90 8AT, standard aero and 19-inch staggered tires",
+    "bodyRef": "Sweet Violet 2016 Body",
+    "wheelRef": "Sweet Violet 2016 Wheel",
+    "radius": 0.33404999999999996,
+    "axles": [
+      {
+        "track": 1.577340006828308,
+        "y": 0.3340499997138977,
+        "z": 1.4550000429153442
+      },
+      {
+        "track": 1.554479956626892,
+        "y": 0.3340499997138977,
+        "z": -1.4550000429153442
+      }
+    ],
+    "reference": "2016 Cadillac CTS-V LT4 automatic, US"
+  },
+  {
+    "id": "cadillac-ct4v-blackwing-2022",
+    "label": "Lesser Celandine 2022",
+    "carId": "3d-lesser-celandine-2022-3d-3f43db896e4d",
+    "capability": "2022 US Cadillac CT4-V Blackwing, standard US six-speed manual sedan; no optional carbon-fiber aero or carbon-ceramic brake package",
+    "bodyRef": "Lesser-Celandine-2022-body",
+    "wheelRef": "Lesser-Celandine-2022-wheel",
+    "radius": 0.31784999999999997,
+    "axles": [
+      {
+        "track": 1.5367000102996826,
+        "y": 0.3178499937057495,
+        "z": 1.4574999809265137
+      },
+      {
+        "track": 1.5646400451660156,
+        "y": 0.3178499937057495,
+        "z": -1.3174999952316284
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6809999942779541,
+            0.5879999995231628,
+            -2.4649999141693115
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6809999942779541,
+            0.5879999995231628,
+            -2.4649999141693115
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.7559999823570251,
+            0.6520000100135803,
+            2.453000068664551
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.7559999823570251,
+            0.6520000100135803,
+            2.453000068664551
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7683500051498413,
+            0.3178499937057495,
+            -1.4574999809265137
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7683500051498413,
+            0.3178499937057495,
+            -1.4574999809265137
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7823200225830078,
+            0.3178499937057495,
+            1.3174999952316284
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7823200225830078,
+            0.3178499937057495,
+            1.3174999952316284
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "2022 Cadillac CT4-V Blackwing 6MT, US standard trim"
+  },
+  {
+    "id": "suzuki-escudo-ta01w-1988",
+    "label": "Agrimony 1988",
+    "capability": "Short-wheelbase Japanese Escudo with hardtop and tailgate spare",
+    "carId": "3d-agrimony-1988-3d-8d020dd47365",
+    "bodyRef": "Agrimony",
+    "wheelRef": "Agrimony-Wheel",
+    "radius": 0.3465,
+    "axles": [
+      {
+        "track": 1.3949999809265137,
+        "y": 0.3465000092983246,
+        "z": 1.0119999647140503
+      },
+      {
+        "track": 1.399999976158142,
+        "y": 0.3464460074901581,
+        "z": -1.187999963760376
+      }
+    ],
+    "reference": "May1988 Japan Suzuki Escudo hardtop E-TA01W SHXJ G16A single-point-injected8-valve1590cc5MT. Not SHXR3AT, convertible, van, later16-valve Nomade or export Vitara/Sidekick.",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "suzuki-jimny-sz5-2019",
+    "label": "Mossling 2019",
+    "capability": "Upright JB74 UK Jimny with five-slot grille and rear bumper optic banks",
+    "carId": "3d-mossling-2019-3d-e3e64dfeced6",
+    "bodyRef": "Mossling 2019 Body",
+    "wheelRef": "Mossling 2019 Wheel",
+    "radius": 0.34650000000000003,
+    "axles": [
+      {
+        "track": 1.3949999809265137,
+        "y": 0.3465000092983246,
+        "z": 1.125
+      },
+      {
+        "track": 1.4049999713897705,
+        "y": 0.3465000092983246,
+        "z": -1.125
+      }
+    ],
+    "reference": "2019 UK Suzuki Jimny SZ5 JB74 1.5 5MT three-door RHD",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "suzuki-sx4-crossover-2010",
+    "label": "Bent Clover 2010",
+    "capability": "US SX4 Crossover five-door glazing, rails and covered steel wheels",
+    "carId": "3d-bent-clover-2010-3d-9f4dc21ca101",
+    "bodyRef": "Bent-Clover-2010",
+    "wheelRef": "Bent-Clover-2010-Wheel",
+    "radius": 0.3262,
+    "axles": [
+      {
+        "track": 1.5011399984359741,
+        "y": 0.326200008392334,
+        "z": 1.2496800422668457
+      },
+      {
+        "track": 1.4960600137710571,
+        "y": 0.326200008392334,
+        "z": -1.2496800422668457
+      }
+    ],
+    "reference": "2010 United States Suzuki SX4, Crossover withoptional i-AWD,2.0DOHC gasoline6MT,standard16-inchcoveredsteelwheels; notSportBack,sedan,CVT orFiatSedici",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "citroen-sm",
+    "label": "Chervil 1973",
+    "capability": "Glass fascia fastback and rear wheel skirts",
+    "carId": "3d-chervil-1973-3d-9626b8c7b367",
+    "bodyRef": "Chervil 1973 Body",
+    "wheelRef": "Chervil 1973 Wheel",
+    "radius": 0.33399999999999996,
+    "axles": [
+      {
+        "track": 1.5260000228881836,
+        "y": 0.33399999141693115,
+        "z": 1.475000023841858
+      },
+      {
+        "track": 1.3259999752044678,
+        "y": 0.33399999141693115,
+        "z": -1.475000023841858
+      }
+    ],
+    "reference": "1973 Citroën SM Injection 2.7, Europe"
+  },
+  {
+    "id": "citroen-2cv6",
+    "label": "Camomile 1988",
+    "capability": "Tall fabric roof, detached round lamps and slim fenders",
+    "carId": "3d-camomile-1988-3d-8bb4a625d41f",
+    "bodyRef": "Camomile 1988 Body",
+    "wheelRef": "Camomile 1988 Wheel",
+    "radius": 0.2905,
+    "axles": [
+      {
+        "track": 1.2599999904632568,
+        "y": 0.2904999852180481,
+        "z": 1.2000000476837158
+      },
+      {
+        "track": 1.2599999904632568,
+        "y": 0.2904999852180481,
+        "z": -1.2000000476837158
+      }
+    ],
+    "reference": "1988 Citroën 2CV6 Spécial, France"
+  },
+  {
+    "id": "citroen-c6",
+    "label": "Balm 2006",
+    "capability": "Long fastback sedan, spoilerless rear deck and swept lamp corners",
+    "carId": "3d-balm-2006-3d-cbec07d58f87",
+    "bodyRef": "Balm 2006 Body",
+    "wheelRef": "Balm 2006 Wheel",
+    "radius": 0.33885,
+    "axles": [
+      {
+        "track": 1.5859999656677246,
+        "y": 0.3388499915599823,
+        "z": 1.4500000476837158
+      },
+      {
+        "track": 1.5579999685287476,
+        "y": 0.3388499915599823,
+        "z": -1.4500000476837158
+      }
+    ],
+    "reference": "2006 Citroën C6 base 2.7 HDi, UK"
   }
 ]

@@ -37,6 +37,13 @@ export function sideDuctMask(body,u,v){
 export function cowlDuctMask(body,u,v){
  const x=Math.abs(2*v-1);
  const width=body.cowlDuctWidth, length=body.cowlDuctLength;
+ if(body.cowlDuctSingle){
+  // A broad center-mounted recessed heat extractor tapers into the hood.
+  const t=(u-.23)/length;
+  const edge=width*(.73+.27*smooth(0,.72,t));
+  const cross=Math.pow(x/Math.max(edge,.01),4);
+  return (1-smooth(.63,1,cross))*smooth(.025,.20,t)*(1-smooth(.77,1,t));
+ }
  const a=(x-.235)/(width*1.12), aligned=(u-.045-.089*a)/length;
  return smooth(0,.11,a)*(1-smooth(.92,1,a))*smooth(0,.13,aligned)*
   (1-smooth(.90,1,aligned))*smooth(.19,.31,a+aligned*.63);
