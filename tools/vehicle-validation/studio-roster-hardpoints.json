@@ -7370,5 +7370,580 @@
     ],
     "reference": "2016 US Mazda MX-5 Miata Sport ND 2.0 SKYACTIV-G six-speed manual, cloth soft top; not Club, Grand Touring or RF",
     "canonicalLampSides": true
+  },
+  {
+    "id": "lancia-y-12-16v-ls-1998",
+    "label": "Blackcurrant Clover 1998",
+    "capability": "First-generation Y LS with arched side crease and upright hatch lights",
+    "carId": "3d-blackcurrant-clover-1998-3d-e058e59667ef",
+    "bodyRef": "Blackcurrant Clover 1998 Body",
+    "wheelRef": "Blackcurrant Clover 1998 Wheel",
+    "radius": 0.2888,
+    "axles": [
+      {
+        "track": 1.4097000360488892,
+        "y": 0.2888000011444092,
+        "z": 1.190000057220459
+      },
+      {
+        "track": 1.3842999935150146,
+        "y": 0.2888000011444092,
+        "z": -1.190000057220459
+      }
+    ],
+    "reference": "1998 Italy Lancia Y 1.2 16V LS standard, not Geneva accessory pack"
+  },
+  {
+    "id": "lancia-thesis-executive-32-2003",
+    "label": "Privet Clover 2003",
+    "capability": "Thesis Executive 3.2 with tall chrome shield and jewel lamps",
+    "carId": "3d-privet-clover-2003-3d-b21a923efd67",
+    "bodyRef": "Privet-Clover-2003",
+    "wheelRef": "Privet-Clover-2003-Wheel",
+    "radius": 0.3322,
+    "axles": [
+      {
+        "track": 1.4986000061035156,
+        "y": 0.33219999074935913,
+        "z": 1.4014999866485596
+      },
+      {
+        "track": 1.4859000444412231,
+        "y": 0.33219999074935913,
+        "z": -1.4014999866485596
+      }
+    ],
+    "reference": "2003 Italy Lancia Thesis Executive 3.2 V6"
+  },
+  {
+    "id": "lancia-lybra-20-sedan-1999",
+    "label": "Redcurrant Clover 1999",
+    "capability": "Lybra classic sedan with oval optics steel-look base wheels",
+    "carId": "3d-redcurrant-clover-1999-3d-fe62be0fd936",
+    "bodyRef": "Redcurrant-Clover-1999",
+    "wheelRef": "Redcurrant-Clover-1999-Wheel",
+    "radius": 0.31725000000000003,
+    "axles": [
+      {
+        "track": 1.496000051498413,
+        "y": 0.31725001335144043,
+        "z": 1.2964999675750732
+      },
+      {
+        "track": 1.4670000076293945,
+        "y": 0.31725001335144043,
+        "z": -1.2964999675750732
+      }
+    ],
+    "reference": "1999 Italy Lancia Lybra 2.0 20V base sedan"
+  },
+  {
+    "id": "hyundai-veloster-base-2012",
+    "label": "Fleabane 2012",
+    "capability": "Aero compact asymmetric three-door notch and modest base front mask",
+    "carId": "3d-fleabane-2012-3d-7e1b0cff5920",
+    "bodyRef": "Fleabane 2012 Body",
+    "wheelRef": "Fleabane 2012 Wheel",
+    "radius": 0.31265,
+    "axles": [
+      {
+        "track": 1.5570000410079956,
+        "y": 0.31264999508857727,
+        "z": 1.3246099948883057
+      },
+      {
+        "track": 1.5700000524520874,
+        "y": 0.31264999508857727,
+        "z": -1.3246099948883057
+      }
+    ],
+    "reference": "2012 US-market Hyundai Veloster base 1.6 GDI naturally aspirated FWD six-speed manual, LHD, standard 17-inch wheels, no Style/Tech package. Not Turbo, DCT, later generation or European MPI variant.",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "hyundai-veloster-n-2019",
+    "label": "Harebell 2019",
+    "capability": "Asymmetric 250-hp track hatch with big frontal mesh and dual exhaust",
+    "carId": "3d-harebell-2019-3d-2ca689336214",
+    "bodyRef": "Harebell-2019",
+    "wheelRef": "Harebell-2019-Wheel",
+    "radius": 0.3186,
+    "axles": [
+      {
+        "track": 1.559559941291809,
+        "y": 0.31859999895095825,
+        "z": 1.3250000476837158
+      },
+      {
+        "track": 1.5697200298309326,
+        "y": 0.31859999895095825,
+        "z": -1.3250000476837158
+      }
+    ],
+    "reference": "2019 US Hyundai Veloster N standard 250hp six-speed manual,18-inch wheels; no Performance Package",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "hyundai-i30-n-2020",
+    "label": "Basil Thyme 2020",
+    "capability": "Performance five-door hatch with tall glass and pre-facelift aero trim",
+    "carId": "3d-basil-thyme-2020-3d-aa677e7d054b",
+    "bodyRef": "Basil Thyme 2020 Body",
+    "wheelRef": "Basil Thyme 2020 Wheel",
+    "radius": 0.32355,
+    "axles": [
+      {
+        "track": 1.555999994277954,
+        "y": 0.3235499858856201,
+        "z": 1.3250000476837158
+      },
+      {
+        "track": 1.5640000104904175,
+        "y": 0.3235499858856201,
+        "z": -1.3250000476837158
+      }
+    ],
+    "reference": "2020 Germany Hyundai i30 N Performance five-door hatch,2.0T-GDI202kW six-speed manual,pre-facelift; not Fastback or2021DCT",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "subaru-forester-wilderness-2024",
+    "label": "Briar Trail 2024",
+    "carId": "3d-briar-trail-2024-3d-4b9ddc74e787",
+    "capability": "2024 US Subaru Forester Wilderness, standard equipment, 2.5L AWD Lineartronic CVT; not 2025 Forester or existing Base",
+    "bodyRef": "Briar Trail 2024 Body",
+    "wheelRef": "Briar Trail 2024 Wheel",
+    "radius": 0.3509,
+    "axles": [
+      {
+        "track": 1.559559941291809,
+        "y": 0.35089999437332153,
+        "z": 1.3322299718856812
+      },
+      {
+        "track": 1.559559941291809,
+        "y": 0.35089999437332153,
+        "z": -1.3322299718856812
+      }
+    ],
+    "reference": "https://www.subaru.com/content/dam/subaru/downloads/pdf/brochures/2024/2024_Forester_Wilderness_Brochure_050824.pdf"
+  },
+  {
+    "id": "subaru-baja-25-2003",
+    "label": "Calamint 2003",
+    "carId": "3d-calamint-2003-3d-05226b61b020",
+    "capability": "2003 USA Subaru Baja standard launch model,2.5L naturally aspirated SOHC16-valve boxer4,5-speed manual,full-timeAWD,LHD,four seats,225/60R16. Not laterBajaSport,Turbo,automatic,STXconcept orloadedtowvehicle.",
+    "bodyRef": "Calamint-2003-body",
+    "wheelRef": "Calamint-2003-wheel",
+    "radius": 0.3382,
+    "axles": [
+      {
+        "track": 1.4706599712371826,
+        "y": 0.33820000290870667,
+        "z": 1.5226099491119385
+      },
+      {
+        "track": 1.4655799865722656,
+        "y": 0.33820000290870667,
+        "z": -1.1266100406646729
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.5920000076293945,
+            0.6700000166893005,
+            -2.4579999446868896
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.5920000076293945,
+            0.6700000166893005,
+            -2.4579999446868896
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.7509999871253967,
+            0.718999981880188,
+            2.503999948501587
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.7509999871253967,
+            0.718999981880188,
+            2.503999948501587
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7353299856185913,
+            0.33820000290870667,
+            -1.5226099491119385
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7353299856185913,
+            0.33820000290870667,
+            -1.5226099491119385
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7327899932861328,
+            0.33820000290870667,
+            1.1266100406646729
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7327899932861328,
+            0.33820000290870667,
+            1.1266100406646729
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "https://www.motorologist.com/wp-content/uploads/2003-Subaru-Baja-brochure.pdf"
+  },
+  {
+    "id": "subaru-svx-awd-1992",
+    "label": "Campion 1992",
+    "carId": "3d-campion-1992-3d-1b2ec005421d",
+    "capability": "1992 US Subaru SVX standard AWD4AT, without optional Touring Package, sunroof or accessory rear deck spoiler. Not later FWD/LSi, Japanese Alcyone or manual conversion.",
+    "bodyRef": "Campion 1992 Body",
+    "wheelRef": "Campion 1992 Wheel",
+    "radius": 0.3157,
+    "axles": [
+      {
+        "track": 1.5010000467300415,
+        "y": 0.3156999945640564,
+        "z": 1.3055000305175781
+      },
+      {
+        "track": 1.4809999465942383,
+        "y": 0.3156999945640564,
+        "z": -1.3055000305175781
+      }
+    ],
+    "reference": "https://importarchive.com/brochure/subarusvx1992_02"
+  },
+  {
+    "id": "kia-soul-base-2010",
+    "label": "Zinnia 16 2010",
+    "capability": "Tall slab sides, rising side glass, steel wheels and upright hatch strips",
+    "carId": "3d-zinnia-16-2010-3d-1470bc51d337",
+    "bodyRef": "Zinnia-16",
+    "wheelRef": "Zinnia-16-Wheel",
+    "radius": 0.31725000000000003,
+    "axles": [
+      {
+        "track": 1.5697200298309326,
+        "y": 0.31725001335144043,
+        "z": 0.9945623874664307
+      },
+      {
+        "track": 1.5748000144958496,
+        "y": 0.31814301013946533,
+        "z": -1.5555975437164307
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2010 US Kia Soul 1.6 base five-speed manual"
+  },
+  {
+    "id": "kia-sportage-base-2013",
+    "label": "Amber Trefoil 2013",
+    "capability": "Swept shoulder, mesh fascia and 16-inch alloys, no roof option package",
+    "carId": "3d-amber-trefoil-2013-3d-ff60fd36fa64",
+    "bodyRef": "Amber-Trefoil-2013-body",
+    "wheelRef": "Amber-Trefoil-2013-wheel",
+    "radius": 0.3537,
+    "axles": [
+      {
+        "track": 1.6129000186920166,
+        "y": 0.35370001196861267,
+        "z": 1.3635300397872925
+      },
+      {
+        "track": 1.615440011024475,
+        "y": 0.35370001196861267,
+        "z": -1.2755299806594849
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2013 US Kia Sportage 2.4 base FWD six-speed manual",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.5929999947547913,
+            0.6129999756813049,
+            -2.307960033416748
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.5929999947547913,
+            0.6129999756813049,
+            -2.307960033416748
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.652999997138977,
+            0.6600000262260437,
+            2.309959888458252
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.652999997138977,
+            0.6600000262260437,
+            2.309959888458252
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.8064500093460083,
+            0.35370001196861267,
+            -1.3635300397872925
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.8064500093460083,
+            0.35370001196861267,
+            -1.3635300397872925
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.8077200055122375,
+            0.35370001196861267,
+            1.2755299806594849
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.8077200055122375,
+            0.35370001196861267,
+            1.2755299806594849
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "kia-stinger-gt-rwd-2018",
+    "label": "Thornbill GT 2018",
+    "capability": "Long-hood four-door fastback, vent pairs, staggered wheels and quad outlets",
+    "carId": "3d-thornbill-gt-2018-3d-bb7e2ee1c7f3",
+    "bodyRef": "Thornbill-GT",
+    "wheelRef": "Thornbill-GT-Wheel",
+    "radius": 0.33055,
+    "axles": [
+      {
+        "track": 1.5951199531555176,
+        "y": 0.3305499851703644,
+        "z": 1.39476478099823
+      },
+      {
+        "track": 1.6179800033569336,
+        "y": 0.3294999897480011,
+        "z": -1.5109951496124268
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2018 US Kia Stinger GT 3.3 twin turbo RWD"
+  },
+  {
+    "id": "mercedes-slk350-r171-2005",
+    "label": "Myrtle Clover 2005",
+    "capability": "R171 original sports nose, swept optics and painted retractable roof up",
+    "carId": "3d-myrtle-clover-2005-3d-0d58296e8447",
+    "bodyRef": "Myrtle Clover 2005 Body",
+    "wheelRef": "Myrtle Clover 2005 Wheel",
+    "radius": 0.31715,
+    "axles": [
+      {
+        "track": 1.5265400409698486,
+        "y": 0.3171499967575073,
+        "z": 1.215000033378601
+      },
+      {
+        "track": 1.549399971961975,
+        "y": 0.3171499967575073,
+        "z": -1.215000033378601
+      }
+    ],
+    "reference": "2005 United States Mercedes-Benz SLK350 R171 3498cc naturally aspirated V6 standard six-speed manual, standard17-inch staggered wheels, roof up; not SLK55 AMG or R172",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "mercedes-slk55-r172-2012",
+    "label": "Wood Dock 2012",
+    "capability": "R172 lower intakes with upright horizontal grille, angular lenses and quad outlets",
+    "carId": "3d-wood-dock-2012-3d-4c2f59054f90",
+    "bodyRef": "Wood Dock 2012 Body",
+    "wheelRef": "Wood Dock 2012 Wheel",
+    "radius": 0.3226,
+    "axles": [
+      {
+        "track": 1.5490000247955322,
+        "y": 0.32260000705718994,
+        "z": 1.215000033378601
+      },
+      {
+        "track": 1.5670000314712524,
+        "y": 0.32260000705718994,
+        "z": -1.215000033378601
+      }
+    ],
+    "reference": "2012 German Mercedes-Benz SLK55AMG R172 type172.475 M152.980 naturally aspirated5.5V8,standard seven-speed torque-converter automatic; not R171 or SL55",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "mercedes-sl550-r230-2008",
+    "label": "Hackberry Clover 2008",
+    "capability": "R230 SL550 rounded dual-bowl lamps, long hood and US roof-up spec",
+    "carId": "3d-hackberry-clover-2008-3d-4f2d513c96fb",
+    "bodyRef": "Hackberry-Clover-2008-finished",
+    "wheelRef": "Hackberry-Clover-2008-wheel",
+    "radius": 0.3306,
+    "axles": [
+      {
+        "track": 1.559559941291809,
+        "y": 0.33059999346733093,
+        "z": 1.2801599502563477
+      },
+      {
+        "track": 1.5392400026321411,
+        "y": 0.33043599128723145,
+        "z": -1.2801599502563477
+      }
+    ],
+    "reference": "2008 United States Mercedes-Benz SL550 R230 naturally aspirated5.461V8 two-seat retractable-hardtop roadster7AT, standard18inch wheels, roof-up; not SL600,SL55AMG orSL65BlackSeries",
+    "canonicalLampSides": true
   }
 ]

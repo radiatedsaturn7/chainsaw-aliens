@@ -20,7 +20,7 @@ const style=(label,types,shape='roundness')=>({label,types,shape});
 export const COMPONENTS={
  hood:style('Hood',['crowned','flat','power bulge'],'crown'), frontFenders:style('Front fenders',['swept','boxed','integrated'],'flare'),
  rearFenders:style('Rear quarters / fenders',['swept','boxed','wide'],'flare'),frontBumper:style('Front bumper',['sport','smooth','rally']),
- rearBumper:style('Rear bumper',['sport','smooth','diffuser']), doors:style('Doors',['four door','two door'],'character line'),
+ rearBumper:style('Rear bumper',['sport','smooth','diffuser']), doors:style('Doors',['four door','two door','three door right'],'character line'),
  roof:style('Roof',['crowned','flat','arched','targa fabric','roadster open'],'curvature'),pillars:style('Pillars',['dark','painted','painted frame'],'thickness'),
  glass:style('Windshield, rear and side glass',['clear','tinted'],'rake'),rockers:style('Rockers and side skirts',['stock','deep','blade']),
  trunk:style('Trunk / rear deck',['notch','fastback','ducktail'],'crown'),
@@ -160,7 +160,7 @@ export const ARCH_FIELDS={
  frontArchFore:F('Front arch fore/aft gap (m)',.022,.105,.002),rearArchFore:F('Rear arch fore/aft gap (m)',.022,.105,.002)
 };
 export const BODY_FIELDS={...ARCH_FIELDS,
- pickupBedDepth:F('Open pickup bed depth (m)',0,.44,.005),pickupBedStep:F('Stepside outer bed narrowing (m)',0,.155,.005),
+ pickupBedDepth:F('Open pickup bed depth (m)',0,.44,.005),lowerCladding:F('Lower side cladding height (0 = off)',0,.68,.01),pickupBedStep:F('Stepside outer bed narrowing (m)',0,.155,.005),
  fenderGill:F('Recessed front fender gill',0,1,1),fenderGillDepth:F('Gill recess depth (m)',.005,.021,.001),fenderGillRake:F('Gill rake',-.6,.6,.025),
  quarterDuct:F('Rear-quarter cooling intake',0,1,1),quarterDuctWidth:F('Rear-quarter intake length',.18,.62,.01),quarterDuctDepth:F('Rear-quarter intake depth (m)',0,.060,.001),sideDuct:F('Sculpted side duct',0,1,1),rearwardSideDuct:F('Side duct opens toward rear wheel',0,1,1),pairedSideDucts:F('Paired diagonal and triangular ducts',0,1,1),sideDuctCrescent:F('Swept crescent profile (off/on)',0,1,1),sideDuctDepth:F('Side duct recess (m)',0,.055,.001),
  sideDuctWidth:F('Side duct length',.28,.80,.01),sideDuctSweep:F('Side duct taper',-.18,.18,.01),sideDuctHeight:F('Side duct upper edge',.02,.30,.01),
@@ -186,7 +186,7 @@ export const STYLE_KINDS={ridge:'Stamped ridge',groove:'Recessed groove',crease:
 export const BODY_EDITOR_FIELDS={bolster:F('Seat bolster',0,1,.01),lumbar:F('Lumbar curve',0,1,.01),trim:F('Interior trim',0,1,.01),
  rearDeckVents:F('Rear deck: 0 none, 1 louvers, 2 twin ram scoops',0,2,1),
  gullwingRoofSeams:F('Closed gullwing roof seams',0,1,1),
- rallyMudflaps:F('Rally mudflap drop (m; 0 = off)',0,.23,.005),
+ insetSideWindow:F('Window-within-window glazing contour',0,1,.01),rallyMudflaps:F('Rally mudflap drop (m; 0 = off)',0,.23,.005),
  gullwingRoofGlass:F('Glaze the outer gullwing roof leaves',0,1,1),
  roofGlazing:F('Roof insert (0 none / 1 glass / 2 T-bar / 3 metal)',0,3,1),
  raisedEngineLid:F('Raised twin engine-deck louver banks',0,1,.01),
@@ -229,7 +229,7 @@ export const newStyle=(id='styling-1')=>({id,kind:'ridge',side:'both',start:.24,
 const constructionDefaults=()=>({
  symmetry:Object.fromEntries(Object.keys(PAIR_GROUPS).map(k=>[k,'mirrored'])),
  sides:{L:{},R:{}},
- cabin:{rallyMudflaps:0,gullwingRoofSeams:0,gullwingRoofGlass:0,rearDeckVents:0,roofGlazing:0,raisedEngineLid:0,layout:'bench',driverSide:'left',bolster:.53,lumbar:.45,trim:.54,targaRearBulkhead:0,hatchBridge:0,hatchBridgeWidth:.84,hatchQuarterTaper:0,hatchLampFill:0,wagonTallTail:0,wagonTailWidth:.5,noDoorHandles:0,openScreenRatio:0,openRollHoop:0,roofLipReach:0,roofLipSpan:.88,roofLipLift:.02,contrastMirrorCaps:0,wagonGlassPillar:0,wagonGlassPillarWidth:.030,wagonGlassPillarLean:.018,rearDeckButtresses:0,rearPillarFoot:0,rearRoofShift:0,rearPillarWidth:0,pickupCabFrame:0,utilityCabinSplit:0,hardtopRearSide:0,utilityBumper:0,utilityBumperPlate:0,bubbleCanopy:0,hardtopContrast:0,rearSpareRadius:0,rearSpareOffset:0,rearSpareHeight:1.04,vanSideTrim:0,utilityRoofRails:0,rallyTubework:0,rearGlassArc:0,rearHatchFold:0,hatchEdgeLamps:0,rearHatchUpright:0,rearBenchSeats:2,canopyLength:.5,frontScreenRake:0,sideGlassRise:0,darkWindscreenFrame:0,canopyShoulder:.5,glassBow:.5},
+ cabin:{insetSideWindow:0,rallyMudflaps:0,gullwingRoofSeams:0,gullwingRoofGlass:0,rearDeckVents:0,roofGlazing:0,raisedEngineLid:0,layout:'bench',driverSide:'left',bolster:.53,lumbar:.45,trim:.54,targaRearBulkhead:0,hatchBridge:0,hatchBridgeWidth:.84,hatchQuarterTaper:0,hatchLampFill:0,wagonTallTail:0,wagonTailWidth:.5,noDoorHandles:0,openScreenRatio:0,openRollHoop:0,roofLipReach:0,roofLipSpan:.88,roofLipLift:.02,contrastMirrorCaps:0,wagonGlassPillar:0,wagonGlassPillarWidth:.030,wagonGlassPillarLean:.018,rearDeckButtresses:0,rearPillarFoot:0,rearRoofShift:0,rearPillarWidth:0,pickupCabFrame:0,utilityCabinSplit:0,hardtopRearSide:0,utilityBumper:0,utilityBumperPlate:0,bubbleCanopy:0,hardtopContrast:0,rearSpareRadius:0,rearSpareOffset:0,rearSpareHeight:1.04,vanSideTrim:0,utilityRoofRails:0,rallyTubework:0,rearGlassArc:0,rearHatchFold:0,hatchEdgeLamps:0,rearHatchUpright:0,rearBenchSeats:2,canopyLength:.5,frontScreenRake:0,sideGlassRise:0,darkWindscreenFrame:0,canopyShoulder:.5,glassBow:.5},
  finish:{paintRoughness:.44,coatRoughness:.12},
  hood:{lampLids:'off',insetLampMounts:0,parkedPopups:0,lidWidth:.25,lidLength:.25,lidSpread:.30,lidSetback:.065,lidGap:.004,classicLampBezel:0,bonnetStripes:0,deckStripes:0,contrastBonnet:0,crossCrown:0,noseFairing:0,lampPodRise:0,shoulderRise:0,shoulderWidth:.087,shoulderAt:.65,shoulderSweep:0,scoopWidth:0,scoopOffset:0,scoopHeight:0,scoopCorner:0},
  wing:{supportMount:'under',elevation:0,boxWallWidth:.041,boxWallRake:0,camber:.34,sweep:.08,taper:.42,thickness:.097,angle:4,supports:2,spacing:.67,formula:'',elements:1},
@@ -269,7 +269,7 @@ export function createVehicle(family='sedan'){
  components:Object.fromEntries(Object.entries(COMPONENTS).map(([k,c])=>[k,{type:c.types[defaults[family]?.[k]??0],size:1,shape:.5,depth:1,...(k==='frontBumper'?NOSE_DEFAULTS[family]:{}),...(POSITIONABLE.has(k)?{bias:0,angle:0}:{})}])),
  fascia:Object.fromEntries(['front','rear'].map(end=>[end,baseFascia(family,end==='front',NOSE_DEFAULTS[family])])),
  optics:Object.fromEntries(['front','rear'].map(end=>[end,baseOptic(family,end==='front')])),
- construction:constructionDefaults(),seams:defaultSeams(),body:{raisedLampPods:0,rearWheelSkirt:0,pickupBedDepth:0,pickupBedStep:0,sideRubStrip:0,sideRubStripHeight:.39,fenderGill:0,fenderGillDepth:.011,fenderGillRake:0,quarterDuct:0,quarterDuctWidth:.36,quarterDuctDepth:.028,sideDuct:0,rearwardSideDuct:0,pairedSideDucts:0,sideDuctCrescent:0,sideDuctDepth:.036,sideDuctWidth:.65,sideDuctSweep:.07,sideDuctHeight:.06,cycleGuardPull:0,vintageFenders:0,sillRelief:0,darkArchLips:0,lowHoodLinerCap:0,cowlDuct:0,cowlDuctSingle:0,cowlDuctAccent:0,cowlDuctWidth:.32,cowlDuctLength:.46,cowlDuctDepth:.020,frontFlareScale:1,rearFlareScale:1,lipScale:1,archFootBlend:.065,doorStamp:0,doorStampFade:.16,doorStampWidth:.066,doorStampFront:.26,doorStampRear:.26,doorStampHeight:.47,doorStampSweep:0,frontArchUpper:.045,rearArchUpper:.045,frontArchFore:.045,rearArchFore:.045,creaseHeight:.31,creaseStrength:.40,archCrown:.52,roofEdge:.47,handleRecess:.49},
+ construction:constructionDefaults(),seams:defaultSeams(),body:{raisedLampPods:0,rearWheelSkirt:0,pickupBedDepth:0,pickupBedStep:0,lowerCladding:0,sideRubStrip:0,sideRubStripHeight:.39,fenderGill:0,fenderGillDepth:.011,fenderGillRake:0,quarterDuct:0,quarterDuctWidth:.36,quarterDuctDepth:.028,sideDuct:0,rearwardSideDuct:0,pairedSideDucts:0,sideDuctCrescent:0,sideDuctDepth:.036,sideDuctWidth:.65,sideDuctSweep:.07,sideDuctHeight:.06,cycleGuardPull:0,vintageFenders:0,sillRelief:0,darkArchLips:0,lowHoodLinerCap:0,cowlDuct:0,cowlDuctSingle:0,cowlDuctAccent:0,cowlDuctWidth:.32,cowlDuctLength:.46,cowlDuctDepth:.020,frontFlareScale:1,rearFlareScale:1,lipScale:1,archFootBlend:.065,doorStamp:0,doorStampFade:.16,doorStampWidth:.066,doorStampFront:.26,doorStampRear:.26,doorStampHeight:.47,doorStampSweep:0,frontArchUpper:.045,rearArchUpper:.045,frontArchFore:.045,rearArchFore:.045,creaseHeight:.31,creaseStrength:.40,archCrown:.52,roofEdge:.47,handleRecess:.49},
  surfaces:{frontFenders:createPanel(f.panel),...Object.fromEntries(PATCH_PANELS.map(key=>[key,{kind:'bicubic-interior-v1',points:[0,0,0,0]}]))}, constraints:{gap:.005,archClearance:.045,partition:'shared-stations-v1'},
  materials:{...MAT,paint:f.color,wheel:f.wheel}, attachments:{schema:'axles-and-optics-v1'}};
 }

@@ -136,7 +136,7 @@ export function buildCabin({g,quality='preview',compact=0,put,sample,dims}){
    const p=inner(z,mix(.55,.77,v)-drop);p[0]-=s*(.006+.010*Math.sin(pi*u)*Math.sin(pi*v));return p;
   },s<0));
   if(!lod){
-   const doorCount=c.doors.type==='four door'?2:1;
+   const doorCount=c.doors.type==='four door'||c.doors.type==='three door right'&&s>0?2:1;
    for(let j=0;j<doorCount;j++){
     const z=mix(front-.30,rear+.30,doorCount===1?.42:j);
     const innerPoint=t=>{const p=inner(z,t);p[0]-=s*.020;return p;};

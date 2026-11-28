@@ -117,8 +117,14 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  let cabinFront=zC+length*(d.cabinLength/2-d.hood),cabinRear=zC-length*(d.cabinLength/2-d.trunk);
  cabinFront=clamp(cabinFront,Lr+.9,Lf-.53);cabinRear=clamp(cabinRear-g.construction.cabin.rearPillarFoot-.22*hatchUpright,Math.max(Lr+(g.construction.cabin.rearPillarFoot?.40:.50)-.22*hatchUpright,hatchUpright?bumperRear+.025:-Infinity),cabinFront-1.52);
  const doorFront=clamp(cabinFront+.12,-.15,L-.26),doorRear=clamp(cabinRear-.17,-L+.23,doorFront-.65);
- const doorSplits=c.doors.type==='four door'?[doorRear,mix(doorRear,doorFront,.47),doorFront]:[doorRear,doorFront];
- const handleStations=doorSplits.slice(1).map((z,i)=>mix(doorSplits[i],z,.26));
+ const asymDoors=c.doors.type==='three door right';
+ // The game chassis uses signed +X right. On the asymmetric layout only
+ // that side receives the second leaf and a station closer to the rear.
+ const oneDoor=[doorRear,doorFront],twoDoors=[doorRear,mix(doorRear,doorFront,asymDoors?.385:.47),doorFront];
+ const doorSplits=s=>c.doors.type==='four door'||asymDoors&&s>0?twoDoors:oneDoor;
+ const layerHandles=(q,skip)=>q.slice(1).map((z,i)=>mix(q[i],z,.26)).slice(skip?1:0);
+ const handlesL=layerHandles(doorSplits(-1),false),handlesR=layerHandles(doorSplits(1),asymDoors);
+ const handleStations=s=>s>0?handlesR:handlesL;
  const styleCurves=g.construction.features.map(f=>({...f,calculate:compileFormula(f.formula)}));
  function featureHeight(f,z){
   const longitudinal=(z-Lr)/length,q=clamp((longitudinal-f.start)/(f.end-f.start));
@@ -250,7 +256,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    x-=g.body.quarterDuctDepth*quarterDuctMask(g.body,(z-bumperRear)/Math.max(.11,doorRear-bumperRear),v);
   if(comp==='doors'){
    if(g.body.sideDuct)x-=g.body.sideDuctDepth*sideDuctMask(g.body,(z-doorRear)/(doorFront-doorRear),v);
-   for(const hz of handleStations)x-=(.002+.013*g.body.handleRecess)*Math.exp(-((v-.22)**2)/.0034-((z-hz)**2)/.008);
+   for(const hz of handleStations(sgn))x-=(.002+.013*g.body.handleRecess)*Math.exp(-((v-.22)**2)/.0034-((z-hz)**2)/.008);
   }
   x+=stamped(z,v,sgn)-sillLift(z)*.68*v**3;
   if(archAt<0&&g.body.rearWheelSkirt){
@@ -580,11 +586,11 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  // All side panels use the same trimmed wheel envelope; arch edge samples
  // and hem are generated from the same function as the adjacent skin.
  for(const s of [-1,1]){
-  const letter=s>0?'R':'L',lowerRails=[];lowerPanelRails[s]=lowerRails;
+  const letter=s>0?'R':'L',lowerRails=[],cuts=doorSplits(s);lowerPanelRails[s]=lowerRails;
   const slabs=[
    {key:'rearBumper',start:Lr,end:bumperRear,seamAfter:'rearFenderSeam'},
    {key:'rearFenders',start:bumperRear,end:doorRear,seamAfter:'rearDoorSeam'},
-   ...doorSplits.slice(1).map((z,i)=>({key:'doors',start:doorSplits[i],end:z,seamAfter:i<doorSplits.length-2?'centerDoorSeam':'frontDoorSeam'})),
+   ...cuts.slice(1).map((z,i)=>({key:'doors',start:cuts[i],end:z,seamAfter:i<cuts.length-2?'centerDoorSeam':'frontDoorSeam'})),
    {key:'frontFenders',start:doorFront,end:bumperFront,seamAfter:'frontFenderSeam'},
    {key:'frontBumper',start:bumperFront,end:Lf}
   ];
@@ -595,12 +601,18 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    return key.endsWith('Fenders')?ends[front?'front':'rear'].quarter(z,v,s,raw):raw;
   };
   const master=createMasterSide({panels:slabs,settings:g.seams,gap:g.constraints.gap,side:s,stations:down,quality:slim?'compact':lod?'lod':quality});masters[s]=master;
+  const claddingUV=geo=>{
+   const uv=geo.attributes.uv, xyz=geo.attributes.position;
+   for(let i=0;i<uv.count;i++)uv.setY(i,clamp((B-xyz.getY(i))/Math.max(.25,B-floor)));
+   return geo;
+  };
   for(let index=0;index<slabs.length;index++){
    const {key,start:a,end:b}=slabs[index],sampler=(u,v)=>master.panel(index,u,v);
    if(key==='frontBumper'||key==='rearBumper'){
     const front=key==='frontBumper',surf=ends[front?'front':'rear'],col=s<0?0:across,{shell,roll,trail,faceColumns}=surf.geometries;
     const fraction=trail/along;
-    const side=put(key,'paint',patch(trail,down,(u,v)=>sampler(front?u*fraction:1-(1-u)*fraction,v),s<0));
+    const face=patch(trail,down,(u,v)=>sampler(front?u*fraction:1-(1-u)*fraction,v),s<0);
+    const side=put(key,g.body.lowerCladding?'lower-clad':'paint',g.body.lowerCladding?claddingUV(face):face);
     lowerRails.push(readLowerRail(side,trail,down,i=>mix(a,b,front?i/along:1-(trail-i)/along)));
     const tipIndex=front?trail:0, at=i=>front?i:trail-i;
     for(let i=0;i<=trail;i++)weldNormals([roll,i*(across+1)+col],[side,at(i)*(down+1)]);
@@ -645,7 +657,8 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
       uv.setX(i,(mix(a,b,t)-bumperRear)/Math.max(.11,doorRear-bumperRear));
      }
     }
-    put(key,duct?'side-duct':quarter?'quarter-duct':gill?'fender-duct':'paint',panel);
+    const clad=g.body.lowerCladding&&!duct&&!quarter&&!gill;
+    put(key,duct?'side-duct':quarter?'quarter-duct':gill?'fender-duct':clad?'lower-clad':'paint',clad?claddingUV(panel):panel);
    }
    if(g.body.sideRubStrip&&['rearFenders','doors','frontFenders'].includes(key)){
     // Use the same authored panel chart as body paint and seams. Roll the
@@ -714,7 +727,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   }
   const p=getSideSettings(g,'rockers',letter,c.rockers);
   const sillHeight=(p.type==='blade'?.052:p.type==='deep'?.14:.089)*p.size*d.skirt;
-  addModelPart(parts,'rockers',p.type==='blade'?'trim':'paint',patch(small(16,9,7,6),small(5,2,2,2),(u,v)=>{
+  addModelPart(parts,'rockers',g.body.lowerCladding?'roofPaint':p.type==='blade'?'trim':'paint',patch(small(16,9,7,6),small(5,2,2,2),(u,v)=>{
    const z=mix(-L+radius+.011,L-radius-.011,u);
    return [master.at(z,.99)[0]+s*(.008*p.depth+.020*bell(v)*p.shape),floor+sillLift(z)-.019+sillHeight*v,z];
   },s>0));
@@ -738,7 +751,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   put('mirrors',g.construction.cabin.contrastMirrorCaps?'roofPaint':'paint',ellipsoid(.25*mirror.size,.115*mirror.depth,.185*mirror.size*(mirror.type==='aero'?1.42:1)),[s*(sx+.19),sy,mz],[mirror.angle*RAD,s*(mirror.shape-.5)*.52,0]);
   put('mirrors','chrome',ellipsoid(.19*mirror.size,.087,.019),[s*(sx+.20),sy,mz-.081*mirror.size]);
   }
-  if(!canopy.noDoorHandles)for(const z of handleStations){
+  if(!canopy.noDoorHandles)for(const z of handleStations(s)){
    const hp=c.handles,q=master.at(z,.22);
    if(hp.type==='painted lever'){
     const span=.132*hp.size, height=.025+hp.shape*.014, rise=.009*hp.depth;
@@ -1090,7 +1103,20 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   },s<0));
   const taper=canopy.hatchQuarterTaper;
   const split=canopy.utilityCabinSplit;
-  if(!roadster&&pickupFrame){
+  if(!roadster&&canopy.insetSideWindow){
+   // A three-piece chart: a long lower sliding pane, a bonded rubber
+   // guide above it, and the outer fixed glass above the guide.
+   const amount=canopy.insetSideWindow,weight=.014+.016*amount;
+   const fold=u=>.36+amount*(.31*(1-u)**2+.095*u);
+   const slab=(material,a,b,rows)=>{
+    const geo=patch(small(22,12,10,9),rows,(u,v)=>side(u,mix(a(u),b(u),v)),s<0);
+    geo.userData.section='window-within-window / '+material;
+    put(material==='glass'?'glass':'pillars',material,geo);
+   };
+   slab('glass',()=>0,u=>fold(u)-weight,small(7,4,3,2));
+   slab('seamDark',u=>fold(u)-weight,u=>fold(u)+weight,1);
+   slab('glass',u=>fold(u)+weight,()=>1,small(7,4,3,2));
+  }else if(!roadster&&pickupFrame){
    const lo=.04+.091*pickupFrame,hi=.96-.103*pickupFrame;
    const l=.028+.034*pickupFrame,r=.955-.112*pickupFrame;
    const mid=clamp(split,.43,.67),rail=.025+.023*pickupFrame;
@@ -1149,7 +1175,8 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    return [s*mix(Math.abs(q[0]),outer,v),q[1]+(skinY(q[2])-q[1])*v,q[2]];
   },s<0));
   const framed=c.pillars.type==='painted frame';
-  for(const u of roadster?[0]:split>=.25?[]:taper?[0,c.doors.type==='four door'?.50:.65]:[0,c.doors.type==='four door'?.50:.65,1]){
+  const windowPillar=c.doors.type==='four door'?.50:asymDoors&&s>0?.605:.65;
+  for(const u of roadster?[0]:split>=.25?[]:taper?[0,windowPillar]:[0,windowPillar,1]){
    const outer=u===0||u===1;
    const mat=(c.pillars.type==='painted'||framed&&outer)&&!(u===0&&canopy.darkWindscreenFrame)?'paint':'trim',w=(.013+.027*c.pillars.shape)*c.pillars.size+(u===1?canopy.rearPillarWidth:0);
    const pillar=(v,j)=>{
@@ -1160,6 +1187,16 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     const edge=u===0?.78:.22, q=pillar(v,edge+(u===0?1:-1)*j*.18);
     q[0]+=s*.0012;return q;
    },(s<0)!==(u===1)));
+  }
+  if(asymDoors&&s>0&&!roadster&&!canopy.noDoorHandles){
+   // Small upright passenger-rear pull buried in the trailing black
+   // glazing trim, not a body-color duplicate on the lower door skin.
+   const grip=patch(4,2,(v,j)=>{
+    const u=mix(.882+.023*v,.953+.011*v,j);
+    const p=side(u,mix(.16,.42,v));p[0]+=.013+.009*bell(j)*bell(v);return p;
+   },true);
+   grip.userData.constructionRole='right rear hidden door pull';
+   put('handles','trim',grip);
   }
   if(framed&&!roadster&&split<.25)put('pillars','paint',patch(small(20,12,10,9),small(3,1,1,1),(u,j)=>{
    const q=side(u,1-j*.046);q[0]+=s*.006;return q;

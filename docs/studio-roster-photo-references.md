@@ -558,3 +558,29 @@ Clio road-trim reference specifies 18-inch wheels; stock game 17-inch
 tire and wheel mounts remain unchanged. Competition Celica sponsor and
 trademark graphics are omitted; this is not an event-day replication.
 SVO wing spacing and C30 glass-to-tail transition remain approximations.
+
+### Full-roster rollout, Lancia, Hyundai, Subaru, Kia, and Mercedes-Benz
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Blackcurrant Clover 1998 | Italian Lancia Y LS 1.2 16V, not the Geneva accessory car. [Lancia Italy](https://www.media.stellantis.com/it-it/lancia/press/motor-show-di-bologna-1998-lancia-y). |
+| Privet Clover 2003 | Lancia Thesis Executive 3.2 V6 unarmored Italian model. [Lancia trim and engine](https://www.media.stellantis.com/em-en/lancia/press/new-engines-for-the-lancia-thesis); [Lancia body overview](https://www.media.stellantis.com/em-en/lancia/press/lancia-thesis-a-car-that-embodies-the-italian-art-of-living). |
+| Redcurrant Clover 1999 | Italian Lancia Lybra 2.0 20V base sedan manual, not wagon. [Lancia Italy](https://www.media.stellantis.com/it-it/lancia/press/lancia-lybra-4). |
+| Fleabane 2012 | US Hyundai Veloster base 1.6 GDI six-speed, standard 17-inch wheels. [Factory US brochure](https://www.auto-brochures.com/makes/Hyundai/Veloster/Hyundai_US%20Veloster_2012.pdf). |
+| Harebell 2019 | US Hyundai Veloster N base 250 hp on 18-inch wheels, not Performance Package. [Hyundai US launch](https://www.hyundai-n.com/en/brand/press/hyundai-introduces-2019-veloster-n-first-u.s.-market-n-brand-high-performance-model-20191024); [US brochure](https://www.auto-brochures.com/makes/Hyundai/Veloster/Hyundai_US%20Veloster_2019-N.pdf). |
+| Basil Thyme 2020 | German Hyundai i30 N Performance original five-door body, pre-facelift manual. [Hyundai Germany trim guide](https://www.hyundai.news/newsroom/dam/de/Pressemappen/i30_N/20200130/Hyundai_i30_N_2020_2_Ausstattung_1.pdf). |
+| Briar Trail 2024 | US Subaru Forester Wilderness 2.5 CVT, not Base or 2025. [Subaru Wilderness brochure](https://www.subaru.com/content/dam/subaru/downloads/pdf/brochures/2024/2024_Forester_Wilderness_Brochure_050824.pdf). |
+| Calamint 2003 | US Subaru Baja launch 2.5 naturally aspirated five-speed, open bed, non-turbo. [Factory brochure](https://www.motorologist.com/wp-content/uploads/2003-Subaru-Baja-brochure.pdf). |
+| Campion 1992 | US Subaru SVX standard AWD, no optional Touring sunroof or spoiler. [Original US brochure](https://importarchive.com/brochure/subarusvx1992_02). |
+| Zinnia 16 2010 | US Kia Soul 1.6 base five-speed. [Kia America launch](https://www.kiamedia.com/us/en/media/pressreleases/3610/all-new-2010-kia-soul). |
+| Amber Trefoil 2013 | US Kia Sportage base 2.4 FWD six-speed. [Kia trim and specifications](https://www.kiamedia.com/us/en/models/sportage/2013/specifications). |
+| Thornbill GT 2018 | US Kia Stinger GT 3.3 turbo RWD, not GT1/GT2. [Kia trim pricing](https://www.kiamedia.com/us/en/models/stinger/2018/pricing); [vehicle overview](https://www.kiamedia.com/us/en/media/pressreleases/12966/2018-kia-stinger-overview). |
+| Myrtle Clover 2005 | US Mercedes-Benz SLK350 R171 six-speed hardtop raised. [US factory brochure](https://www.brochure-catalogue-voiture-neuve.fr/en/brochures/mercedes-benz/classe-slk/mercedes-benz-classe-slk-2005/ANG-2005-US/). |
+| Wood Dock 2012 | German Mercedes-Benz SLK55 AMG R172 hardtop raised. [German factory price and model guide](https://www.mbslk.de/files/artikel/Preisliste_SLK-Klasse_120120.pdf). |
+| Hackberry Clover 2008 | US Mercedes-Benz SL550 R230 7AT, hardtop raised and non-AMG trim. [US factory brochure](https://www.auto-brochures.com/makes/Mercedes_Benz/SL-Class/Mercedes%20Benz_US%20SL-Class_2008.pdf). |
+
+Velosters have their own right-side rear door seam and hidden pull and
+do not change two- or four-door designs. The SVX has separate side
+glazing panes on its side surface. Hinges and roof animations are not
+implemented. Lancia rear lamp shapes and Kia hatch and lamp joins remain
+approximations.

@@ -8,6 +8,7 @@ import {generateVehicle,disposeDesign} from './geometry.mjs';
 const PALETTE={
  'bonnet-stripes':['Twin bonnet stripes','paint'],
  'cowl-duct':['Twin hood cowl ducts','paint'],
+ 'lower-clad':['Lower side cladding','paint'],
  'side-duct':['Sculpted door-side duct','paint'],
  'fender-duct':['Recessed fender gill skin','paint'],
  'quarter-duct':['Sculpted rear-quarter cooling intake','paint'],
@@ -46,7 +47,8 @@ function fasciaInsertTexture(g,end){
   const satin=(f.insertSatinCenter??0)*upper*(1-smooth(span-.019,span+.019,q))
    *smooth(.065,.15,h)*(1-smooth(.69,.82,h));
   const light=(f.utilityLightInsert??0)*upper*(1-smooth(.92,1,q))*smooth(.10,.14,h)*(1-smooth(.81,.92,h));
-  pixels[y*width+x]='#'+paint.map((p,k)=>Math.round(p+(trim[k]-p)*a+([116,124,132][k]-trim[k])*satin*(1-light)+(roof[k]-trim[k])*light).toString(16).padStart(2,'0')).join('');
+  const clad=g.body.lowerCladding>0?Math.min(lower,Math.max(0,lower-upper)):0;
+  pixels[y*width+x]='#'+paint.map((p,k)=>Math.round(p+(trim[k]-p)*a+(roof[k]-trim[k])*clad+([116,124,132][k]-trim[k])*satin*(1-light)+(roof[k]-trim[k])*light).toString(16).padStart(2,'0')).join('');
  }
  return {width,height,pixels};
 }
@@ -69,6 +71,11 @@ function ductTexture(g,mask,centerAccent=false){
  return {width,height,pixels};
 }
 
+function claddingTexture(g){
+ const width=2,height=128,stop=1-g.body.lowerCladding;
+ return {width,height,pixels:Array.from({length:width*height},(_,i)=>
+  1-(Math.floor(i/width)+.5)/height>stop?g.materials.roofPaint:g.materials.paint)};
+}
 function stripeTexture(g){
  const width=64,height=128,pixels=[];
  const paint=g.materials.paint,stripe=g.materials.roofPaint;
@@ -82,8 +89,8 @@ function stripeTexture(g){
 
 export function materialDoc(g,key,{texture=true}={}){
  const [name,preset]=PALETTE[key];const fascia=key.startsWith('fascia-')?key.slice(7):null;const rimFace=key==='wheel',maps=texture?studioMaps(key==='rubber'?'tire':key.startsWith('signal')?'indicator':key==='runningRed'?'opticRed':key):{};
- return {id:'studio-mat-'+key,name,color:fascia||key==='bonnet-stripes'||key.endsWith('-duct')?'#ffffff':g.materials[key],
-  texture:!texture?null:fascia?fasciaInsertTexture(g,fascia):key==='bonnet-stripes'?stripeTexture(g):key==='quarter-duct'?ductTexture(g,quarterDuctMask):key==='fender-duct'?ductTexture(g,fenderGillMask):key==='side-duct'?ductTexture(g,sideDuctMask):key==='cowl-duct'?ductTexture(g,cowlDuctMask,g.body.cowlDuctAccent>0):key==='glass'?solidTexture(g.components.glass.type==='tinted'?'#ffffff70':'#ffffff48'):key==='opticCover'?solidTexture('#ffffff31'):key==='rubber'?wheelTireTexture(g.components.tires.type,g.components.tires.shape,g.components.tires.depth):key==='rotor'?wheelRotorTexture():null,
+ return {id:'studio-mat-'+key,name,color:fascia||key==='lower-clad'||key==='bonnet-stripes'||key.endsWith('-duct')?'#ffffff':g.materials[key],
+  texture:!texture?null:fascia?fasciaInsertTexture(g,fascia):key==='lower-clad'?claddingTexture(g):key==='bonnet-stripes'?stripeTexture(g):key==='quarter-duct'?ductTexture(g,quarterDuctMask):key==='fender-duct'?ductTexture(g,fenderGillMask):key==='side-duct'?ductTexture(g,sideDuctMask):key==='cowl-duct'?ductTexture(g,cowlDuctMask,g.body.cowlDuctAccent>0):key==='glass'?solidTexture(g.components.glass.type==='tinted'?'#ffffff70':'#ffffff48'):key==='opticCover'?solidTexture('#ffffff31'):key==='rubber'?wheelTireTexture(g.components.tires.type,g.components.tires.shape,g.components.tires.depth):key==='rotor'?wheelRotorTexture():null,
   automotive:{preset:key==='rubber'?'rubber':preset,creaseAngle:0, ...maps,...(rimFace?{roughness:.27}:{}),...(key==='whitewall'?{roughness:.94,metalness:0}:{}),...(key==='ductMatte'?{roughness:.97,metalness:0}:{}),...(key==='rotor'?{roughness:1,metalness:1}:{}),...(key==='barrel'?{roughness:1,metalness:1}:{}),...(key==='opticSilver'?{metalness:.86,roughness:.26}:{}),...(preset==='paint'?{paintCalibration:true,
     ...(g.construction.finish.paintRoughness!==.44?{roughness:g.construction.finish.paintRoughness}:{}),
     ...(g.construction.finish.coatRoughness!==.12?{paintClearcoatRoughness:g.construction.finish.coatRoughness}:{})}:{} )}};
