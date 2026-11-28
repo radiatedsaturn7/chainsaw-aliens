@@ -7,6 +7,8 @@ import {isWrxStudioDocument} from './WrxBundledModels.js';
 import {syncWrxBrakeHardware} from './WrxBrakeHardware.js';
 import {isNativeModelWheelCar,hasAuthoritativeModelWheelPose} from './ModelWheel.js';
 import {jointMatrices} from './ModelRig.js';
+import {daytimeMechanicalLampSupply} from '../racing/simulation/MechanicalModel.js';
+import {turnSignalLit} from '../racing/TurnSignals.js';
 import {ModelAssetInstance,modelAssets} from './ModelAssets.js';
 
 const visualWheelIds=['fl','fr','rl','rr'];
@@ -172,11 +174,14 @@ const studioLightColors={head:0xf5e9da,brake:0xff171a,running:0xde161b,reverse:0
 export function studioLampLevels(session,{braking=false,reversing=false,enabled=true,headlights=null,defaultHeadlights=false}={}){
  const state=session?.mechanical??{},head=Boolean(headlights??state.headlights??defaultHeadlights);
  const power=enabled?Math.max(0,Math.min(1,state.effects?.lights??1)):0;
+ const safetyPower=enabled&&!head?(daytimeMechanicalLampSupply(state)??power):power;
  const signal=state.turnSignal??session?.turnSignal,blink=Math.floor((Number(session?.elapsedMs)||0)/380)%2===0;
- return {head:head*power*(state.highBeams?2.1:1.35),brake:Number(braking)*power*2.7,
-  running:head*power*.75,reverse:Number(reversing)*power*1.65,
-  'signal-left':(blink&&(state.hazards||signal==='hazard'||signal==='left'))?power*1.8:0,
-  'signal-right':(blink&&(state.hazards||signal==='hazard'||signal==='right'))?power*1.8:0};
+ const active=side=>session?.turnSignals?turnSignalLit(session,side):
+  blink&&(state.hazards||signal==='hazard'||signal===side);
+ return {head:head*power*(state.highBeams?2.1:1.35),brake:Number(braking)*safetyPower*2.7,
+  running:head*power*.75,reverse:Number(reversing)*safetyPower*1.65,
+  'signal-left':active('left')?safetyPower*1.8:0,
+  'signal-right':active('right')?safetyPower*1.8:0};
 }
 export function syncRaceModelLamps(part,session,{braking=false,reversing=false,enabled=true,headlights=null,defaultHeadlights=false}={}){
  const instance=part?.userData?.modelInstance;
