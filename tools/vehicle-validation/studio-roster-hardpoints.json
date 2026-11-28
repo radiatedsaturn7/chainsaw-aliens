@@ -16252,5 +16252,469 @@
         }
       ]
     }
+  },
+  {
+    "id": "ford-expedition-xl-2012",
+    "label": "Spruce Clover 2012",
+    "carId": "3d-spruce-clover-2012-3d-38e8e6682ef4",
+    "capability": "2012 United States Ford Expedition, XL standard-wheelbase 5.4-liter V8 gasoline 4x2 six-speed automatic, standard open3.31 axle and17-inch wheels; not EL,4x4 or tow package",
+    "bodyRef": "spruce-clover-finished",
+    "wheelRef": "spruce-clover-wheel",
+    "radius": 0.4014,
+    "axles": [
+      {
+        "track": 1.701799988746643,
+        "y": 0.4011490046977997,
+        "z": 1.4206219911575317
+      },
+      {
+        "track": 1.70687997341156,
+        "y": 0.40098199248313904,
+        "z": -1.6019779443740845
+      }
+    ],
+    "reference": "https://www.geraldjonesford.com/static/dealer-12511/pdf/52e75dc60a0d028a0031c43f290c1d1d.pdf"
+  },
+  {
+    "id": "ford-explorer-base-2012",
+    "label": "Yew Clover 2012",
+    "carId": "3d-yew-clover-2012-3d-95992cb9c538",
+    "capability": "2012 United States Ford Explorer, base 3.5-liter Ti-VCT V6 FWD six-speed automatic, standard 17-inch covered steel wheels; not EcoBoost, XLT or 4WD",
+    "bodyRef": "Yew-Clover-2012-finished",
+    "wheelRef": "Yew-Clover-2012-wheel",
+    "radius": 0.37515,
+    "axles": [
+      {
+        "track": 1.701799988746643,
+        "y": 0.37514999508857727,
+        "z": 1.4300199747085571
+      },
+      {
+        "track": 1.701799988746643,
+        "y": 0.37553301453590393,
+        "z": -1.4300199747085571
+      }
+    ],
+    "reference": "https://cdn.dealereprocess.org/cdn/brochures/ford/2012-explorer.pdf"
+  },
+  {
+    "id": "volkswagen-pickup-lx-us-1982",
+    "label": "Black Medick 1982",
+    "capability": "1982 US federal VW Pickup LX 1.7 gasoline 4MT, unbadged with empty cargo bed",
+    "carId": "3d-black-medick-1982-3d-72c189b87759",
+    "bodyRef": "Black-Medick-1982-body",
+    "wheelRef": "Black-Medick-1982-wheel",
+    "radius": 0.29710000000000003,
+    "axles": [
+      {
+        "track": 1.3766800165176392,
+        "y": 0.2971000075340271,
+        "z": 1.337499976158142
+      },
+      {
+        "track": 1.3868399858474731,
+        "y": 0.2971000075340271,
+        "z": -1.287500023841858
+      }
+    ],
+    "reference": "1982 US federal Volkswagen Pickup LX gasoline 1.7 fuel-injected inline-four, FWD standard four-speed manual, empty cargo bed; not diesel, California calibration or Sportruck.",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.5730000138282776,
+            0.5329999923706055,
+            -2.2769999504089355
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.5730000138282776,
+            0.5329999923706055,
+            -2.2769999504089355
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6740000247955322,
+            0.5,
+            2.2720000743865967
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6740000247955322,
+            0.5,
+            2.2720000743865967
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.6883400082588196,
+            0.2971000075340271,
+            -1.337499976158142
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.6883400082588196,
+            0.2971000075340271,
+            -1.337499976158142
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.6934199929237366,
+            0.2971000075340271,
+            1.287500023841858
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.6934199929237366,
+            0.2971000075340271,
+            1.287500023841858
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "volkswagen-bus-latebay-1978",
+    "label": "Vetch 1978",
+    "capability": "1978 Canada Type 2 late-bay solid roof passenger seven-seat Bus",
+    "carId": "3d-vetch-1978-3d-d4fab9c26a28",
+    "bodyRef": "Vetch-1978-body",
+    "wheelRef": "Vetch-1978-wheel",
+    "radius": 0.3258,
+    "axles": [
+      {
+        "track": 1.3949999809265137,
+        "y": 0.32579898834228516,
+        "z": 1.2209999561309814
+      },
+      {
+        "track": 1.4550000429153442,
+        "y": 0.3249030113220215,
+        "z": -1.1790000200271606
+      }
+    ],
+    "reference": "1978 Canada Volkswagen Bus Type2 late-bay, seven-passenger solid-roof passenger body, 1970cc AFC fuel-injected air-cooled flat-four, rear-engine RWD four-speed manual, LHD. Not Campmobile, cargo van, automatic, Brazilian water-cooled model or early split-window bus.",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6159999966621399,
+            0.765999972820282,
+            -2.2795000076293945
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6159999966621399,
+            0.765999972820282,
+            -2.2795000076293945
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6669999957084656,
+            0.5211666822433472,
+            2.2704999446868896
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6669999957084656,
+            0.5211666822433472,
+            2.2704999446868896
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.6974999904632568,
+            0.32579898834228516,
+            -1.2209999561309814
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.6974999904632568,
+            0.32579898834228516,
+            -1.2209999561309814
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7275000214576721,
+            0.3249030113220215,
+            1.1790000200271606
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7275000214576721,
+            0.3249030113220215,
+            1.1790000200271606
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "renault-r4-export-1968",
+    "label": "Speedwell 1968",
+    "capability": "1968 French Renault 4 Export 747cc with the widened 1968 grille",
+    "carId": "3d-speedwell-1968-3d-b07b6d269045",
+    "bodyRef": "Speedwell-1968-body",
+    "wheelRef": "Speedwell-1968-wheel",
+    "radius": 0.2731,
+    "axles": [
+      {
+        "track": 1.25,
+        "y": 0.27309998869895935,
+        "z": 1.2339999675750732
+      },
+      {
+        "track": 1.24399995803833,
+        "y": 0.27309998869895935,
+        "z": -1.1859999895095825
+      }
+    ],
+    "reference": "France model-year1968 Renault4 Export, standard747cc 4CV fiscal engine, LHD, four-speed manual. Optional845cc Super5CV not selected.",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.625,
+            0.27309998869895935,
+            -1.2339999675750732
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.625,
+            0.27309998869895935,
+            -1.2339999675750732
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.621999979019165,
+            0.27309998869895935,
+            1.1859999895095825
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.621999979019165,
+            0.27309998869895935,
+            1.1859999895095825
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.49900001287460327,
+            0.593999981880188,
+            -1.9179999828338623
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.5929999947547913,
+            0.6050000190734863,
+            1.909000039100647
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.49900001287460327,
+            0.593999981880188,
+            -1.9179999828338623
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.5929999947547913,
+            0.6050000190734863,
+            1.909000039100647
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
   }
 ]

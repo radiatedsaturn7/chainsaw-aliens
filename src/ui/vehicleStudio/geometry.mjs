@@ -110,6 +110,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
 
  if(floor>R-.03)warnings.push('Rocker sits above the hub; this is an elevated stance.');
  const hatchUpright=g.construction.cabin.rearHatchUpright;
+ const cabOver=g.construction.cabin.cabForwardFace;
  const targaBulk=c.roof.type==='targa fabric'?g.construction.cabin.targaRearBulkhead:0;
  const functionalTowers=g.construction.cabin.functionalTailTowers&&g.construction.cabin.wagonTallTail>.18&&hatchUpright>0&&!g.construction.cabin.rearHatchFold&&c.roof.type!=='roadster open';
  const hatchLamps=g.construction.cabin.rearHatchFold&&c.roof.type!=='roadster open'?g.construction.cabin.hatchEdgeLamps:0;
@@ -117,8 +118,8 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  const bumperFront=Lf-seamSpan('front',d.front),bumperRear=Lr+seamSpan('rear',d.rear);
  const wide=clamp(d.box),zC=(Lf+Lr)*.5+length*d.cabin;
  let cabinFront=zC+length*(d.cabinLength/2-d.hood),cabinRear=zC-length*(d.cabinLength/2-d.trunk);
- cabinFront=clamp(cabinFront,Lr+.9,Lf-.53);cabinRear=clamp(cabinRear-g.construction.cabin.rearPillarFoot-.22*hatchUpright,Math.max(Lr+(g.construction.cabin.rearPillarFoot?.40:.50)-.22*hatchUpright,hatchUpright?bumperRear+.025:-Infinity),cabinFront-1.52);
- const doorFront=clamp(cabinFront+.12,-.15,L-.26),doorRear=clamp(cabinRear-.17,-L+.23,doorFront-.65);
+ cabinFront=cabOver?bumperFront-.055:clamp(cabinFront,Lr+.9,Lf-.53);cabinRear=clamp(cabinRear-g.construction.cabin.rearPillarFoot-.22*hatchUpright,Math.max(Lr+(g.construction.cabin.rearPillarFoot?.40:.50)-.22*hatchUpright,hatchUpright?bumperRear+.025:-Infinity),cabinFront-1.52);
+ const doorFront=cabOver?Math.min(cabinFront,bumperFront-.06):clamp(cabinFront+.12,-.15,L-.26),doorRear=clamp(cabinRear-.17,-L+.23,doorFront-.65);
  const asymDoors=c.doors.type==='three door right';
  const halfDoors=c.doors.type==='four door'&&g.construction.cabin.rearHalfDoors;
  // The game chassis uses signed +X right. On the asymmetric layout only
@@ -149,7 +150,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  }
  const canopy=g.construction.cabin,extension=(canopy.canopyLength-.5)*.15;
  const nominalRoofFront=mix(cabinFront,doorRear,.37+.10*c.glass.shape-extension);
- const roofFront=canopy.cargoPanel?clamp(cabinFront-.48,cabinRear+.8,cabinFront-.18):canopy.frontScreenRake?clamp(nominalRoofFront-canopy.frontScreenRake,cabinRear+.48,cabinFront-.14):nominalRoofFront;
+ const roofFront=cabOver?cabinFront-.088:canopy.cargoPanel?clamp(cabinFront-.48,cabinRear+.8,cabinFront-.18):canopy.frontScreenRake?clamp(nominalRoofFront-canopy.frontScreenRake,cabinRear+.48,cabinFront-.14):nominalRoofFront;
  const rearFraction=(g.family==='fastback'?.45:.22+.10*c.glass.shape)-extension;
  const rearDatum=mix(cabinRear,doorFront,rearFraction);
  const roofRear=hatchUpright&&canopy.rearHatchRoofSetback>0?clamp(cabinRear+canopy.rearHatchRoofSetback,cabinRear+.054,roofFront-.34):canopy.rearPillarFoot||canopy.rearRoofShift||hatchUpright||targaBulk?clamp(rearDatum+canopy.rearPillarFoot*(1-rearFraction)-canopy.rearRoofShift-.38*hatchUpright-.24*targaBulk,cabinRear+mix(.18,.078,hatchUpright),roofFront-.34):rearDatum;
@@ -1311,7 +1312,8 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     if(u1-u0<=1e-5||v1-v0<=1e-5)return;
     put(mat==='glass'?'glass':'pillars',mat,patch(res,1,(u,v)=>side(mix(u0,u1,u),mix(v0,v1,v)),s<0));
    };
-   for(const [a,b,m] of [[0,uMid,'paint'],[uMid,1,rearMat]]){
+   const windowSections=cabOver?[[0,.305,'paint'],[.305,uMid,'paint'],[uMid,1,rearMat]]:[[0,uMid,'paint'],[uMid,1,rearMat]];
+   for(const [a,b,m] of windowSections){
     if(canopy.cargoPanel&&a>0){
      // The cargo side has a shallow rolled seam rather than passenger glass.
      zone(m,a,b,0,.101,small(12,8,6,5));

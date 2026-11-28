@@ -254,6 +254,18 @@ export function makeOpenings({end,g,segments=32,face=null}){
  out.push(opening);
  }
  if(front){
+  if(g.construction?.cabin.cabForwardFace){
+   // High amber turn indicators on the cab-over front corners. Keep an
+   // intact panel between both trims and the independently cut main beam.
+   for(const side of [-1,1]){
+    const lamp=out.find(o=>o.kind==='lamp'&&o.side===side);
+    const eyeTop=lamp?Math.min(...lamp.outline.map(p=>p[1])):.30;
+    const height=.072,cy=Math.min(.12,eyeTop-.030-height/2);
+    if(cy>height/2+.02)out.push(aperture({id:'high-signal-'+side,component:'fogs',
+     housing:'round-rect',cx:.5+side*.361,cy,width:.092,height,
+     kind:'signal',segments:Math.min(12,segments),side,opt:{corner:.28}}));
+   }
+  }
   const gr=c.grille??{},fog=c.fogs??{};
   const spine=gr.type==='spined chrome bars',broadBars=gr.type==='broad chrome bars'||spine;
   if(gr.type==='deep mesh frame'||gr.type==='deep vertical frame'||broadBars){
