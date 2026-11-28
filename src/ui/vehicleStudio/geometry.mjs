@@ -492,7 +492,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  }else if(g.body.cowlDuct)sheet('hood','cowl-duct',hoodStart,hoodEdge,(z,u)=>{
   const p=hoodCover(z,u);p[1]-=g.body.cowlDuctDepth*cowlDuctMask(g.body,(z-hoodStart)/(hoodEdge-hoodStart),u);return p;
  },hoodAlong,across);
- else sheet('hood',hoodDesign.bonnetStripes?'bonnet-stripes':'paint',hoodStart,hoodEdge,hoodCover,hoodAlong,across);
+ else sheet('hood',hoodDesign.bonnetStripes?'bonnet-stripes':hoodDesign.contrastBonnet?'roofPaint':'paint',hoodStart,hoodEdge,hoodCover,hoodAlong,across);
  const trunkCover=(z,u)=>coverPoint(trunkPoint,trunkEdge,g.seams.trunkSeam,z,u);
  const bedEnd=cabinRear-G, pickupDepth=g.body.pickupBedDepth;
  let pickupWellCeiling=null;
@@ -1224,6 +1224,18 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   features.push(guideFeature('style-'+f.id+'-'+side,'style-curve','Styling curve · '+f.id+' · '+side,'doors',points,{key:f.id,side,view:'side',axis:1,scale:-.50}));
  }
  const wheels=Object.fromEntries([['fl',-1,L],['fr',1,L],['rl',-1,-L],['rr',1,-L]].map(([id,s,z])=>[id,[s*(z>0?t:rearTrack),R,z]]));
+ // Competition splash guards hang behind the physical tire centers.
+ // Keep their visual mesh independent of tire clearance and attachment joints.
+ if(canopy.rallyMudflaps>.005)for(const [id,[x,y,z]] of Object.entries(wheels)){
+  const rear=id[0]==='r', width=(rear?rearFit.tireWidth:d.tireWidth)*1.03;
+  const top=Math.max(floor+.073,y-.028), drop=Math.min(canopy.rallyMudflaps,top-.052);
+  const flap=new T.BoxGeometry(width,drop,.006);
+  const v=flap.attributes.position;
+  for(let i=0;i<v.count;i++)if(v.getY(i)<0){v.setX(i,v.getX(i)*.94);v.setZ(i,v.getZ(i)-.019);}
+  flap.computeVertexNormals();
+  flap.userData.constructionRole='rally mudflap';
+  put(rear?'rearFenders':'frontFenders','rubber',flap,[x,top-drop*.5,z-R-.047]);
+ }
  const wp=[];buildWheels(g,{quality,compact,emit:(k,m,geo,p,r)=>addModelPart(wp,k,m,geo,p,r)});
  const rearWp=staggered?[]:null;
  if(rearWp)buildWheels(g,{quality,compact,rear:true,emit:(k,m,geo,p,r)=>addModelPart(rearWp,k,m,geo,p,r)});

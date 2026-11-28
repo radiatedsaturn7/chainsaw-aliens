@@ -462,3 +462,24 @@ UK brochure shows a 17-inch option. The Sports 800 has an inherited
 2.100 m visual mount span and 2.000 m handling wheelbase; both are
 unchanged, and the live rim-to-joint fit was verified. The Sera uses
 transparent door-roof leaves and a painted spine, not animated doors.
+
+### Full-roster rollout, Evolution, Jeep, Mégane, and BMW sedans
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| White Deadnettle 1995 | Japanese Mitsubishi Lancer Evolution III CE9A GSR. [Mitsubishi history](https://www.mitsubishi-motors.com/en/company/history/car/?carhub_generation=CC). |
+| Hawkbit 1999 | Mitsubishi Lancer Evolution VI Group A, Mäkinen's Monte-Carlo winner, without sponsor graphics. [Mitsubishi event archive](https://www.mitsubishi-motors.com/en/brand/motorsports/wrc/1999/); [period action angle](https://dirtfish.com/rally/wrc/when-the-monte-was-decided-on-its-opening-stage/). |
+| Cow Parsley 2008 | US Mitsubishi Lancer Evolution X GSR base manual. [Factory US brochure](https://dgv4.xr793.org/wp-content/uploads/2017/02/2008-Mitsubishi-Lancer-Evolution.pdf). |
+| Caucasian Clover 2014 | US Jeep Grand Cherokee SRT 6.4. [Factory US specifications](https://s3.amazonaws.com/chryslermedia.iconicweb.com/mediasite/specs/2014_JP_GrandCherokeeSRT_FA.pdf); [factory multi-angle gallery](https://www.media.stellantis.com/uk-en/jeep/press/2014-jeep-grand-cherokee-technological-evolution-of-the-species-press-pack) (regional variants differ). |
+| Bogmyrtle 2018 | US Jeep Grand Cherokee Trackhawk. [Factory reveal brochure](https://www.jeep.com/assets/pdf/eBrochure%20-%20Jeep%20Grand%20Cherokee%20Trackhawk%20Reveal%20Brochure%20%282018%29.pdf). |
+| Deergrass 2020 | US Jeep Gladiator Rubicon 3.6 manual crew cab with five-foot box. [Factory launch](https://www.media.stellantis.com/em-en/jeep/press/all-new-2020-jeep-gladiator-the-most-capable-jeep-truck-ever). |
+| Bur Parsley 2008 | French Renault Mégane II R26.R two-seater. [Factory release](https://media.alpinecars.com/megane-r26r-nouveau-fer-de-lance-de-la-gamme-renault-sport-technologies/?lang=fra). |
+| Bitter Vetch 2010 | German Renault Mégane III RS250 Sport coupe. [Period German photo reference](https://www.autobild.de/artikel/preise-renault-megane-r.s.-995087.html). |
+| Greater Burnet 2018 | Belgian Renault Mégane IV RS280 Sport five-door. [Renault Belgium announcement](https://be.media.renaultgroup.com/nouvelle-megane-rs-la-sportive-agile-efficace-et-polyvalente-devoile-ses-tarifs/?lang=bel). |
+| Goldilocks 1995 | European BMW M5 E34 3.8 late-facelift manual. [BMW Classic](https://www.bmwgroup-classic.com/en/models/bmw-classics/product-description-page.ad-1525-1.bmw-m5-e34-340-hp.html); [1995 example](https://www.norclassics.com/en/product/bmw-m5-e34-3-8-last-edition-1995/). |
+| Heath Speedwell 2009 | US BMW M5 E60 V10 manual. [BMW USA press kit](https://www.press.bmwgroup.com/usa/article/detail/T0018132EN_US/press-kit%3A-2009-bmw-m5?language=en_US). |
+| Plum Clover 2008 | US BMW 550i E60 4.8 manual non-Sport. [BMW USA trim reference](https://www.press.bmwgroup.com/usa/article/detail/T0017751EN_US/the-2008-bmw-5-series?language=en_US); [same-generation shell](https://www.press.bmwgroup.com/global/photo/detail/P0033668/bmw-5-series-saloon-01/2007). |
+
+The Group A Evo VI uses separate adjustable mudflaps. The Gladiator's
+long wheelbase stays stock. BMW rear glass and rear optics, Mégane
+factory light signatures, and Trackhawk fascia shaping are simplified.

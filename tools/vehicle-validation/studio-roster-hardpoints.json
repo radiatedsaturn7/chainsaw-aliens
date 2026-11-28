@@ -5096,5 +5096,275 @@
       }
     ],
     "reference": "2006 Citroën C6 base 2.7 HDi, UK"
+  },
+  {
+    "id": "mitsubishi-evo-iii-ce9a-gsr",
+    "label": "White Deadnettle 1995",
+    "capability": "Evo III early compact GSR four-door with giant square ducts and high wing",
+    "carId": "3d-white-deadnettle-1995-3d-8f72585142e8",
+    "bodyRef": "White Deadnettle 1995 Body",
+    "wheelRef": "White Deadnettle 1995 Wheel",
+    "radius": 0.3135,
+    "axles": [
+      {
+        "track": 1.465000033378601,
+        "y": 0.31349998712539673,
+        "z": 1.2549999952316284
+      },
+      {
+        "track": 1.4700000286102295,
+        "y": 0.31349998712539673,
+        "z": -1.2549999952316284
+      }
+    ],
+    "reference": "1995 Mitsubishi Lancer Evolution III CE9A GSR, JDM"
+  },
+  {
+    "id": "mitsubishi-evo-vi-monte-carlo-1999",
+    "label": "Hawkbit 1999",
+    "capability": "Evo VI Monte Carlo rally stance with mudflaps and twin-level wing",
+    "carId": "3d-hawkbit-1999-3d-8e525f0d1b30",
+    "bodyRef": "Hawkbit-1999",
+    "wheelRef": "Hawkbit-1999-Wheel",
+    "radius": 0.32375,
+    "axles": [
+      {
+        "track": 1.5099999904632568,
+        "y": 0.32374998927116394,
+        "z": 1.2549999952316284
+      },
+      {
+        "track": 1.5099999904632568,
+        "y": 0.32374998927116394,
+        "z": -1.2549999952316284
+      }
+    ],
+    "reference": "1999 Mitsubishi Lancer Evolution VI Group A, Monte Carlo winner"
+  },
+  {
+    "id": "mitsubishi-evo-x-us-gsr",
+    "label": "Cow Parsley 2008",
+    "capability": "US Evo X GSR with trapezoid shark fascia and Enkei wheels",
+    "carId": "3d-cow-parsley-2008-3d-507e919085a4",
+    "bodyRef": "Cow-Parsley-2008",
+    "wheelRef": "Cow-Parsley-2008-Wheel",
+    "radius": 0.3266,
+    "axles": [
+      {
+        "track": 1.544319987297058,
+        "y": 0.32659998536109924,
+        "z": 1.3246099948883057
+      },
+      {
+        "track": 1.544319987297058,
+        "y": 0.32659998536109924,
+        "z": -1.3246099948883057
+      }
+    ],
+    "reference": "2008 Mitsubishi Lancer Evolution X GSR 5MT, US"
+  },
+  {
+    "id": "jeep-grand-cherokee-srt-2014",
+    "label": "Caucasian Clover 2014",
+    "carId": "3d-caucasian-clover-2014-3d-c10c83e0ad49",
+    "capability": "2014 United States Jeep Grand Cherokee SRT, US6.4naturally aspirated HEMI,8HP70automatic,Auto-mode40:60approximation,standardall-seasonrunflat20inchtires",
+    "bodyRef": "Caucasian-Clover",
+    "wheelRef": "Caucasian-Clover-Wheel",
+    "radius": 0.38675000000000004,
+    "axles": [
+      {
+        "track": 1.6179800033569336,
+        "y": 0.3867500126361847,
+        "z": 1.4574999809265137
+      },
+      {
+        "track": 1.6332199573516846,
+        "y": 0.3867500126361847,
+        "z": -1.4574999809265137
+      }
+    ],
+    "reference": "2014 Jeep Grand Cherokee SRT 6.4, US"
+  },
+  {
+    "id": "jeep-grand-cherokee-trackhawk-2018",
+    "label": "Bogmyrtle 2018",
+    "carId": "3d-bogmyrtle-2018-3d-bc1d9f017c09",
+    "capability": "2018 US Jeep Grand Cherokee Trackhawk 6.2supercharged V8 eight-speed automatic, standard20-inch wheels; Auto-mode approximation",
+    "bodyRef": "Bogmyrtle-2018",
+    "wheelRef": "Bogmyrtle-2018-Wheel",
+    "radius": 0.38675000000000004,
+    "axles": [
+      {
+        "track": 1.6611599922180176,
+        "y": 0.3867500126361847,
+        "z": 1.4574999809265137
+      },
+      {
+        "track": 1.6459200382232666,
+        "y": 0.3867500126361847,
+        "z": -1.4574999809265137
+      }
+    ],
+    "reference": "2018 Jeep Grand Cherokee Trackhawk, US"
+  },
+  {
+    "id": "jeep-gladiator-rubicon-2020",
+    "label": "Deergrass 2020",
+    "carId": "3d-deergrass-2020-3d-6d5c799b1004",
+    "capability": "2020 US Jeep Gladiator Rubicon 3.6V6 six-speed manual Crew Cab5-foot bed; high-range road approximation",
+    "bodyRef": "Deergrass 2020 Body",
+    "wheelRef": "Deergrass 2020 Wheel",
+    "radius": 0.4154,
+    "axles": [
+      {
+        "track": 1.635759949684143,
+        "y": 0.4153999984264374,
+        "z": 1.743499994277954
+      },
+      {
+        "track": 1.635759949684143,
+        "y": 0.4153999984264374,
+        "z": -1.743499994277954
+      }
+    ],
+    "reference": "2020 Jeep Gladiator Rubicon 3.6 6MT crew cab, US"
+  },
+  {
+    "id": "bmw-e34-m5",
+    "label": "Goldilocks 1995",
+    "capability": "Wide twin slat grille, four round lamps, square belt",
+    "carId": "3d-goldilocks-1995-3d-0c20fbaafb4c",
+    "bodyRef": "Goldilocks-1995",
+    "wheelRef": "Goldilocks-1995-Wheel",
+    "radius": 0.3266,
+    "axles": [
+      {
+        "track": 1.4935200214385986,
+        "y": 0.32659998536109924,
+        "z": 1.3804999589920044
+      },
+      {
+        "track": 1.5011399984359741,
+        "y": 0.32659998536109924,
+        "z": -1.3804999589920044
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "1995 BMW M5 E34 3.8 late facelift 6MT, Europe"
+  },
+  {
+    "id": "bmw-e60-m5",
+    "label": "Heath Speedwell 2009",
+    "capability": "Brow optics, motorsport fascia, staggered tires and quad exhaust",
+    "carId": "3d-heath-speedwell-2009-3d-4d1f19795f79",
+    "bodyRef": "Heath-Speedwell-2009",
+    "wheelRef": "Heath-Speedwell-2009-Wheel",
+    "radius": 0.3433,
+    "axles": [
+      {
+        "track": 1.5800000429153442,
+        "y": 0.3433000147342682,
+        "z": 1.4444999694824219
+      },
+      {
+        "track": 1.565999984741211,
+        "y": 0.3433000147342682,
+        "z": -1.4444999694824219
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2009 BMW M5 E60 5.0 V10 6MT, US"
+  },
+  {
+    "id": "bmw-e60-550i",
+    "label": "Plum Clover 2008",
+    "capability": "Facelift brow lamps, standard bumper, round fogs and thicker 18-inch sidewall",
+    "carId": "3d-plum-clover-2008-3d-5d6dd31e9646",
+    "bodyRef": "Plum-Clover-2008",
+    "wheelRef": "Plum-Clover-2008-Wheel",
+    "radius": 0.32615,
+    "axles": [
+      {
+        "track": 1.5570199489593506,
+        "y": 0.32615000009536743,
+        "z": 1.444000005722046
+      },
+      {
+        "track": 1.582419991493225,
+        "y": 0.32615000009536743,
+        "z": -1.444000005722046
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2008 BMW 550i E60 4.8 V8 sedan, US"
+  },
+  {
+    "id": "renault-megane-ii-r26r-2008",
+    "label": "Bur Parsley 2008",
+    "capability": "Dark lightweight bonnet, two seats, split bustle and red wheels",
+    "carId": "3d-bur-parsley-2008-3d-2dc00d208d9c",
+    "bodyRef": "Bur Parsley 2008 Body",
+    "wheelRef": "Bur Parsley 2008 Wheel",
+    "radius": 0.3226,
+    "axles": [
+      {
+        "track": 1.5189199447631836,
+        "y": 0.32260000705718994,
+        "z": 1.3125
+      },
+      {
+        "track": 1.5138399600982666,
+        "y": 0.32260000705718994,
+        "z": -1.3125
+      }
+    ],
+    "reference": "2008 France Renault Megane R26.R 2.0turbo two-seat road car six-speed manual with mechanicalfrontLSD; notF1TeamR26 orlaterMeganeIII",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "renault-megane-iii-rs250-2010",
+    "label": "Bitter Vetch 2010",
+    "capability": "French three-door Coupe Sport with steep rear glass and center outlet",
+    "carId": "3d-bitter-vetch-2010-3d-d1855be84a2b",
+    "bodyRef": "Bitter-Vetch",
+    "wheelRef": "Bitter-Vetch-Wheel",
+    "radius": 0.3186,
+    "axles": [
+      {
+        "track": 1.592579960823059,
+        "y": 0.31859999895095825,
+        "z": 0.94896000623703
+      },
+      {
+        "track": 1.5468599796295166,
+        "y": 0.31966298818588257,
+        "z": -1.6870399713516235
+      }
+    ],
+    "reference": "2010 Germany Renault Megane III R.S.250 three-door Coupe Sport chassis 6MT, no Cup package or LSD",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "renault-megane-iv-rs280-2018",
+    "label": "Greater Burnet 2018",
+    "capability": "Belgian Sport five-door orange hatch with broad lamps and center outlet",
+    "carId": "3d-greater-burnet-2018-3d-8fd94ca232e2",
+    "bodyRef": "Greater Burnet 2018 Body",
+    "wheelRef": "Greater Burnet 2018 Wheel",
+    "radius": 0.3226,
+    "axles": [
+      {
+        "track": 1.615440011024475,
+        "y": 0.32260000705718994,
+        "z": 1.3344999551773071
+      },
+      {
+        "track": 1.592579960823059,
+        "y": 0.32260000705718994,
+        "z": -1.3344999551773071
+      }
+    ],
+    "reference": "2018 Renault Megane R.S. 280, Belgian-market Sport chassis five-door with manual gearbox; not Cup or Trophy",
+    "canonicalLampSides": true
   }
 ]

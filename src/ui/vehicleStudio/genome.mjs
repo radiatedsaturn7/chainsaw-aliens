@@ -4,7 +4,7 @@ import {createGenome as createPanel,normalizeGenome as normalizePanel,buildFende
 export const VERSION=5;
 const F=(label,min,max,step)=>({label,min,max,step});
 export const GLOBAL={
- wheelbase:F('Wheelbase (m)',1.90,3.35,.005),width:F('Body width (m)',1.32,2.24,.005),height:F('Roof height (m)',1.08,2.10,.005),
+ wheelbase:F('Wheelbase (m)',1.90,3.55,.005),width:F('Body width (m)',1.32,2.24,.005),height:F('Roof height (m)',1.08,2.10,.005),
  front:F('Front overhang (m)',.43,1.40,.005),rear:F('Rear overhang (m)',.42,1.22,.005),track:F('Track / body width',.73,.89,.005),
  belt:F('Beltline height',.49,.70,.005),box:F('Body boxiness',0,1,.01),stance:F('Ground clearance (m)',.095,.36,.005),
  cabin:F('Cabin position',-.10,.10,.005),cabinLength:F('Cabin length',.39,.62,.005),cabinWidth:F('Cabin width',.60,.90,.005),
@@ -185,6 +185,7 @@ export const STYLE_KINDS={ridge:'Stamped ridge',groove:'Recessed groove',crease:
 export const BODY_EDITOR_FIELDS={bolster:F('Seat bolster',0,1,.01),lumbar:F('Lumbar curve',0,1,.01),trim:F('Interior trim',0,1,.01),
  rearDeckVents:F('Rear deck: 0 none, 1 louvers, 2 twin ram scoops',0,2,1),
  gullwingRoofSeams:F('Closed gullwing roof seams',0,1,1),
+ rallyMudflaps:F('Rally mudflap drop (m; 0 = off)',0,.23,.005),
  gullwingRoofGlass:F('Glaze the outer gullwing roof leaves',0,1,1),
  roofGlazing:F('Roof insert (0 none / 1 glass / 2 T-bar / 3 metal)',0,3,1),
  raisedEngineLid:F('Raised twin engine-deck louver banks',0,1,.01),
@@ -200,7 +201,7 @@ export const HOOD_CONSTRUCTION_FIELDS={
  crossCrown:F('Smooth arch across the hood',0,1,.01),
  noseFairing:F('Smooth longitudinal hood sweep',0,1,.01),
  shoulderRise:F('Shoulder drop (m)',0,.055,.001),
- classicLampBezel:F('Chrome inset lamp perimeter',0,1,1),bonnetStripes:F('Twin bonnet stripes',0,1,1),lampPodRise:F('Raised inset lamp pods (m)',0,.115,.002),
+ classicLampBezel:F('Chrome inset lamp perimeter',0,1,1),contrastBonnet:F('Use secondary paint on bonnet',0,1,1),bonnetStripes:F('Twin bonnet stripes',0,1,1),lampPodRise:F('Raised inset lamp pods (m)',0,.115,.002),
  shoulderWidth:F('Shoulder blend width (m)',.045,.18,.001),
  shoulderAt:F('Shoulder position across hood',.43,.90,.01),
  shoulderSweep:F('Shoulder sweep toward grille',-.19,.19,.005),
@@ -227,9 +228,9 @@ export const newStyle=(id='styling-1')=>({id,kind:'ridge',side:'both',start:.24,
 const constructionDefaults=()=>({
  symmetry:Object.fromEntries(Object.keys(PAIR_GROUPS).map(k=>[k,'mirrored'])),
  sides:{L:{},R:{}},
- cabin:{gullwingRoofSeams:0,gullwingRoofGlass:0,rearDeckVents:0,roofGlazing:0,raisedEngineLid:0,layout:'bench',driverSide:'left',bolster:.53,lumbar:.45,trim:.54,targaRearBulkhead:0,hatchBridge:0,hatchBridgeWidth:.84,hatchQuarterTaper:0,hatchLampFill:0,wagonTallTail:0,wagonTailWidth:.5,roofLipReach:0,roofLipSpan:.88,roofLipLift:.02,contrastMirrorCaps:0,wagonGlassPillar:0,wagonGlassPillarWidth:.030,wagonGlassPillarLean:.018,rearDeckButtresses:0,rearPillarFoot:0,rearRoofShift:0,rearPillarWidth:0,pickupCabFrame:0,utilityCabinSplit:0,hardtopRearSide:0,utilityBumper:0,utilityBumperPlate:0,bubbleCanopy:0,hardtopContrast:0,rearSpareRadius:0,rearSpareOffset:0,rearSpareHeight:1.04,vanSideTrim:0,utilityRoofRails:0,rallyTubework:0,rearGlassArc:0,rearHatchFold:0,hatchEdgeLamps:0,rearHatchUpright:0,rearBenchSeats:2,canopyLength:.5,frontScreenRake:0,sideGlassRise:0,darkWindscreenFrame:0,canopyShoulder:.5,glassBow:.5},
+ cabin:{rallyMudflaps:0,gullwingRoofSeams:0,gullwingRoofGlass:0,rearDeckVents:0,roofGlazing:0,raisedEngineLid:0,layout:'bench',driverSide:'left',bolster:.53,lumbar:.45,trim:.54,targaRearBulkhead:0,hatchBridge:0,hatchBridgeWidth:.84,hatchQuarterTaper:0,hatchLampFill:0,wagonTallTail:0,wagonTailWidth:.5,roofLipReach:0,roofLipSpan:.88,roofLipLift:.02,contrastMirrorCaps:0,wagonGlassPillar:0,wagonGlassPillarWidth:.030,wagonGlassPillarLean:.018,rearDeckButtresses:0,rearPillarFoot:0,rearRoofShift:0,rearPillarWidth:0,pickupCabFrame:0,utilityCabinSplit:0,hardtopRearSide:0,utilityBumper:0,utilityBumperPlate:0,bubbleCanopy:0,hardtopContrast:0,rearSpareRadius:0,rearSpareOffset:0,rearSpareHeight:1.04,vanSideTrim:0,utilityRoofRails:0,rallyTubework:0,rearGlassArc:0,rearHatchFold:0,hatchEdgeLamps:0,rearHatchUpright:0,rearBenchSeats:2,canopyLength:.5,frontScreenRake:0,sideGlassRise:0,darkWindscreenFrame:0,canopyShoulder:.5,glassBow:.5},
  finish:{paintRoughness:.44,coatRoughness:.12},
- hood:{lampLids:'off',insetLampMounts:0,parkedPopups:0,lidWidth:.25,lidLength:.25,lidSpread:.30,lidSetback:.065,lidGap:.004,classicLampBezel:0,bonnetStripes:0,crossCrown:0,noseFairing:0,lampPodRise:0,shoulderRise:0,shoulderWidth:.087,shoulderAt:.65,shoulderSweep:0,scoopWidth:0,scoopHeight:0,scoopCorner:0},
+ hood:{lampLids:'off',insetLampMounts:0,parkedPopups:0,lidWidth:.25,lidLength:.25,lidSpread:.30,lidSetback:.065,lidGap:.004,classicLampBezel:0,bonnetStripes:0,contrastBonnet:0,crossCrown:0,noseFairing:0,lampPodRise:0,shoulderRise:0,shoulderWidth:.087,shoulderAt:.65,shoulderSweep:0,scoopWidth:0,scoopHeight:0,scoopCorner:0},
  wing:{supportMount:'under',elevation:0,boxWallWidth:.041,boxWallRake:0,camber:.34,sweep:.08,taper:.42,thickness:.097,angle:4,supports:2,spacing:.67,formula:'',elements:1},
  exhaust:[],features:[]
 });
