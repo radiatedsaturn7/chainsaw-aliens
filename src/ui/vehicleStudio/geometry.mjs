@@ -292,6 +292,24 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    archEnd:L+Math.max(archData(sign*L,-1).fore,archData(sign*L,1).fore),floor,deckAt:front?originalHood:originalTrunk,
    sideAt:(z,v,s)=>skinPoint(z,v,s,name),bumper:c[name],upper,hoodFairing:front?hoodDesign.noseFairing:0,hoodCrown:front?hoodDesign.crossCrown:0});
   ends[end]=surf;
+  // Period bolt-on driving lights share the same runtime headlight material.
+  // This optional rack never trims the fascia or replaces its original lights.
+  const count=front?Math.round(g.fascia.front.rallyAuxiliary):0;
+  if(count){
+   const radius=Math.min(.087,d.width*.221/count),step=radius*2.27;
+   const bar=[0,-Infinity,-Infinity];
+   for(let n=0;n<count;n++){
+    const x=(n-(count-1)*.5)*step,u=.5+x/d.width;
+    const [,y,z]=surf.face(u,.27),p=[x,y+radius*.61,z+.028];
+    const seg=small(24,14,12,8),cyl=(top,bottom,depth)=>new T.CylinderGeometry(top,bottom,depth,seg,1,false).rotateX(Math.PI/2);
+    bar[1]=Math.max(bar[1],p[1]-radius*.82);
+    bar[2]=Math.max(bar[2],z-.025);
+    put('fogs','trim',cyl(radius*.95,radius*.68,.096),p);
+    put('fogs','chrome',cyl(radius,radius,.014),[x,p[1],p[2]+.047]);
+    put('fogs','head',cyl(radius*.80,radius*.77,.010),[x,p[1],p[2]+.056]);
+   }
+   put('fogs','trim',new T.BoxGeometry(Math.max(step,(count-1)*step+radius*.8),radius*.23,.048),bar);
+  }
   const originalOpenings=makeOpenings({end,g,face:surf.face,segments:small(quality==='opponent'?14:lod?18:quality==='export'?32:24,13,12,9)});
   const openings=!front&&hatchLamps?originalOpenings.filter(o=>o.kind!=='lamp'):originalOpenings;
   if(!front){
@@ -394,7 +412,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  const hoodCover=(z,u)=>coverPoint(hoodPoint,hoodEdge,g.seams.hoodSeam,z,u);
  if(hoodDesign.lampLids!=='off'){
   const bounds=emitFlushHoodLids({cover:(u,v)=>hoodCover(mix(hoodEdge,hoodStart,v),u),hoodLength:hoodEdge-hoodStart,
-   settings:hoodDesign,across,along:hoodAlong,compact,put});
+   settings:hoodDesign,across,along:hoodAlong,compact,put,lampMounts});
   if(Math.abs(bounds.mesh-bounds.expected)>1e-6||bounds.unmatched)issues.push('Overlapping or invalid hood cover cutouts.');
  }else if(g.body.cowlDuct)sheet('hood','cowl-duct',hoodStart,hoodEdge,(z,u)=>{
   const p=hoodCover(z,u);p[1]-=g.body.cowlDuctDepth*cowlDuctMask(g.body,(z-hoodStart)/(hoodEdge-hoodStart),u);return p;
@@ -653,6 +671,26 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   }));
  }
 
+ // Partition the glazing chart rather than drawing trim over a full glass
+ // plane. Paint, weatherstrip and glass segments are disjoint and share edges.
+ const framePickupGlazing=(chart,panes,flip)=>{
+  const n=small(10,6,5,4),seal=.010,cuts=[0];
+  const emit=(mat,l,r,b,t,nu=n,nv=1)=>{
+   if(r-l<1e-6||t-b<1e-6)return;
+   const mesh=patch(nu,nv,(u,v)=>chart(mix(l,r,u),mix(b,t,v)),flip);
+   mesh.userData.constructionRole='pickup cab frame / '+mat;
+   put(mat==='glass'?'glass':'pillars',mat,mesh);
+  };
+  for(const {l,r,b,t} of panes){
+   const prev=cuts.at(-1);
+   emit('paint',prev,l,0,1,1);emit('paint',l,r,0,b);emit('paint',l,r,t,1);
+   emit('seamDark',l,r,b,b+seal);emit('seamDark',l,r,t-seal,t);
+   emit('seamDark',l,l+seal,b+seal,t-seal,1);emit('seamDark',r-seal,r,b+seal,t-seal,1);
+   emit('glass',l+seal,r-seal,b+seal,t-seal,n,small(8,5,4,3));cuts.push(r);
+  }
+  emit('paint',cuts.at(-1),1,0,1,1);
+ };
+ const pickupFrame=pickupDepth>0?canopy.pickupCabFrame:0;
  for(const s of [-1,1]){
   if(s<0&&roadster){
    // Lower door belt still samples the nominal canopy chart below.
@@ -754,8 +792,49 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    for(const [a,b,segments] of [[0,left,1],[left,right,m],[right,1,1]]){
     f('paint',a,b,0,lo,1,segments);f('paint',a,b,hi,1,1,segments);
    }
-   f('paint',0,left,lo,hi,n,1);f('paint',right,1,lo,hi,n,1);
+   if(canopy.wagonTallTail){
+    // Partition the actual C/D-pillar skin, not the hatch glass. The
+    // backing, red lens and two gasket rails live on the same chart.
+    const top=lo+Math.min(hi-lo-.025,canopy.wagonTallTail*(hi-lo));
+    const stations=small(12,7,6,5);
+    // Carry the tower past the rear glass, across the painted lower hatch
+    // stamp. This follows the original trunk sheet with a slight lens rise
+    // and stops inside its panel gap, rather than drawing a diagonal box.
+    const upperStation=cabinRear-G,lowerStation=trunkEdge+.006;
+    if(upperStation-lowerStation>.065)for(const sign of [-1,1]){
+     const strip=(u,v)=>{
+      const z=mix(lowerStation,upperStation,v);
+      const lead=canopy.wagonTailWidth*.029+.014;
+      const center=.029+.008*Math.sin(Math.PI*v*.81);
+      const a=clamp(center+lead*(u-.5)*(1-.36*v)*(.50+.50*Math.sin(Math.PI*.70*v+.15)));
+      const p=trunkPoint(z,sign>0?1-a:a);
+      p[1]+=.004+.004*Math.sin(Math.PI*u);p[2]-=.003;
+      return p;
+     };
+     put('tails','runningRed',patch(small(9,5,4,3),2,(v,u)=>strip(u,v),sign<0));
+    }
+    for(const mirrored of [false,true]){
+     const band=(v,u)=>glassPoint(-1,v,mirrored?1-u:u);
+     const add=(color,low,high,from,to,res=stations)=>
+      put(color==='paint'?'trunk':'tails',color,patch(res,1,(v,u)=>{
+       const y=mix(from,to,v),t=clamp((y-lo)/Math.max(.01,top-lo));
+       const c=.50-.09*Math.sin(Math.PI*t)+.17*t**4;
+       const half=mix(.155,.409,canopy.wagonTailWidth)*(1-.46*t**2);
+       const rails=[0,(c-half)*left,(c-half+.060)*left,(c+half-.060)*left,(c+half)*left,left];
+       const p=band(y,mix(rails[low],rails[high],u));
+       if(color==='runningRed'||color==='opticRed')p[2]-=.004*Math.sin(Math.PI*u);
+       return p;
+      },!mirrored));
+     for(const [k,mat] of ['paint','seamDark','runningRed','seamDark','paint'].entries())add(mat,k,k+1,lo,top);
+     f('paint',mirrored?right:0,mirrored?1:left,top,hi,Math.max(1,n-stations),1);
+    }
+   }else{f('paint',0,left,lo,hi,n,1);f('paint',right,1,lo,hi,n,1);}
    f('glass',left,right,lo,hi,n,m);
+  }else if(pickupFrame){
+   const edge=s>0?.041+.043*pickupFrame:.063+.087*pickupFrame;
+   const b=s>0?.032+.053*pickupFrame:.085+.13*pickupFrame;
+   const t=s>0?.966-.054*pickupFrame:.932-.095*pickupFrame;
+   framePickupGlazing((u,v)=>glassPoint(s,v,u),[{l:edge,r:1-edge,b,t}],s>0);
   }else put('glass','glass',patch(small(12,6,5,4),small(16,10,9,8),(v,u)=>glassPoint(s,v,u),s<0));
   const roofSide=s>0?1:0,letter=s>0?'R':'L', A=canopyRoof(roofFront,roofSide),C=canopyRoof(roofRear,roofSide);
   function side(u,v){
@@ -777,7 +856,14 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   },s<0));
   const taper=canopy.hatchQuarterTaper;
   const split=canopy.utilityCabinSplit;
-  if(!roadster&&split>=.25){
+  if(!roadster&&pickupFrame){
+   const lo=.04+.091*pickupFrame,hi=.96-.103*pickupFrame;
+   const l=.028+.034*pickupFrame,r=.955-.112*pickupFrame;
+   const mid=clamp(split,.43,.67),rail=.025+.023*pickupFrame;
+   const panes=split>=.25?[{l,r:mid-rail,b:lo,t:hi},{l:mid+rail,r,b:lo+.012,t:hi}]:
+    [{l,r,b:lo,t:hi}];
+   framePickupGlazing(side,panes,s<0);
+  }else if(!roadster&&split>=.25){
    // Door and cargo glazing are separate parts of the same side chart.
    // A thick painted belt / pillar and small black seals replace the
    // coupe's unbroken DLO; use body or composite rear hardtop color.

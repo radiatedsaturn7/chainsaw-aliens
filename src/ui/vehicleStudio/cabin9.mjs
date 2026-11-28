@@ -178,7 +178,8 @@ export function buildCabin({g,quality='preview',compact=0,put,sample,dims}){
  }
 
  const seats=[],rowMeta=[];
- const rowCount=layout==='three-row'?3:layout==='front-only'?1:2;
+ const central=layout==='center-driver';
+ const rowCount=layout==='three-row'?3:layout==='front-only'||central?1:2;
  const limits={
   1:{u:[.31],zLength:[.49]},
   2:{u:[.31,.76],zLength:[.49,.43]},
@@ -253,13 +254,13 @@ export function buildCabin({g,quality='preview',compact=0,put,sample,dims}){
   const length=Math.min(limits.zLength[i]*clamp(c.seats.size,.78,1.18),rowPitch*.94);
   const y=floorY+.108+i*.019;
   const isBench=i>0&&(layout==='bench'||(layout==='three-row'&&i===2));
-  const ordered=isBench?[0]:[-1,1];
+  const ordered=isBench||central?[0]:[-1,1];
   const rowStart=seats.length;
   for(const s of ordered){
    const x=s*width*.247;
    addSeat({x,z,w:isBench?width*.93:Math.min(width*.43,.51*c.seats.size),l:length,y,bench:isBench,positions:rowCount===3&&i===2?g.construction.cabin.rearBenchSeats:2,row:i});
   }
-  rowMeta.push({index:i,z,layout:isBench?'bench':'individual',count:isBench?(layout==='three-row'?g.construction.cabin.rearBenchSeats:3):2,parts:seats.length-rowStart});
+  rowMeta.push({index:i,z,layout:isBench?'bench':'individual',count:central?1:isBench?(layout==='three-row'?g.construction.cabin.rearBenchSeats:3):2,parts:seats.length-rowStart});
  }
 
  const dashZ=front-.118, dw=Math.min(widthAt(dashZ)*1.95,xBound(dashZ)*2*c.dash.size);
@@ -320,22 +321,22 @@ export function buildCabin({g,quality='preview',compact=0,put,sample,dims}){
  // Center stack, seams and controls anchor at the local dashboard plane.
  const cp=c.console, centerZ=mix(dashZ-dashD-.2,driver.center[2]-.20,.54);
  const consoleTop=floorY+.135+.10*cp.depth;
- const consoleW=.17+.066*cp.size;
+ const consoleW=.17+.066*cp.size, tunnelX=central?Math.min(.31,xBound(driver.center[2])*.48):0;
  add('console','interior',closedLoft(lod?5:10,lod?8:13,(u,a)=>{
-  const w=.80+.19*Math.sin(pi*u);return [consoleW*.5*w*f(Math.cos(a),.56),consoleTop-.056+.074*w*f(Math.sin(a),.70),mix(centerZ-.36,dashZ-.18,u)];
+  const w=.80+.19*Math.sin(pi*u);return [tunnelX+consoleW*.5*w*f(Math.cos(a),.56),consoleTop-.056+.074*w*f(Math.sin(a),.70),mix(centerZ-.36,dashZ-.18,u)];
  }));
- add('console','trim',box(.168*cp.size,.108,.030),[0,dashY-.100,dashZ-dashD-.013],[-.13,0,0]);
+ add('console','trim',box(.168*cp.size,.108,.030),[tunnelX,dashY-.100,dashZ-dashD-.013],[-.13,0,0]);
  if(!lod){
-  for(let i=0;i<3;i++)add('console','chrome',new T.CylinderGeometry(.014,.015,.007,10).rotateX(pi/2),[(i-1)*.046,dashY-.119,dashZ-dashD-.030]);
+  for(let i=0;i<3;i++)add('console','chrome',new T.CylinderGeometry(.014,.015,.007,10).rotateX(pi/2),[tunnelX+(i-1)*.046,dashY-.119,dashZ-dashD-.030]);
   for(const x of [-.27,0,.27]){
    const w=.108*.68+.045*trim;
    add('dash','trim',box(w,.030,.015),[x*dw,dashY-.006,dashZ-dashD-.009]);
    if(high)for(let j=0;j<3;j++)add('dash','interior',box(w*.88,.003,.006),[x*dw,dashY-.014+.007*j,dashZ-dashD-.018]);
   }
-  add('console','trim',box(.119,.013,.123),[0,consoleTop+.026,centerZ+.13]);
+  add('console','trim',box(.119,.013,.123),[tunnelX,consoleTop+.026,centerZ+.13]);
  }
- const gear=[0,consoleTop+.105+cp.shape*.035,centerZ+.115];
- add('console','chrome',rod([0,consoleTop,centerZ+.14],gear,.012,7));
+ const gear=[tunnelX,consoleTop+.105+cp.shape*.035,centerZ+.115];
+ add('console','chrome',rod([tunnelX,consoleTop,centerZ+.14],gear,.012,7));
  add('console','trim',new T.SphereGeometry(cp.type==='manual'?.027:.039,lod?8:13,lod?5:8).scale(1,.85,.88),gear);
  if(!lod){
   const py=floorY+.081, pz=floorFront-.13;

@@ -8,7 +8,7 @@ const ch=.22,profile=[
 
 // Cut the apertures into the actual hood, then span their visible gap with
 // recessed backing. There is no painted line or floating piece to z-fight.
-export function emitFlushHoodLids({cover,hoodLength,settings,across,along,compact,put}){
+export function emitFlushHoodLids({cover,hoodLength,settings,across,along,compact,put,lampMounts}){
  const surface=(u,v)=>cover(u,v);
  const inset=settings.lampLids==='inset';
  const section=inset?Array.from({length:compact?12:20},(_,i)=>{
@@ -27,7 +27,11 @@ export function emitFlushHoodLids({cover,hoodLength,settings,across,along,compac
    inner:loop(hw-insetU,hv-insetV),center:[u,v]};
  });
  const hood=fasciaMesh(surface,paired,{rear:true,across,down:along,tolerance:compact?.21:.114});
- put('hood','paint',hood);
+ if(settings.bonnetStripes){
+  const uv=hood.getAttribute('uv');
+  for(let i=0;i<uv.count;i++)uv.setXY(i,1-uv.getY(i),uv.getX(i));
+ }
+ put('hood',settings.bonnetStripes?'bonnet-stripes':'paint',hood);
  function strip(rings,drop,center=null){
   const steps=section.length;
   const positions=rings.flatMap((r,j)=>r.flatMap(([u,v])=>surface(u,v).map((n,k)=>k===1?n-drop[j]:n)));
@@ -47,6 +51,10 @@ export function emitFlushHoodLids({cover,hoodLength,settings,across,along,compac
  }
  for(const lid of paired){
   if(inset){
+   if(settings.bonnetStripes&&lampMounts){
+    const p=surface(...lid.center);p[1]-=.023;
+    lampMounts['HeadlightMount_'+(lid.center[0]>.5?'L':'R')]=p;
+   }
    const blend=(k)=>lid.inner.map(p=>p.map((n,j)=>lid.center[j]+(n-lid.center[j])*k));
    const bezel=blend(.89), bowl=blend(.50), core=blend(.27), cover=blend(.68);
    if(settings.classicLampBezel){

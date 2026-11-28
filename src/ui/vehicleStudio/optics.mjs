@@ -240,7 +240,7 @@ export function makeOpenings({end,g,segments=32,face=null}){
     opt:{corner:.74},kind:'duct',segments,style:'vertical'}));
   }else if(gr.type!=='closed')out.push(aperture({id:'upper-grille',component:'grille',housing:fascia.grilleShape??'trapezoid',cx:.5,cy:.415+(num(fascia.grilleHeightPosition,.5)-.5)*.43,
    width:Math.min(mix(.155,.256,sat((num(gr.size,1)-.68)/.60))*(.56+.88*num(fascia.grilleWidth,.5)),2*(.49-Math.max(...out.filter(o=>o.center[0]<.5).flatMap(o=>o.outline.map(p=>p[0])))),2*(Math.min(...out.filter(o=>o.center[0]>.5).flatMap(o=>o.outline.map(p=>p[0])))-.51)),height:mix(.13,(gr.type==='vertical slats'||gr.type==='seven-slot')?.35:.238,sat((num(gr.depth,1)-.68)/.60))*(.58+.84*num(fascia.grilleHeight,.5)),
-   kind:'duct',segments,style:gr.type==='seven-slot'?'seven-slot':gr.type==='vertical slats'?'vertical':gr.type==='bars'?'bars':'mesh'}));
+   kind:'duct',segments,style:gr.type==='crosshair'?'crosshair':gr.type==='seven-slot'?'seven-slot':gr.type==='vertical slats'?'vertical':gr.type==='bars'?'bars':'mesh'}));
   for(const s of [-1,1]){
    const sideFog=getSideSettings(g,'fogs',s>0?'R':'L',fog);
    if(sideFog.type==='off')continue;
@@ -575,6 +575,21 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
      putGeo(opt.matte?'ductMatte':'seamDark',[path.map(([x,y])=>pt(x,y,depth)),path.map(([x,y])=>pt(x,y,depth+.006))],
       pt(cx,(top+bottom)*.5,depth));
     }
+   }
+   if(a.style==='crosshair'){
+    // Disjoint center post and two arms in the real inlet. Trim is
+    // restricted to the inset polygon; the mesh behind remains solid.
+    const X=w*.048,Y=h*.055;
+    const rx=[...spanAt(inset,cy-Y),...spanAt(inset,cy+Y)];
+    const rotated=inset.map(([x,y])=>[y,x]);
+    const ry=[...spanAt(rotated,cx-X),...spanAt(rotated,cx+X)];
+    const L=Math.max(rx[0],rx[2]),R=Math.min(rx[1],rx[3]),B=Math.max(ry[0],ry[2]),U=Math.min(ry[1],ry[3]);
+    for(const [x0,y0,x1,y1] of [[cx-X,B,cx+X,U],[L,cy-Y,cx-X,cy+Y],[cx+X,cy-Y,R,cy+Y]]){
+     if(!(x1>x0&&y1>y0))continue;
+     const q=[[x0,y0],[x1,y0],[x1,y1],[x0,y1]];
+     putGeo('chrome',[q.map(([x,y])=>pt(x,y,.017)),q.map(([x,y])=>pt(x,y,.025))],pt((x0+x1)/2,(y0+y1)/2,.016));
+    }
+    continue;
    }
    if(a.style==='vertical'||a.style==='seven-slot'){
     const inner=outline.map(([x,y])=>[mix(cy,y,.86),mix(cx,x,.91)]);

@@ -966,5 +966,269 @@
       }
     ],
     "reference": "1991 Suzuki Cappuccino EA11R 660cc"
+  },
+  {
+    "id": "ford-rs200-road",
+    "label": "Fenfire 1800 1986",
+    "capability": "Rounded white Group B homologation coupe, low wing and side cooling",
+    "carId": "3d-fenfire-1800-1986-3d-344c7591f248",
+    "bodyRef": "Fenfire 1800 1986 Body",
+    "wheelRef": "Fenfire 1800 1986 Wheel",
+    "radius": 0.3088,
+    "axles": [
+      {
+        "track": 1.5019999742507935,
+        "y": 0.30880001187324524,
+        "z": 1.2649999856948853
+      },
+      {
+        "track": 1.4980000257492065,
+        "y": 0.30880001187324524,
+        "z": -1.2649999856948853
+      }
+    ],
+    "reference": "1986 Ford RS200 road car"
+  },
+  {
+    "id": "lancia-stratos-group4",
+    "label": "Storksbill 1977",
+    "capability": "Short wedge Group 4 with closed pop-ups, wide rear hips and round rear lights",
+    "carId": "3d-storksbill-1977-3d-031657e50b0d",
+    "bodyRef": "Storksbill-1977-body",
+    "wheelRef": "Storksbill-1977-wheel",
+    "radius": 0.31105,
+    "axles": [
+      {
+        "track": 1.4299999475479126,
+        "y": 0.3110499978065491,
+        "z": 1.1610000133514404
+      },
+      {
+        "track": 1.4600000381469727,
+        "y": 0.3110499978065491,
+        "z": -1.0190000534057617
+      }
+    ],
+    "reference": "1977 Lancia Stratos HF Group 4, Monte Carlo"
+  },
+  {
+    "id": "lancia-delta-s4",
+    "label": "Gromwell 1985",
+    "capability": "Boxed Group B with side cooling and high rally wing",
+    "carId": "3d-gromwell-1985-3d-edb5ec9a8439",
+    "bodyRef": "Gromwell",
+    "wheelRef": "Gromwell-Wheel",
+    "radius": 0.32375,
+    "axles": [
+      {
+        "track": 1.5,
+        "y": 0.32374998927116394,
+        "z": 1.3420000076293945
+      },
+      {
+        "track": 1.5,
+        "y": 0.32279399037361145,
+        "z": -1.0980000495910645
+      }
+    ],
+    "reference": "1985 Lancia Delta S4 Group B, RAC winner"
+  },
+  {
+    "id": "jaguar-xj220",
+    "label": "Black Medick 1993",
+    "capability": "Long sculpted silver road coupe with covered lamps",
+    "carId": "3d-black-medick-1993-3d-a37a7c3bc806",
+    "bodyRef": "Black Medick 1993 Body",
+    "wheelRef": "Black Medick 1993 Wheel",
+    "radius": 0.33065,
+    "axles": [
+      {
+        "track": 1.6002000570297241,
+        "y": 0.3306500017642975,
+        "z": 1.3200000524520874
+      },
+      {
+        "track": 1.620519995689392,
+        "y": 0.3306500017642975,
+        "z": -1.3200000524520874
+      }
+    ],
+    "reference": "1993 Jaguar XJ220 road car"
+  },
+  {
+    "id": "ford-gt40-mk2-daytona",
+    "label": "Bugle 1966",
+    "capability": "Daytona white Mk II with low black fascia and tall tire sidewalls",
+    "carId": "3d-bugle-1966-3d-0a88087e174d",
+    "bodyRef": "Bugle-1966-body",
+    "wheelRef": "Bugle-1966-wheel",
+    "radius": 0.3375,
+    "axles": [
+      {
+        "track": 1.4500000476837158,
+        "y": 0.3375000059604645,
+        "z": 1.2615000009536743
+      },
+      {
+        "track": 1.5,
+        "y": 0.3375000059604645,
+        "z": -1.1514999866485596
+      }
+    ],
+    "reference": "1966 Ford GT40 Mk II, Daytona #98"
+  },
+  {
+    "id": "mclaren-f1-gtr-1995",
+    "label": "Soapwort 1995",
+    "capability": "Short-tail 1995 endurance race car with central cockpit and raised rear wing",
+    "carId": "3d-soapwort-1995-3d-712c48ee8f5c",
+    "bodyRef": "Soapwort 1995 Body",
+    "wheelRef": "Soapwort 1995 Wheel",
+    "radius": 0.33535000000000004,
+    "axles": [
+      {
+        "track": 1.5579999685287476,
+        "y": 0.33535000681877136,
+        "z": 1.3589999675750732
+      },
+      {
+        "track": 1.4880000352859497,
+        "y": 0.33535000681877136,
+        "z": -1.3589999675750732
+      }
+    ],
+    "reference": "1995 McLaren F1 GTR, Le Mans #59"
+  },
+  {
+    "id": "volvo-v70-32",
+    "label": "Quince Clover 2010",
+    "capability": "Upright wagon hatch, roof rails, tall D-pillar tail lamp towers",
+    "carId": "3d-quince-clover-2010-3d-5e87bacfeaee",
+    "bodyRef": "Quince-Clover-2010",
+    "wheelRef": "Quince-Clover-2010-Wheel",
+    "radius": 0.32694999999999996,
+    "axles": [
+      {
+        "track": 1.587499976158142,
+        "y": 0.3269500136375427,
+        "z": 1.4079999923706055
+      },
+      {
+        "track": 1.582419991493225,
+        "y": 0.3269500136375427,
+        "z": -1.4079999923706055
+      }
+    ],
+    "reference": "2010 Volvo V70 3.2 FWD, US"
+  },
+  {
+    "id": "cadillac-cts-v-wagon",
+    "label": "Great Dock 2014",
+    "capability": "Tall clear front optics, power dome, rear lamp towers, four grouped exhaust tips",
+    "carId": "3d-great-dock-2014-3d-7f5ded970e0e",
+    "bodyRef": "Great-Dock-2014-finished",
+    "wheelRef": "Great-Dock-2014-wheel",
+    "radius": 0.3433,
+    "axles": [
+      {
+        "track": 1.5748000144958496,
+        "y": 0.3433000147342682,
+        "z": 1.4401799440383911
+      },
+      {
+        "track": 1.577340006828308,
+        "y": 0.3428719937801361,
+        "z": -1.4401799440383911
+      }
+    ],
+    "reference": "2014 Cadillac CTS-V Wagon, six-speed manual"
+  },
+  {
+    "id": "dodge-magnum-srt8",
+    "label": "Yellow Loosestrife 2008",
+    "capability": "Facelift crosshair grille, hood scoop, shallow window strip and factory staggered tires",
+    "carId": "3d-yellow-loosestrife-2008-3d-672dc66742d6",
+    "bodyRef": "Yellow-Loosestrife-2008",
+    "wheelRef": "Yellow-Loosestrife-2008-Wheel",
+    "radius": 0.36425,
+    "axles": [
+      {
+        "track": 1.6002000570297241,
+        "y": 0.3642500042915344,
+        "z": 1.5240000486373901
+      },
+      {
+        "track": 1.6027400493621826,
+        "y": 0.3642500042915344,
+        "z": -1.5240000486373901
+      }
+    ],
+    "reference": "2008 Dodge Magnum SRT8 facelift"
+  },
+  {
+    "id": "toyota-tacoma-1997",
+    "label": "Buckwheat 2.4 1997",
+    "carId": "3d-buckwheat-2-4-1997-3d-2f22b3f2bbc6",
+    "capability": "1997 Toyota Tacoma 2.4L 2WD regular cab short bed",
+    "bodyRef": "Buckwheat-2-4",
+    "wheelRef": "Buckwheat-2-4-Wheel",
+    "radius": 0.32404999999999995,
+    "axles": [
+      {
+        "track": 1.3944599628448486,
+        "y": 0.32405000925064087,
+        "z": 1.1282426118850708
+      },
+      {
+        "track": 1.4147800207138062,
+        "y": 0.3244740068912506,
+        "z": -1.4955774545669556
+      }
+    ],
+    "reference": "1997 Toyota Tacoma 2.4 2WD regular cab"
+  },
+  {
+    "id": "toyota-tundra-2005",
+    "label": "Gorse Clover 2005",
+    "carId": "3d-gorse-clover-2005-3d-34fbc13be4ad",
+    "capability": "2005 United States Toyota Tundra, base regular cab long bed 4x2 4.0 V6 six-speed manual, standard 16-inch wheels; no V8, Access Cab, Double Cab or TRD package",
+    "bodyRef": "Gorse-Clover-2005-finished",
+    "wheelRef": "Gorse-Clover-2005-wheel",
+    "radius": 0.37470000000000003,
+    "axles": [
+      {
+        "track": 1.6789400577545166,
+        "y": 0.37470000982284546,
+        "z": 1.6294100284576416
+      },
+      {
+        "track": 1.648460030555725,
+        "y": 0.37491899728775024,
+        "z": -1.6294100284576416
+      }
+    ],
+    "reference": "2005 Toyota Tundra base regular cab"
+  },
+  {
+    "id": "nissan-frontier-xe-2010",
+    "label": "Little Clover 2010",
+    "carId": "3d-little-clover-2010-3d-62f158e76ec9",
+    "capability": "2010 United States Nissan Frontier, XEKingCab2.5QR25DE five-speedmanual4x2 standardbed,baseequipment;notV6,PRO4X,4WD,automatic orCrewCab",
+    "bodyRef": "Little-Clover-2010-finished",
+    "wheelRef": "Little-Clover-2010-wheel",
+    "radius": 0.36675,
+    "axles": [
+      {
+        "track": 1.5697200298309326,
+        "y": 0.36675000190734863,
+        "z": 1.59893000125885
+      },
+      {
+        "track": 1.5697200298309326,
+        "y": 0.3669529855251312,
+        "z": -1.59893000125885
+      }
+    ],
+    "reference": "2010 Nissan Frontier XE King Cab, 2.5 RWD"
   }
 ]

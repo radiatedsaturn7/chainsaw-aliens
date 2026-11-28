@@ -213,3 +213,43 @@ fenders. The CT-86 uses the original wider track and game wheelbase; it is
 a visual study, not a dimensional replica. All studies keep functional front,
 brake, reverse, running, left and right signal geometry; the closed Countach
 headlamp covers, like those on the WS6, do not animate.
+
+### Full-roster rollout, rally trio
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Fenfire 1800 1986 | Ford RS200 road homologation coupe. [Period road car, matched front-quarter, side and rear](https://rmsothebys.com/auctions/ny15/lots/r117-1986-ford-rs200/); [FIA record](https://historicdb.fia.com/range/rs). |
+| Storksbill 1977 | Lancia Stratos HF Group 4 in its 1977 Monte Carlo setup. [Period front and lamps](https://www.redbull.com/es-es/motor-rally-wrc-montecarlo-sandro-munari-rey-montana-lancia); [period driving angle](https://www.gettyimages.be/detail/nieuwsfotos/italian-driver-sandro-munari-is-seen-in-his-lancia-nieuwsfotos/597677652). |
+| Gromwell 1985 | Lancia Delta S4 Group B, 1985 RAC winner. [Same chassis, restored, multiple angles](https://rmsothebys.com/auctions/lf19/lots/r0037-1985-lancia-delta-s4-rally/); [1985 period action](https://www.gettyimages.ie/detail/news-photo/henri-toivonen-from-finland-and-co-driver-navigator-neil-news-photo/2154291646). |
+
+The Stratos auxiliary rack turns on and off with the main headlights;
+the closed pop-up covers do not animate. The RS200's headlamp envelope,
+cab glass and side cooling intakes remain the least accurate details.
+
+### Full-roster rollout, endurance trio
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Black Medick 1993 | Jaguar XJ220 road car, silver. [Original 1993 car gallery](https://rmsothebys.com/auctions/el20/lots/r0124-1993-jaguar-xj220/). |
+| Bugle 1966 | Ford GT40 Mk II, Daytona #98, white with blue stripes, not the later Le Mans setup. [Period images](https://www.library.revsinstitute.org/daytona-24-hour-continental/250901); [Shelby's P/1015 history](https://shelby-american-collection.squarespace.com/gt40s/1966-gt40-p1015). |
+| Soapwort 1995 | McLaren F1 GTR #59, Le Mans 1995. [ACO history](https://assets.lemans.org/explorer/pdf/musee/2023/grande-exposition-dossier-de-presse.pdf); [McLaren gallery](https://cars.mclaren.com/us_en/le-mans30). |
+
+The GT40's inset optics and hood stripes share the same surface. The
+F1 has editable center seating, instruments and cockpit eye position.
+The competition livery is logo-free and simplified; the F1 roof intake
+and compound curvature on all three need further refinement.
+
+### Full-roster rollout, wagons and pickups
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Quince Clover 2010 | Volvo V70 3.2 FWD, US. [Unmodified car, multiple angles](https://carsandbids.com/auctions/rxbbPMQW/2010-volvo-v70-32). |
+| Great Dock 2014 | Cadillac CTS-V Wagon, six-speed manual. [Exact variant gallery](https://bringatrailer.com/listing/2014-cadillac-cts-v-wagon-50/). |
+| Yellow Loosestrife 2008 | 2008 Dodge Magnum SRT8 facelift. [Factory gallery](https://media.stellantisnorthamerica.com/image-gallery.do?imageGalleryId=166&method=view&mid=); [matched trim](https://www.mecum.com/lots/SC0516-240313/2008-dodge-magnum-srt-8/). |
+| Buckwheat 2.4 1997 | Tacoma 2.4 2WD regular cab. [Toyota period product source](https://xr793.com/wp-content/uploads/2025/12/1997-Toyota-Tacoma-Product-Source.pdf); [regular-cab photos](https://www.edmunds.com/toyota/tacoma/1997/regular-cab/) (same generation, trim not confirmed). |
+| Gorse Clover 2005 | Tundra base 4x2 regular cab. [Exact trim specifications](https://www.edmunds.com/toyota/tundra/2005/regular-cab/st-100414632/features-specs); [Toyota period data and dimensions](https://media.toyota.ca/content/dam/media-toyota/general/specifications/pagesfrom05tundra_e.pdf) (Canadian-market source). |
+| Little Clover 2010 | Frontier XE King Cab 2.5 RWD. [Factory US press kit](https://usa.nissannews.com/en-US/releases/2010-nissan-frontier-press-kit); [XE exterior](https://cdn.jdpower.com/Models/640x480/2010-Nissan-Frontier-XE.jpg). |
+
+Painted pickup cab frames and inset window seals are distinct native surfaces.
+The Frontier's grille cheeks and King Cab door shutline need refinement.
+The CTS-V needs a deeper, more tapered hood-to-lamp transition.
