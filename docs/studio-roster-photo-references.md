@@ -812,3 +812,18 @@ fidelity despite passing runtime checks. Neither counts as a conversion.
 The Senna, 720S, and Agera design experiments are withheld from this
 release. Their roof and upper bumper-to-fender transitions do not match
 closely enough even with a prototype two-stage headlight/duct opening.
+
+### Full-roster rollout: Hyundai, compact Ford, minivans and Buick
+
+- Flathead Clover 2012 and Stream Clover 2012: US Hyundai Elantra GLS 1.8 six-speed sedan and Elantra Touring GLS 2.0 five-speed wagon, both with standard covered steel wheels. [Factory brochure](https://www.auto-brochures.com/makes/Hyundai/Elantra/Hyundai_US%20Elantra_2012.pdf), [sedan front/side/rear](https://origin-www-k8s-preview.thecarconnection.com/photos/hyundai_elantra_2012), [Touring angles](https://www.carsdirect.com/hyundai/elantra-touring/2012/pictures).
+- Field Scabious 2022: US Hyundai Elantra N six-speed manual, not N Line. [Factory specifications](https://www.hyundainews.com/releases/3367), [manual production test and multiple angles](https://www.motortrend.com/reviews/2022-hyundai-elantra-n-6mt-first-test-review).
+- Groundsel 2002: US Ford Focus SE four-door SOHC 5MT, standard 15-inch wheels. [Factory brochure](https://www.motorologist.com/wp-content/uploads/2002-Ford-Focus-brochure.pdf), [front/side/rear exact body](https://veh-markets.com/cars/ford-c/294106-2002-ford-se.html).
+- Aster 170 2003: US Ford Focus SVT ZX3 6MT, standard five-spoke wheels, not EAP. [Factory SVT supplement](https://www.fordservicecontent.com/Ford_Content/catalog/owner_guides/03focsv1e.pdf), [front/side/rear exact three-door](https://bringatrailer.com/listing/2003-ford-focus-21/).
+- Milkwort 1999: US Ford Escort LX four-door SOHC 5MT, stock-covered 14-inch wheels. [US factory brochure archive](https://www.auto-brochures.com/ford), [stock four-door period front/side/rear](https://www.purplewave.com/auction/180110/item/AX9037/1999-Ford-Escort-Passenger_Vehicles-Passenger_Vehicle-Missouri).
+- Ash Clover 2004: US Toyota Sienna CE 7-seat. [US factory brochure](https://www.ms-auto.co.jp/wp-content/catalog/sienna/Sienna_2004.pdf), [CE front/side/rear](https://www.liveauctionworld.com/2004-Toyota-Sienna-CE-7-Passenger_i48120948).
+- Brook Clover 2012: US Kia Sedona LX 7-seat, base wheel covers. [Factory trim equipment](https://www.kiamedia.com/us/en/models/sedona/2012/features), [LX front quarter](https://www.727-car.com/inventory/2012-kia-sedona-lx/956092), [LX side/rear](https://bid.cars/en/lot/1-48155614).
+- Hoary Mullein 1970: US Buick GSX 350 hp, standard 455 V8 four-speed, not Stage 1. [Exact four-speed with build sheet](https://classiccars.com/listings/view/1057453/1970-buick-gsx-455-cuin-4speed-69-gsx-build-sheeet-year-1970-for-sale-in-milford-city-connecticut-06450), [other GSX angles](https://www.mecum.com/lots/1184296/1970-buick-gsx/).
+- Running Clover 2002: US Buick LeSabre Custom standard trim. [Factory brochure](https://brochureshub.com/wp-content/uploads/2020/04/Buick_US-LeSabre_2002.pdf), [exterior views](https://www.edmunds.com/buick/lesabre/2002/pictures/).
+- Spindle Clover 2011: US Buick Regal 2.4 CXL, not Turbo. [Factory brochure](https://www.auto-brochures.com/makes/Buick/Regal/Buick_US%20Regal_2011.pdf), [CXL exterior views](https://www.victorymotorsofcolorado.com/inventory/2011-buick-regal-cxl/507282).
+
+These are first-pass models. The 2005 Nissan Quest remains held for its distinctive side-window kink and hatch, and Opel Mokka, Opel Adam and Vauxhall Grandland X for lamps and greenhouse transitions. No stock tuning or wheel frame changes. Real photos were used as references, not distributed with the game.

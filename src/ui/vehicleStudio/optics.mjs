@@ -14,6 +14,9 @@ const profiles={
  'upright-wrap':[[-1,-.54],[-.68,-.65],[.36,-.93],[.68,-.98],[.94,-.70],[1,-.18],[.95,.53],[.75,.80],[.12,.89],[-.70,.85],[-.96,.60]],
  rectangle:[[-1,-1],[1,-1],[1,1],[-1,1]],
  'round-rect':[[-.84,-1],[.84,-1],[1,-.73],[1,.73],[.84,1],[-.84,1],[-1,.73],[-1,-.73]],
+ // A rounded wedge with a low inboard tip and high outboard shoulder.
+ // The aperture transforms this outline by signed chassis side.
+ 'high-outer wedge':[[-1,.30],[-.43,-.09],[.22,-.69],[.68,-1],[.93,-.64],[1,.42],[.83,.79],[.42,1],[-.47,.90],[-.87,.73]],
  trapezoid:[[-.72,-1],[.72,-1],[1,1],[-1,1]],
  angular:[[-.92,-.63],[-.48,-1],[.7,-1],[1,-.43],[.81,.68],[.38,1],[-.78,.85],[-1,.22]],
  swept:[[-1,-.41],[-.64,-.78],[.84,-1],[1,-.68],[.81,.28],[.49,.98],[-.8,1],[-1,.41]],
@@ -27,7 +30,7 @@ const profiles={
  shield:[[-.91,-.78],[-.54,-1],[.54,-1],[.91,-.78],[.75,-.19],[.43,.48],[.11,.96],[0,1],[-.11,.96],[-.43,.48],[-.75,-.19]],
  compound:[[-1,-.36],[-.79,-.77],[-.29,-.99],[.24,-.87],[.83,-.98],[1,-.69],[.95,.33],[.72,.89],[.27,.82],[-.36,1],[-.82,.78],[-1,.31]]
 };
-export const HOUSING_FAMILIES=['round-rect','circle','oval','rectangle','trapezoid','winged','shield','angular','swept','wrap','upright-wrap','compound','round-twin','dual-round','dual-trapezoid','stacked-round'];
+export const HOUSING_FAMILIES=['round-rect','circle','oval','rectangle','trapezoid','winged','shield','angular','high-outer wedge','swept','wrap','upright-wrap','compound','round-twin','dual-round','dual-trapezoid','stacked-round'];
 const layouts=new Set(['projector','twin','led','mixed','factory-split','round-stack']);
 function curvePolygon(points,r,n){
  const controls=(p,q,t)=>p.map((x,i)=>mix(x,q[i],t));
@@ -352,9 +355,10 @@ export function makeOpenings({end,g,segments=32,face=null}){
   const low=Math.max(...lamps.filter(o=>o.center[0]<.5).flatMap(o=>o.outline.map(p=>p[0])));
   const high=Math.min(...lamps.filter(o=>o.center[0]>.5).flatMap(o=>o.outline.map(p=>p[0])));
   const reach=(Math.min(.5-low,high-.5)-.014)*fascia.tailBridge;
-  const y=Math.max(.09,Math.min(.32,lamps.reduce((sum,o)=>sum+o.center[1],0)/lamps.length-.031));
+  const section=fascia.tailBridgeHeight||0;
+  const y=Math.max(.09,Math.min(.32,lamps.reduce((sum,o)=>sum+o.center[1],0)/lamps.length-(section?0:.031)));
   if(reach>.028)out.push(aperture({id:'rear-running-bridge',component:'tails',housing:'round-rect',
-   cx:.5,cy:y,width:2*reach,height:.020,kind:'light-guide',segments:8}));
+   cx:.5,cy:y,width:2*reach,height:section||.020,kind:'light-guide',segments:8}));
  }
  if(!front&&g.construction&&fascia.rearTrayDepth>0){
   const width=fascia.rearTrayWidth;
