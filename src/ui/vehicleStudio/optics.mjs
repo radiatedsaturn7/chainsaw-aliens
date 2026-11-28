@@ -212,8 +212,10 @@ export function makeOpenings({end,g,segments=32,face=null}){
   for(let i=0;i<2;i++){
    const cx=s>0?1-(i?inner:outer):(i?inner:outer),cy=y+(i?.018:0);
    const fit=i?fitInner:1, roundOpt={...opt,angle:0,sweep:.5,inboardReach:.5,outline:[],formula:'',layout:'projector',sideWrap:0,secondaryLamp:i>0};
+   const portMode=num(raw.roundInnerPort,0);
+   const activeInlet=i>0&&(portMode===2||portMode===1&&s===(g.construction?.cabin?.driverSide==='right'?1:-1));
    const opening=aperture({id:'head-'+(s>0?'l':'r')+(i?'-inner':''),component:'headlights',
-    housing:'circle',cx,cy,width:hw*2*fit,height:hh*2*fit,side:s,opt:roundOpt,segments});
+    kind:activeInlet?'air-port':'lamp',housing:'circle',cx,cy,width:hw*2*fit,height:hh*2*fit,side:s,opt:roundOpt,segments});
    if(face&&raw.physicalDiameter>0)projectRoundLamp(opening,face,Math.min(raw.physicalDiameter,g.dimensions.width*hw*1.7)*fit,0);
    out.push(opening);
   }
@@ -599,6 +601,14 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
    const outer=ring(.986,.0018),inner=ring(mix(.967,.931,grilleBezel),.0068);
    putGeo('paint',[mouth,outer]);putGeo('chrome',[outer,inner]);putGeo('trim',[inner,seat]);
   }else{putGeo('paint',[mouth,lip]);putGeo('trim',[lip,seat]);}
+  if(kind==='air-port'){
+   // Dry central airway: lit perimeter, no opaque projector or lens.
+   const trim=ring(.675,.023), inlet=ring(.620,.043), rear=ring(.550,.086);
+   putGeo('trim',[seat,ring(.882,.008)]);
+   putGeo('head',[ring(.882,.008),ring(.802,.011)]);
+   putGeo('seamDark',[ring(.802,.011),trim,inlet,rear],pt(cx,cy,.092));
+   continue;
+  }
   if(kind==='front-guide'){
    putGeo('seamDark',[seat,ring(.85,.021)],pt(cx,cy,.021));
    putGeo('head',[ring(.74,.012),ring(.58,.009)],pt(cx,cy,.009));

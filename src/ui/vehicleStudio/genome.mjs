@@ -28,7 +28,7 @@ export const COMPONENTS={
  fogs:style('Fog lights',['round','strip','blank','off','amber strip','vertical LED strip']),grille:style('Grille',['mesh','bars','closed','vertical slats','seven-slot','five-slot','twin vertical slats','twin mesh','twin deep mesh','crosshair','deep mesh frame']),
  scoop:style('Scoop and vents',['scoop','vents','off']),spoiler:style('Spoiler',['wing','lip','off','boxed wing']),
  mirrors:style('Mirrors',['standard','aero','folded rectangle'],'corner radius'),handles:style('Door handles',['lever','flush','painted lever']),
- wheels:style('Wheels',['6-spoke','5-spoke','mesh','10-spoke','stamped steel','8-spoke','15-spoke','4-spoke','7-spoke','3-spoke sweep','pentagonal cast pockets'],'dish'),tires:style('Tires',['road','rally'],'sidewall'),
+ wheels:style('Wheels',['6-spoke','5-spoke','mesh','10-spoke','stamped steel','8-spoke','15-spoke','4-spoke','7-spoke','9-spoke','3-spoke sweep','pentagonal cast pockets'],'dish'),tires:style('Tires',['road','rally'],'sidewall'),
  exhaust:style('Exhaust',['single','dual','quad']),dash:style('Dashboard',['road','sport']),
  seats:style('Seats',['bucket','touring']),steering:style('Steering wheel',['round','flat-bottom']),
  instruments:style('Instrument cluster',['analog','digital']),console:style('Center console',['manual','automatic'])
@@ -92,7 +92,7 @@ export const FASCIA_FIELDS={
 export const OPTIC_HOUSINGS={'circle':'Circular',oval:'Oval',rectangle:'Rectangular','upright-wrap':'Upright rounded wrap','round-rect':'Rounded rectangle',
  trapezoid:'Trapezoidal',shield:'Tapered shield',angular:'Angular',swept:'Swept',wrap:'Wraparound',compound:'Compound', 'round-twin':'Rounded twin-bowl','dual-round':'Paired round lamps','stacked-round':'Stacked round front lamps'};
 export const OPTIC_LAYOUTS={projector:'Single projector',twin:'Twin elements',led:'LED signature',mixed:'Projector + LED','factory-split':'Factory split lens','round-stack':'Round rear lamp with running-light ring'};
-export const OPTIC_FIELDS={width:unit('Housing width'),height:unit('Housing height'),corner:unit('Corner radius'),angle:signed('Housing angle'),
+export const OPTIC_FIELDS={roundInnerPort:F('Inner round air inlet: 0 off, 1 driver, 2 both',0,2,1),width:unit('Housing width'),height:unit('Housing height'),corner:unit('Corner radius'),angle:signed('Housing angle'),
  sweep:unit('Housing sweep'),curvature:unit('Lens curvature'),recess:unit('Recess depth'),convexity:unit('Lens convexity'),
  position:unit('Vertical position'),outboard:unit('Outboard lamp placement'),sideWrap:F('Wrap lamp into side',0,1,.01),physicalDiameter:F('Round lens diameter (m; 0 = legacy)',0,.20,.005),innerRoundRatio:F('Inner round headlamp size ratio (0 = legacy)',0,1,.01),frontPhysicalCircle:F('Fit circular front lamps in body-plane metric units',0,1,1),circleLift:F('Round lens raise on fascia',0,.14,.005),tallHousing:F('Taller rear lens',0,.88,.01),lowerLensReach:F('Headlight lower reach',0,.11,.005),tripleBowls:F('Three reflector bowls per front housing',0,1,1),rearCells:F('Molded red reflector cells (off/on)',0,1,1),rearTriBars:F('Three vertical red tail lenses',0,1,1),roundBowls:F('Rounder reflector bowls',0,1,.01),silverFront:F('Silver headlight backing (off/on)',0,1,1),silverUpper:F('Silver upper taillight chamber (off/on)',0,1,1),silverUpperSplit:F('Upper silver chamber split',-.08,.20,.005),flutedBowls:F('Reflector flute definition',0,1,.01),inboardReach:unit('Lens reach toward grille'),protrusion:unit('Lens protrusion')};
 export const FASCIA_DEMOS={classic:'Upright classic',rally:'Rounded sport sedan',hyper:'Pointed hypercar',compound:'Compound-curved sports car'};
@@ -107,7 +107,7 @@ function baseFascia(family,front,legacy){
 }
 function baseOptic(family,front){return {
  housing:front?(family==='coupe'?'round-rect':family==='fastback'?'oval':'swept'):(family==='fastback'?'wrap':'trapezoid'),
- layout:front?'mixed':'led',...initial(OPTIC_FIELDS,{angle:0,width:.58,height:.54,position:.46,recess:.53,protrusion:0,sideWrap:0,physicalDiameter:0,innerRoundRatio:0,frontPhysicalCircle:0,circleLift:0,roundBowls:0,flutedBowls:0,silverFront:0,silverUpper:0,silverUpperSplit:-.018,tallHousing:0,lowerLensReach:0,tripleBowls:0,rearCells:0,rearTriBars:0}),outline:Array(8).fill(0),formula:'',modules:0,spacing:.5,outboard:.5,inboardReach:.5
+ layout:front?'mixed':'led',...initial(OPTIC_FIELDS,{angle:0,width:.58,height:.54,position:.46,recess:.53,protrusion:0,sideWrap:0,physicalDiameter:0,innerRoundRatio:0,roundInnerPort:0,frontPhysicalCircle:0,circleLift:0,roundBowls:0,flutedBowls:0,silverFront:0,silverUpper:0,silverUpperSplit:-.018,tallHousing:0,lowerLensReach:0,tripleBowls:0,rearCells:0,rearTriBars:0}),outline:Array(8).fill(0),formula:'',modules:0,spacing:.5,outboard:.5,inboardReach:.5
 };}
 export function createFasciaDemo(key){
  if(!Object.hasOwn(FASCIA_DEMOS,key))throw Error('Unknown fascia demonstration');
@@ -183,9 +183,11 @@ const defaultSeams=()=>Object.fromEntries(Object.keys(SEAM_KEYS).map(k=>[k,{...S
 export const PAIR_MODES={mirrored:'Mirrored',linked:'Linked',independent:'Independent'};
 export const PAIR_GROUPS={headlights:'Headlights',taillights:'Taillights',fogs:'Fog lights',mirrors:'Mirrors',fenders:'Fenders',doors:'Doors',wheels:'Wheels',vents:'Vents',rockers:'Side skirts'};
 export const STYLE_KINDS={ridge:'Stamped ridge',groove:'Recessed groove',crease:'Styling crease',trim:'Raised molding',shoulder:'Raised shoulder',recess:'Local recess'};
-export const BODY_EDITOR_FIELDS={bolster:F('Seat bolster',0,1,.01),lumbar:F('Lumbar curve',0,1,.01),trim:F('Interior trim',0,1,.01),
+export const BODY_EDITOR_FIELDS={periodLowSeat:F('Period front seat: low back without headrest',0,1,1),bolster:F('Seat bolster',0,1,.01),lumbar:F('Lumbar curve',0,1,.01),trim:F('Interior trim',0,1,.01),
  rearDeckVents:F('Rear deck: 0 none, 1 louvers, 2 twin ram scoops',0,2,1),
  gullwingRoofSeams:F('Closed gullwing roof seams',0,1,1),
+ foldingRoofSeam:F('Closed folding roof seam station (0 = off)',0,.90,.01),
+ middleBench:F('Three-place middle bench for three-row cabins',0,1,1),
  insetSideWindow:F('Window-within-window glazing contour',0,1,.01),rallyMudflaps:F('Rally mudflap drop (m; 0 = off)',0,.23,.005),
  gullwingRoofGlass:F('Glaze the outer gullwing roof leaves',0,1,1),
  roofGlazing:F('Roof insert (0 none / 1 glass / 2 T-bar / 3 metal)',0,3,1),
@@ -222,14 +224,14 @@ export const STYLE_FIELDS={start:F('Start station',0,1,.01),end:F('End station',
 export const EXHAUST_SHAPES={round:'Round',oval:'Oval',rect:'Rectangular',square:'Square'};
 export const EXHAUST_FINISHES={steel:'Brushed steel',polished:'Polished',dark:'Dark coated'};
 export const DRIVER_SIDES={left:'Left',right:'Right'};
-export const CABIN_LAYOUTS={bench:'Rear bench',individual:'Separate rear seats','three-row':'Three rows','front-only':'Front seats only','center-driver':'Center driver / endurance single-seater'};
+export const CABIN_LAYOUTS={bench:'Rear bench',individual:'Separate rear seats','three-row':'Three rows','front-only':'Front seats only','driver-only':'Single seat at the driver side','center-driver':'Center driver / endurance single-seater'};
 export const newOutlet=(id='outlet-left',x=-.51,count=1,mirror=false)=>({id,x,y:.022,sideAhead:0,fasciaHeight:0,spacing:.091,count,diameter:.084,shape:'round',protrusion:.026,
  curvature:.21,pitch:0,yaw:0,roll:0,wall:.0035,bevel:.004,recess:.018,finish:'steel',mirror});
 export const newStyle=(id='styling-1')=>({id,kind:'ridge',side:'both',start:.24,end:.74,height:.33,width:.029,depth:.009,sharpness:.49,falloff:.17,formula:'0.04*sin(pi*u)'});
 const constructionDefaults=()=>({
  symmetry:Object.fromEntries(Object.keys(PAIR_GROUPS).map(k=>[k,'mirrored'])),
  sides:{L:{},R:{}},
- cabin:{insetSideWindow:0,rallyMudflaps:0,gullwingRoofSeams:0,gullwingRoofGlass:0,rearDeckVents:0,roofGlazing:0,raisedEngineLid:0,layout:'bench',driverSide:'left',bolster:.53,lumbar:.45,trim:.54,targaRearBulkhead:0,hatchBridge:0,hatchBridgeWidth:.84,hatchQuarterTaper:0,hatchLampFill:0,wagonTallTail:0,wagonTailWidth:.5,noDoorHandles:0,openScreenRatio:0,openRollHoop:0,roofLipReach:0,roofLipSpan:.88,roofLipLift:.02,contrastMirrorCaps:0,wagonGlassPillar:0,wagonGlassPillarWidth:.030,wagonGlassPillarLean:.018,rearDeckButtresses:0,rearPillarFoot:0,rearRoofShift:0,rearPillarWidth:0,pickupCabFrame:0,utilityCabinSplit:0,hardtopRearSide:0,utilityBumper:0,utilityBumperPlate:0,bubbleCanopy:0,hardtopContrast:0,rearSpareRadius:0,rearSpareOffset:0,rearSpareHeight:1.04,vanSideTrim:0,utilityRoofRails:0,rallyTubework:0,rearGlassArc:0,rearHatchFold:0,hatchEdgeLamps:0,rearHatchUpright:0,rearBenchSeats:2,canopyLength:.5,frontScreenRake:0,sideGlassRise:0,darkWindscreenFrame:0,canopyShoulder:.5,glassBow:.5},
+ cabin:{periodLowSeat:0,foldingRoofSeam:0,middleBench:0,insetSideWindow:0,rallyMudflaps:0,gullwingRoofSeams:0,gullwingRoofGlass:0,rearDeckVents:0,roofGlazing:0,raisedEngineLid:0,layout:'bench',driverSide:'left',bolster:.53,lumbar:.45,trim:.54,targaRearBulkhead:0,hatchBridge:0,hatchBridgeWidth:.84,hatchQuarterTaper:0,hatchLampFill:0,wagonTallTail:0,wagonTailWidth:.5,noDoorHandles:0,openScreenRatio:0,openRollHoop:0,roofLipReach:0,roofLipSpan:.88,roofLipLift:.02,contrastMirrorCaps:0,wagonGlassPillar:0,wagonGlassPillarWidth:.030,wagonGlassPillarLean:.018,rearDeckButtresses:0,rearPillarFoot:0,rearRoofShift:0,rearPillarWidth:0,pickupCabFrame:0,utilityCabinSplit:0,hardtopRearSide:0,utilityBumper:0,utilityBumperPlate:0,bubbleCanopy:0,hardtopContrast:0,rearSpareRadius:0,rearSpareOffset:0,rearSpareHeight:1.04,vanSideTrim:0,utilityRoofRails:0,rallyTubework:0,rearGlassArc:0,rearHatchFold:0,hatchEdgeLamps:0,rearHatchUpright:0,rearBenchSeats:2,canopyLength:.5,frontScreenRake:0,sideGlassRise:0,darkWindscreenFrame:0,canopyShoulder:.5,glassBow:.5},
  finish:{paintRoughness:.44,coatRoughness:.12},
  hood:{lampLids:'off',insetLampMounts:0,parkedPopups:0,lidWidth:.25,lidLength:.25,lidSpread:.30,lidSetback:.065,lidGap:.004,classicLampBezel:0,bonnetStripes:0,deckStripes:0,contrastBonnet:0,crossCrown:0,noseFairing:0,lampPodRise:0,shoulderRise:0,shoulderWidth:.087,shoulderAt:.65,shoulderSweep:0,scoopWidth:0,scoopOffset:0,scoopHeight:0,scoopCorner:0},
  wing:{supportMount:'under',elevation:0,boxWallWidth:.041,boxWallRake:0,camber:.34,sweep:.08,taper:.42,thickness:.097,angle:4,supports:2,spacing:.67,formula:'',elements:1},

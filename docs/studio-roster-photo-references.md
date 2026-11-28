@@ -584,3 +584,28 @@ do not change two- or four-door designs. The SVX has separate side
 glazing panes on its side surface. Hinges and roof animations are not
 implemented. Lancia rear lamp shapes and Kia hatch and lamp joins remain
 approximations.
+
+### Full-roster rollout, Canadian Lexus, Audi, Dodge SRT, Porsche, and Subaru
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Bearberry Clover 2005 | Canadian Lexus ES 330 base, 16-inch wheels and no Luxury/Appearance/AVS package. [Lexus Canada gallery](https://media.lexus.ca/en/albums/2005/2005-lexus-es-330.html). |
+| Bilberry Clover 2005 | Canadian Lexus SC 430 standard 4.3 V8, roof closed, not Pebble Beach. [Lexus Canada gallery](https://media.lexus.ca/en/albums/2005/2005-lexus-sc-430.html). |
+| Cloudberry Clover 2005 | Canadian Lexus GX 470 standard 4.7 VVT-i, eight seats. [Lexus Canada exact specs](https://media.lexus.ca/content/dam/media-lexus/general/unassigned/20145/specs_2005_GX470.pdf). |
+| Hoary Willowherb 2001 | UK Audi RS4 B5 Avant 2.7 manual, RHD, standard wheels and left-side paired outlets. [Factory English brochure](https://www.brochure-catalogue-voiture-neuve.fr/de/brochures/audi/a4/audi-a4-1998/B5-2-ANG-03-2000-RS4-AVANT-QUATTRO/). |
+| Cinquefoil 2004 | US Audi S4 B6 sedan 4.2 V8 6MT, not Avant or Tiptronic. [Audi of America specifications](https://www.audiworld.com/model/s4/04/s4sedan.pdf); [US six-speed example](https://www.pcarmarket.com/results/26k-mile-2004-audi-s4-sedan-6-speed). |
+| Golden Saxifrage 2003 | Continental European Audi RS6 C5 standard 4.2 biturbo sedan, not Avant or Plus. [Period release/specification](https://www.motorline.cc/autowelt/2002/Audi-RS6-Neuvorstellung-Technische-Daten-Limousine-111711.html); [sedan angles](https://commons.wikimedia.org/wiki/Category:Audi_RS6_C5_sedans). |
+| Greater Knapweed 2008 | US Dodge Viper SRT10 ACR road setup, standard audio, not Hardcore. [ACR factory specifications](https://s3.amazonaws.com/chryslermedia.iconicweb.com/mediasite/specs/2008ViperSRT10ACRSpecs110107.pdf). |
+| Hoary Plantain 2015 | Canadian Dodge Challenger Hellcat 707 hp 6MT on standard tires. [Dodge Canada press kit](https://www.fcapresskit.ca/2015/Contents/Press-Releases/PDFs/Dodge/Challenger_SRT/CN_2015_DG_Challenger_SRT_HS.pdf). |
+| Starry Clover 2018 | Canadian Dodge Challenger Demon at the standard 91-octane specification with one left driver seat. [Dodge Canada press kit](https://www.fcapresskit.ca/2018/data/dodge_challenger.html). |
+| Cow Clover 1957 | European Porsche 356A 1600 Speedster standard 60 PS, low seats and open roof. [Porsche Classic](https://www.porsche.com/usa/accessoriesandservice/classic/models/356/356-a/). |
+| Sandspurry Six 1970 | European Porsche 914/6 road targa, not competition GT. [Porsche Classic](https://www.porsche.com/de-AT/accessoriesandservice/classic/models/914/914-6/); [factory parts catalogue](https://porschecarshistory.com/wp-content/old/manuals/E/E_914_KATALOG.pdf). |
+| Sea Lavender GTS 1993 | European Porsche 928 GTS 5MT. [Period German catalogue](https://www.archives-catalogues-automobiles.fr/shop/fr/porsche/316-PO284009-02.html). |
+| Persian Clover 1990 | Early Japanese Subaru Legacy RS BC5A, standard trim 5MT, not RS-RA. [Subaru Japan](https://ucar.subaru.jp/php/catalog/grade.php?cat_id=4501037); [period homologation and reference views](https://historicdb.fia.com/sites/default/files/car_attachment/1589842012/homologation_form_number_5422_group_a.pdf). |
+| Wineberry Clover 2008 | US Subaru Tribeca Base five-seater without rails, third row or moonroof. [Subaru factory release](https://www.subaru.co.jp/en/news/archives/press/2007/07_04_03e_02.pdf); [US brochure](https://xr793.com/wp-content/uploads/2017/03/2008-Subaru-Tribeca.pdf). |
+| Starflower 20 2024 | US Subaru Impreza Base no moonroof, standard wheels. [Subaru trim chart and photos](https://www.subaru.com/services/vehicles/pdf/trimComparison/2024/IMP); [US brochure](https://www.subaru.com/content/dam/subaru/downloads/pdf/brochures/2024/MY24_Impreza_Brochure.pdf). |
+
+The SC roof seal and 914 parked covers are static. The Demon intake
+appearance does not change engine operation. The GX uses an eight-seat
+layout; its rear door remains static. The 928 rear glass and Subaru rear
+optical hook remain simplified.

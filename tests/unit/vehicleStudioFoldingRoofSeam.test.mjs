@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {test} from 'node:test';
+import {createVehicle,loadVehicle} from '../../src/ui/vehicleStudio/genome.mjs';
+import {generateVehicle} from '../../src/ui/vehicleStudio/geometry.mjs';
+test('the static folding hardtop shares the two roof edge interfaces with its recessed seal',()=>{
+ const g=loadVehicle(readFileSync(new URL('../../src/ui/vehicleStudio/examples/lexus-sc430-ca-2005.json',import.meta.url),'utf8'));
+ const make=(station)=>{const v=structuredClone(g);v.construction.cabin.foldingRoofSeam=station;return generateVehicle(v,{quality:'drive',compact:2});};
+ assert.equal(createVehicle().construction.cabin.foldingRoofSeam,0);
+ assert.equal(make(0).parts.filter(p=>p.geometry.userData.constructionRole?.startsWith('closed folding')).length,0);
+ const next=make(.3), roofs=next.parts.filter(p=>p.geometry.userData.constructionRole?.startsWith('closed folding'));
+ assert.deepEqual(roofs.map(p=>p.material),['paint','seamDark','paint']);
+ const interfaceAt=(geo,z)=>{const p=geo.attributes.position,rows=[];for(let i=0;i<p.count;i++)if(Math.abs(p.getZ(i)-z)<1e-7)rows.push([p.getX(i),p.getY(i),p.getZ(i)]);return rows.sort((a,b)=>a[0]-b[0]);};
+ const box=geo=>{geo.computeBoundingBox();return geo.boundingBox;};
+ const [fore,seam,aft]=roofs.map(p=>p.geometry),range=box(seam);
+ assert.ok(Math.abs(range.max.z-range.min.z-.007)<1e-7);
+ assert.deepEqual(interfaceAt(fore,range.min.z),interfaceAt(seam,range.min.z));
+ assert.deepEqual(interfaceAt(aft,range.max.z),interfaceAt(seam,range.max.z));
+ assert.equal(next.diagnostics.issues.length,0);
+});

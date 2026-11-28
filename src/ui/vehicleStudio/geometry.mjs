@@ -849,6 +849,21 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     const leaf=canopy.gullwingRoofGlass&&(a===0||b===1);
     put('roof',seal?'seamDark':leaf?'glass':roofFinish,mesh);
    }
+  }else if(!roofMode&&!coveredTarga&&canopy.foldingRoofSeam>.09){
+   // Closed retractable hardtop with separate skins and a recessed seal.
+   // All three strips sample a single roof chart, so perimeter joins stay put.
+   const station=clamp(canopy.foldingRoofSeam,.10,.90),span=roofFront-roofRear;
+   const half=.0035/span, seam=mix(roofRear,roofFront,station),columns=small(12,9,8,7);
+   const n=small(17,9,8,7), before=Math.max(2,Math.round(n*station)),after=Math.max(2,n-before);
+   for(const [a,b,rows,seal] of [[roofRear,seam-span*half,before,0],[seam-span*half,seam+span*half,2,1],[seam+span*half,roofFront,after,0]]){
+    const m=patch(rows,columns,(t,u)=>{
+     const v=canopyRoof(mix(a,b,t),u);
+     if(seal)v[1]-=.0028*Math.sin(Math.PI*t)*Math.sin(Math.PI*u)**.5;
+     return v;
+    });
+    m.userData.constructionRole=seal?'closed folding roof / seal':'closed folding roof / painted section';
+    put('roof',seal?'seamDark':roofFinish,m);
+   }
   }else if(!roofMode)sheet('roof',roofFinish,roofRear,roofFront,canopyRoof,small(17,9,8,7),small(12,9,8,7));
   else{
    // The glass and weatherstrips partition the same master surface; no

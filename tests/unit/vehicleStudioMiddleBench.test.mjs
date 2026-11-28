@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {test} from 'node:test';
+import {createVehicle,loadVehicle} from '../../src/ui/vehicleStudio/genome.mjs';
+import {generateVehicle} from '../../src/ui/vehicleStudio/geometry.mjs';
+import {exportVehicle} from '../../src/ui/vehicleStudio/export.mjs';
+test('three-row middle bench fits eight seats without changing steering or wheel mounts',()=>{
+ const g=loadVehicle(readFileSync(new URL('../../src/ui/vehicleStudio/examples/lexus-gx470-ca-2005.json',import.meta.url),'utf8'));
+ const make=(flag)=>{const v=structuredClone(g);v.construction.cabin.middleBench=flag;return generateVehicle(v,{quality:'drive',compact:2});};
+ const before=make(0),after=make(1);
+ assert.equal(createVehicle().construction.cabin.middleBench,0);
+ assert.deepEqual(before.cabin.rows.map(r=>r.count),[2,2,3]);
+ assert.deepEqual(after.cabin.rows.map(r=>r.count),[2,3,3]);
+ assert.equal(after.cabin.capacity,8);
+ assert.ok(after.cabin.seats.some(s=>s.row===1&&s.bench&&s.headrests===3));
+ assert.deepEqual(after.cabin.steeringCenter,before.cabin.steeringCenter);
+ assert.deepEqual(after.wheels,before.wheels);
+ assert.deepEqual(after.diagnostics.issues,[]);
+ const [body,wheel]=Object.values(exportVehicle(g,{quality:'drive'}).models);
+ assert.ok(body.faces.length+2*(wheel.faces.length+(wheel.rearAxleModel?.faces.length??wheel.faces.length))<=15000);
+});
