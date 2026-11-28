@@ -768,3 +768,26 @@ front shapes and the race Pajero wheel arches remain approximations.
 
 - **Selfheal 2005 (Grand Caravan SE):** Refitted against the [2005 Dodge brochure](https://www.auto-brochures.com/makes/Dodge/Grand%20Caravan/Dodge_US%20GrandCaravan_2005.pdf#page=6), [SE side profile](https://www.groovecar.com/research/2005/dodge/grand-caravan/se-4dr-extended-mini-van/) and [straight rear photos of an SE survivor](https://www.victorymotorsofcolorado.com/inventory/2005-dodge-grand-caravan-se/330858?photos=1) (optional rails excluded). The roof extends farther aft and the four working rear light functions now sit in vertical corner towers. The lower hatch and molding still differ from the reference.
 - **Hellebore RS 2015 (Juke NISMO RS):** Refitted against Nissan's exact [front three-quarter](https://usa.nissannews.com/en-US/photos/2015-nissan-juke-nismo-rs-13), [side](https://usa.nissannews.com/en-US/photos/2015-nissan-juke-nismo-rs-10) and [head-on](https://usa.nissannews.com/en-US/photos/2015-nissan-juke-nismo-rs-17) photos. Two formed hood marker pockets, a swept grille opening and a lower recessed fascia improve profile and lamp seating. The outboard bumper still reads more upright than the real body. These two edits do not increase the roster count.
+
+### Full-roster rollout, Toyota, Suzuki, Chevrolet, Volkswagen, and Mazda
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Hoary Cinquefoil 1992 | Japanese Toyota Supra 2.0 GT GA70 narrow body, fixed roof 5MT. [Toyota Japan model catalogue](https://toyota.jp/ucar/catalog/brand-TOYOTA/car-SUPRA/199108/1000943/); [front](https://gazoo.com/catalog/car_img/10101007/10101007_199108.jpg), [rear](https://gazoo.com/catalog/car_img/10101007/10101007_199108bk.jpg). |
+| Starwort 2005 | US Toyota MR2 Spyder standard five-speed manual, no optional LSD. [Toyota family archive](https://pressroom.toyota.com/album/2000-2005-toyota-mr2-third-3rd-generation/); [exact 2005 base exterior](https://www.carsrememberwhen.com/inventory/2005-toyota-mr2-spyder-base/786646?photos=1). |
+| Woodruff 1991 | US Toyota Previa Deluxe 2.4 RWD five-speed, seven seats. [Toyota archive](https://pressroom.toyota.com/album/1991-1997-toyota-previa-first-1st-generation/); [1991 brochure](https://importarchive.com/brochure/toyotaprevia1991_01). |
+| Hazel S 2011 | US Suzuki Kizashi S FWD 6MT, standard full covers, not Sport/AWD. [US factory brochure](https://www.auto-brochures.com/makes/Suzuki/Kizashi/Suzuki_US%20Kizashi_2011.pdf); [matching body styling](https://commons.wikimedia.org/wiki/File:2011_Suzuki_Kizashi_S_AWD_left_front.jpg) (AWD reference, not wheel authority). |
+| Wispwing 660 1993 | January 1993 Japanese Suzuki Cara E-PG6SS with fixed gullwing doors shut. [Suzuki Japan](https://www.suzuki.co.jp/suzuki_digital_library/pdf/1_auto/cara/61.pdf); [exact 1993 photo gallery](https://www.allcollectorcars.com/for-sale/1993-Suzuki-Cara-/2666155/). |
+| Copperhead SC 2006 | US Chevrolet Cobalt SS Supercharged coupe 5MT without G85 package. [Factory packet](https://news.chevrolet.com/content/dam/company/no_search/heritage-archive-docs/vehicle-information-kits/chevrolet/2006-Chevrolet-Cobalt.pdf); [model angles](https://commons.wikimedia.org/wiki/Category:Chevrolet_Cobalt_SS_coupe). |
+| Golden Trefoil 2012 | US Chevrolet Cruze LS 1.8 6MT, 16-inch covered steel wheels, not Eco/RS. [2012 model gallery](https://www.thecarconnection.com/photos/chevrolet_cruze_2012). |
+| Prairie Trefoil 2012 | US Chevrolet Sonic LS five-door 1.8 5MT, not sedan. [Original brochure](https://s3.amazonaws.com/cdn.autoipacket.com/brochures/chevrolet/2012/2012-chevrolet-sonic.pdf). |
+| Redwood Clover 2012 | US VW Golf Mk6 TDI four-door diesel 6MT, standard 17-inch alloys. [Original order guide](https://volkswagenorderguides.com/wp-content/uploads/2023/10/2012_Volkswagen_Golf_Order_Guide.pdf). |
+| Scabious 2015 | US VW GTI S Mk7 three-door 6MT, no Power Package. [Factory brochure](https://cdn.dealereprocess.org/cdn/brochures/volkswagen/2015-golfgti.pdf); [US gallery](https://www.caricos.com/cars/v/vw/2015_volkswagen_golf_gti_us/). |
+| Trailglass 2024 | US VW Tiguan S front-drive seven-seat original 17-inch twin-five wheel design. [US factory ordering guide](https://volkswagenorderguides.com/wp-content/uploads/2023/10/2024_Volkswagen_Tiguan_Order_Guide.pdf). |
+| Small Toadflax 1990 | Japanese Mazda Savanna RX-7 GT-X FC3S fixed roof 5MT, not Infini. [Period Japanese model catalogue](https://www.goo-net.com/catalog/MAZDA/SAVANNA_RX7/). |
+| Rotarypetal 2011 | US Mazda RX-8 Sport six-speed, not R3. [US factory brochure](https://portal.mazdausa.com/m176/MusaWeb/musa2/pdf/brochures/2011/2011_rx8_brochure.pdf). |
+
+The Suzuki Carry study is withheld: the original game model's 2.10 m
+wheel mount span differs from its 1.855 m wheelbase and did not align in a
+live drive. The experimental Mazda Furai is withheld for nose/canopy
+fidelity despite passing runtime checks. Neither counts as a conversion.

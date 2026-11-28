@@ -120,12 +120,13 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  cabinFront=clamp(cabinFront,Lr+.9,Lf-.53);cabinRear=clamp(cabinRear-g.construction.cabin.rearPillarFoot-.22*hatchUpright,Math.max(Lr+(g.construction.cabin.rearPillarFoot?.40:.50)-.22*hatchUpright,hatchUpright?bumperRear+.025:-Infinity),cabinFront-1.52);
  const doorFront=clamp(cabinFront+.12,-.15,L-.26),doorRear=clamp(cabinRear-.17,-L+.23,doorFront-.65);
  const asymDoors=c.doors.type==='three door right';
+ const halfDoors=c.doors.type==='four door'&&g.construction.cabin.rearHalfDoors;
  // The game chassis uses signed +X right. On the asymmetric layout only
  // that side receives the second leaf and a station closer to the rear.
- const oneDoor=[doorRear,doorFront],twoDoors=[doorRear,mix(doorRear,doorFront,asymDoors?.385:.47),doorFront];
+ const oneDoor=[doorRear,doorFront],twoDoors=[doorRear,mix(doorRear,doorFront,halfDoors?.287:asymDoors?.385:.47),doorFront];
  const doorSplits=s=>c.doors.type==='four door'||asymDoors&&s>0?twoDoors:oneDoor;
  const layerHandles=(q,skip)=>q.slice(1).map((z,i)=>mix(q[i],z,.26)).slice(skip?1:0);
- const handlesL=layerHandles(doorSplits(-1),false),handlesR=layerHandles(doorSplits(1),asymDoors);
+ const handlesL=layerHandles(doorSplits(-1),halfDoors),handlesR=layerHandles(doorSplits(1),asymDoors||halfDoors);
  const handleStations=s=>s>0?handlesR:handlesL;
  const styleCurves=g.construction.features.map(f=>({...f,calculate:compileFormula(f.formula)}));
  function featureHeight(f,z){
@@ -851,7 +852,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   put('mirrors',g.construction.cabin.contrastMirrorCaps?'roofPaint':'paint',ellipsoid(.25*mirror.size,.115*mirror.depth,.185*mirror.size*(mirror.type==='aero'?1.42:1)),[s*(sx+.19),sy,mz],[mirror.angle*RAD,s*(mirror.shape-.5)*.52,0]);
   put('mirrors','chrome',ellipsoid(.19*mirror.size,.087,.019),[s*(sx+.20),sy,mz-.081*mirror.size]);
   }
-  if(!canopy.noDoorHandles)for(const z of handleStations(s)){
+  if(!canopy.noDoorHandles)for(const z of canopy.highRearDoorHandles&&c.doors.type==='four door'?handleStations(s).slice(1):handleStations(s)){
    const hp=c.handles,q=master.at(z,.22);
    if(hp.type==='painted lever'){
     const span=.132*hp.size, height=.025+hp.shape*.014, rise=.009*hp.depth;
@@ -1322,7 +1323,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   },s<0));
   const framed=c.pillars.type==='painted frame';
   const windowPillar=c.doors.type==='four door'?.50:asymDoors&&s>0?.605:.65;
-  for(const u of roadster?[0]:split>=.25?[]:taper?[0,windowPillar]:[0,windowPillar,1]){
+  for(const u of roadster?[0]:split>=.25?[]:taper?(halfDoors?[0]:[0,windowPillar]):halfDoors?[0,1]:[0,windowPillar,1]){
    const outer=u===0||u===1;
    const mat=roofStrake&&outer?'roofPaint':(c.pillars.type==='painted'||framed&&outer)&&!(u===0&&canopy.darkWindscreenFrame)?'paint':'trim',w=(.013+.027*c.pillars.shape)*c.pillars.size+(u===1?canopy.rearPillarWidth:0);
    const pillar=(v,j)=>{
@@ -1334,14 +1335,25 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     q[0]+=s*.0012;return q;
    },(s<0)!==(u===1)));
   }
-  if(asymDoors&&s>0&&!roadster&&!canopy.noDoorHandles){
+  if((asymDoors&&s>0||canopy.highRearDoorHandles&&c.doors.type==='four door')&&!roadster&&!canopy.noDoorHandles){
    // Small upright passenger-rear pull buried in the trailing black
    // glazing trim, not a body-color duplicate on the lower door skin.
+   if(canopy.highRearDoorHandles){
+    // The short pull is molded into the aft DLO applique. Opaque backing
+    // lands against the real chart so the pull cannot float over the glass.
+    const garnish=patch(7,3,(v,j)=>{
+     const t=mix(.045,.978,v),u=mix(.923-.025*bell(v),1,j);
+     const p=side(u,t);p[0]+=s*(.0025+.002*bell(j));return p;
+    },s>0);
+    put('pillars','trim',garnish);
+   }
    const grip=patch(4,2,(v,j)=>{
-    const u=mix(.882+.023*v,.953+.011*v,j);
-    const p=side(u,mix(.16,.42,v));p[0]+=.013+.009*bell(j)*bell(v);return p;
-   },true);
-   grip.userData.constructionRole='right rear hidden door pull';
+    const high=canopy.highRearDoorHandles;
+    const u=high?mix(.947+.008*v,.975+.006*v,j):mix(.882+.023*v,.953+.011*v,j);
+    const p=side(u,mix(high?.43:.16,high?.69:.42,v));
+    p[0]+=(high?s:1)*(high?.0045+.004*bell(j)*bell(v):.013+.009*bell(j)*bell(v));return p;
+   },canopy.highRearDoorHandles?s>0:true);
+   grip.userData.constructionRole=(s>0?'right':'left')+' rear hidden door pull';
    put('handles','trim',grip);
   }
   if(framed&&!roadster&&split<.25)put('pillars',roofStrake?'roofPaint':'paint',patch(small(20,12,10,9),small(3,1,1,1),(u,j)=>{

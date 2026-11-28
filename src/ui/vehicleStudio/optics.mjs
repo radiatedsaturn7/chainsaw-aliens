@@ -163,7 +163,7 @@ export function makeOpenings({end,g,segments=32,face=null}){
    width:sat(num(raw.width,.5)),height:sat(num(raw.height,.5)),corner:sat(num(raw.corner,.5)),
    angle:signed(num(raw.angle,(legacy.angle||0)/18)),sweep:sat(num(raw.sweep,.5)),
    curvature:sat(num(raw.curvature,.5)),recess:sat(num(raw.recess,.5)),convexity:sat(num(raw.convexity,.5)),
-   sideWrap:sat(num(raw.sideWrap,0)),silverFront:sat(num(raw.silverFront,0)),silverUpper:sat(num(raw.silverUpper,0)),silverUpperSplit:Math.max(-.08,Math.min(.20,num(raw.silverUpperSplit,-.018))),tripleBowls:sat(num(raw.tripleBowls,0)),rearLightBlades:Math.max(0,Math.min(27,Math.round(num(raw.rearLightBlades,0)))),rearCells:sat(num(raw.rearCells,0)),rearClearNotch:sat(num(raw.rearClearNotch,0)),headlampBrow:Math.max(0,Math.min(.36,num(raw.headlampBrow,0))),rearTriBars:Math.max(0,Math.min(2,num(raw.rearTriBars,0))),roundBowls:sat(num(raw.roundBowls,0)),flutedBowls:sat(num(raw.flutedBowls,0)),position:sat(num(raw.position,.5)),protrusion:sat(num(raw.protrusion,0)),formula:raw.formula??'',modules:Math.max(0,Math.min(8,Math.round(raw.modules??0))),spacing:sat(num(raw.spacing,.5)),inboardReach:sat(num(raw.inboardReach,.5)),formulaSide:g.construction?.symmetry?.[group]==='linked'?s:1,outline:Array.isArray(raw.outline)?raw.outline:[]};
+   sideWrap:sat(num(raw.sideWrap,0)),silverFront:sat(num(raw.silverFront,0)),silverUpper:sat(num(raw.silverUpper,0)),silverUpperSplit:Math.max(-.08,Math.min(.20,num(raw.silverUpperSplit,-.018))),tripleBowls:sat(num(raw.tripleBowls,0)),rearLightBlades:Math.max(0,Math.min(27,Math.round(num(raw.rearLightBlades,0)))),rearCells:sat(num(raw.rearCells,0)),rearClearNotch:sat(num(raw.rearClearNotch,0)),splitInnerRounds:sat(num(raw.splitInnerRounds,0)),headlampBrow:Math.max(0,Math.min(.36,num(raw.headlampBrow,0))),rearTriBars:Math.max(0,Math.min(2,num(raw.rearTriBars,0))),roundBowls:sat(num(raw.roundBowls,0)),flutedBowls:sat(num(raw.flutedBowls,0)),position:sat(num(raw.position,.5)),protrusion:sat(num(raw.protrusion,0)),formula:raw.formula??'',modules:Math.max(0,Math.min(8,Math.round(raw.modules??0))),spacing:sat(num(raw.spacing,.5)),inboardReach:sat(num(raw.inboardReach,.5)),formulaSide:g.construction?.symmetry?.[group]==='linked'?s:1,outline:Array.isArray(raw.outline)?raw.outline:[]};
 
  // The bands are deliberately disjoint even at all slider extremes:
  // lamp inside <= .366; center grille starts >= .388; lower intakes start >= .31.
@@ -806,7 +806,26 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
     putGeo(front?'projector':'opticRed',[rr(.51,bright?d*.60:d*.64),rr(.29,d*.55)],pt(x,y,d*.53));
    }
   };
-  if(!front&&!opt.rearTriBars&&oLayout==='round-stack'){
+  if(!front&&opt.splitInnerRounds&&opt.housing==='dual-round'&&oLayout==='round-stack'){
+   if(opt.secondaryLamp){
+    // Inner lamp has an amber upper semicircle and a clear lower half.
+    // Cut the passive optical lens and live masks on the same fitted rim.
+    const inset=outline.map(([u,v])=>[mix(cx,u,.86),mix(cy,v,.86)]);
+    for(const [keep,mat] of [[-1,side>0?'signalR':'signalL'],[1,'opticClear']]){
+     const part=[],cut=cy+keep*.0018;
+     for(let i=0;i<inset.length;i++){
+      const a=inset[i],b=inset[(i+1)%inset.length],da=a[1]-cut,db=b[1]-cut;
+      if(da*keep>=0)part.push(a);
+      if((da*keep>=0)!==(db*keep>=0))part.push([mix(a[0],b[0],da/(da-db)),cut]);
+     }
+     if(part.length>=3)putGeo(mat,[ring(1,d*.44,part)],pt(cx,cy+keep*.11*h,d*.433));
+    }
+   }else{
+    // Outboard bowl is a red brake field with an independent red running lip.
+    putGeo('runningRed',[ring(.853,d*.44),ring(.72,d*.414),ring(.62,d*.432)]);
+    putGeo('opticRed',[ring(.61,d*.479),ring(.39,d*.458)],pt(cx,cy,d*.454));
+   }
+  }else if(!front&&!opt.rearTriBars&&oLayout==='round-stack'){
    // A broad brake optic and independent red running ring sit behind
    // the outer glass. The small reverse/turn elements remain functional.
    putGeo('runningRed',[ring(.855,d*.425),ring(.705,d*.392),ring(.625,d*.41)]);

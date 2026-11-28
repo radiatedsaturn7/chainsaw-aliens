@@ -13173,5 +13173,577 @@
     ],
     "reference": "2017 Maserati Levante S, UKSeptember2017 petrol3.0 twin-turboV6 Q4 eight-speed automatic SUV,standard19-inch wheels;notDiesel,350CVbase,GTS,Trofeo orlaterfacelift",
     "canonicalLampSides": true
+  },
+  {
+    "id": "toyota-supra-ga70-20gt-jp-1992",
+    "label": "Hoary Cinquefoil 1992",
+    "capability": "JDM narrow hardtop Supra A70 pop-ups and long bonnet",
+    "carId": "3d-hoary-cinquefoil-1992-3d-3561ec693bfc",
+    "bodyRef": "Hoary Cinquefoil 1992 Body",
+    "wheelRef": "Hoary Cinquefoil 1992 Wheel",
+    "radius": 0.3135,
+    "axles": [
+      {
+        "track": 1.4600000381469727,
+        "y": 0.31349998712539673,
+        "z": 1.2975000143051147
+      },
+      {
+        "track": 1.465000033378601,
+        "y": 0.31349998712539673,
+        "z": -1.2975000143051147
+      }
+    ],
+    "reference": "1992 Japan Toyota Supra GA70 narrow body 2.0GT fixed roof manual"
+  },
+  {
+    "id": "toyota-mr2-spyder-us-2005",
+    "label": "Starwort 2005",
+    "capability": "MR2 Spyder small open two-seat 2005 projector and fog fascia",
+    "carId": "3d-starwort-2005-3d-abe95a6c4d56",
+    "bodyRef": "Starwort 2005 Body",
+    "wheelRef": "Starwort 2005 Wheel",
+    "radius": 0.29995,
+    "axles": [
+      {
+        "track": 1.4757399559020996,
+        "y": 0.2999500036239624,
+        "z": 1.2255500555038452
+      },
+      {
+        "track": 1.4605000019073486,
+        "y": 0.2999500036239624,
+        "z": -1.2255500555038452
+      }
+    ],
+    "reference": "2005 US Toyota MR2 Spyder standard five-speed manual"
+  },
+  {
+    "id": "toyota-previa-deluxe-us-1991",
+    "label": "Woodruff 1991",
+    "capability": "Previa seven-seat egg-shaped monovolume with one sliding door",
+    "carId": "3d-woodruff-1991-3d-412d4c475588",
+    "bodyRef": "Woodruff",
+    "wheelRef": "Woodruff-Wheel",
+    "radius": 0.33155,
+    "axles": [
+      {
+        "track": 1.559999942779541,
+        "y": 0.3315500020980835,
+        "z": 1.4325599670410156
+      },
+      {
+        "track": 1.5549999475479126,
+        "y": 0.33095499873161316,
+        "z": -1.4325599670410156
+      }
+    ],
+    "reference": "1991 US Toyota Previa Deluxe RWD manual seven-seater"
+  },
+  {
+    "reference": "2011 mainland-US Suzuki Kizashi S FWD six-speed manual, J24B 2.4L and full covered 215/60R16, excluding Sport, AWD and CVT.",
+    "canonicalLampSides": true,
+    "stockWheelPositions": {
+      "FR": [
+        0.7825000286102295,
+        0.33219999074935913,
+        1.0800080299377441
+      ],
+      "FL": [
+        -0.7825000286102295,
+        0.33219999074935913,
+        1.0800080299377441
+      ],
+      "RR": [
+        0.7825000286102295,
+        0.3328799903392792,
+        -1.6200120449066162
+      ],
+      "RL": [
+        -0.7825000286102295,
+        0.3328799903392792,
+        -1.6200120449066162
+      ]
+    },
+    "id": "suzuki-kizashi-s-2011",
+    "label": "Hazel S 2011",
+    "capability": "2011 base sedan retained full-height glass, front grille and lower openings, no Sport deck lid wing",
+    "carId": "3d-hazel-s-2011-3d-be1f633d45ed",
+    "bodyRef": "Hazel-S",
+    "wheelRef": "Hazel-S-Wheel",
+    "radius": 0.3322,
+    "axles": [
+      {
+        "track": 1.565000057220459,
+        "y": 0.33219999074935913,
+        "z": 1.0800080299377441
+      },
+      {
+        "track": 1.565000057220459,
+        "y": 0.3328799903392792,
+        "z": -1.6200120449066162
+      }
+    ]
+  },
+  {
+    "reference": "January 1993 JDM Suzuki Cara E-PG6SS FAXF two-seat 5MT fixed-roof closed gullwing midship F6A; not Mazda-spec AZ-1 or open roadster.",
+    "canonicalLampSides": true,
+    "stockWheelPositions": {
+      "FR": [
+        0.6000000238418579,
+        0.2658500075340271,
+        1.2739499807357788
+      ],
+      "FL": [
+        -0.6000000238418579,
+        0.2658500075340271,
+        1.2739499807357788
+      ],
+      "RR": [
+        0.6000000238418579,
+        0.2648940086364746,
+        -0.9610499739646912
+      ],
+      "RL": [
+        -0.6000000238418579,
+        0.2648940086364746,
+        -0.9610499739646912
+      ]
+    },
+    "id": "suzuki-cara-1993",
+    "label": "Wispwing 660 1993",
+    "capability": "Compact true glass gullwing roof/headroom, two seat RHD, side skirt and functional round lamp pair",
+    "carId": "3d-wispwing-660-1993-3d-ce7de973c2ce",
+    "bodyRef": "Wispwing-660",
+    "wheelRef": "Wispwing-660-Wheel",
+    "radius": 0.26585,
+    "axles": [
+      {
+        "track": 1.2000000476837158,
+        "y": 0.2658500075340271,
+        "z": 1.2739499807357788
+      },
+      {
+        "track": 1.2000000476837158,
+        "y": 0.2648940086364746,
+        "z": -0.9610499739646912
+      }
+    ]
+  },
+  {
+    "id": "chevrolet-cobalt-ss-sc-2006",
+    "label": "Copperhead SC 2006",
+    "carId": "3d-copperhead-sc-2006-3d-60f0116643c3",
+    "capability": "2006 US Chevrolet Cobalt SS Supercharged coupe, standard 2.0L LSJ 205 hp, F35 5MT, 18-inch cast alloys, standard high wing and fogs; no G85 performance bucket seats, LSD or options.",
+    "bodyRef": "Copperhead-SC-2006-body",
+    "wheelRef": "Copperhead-SC-2006-wheel",
+    "radius": 0.32535,
+    "axles": [
+      {
+        "track": 1.4496999979019165,
+        "y": 0.32534998655319214,
+        "z": 1.3320000171661377
+      },
+      {
+        "track": 1.4759999513626099,
+        "y": 0.32534998655319214,
+        "z": -1.2920000553131104
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.5709999799728394,
+            0.6069999933242798,
+            -2.3259999752044678
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.5709999799728394,
+            0.6069999933242798,
+            -2.3259999752044678
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.593999981880188,
+            0.6959999799728394,
+            2.3510000705718994
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.593999981880188,
+            0.6959999799728394,
+            2.3510000705718994
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7248499989509583,
+            0.32534998655319214,
+            -1.3320000171661377
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7248499989509583,
+            0.32534998655319214,
+            -1.3320000171661377
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7379999756813049,
+            0.32534998655319214,
+            1.2920000553131104
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7379999756813049,
+            0.32534998655319214,
+            1.2920000553131104
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "https://news.chevrolet.com/content/dam/company/no_search/heritage-archive-docs/vehicle-information-kits/chevrolet/2006-Chevrolet-Cobalt.pdf"
+  },
+  {
+    "id": "chevrolet-cruze-ls-2012",
+    "label": "Golden Trefoil 2012",
+    "carId": "3d-golden-trefoil-2012-3d-15606b90b62b",
+    "capability": "2012 United States Chevrolet Cruze, LS1.8Ecotec sedan6MT,16-inchcoveredsteelwheels,noEcoorRS",
+    "bodyRef": "Golden-Trefoil",
+    "wheelRef": "Golden-Trefoil-Wheel",
+    "radius": 0.3322,
+    "axles": [
+      {
+        "track": 1.5417799949645996,
+        "y": 0.33219999074935913,
+        "z": 1.0739120244979858
+      },
+      {
+        "track": 1.5570199489593506,
+        "y": 0.3327690064907074,
+        "z": -1.610867977142334
+      }
+    ],
+    "reference": "https://www.thecarconnection.com/photos/chevrolet_cruze_2012"
+  },
+  {
+    "id": "chevrolet-sonic-ls-hatch-2012",
+    "label": "Prairie Trefoil 2012",
+    "carId": "3d-prairie-trefoil-2012-3d-44475349d4a7",
+    "capability": "2012 United States Chevrolet Sonic, LS1.8Ecotec five-doorhatchback5MT,standard15-inchalloys,manualwindows",
+    "bodyRef": "Prairie Trefoil 2012 Body",
+    "wheelRef": "Prairie Trefoil 2012 Wheel",
+    "radius": 0.31725000000000003,
+    "axles": [
+      {
+        "track": 1.5087599754333496,
+        "y": 0.31725001335144043,
+        "z": 1.2623800039291382
+      },
+      {
+        "track": 1.5087599754333496,
+        "y": 0.31725001335144043,
+        "z": -1.2623800039291382
+      }
+    ],
+    "reference": "https://s3.amazonaws.com/cdn.autoipacket.com/brochures/chevrolet/2012/2012-chevrolet-sonic.pdf"
+  },
+  {
+    "id": "volkswagen-golf-tdi-mk6-2012",
+    "label": "Redwood Clover 2012",
+    "capability": "Halogen-lens Mk6 four-door with sedan-like broad cabin, lowered sport stance and 17-in 10 spokes",
+    "carId": "3d-redwood-clover-2012-3d-713f51e699f5",
+    "bodyRef": "Redwood-Clover-2012",
+    "wheelRef": "Redwood-Clover-2012-Wheel",
+    "radius": 0.31715,
+    "axles": [
+      {
+        "track": 1.5417799949645996,
+        "y": 0.3171499967575073,
+        "z": 1.2890000343322754
+      },
+      {
+        "track": 1.5138399600982666,
+        "y": 0.3171499967575073,
+        "z": -1.2890000343322754
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2012 US Volkswagen Golf Mk6 TDI four-door 6MT"
+  },
+  {
+    "id": "volkswagen-gti-s-mk7-2015",
+    "label": "Scabious 2015",
+    "capability": "Low angular Mk7 two-door hatch, honeycomb fascia, 18-in alloys, twin pipes",
+    "carId": "3d-scabious-2015-3d-df2be3ac450e",
+    "bodyRef": "Scabious 2015 Body",
+    "wheelRef": "Scabious 2015 Wheel",
+    "radius": 0.3186,
+    "axles": [
+      {
+        "track": 1.5379999876022339,
+        "y": 0.31859999895095825,
+        "z": 1.315500020980835
+      },
+      {
+        "track": 1.5160000324249268,
+        "y": 0.31859999895095825,
+        "z": -1.315500020980835
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2015 US Volkswagen Golf GTI Mk7 S two-door 6MT (210 hp)"
+  },
+  {
+    "id": "volkswagen-tiguan-s-fwd-2024",
+    "label": "Trailglass 2024",
+    "capability": "2024 facelift long-wheelbase three-row S, roof rails, unbadged wide bars and machined-style paired five-spokes",
+    "carId": "3d-trailglass-2024-3d-119dc24ed195",
+    "bodyRef": "Trailglass",
+    "wheelRef": "Trailglass-Wheel",
+    "radius": 0.35565,
+    "axles": [
+      {
+        "track": 1.5800000429153442,
+        "y": 0.35565000772476196,
+        "z": 1.1443099975585938
+      },
+      {
+        "track": 1.5709999799728394,
+        "y": 0.3562360107898712,
+        "z": -1.646690011024475
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2024 US Volkswagen Tiguan S FWD seven-seat"
+  },
+  {
+    "id": "mazda-savanna-rx7-gtx-1990",
+    "label": "Small Toadflax 1990",
+    "capability": "1990 JDM fixed roof Savanna GT-X with turbo scoop and parked headlamp lids",
+    "carId": "3d-small-toadflax-1990-3d-b5228c590d61",
+    "bodyRef": "Small-Toadflax-1990-body",
+    "wheelRef": "Small-Toadflax-1990-wheel",
+    "radius": 0.31595,
+    "axles": [
+      {
+        "track": 1.4500000476837158,
+        "y": 0.3159500062465668,
+        "z": 1.2769999504089355
+      },
+      {
+        "track": 1.440000057220459,
+        "y": 0.3159500062465668,
+        "z": -1.152999997138977
+      }
+    ],
+    "reference": "1990 Japan Mazda Savanna RX-7 GT-X June1990 E-FC3S 13B1308cc single twin-scroll-turbo two-rotor RWD5MT four-seat coupe, standardfixedroof; notInfini215PS,AT orCabriolet",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6129999756813049,
+            0.4580000042915344,
+            -2.2355000972747803
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6129999756813049,
+            0.4580000042915344,
+            -2.2355000972747803
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6570000052452087,
+            0.6290000081062317,
+            2.248500108718872
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6570000052452087,
+            0.6290000081062317,
+            2.248500108718872
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7250000238418579,
+            0.3159500062465668,
+            -1.2769999504089355
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7250000238418579,
+            0.3159500062465668,
+            -1.2769999504089355
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7200000286102295,
+            0.3159500062465668,
+            1.152999997138977
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7200000286102295,
+            0.3159500062465668,
+            1.152999997138977
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "mazda-rx8-sport-2011",
+    "label": "Rotarypetal 2011",
+    "capability": "US Series II RX-8 Sport six-speed, rear half doors and stock lip",
+    "carId": "3d-rotarypetal-2011-3d-58eee6011f1d",
+    "bodyRef": "Rotarypetal 2011 Body",
+    "wheelRef": "Rotarypetal 2011 Wheel",
+    "radius": 0.32985,
+    "axles": [
+      {
+        "track": 1.5011399984359741,
+        "y": 0.3298499882221222,
+        "z": 1.3512799739837646
+      },
+      {
+        "track": 1.5062199831008911,
+        "y": 0.3298499882221222,
+        "z": -1.3512799739837646
+      }
+    ],
+    "reference": "2011 US Mazda RX-8 Sport 6MT, 232 hp Renesis, Series II, not R3",
+    "canonicalLampSides": true
   }
 ]

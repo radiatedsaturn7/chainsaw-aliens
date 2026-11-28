@@ -88,8 +88,8 @@ function tire(r,c,rim,shape,depth,size,rally,n,compact=0){
 }
 
 function spoke(r,face,dish,i,count,style,depth,low){
- const paired=style==='7 twin spoke',half=i%2===0?-1:1;
- const a=paired?(Math.floor(i/2)*TAU/7+half*.092):i*TAU/count;
+ const paired=style==='7 twin spoke'||style==='5 twin spoke',half=i%2===0?-1:1;
+ const a=paired?(Math.floor(i/2)*TAU/(style==='5 twin spoke'?5:7)+half*.092):i*TAU/count;
  const swept=style==='3-spoke sweep';
  const lean=(paired?half*.041:swept?-.37:style==='mesh'?(i%2===0?-.097:.097):style==='5-spoke'?-.105:style==='15-spoke'?0:style==='10-spoke'?.009:style==='9-spoke'?.016:-.052);
  const P=[],U=[],I=[];
@@ -209,22 +209,23 @@ export function buildWheels(g,{quality='preview',compact=0,emit,rear=false}={}){
   [rim*.239,hub-.012],[rim*.221,hub-.004],[rim*.202,hub+.002],
   [rim*.188,hub+.004],[0,hub+.004]
  ];
- const cover=w.type==='interface cover'||w.type==='swept steel cover';
+ const thinCover=w.type==='12-slot steel cover';
+ const cover=w.type==='interface cover'||w.type==='swept steel cover'||thinCover;
  if(!cover)put('wheels','wheel',lathe(compact?hubProfile.filter((p,i)=>i!==1&&i!==3):hubProfile,innerN));
 
  if(w.type==='wire cross-laced'){
   for(const part of crossLacedWheel(rim,c,face,hub,compact,detail,w.depth))put('wheels','wheel',part);
  }else if(cover){
-  const dodge=w.type==='interface cover',s=dodge?6:7,al=TAU/s,x=face-.006;
+  const dodge=w.type==='interface cover',s=thinCover?12:dodge?6:7,al=TAU/s,x=face-.006;
   // Clip-on convex painted cap, with low molded shoulder and smooth center
   // concealing the studs. The trim slots use real formed surface relief.
   put('wheels','wheel',lathe([[rim*.954,x-.007],[rim*.919,x+.002],[rim*.78,x+.004],[rim*.33,x+.008],[rim*.22,x+.009],[0,x+.010]],n));
   for(let i=0;i<s;i++){
    const a=i*al,pt=(p,b,h)=>[x+h,Math.cos(a+b)*rim*p,Math.sin(a+b)*rim*p];
-   const outer=dodge?.90:.895,inner=dodge?.61:.49,tw=dodge?.05:.19;
-   const poly=[pt(inner,-.11-tw,.0075),pt(outer,-.12,.0045),pt(outer,.114,.0045),pt(inner,.079-tw,.0075)];
+   const outer=dodge?.90:.895,inner=thinCover?.51:dodge?.61:.49,tw=thinCover?.021:dodge?.05:.19;
+   const poly=thinCover?[pt(inner,-.063-tw,.0082),pt(outer,-.104,.0055),pt(outer,.103,.0055),pt(inner,.058-tw,.0082)]:[pt(inner,-.11-tw,.0075),pt(outer,-.12,.0045),pt(outer,.114,.0045),pt(inner,.079-tw,.0075)];
    put('wheels','seamDark',mesh(poly,[0,1,2,0,2,3],[[0,0],[0,1],[1,1],[1,0]]));
-   const rib=[pt(inner,-.16-tw,.010),pt(outer,-.145,.0068),pt(outer,-.115,.0068),pt(inner,-.08-tw,.010)];
+   const rib=thinCover?[pt(inner,-.092-tw,.0102),pt(outer,-.129,.0071),pt(outer,-.104,.0071),pt(inner,-.063-tw,.0102)]:[pt(inner,-.16-tw,.010),pt(outer,-.145,.0068),pt(outer,-.115,.0068),pt(inner,-.08-tw,.010)];
    put('wheels','wheel',mesh(rib,[0,1,2,0,2,3],[[0,0],[0,1],[1,1],[1,0]]));
   }
  }else if(w.type==='pentagonal cast pockets'){
@@ -265,7 +266,7 @@ export function buildWheels(g,{quality='preview',compact=0,emit,rear=false}={}){
    put('wheels','seamDark',recess);
   }
  }else{
- const nSpokes=w.type==='7 twin spoke'?14:w.type==='9-spoke'?9:w.type==='3-spoke sweep'?3:w.type==='4-spoke'?4:w.type==='6-spoke'?6:w.type==='5-spoke'?5:w.type==='15-spoke'?15:w.type==='10-spoke'?10:w.type==='8-spoke'?8:w.type==='7-spoke'?7:low?8:12;
+ const nSpokes=w.type==='7 twin spoke'?14:w.type==='5 twin spoke'?10:w.type==='9-spoke'?9:w.type==='3-spoke sweep'?3:w.type==='4-spoke'?4:w.type==='6-spoke'?6:w.type==='5-spoke'?5:w.type==='15-spoke'?15:w.type==='10-spoke'?10:w.type==='8-spoke'?8:w.type==='7-spoke'?7:low?8:12;
  for(let k=0;k<nSpokes;k++)put('wheels','wheel',spoke(rim,face,dish,k,nSpokes,w.type,w.depth,low||nSpokes>7&&!detail));
   }
  if(!low&&!cover&&w.type!=='wire cross-laced')for(let k=0;k<5;k++)put('wheels','trim',boltSocket(hub+.0042,rim*.134,k));
