@@ -195,7 +195,8 @@ export function syncRaceModelLamps(part,session,{braking=false,reversing=false,e
    const mat=mesh.material,role=/^\[studio9:([a-z-]+)\]/.exec(mat?.name??'')?.[1];
    if(!role||!mat.emissive||studioLightColors[role]===undefined)return [];
    mat.userData.raceVehicleLamp=true;
-   mat.emissive.set(studioLightColors[role]);mat.emissiveIntensity=0;return [{role,mat}];
+   const redRearTurn=role.startsWith('signal-')&&/ Red rear turn lens$/.test(mat.name);
+   mat.emissive.set(redRearTurn?studioLightColors.brake:studioLightColors[role]);mat.emissiveIntensity=0;return [{role,mat}];
   });
   const studioFront=instance.raceStudioLights.some(x=>x.role==='head'),studioRear=instance.raceStudioLights.some(x=>x.role==='brake');
   const frames=mountedLampLocalFrames(instance.model);

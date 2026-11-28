@@ -105,9 +105,16 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
   const corner=(f.cornerTuck??0)*Math.abs(x)**1.75*smooth(clamp((v-.16)/.75));
   const sweepAmount=f.upperEndSweep?Math.min(f.upperEndSweep,Math.max(0,z-s*upperPanel(seam,u)[2]-.054)):0;
   const noseRake=sweepAmount*(1-smooth(clamp(v/.67)))*(.83+.17*co);
-  const past=z+stamp-tucked-corner-noseRake;
+  // Shape the complete lower face rather than projecting a lip on top of
+  // it. Keep the shoulder and optical pocket above v=.41, and develop a
+  // rolled-in lower corner around the intake, sharing the side terminal.
+  const headroom=smoother((v-.41)/.48);
+  const outer= Math.abs(x)**1.45;
+  const draw=(f.lowerFasciaDrawIn??0)*headroom;
+  const past=z+stamp-tucked-corner-noseRake-draw*(.40+.60*outer);
+
   const knee=(f.bumperMidReach??0)*Math.exp(-(((v-.49)/.175)**2))*(.36+.64*Math.abs(x)**1.8);
-  return [x*edge[0]*track*(1+(f.outerFasciaWidth??0))-Math.sign(x)*corner*.72,y+lip-leadingDrop(u)*(1-smoother(v/.33))-shelf(u)*(1-smoother(v/.56))+(f.utilityLowerLipLift??0)*smoother((v-.52)/.48),s*(past+Math.min(knee,Math.max(0,along-past)))];
+  return [x*edge[0]*track*(1+(f.outerFasciaWidth??0))-Math.sign(x)*(corner*.72+draw*outer*.48),y+lip+draw*outer*.38-leadingDrop(u)*(1-smoother(v/.33))-shelf(u)*(1-smoother(v/.56))+(f.utilityLowerLipLift??0)*smoother((v-.52)/.48),s*(past+Math.min(knee,Math.max(0,along-past)))];
  }
  // The rear stamping and bumper are separate surfaces with their own
  // crown. A smooth corridor preserves the existing lamp/quarter shape

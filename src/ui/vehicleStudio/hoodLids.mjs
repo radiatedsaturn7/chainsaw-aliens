@@ -91,3 +91,52 @@ export function emitFlushHoodLids({cover,hoodLength,settings,across,along,compac
  }
  return hood.userData.trimArea;
 }
+
+// Hood-top combination lamp seat. Cut through the hood surface first, then
+// use the same parametric contour for the formed pocket, gasket and lens.
+export function emitIntegratedHoodMarkers({cover,hoodLength,length,depth,across,along,compact,put,material}){
+ const end=clamp(length/hoodLength,.075,.70), start=.029;
+ const steps=compact?12:24;
+ const paired=[-1,1].map(side=>{
+  const center=[.5+side*.405,start+end*.5];
+  const outline=Array.from({length:steps},(_,i)=>{
+   const a=i/steps*Math.PI*2,t=(1-Math.cos(a))/2;
+   const x=.867+.069*t;
+   return [.5+side*(x-.5)+(.025+.015*t)*Math.sin(a),start+end*t];
+  });
+  if(side<0)outline.reverse();
+  return {side,center,outline};
+ });
+ const hood=fasciaMesh(cover,paired,{rear:true,across,down:along,tolerance:compact?.21:.114});
+ if(material==='bonnet-stripes'){
+  const uv=hood.getAttribute('uv');
+  for(let i=0;i<uv.count;i++)uv.setXY(i,1-uv.getY(i),uv.getX(i));
+ }
+ put('hood',material,hood);
+ for(const {side,center,outline} of paired){
+  const mesh=(rings,fill=false,drift=0)=>{
+   const pos=[],uv=[],ids=[];
+   for(const [scale,lift] of rings)for(const p of outline){
+    const u=center[0]+(p[0]-center[0])*scale+side*drift*.09,v=center[1]+(p[1]-center[1])*scale+drift;
+    const q=cover(u,v);q[1]+=lift;pos.push(...q);uv.push(u,v);
+   }
+   for(let j=1;j<rings.length;j++)for(let k=0;k<steps;k++){
+    const a=(j-1)*steps+k,b=(j-1)*steps+(k+1)%steps;
+    ids.push(a,b,b+steps,a,b+steps,a+steps);
+   }
+   if(fill){
+    const tail=(rings.length-1)*steps,u0=center[0]+side*drift*.09,v0=center[1]+drift, q=cover(u0,v0);q[1]+=rings.at(-1)[1]+.001;
+    pos.push(...q);uv.push(u0,v0);
+    for(let k=0;k<steps;k++)ids.push(tail+k,tail+(k+1)%steps,tail+steps);
+   }
+   const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(pos,3));
+   geo.setAttribute('uv',new T.Float32BufferAttribute(uv,2));geo.setIndex(ids);geo.computeVertexNormals();return geo;
+  };
+  put('headlights',material==='roofPaint'?'roofPaint':'paint',mesh([[1,0],[.96,-depth*.21]]));
+  put('headlights','seamDark',mesh([[.96,-depth*.21],[.88,-depth*.51],[.83,-depth*.76]]));
+  put('headlights','reflector',mesh([[.84,-depth*.76],[.66,-depth*.80]],true));
+  put('headlights',side>0?'signalR':'signalL',mesh([[.43,-depth*.65],[.26,-depth*.62]],true,end*.17));
+  put('headlights','opticCover',mesh([[.90,-depth*.34],[.80,-depth*.27],[.35,-depth*.22]],true));
+ }
+ return hood.userData.trimArea;
+}

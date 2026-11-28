@@ -2,7 +2,7 @@ import {buildOpenWheelVintage,buildVintageBlower} from './vintage21.mjs';
 import {sideDuctMask,cowlDuctMask,quarterDuctMask,fenderGillMask} from './sideDuct.mjs';
 import * as T from '../../vendorBridge/three.js';
 import {createEndSurface,fasciaMesh} from './fascia.mjs';
-import {emitFlushHoodLids} from './hoodLids.mjs';
+import {emitFlushHoodLids,emitIntegratedHoodMarkers} from './hoodLids.mjs';
 import {makeOpenings,emitOpenings,exhaustMountOpenings,rearSculptOpening} from './optics.mjs';
 import {createMasterSide,buildPanelGap} from './seams.mjs';
 import {buildCabin} from './cabin9.mjs';
@@ -111,6 +111,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  if(floor>R-.03)warnings.push('Rocker sits above the hub; this is an elevated stance.');
  const hatchUpright=g.construction.cabin.rearHatchUpright;
  const targaBulk=c.roof.type==='targa fabric'?g.construction.cabin.targaRearBulkhead:0;
+ const functionalTowers=g.construction.cabin.functionalTailTowers&&g.construction.cabin.wagonTallTail>.18&&hatchUpright>0&&!g.construction.cabin.rearHatchFold&&c.roof.type!=='roadster open';
  const hatchLamps=g.construction.cabin.rearHatchFold&&c.roof.type!=='roadster open'?g.construction.cabin.hatchEdgeLamps:0;
  const seamSpan=(end,overhang)=>Math.min(overhang*.69,g.fascia[end].bumperStation===.43?Math.min(overhang*.49,.43):g.fascia[end].bumperStation);
  const bumperFront=Lf-seamSpan('front',d.front),bumperRear=Lr+seamSpan('rear',d.rear);
@@ -150,7 +151,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  const roofFront=canopy.cargoPanel?clamp(cabinFront-.48,cabinRear+.8,cabinFront-.18):canopy.frontScreenRake?clamp(nominalRoofFront-canopy.frontScreenRake,cabinRear+.48,cabinFront-.14):nominalRoofFront;
  const rearFraction=(g.family==='fastback'?.45:.22+.10*c.glass.shape)-extension;
  const rearDatum=mix(cabinRear,doorFront,rearFraction);
- const roofRear=canopy.rearPillarFoot||canopy.rearRoofShift||hatchUpright||targaBulk?clamp(rearDatum+canopy.rearPillarFoot*(1-rearFraction)-canopy.rearRoofShift-.38*hatchUpright-.24*targaBulk,cabinRear+mix(.18,.078,hatchUpright),roofFront-.34):rearDatum;
+ const roofRear=hatchUpright&&canopy.rearHatchRoofSetback>0?clamp(cabinRear+canopy.rearHatchRoofSetback,cabinRear+.054,roofFront-.34):canopy.rearPillarFoot||canopy.rearRoofShift||hatchUpright||targaBulk?clamp(rearDatum+canopy.rearPillarFoot*(1-rearFraction)-canopy.rearRoofShift-.38*hatchUpright-.24*targaBulk,cabinRear+mix(.18,.078,hatchUpright),roofFront-.34):rearDatum;
  const nose=B-(.14+.10*(1-wide))*c.frontBumper.depth,deck=B-(c.trunk.type==='fastback'?.13:.065)*c.rearBumper.depth;
  const standardY=z=>z>cabinFront?mix(B,nose,((z-cabinFront)/(Lf-cabinFront))**1.4):z<cabinRear?mix(B,deck,((cabinRear-z)/(cabinRear-Lr))**1.38):B;
  const vintage=g.body.vintageFenders,cycles=g.body.cycleGuardPull;
@@ -367,7 +368,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    put('fogs','trim',new T.BoxGeometry(Math.max(step,(count-1)*step+radius*.8),radius*.23,.048),bar);
   }
   const originalOpenings=makeOpenings({end,g,face:surf.face,segments:small(quality==='opponent'?14:lod?18:quality==='export'?32:24,13,12,9)});
-  const openings=!front&&hatchLamps?originalOpenings.filter(o=>o.kind!=='lamp'):originalOpenings;
+  const openings=!front&&(hatchLamps||functionalTowers)?originalOpenings.filter(o=>o.kind!=='lamp'):originalOpenings;
   if(!front){
    const pockets=exhaustMountOpenings(g,surf.face,openings);
    openings.push(...pockets);
@@ -506,7 +507,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  }
  const hoodEdge=bumperFront+g.seams.hoodSeam.offset-g.seams.hoodSeam.gap*.5,
   trunkEdge=bumperRear+g.seams.trunkSeam.offset+g.seams.trunkSeam.gap*.5;
- if(g.body.upperHoodMarkers>0){
+ if(g.body.upperHoodMarkers>0&&(!g.body.hoodMarkerRecess||hoodDesign.lampLids!=='off'||g.body.cowlDuct)){
   // Trace both bonded upper marker housings on the hood itself. They
   // follow shoulder and nose edits without replacing the lower main beam.
   const length=g.body.upperHoodMarkers, station=hoodEdge-.013;
@@ -534,6 +535,11 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   const bounds=emitFlushHoodLids({cover:(u,v)=>hoodCover(mix(hoodEdge,hoodStart,v),u),hoodLength:hoodEdge-hoodStart,
    settings:hoodDesign,across,along:hoodAlong,compact,put,lampMounts});
   if(Math.abs(bounds.mesh-bounds.expected)>1e-6||bounds.unmatched)issues.push('Overlapping or invalid hood cover cutouts.');
+ }else if(g.body.upperHoodMarkers&&g.body.hoodMarkerRecess&&!g.body.cowlDuct){
+  const bounds=emitIntegratedHoodMarkers({cover:(u,v)=>hoodCover(mix(hoodEdge,hoodStart,v),u),hoodLength:hoodEdge-hoodStart,
+   length:g.body.upperHoodMarkers,depth:g.body.hoodMarkerRecess,across,along:hoodAlong,compact,put,
+   material:hoodDesign.bonnetStripes?'bonnet-stripes':hoodDesign.contrastBonnet?'roofPaint':'paint'});
+  if(Math.abs(bounds.mesh-bounds.expected)>1e-6||bounds.unmatched)issues.push('Overlapping or invalid hood marker cutouts.');
  }else if(g.body.cowlDuct)sheet('hood','cowl-duct',hoodStart,hoodEdge,(z,u)=>{
   const p=hoodCover(z,u);p[1]-=g.body.cowlDuctDepth*cowlDuctMask(g.body,(z-hoodStart)/(hoodEdge-hoodStart),u);return p;
  },hoodAlong,across);
@@ -1116,7 +1122,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   }else if(s<0&&hatchUpright>0){
    // The rear hatch surround and its central glass share the identical chart.
    // Both panel seams and D-pillar paint stay present around the glass opening.
-   const lo=.139*hatchUpright,hi=1-.081*hatchUpright,left=.086*hatchUpright,right=1-left;
+   const lo=.139*hatchUpright,hi=1-.081*hatchUpright,left=(functionalTowers?.133:.086)*hatchUpright,right=1-left;
    const f=(k,u,v,a,b,n,m)=>put(k==='glass'?'glass':'trunk',k,patch(n,m,(t,w)=>glassPoint(-1,mix(a,b,t),mix(u,v,w)),true));
    const n=small(12,6,5,4),m=small(16,10,9,8);
    for(const [a,b,segments] of [[0,left,1],[left,right,m],[right,1,1]]){
@@ -1149,13 +1155,24 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
       put(color==='paint'?'trunk':'tails',color,patch(res,1,(v,u)=>{
        const y=mix(from,to,v),t=clamp((y-lo)/Math.max(.01,top-lo));
        const c=.50-.09*Math.sin(Math.PI*t)+.17*t**4;
-       const half=mix(.155,.409,canopy.wagonTailWidth)*(1-.46*t**2);
+       const half=mix(.155,.409,canopy.wagonTailWidth)*(1-(functionalTowers?.29:.46)*t**2);
        const rails=[0,(c-half)*left,(c-half+.060)*left,(c+half-.060)*left,(c+half)*left,left];
        const p=band(y,mix(rails[low],rails[high],u));
-       if(color==='runningRed'||color==='opticRed')p[2]-=.004*Math.sin(Math.PI*u);
+       if(color==='runningRed'||color==='opticRed'||functionalTowers&&['opticClear','rearSignalL','rearSignalR'].includes(color))p[2]-=(functionalTowers?.008:.004)*Math.sin(Math.PI*u);
        return p;
       },!mirrored));
-     for(const [k,mat] of ['paint','seamDark','runningRed','seamDark','paint'].entries())add(mat,k,k+1,lo,top);
+     for(const [k,mat] of ['paint','seamDark',functionalTowers?null:'runningRed','seamDark','paint'].entries())if(mat)add(mat,k,k+1,lo,top);
+     if(functionalTowers){
+      // Same physical tower chart as the old decorative trim: working
+      // sections share boundary samples, cavity lands and solid body skins.
+      const z=t=>mix(lo,top,t),leftHand=mirrored?'R':'L', signal=mirrored?'rearSignalR':'rearSignalL';
+      for(const [mat,a,b,r] of [
+       ['runningRed',0,.284,4],['opticClear',.284,.469,2],
+       [signal,.469,.68,3],['opticRed',.68,1,5],
+      ])add(mat,2,3,z(a),z(b),r);
+      const lampMount=band(z(.59),left*.55);
+      lampMounts['TaillightMount_'+leftHand]=lampMount;
+     }
      f('paint',mirrored?right:0,mirrored?1:left,top,hi,Math.max(1,n-stations),1);
     }
    }else{f('paint',0,left,lo,hi,n,1);f('paint',right,1,lo,hi,n,1);}

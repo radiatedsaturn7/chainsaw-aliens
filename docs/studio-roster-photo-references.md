@@ -763,3 +763,8 @@ The front intake and seated marker controls are reusable and opt-in.
 The Caprice has a physical aft-facing third row. The FTO's recessed hood
 optics use the six independent gameplay roles. The Huracán and Galant
 front shapes and the race Pajero wheel arches remain approximations.
+
+### Follow-up fit corrections, existing roster slots
+
+- **Selfheal 2005 (Grand Caravan SE):** Refitted against the [2005 Dodge brochure](https://www.auto-brochures.com/makes/Dodge/Grand%20Caravan/Dodge_US%20GrandCaravan_2005.pdf#page=6), [SE side profile](https://www.groovecar.com/research/2005/dodge/grand-caravan/se-4dr-extended-mini-van/) and [straight rear photos of an SE survivor](https://www.victorymotorsofcolorado.com/inventory/2005-dodge-grand-caravan-se/330858?photos=1) (optional rails excluded). The roof extends farther aft and the four working rear light functions now sit in vertical corner towers. The lower hatch and molding still differ from the reference.
+- **Hellebore RS 2015 (Juke NISMO RS):** Refitted against Nissan's exact [front three-quarter](https://usa.nissannews.com/en-US/photos/2015-nissan-juke-nismo-rs-13), [side](https://usa.nissannews.com/en-US/photos/2015-nissan-juke-nismo-rs-10) and [head-on](https://usa.nissannews.com/en-US/photos/2015-nissan-juke-nismo-rs-17) photos. Two formed hood marker pockets, a swept grille opening and a lower recessed fascia improve profile and lamp seating. The outboard bumper still reads more upright than the real body. These two edits do not increase the roster count.

@@ -22,10 +22,12 @@ const profiles={
  // bowl, and a higher outer tip where the lens meets the front fender.
  'round-twin':[[-1,-.47],[-.71,-.72],[-.25,-.82],[.23,-1],[.75,-.99],[.98,-.61],
   [1,-.25],[.95,.39],[.70,.83],[.34,1],[-.08,.91],[-.38,.79],[-.72,.86],[-.94,.62],[-1,.22]],
+ // Wide upper lip, shoulder tips and a tapered but blunt lower web.
+ winged:[[-1,-.93],[-.63,-.83],[-.23,-.69],[.23,-.69],[.63,-.83],[1,-.93],[.89,-.15],[.55,.68],[.28,1],[-.28,1],[-.55,.68],[-.89,-.15]],
  shield:[[-.91,-.78],[-.54,-1],[.54,-1],[.91,-.78],[.75,-.19],[.43,.48],[.11,.96],[0,1],[-.11,.96],[-.43,.48],[-.75,-.19]],
  compound:[[-1,-.36],[-.79,-.77],[-.29,-.99],[.24,-.87],[.83,-.98],[1,-.69],[.95,.33],[.72,.89],[.27,.82],[-.36,1],[-.82,.78],[-1,.31]]
 };
-export const HOUSING_FAMILIES=['round-rect','circle','oval','rectangle','trapezoid','shield','angular','swept','wrap','upright-wrap','compound','round-twin','dual-round','dual-trapezoid','stacked-round'];
+export const HOUSING_FAMILIES=['round-rect','circle','oval','rectangle','trapezoid','winged','shield','angular','swept','wrap','upright-wrap','compound','round-twin','dual-round','dual-trapezoid','stacked-round'];
 const layouts=new Set(['projector','twin','led','mixed','factory-split','round-stack']);
 function curvePolygon(points,r,n){
  const controls=(p,q,t)=>p.map((x,i)=>mix(x,q[i],t));
@@ -250,8 +252,9 @@ export function makeOpenings({end,g,segments=32,face=null}){
  if(front){
   const gr=c.grille??{},fog=c.fogs??{};
   if(gr.type==='deep mesh frame'||gr.type==='deep vertical frame'){
-   const cy=.479+(num(fascia.grilleHeightPosition,.5)-.5)*.27;
-   const h=Math.min(mix(.360,.681,num(fascia.grilleHeight,.5)),2*(cy-.096),2*(.933-cy));
+   const winged=fascia.grilleShape==='winged';
+   const cy=winged?.25+num(fascia.grilleHeightPosition,.5)*.26:.479+(num(fascia.grilleHeightPosition,.5)-.5)*.27;
+   const h=Math.min(mix(winged?.26:.360,winged?.49:.681,num(fascia.grilleHeight,.5)),2*(cy-.096),2*(.933-cy));
    const free=Math.min(.49-Math.max(...out.filter(o=>o.center[0]<.5).flatMap(o=>o.outline.map(p=>p[0]))),
     Math.min(...out.filter(o=>o.center[0]>.5).flatMap(o=>o.outline.map(p=>p[0])))-.51);
    const w=Math.min(mix(.234,.475,num(fascia.grilleWidth,.5)),2*free);
@@ -419,7 +422,8 @@ export function makeOpenings({end,g,segments=32,face=null}){
   const wideDucts=front&&c.fogs?.type==='off';
   const pair=wideDucts?[.285,.715]:[.395,.605];
   const deepFrame=front&&['deep mesh frame','deep vertical frame'].includes(c.grille?.type);
-  for(const k of deepFrame?(mode==='triple'||mode==='split'?[.183,.817]:[]):triple?[.5,.183,.817]:iMode==='split'?pair:[.5]){
+  const centralWinged=deepFrame&&fascia.grilleShape==='winged';
+  for(const k of deepFrame&&!centralWinged?(mode==='triple'||mode==='split'?[.183,.817]:[]):triple?[.5,.183,.817]:iMode==='split'?pair:[.5]){
    let cy=(front?.789:.78)+(num(fascia.intakeHeightPosition,.5)-.5)*.29;
    let height=(front?(wideDucts&&iMode==='split'?.23:.19):.14)*(.57+.86*num(fascia.intakeHeight,.5));
    if(!front)cy=Math.max(cy,.685+height*.5);
