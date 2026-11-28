@@ -87,6 +87,22 @@ export function buildRearSpare({put,dims,compact,cfg,finish,tireWidth}){
  const x=cfg.rearSpareOffset,y=cfg.rearSpareHeight,z=dims.Lr-.045;
  const n=compact?16:24,w=Math.min(.130,tireWidth*.51),rim=r*.55;
  const lathe=p=>new T.LatheGeometry(p.map(([a,b])=>new T.Vector2(a,b)),n).rotateX(-Math.PI*.5).translate(x,y,z);
+ if(cfg.rearSpareCover===1){
+  // Separate snap-on molded cover. Keep the original rubber shadow and
+  // carrier behind the rounded painted face, with no emblem surface.
+  put('trunk','rubber',lathe([[0,-w*.70],[r*.87,-w*.70],[r,-w*.35],[r,w*.65],[r*.91,w*.77],[0,w*.77]]));
+  put('trunk','paint',lathe([[r*.95,w*.60],[r*.973,w*.85],[r*.91,w*1.01],[r*.76,w*1.07],[r*.22,w*1.08],[0,w*1.08]]));
+  put('trunk','trim',new T.BoxGeometry(r*.72,r*.51,.26).translate(x,y,z+.115));
+  return;
+ }
+ if(cfg.rearSpareCover===2){
+  // The broad bumper-to-gate blister is not another visible wheel. Its
+  // closed return extends forward into the body and rolls into the face.
+  const shell=lathe([[0,-w*1.85],[r*.79,-w*1.73],[r,-w*1.22],[r*.97,-w*.65],[r*.91,-w*.12],[r*.76,w*.34],[r*.56,w*.63],[r*.22,w*.77],[0,w*.80]]).translate(0,0,.055);
+  shell.userData.constructionRole='hatch / closed molded spare cover';
+  put('trunk','paint',shell);
+  return;
+ }
  const tire=[[rim,-w],[r*.80,-w*1.04],[r*.98,-w*.77],[r,-w*.40],[r,w*.55],[r*.96,w*.88],[r*.79,w],[rim,w*.92],[rim,-w]];
  put('trunk','rubber',lathe(tire));
  put('trunk',finish,lathe([[0,w*.88],[rim*.42,w*.88],[rim*.53,w*.71],[rim*.83,w*.75],[rim,w*.98],[rim*1.01,w*.82],[0,w*.64]]));

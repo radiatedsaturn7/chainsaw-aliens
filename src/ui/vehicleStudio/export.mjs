@@ -80,6 +80,7 @@ function claddingTexture(g){
 function stripeTexture(g){
  const width=64,height=128,pixels=[];
  const paint=g.materials.paint,stripe=g.materials.roofPaint;
+ const offset=g.construction.hood.stripeOffset;
  for(let i=0;i<height;i++)for(let j=0;j<width;j++){
   const z=(j+.5)/width,x=Math.abs((i+.5)/height-.5);
   const core=.129+.040*z;
@@ -87,6 +88,7 @@ function stripeTexture(g){
   // blocks are unbranded and do not allocate any additional geometry.
   const secondary=g.construction.hood.diagonalCoachwork
    ?(i+.5)/height>.20+z*.55
+   :offset?z>.009&&z<.992&&Math.abs(Math.abs((i+.5)/height-.5-offset)-.048)<.031
    :z>.042&&z<.984&&Math.abs(x-core)<.029;
   pixels.push(secondary?stripe:paint);
  }

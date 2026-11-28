@@ -15349,5 +15349,584 @@
         }
       ]
     }
+  },
+  {
+    "id": "fiat-punto-evo-sporting-135-2010",
+    "label": "Saffron 135 2010",
+    "capability": "Three-door Evo facelift, RHD, dark split fascia, full-height rear lamps, 17-inch graphite",
+    "carId": "3d-saffron-135-2010-3d-062fbb2a27f9",
+    "bodyRef": "Saffron-135",
+    "wheelRef": "Saffron-135-Wheel",
+    "radius": 0.30815,
+    "axles": [
+      {
+        "track": 1.4730000495910645,
+        "y": 0.3081499934196472,
+        "z": 0.9286999702453613
+      },
+      {
+        "track": 1.465999960899353,
+        "y": 0.3093239963054657,
+        "z": -1.5813000202178955
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2010 UK Fiat Punto Evo Sporting 135 5MT"
+  },
+  {
+    "id": "nissan-rasheen-type-ii-1994",
+    "label": "Asphodel 1994",
+    "carId": "3d-asphodel-1994-3d-cd40b9508662",
+    "capability": "December1994 Japan Nissan Rasheen Type II E-RFNB14,1497cc GA15DE naturally aspirated DOHC four,AWD five-speed manual,RHD,five-door five-seat wagon,roofrails and rear spare. Not TypeIII,4AT,1.8ft,2.0Forza or facelift.",
+    "bodyRef": "Asphodel-1994-body",
+    "wheelRef": "Asphodel-1994-wheel",
+    "radius": 0.29805000000000004,
+    "axles": [
+      {
+        "track": 1.440000057220459,
+        "y": 0.2980499863624573,
+        "z": 1.253000020980835
+      },
+      {
+        "track": 1.4149999618530273,
+        "y": 0.2980499863624573,
+        "z": -1.1770000457763672
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.5609999895095825,
+            0.656000018119812,
+            -2.1575000286102295
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.5609999895095825,
+            0.656000018119812,
+            -2.1575000286102295
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6930000185966492,
+            0.6710000038146973,
+            2.1445000171661377
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6930000185966492,
+            0.6710000038146973,
+            2.1445000171661377
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7200000286102295,
+            0.2980499863624573,
+            -1.253000020980835
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7200000286102295,
+            0.2980499863624573,
+            -1.253000020980835
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7074999809265137,
+            0.2980499863624573,
+            1.1770000457763672
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7074999809265137,
+            0.2980499863624573,
+            1.1770000457763672
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/Rasheen_Type_II.html"
+  },
+  {
+    "id": "isuzu-vehicross-standard-1999",
+    "label": "Angelica 1999",
+    "carId": "3d-angelica-1999-3d-7b9ed62a3ce1",
+    "capability": "1999 US Isuzu VehiCROSS standard 3.5 V6 4AT Torque-on-Demand AWD, 16-inch wheels; no Ironman package, Japanese3.2 engine or later18-inch tires.",
+    "bodyRef": "Angelica-1999-body",
+    "wheelRef": "Angelica-1999-wheel",
+    "radius": 0.3747,
+    "axles": [
+      {
+        "track": 1.5149999856948853,
+        "y": 0.37470000982284546,
+        "z": 1.218999981880188
+      },
+      {
+        "track": 1.5199999809265137,
+        "y": 0.37470000982284546,
+        "z": -1.1130000352859497
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6140000224113464,
+            0.6510000228881836,
+            -2.1480000019073486
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6140000224113464,
+            0.6510000228881836,
+            -2.1480000019073486
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.7129999995231628,
+            0.6850000023841858,
+            2.1419999599456787
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.7129999995231628,
+            0.6850000023841858,
+            2.1419999599456787
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7574999928474426,
+            0.37470000982284546,
+            -1.218999981880188
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7574999928474426,
+            0.37470000982284546,
+            -1.218999981880188
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7599999904632568,
+            0.37470000982284546,
+            1.1130000352859497
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7599999904632568,
+            0.37470000982284546,
+            1.1130000352859497
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "https://importarchive.com/brochure/isuzuvehicross1999_06"
+  },
+  {
+    "reference": "2012 United States Hyundai Genesis, 3.8GDI sedan RWD8AT,standard17-inchwheels,regulargasoline; notCoupe,V8,R-Spec orlaterGenesisbrand",
+    "canonicalLampSides": true,
+    "stockWheelPositions": {
+      "FR": [
+        0.810259997844696,
+        0.3396500051021576,
+        1.4681199789047241
+      ],
+      "FL": [
+        -0.810259997844696,
+        0.3396500051021576,
+        1.4681199789047241
+      ],
+      "RR": [
+        0.8178799748420715,
+        0.3396500051021576,
+        -1.4681199789047241
+      ],
+      "RL": [
+        -0.8178799748420715,
+        0.3396500051021576,
+        -1.4681199789047241
+      ]
+    },
+    "id": "hyundai-genesis-38-2012",
+    "label": "Persimmon Clover 2012",
+    "capability": "2012 U.S. 3.8 base luxury sedan, horizontal brightwork grille and factory 17-inch wheels",
+    "carId": "3d-persimmon-clover-2012-3d-9ebeb1cb6844",
+    "bodyRef": "Persimmon-Clover-2012",
+    "wheelRef": "Persimmon-Clover-2012-Wheel",
+    "radius": 0.33965,
+    "axles": [
+      {
+        "track": 1.620519995689392,
+        "y": 0.3396500051021576,
+        "z": 1.4681199789047241
+      },
+      {
+        "track": 1.635759949684143,
+        "y": 0.3396500051021576,
+        "z": -1.4681199789047241
+      }
+    ]
+  },
+  {
+    "reference": "2012 United States Hyundai Equus, Signature5.0GDI V8 RWD8AT,premiumfuel,standard19-inchstaggeredtires",
+    "canonicalLampSides": true,
+    "stockWheelPositions": {
+      "FR": [
+        0.810259997844696,
+        0.35155001282691956,
+        1.5227299928665161
+      ],
+      "FL": [
+        -0.810259997844696,
+        0.35155001282691956,
+        1.5227299928665161
+      ],
+      "RR": [
+        0.8140699863433838,
+        0.35155001282691956,
+        -1.5227299928665161
+      ],
+      "RL": [
+        -0.8140699863433838,
+        0.35155001282691956,
+        -1.5227299928665161
+      ]
+    },
+    "id": "hyundai-equus-signature-2012",
+    "label": "Rain Clover 2012",
+    "capability": "2012 U.S. Signature flagship, taller vertical grille, long rear passenger section and staggered wheels",
+    "carId": "3d-rain-clover-2012-3d-0a944b002d1f",
+    "bodyRef": "Rain-Clover-2012",
+    "wheelRef": "Rain-Clover-2012-Wheel",
+    "radius": 0.35155,
+    "axles": [
+      {
+        "track": 1.620519995689392,
+        "y": 0.35155001282691956,
+        "z": 1.5227299928665161
+      },
+      {
+        "track": 1.6281399726867676,
+        "y": 0.35155001282691956,
+        "z": -1.5227299928665161
+      }
+    ]
+  },
+  {
+    "id": "renault-r8-gordini-1967",
+    "label": "Bugloss 1967",
+    "capability": "1967 French Renault 8 Gordini R1135 1300 rear-engined five-speed sedan",
+    "carId": "3d-bugloss-1967-3d-ae7dc62f621c",
+    "bodyRef": "Bugloss",
+    "wheelRef": "Bugloss-Wheel",
+    "radius": 0.2985,
+    "axles": [
+      {
+        "track": 1.2680000066757202,
+        "y": 0.2985000014305115,
+        "z": 1.3805848360061646
+      },
+      {
+        "track": 1.2380000352859497,
+        "y": 0.29694798588752747,
+        "z": -0.8894152045249939
+      }
+    ],
+    "reference": "1967 France Renault 8 Gordini 1300 R1135, Type812 1255cc, rear-engine RWD5MT, standard4.125 axle",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "peugeot-504-a90-us-1975",
+    "label": "Salsify 1975",
+    "capability": "1975 US Peugeot 504 A90 XD90 diesel, closed factory sliding metal sunroof, quad beams",
+    "carId": "3d-salsify-1975-3d-525987e0e95e",
+    "bodyRef": "Salsify-1975-body",
+    "wheelRef": "Salsify-1975-wheel",
+    "radius": 0.31779999999999997,
+    "axles": [
+      {
+        "track": 1.4199999570846558,
+        "y": 0.31779998540878296,
+        "z": 1.4265999794006348
+      },
+      {
+        "track": 1.3700000047683716,
+        "y": 0.31779998540878296,
+        "z": -1.31659996509552
+      }
+    ],
+    "reference": "1975 United States Peugeot504 A90 standard diesel four-door sedan, XD90 2112cc naturally aspirated indirect-injection four-cylinder, RWD four-speed manual, LHD, closed standard sliding metal sunroof and US bumpers/quad headlamps. Not French GL, later2304cc diesel or automatic.",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6029999852180481,
+            0.5950000286102295,
+            -2.414479970932007
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6029999852180481,
+            0.5950000286102295,
+            -2.414479970932007
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6499999761581421,
+            0.6299999952316284,
+            2.400480031967163
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6499999761581421,
+            0.6299999952316284,
+            2.400480031967163
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7099999785423279,
+            0.31779998540878296,
+            -1.4265999794006348
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7099999785423279,
+            0.31779998540878296,
+            -1.4265999794006348
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.6850000023841858,
+            0.31779998540878296,
+            1.31659996509552
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.6850000023841858,
+            0.31779998540878296,
+            1.31659996509552
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "peugeot-405-mi16-1988",
+    "label": "Loosestrife 1988",
+    "capability": "1988 French Peugeot 405 Mi16 Phase 1, XU9 1.9, 14 inch alloys, no later 15s or X4",
+    "carId": "3d-loosestrife-1988-3d-227b5d24b925",
+    "bodyRef": "Loosestrife",
+    "wheelRef": "Loosestrife-Wheel",
+    "radius": 0.2948,
+    "axles": [
+      {
+        "track": 1.4700000286102295,
+        "y": 0.2948000133037567,
+        "z": 1.040910005569458
+      },
+      {
+        "track": 1.4299999475479126,
+        "y": 0.295648992061615,
+        "z": -1.6280900239944458
+      }
+    ],
+    "reference": "1988 France Peugeot405Mi16 Phase1 four-door saloon,1905cc high-compression10.4:1 naturally aspirated16-valve multipoint-injection engine,FWD5MT,LHD,early14inch wheels. French160chDIN specification interpreted as non-catalyst,not US150hp export,Swiss catalyst,1990wheel update,Mi16x4,1992two-litre,LeMans orT16.",
+    "canonicalLampSides": true
   }
 ]

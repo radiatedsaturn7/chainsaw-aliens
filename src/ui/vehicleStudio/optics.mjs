@@ -212,8 +212,9 @@ export function makeOpenings({end,g,segments=32,face=null}){
   // Unequal round pairs: use the same editable aperture and keep a painted
   // ligament between a larger main lamp and separate inboard driving lamp.
   const hw=(ratio?.047:.032)+.014*opt.width,hh=angled?.074+.046*opt.height:(ratio?.090:.077)+.056*opt.height;
-  const outer=Math.max(.097,Math.min(.175,sideX-(hw+.005)));
-  const inner=outer+hw*(ratio?1+fitInner:2)+.020;
+  const wide=num(raw.periodRoundSpread,0);
+  const outer=wide?mix(.111,.152,wide):Math.max(.097,Math.min(.175,sideX-(hw+.005)));
+  const inner=wide?mix(.238,.323,wide):outer+hw*(ratio?1+fitInner:2)+.020;
   const y=Math.max(.130+hh,Math.min(.402,cyBase+.034));
   for(let i=0;i<2;i++){
    const cx=s>0?1-(i?inner:outer):(i?inner:outer),cy=y+(i?.018:0);
@@ -222,7 +223,7 @@ export function makeOpenings({end,g,segments=32,face=null}){
    const activeInlet=i>0&&(portMode===2||portMode===1&&s===(g.construction?.cabin?.driverSide==='right'?1:-1));
    const opening=aperture({id:'head-'+(s>0?'l':'r')+(i?'-inner':''),component:'headlights',
     kind:activeInlet?'air-port':'lamp',housing:angled?'trapezoid':'circle',cx,cy,width:hw*2*fit,height:hh*2*fit,side:s,opt:roundOpt,segments});
-   if(!angled&&face&&raw.physicalDiameter>0)projectRoundLamp(opening,face,Math.min(raw.physicalDiameter,g.dimensions.width*hw*1.7)*fit,aspect===1?0:num(raw.circleLift,0),aspect);
+   if(!angled&&face&&raw.physicalDiameter>0)projectRoundLamp(opening,face,Math.min(raw.physicalDiameter,g.dimensions.width*hw*(wide?2.62:1.7))*fit,wide?num(raw.circleLift,0):aspect===1?0:num(raw.circleLift,0),aspect);
    out.push(opening);
   }
   continue;
@@ -254,7 +255,7 @@ export function makeOpenings({end,g,segments=32,face=null}){
  }
  if(front){
   const gr=c.grille??{},fog=c.fogs??{};
-  const broadBars=gr.type==='broad chrome bars';
+  const spine=gr.type==='spined chrome bars',broadBars=gr.type==='broad chrome bars'||spine;
   if(gr.type==='deep mesh frame'||gr.type==='deep vertical frame'||broadBars){
    const winged=fascia.grilleShape==='winged';
    const cy=broadBars?.243+num(fascia.grilleHeightPosition,.5)*.27:winged?.25+num(fascia.grilleHeightPosition,.5)*.26:.479+(num(fascia.grilleHeightPosition,.5)-.5)*.27;
@@ -264,7 +265,7 @@ export function makeOpenings({end,g,segments=32,face=null}){
    const w=Math.min(mix(.234,broadBars?.545:.475,num(fascia.grilleWidth,.5)),2*free);
    if(w>.075)out.push(aperture({id:'upper-grille',component:'grille',kind:'duct',
     housing:fascia.grilleShape??'trapezoid',cx:.5,cy,width:w,height:h,
-    opt:{corner:.58,bezel:num(fascia.grilleBezel,0),throatDepth:num(fascia.lowerIntakeDepth,0)},segments,style:broadBars?'broad-bars':gr.type==='deep vertical frame'?'vertical':'mesh'}));
+    opt:{corner:.58,bezel:num(fascia.grilleBezel,0),throatDepth:num(fascia.lowerIntakeDepth,0)},segments,style:spine?'spined-bars':broadBars?'broad-bars':gr.type==='deep vertical frame'?'vertical':'mesh'}));
   }else if(gr.type==='twin deep mesh'){
    const cy=.488+(num(fascia.grilleHeightPosition,.5)-.5)*.32;
    const h=mix(.16,.44,num(fascia.grilleHeight,.5))*num(gr.depth,1);
@@ -705,7 +706,7 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
    const d=.047+extra, back=ring(mix(.79,.88,extra/.055),d);
    const ductMaterial=opt.matte?'ductMatte':opt.upperBar?'seamDark':'trim';
    putGeo(ductMaterial,[seat,ring(mix(.857,.90,extra/.055),.028+extra*.36),back],pt(cx,cy,d-.002));
-   const broad=a.style==='broad-bars';
+   const spined=a.style==='spined-bars',broad=a.style==='broad-bars'||spined;
    const n=broad?3:compact?(a.style==='bars'?3:4):a.style==='bars'?4:7, inset=outline.map(([x,y])=>[mix(cx,x,broad?.86:.74),mix(cy,y,broad?.83:.73)]);
    // Join a recessed inlet cap to the inner outline, not over the rim.
    // Matching widths at the top/bottom keep the bar inside rounded corners.
@@ -733,7 +734,7 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
     }
     continue;
    }
-   if(a.id==='upper-grille'&&opt.lampPair>0)for(const s of [-1,1]){
+   if(a.id==='upper-grille'&&opt.lampPair>0&&!spined)for(const s of [-1,1]){
     const x=cx+s*w*.245,y=cy,r=w*(.068+.041*opt.lampPair),v=h*(.15+.21*opt.lampPair);
     const chart=(n)=>pairs(compact?10:16,t=>[x+r*n*Math.cos(t*tau),y+v*n*Math.sin(t*tau)]);
     let size=1,p=chart(size);
@@ -755,6 +756,27 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
      const blade=[[x-r,lo],[x+r,lo],[x+r,hi],[x-r,hi]];
      const bladeDepth=v=>blade.map(([u,y])=>pt(u,y,v));
      putGeo(jeep?'paint':five?'trim':'chrome',[bladeDepth(slots?.027:.029),bladeDepth(.035)],pt(x,(lo+hi)/2,.028));
+    }
+    continue;
+   }
+   if(spined){
+    // Fitted five-bar manufacturer-neutral grilles with a tapering central
+    // rib. All solid details are behind the lip and in front of the solid
+    // duct back, with bars cut at the rib rather than intersecting it.
+    const rise=h*.355,centerAt=y=>w*mix(.056,.017,(y-(cy-rise))/(2*rise));
+    const depth=.021+extra*.39, point=(x,y,z=0)=>pt(x,y,depth+z);
+    function blade(q){
+     putGeo('chrome',[q.map(([x,y])=>point(x,y)),q.map(([x,y])=>point(x,y,.006))],
+      point(q.reduce((t,p)=>t+p[0],0)*.25,q.reduce((t,p)=>t+p[1],0)*.25,-.001));
+    }
+    const upper=cy-rise,lower=cy+rise;
+    blade([[cx-centerAt(upper),upper],[cx+centerAt(upper),upper],[cx+centerAt(lower),lower],[cx-centerAt(lower),lower]]);
+    for(let j=0;j<5;j++){
+     const y=cy+h*.62*((j+.5)/5-.5),r=h*.020,T=y-r,B=y+r;
+     const [l,u]=spanAt(inset,T),[b,v]=spanAt(inset,B),lo=Math.max(l,b),hi=Math.min(u,v);
+     const top=centerAt(T),bottom=centerAt(B);
+     if(lo<cx-Math.max(top,bottom))blade([[lo,T],[cx-top,T],[cx-bottom,B],[lo,B]]);
+     if(hi>cx+Math.max(top,bottom))blade([[cx+top,T],[hi,T],[hi,B],[cx+bottom,B]]);
     }
     continue;
    }
