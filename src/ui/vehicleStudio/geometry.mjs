@@ -382,6 +382,29 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   features.push(guideFeature(end+'-silhouette','silhouette',front?'Nose silhouette':'Tail silhouette',name,curvePoints(u=>surf.face(u,.13)),{end,view:'top',axis:2,scale:sign*.28}));
   const mounted=emitOpenings({end,openings,surface:chart,put,lod,compact,spatialDepth:wrapped,shellMaterial,suppressHeadlamps});
   Object.assign(lampMounts,mounted.mounts);
+  if(front&&g.fascia.front.pairedLampSurround&&g.optics.front.housing==='dual-round'){
+   // Derive both chrome bezels from the corresponding actual twin apertures.
+   // Proud polished centers with body-level returns; no overlap with either lens.
+   for(const side of [-1,1]){
+    const eyes=faceOpenings.filter(x=>x.kind==='lamp'&&Math.sign(x.center[0]-.5)===side);
+    if(eyes.length!==2)continue;
+    const uv=eyes.flatMap(x=>x.outline);
+    const bounds=i=>[Math.min(...uv.map(p=>p[i])),Math.max(...uv.map(p=>p[i]))];
+    const [l,r]=bounds(0),[h,b]=bounds(1),cx=(l+r)/2,cy=(h+b)/2;
+    const rx=Math.min((r-l)*.66,cx-.022,.48-Math.abs(cx-.5));
+    const ry=Math.min((b-h)*.76,cy-.045,.59-cy);
+    if(rx<.02||ry<.03)continue;
+    const ring=patch(small(30,26,24,22),3,(u,v)=>{
+     const t=u*Math.PI*2,co=Math.cos(t),si=Math.sin(t),rad=.91+v*.14;
+     const a=.74+.09*(side*co);
+     const q=chart(cx+rad*rx*Math.sign(co)*Math.abs(co)**a,cy+rad*ry*Math.sign(si)*Math.abs(si)**.72);
+     q[2]+=.001+.024*Math.sin(Math.PI*v);
+     return q;
+    },false);
+    ring.userData.constructionRole='paired chrome fascia surround';
+    put(name,'chrome',ring);
+   }
+  }
   const {chromeBumperBand:bandDepth,chromeBandHeight,chromeBandPosition}=g.fascia[end];
   if(bandDepth>0){
    // A formed metal crossbar follows the fascia envelope, including a
@@ -575,6 +598,27 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     }
     put(key,duct?'side-duct':quarter?'quarter-duct':gill?'fender-duct':'paint',panel);
    }
+   if(g.body.sideRubStrip&&['rearFenders','doors','frontFenders'].includes(key)){
+    // Use the same authored panel chart as body paint and seams. Roll the
+    // plastic surface into the paint at the ends, retaining physical gaps.
+    const step=small(12,8,7,6),margin=Math.min(.035,.012/(b-a));
+    const band=patch(step,4,(u,v)=>{
+     const z=mix(a,b,u),x=mix(margin,1-margin,u);
+     // Invert the actual side chart to pin each sample to the skin. A
+     // clamped arch/belt intersection follows the local top of the arch
+     // instead of floating into it or poking through a door seam.
+     const bottom=sampler(x,1)[1],top=sampler(x,0)[1],thickness=.016;
+     const target=skinY(z)-.101-.25*(g.body.sideRubStripHeight-.39);
+     const y=clamp(target,Math.min(top,bottom+.011),top-.017)+(v-.5)*thickness;
+     let lo=0,hi=1;
+     for(let i=0;i<14;i++){const t=(lo+hi)*.5;if(sampler(x,t)[1]>y)lo=t;else hi=t;}
+     const p=sampler(x,(lo+hi)*.5);
+     p[0]+=s*(.002+.006*Math.sin(Math.PI*v))*(.28+.72*Math.sin(Math.PI*u)**.16);
+     return p;
+    },s<0);
+    band.userData.constructionRole='side panel / rolled protective molding';
+    put(key,'trim',band);
+   }
    joins.push({a,b,component:key,side:s});
   }
   for(const seam of master.seams){
@@ -703,7 +747,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   else{
    // The glass and weatherstrips partition the same master surface; no
    // duplicate paint underneath panes, including underneath the T-bar.
-   const tbar=roofMode===2, zStops=tbar?[0,.155,.172,.862,.879,1]:[0,.305,.322,.826,.843,1];
+   const tbar=roofMode===2,metal=roofMode===3, zStops=tbar?[0,.155,.172,.862,.879,1]:[0,.305,.322,.826,.843,1];
    const uStops=tbar?[0,.018,.448,.464,.536,.552,.982,1]:[0,.158,.175,.825,.842,1];
    for(let iz=0;iz<zStops.length-1;iz++)for(let iu=0;iu<uStops.length-1;iu++){
     const pane=iz===2&&(tbar?iu===1||iu===5:iu===2);
@@ -711,8 +755,8 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     const z1=zStops[iz],z2=zStops[iz+1],u1=uStops[iu],u2=uStops[iu+1];
     const n=Math.max(1,Math.round((z2-z1)*small(25,12,11,9))),m=Math.max(1,Math.round((u2-u1)*small(22,13,11,9)));
     const mesh=patch(n,m,(t,u)=>canopyRoof(mix(roofRear,roofFront,mix(z1,z2,t)),mix(u1,u2,u)));
-    mesh.userData.constructionRole=pane?'roof glazing':seal?'roof seal':'roof frame';
-    put('roof',pane?'glass':seal?'seamDark':roofFinish,mesh);
+    mesh.userData.constructionRole=pane?(metal?'metal sunroof insert':'roof glazing'):seal?'roof seal':'roof frame';
+    put('roof',pane?(metal?roofFinish:'glass'):seal?'seamDark':roofFinish,mesh);
    }
   }
 
@@ -984,7 +1028,17 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    const end=t=>1-taper*(.044+.260*Math.abs(t-.52)**1.66);
    const panel=(mat,a,b,m)=>put(mat==='glass'?'glass':'pillars',mat,
     patch(m,small(10,7,6,5),(u,t)=>side(mix(a(t),b(t),u),t),s<0));
-   panel('glass',()=>0,t=>end(t)-.013,small(22,12,10,9));
+   const span=small(22,12,10,9);
+   if(canopy.wagonGlassPillar>=.50){
+    // Partition the side window on the master glass chart. The trim between
+    // the two panes is a real opaque share of the surface, not an overlay.
+    const station=canopy.wagonGlassPillar,w=canopy.wagonGlassPillarWidth/2;
+    const boundary=(t,sign)=>clamp(station+canopy.wagonGlassPillarLean*(t-.50),.24+w,end(t)-.048-w)+sign*w;
+    const stops=Math.max(3,Math.min(span-3,Math.round(span*station)));
+    panel('glass',()=>0,t=>boundary(t,-1),stops);
+    panel(c.pillars.type==='painted'?'paint':'trim',t=>boundary(t,-1),t=>boundary(t,1),1);
+    panel('glass',t=>boundary(t,1),t=>end(t)-.013,span-stops-1);
+   }else panel('glass',()=>0,t=>end(t)-.013,span);
    panel('trim',t=>end(t)-.013,end,1);
    panel('paint',end,()=>1,small(6,3,2,2));
   }else if(!roadster)put('glass','glass',patch(small(20,12,10,9),small(9,5,4,3),side,s<0));

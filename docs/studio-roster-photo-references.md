@@ -370,3 +370,26 @@ The Celica RC and 1965/1969 Mustangs opt into source-frame normalization
 without modifying their car documents, tuning or original bindings. The
 Miura's fine lamp lashes, GT-S lamp outline, Aventador Y signature, and
 Boss side stripes remain simplified or omitted.
+
+### Full-roster rollout, Honda, Mazda rotary, Volvo wagons, and Dodge
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Cinder Si 1991 | US Honda CRX Si non-VTEC 5MT. [Honda US period brochure](https://www.auto-brochures.com/makes/Honda/Honda_US%20Model%20Range_1991.pdf); [factory metal sunroof assembly](https://www.hondapartsnow.com/parts-list/1991-honda-crx--2dr_si-ka_5mt/interior_bumper/sliding_roof.html). |
+| Honeysuckle 22 2009 | US Honda S2000 AP2 base 6MT with closed soft top, not CR. [Honda US brochure](https://automobiles.honda.com/images/2009/s2000/downloads/2009-s2000-brochure.pdf). |
+| Hedge Bedstraw 2005 | JDM Honda NSX Type R NA2. [Honda factory exterior archive](https://www.honda.co.jp/auto-archive/nsx/2005/type/r-ext/). |
+| Common Agrimony 1972 | Mazda Cosmo Sport Series II L10B. [1972 reference gallery](https://www.christies.com/en/lot/lot-6612298); [period vehicle museum views](https://commons.wikimedia.org/wiki/Category:Mazda_Cosmo_Sport_(L10B)). |
+| Ground Ivy 1973 | US Mazda RX-3 Coupe, 12A. [Mazda heritage gallery](https://mazdamediapacks.com/en/heritage/gallery/mazda-rx-3.html); [US 1973 12A visual reference](https://smclassiccars.com/mazda/254129-mazda-rx3-1973.html). |
+| Musk Mallow 1985 | US Mazda RX-7 GSL-SE FB, 13B. [Period Mazda model guide](https://www.cheavens.com/Mazda/NewsLetters/Mazda_Today_1984_Fall.pdf); [exact manual variant gallery](https://bringatrailer.com/listing/1985-mazda-rx-7-90/). |
+| Heather 1993 | UK Volvo 240 SE estate. [UK estate reference](https://ridedrivestore.co.uk/classics/volvo240estate). |
+| Larch Turbo 1995 | US Volvo 850 T-5R SportsWagon. [US trim reference gallery](https://bringatrailer.com/listing/1995-volvo-850-t5-r-4/). |
+| Sea Lavender 2015 | UK Volvo V60 Polestar T6 estate. [Volvo factory UK press kit](https://www.volvocars.com/uk/media/press-releases/A57B7EDF11FA5DBC/). |
+| Hairy Clover 1970 | US Dodge Coronet Super Bee Six Pack Hardtop. [Dodge period brochure](https://www.automontage.ch/content/dam/amag-generic-automontage/archiv/prospekte/1970_Coronet.pdf.coredownload.inline.pdf); [trim gallery](https://trombinoscar.com/dodge/dg7024.html). |
+| Ragwort 1970 | US Dodge Charger R/T 440 Magnum Hardtop. [Matched trim gallery](https://www.thewestcoastclassics.com/1970-dodge-charger-rt-440-375hp-v8-2-dr-hardtop-c-1254.htm). |
+| Meadow Buttercup 2012 | Canadian Dodge Challenger SRT8 392. [Canadian Dodge factory media](https://www.fcapresskit.ca/2012/data/srt_challenger.html). |
+
+The CRX uses a sealed painted metal sunroof; the S2000's fabric roof
+is closed. UK Volvo wagons use right-hand cabin geometry. The RX-7's
+parked covers remain static, and the Charger's dark recessed lamps
+approximate the concealed face without animated covers. The Cosmo roof,
+NA2 lamp wrap, and V60 rear light towers remain simplified.

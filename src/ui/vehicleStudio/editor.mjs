@@ -570,6 +570,7 @@ function inspector(){
   const arch=group(root,'Wheel opening fit',true);
   range(arch,'body','sillRelief',phenotype.BODY_FIELDS.sillRelief,g.body.sillRelief);
   range(arch,'body','darkArchLips',phenotype.BODY_FIELDS.darkArchLips,g.body.darkArchLips);
+  if(part==='doors')for(const k of ['sideRubStrip','sideRubStripHeight'])range(arch,'body',k,phenotype.BODY_FIELDS[k],g.body[k]);
   if(part==='frontFenders')for(const k of ['fenderGill','fenderGillDepth','fenderGillRake'])range(arch,'body',k,phenotype.BODY_FIELDS[k],g.body[k]);
   for(const [k,spec] of Object.entries(phenotype.ARCH_FIELDS)){
    if(part==='frontFenders'&&k.startsWith('rear')||part==='rearFenders'&&k.startsWith('front'))continue;

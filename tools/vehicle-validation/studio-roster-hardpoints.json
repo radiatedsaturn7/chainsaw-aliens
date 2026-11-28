@@ -2972,5 +2972,623 @@
         }
       ]
     }
+  },
+  {
+    "id": "honda-crx-si-ed9-us",
+    "label": "Cinder Si 1991",
+    "capability": "US CRX non-VTEC Si hatch shape with split rear glazing and roof panel",
+    "carId": "3d-cinder-si-1991-3d-7e3babc8e856",
+    "bodyRef": "Cinder Si 1991 Body",
+    "wheelRef": "Cinder Si 1991 Wheel",
+    "radius": 0.2888,
+    "axles": [
+      {
+        "track": 1.4503400325775146,
+        "y": 0.2888000011444092,
+        "z": 1.1506199836730957
+      },
+      {
+        "track": 1.4554200172424316,
+        "y": 0.2888000011444092,
+        "z": -1.1506199836730957
+      }
+    ],
+    "reference": "1991 Honda CRX Si ED9 non-VTEC 5MT, US"
+  },
+  {
+    "id": "honda-s2000-ap2-base",
+    "label": "Honeysuckle 22 2009",
+    "capability": "US AP2 base closed fabric roof, short tail, no CR wing and two oval tips",
+    "carId": "3d-honeysuckle-22-2009-3d-c3b040b448d7",
+    "bodyRef": "Honeysuckle 22 2009 Body",
+    "wheelRef": "Honeysuckle 22 2009 Wheel",
+    "radius": 0.3139,
+    "axles": [
+      {
+        "track": 1.4706599712371826,
+        "y": 0.3138999938964844,
+        "z": 1.2001500129699707
+      },
+      {
+        "track": 1.5087599754333496,
+        "y": 0.3138999938964844,
+        "z": -1.2001500129699707
+      }
+    ],
+    "reference": "2009 Honda S2000 AP2 base 6MT, US"
+  },
+  {
+    "id": "honda-nsx-type-r-na2",
+    "label": "Hedge Bedstraw 2005",
+    "capability": "Facelift NA2 coupe with fixed triangular lenses, low hood ducts and high wing",
+    "carId": "3d-hedge-bedstraw-2005-3d-fd46ab421790",
+    "bodyRef": "Hedge Bedstraw 2005 Body",
+    "wheelRef": "Hedge Bedstraw 2005 Wheel",
+    "radius": 0.30189999999999995,
+    "axles": [
+      {
+        "track": 1.5099999904632568,
+        "y": 0.3018999993801117,
+        "z": 1.2649999856948853
+      },
+      {
+        "track": 1.5399999618530273,
+        "y": 0.3018999993801117,
+        "z": -1.2649999856948853
+      }
+    ],
+    "reference": "2005 Honda NSX Type R NA2, JDM"
+  },
+  {
+    "id": "volvo-240-se-1993",
+    "label": "Heather 1993",
+    "capability": "Upright 240 SE estate with broad black bumpers and horizontal rear lights",
+    "carId": "3d-heather-1993-3d-06c97b3573f0",
+    "bodyRef": "Heather-1993-body",
+    "wheelRef": "Heather-1993-wheel",
+    "radius": 0.3073,
+    "axles": [
+      {
+        "track": 1.4299999475479126,
+        "y": 0.30730000138282776,
+        "z": 1.4010000228881836
+      },
+      {
+        "track": 1.3600000143051147,
+        "y": 0.30730000138282776,
+        "z": -1.2389999628067017
+      }
+    ],
+    "reference": "1993 UK Volvo 240 SE estate, 2.0 B200F 1986cc, RHD five-speed manual, catalyst/Lambda sond; not SE 2.3 B230F",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.5789999961853027,
+            0.625,
+            -2.496000051498413
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.5789999961853027,
+            0.625,
+            -2.496000051498413
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.7080000042915344,
+            0.8109999895095825,
+            2.4739999771118164
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.7080000042915344,
+            0.8109999895095825,
+            2.4739999771118164
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7149999737739563,
+            0.30730000138282776,
+            -1.4010000228881836
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7149999737739563,
+            0.30730000138282776,
+            -1.4010000228881836
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.6800000071525574,
+            0.30730000138282776,
+            1.2389999628067017
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.6800000071525574,
+            0.30730000138282776,
+            1.2389999628067017
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "volvo-850-t5r-1995",
+    "label": "Larch Turbo 1995",
+    "capability": "Cream Yellow 850 SportsWagon with Titan wheels and vertical red towers",
+    "carId": "3d-larch-turbo-1995-3d-8df5ac016cd9",
+    "bodyRef": "Larch-Turbo",
+    "wheelRef": "Larch-Turbo-Wheel",
+    "radius": 0.30815,
+    "axles": [
+      {
+        "track": 1.5189199447631836,
+        "y": 0.3081499934196472,
+        "z": 1.065783977508545
+      },
+      {
+        "track": 1.4706599712371826,
+        "y": 0.30879101157188416,
+        "z": -1.5986759662628174
+      }
+    ],
+    "reference": "1995 United States Volvo 850 T-5R SportsWagon 2.3 turbo FWD four-speed automatic, Cream Yellow"
+  },
+  {
+    "id": "volvo-v60-polestar-2015",
+    "label": "Sea Lavender 2015",
+    "capability": "Rebel Blue V60 with swept rear shoulders and high C-pillar lamps",
+    "carId": "3d-sea-lavender-2015-3d-d5041d985ec4",
+    "bodyRef": "Sea-Lavender-2015-finished",
+    "wheelRef": "Sea-Lavender-2015-wheel",
+    "radius": 0.33975,
+    "axles": [
+      {
+        "track": 1.587499976158142,
+        "y": 0.3397499918937683,
+        "z": 1.3880000114440918
+      },
+      {
+        "track": 1.5849599838256836,
+        "y": 0.3402650058269501,
+        "z": -1.3880000114440918
+      }
+    ],
+    "reference": "2015 UK Volvo V60 Polestar, first-generation T6 six-cylinder estate, six-speed automatic; not later four-cylinder/eight-speed"
+  },
+  {
+    "id": "mazda-cosmo-l10b",
+    "label": "Common Agrimony 1972",
+    "capability": "Long wheelbase 110S round inset lamps, low two-seat roof and split rear light treatment",
+    "carId": "3d-common-agrimony-1972-3d-959e06f70551",
+    "bodyRef": "Common-Agrimony",
+    "wheelRef": "Common-Agrimony-Wheel",
+    "radius": 0.3225,
+    "axles": [
+      {
+        "track": 1.25,
+        "y": 0.32249999046325684,
+        "z": 1.1749999523162842
+      },
+      {
+        "track": 1.2400000095367432,
+        "y": 0.32249999046325684,
+        "z": -1.1749999523162842
+      }
+    ],
+    "reference": "1972 Mazda Cosmo Sport 110S L10B Series II, JDM"
+  },
+  {
+    "id": "mazda-rx3-12a",
+    "label": "Ground Ivy 1973",
+    "capability": "Early US twelve-A fastback with four round beams, chrome and compact stance",
+    "carId": "3d-ground-ivy-1973-3d-0053f687c6d0",
+    "bodyRef": "Ground Ivy 1973 Body",
+    "wheelRef": "Ground Ivy 1973 Wheel",
+    "radius": 0.29710000000000003,
+    "axles": [
+      {
+        "track": 1.2954000234603882,
+        "y": 0.2971000075340271,
+        "z": 1.1549999713897705
+      },
+      {
+        "track": 1.2954000234603882,
+        "y": 0.2971000075340271,
+        "z": -1.1549999713897705
+      }
+    ],
+    "reference": "1973 Mazda RX-3 12A Coupe, US"
+  },
+  {
+    "id": "mazda-rx7-gsl-se",
+    "label": "Musk Mallow 1985",
+    "capability": "Late first-generation US fuel-injected notch-front sports car, wide rear glass and closed lamp covers",
+    "carId": "3d-musk-mallow-1985-3d-b426337801ac",
+    "bodyRef": "Musk-Mallow",
+    "wheelRef": "Musk-Mallow-Wheel",
+    "radius": 0.30079999999999996,
+    "axles": [
+      {
+        "track": 1.4198600053787231,
+        "y": 0.30079999566078186,
+        "z": 1.2103099822998047
+      },
+      {
+        "track": 1.3995399475097656,
+        "y": 0.3002060055732727,
+        "z": -1.2103099822998047
+      }
+    ],
+    "reference": "1985 Mazda RX-7 GSL-SE FB 13B, US"
+  },
+  {
+    "id": "dodge-coronet-super-bee-1970",
+    "label": "Hairy Clover 1970",
+    "carId": "3d-hairy-clover-1970-3d-01c1398dea81",
+    "capability": "1970 United States Dodge Coronet Super Bee, two-doorhardtop,optional440SixPack three-two-barrelV8,optional4MT",
+    "bodyRef": "Hairy-Clover-1970-body",
+    "wheelRef": "Hairy-Clover-1970-wheel",
+    "radius": 0.3283,
+    "axles": [
+      {
+        "track": 1.511299967765808,
+        "y": 0.32829999923706055,
+        "z": 1.611899971961975
+      },
+      {
+        "track": 1.5036799907684326,
+        "y": 0.32829999923706055,
+        "z": -1.3598999977111816
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.593999981880188,
+            0.5860000252723694,
+            -2.7901899814605713
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.593999981880188,
+            0.5860000252723694,
+            -2.7901899814605713
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.5889999866485596,
+            0.6100000143051147,
+            2.759190082550049
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.5889999866485596,
+            0.6100000143051147,
+            2.759190082550049
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.755649983882904,
+            0.32829999923706055,
+            -1.611899971961975
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.755649983882904,
+            0.32829999923706055,
+            -1.611899971961975
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7518399953842163,
+            0.32829999923706055,
+            1.3598999977111816
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7518399953842163,
+            0.32829999923706055,
+            1.3598999977111816
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "1970 Dodge Coronet Super Bee Six Pack Hardtop, US"
+  },
+  {
+    "id": "dodge-charger-rt-1970",
+    "label": "Ragwort 1970",
+    "carId": "3d-ragwort-1970-3d-5f3f6608a3f0",
+    "capability": "1970 United States Dodge Charger R/T two-door hardtop, standard 440 Magnum four-barrel V8 and standard TorqueFlite three-speed automatic, LHD, optional console. Not SE, Hemi, Six Pack, Daytona, four-speed manual or modified film car.",
+    "bodyRef": "Ragwort",
+    "wheelRef": "Ragwort-Wheel",
+    "radius": 0.3283,
+    "axles": [
+      {
+        "track": 1.516379952430725,
+        "y": 0.32829999923706055,
+        "z": 1.3373099565505981
+      },
+      {
+        "track": 1.5036799907684326,
+        "y": 0.32836800813674927,
+        "z": -1.6344900131225586
+      }
+    ],
+    "reference": "1970 Dodge Charger R/T 440 Magnum Hardtop, US"
+  },
+  {
+    "id": "dodge-challenger-srt8-392-2012",
+    "label": "Meadow Buttercup 2012",
+    "carId": "3d-meadow-buttercup-2012-3d-2cfbb9ae6da6",
+    "capability": "2012 Canadian Dodge Challenger SRT8 392 6.4 naturally aspirated HEMI RWD TR6060 six-speed manual, standard245/45ZR20 all-season tires",
+    "bodyRef": "Meadow-Buttercup-2012-body",
+    "wheelRef": "Meadow-Buttercup-2012-wheel",
+    "radius": 0.36425,
+    "axles": [
+      {
+        "track": 1.6002000570297241,
+        "y": 0.3642500042915344,
+        "z": 1.5240000486373901
+      },
+      {
+        "track": 1.6027400493621826,
+        "y": 0.3642500042915344,
+        "z": -1.4220000505447388
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6579999923706055,
+            0.6579999923706055,
+            -2.609499931335449
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6579999923706055,
+            0.6579999923706055,
+            -2.609499931335449
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.5740000009536743,
+            0.6919999718666077,
+            2.6024999618530273
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.5740000009536743,
+            0.6919999718666077,
+            2.6024999618530273
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.8001000285148621,
+            0.3642500042915344,
+            -1.5240000486373901
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.8001000285148621,
+            0.3642500042915344,
+            -1.5240000486373901
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.8013700246810913,
+            0.3642500042915344,
+            1.4220000505447388
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.8013700246810913,
+            0.3642500042915344,
+            1.4220000505447388
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "2012 Dodge Challenger SRT8 392, Canada"
   }
 ]
