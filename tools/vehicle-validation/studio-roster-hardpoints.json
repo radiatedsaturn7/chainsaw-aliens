@@ -6559,5 +6559,816 @@
     ],
     "reference": "2011 Lotus Evora S, UK/European original3.456superchargedV6 six-speedmanual2+2GT standard18/19wheels;notIPS,400,GT430orGTE",
     "canonicalLampSides": true
+  },
+  {
+    "id": "toyota-celica-st205-uk",
+    "label": "Stone Parsley 1994",
+    "capability": "ST205 UK four round lights and raised road deck wing",
+    "carId": "3d-stone-parsley-1994-3d-44f1728f0815",
+    "bodyRef": "Stone Parsley 1994 Body",
+    "wheelRef": "Stone Parsley 1994 Wheel",
+    "radius": 0.3107,
+    "axles": [
+      {
+        "track": 1.5099999904632568,
+        "y": 0.310699999332428,
+        "z": 1.2699999809265137
+      },
+      {
+        "track": 1.4900000095367432,
+        "y": 0.310699999332428,
+        "z": -1.2699999809265137
+      }
+    ],
+    "reference": "1994 UK Toyota Celica GT-Four ST205 road launch model"
+  },
+  {
+    "id": "toyota-celica-st185-rac-1993",
+    "label": "Melilot 1993",
+    "capability": "ST185 Group A raised rally stance and classic closed popups",
+    "carId": "3d-melilot-1993-3d-a24562be57af",
+    "bodyRef": "Melilot-1993-body",
+    "wheelRef": "Melilot-1993-wheel",
+    "radius": 0.32375,
+    "axles": [
+      {
+        "track": 1.5099999904632568,
+        "y": 0.32374998927116394,
+        "z": 1.3454999923706055
+      },
+      {
+        "track": 1.5099999904632568,
+        "y": 0.32374998927116394,
+        "z": -1.1794999837875366
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7549999952316284,
+            0.32374998927116394,
+            -1.3454999923706055
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7549999952316284,
+            0.32374998927116394,
+            -1.3454999923706055
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7549999952316284,
+            0.32374998927116394,
+            1.1794999837875366
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7549999952316284,
+            0.32374998927116394,
+            1.1794999837875366
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6240000128746033,
+            0.7350000143051147,
+            -2.325
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6240000128746033,
+            0.7350000143051147,
+            -2.325
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6380000114440918,
+            0.6690000295639038,
+            2.2880001068115234
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6380000114440918,
+            0.6690000295639038,
+            2.2880001068115234
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "1993 Toyota Celica ST185 Group A RAC-winning Kankkunen/Grist"
+  },
+  {
+    "id": "toyota-celica-pikes-peak-1994",
+    "label": "Rockrose 1994",
+    "capability": "Rod Millen AWD tube-frame hill climb shell with giant wing and splitter",
+    "carId": "3d-rockrose-1994-3d-d44f36267f05",
+    "bodyRef": "Rockrose",
+    "wheelRef": "Rockrose-Wheel",
+    "radius": 0.33145,
+    "axles": [
+      {
+        "track": 1.7200000286102295,
+        "y": 0.3314499855041504,
+        "z": 1.2649999856948853
+      },
+      {
+        "track": 1.7200000286102295,
+        "y": 0.3310000002384186,
+        "z": -1.2649999856948853
+      }
+    ],
+    "reference": "1994 Rod Millen Toyota Celica AWD Unlimited Pikes Peak prototype"
+  },
+  {
+    "id": "twingo-renaultsport-133",
+    "label": "Sorrel 133 2008",
+    "capability": "Launch-era compact three-door hot hatch, fender arches and round bumper lamps",
+    "carId": "3d-sorrel-133-2008-3d-ddce5a94c019",
+    "bodyRef": "Sorrel-133",
+    "wheelRef": "Sorrel-133-Wheel",
+    "radius": 0.29095,
+    "axles": [
+      {
+        "track": 1.4600000381469727,
+        "y": 0.2909500002861023,
+        "z": 0.8761600255966187
+      },
+      {
+        "track": 1.4450000524520874,
+        "y": 0.2920829951763153,
+        "z": -1.4918400049209595
+      }
+    ],
+    "reference": "2008 United Kingdom Renault Twingo Renaultsport 133 Sport chassis, standard 16-inch wheels, 1.6 16V 5MT, RHD; not Cup or 2011 facelift",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "clio-rs-200-edc",
+    "label": "Lesser Stitchwort 2013",
+    "capability": "Sport five-door hatch with flowing upper intake and rear extractor",
+    "carId": "3d-lesser-stitchwort-2013-3d-1d1fa9576f01",
+    "bodyRef": "Lesser-Stitchwort-2013",
+    "wheelRef": "Lesser-Stitchwort-2013-Wheel",
+    "radius": 0.30815,
+    "axles": [
+      {
+        "track": 1.5036799907684326,
+        "y": 0.3081499934196472,
+        "z": 1.2944999933242798
+      },
+      {
+        "track": 1.5011399984359741,
+        "y": 0.3081499934196472,
+        "z": -1.2944999933242798
+      }
+    ],
+    "reference": "2013 Renault Clio R.S. 200 EDC, French-market Sport chassis five-door, standard six-speed EDC, not Cup or Trophy",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "twingo-expression-sce70",
+    "label": "Thimble Clover 2014",
+    "capability": "Upright five-door city hatch, rear engine and rounded glass tailgate",
+    "carId": "3d-thimble-clover-2014-3d-6f925b7df3a6",
+    "bodyRef": "Thimble-Clover-2014-finished",
+    "wheelRef": "Thimble-Clover-2014-wheel",
+    "radius": 0.29775,
+    "axles": [
+      {
+        "track": 1.4528800249099731,
+        "y": 0.29774999618530273,
+        "z": 1.2450000047683716
+      },
+      {
+        "track": 1.4300199747085571,
+        "y": 0.2967270016670227,
+        "z": -1.2450000047683716
+      }
+    ],
+    "reference": "2014 Renault Twingo Expression SCe 70, Germany third-generation five-door rear-engine naturally aspirated 1.0 three-cylinder five-speed manual; non-ENERGY without start-stop",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "ford-mustang-mach1-429-1971",
+    "label": "Broadleaf Clover 1971",
+    "carId": "3d-broadleaf-clover-1971-3d-905cc3a2a6fa",
+    "capability": "1971 United States Ford Mustang Mach 1, 429CJ-R DualRamInduction,wide-ratio4MT,noDragPack",
+    "bodyRef": "Broadleaf-Clover-1971-body",
+    "wheelRef": "Broadleaf-Clover-1971-wheel",
+    "radius": 0.3283,
+    "axles": [
+      {
+        "track": 1.5621000528335571,
+        "y": 0.32829999923706055,
+        "z": 1.4133000373840332
+      },
+      {
+        "track": 1.5646400451660156,
+        "y": 0.32829999923706055,
+        "z": -1.355299949645996
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6069999933242798,
+            0.5040000081062317,
+            -2.505650043487549
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6069999933242798,
+            0.5040000081062317,
+            -2.505650043487549
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.5450000166893005,
+            0.5429999828338623,
+            2.495650053024292
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.5450000166893005,
+            0.5429999828338623,
+            2.495650053024292
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7810500264167786,
+            0.32829999923706055,
+            -1.4133000373840332
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7810500264167786,
+            0.32829999923706055,
+            -1.4133000373840332
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7823200225830078,
+            0.32829999923706055,
+            1.355299949645996
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7823200225830078,
+            0.32829999923706055,
+            1.355299949645996
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "https://fordimages.com/pages/1971-ford-mustang-factory-reference"
+  },
+  {
+    "id": "ford-mustang-svo-1986",
+    "label": "Mouseear Hawkweed 1986",
+    "carId": "3d-mouseear-hawkweed-1986-3d-4b4cf1d8e1cf",
+    "capability": "1986 US Ford Mustang SVO 2.3 EFI intercooled turbo hatchback,5MT,standard equipment,noCompetitionPrep",
+    "bodyRef": "Mouseear-Hawkweed-1986-body",
+    "wheelRef": "Mouseear-Hawkweed-1986-wheel",
+    "radius": 0.3157,
+    "axles": [
+      {
+        "track": 1.4681199789047241,
+        "y": 0.3156999945640564,
+        "z": 1.3613500595092773
+      },
+      {
+        "track": 1.4808199405670166,
+        "y": 0.3156999945640564,
+        "z": -1.191349983215332
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6320000290870667,
+            0.5960000157356262,
+            -2.389159917831421
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6320000290870667,
+            0.5960000157356262,
+            -2.389159917831421
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.628000020980835,
+            0.6039999723434448,
+            2.381160020828247
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.628000020980835,
+            0.6039999723434448,
+            2.381160020828247
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7340599894523621,
+            0.3156999945640564,
+            -1.3613500595092773
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7340599894523621,
+            0.3156999945640564,
+            -1.3613500595092773
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7404099702835083,
+            0.3156999945640564,
+            1.191349983215332
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7404099702835083,
+            0.3156999945640564,
+            1.191349983215332
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "https://www.auto-brochures.com/makes/Ford/Mustang/Ford_US%20Mustang_1986.pdf"
+  },
+  {
+    "id": "ford-thunderbird-turbo-1988",
+    "label": "Holly 1988",
+    "carId": "3d-holly-1988-3d-d9fe6307f071",
+    "capability": "1988 US Ford Thunderbird Turbo Coupe, intercooled 2.3-litre four-cylinder, standard five-speed manual. Not the 150hp optional automatic, V8 Sport, LX or later supercharged Thunderbird SC.",
+    "bodyRef": "Holly-1988",
+    "wheelRef": "Holly-1988-Wheel",
+    "radius": 0.3382,
+    "axles": [
+      {
+        "track": 1.4759999513626099,
+        "y": 0.33820000290870667,
+        "z": 1.3235000371932983
+      },
+      {
+        "track": 1.4859999418258667,
+        "y": 0.33820000290870667,
+        "z": -1.3235000371932983
+      }
+    ],
+    "reference": "https://www.auto-brochures.com/makes/Ford/Thunderbird/Ford_US%20Thunderbird_1988.pdf"
+  },
+  {
+    "id": "volvo-s40-24i-2007",
+    "label": "Juneberry Clover 2007",
+    "capability": "Pre-facelift notchback, upright four-door quarters, rectangular grille and high tail shoulders",
+    "carId": "3d-juneberry-clover-2007-3d-c5f479585078",
+    "bodyRef": "Juneberry-Clover-2007-body",
+    "wheelRef": "Juneberry-Clover-2007-wheel",
+    "radius": 0.31595,
+    "axles": [
+      {
+        "track": 1.5341600179672241,
+        "y": 0.3159500062465668,
+        "z": 1.3619999885559082
+      },
+      {
+        "track": 1.5316200256347656,
+        "y": 0.3159500062465668,
+        "z": -1.277999997138977
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2007 US Volvo S40 2.4i base sedan",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6079999804496765,
+            0.593999981880188,
+            -2.3239998817443848
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6079999804496765,
+            0.593999981880188,
+            -2.3239998817443848
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.7179999947547913,
+            0.722000002861023,
+            2.316999912261963
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.7179999947547913,
+            0.722000002861023,
+            2.316999912261963
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7670800089836121,
+            0.3159500062465668,
+            -1.3619999885559082
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7670800089836121,
+            0.3159500062465668,
+            -1.3619999885559082
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7658100128173828,
+            0.3159500062465668,
+            1.277999997138977
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7658100128173828,
+            0.3159500062465668,
+            1.277999997138977
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "volvo-c30-t5-2008",
+    "label": "Snowdrop T5 2008",
+    "capability": "Pre-facelift bumper and cladding, silver wheels, tall tail lens and glass hatch",
+    "carId": "3d-snowdrop-t5-2008-3d-4240429fe75b",
+    "bodyRef": "Snowdrop-T5",
+    "wheelRef": "Snowdrop-T5-Wheel",
+    "radius": 0.3184,
+    "axles": [
+      {
+        "track": 1.5341600179672241,
+        "y": 0.31839999556541443,
+        "z": 1.0028427839279175
+      },
+      {
+        "track": 1.5316200256347656,
+        "y": 0.31929999589920044,
+        "z": -1.6362172365188599
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2008 US Volvo C30 T5 Version 1.0"
+  },
+  {
+    "id": "volvo-c30-polestar-limited-2013",
+    "label": "Wood Sorrel 2013",
+    "capability": "Facelift swept lamps, deep lower grille, upper spoiler, charcoal wheels and Rebel Blue",
+    "carId": "3d-wood-sorrel-2013-3d-1adf8f7826be",
+    "bodyRef": "Wood-Sorrel-2013-finished",
+    "wheelRef": "Wood-Sorrel-2013-wheel",
+    "radius": 0.31839999999999996,
+    "axles": [
+      {
+        "track": 1.5341600179672241,
+        "y": 0.31839999556541443,
+        "z": 1.3200000524520874
+      },
+      {
+        "track": 1.5316200256347656,
+        "y": 0.3191390037536621,
+        "z": -1.3200000524520874
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2013 US Volvo C30 Polestar Limited Edition"
+  },
+  {
+    "id": "mazda-mx5-nb-turbo-2005",
+    "label": "Mouse-ear 2005",
+    "capability": "Turbo NB roadster with Touring-free open vinyl top, dark bezel projectors and rear deck lip",
+    "carId": "3d-mouse-ear-2005-3d-f3591af2909f",
+    "bodyRef": "Mouse-ear 2005 Body",
+    "wheelRef": "Mouse-ear 2005 Wheel",
+    "radius": 0.2979,
+    "axles": [
+      {
+        "track": 1.4147800207138062,
+        "y": 0.29789999127388,
+        "z": 1.1328400373458862
+      },
+      {
+        "track": 1.4401799440383911,
+        "y": 0.29789999127388,
+        "z": -1.1328400373458862
+      }
+    ],
+    "reference": "2005 US Mazda Mazdaspeed MX-5 NB, US turbo 1.8 six-speed manual, standard cloth/vinyl-roof specification without Grand Touring package",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "mazda-mx5-nc-sport-2013",
+    "label": "Red Campion 2013",
+    "capability": "NC3 Sport with broad five-point bumper mouth, pronounced fender arches and bilateral exhaust",
+    "carId": "3d-red-campion-2013-3d-2ee16d93000d",
+    "bodyRef": "Red Campion 2013 Body",
+    "wheelRef": "Red Campion 2013 Wheel",
+    "radius": 0.30569999999999997,
+    "axles": [
+      {
+        "track": 1.4909800291061401,
+        "y": 0.30570000410079956,
+        "z": 1.1645900011062622
+      },
+      {
+        "track": 1.4960600137710571,
+        "y": 0.30570000410079956,
+        "z": -1.1645900011062622
+      }
+    ],
+    "reference": "2013 US Mazda MX-5 Miata Sport NC 2.0 five-speed manual, vinyl soft top; not Club, PRHT or automatic",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "mazda-mx5-nd-sport-2016",
+    "label": "White Campion 2016",
+    "capability": "ND Sport with low Kodo nose, thin LED headlights and right twin outlets",
+    "carId": "3d-white-campion-2016-3d-446f2f645c9a",
+    "bodyRef": "White Campion 2016 Body",
+    "wheelRef": "White Campion 2016 Wheel",
+    "radius": 0.30069999999999997,
+    "axles": [
+      {
+        "track": 1.4960600137710571,
+        "y": 0.30070000886917114,
+        "z": 1.1544300317764282
+      },
+      {
+        "track": 1.502918004989624,
+        "y": 0.30070000886917114,
+        "z": -1.1544300317764282
+      }
+    ],
+    "reference": "2016 US Mazda MX-5 Miata Sport ND 2.0 SKYACTIV-G six-speed manual, cloth soft top; not Club, Grand Touring or RF",
+    "canonicalLampSides": true
   }
 ]

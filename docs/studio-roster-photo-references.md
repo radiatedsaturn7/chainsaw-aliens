@@ -533,3 +533,28 @@ BMW rear glass and lens shapes, and the Type 181 folded top remain stylized.
 The Lotus 340R uses a separate narrow tub and four individual cycle guards.
 The Volvo lamp tower-to-fascia junction and fixed pop-up shapes are
 simplified, along with the TZ2's inset optics and Giulietta's rear hatch.
+
+### Full-roster rollout, Celica, Renault, Ford, Volvo, and Miata
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Stone Parsley 1994 | UK Toyota Celica GT-Four ST205 road launch model. [Toyota UK gallery](https://media.toyota.co.uk/images/celica-gt-four-exterior-1994-1999/); [launch packet](https://media.toyota.co.uk/wp-content/uploads/sites/5/pdf/Celica-Gen6-GT-Four-UK-launch-pack.pdf). |
+| Melilot 1993 | Toyota Celica ST185 Group A RAC Rally winner, Kankkunen and Grist. [Period race gallery](https://www.pro-rally.co.uk/gallery/1993-network-q-rac-rally/); [same car, multiple angles](https://commons.wikimedia.org/wiki/Category:Toyota_Celica_GT-Four_ST185_(1993_Wales_Rally_GB,_No.1)). |
+| Rockrose 1994 | Rod Millen Toyota Celica AWD Unlimited Pikes Peak prototype. [Toyota history](https://mag.toyota.co.uk/toyota-people-motorsport-legend-rod-millen/); [period footage](https://www.youtube.com/watch?v=-vZJXWL5yBM). |
+| Sorrel 133 2008 | UK Renaultsport Twingo 133 standard Sport chassis, not Cup or 2011 facelift. [2008 UK brochure](https://autocatalogarchive.com/wp-content/uploads/2021/06/Renault-Twingo-Sport-133-2008-UK.pdf). |
+| Lesser Stitchwort 2013 | French Renault Clio R.S. 200 EDC Sport, not Cup or Trophy. [Renault France](https://media.alpinecars.com/nouvelle-renault-clio-rs-200-edc-tarifs-et-equipements/?lang=fra). |
+| Thimble Clover 2014 | German Renault Twingo Expression SCe 70, five doors and rear engine, no Energy package. [German factory price/equipment guide](https://el.semen.de/scenic/Preisliste_Twingo_2014.pdf). |
+| Broadleaf Clover 1971 | US Ford Mustang Mach 1 429 CJ-R regular package, dual Ram Induction, standard axle. [Ford references](https://fordimages.com/pages/1971-ford-mustang-factory-reference); [1971 Ford brochure](https://ponynsnake.com/wp-content/uploads/2023/07/access-1971_Ford_Mustang_brochure_AR_96_212010_7046.pdf). |
+| Mouseear Hawkweed 1986 | US Ford Mustang SVO standard 2.3 turbo five-speed, no Competition Prep. [Ford USA brochure](https://www.auto-brochures.com/makes/Ford/Mustang/Ford_US%20Mustang_1986.pdf). |
+| Holly 1988 | US Ford Thunderbird Turbo Coupe 2.3 intercooled manual, not later SC. [Ford USA brochure](https://www.auto-brochures.com/makes/Ford/Thunderbird/Ford_US%20Thunderbird_1988.pdf). |
+| Juneberry Clover 2007 | US Volvo S40 2.4i base five-speed, not T5. [Volvo USA](https://www.volvocars.com/us/media/press-releases/2EB70A881C28E85B/). |
+| Snowdrop T5 2008 | US Volvo C30 T5 Version 1.0 6MT, no Custom Build options. [Volvo USA](https://www.volvocars.com/us/media/press-releases/30866183D4E5D637/). |
+| Wood Sorrel 2013 | US Volvo C30 Polestar Limited Edition production hatch, not AWD concept. [Volvo USA](https://www.volvocars.com/us/media/press-releases/BAC5EB4A3B6F3CB1/). |
+| Mouse-ear 2005 | US Mazda Mazdaspeed MX-5 turbo NB 6MT, standard roof trim. [Mazda USA](https://news.mazdausa.com/vehicles?item=129); [2005 car gallery](https://bringatrailer.com/listing/2005-mazda-mx-5-miata-4/). |
+| Red Campion 2013 | US Mazda MX-5 Sport NC3, vinyl soft top, 5MT. [Mazda USA press kit](https://news.mazdausa.com/vehicles-2013-mx-5-miata). |
+| White Campion 2016 | US Mazda MX-5 Sport ND, cloth soft top and 6MT, not Club, GT or RF. [Mazda USA press kit](https://news.mazdausa.com/vehicles-2016-mx-5). |
+
+Clio road-trim reference specifies 18-inch wheels; stock game 17-inch
+tire and wheel mounts remain unchanged. Competition Celica sponsor and
+trademark graphics are omitted; this is not an event-day replication.
+SVO wing spacing and C30 glass-to-tail transition remain approximations.

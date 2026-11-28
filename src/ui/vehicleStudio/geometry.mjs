@@ -1172,8 +1172,10 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   const z=mix(cabinFront,bumperFront,.49+sc.bias*.14),p=hoodPoint(z,.5),w=hoodDesign.scoopWidth?Math.max(.12,hoodDesign.scoopWidth):.41*sc.size,l=.34*sc.depth,h=hoodDesign.scoopHeight?Math.max(.015,hoodDesign.scoopHeight):.045+.085*sc.shape;
   if(sc.type==='scoop'){
    const lipZ=z+l*.48,ht=h+sc.angle*RAD*l*.24;
+   const available=Math.max(0,Math.min(skinX(lipZ),skinX(z-l*.56))-.5*w-.028);
+   const shift=Math.max(-available,Math.min(available,hoodDesign.scoopOffset??0));
    function surface(a,b){
-    const sz=mix(z-l*.56,lipZ,b),x=w*.5*a*(.87+.13*b);
+    const sz=mix(z-l*.56,lipZ,b),x=shift+w*.5*a*(.87+.13*b);
     const base=hoodPoint(sz,clamp(.5+x/(2*skinX(sz))))[1];
     const cross=Math.max(0,1-Math.abs(a)**(8+12*hoodDesign.scoopCorner))**(.64-.30*hoodDesign.scoopCorner);
     return [x,base+ht*cross*(b*b*(3-2*b))-.001,sz];
@@ -1181,10 +1183,10 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    put('scoop','paint',patch(small(lod?8:16,6,5,4),small(8,7,6,5),(b,u)=>surface(2*u-1,b)));
    // A real open sleeve with painted lip, black inside walls and a recessed
    // termination; shadows have physical depth, not a floating black oval.
-   if(hoodDesign.scoopWidth||hoodDesign.scoopHeight||hoodDesign.scoopCorner){
+   if(hoodDesign.scoopWidth||hoodDesign.scoopHeight||hoodDesign.scoopCorner||shift){
     const base=(x,at)=>hoodPoint(at,clamp(.5+x/(2*skinX(at))))[1];
     const ringShape=(a,at,scale,height)=>{
-     const x=w*.5*a*scale,arch=Math.max(0,1-Math.abs(a)**(8+12*hoodDesign.scoopCorner))**(.64-.30*hoodDesign.scoopCorner);
+     const x=shift+w*.5*a*scale,arch=Math.max(0,1-Math.abs(a)**(8+12*hoodDesign.scoopCorner))**(.64-.30*hoodDesign.scoopCorner);
      const bottom=base(x,at)-.001;
      return {x,bottom,top:bottom+height*arch};
     };

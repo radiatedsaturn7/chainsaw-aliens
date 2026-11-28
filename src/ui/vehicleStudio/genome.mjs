@@ -164,7 +164,7 @@ export const BODY_FIELDS={...ARCH_FIELDS,
  fenderGill:F('Recessed front fender gill',0,1,1),fenderGillDepth:F('Gill recess depth (m)',.005,.021,.001),fenderGillRake:F('Gill rake',-.6,.6,.025),
  quarterDuct:F('Rear-quarter cooling intake',0,1,1),quarterDuctWidth:F('Rear-quarter intake length',.18,.62,.01),quarterDuctDepth:F('Rear-quarter intake depth (m)',0,.060,.001),sideDuct:F('Sculpted side duct',0,1,1),rearwardSideDuct:F('Side duct opens toward rear wheel',0,1,1),pairedSideDucts:F('Paired diagonal and triangular ducts',0,1,1),sideDuctCrescent:F('Swept crescent profile (off/on)',0,1,1),sideDuctDepth:F('Side duct recess (m)',0,.055,.001),
  sideDuctWidth:F('Side duct length',.28,.80,.01),sideDuctSweep:F('Side duct taper',-.18,.18,.01),sideDuctHeight:F('Side duct upper edge',.02,.30,.01),
- lowHoodLinerCap:F('Fit front wheel liners under hood',0,1,1),cowlDuct:F('Hood cowl ducts',0,1,1),cowlDuctSingle:F('Single central extractor',0,1,1),cowlDuctWidth:F('Cowl duct lateral width',.15,.60,.01),
+ lowHoodLinerCap:F('Fit front wheel liners under hood',0,1,1),cowlDuct:F('Hood cowl ducts',0,1,1),cowlDuctSingle:F('Single central extractor',0,1,1),cowlDuctAccent:F('Contrast center on vented bonnet',0,1,1),cowlDuctWidth:F('Cowl duct lateral width',.15,.60,.01),
  cowlDuctLength:F('Cowl duct length',.18,.62,.01),cowlDuctDepth:F('Cowl duct recess (m)',0,.035,.001),
  sideRubStrip:F('Raised protective side molding',0,1,1),sideRubStripHeight:F('Side molding vertical station',.18,.58,.01),
  cycleGuardPull:F('Separate cycle guards / tub pinch (m)',0,.30,.005),vintageFenders:F('Ponton fender separation',0,1,.01),sillRelief:F('Raised scalloped side sill (m)',0,.18,.005),
@@ -206,7 +206,7 @@ export const HOOD_CONSTRUCTION_FIELDS={
  shoulderWidth:F('Shoulder blend width (m)',.045,.18,.001),
  shoulderAt:F('Shoulder position across hood',.43,.90,.01),
  shoulderSweep:F('Shoulder sweep toward grille',-.19,.19,.005),
- scoopWidth:F('Intake mouth width (m, 0 = linked to size)',0,.86,.005),
+ scoopWidth:F('Intake mouth width (m, 0 = linked to size)',0,.86,.005),scoopOffset:F('Hood intake lateral shift (m)',-.46,.46,.005),
  scoopHeight:F('Intake mouth height (m, 0 = linked to shape)',0,.20,.005),
  scoopCorner:F('Intake corner shape',0,1,.01)
 };
@@ -231,7 +231,7 @@ const constructionDefaults=()=>({
  sides:{L:{},R:{}},
  cabin:{rallyMudflaps:0,gullwingRoofSeams:0,gullwingRoofGlass:0,rearDeckVents:0,roofGlazing:0,raisedEngineLid:0,layout:'bench',driverSide:'left',bolster:.53,lumbar:.45,trim:.54,targaRearBulkhead:0,hatchBridge:0,hatchBridgeWidth:.84,hatchQuarterTaper:0,hatchLampFill:0,wagonTallTail:0,wagonTailWidth:.5,noDoorHandles:0,openScreenRatio:0,openRollHoop:0,roofLipReach:0,roofLipSpan:.88,roofLipLift:.02,contrastMirrorCaps:0,wagonGlassPillar:0,wagonGlassPillarWidth:.030,wagonGlassPillarLean:.018,rearDeckButtresses:0,rearPillarFoot:0,rearRoofShift:0,rearPillarWidth:0,pickupCabFrame:0,utilityCabinSplit:0,hardtopRearSide:0,utilityBumper:0,utilityBumperPlate:0,bubbleCanopy:0,hardtopContrast:0,rearSpareRadius:0,rearSpareOffset:0,rearSpareHeight:1.04,vanSideTrim:0,utilityRoofRails:0,rallyTubework:0,rearGlassArc:0,rearHatchFold:0,hatchEdgeLamps:0,rearHatchUpright:0,rearBenchSeats:2,canopyLength:.5,frontScreenRake:0,sideGlassRise:0,darkWindscreenFrame:0,canopyShoulder:.5,glassBow:.5},
  finish:{paintRoughness:.44,coatRoughness:.12},
- hood:{lampLids:'off',insetLampMounts:0,parkedPopups:0,lidWidth:.25,lidLength:.25,lidSpread:.30,lidSetback:.065,lidGap:.004,classicLampBezel:0,bonnetStripes:0,deckStripes:0,contrastBonnet:0,crossCrown:0,noseFairing:0,lampPodRise:0,shoulderRise:0,shoulderWidth:.087,shoulderAt:.65,shoulderSweep:0,scoopWidth:0,scoopHeight:0,scoopCorner:0},
+ hood:{lampLids:'off',insetLampMounts:0,parkedPopups:0,lidWidth:.25,lidLength:.25,lidSpread:.30,lidSetback:.065,lidGap:.004,classicLampBezel:0,bonnetStripes:0,deckStripes:0,contrastBonnet:0,crossCrown:0,noseFairing:0,lampPodRise:0,shoulderRise:0,shoulderWidth:.087,shoulderAt:.65,shoulderSweep:0,scoopWidth:0,scoopOffset:0,scoopHeight:0,scoopCorner:0},
  wing:{supportMount:'under',elevation:0,boxWallWidth:.041,boxWallRake:0,camber:.34,sweep:.08,taper:.42,thickness:.097,angle:4,supports:2,spacing:.67,formula:'',elements:1},
  exhaust:[],features:[]
 });
@@ -269,7 +269,7 @@ export function createVehicle(family='sedan'){
  components:Object.fromEntries(Object.entries(COMPONENTS).map(([k,c])=>[k,{type:c.types[defaults[family]?.[k]??0],size:1,shape:.5,depth:1,...(k==='frontBumper'?NOSE_DEFAULTS[family]:{}),...(POSITIONABLE.has(k)?{bias:0,angle:0}:{})}])),
  fascia:Object.fromEntries(['front','rear'].map(end=>[end,baseFascia(family,end==='front',NOSE_DEFAULTS[family])])),
  optics:Object.fromEntries(['front','rear'].map(end=>[end,baseOptic(family,end==='front')])),
- construction:constructionDefaults(),seams:defaultSeams(),body:{raisedLampPods:0,rearWheelSkirt:0,pickupBedDepth:0,pickupBedStep:0,sideRubStrip:0,sideRubStripHeight:.39,fenderGill:0,fenderGillDepth:.011,fenderGillRake:0,quarterDuct:0,quarterDuctWidth:.36,quarterDuctDepth:.028,sideDuct:0,rearwardSideDuct:0,pairedSideDucts:0,sideDuctCrescent:0,sideDuctDepth:.036,sideDuctWidth:.65,sideDuctSweep:.07,sideDuctHeight:.06,cycleGuardPull:0,vintageFenders:0,sillRelief:0,darkArchLips:0,lowHoodLinerCap:0,cowlDuct:0,cowlDuctSingle:0,cowlDuctWidth:.32,cowlDuctLength:.46,cowlDuctDepth:.020,frontFlareScale:1,rearFlareScale:1,lipScale:1,archFootBlend:.065,doorStamp:0,doorStampFade:.16,doorStampWidth:.066,doorStampFront:.26,doorStampRear:.26,doorStampHeight:.47,doorStampSweep:0,frontArchUpper:.045,rearArchUpper:.045,frontArchFore:.045,rearArchFore:.045,creaseHeight:.31,creaseStrength:.40,archCrown:.52,roofEdge:.47,handleRecess:.49},
+ construction:constructionDefaults(),seams:defaultSeams(),body:{raisedLampPods:0,rearWheelSkirt:0,pickupBedDepth:0,pickupBedStep:0,sideRubStrip:0,sideRubStripHeight:.39,fenderGill:0,fenderGillDepth:.011,fenderGillRake:0,quarterDuct:0,quarterDuctWidth:.36,quarterDuctDepth:.028,sideDuct:0,rearwardSideDuct:0,pairedSideDucts:0,sideDuctCrescent:0,sideDuctDepth:.036,sideDuctWidth:.65,sideDuctSweep:.07,sideDuctHeight:.06,cycleGuardPull:0,vintageFenders:0,sillRelief:0,darkArchLips:0,lowHoodLinerCap:0,cowlDuct:0,cowlDuctSingle:0,cowlDuctAccent:0,cowlDuctWidth:.32,cowlDuctLength:.46,cowlDuctDepth:.020,frontFlareScale:1,rearFlareScale:1,lipScale:1,archFootBlend:.065,doorStamp:0,doorStampFade:.16,doorStampWidth:.066,doorStampFront:.26,doorStampRear:.26,doorStampHeight:.47,doorStampSweep:0,frontArchUpper:.045,rearArchUpper:.045,frontArchFore:.045,rearArchFore:.045,creaseHeight:.31,creaseStrength:.40,archCrown:.52,roofEdge:.47,handleRecess:.49},
  surfaces:{frontFenders:createPanel(f.panel),...Object.fromEntries(PATCH_PANELS.map(key=>[key,{kind:'bicubic-interior-v1',points:[0,0,0,0]}]))}, constraints:{gap:.005,archClearance:.045,partition:'shared-stations-v1'},
  materials:{...MAT,paint:f.color,wheel:f.wheel}, attachments:{schema:'axles-and-optics-v1'}};
 }
