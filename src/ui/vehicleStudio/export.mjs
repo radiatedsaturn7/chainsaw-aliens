@@ -32,7 +32,9 @@ function fasciaInsertTexture(g,end){
   const u=(x+.5)/width,v=1-(y+.5)/height,q=Math.abs(2*u-1)/f.insertWidth;
   const corner=Math.min(1,q)**2,top=f.insertTop+f.insertSweep*.34*corner,
    bottom=f.insertBottom-f.insertSweep*.80*corner+(f.insertStep??0)*(1-smooth(.49,.62,q));
-  const upper=f.insertBand?(1-smooth(.975,1.005,q))*smooth(top-.014,top+.014,v)*(1-smooth(bottom-.014,bottom+.014,v)):0;
+  const waist=1-(f.insertWaist??0)*.68*Math.exp(-(((v-.47)/.138)**2));
+  const maskQ=waist<1?q/waist:q;
+  const upper=f.insertBand?(1-smooth(.975,1.005,maskQ))*smooth(top-.014,top+.014,v)*(1-smooth(bottom-.014,bottom+.014,v)):0;
   const xEdge=Math.abs(2*u-1),amount=f.lowerInsert??0,lowerWidth=.64+.24*amount;
   const lowerTop=.90-.26*amount+.060*(xEdge/lowerWidth)**3;
   const lower=amount>0?(1-smooth(lowerWidth-.025,lowerWidth+.015,xEdge))*smooth(lowerTop-.018,lowerTop+.018,v):0;

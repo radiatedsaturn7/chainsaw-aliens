@@ -57,7 +57,10 @@ for(const r of studioRoster)test(r.label+' keeps exact hubs and builds a determi
  assert.ok(body.joints.find(j=>j.name==='WheelMount_FL').position[2]>body.joints.find(j=>j.name==='WheelMount_RL').position[2]);
  for(const [i,axle] of ['F','R'].entries())for(const [side,sign] of [['L',-1],['R',1]]){
   const at=t.axles[i],h=body.joints.find(j=>j.name==='WheelMount_'+axle+side);
-  assert.deepEqual(h.position,[sign*at.track/2,at.y,at.z]);
+  const symmetric=[sign*at.track/2,at.y,at.z];
+  const pinned=t.stockWheelPositions?.[axle+side];
+  if(t.stockWheelPositions)assert.ok(pinned.every((value,i)=>Math.abs(value-symmetric[i])<.001));
+  assert.deepEqual(h.position,pinned??symmetric);
  }
  const wheels=wheel.vertices.map(({position:[,y,z]})=>Math.hypot(y,z));
  assert.ok(Math.abs(Math.max(...wheels)-t.radius)<.005);

@@ -483,3 +483,29 @@ transparent door-roof leaves and a painted spine, not animated doors.
 The Group A Evo VI uses separate adjustable mudflaps. The Gladiator's
 long wheelbase stays stock. BMW rear glass and rear optics, Mégane
 factory light signatures, and Trackhawk fascia shaping are simplified.
+
+### Full-roster rollout, Lexus, Saab, Chevrolets, BMW, and Volkswagen
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Mignonette 2011 | UK/EU Lexus LFA standard, not Nürburgring Package. [Lexus exterior archive](https://media.lexus.co.uk/images/lfa-exterior/). |
+| Purple Vetch 2021 | Canadian Lexus LC 500 base on 20-inch wheels. [Lexus Canada](https://media.lexus.ca/en/releases/2020/2021-lexus-lc-luxury-driving-evolved.html). |
+| Wild Clary 2015 | US Lexus RC F standard, not Carbon Package. [Lexus USA](https://pressroom.lexus.com/album/2015-2016-lexus-rc-f/). |
+| Fumitory 1974 | US Saab Sonett III V4 4MT with later bumpers and cast wheels. [Lane Motor Museum](https://www.lanemotormuseum.org/collection/cars/item/saab-97/); [factory service manual](https://www.saab-teile.de/pdf/Saab%20Sonett%20III%20V4%20SM%20en.pdf). |
+| Valerian Turbo 1992 | US Saab 900 Turbo 16V three-door manual on the directional three-spoke wheels. [Factory brochure](https://www.auto-brochures.com/makes/Saab/900/Saab_US%20900_1992.pdf); [factory owner's manual](https://www.vintagesaabmanuals.org/uploads/1/9/1/5/19154273/92saab900ownersmanual.pdf). |
+| Blackberry Clover 2011 | US Saab 9-5 Turbo4 base manual, not Premium or Aero. [Factory brochure](https://www.auto-brochures.com/makes/Saab/Saab_US%202011.pdf). |
+| Common Restharrow 1966 | Chevrolet Chevy II Nova SS 327 coupe. [Period brochure](https://over-drive-magazine.com/wp-content/uploads/2024/12/1966-Chevy-II-Brochure-1-12C.pdf). |
+| Sneezewort 1965 | Chevrolet Corvair Monza 164 Sport Coupe. [Period catalog](https://www.corvair.org/chapters/southcoast/misc/CorvairCatalog.pdf). |
+| Wood Vetch 1970 | Canadian Chevrolet Camaro Z28 350 without RS split bumpers. [Period trim distinction](https://macswebs.com/7073camaroworld/pdffiles/1970-chevrolet-camaro.pdf) (US edition). |
+| Peach Clover 2009 | US BMW 128i E82 3.0 base coupe. [BMW standard specification](https://www.press.bmwgroup.com/usa/article/attachment/T0018120EN_US/42485); [stock exterior](https://commons.wikimedia.org/wiki/File:%2709_BMW_128i_Coupe_(Montreal).jpg). |
+| Dew Clover 2012 | US BMW 328i F30 base sedan. [BMW US launch](https://www.press.bmwgroup.com/usa/article/detail/T0122576EN_US/introducing-the-all-new-6th-generation-bmw-3-series-sedan?language=en_US) (press imagery also shows other trims). |
+| Fawn Clover 2011 | US BMW 740i F01 short-wheelbase base sedan. [BMW US launch](https://www.press.bmwgroup.com/usa/article/detail/T0076496EN_US/the-2011-bmw-740i-and-740li-sedans). |
+| Blue Trefoil 2002 | German Volkswagen Lupo GTI 1.6 16V six-speed. [Volkswagen archive](https://www.volkswagen-newsroom.com/en/images/albums/lupo-gti-archive-2302). |
+| Field Pennywort 2011 | German Volkswagen Scirocco III R 195 kW six-speed. [Volkswagen model history](https://www.volkswagen-newsroom.com/en/scirocco-3-20082017-19654). |
+| Glasswort 181 1973 | Civilian European Volkswagen Type 181 1600 after the 1973 update. [Volkswagen model history](https://www.volkswagen-newsroom.com/en/type-181-courier-19691980-19669). |
+
+The Corvair and Type 181 use explicit stock frame conversions, not
+changes to handling. The 128i pins the exact stock wheel positions within
+a one-millimeter export guard; the actual asymmetry is under one micron.
+Lexus light signatures and the LFA exhaust height, Corvair cooling vents,
+BMW rear glass and lens shapes, and the Type 181 folded top remain stylized.

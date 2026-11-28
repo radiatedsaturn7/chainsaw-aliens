@@ -5366,5 +5366,601 @@
     ],
     "reference": "2018 Renault Megane R.S. 280, Belgian-market Sport chassis five-door with manual gearbox; not Cup or Trophy",
     "canonicalLampSides": true
+  },
+  {
+    "id": "lexus-lfa-standard-2011",
+    "label": "Mignonette 2011",
+    "capability": "LFA standard coupe with quarter inlets broad rear heat exits and center triple exhaust",
+    "carId": "3d-mignonette-2011-3d-5c7785c29776",
+    "bodyRef": "Mignonette-2011",
+    "wheelRef": "Mignonette-2011-Wheel",
+    "radius": 0.34550000000000003,
+    "axles": [
+      {
+        "track": 1.5800000429153442,
+        "y": 0.34549999237060547,
+        "z": 1.3025000095367432
+      },
+      {
+        "track": 1.5700000524520874,
+        "y": 0.34549999237060547,
+        "z": -1.3025000095367432
+      }
+    ],
+    "reference": "2011 UK/EU Lexus LFA standard (not Nürburgring Package)"
+  },
+  {
+    "id": "lexus-lc500-ca-base-2021",
+    "label": "Purple Vetch 2021",
+    "capability": "LC500 Canada base panoramic coupe with spindle front and standard 20-inch wheels",
+    "carId": "3d-purple-vetch-2021-3d-6d8f701087c0",
+    "bodyRef": "Purple Vetch 2021 Body",
+    "wheelRef": "Purple Vetch 2021 Wheel",
+    "radius": 0.36425,
+    "axles": [
+      {
+        "track": 1.630679965019226,
+        "y": 0.3642500042915344,
+        "z": 1.434999942779541
+      },
+      {
+        "track": 1.635759949684143,
+        "y": 0.3642500042915344,
+        "z": -1.434999942779541
+      }
+    ],
+    "reference": "2021 Canada Lexus LC 500 base V8 coupe standard 20-inch wheels"
+  },
+  {
+    "id": "lexus-rc-f-us-2015",
+    "label": "Wild Clary 2015",
+    "capability": "US RC F with roof painted and stacked quad exhaust",
+    "carId": "3d-wild-clary-2015-3d-d0d0193e7c29",
+    "bodyRef": "Wild Clary 2015 Body",
+    "wheelRef": "Wild Clary 2015 Wheel",
+    "radius": 0.33055,
+    "axles": [
+      {
+        "track": 1.554479956626892,
+        "y": 0.3305499851703644,
+        "z": 1.3652499914169312
+      },
+      {
+        "track": 1.559559941291809,
+        "y": 0.3305499851703644,
+        "z": -1.3652499914169312
+      }
+    ],
+    "reference": "2015 US Lexus RC F standard V8 coupe without Carbon Package"
+  },
+  {
+    "id": "saab-sonett-iii",
+    "label": "Fumitory 1974",
+    "capability": "Low V4 fastback and covered rectangular headlight lids",
+    "carId": "3d-fumitory-1974-3d-fcddf52183f4",
+    "bodyRef": "Fumitory 1974 Body",
+    "wheelRef": "Fumitory 1974 Wheel",
+    "radius": 0.3225,
+    "axles": [
+      {
+        "track": 1.2319999933242798,
+        "y": 0.32249999046325684,
+        "z": 1.0744999647140503
+      },
+      {
+        "track": 1.2319999933242798,
+        "y": 0.32249999046325684,
+        "z": -1.0744999647140503
+      }
+    ],
+    "reference": "1974 US Saab Sonett III,1698ccV4 FWD4MT,LHD,standardcast15inchwheels,no optional factoryairconditioning,impactabsorbing1974bumpers. NotSonettII,earlier smallbumpers,European1500cc or modifiedengine.",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "saab-900-turbo",
+    "label": "Valerian Turbo 1992",
+    "capability": "Aero hatch with upright windshield and 16V Turbo facelift nose",
+    "carId": "3d-valerian-turbo-1992-3d-558a22f3259a",
+    "bodyRef": "Valerian-Turbo",
+    "wheelRef": "Valerian-Turbo-Wheel",
+    "radius": 0.3075,
+    "axles": [
+      {
+        "track": 1.4300199747085571,
+        "y": 0.3075000047683716,
+        "z": 1.0068559646606445
+      },
+      {
+        "track": 1.4401799440383911,
+        "y": 0.30826398730278015,
+        "z": -1.5102839469909668
+      }
+    ],
+    "reference": "US 1992 Saab 900 Turbo three-door hatchback, 2.0 DOHC16 intercooled turbo with APC and three-way catalyst/Lambda, five-speed manual; not convertible or1993 Commemorative Edition",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "saab-9-5-turbo4",
+    "label": "Blackberry Clover 2011",
+    "capability": "Modern wraparound windshield sedan and ice-block optics",
+    "carId": "3d-blackberry-clover-2011-3d-25d378a2c7bb",
+    "bodyRef": "Blackberry-Clover-2011",
+    "wheelRef": "Blackberry-Clover-2011-Wheel",
+    "radius": 0.33965,
+    "axles": [
+      {
+        "track": 1.5849599838256836,
+        "y": 0.3396500051021576,
+        "z": 1.4184999465942383
+      },
+      {
+        "track": 1.5849599838256836,
+        "y": 0.3396500051021576,
+        "z": -1.4184999465942383
+      }
+    ],
+    "reference": "2011 United States Saab 9-5 second-generation Turbo4 base sedan2.0 twin-scroll turbo four FWD standard six-speed manual; not Premium automatic,Turbo6XWD or Aero",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "chevrolet-nova-ss-327-1966",
+    "label": "Common Restharrow 1966",
+    "carId": "3d-common-restharrow-1966-3d-52d00df8100d",
+    "capability": "1966 US Chevrolet Chevy II Nova Super Sport Coupe two-door hardtop, optional275-hp327cuin four-barrel Turbo-Fire V8, optional four-speed wide-ratio2.52 first gear,3.36 rear axle, RWD; not350-hpL79, later396Nova, four-door or racing conversion.",
+    "bodyRef": "Common-Restharrow-1966",
+    "wheelRef": "Common-Restharrow-1966-Wheel",
+    "radius": 0.32404999999999995,
+    "axles": [
+      {
+        "track": 1.4427200555801392,
+        "y": 0.32405000925064087,
+        "z": 1.3969999551773071
+      },
+      {
+        "track": 1.4300199747085571,
+        "y": 0.32405000925064087,
+        "z": -1.3969999551773071
+      }
+    ],
+    "reference": "https://over-drive-magazine.com/wp-content/uploads/2024/12/1966-Chevy-II-Brochure-1-12C.pdf"
+  },
+  {
+    "id": "chevrolet-corvair-monza-1965",
+    "label": "Sneezewort 1965",
+    "carId": "3d-sneezewort-1965-3d-1d5597b14420",
+    "capability": "1965 US Chevrolet Corvair Monza 10537 two-door Sport Coupe, standard 164 cu in 95 gross-hp Turbo-Air engine, standard 3-speed manual and 3.27 axle, LHD. No L62 110-hp option, no Corsa, no turbocharger, no Powerglide.",
+    "bodyRef": "Sneezewort-1965-body",
+    "wheelRef": "Sneezewort-1965-wheel",
+    "radius": 0.29714043240752114,
+    "axles": [
+      {
+        "track": 1.3969999551773071,
+        "y": 0.2971404194831848,
+        "z": 1.4545999765396118
+      },
+      {
+        "track": 1.4528800249099731,
+        "y": 0.2971404194831848,
+        "z": -1.288599967956543
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.625,
+            0.5920000076293945,
+            -2.425909996032715
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.625,
+            0.5920000076293945,
+            -2.425909996032715
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6349999904632568,
+            0.5899999737739563,
+            2.404910087585449
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6349999904632568,
+            0.5899999737739563,
+            2.404910087585449
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.6984999775886536,
+            0.2971404194831848,
+            -1.4545999765396118
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.6984999775886536,
+            0.2971404194831848,
+            -1.4545999765396118
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7264400124549866,
+            0.2971404194831848,
+            1.288599967956543
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7264400124549866,
+            0.2971404194831848,
+            1.288599967956543
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "https://www.corvair.org/chapters/southcoast/misc/CorvairCatalog.pdf"
+  },
+  {
+    "id": "chevrolet-camaro-z28-1970",
+    "label": "Wood Vetch 1970",
+    "carId": "3d-wood-vetch-1970-3d-dba168087860",
+    "capability": "1970 Canada Chevrolet Camaro Z28, SportCoupewithZ28package,350solid-lifterfour-barrelV8,4MT,standard3.73axle,nonRS",
+    "bodyRef": "Wood-Vetch",
+    "wheelRef": "Wood-Vetch-Wheel",
+    "radius": 0.3255,
+    "axles": [
+      {
+        "track": 1.5570199489593506,
+        "y": 0.3255000114440918,
+        "z": 1.2344399690628052
+      },
+      {
+        "track": 1.5367000102996826,
+        "y": 0.325547993183136,
+        "z": -1.5087599754333496
+      }
+    ],
+    "reference": "https://macswebs.com/7073camaroworld/pdffiles/1970-chevrolet-camaro.pdf"
+  },
+  {
+    "id": "bmw-e82-128i",
+    "label": "Peach Clover 2009",
+    "capability": "Short two-door coupe, scalloped side stamping, rounded twin grille",
+    "carId": "3d-peach-clover-2009-3d-bcf2ae19864c",
+    "bodyRef": "Peach Clover 2009 Body",
+    "wheelRef": "Peach Clover 2009 Wheel",
+    "radius": 0.31595,
+    "axles": [
+      {
+        "track": 1.4808199405670166,
+        "y": 0.3159500062465668,
+        "z": 1.3300000429153442
+      },
+      {
+        "track": 1.5062199831008911,
+        "y": 0.3159500062465668,
+        "z": -1.3300000429153442
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2009 US BMW 128i E82 3.0 base coupe",
+    "stockWheelPositions": {
+      "FL": [
+        -0.7404100894927979,
+        0.3159500062465668,
+        1.3299999237060547
+      ],
+      "FR": [
+        0.7404098510742188,
+        0.3159500062465668,
+        1.3300001621246338
+      ],
+      "RL": [
+        -0.753109872341156,
+        0.3159500062465668,
+        -1.3300001621246338
+      ],
+      "RR": [
+        0.7531101107597351,
+        0.3159500062465668,
+        -1.3299999237060547
+      ]
+    }
+  },
+  {
+    "id": "bmw-f30-328i",
+    "label": "Dew Clover 2012",
+    "capability": "Swept lamps, slim fascia with round fogs, upper rising belt line",
+    "carId": "3d-dew-clover-2012-3d-06679adaa983",
+    "bodyRef": "Dew-Clover-2012-finished",
+    "wheelRef": "Dew-Clover-2012-wheel",
+    "radius": 0.32839999999999997,
+    "axles": [
+      {
+        "track": 1.5316200256347656,
+        "y": 0.32839998602867126,
+        "z": 1.4046200513839722
+      },
+      {
+        "track": 1.5722600221633911,
+        "y": 0.32784000039100647,
+        "z": -1.4046200513839722
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2012 US BMW 328i F30 2.0 base sedan"
+  },
+  {
+    "id": "bmw-f01-740i",
+    "label": "Fawn Clover 2011",
+    "capability": "Long flagship greenhouse, taller twin grille and wrap rear optics",
+    "carId": "3d-fawn-clover-2011-3d-fb192cfa2e34",
+    "bodyRef": "Fawn-Clover-2011",
+    "wheelRef": "Fawn-Clover-2011-Wheel",
+    "radius": 0.35109999999999997,
+    "axles": [
+      {
+        "track": 1.610360026359558,
+        "y": 0.35109999775886536,
+        "z": 1.5354299545288086
+      },
+      {
+        "track": 1.6510000228881836,
+        "y": 0.35109999775886536,
+        "z": -1.5354299545288086
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2011 US BMW 740i F01 3.0 short-wheelbase base sedan"
+  },
+  {
+    "id": "volkswagen-lupo-gti-2002",
+    "label": "Blue Trefoil 2002",
+    "capability": "Short Lupo GTI hatch with twin round elements and central two outlets",
+    "carId": "3d-blue-trefoil-2002-3d-34166a8bfcc8",
+    "bodyRef": "Blue-Trefoil",
+    "wheelRef": "Blue-Trefoil-Wheel",
+    "radius": 0.28275,
+    "axles": [
+      {
+        "track": 1.4198600053787231,
+        "y": 0.2827500104904175,
+        "z": 0.8827400207519531
+      },
+      {
+        "track": 1.3893799781799316,
+        "y": 0.2836320102214813,
+        "z": -1.4402600526809692
+      }
+    ],
+    "reference": "2002 Germany Volkswagen Lupo GTI1.6 16V six-speed manual three-door,standard15-inch wheels; not earlier5MT,FSI or3L",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "volkswagen-scirocco-r-2011",
+    "label": "Field Pennywort 2011",
+    "capability": "Low Scirocco R with shallow side glass and three large air intakes",
+    "carId": "3d-field-pennywort-2011-3d-e84dad59cf34",
+    "bodyRef": "Field Pennywort 2011 Body",
+    "wheelRef": "Field Pennywort 2011 Wheel",
+    "radius": 0.3226,
+    "axles": [
+      {
+        "track": 1.5646400451660156,
+        "y": 0.32260000705718994,
+        "z": 1.2890000343322754
+      },
+      {
+        "track": 1.5748000144958496,
+        "y": 0.32260000705718994,
+        "z": -1.2890000343322754
+      }
+    ],
+    "reference": "2011 Germany Volkswagen Scirocco III R 2.0TSI195kW front-wheel drive six-speed manual; not R-Line, Australian188kW or2014facelift206kW",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "volkswagen-type181-1973",
+    "label": "Glasswort 181 1973",
+    "capability": "Open civilian Type 181 with four stamped doors and rear intake vents",
+    "carId": "3d-glasswort-181-1973-3d-24d6ecaa1bf9",
+    "bodyRef": "Glasswort-181-1973-body",
+    "wheelRef": "Glasswort-181-1973-wheel",
+    "radius": 0.3258,
+    "axles": [
+      {
+        "track": 1.3792200088500977,
+        "y": 0.32580000162124634,
+        "z": 1.2269999980926514
+      },
+      {
+        "track": 1.3588999509811401,
+        "y": 0.32580000162124634,
+        "z": -1.1729999780654907
+      }
+    ],
+    "reference": "1973 European Volkswagen Type 181 1600 post-update civilian 4MT",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.5350000262260437,
+            0.48399999737739563,
+            -1.9049999713897705
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.5350000262260437,
+            0.48399999737739563,
+            -1.9049999713897705
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6304000020027161,
+            0.4848000109195709,
+            1.8999998569488525
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6304000020027161,
+            0.4848000109195709,
+            1.899999976158142
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.6896100044250488,
+            0.32580000162124634,
+            -1.2269999980926514
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.6896100044250488,
+            0.32580000162124634,
+            -1.2269999980926514
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.6794499754905701,
+            0.32580000162124634,
+            1.1729999780654907
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.6794499754905701,
+            0.32580000162124634,
+            1.1729999780654907
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
   }
 ]

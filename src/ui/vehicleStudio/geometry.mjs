@@ -527,7 +527,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   for(const [z,flip] of [[aft,true],[fore,false]])mark('paint',patch(across,1,(t,h)=>{
    const u=mix(l,r,t);return lerp3(rim(z,u),bottom(z,u),h);
   },flip));
- }else sheet('trunk','paint',trunkEdge,bedEnd,trunkCover,small(lod?8:14,5,4,4),across);
+ }else sheet('trunk',hoodDesign.deckStripes?'bonnet-stripes':'paint',trunkEdge,bedEnd,trunkCover,small(lod?8:14,5,4,4),across);
  if(canopy.raisedEngineLid&&pickupDepth===0&&bedEnd-trunkEdge>.16){
   const amount=canopy.raisedEngineLid;
   for(const side of [-1,1])for(let i=0;i<4;i++){

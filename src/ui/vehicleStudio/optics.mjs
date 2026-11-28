@@ -202,13 +202,16 @@ export function makeOpenings({end,g,segments=32,face=null}){
   // A pair of physically separate front projector recesses, with a painted
   // web between them. Keep both in the existing side tiles and end the
   // circles above the lowest available bumper intake station.
-  const hw=.032+.014*opt.width,hh=.077+.056*opt.height;
+  const ratio=num(raw.innerRoundRatio,0),fitInner=ratio?Math.max(.42,ratio):.88;
+  // Unequal round pairs: use the same editable aperture and keep a painted
+  // ligament between a larger main lamp and separate inboard driving lamp.
+  const hw=(ratio?.047:.032)+.014*opt.width,hh=(ratio?.090:.077)+.056*opt.height;
   const outer=Math.max(.097,Math.min(.175,sideX-(hw+.005)));
-  const inner=outer+hw*2+.020;
+  const inner=outer+hw*(ratio?1+fitInner:2)+.020;
   const y=Math.max(.130+hh,Math.min(.402,cyBase+.034));
   for(let i=0;i<2;i++){
    const cx=s>0?1-(i?inner:outer):(i?inner:outer),cy=y+(i?.018:0);
-   const fit=i?.88:1, roundOpt={...opt,angle:0,sweep:.5,inboardReach:.5,outline:[],formula:'',layout:'projector',sideWrap:0,secondaryLamp:i>0};
+   const fit=i?fitInner:1, roundOpt={...opt,angle:0,sweep:.5,inboardReach:.5,outline:[],formula:'',layout:'projector',sideWrap:0,secondaryLamp:i>0};
    const opening=aperture({id:'head-'+(s>0?'l':'r')+(i?'-inner':''),component:'headlights',
     housing:'circle',cx,cy,width:hw*2*fit,height:hh*2*fit,side:s,opt:roundOpt,segments});
    if(face&&raw.physicalDiameter>0)projectRoundLamp(opening,face,Math.min(raw.physicalDiameter,g.dimensions.width*hw*1.7)*fit,0);

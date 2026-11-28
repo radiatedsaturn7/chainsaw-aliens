@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {test} from 'node:test';
+import {loadVehicle,createVehicle} from '../../src/ui/vehicleStudio/genome.mjs';
+import {materialDoc,exportVehicle} from '../../src/ui/vehicleStudio/export.mjs';
+import {generateVehicle} from '../../src/ui/vehicleStudio/geometry.mjs';
+test('fascia waist only narrows its shared viewport and export mask',()=>{
+ const g=loadVehicle(readFileSync(new URL('../../src/ui/vehicleStudio/examples/lexus-lc500-ca-base-2021.json',import.meta.url),'utf8'));
+ const off=structuredClone(g);off.fascia.front.insertWaist=0;
+ assert.equal(createVehicle().fascia.front.insertWaist,0);
+ const t=materialDoc(g,'fascia-front').texture,s=materialDoc(off,'fascia-front').texture;
+ const px=(d,u,v)=>d.pixels[Math.floor((1-v)*d.height)*d.width+Math.floor(u*d.width)];
+ assert.equal(px(s,.79,.47),g.materials.trim);
+ assert.equal(px(t,.79,.47),g.materials.paint);
+ assert.equal(px(t,.5,.47),g.materials.trim);
+ assert.equal(px(t,.79,.29),px(s,.79,.29));
+ const roof=d=>d.parts.filter(p=>p.component==='frontBumper').map(p=>p.geometry.attributes.position.array.byteLength);
+ assert.deepEqual(roof(generateVehicle(g,{quality:'drive',compact:1})),roof(generateVehicle(off,{quality:'drive',compact:1})));
+ const [body]=Object.values(exportVehicle(g,{quality:'drive'}).models);
+ assert.ok(body.materials.some(m=>m.texture?.pixels?.length===t.pixels.length&&m.texture.pixels.every((p,i)=>p===t.pixels[i])));
+});

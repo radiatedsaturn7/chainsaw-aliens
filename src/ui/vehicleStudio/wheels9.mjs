@@ -89,13 +89,14 @@ function tire(r,c,rim,shape,depth,size,rally,n,compact=0){
 
 function spoke(r,face,dish,i,count,style,depth,low){
  const a=i*TAU/count;
- const lean=(style==='mesh'?(i%2===0?-.097:.097):style==='5-spoke'?-.105:style==='15-spoke'?0:style==='10-spoke'?.009:-.052);
+ const swept=style==='3-spoke sweep';
+ const lean=(swept?-.37:style==='mesh'?(i%2===0?-.097:.097):style==='5-spoke'?-.105:style==='15-spoke'?0:style==='10-spoke'?.009:-.052);
  const P=[],U=[],I=[];
  const section=[[-.52,-.85],[-.52,-.14],[-.30,.53],[.30,.53],[.52,-.14],[.52,-.85]];
- const radii=low?[0,1]:[0,.46,1];
+ const radii=low&&!swept?[0,1]:[0,.46,1];
  for(const s of radii){
   const rr=mix(.212,.968,s)*r;
-  const fullWidth=(style==='4-spoke'?mix(.213,.151,s):style==='5-spoke'?mix(.159,.111,s):style==='mesh'?mix(.072,.052,s):style==='15-spoke'?mix(.079,.048,s):style==='10-spoke'?mix(.099,.060,s):style==='7-spoke'?mix(.144,.076,s):style==='8-spoke'?mix(.145,.112,s):mix(.122,.070,s))*depth;
+  const fullWidth=(swept?mix(.318,.259,s):style==='4-spoke'?mix(.213,.151,s):style==='5-spoke'?mix(.159,.111,s):style==='mesh'?mix(.072,.052,s):style==='15-spoke'?mix(.079,.048,s):style==='10-spoke'?mix(.099,.060,s):style==='7-spoke'?mix(.144,.076,s):style==='8-spoke'?mix(.145,.112,s):mix(.122,.070,s))*depth;
   const angle=a+lean*s*s;
   for(const [side,b] of section){
    const x=face-(.005+dish*(1-s)**1.45)+b*r*(.043-.010*s);
@@ -187,7 +188,33 @@ export function buildWheels(g,{quality='preview',compact=0,emit,rear=false}={}){
  ];
  put('wheels','wheel',lathe(compact?hubProfile.filter((p,i)=>i!==1&&i!==3):hubProfile,innerN));
 
- if(w.type==='stamped steel'){
+ if(w.type==='pentagonal cast pockets'){
+  // Low, broad cast alloy face with five genuine pentagonal recesses.
+  // Openings share the same triangulated boundary as the wall and floor.
+  const x=face-.010,pent=5,pockets=5;
+  const contour=Array.from({length:n},(_,i)=>new T.Vector2(rim*.943*Math.cos(i*TAU/n),rim*.943*Math.sin(i*TAU/n)));
+  const holes=Array.from({length:pockets},(_,i)=>{
+   const a=(i+.5)*TAU/pockets,center=vec(x,rim*.568,a);
+   return Array.from({length:pent},(_,j)=>new T.Vector2(center[1]+rim*.220*Math.cos(a-j*TAU/pent),center[2]+rim*.220*Math.sin(a-j*TAU/pent)));
+  });
+  const radialUv=([_,y,z])=>[.5+y/(rim*2),.5+z/(rim*2)];
+  const split=(p)=>[x,p.x,p.y];
+  const top=[...contour,...holes.flat()].map(split);
+  const faceIndices=T.ShapeUtils.triangulateShape(contour,holes).flatMap(q=>{
+   const [a,b,c]=q.map(i=>top[i]),n=(b[1]-a[1])*(c[2]-a[2])-(b[2]-a[2])*(c[1]-a[1]);
+   return n>0?q:[q[0],q[2],q[1]];
+  });
+  put('wheels','wheel',mesh(top,faceIndices,top.map(radialUv)));
+  for(const hole of holes){
+   const mid=hole.reduce(([y,z],p)=>[y+p.x/pent,z+p.y/pent],[0,0]);
+   const depth=rim*(.058+.052*w.shape),bottom=hole.map(p=>[x-depth,mix(mid[0],p.x,.83),mix(mid[1],p.y,.83)]),mouth=hole.map(split);
+   const wall=[...mouth,...bottom],wallTri=hole.flatMap((_,i)=>{
+    const j=(i+1)%pent;return [i,i+pent,j,j,i+pent,j+pent];});
+   put('wheels','wheel',mesh(wall,wallTri,wall.map(radialUv)));
+   const pts=[...bottom,[x-depth,mid[0],mid[1]]];
+   put('wheels','seamDark',mesh(pts,hole.flatMap((_,i)=>[pent,(i+1)%pent,i]),pts.map(radialUv)));
+  }
+ }else if(w.type==='stamped steel'){
   // Pressed wheel centers are shallow metal discs, not cast spokes.
   // Recess the web between the wheel's central cap and turned outer lip.
   const b=face-.013, web=[[rim*.931,b],[rim*.795,b-.020],[rim*.709,b-.027],[rim*.465,b-.027],[rim*.31,b],[rim*.239,b]];
@@ -199,7 +226,7 @@ export function buildWheels(g,{quality='preview',compact=0,emit,rear=false}={}){
    put('wheels','seamDark',recess);
   }
  }else{
- const nSpokes=w.type==='4-spoke'?4:w.type==='6-spoke'?6:w.type==='5-spoke'?5:w.type==='15-spoke'?15:w.type==='10-spoke'?10:w.type==='8-spoke'?8:w.type==='7-spoke'?7:low?8:12;
+ const nSpokes=w.type==='3-spoke sweep'?3:w.type==='4-spoke'?4:w.type==='6-spoke'?6:w.type==='5-spoke'?5:w.type==='15-spoke'?15:w.type==='10-spoke'?10:w.type==='8-spoke'?8:w.type==='7-spoke'?7:low?8:12;
  for(let k=0;k<nSpokes;k++)put('wheels','wheel',spoke(rim,face,dish,k,nSpokes,w.type,w.depth,low||nSpokes>7&&!detail));
   }
  if(!low)for(let k=0;k<5;k++)put('wheels','trim',boltSocket(hub+.0042,rim*.134,k));

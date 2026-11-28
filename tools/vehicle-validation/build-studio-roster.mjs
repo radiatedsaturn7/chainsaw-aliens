@@ -69,7 +69,15 @@ export function buildStudioRoster(target){
   const key=j.name.match(/^WheelMount_([FR])([LR])$/);
   const exact=exactStock?.get(j.name);
   if(exact){j.position=exact.position;if(!key)j.rotation=exact.rotation;}
-  else if(key){const a=key[1]==='F'?tf:tr;j.position=[(key[2]==='L'?-1:1)*a.track/2,a.y,a.z];}
+  else if(key){
+   const a=key[1]==='F'?tf:tr;
+   const symmetric=[(key[2]==='L'?-1:1)*a.track/2,a.y,a.z];
+   const pinned=target.stockWheelPositions?.[key[1]+key[2]];
+   if(target.stockWheelPositions){
+    assert.ok(pinned?.length===3&&pinned.every((value,i)=>Number.isFinite(value)&&Math.abs(value-symmetric[i])<.001),'Invalid exact stock wheel offset: '+j.name);
+   }
+   j.position=pinned??symmetric;
+  }
  }
  if(target.canonicalLampSides&&!exactStock){
   // Studio viewport names use a viewer-facing convention, unlike race
