@@ -8638,5 +8638,719 @@
     ],
     "reference": "1993 European Porsche 928 GTS M28/49 G28/57 5MT",
     "canonicalLampSides": true
+  },
+  {
+    "id": "lexus-ls400-uk-1990",
+    "label": "Magnolia 40 1990",
+    "capability": "UK launch LS400 RHD rectangular recessed lamps",
+    "carId": "3d-magnolia-40-1990-3d-0a9fef8e3dd2",
+    "bodyRef": "Magnolia-40",
+    "wheelRef": "Magnolia-40-Wheel",
+    "radius": 0.32375,
+    "axles": [
+      {
+        "track": 1.565000057220459,
+        "y": 0.32374998927116394,
+        "z": 1.2866343259811401
+      },
+      {
+        "track": 1.5549999475479126,
+        "y": 0.32374200224876404,
+        "z": -1.5283656120300293
+      }
+    ],
+    "reference": "1990 UK June Lexus LS400 RHD coils 4AT"
+  },
+  {
+    "id": "lexus-is350-f-sport-us-2014",
+    "label": "Meadow Saffron 2014",
+    "capability": "US IS350 F Sport separated chevron DRL and spindle mesh fascia",
+    "carId": "3d-meadow-saffron-2014-3d-deb1dc9f6f53",
+    "bodyRef": "Meadow-Saffron-2014-finished",
+    "wheelRef": "Meadow-Saffron-2014-wheel",
+    "radius": 0.3186,
+    "axles": [
+      {
+        "track": 1.5341600179672241,
+        "y": 0.31859999895095825,
+        "z": 1.399999976158142
+      },
+      {
+        "track": 1.549399971961975,
+        "y": 0.3184399902820587,
+        "z": -1.399999976158142
+      }
+    ],
+    "reference": "2014 US Lexus IS350 F Sport RWD eight-speed"
+  },
+  {
+    "id": "lexus-rx330-ca-2005",
+    "label": "Lingonberry Clover 2005",
+    "capability": "Canadian coil RX330 AWD crossover rear rake and clear outer red optic tails",
+    "carId": "3d-lingonberry-clover-2005-3d-f95072bf1cec",
+    "bodyRef": "Lingonberry-Clover-2005",
+    "wheelRef": "Lingonberry-Clover-2005-Wheel",
+    "radius": 0.36214999999999997,
+    "axles": [
+      {
+        "track": 1.5750000476837158,
+        "y": 0.36215001344680786,
+        "z": 1.3574999570846558
+      },
+      {
+        "track": 1.5549999475479126,
+        "y": 0.36215001344680786,
+        "z": -1.3574999570846558
+      }
+    ],
+    "reference": "2005 Canada Lexus RX330 standard AWD on coil suspension"
+  },
+  {
+    "id": "audi-rs5-b8-coupe-2011",
+    "label": "Meadow Sage 2011",
+    "capability": "Short two-door V8 coupe, deep single frame and polished trim",
+    "carId": "3d-meadow-sage-2011-3d-6b38bbed55bf",
+    "bodyRef": "Meadow-Sage-2011",
+    "wheelRef": "Meadow-Sage-2011-Wheel",
+    "radius": 0.33404999999999996,
+    "axles": [
+      {
+        "track": 1.5859999656677246,
+        "y": 0.3340499997138977,
+        "z": 1.375499963760376
+      },
+      {
+        "track": 1.5820000171661377,
+        "y": 0.3340499997138977,
+        "z": -1.375499963760376
+      }
+    ],
+    "reference": "2011 UK Audi RS5 Coupe 4.2 FSI quattro 7-speed S tronic, standard 19-inch wheels",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "audi-rs7-c7-sportback-2013",
+    "label": "Field Madder 2013",
+    "capability": "Long V8 four-seat low-roof rear sportback hatch",
+    "carId": "3d-field-madder-2013-3d-1720e3799abd",
+    "bodyRef": "Field Madder 2013 Body",
+    "wheelRef": "Field Madder 2013 Wheel",
+    "radius": 0.35025,
+    "axles": [
+      {
+        "track": 1.635759949684143,
+        "y": 0.3502500057220459,
+        "z": 1.4574999809265137
+      },
+      {
+        "track": 1.6332199573516846,
+        "y": 0.3502500057220459,
+        "z": -1.4574999809265137
+      }
+    ],
+    "reference": "2013 Netherlands Audi RS7Sportback C74.0TFSI560PSquattro8AT four-seatfive-door;notlater605PSperformance orC8",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "audi-rs6-c6-sedan-2009",
+    "label": "Field Pansy 2009",
+    "capability": "Full grille V10 executive sedan, wide corner intakes and square cabin",
+    "carId": "3d-field-pansy-2009-3d-d4da9a54516b",
+    "bodyRef": "Field-Pansy-2009",
+    "wheelRef": "Field-Pansy-2009-Wheel",
+    "radius": 0.3433,
+    "axles": [
+      {
+        "track": 1.6139999628067017,
+        "y": 0.3433000147342682,
+        "z": 1.4229999780654907
+      },
+      {
+        "track": 1.6369999647140503,
+        "y": 0.3433000147342682,
+        "z": -1.4229999780654907
+      }
+    ],
+    "reference": "2009 continental Europe Audi RS 6, C6 standard5.0 V10 biturbo sedan quattro6AT,standard19inch wheels and250km/h limiter; notAvant/plus",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "dodge-sprinter-2500-highroof-2008",
+    "label": "Masterwort 2008",
+    "carId": "3d-masterwort-2008-3d-61bbd83675a2",
+    "capability": "2008 US Dodge Sprinter 2500 Cargo Van, regular 144-inch wheelbase, high roof, 3.0 CRD V6 diesel, RWD five-speed automatic, standard 3.9 rear axle, single rear wheels, two seats, empty cargo body. Not passenger wagon, 3500 dual rear wheel, 170-inch, Mega Roof or gasoline variant.",
+    "bodyRef": "Masterwort-2008",
+    "wheelRef": "Masterwort-2008-Wheel",
+    "radius": 0.38695,
+    "axles": [
+      {
+        "track": 1.7272000312805176,
+        "y": 0.38694998621940613,
+        "z": 1.8287999629974365
+      },
+      {
+        "track": 1.7322800159454346,
+        "y": 0.38694998621940613,
+        "z": -1.8287999629974365
+      }
+    ],
+    "reference": "https://s3.amazonaws.com/chryslermedia.iconicweb.com/mediasite/specs/2008DodgeSprinterSpecifications.pdf"
+  },
+  {
+    "id": "dodge-dakota-base-1999",
+    "label": "Pearlwort 1999",
+    "carId": "3d-pearlwort-1999-3d-26db26ef1822",
+    "capability": "1999 United States Dodge Dakota Base regular cab,6.5-foot short box,4x2 rear drive,2.5L Magnum I4,five-speed manual,standard3.55 open axle,manual windows,vinyl bench,P215/75R15. Representative production configuration, not an identified individual vehicle. Not2005V8 AWD Osier,Club Cab,SLT,Sport,R/T,V6,V8 or4x4.",
+    "bodyRef": "Pearlwort 1999 Body",
+    "wheelRef": "Pearlwort 1999 Wheel",
+    "radius": 0.35175,
+    "axles": [
+      {
+        "track": 1.5399999618530273,
+        "y": 0.351749986410141,
+        "z": 1.4225000143051147
+      },
+      {
+        "track": 1.5399999618530273,
+        "y": 0.351749986410141,
+        "z": -1.4225000143051147
+      }
+    ],
+    "reference": "https://xr793.com/wp-content/uploads/2018/09/1999-Dodge-Dakota.pdf"
+  },
+  {
+    "id": "dodge-dakota-slt-quad-2005",
+    "label": "Osier 2005",
+    "carId": "3d-osier-2005-3d-4f8f47b7173f",
+    "capability": "2005 US Dodge Dakota SLT Quad Cab4WD short-bed, standard-output4.7L EVA V8,545RFE automatic,3.55 open axle,optional NV244HD,standard P245/70R16 tires. Selected production configuration, not an identification of Rob's personal truck. Not HO, ST, Laramie, Club Cab or NV233.",
+    "bodyRef": "Osier 2005 Body",
+    "wheelRef": "Osier 2005 Wheel",
+    "radius": 0.3747,
+    "axles": [
+      {
+        "track": 1.594499945640564,
+        "y": 0.37470000982284546,
+        "z": 1.6676499843597412
+      },
+      {
+        "track": 1.5980000495910645,
+        "y": 0.37470000982284546,
+        "z": -1.6676499843597412
+      }
+    ],
+    "reference": "https://xr793.com/wp-content/uploads/2016/11/2005-Dodge-Dakota.pdf"
+  },
+  {
+    "id": "peugeot-405-t16-pikes-1988",
+    "label": "Alchemilla 1988",
+    "capability": "Short overhangs, notchback, massive boxed wing and flared rally arches",
+    "carId": "3d-alchemilla-1988-3d-186e278c4065",
+    "bodyRef": "Alchemilla-1988-body",
+    "wheelRef": "Alchemilla-1988-wheel",
+    "radius": 0.32245,
+    "axles": [
+      {
+        "track": 1.5099999904632568,
+        "y": 0.32245001196861267,
+        "z": 1.4679900407791138
+      },
+      {
+        "track": 1.5199999809265137,
+        "y": 0.32245001196861267,
+        "z": -1.4199899435043335
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "1988 Peugeot 405 T16 Pikes Peak Ari Vatanen hillclimb coupe",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.5929999947547913,
+            0.4189999997615814,
+            -2.191999912261963
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.5929999947547913,
+            0.4189999997615814,
+            -2.191999912261963
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6240000128746033,
+            0.5630000233650208,
+            2.2009999752044678
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6240000128746033,
+            0.5630000233650208,
+            2.2009999752044678
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7549999952316284,
+            0.32245001196861267,
+            -1.4679900407791138
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7549999952316284,
+            0.32245001196861267,
+            -1.4679900407791138
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7599999904632568,
+            0.32245001196861267,
+            1.4199899435043335
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7599999904632568,
+            0.32245001196861267,
+            1.4199899435043335
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "peugeot-208-t16-pikes-2013",
+    "label": "Orpine 2013",
+    "capability": "Wide short hatch, tall rear wing, pronounced splitter and hood heat extraction",
+    "carId": "3d-orpine-2013-3d-efe9c1953be9",
+    "bodyRef": "Orpine-2013-body",
+    "wheelRef": "Orpine-2013-wheel",
+    "radius": 0.3557,
+    "axles": [
+      {
+        "track": 1.649999976158142,
+        "y": 0.35569998621940613,
+        "z": 1.4105000495910645
+      },
+      {
+        "track": 1.649999976158142,
+        "y": 0.35569998621940613,
+        "z": -1.284500002861023
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2013 Peugeot 208 T16 Unlimited Pikes Peak Sebastien Loeb",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6729999780654907,
+            0.5630000233650208,
+            -2.322000026702881
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6729999780654907,
+            0.5630000233650208,
+            -2.322000026702881
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.7390000224113464,
+            0.8019999861717224,
+            2.321000099182129
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.7390000224113464,
+            0.8019999861717224,
+            2.321000099182129
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.824999988079071,
+            0.35569998621940613,
+            -1.4105000495910645
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.824999988079071,
+            0.35569998621940613,
+            -1.4105000495910645
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.824999988079071,
+            0.35569998621940613,
+            1.284500002861023
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.824999988079071,
+            0.35569998621940613,
+            1.284500002861023
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "vw-id-r-pikes-2018",
+    "label": "Moschatel 2018",
+    "capability": "Wide low closed single-seat prototype, long nose and hillclimb rear wing",
+    "carId": "3d-moschatel-2018-3d-0c2e49b8ed37",
+    "bodyRef": "Moschatel 2018 Body",
+    "wheelRef": "Moschatel 2018 Wheel",
+    "radius": 0.355,
+    "axles": [
+      {
+        "track": 1.600000023841858,
+        "y": 0.35499998927116394,
+        "z": 1.4249999523162842
+      },
+      {
+        "track": 1.600000023841858,
+        "y": 0.35499998927116394,
+        "z": -1.4249999523162842
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2018 Volkswagen I.D. R Pikes Peak Romain Dumas EV prototype",
+    "stockWheelPositions": {
+      "FL": [
+        -0.8000001311302185,
+        0.35499998927116394,
+        1.4249998331069946
+      ],
+      "FR": [
+        0.7999998927116394,
+        0.35499998927116394,
+        1.4250000715255737
+      ],
+      "RL": [
+        -0.7999998927116394,
+        0.35499998927116394,
+        -1.4250000715255737
+      ],
+      "RR": [
+        0.8000001311302185,
+        0.35499998927116394,
+        -1.4249998331069946
+      ]
+    }
+  },
+  {
+    "id": "porsche-917kh-1970",
+    "label": "Sanicle 1970",
+    "capability": "1970 overall-winning 917 KH short-tail with round cockpit, twin recessed hood lamps and low rear upsweep",
+    "carId": "3d-sanicle-1970-3d-ddbc1d70ae8c",
+    "bodyRef": "Sanicle 1970 Body",
+    "wheelRef": "Sanicle 1970 Wheel",
+    "radius": 0.3405,
+    "axles": [
+      {
+        "track": 1.4900000095367432,
+        "y": 0.34049999713897705,
+        "z": 1.149999976158142
+      },
+      {
+        "track": 1.5299999713897705,
+        "y": 0.34049999713897705,
+        "z": -1.149999976158142
+      }
+    ],
+    "reference": "Hans Herrmann / Richard Attwood, Porsche Salzburg Porsche917 KH #23, chassis917-023, overall winner1970 Le Mans24Hours. Short-tail4.5L, not1971 winner, longtail or later turboCan-Am.",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "porsche-956-lh-1982",
+    "label": "Houndstongue 1982",
+    "capability": "1982 overall-winning Porsche 956 long-tail with recessed hood lamps and close-mounted boxed wing",
+    "carId": "3d-houndstongue-1982-3d-b2948b1bc415",
+    "bodyRef": "Houndstongue 1982 Body",
+    "wheelRef": "Houndstongue 1982 Wheel",
+    "radius": 0.3382,
+    "axles": [
+      {
+        "track": 1.600000023841858,
+        "y": 0.33820000290870667,
+        "z": 1.3250000476837158
+      },
+      {
+        "track": 1.5499999523162842,
+        "y": 0.33820000290870667,
+        "z": -1.3250000476837158
+      }
+    ],
+    "reference": "Jacky Ickx / Derek Bell, 1982 Le Mans overall-winning Porsche 956 #1 Group C long-tail. Not 956B, 962, 917 or road conversion.",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "mazda-787b-1991",
+    "label": "Butterbur 1991",
+    "capability": "1991 overall-winning Mazda 787B with short canopy, angular compound nose and separate high wing",
+    "carId": "3d-butterbur-1991-3d-51c25f482580",
+    "bodyRef": "Butterbur-1991-body",
+    "wheelRef": "Butterbur-1991-wheel",
+    "radius": 0.337475,
+    "axles": [
+      {
+        "track": 1.534000039100647,
+        "y": 0.3374750018119812,
+        "z": 1.3680000305175781
+      },
+      {
+        "track": 1.503999948501587,
+        "y": 0.3374750018119812,
+        "z": -1.2940000295639038
+      }
+    ],
+    "reference": "Johnny Herbert / Volker Weidler / Bertrand Gachot, 1991 Le Mans overall-winning Mazda 787B #55, chassis 787B-002. Not older 787 or 767B, road RX-7 or later demonstration tune.",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.656000018119812,
+            0.4819999933242798,
+            -2.441999912261963
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.656000018119812,
+            0.4819999933242798,
+            -2.441999912261963
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.7239999771118164,
+            0.4749999940395355,
+            2.486999988555908
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.7239999771118164,
+            0.4749999940395355,
+            2.486999988555908
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7670000195503235,
+            0.3374750018119812,
+            -1.3680000305175781
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7670000195503235,
+            0.3374750018119812,
+            -1.3680000305175781
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7519999742507935,
+            0.3374750018119812,
+            1.2940000295639038
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7519999742507935,
+            0.3374750018119812,
+            1.2940000295639038
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
   }
 ]

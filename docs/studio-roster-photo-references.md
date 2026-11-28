@@ -609,3 +609,29 @@ The SC roof seal and 914 parked covers are static. The Demon intake
 appearance does not change engine operation. The GX uses an eight-seat
 layout; its rear door remains static. The 928 rear glass and Subaru rear
 optical hook remain simplified.
+
+### Full-roster rollout, Lexus, Audi, Dodge utility, Le Mans, and Pikes Peak
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Magnolia 40 1990 | UK June Lexus LS 400 launch RHD with coils and 4AT. [Lexus UK launch kit](https://media.lexus.co.uk/wp-content/uploads/sites/3/pdf/LS400-Gen1-UK-launch-pack-1990.pdf); [gallery](https://media.lexus.co.uk/vehicles/ls-400-archive-1990/). |
+| Meadow Saffron 2014 | US Lexus IS 350 F Sport RWD 8AT. [Lexus gallery](https://pressroom.lexus.com/album/2014-2015-lexus-is-250-350-f-sport-third-3rd-generation/). |
+| Lingonberry Clover 2005 | Canadian Lexus RX 330 standard AWD with coils. [Lexus Canada specifications](https://media.lexus.ca/content/dam/media-lexus/general/unassigned/20145/05LexusRX330_E_specs.pdf). |
+| Meadow Sage 2011 | UK Audi RS5 B8 coupe 4.2 FSI standard 19-inch wheels. [UK factory brochure](https://xr793.com/wp-content/uploads/2022/10/2011-Audi-RS-5-Coupe-UK.pdf). |
+| Field Madder 2013 | Dutch Audi RS7 C7 Sportback 560 PS, four seats. [Audi Dutch launch](https://nieuws.audi.nl/de-nieuwe-audi-rs-7-sportback/). |
+| Field Pansy 2009 | Continental European Audi RS6 C6 V10 sedan, not Avant/Plus. [Audi factory history and gallery](https://www.audi.com/en/media-releases/20-years-four-generations-audi-rs-6-superior-performance-with-an-everyday-look-14768). |
+| Masterwort 2008 | US Dodge Sprinter 2500 cargo 144-inch wheelbase high roof, single rear wheels, two seats. [Dodge factory specifications](https://s3.amazonaws.com/chryslermedia.iconicweb.com/mediasite/specs/2008DodgeSprinterSpecifications.pdf). |
+| Pearlwort 1999 | US Dodge Dakota base regular cab, short box, 2.5 manual RWD. [Factory brochure](https://xr793.com/wp-content/uploads/2018/09/1999-Dodge-Dakota.pdf). |
+| Osier 2005 | US Dodge Dakota SLT Quad Cab short box 4.7 4WD, representative trim. [Factory brochure](https://xr793.com/wp-content/uploads/2016/11/2005-Dodge-Dakota.pdf). |
+| Alchemilla 1988 | Ari Vatanen Peugeot 405 T16 Pikes Peak winner, not Dakar. [Peugeot period history and footage](https://www.media.stellantis.com/uk-en/peugeot/press/the-peugeot-405-t16-the-predecessor-of-the-new-508-peugeot-sport-engineered-and-the-greatest-embodiment-of-the-1990-s-sports-saloon). |
+| Orpine 2013 | Sébastien Loeb Peugeot 208 T16 Unlimited hill climb, not T16 R5. [Peugeot 2013 event photos and release](https://www.media.stellantis.com/es-es/peugeot/press/sebastien-loeb-y-el-peugeot-208-t16-pikes-peak-listos-para-la-salida). |
+| Moschatel 2018 | Romain Dumas Volkswagen I.D. R Pikes Peak record car, not 2019 low-drag revision. [Volkswagen period photo book](https://www.volkswagen-newsroom.com/en/publications/more/mission-maximum-180/download). |
+| Sanicle 1970 | Porsche 917 KH Salzburg #23, chassis 917-023 short-tail winner. [Porsche race archive](https://newsroom.porsche.com/pdf/d53ba335-cc90-49e4-a5e6-039887e19979?print=). |
+| Houndstongue 1982 | Porsche 956 LH #1 Ickx/Bell overall winner. [Porsche period account](https://newsroom.porsche.com/christophorus/en/2022/402/laptime.html); [exact period photography](https://www.racingsportscars.com/photo/1982/Le_Mans-1982-06-20-001.jpg). |
+| Butterbur 1991 | Mazda 787B #55 chassis 787B-002 overall winner. [Mazda archive](https://www2.mazda.com/en/100th/cars/detail_012_787b.html). |
+
+Competition paint color blocking is recreated without sponsor graphics.
+The Lexus IS guide is a separate passive optical element. Sprinter
+cargo rear transitions and the race prototypes' airflow surfaces and
+light internals remain simplified. Sampled steering clearance at nominal
+height is not a full suspension-travel test.

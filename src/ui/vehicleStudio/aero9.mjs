@@ -42,6 +42,7 @@ function boxMesh(x,y,z,p){return new T.BoxGeometry(x,y,z).translate(...p);}
 function wingGeometry({cfg,sp,put,sample,dims,evalFormula,quality,compact=0}){
  if(sp.type==='off'||sp.type==='none')return {elements:0,supports:0};
  const {X,Lr,cabinRear}=dims,lip=sp.type==='lip'||sp.type==='ducktail',boxed=sp.type==='boxed wing',swan=!lip&&!boxed&&cfg.supportMount==='top';
+ const wingMaterial=cfg.darkWing===1?'trim':'paint';
  const w=bounded((.66+.19*sp.size)*X,.24,X*.95,X*.8);
  const depth=bounded(sp.depth,.55,1.8,1),chord=lip?.21*depth:.31*depth;
  const z=mix(Lr,cabinRear,(boxed?.46:lip?.14:.29)+bounded(sp.bias,-1,1,0)*.075);
@@ -70,13 +71,20 @@ function wingGeometry({cfg,sp,put,sample,dims,evalFormula,quality,compact=0}){
     return [x,y+d*c*Math.sin(angle)+formula(u,v,x),z+rake+c*d*Math.cos(angle)-aft];
    });
   });
-  put('spoiler','paint',loft(rows,true));
+  put('spoiler',wingMaterial,loft(rows,true));
   for(const r of [rows[0],rows.at(-1)]){
    const C=r.reduce((s,p)=>add(s,mul(p,1/r.length)),[0,0,0]),ends=[];
    for(let i=0;i<r.length;i++)ends.push(...C,...r[i],...r[(i+1)%r.length]);
    const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(ends,3));geo.computeVertexNormals();
    if(r===rows.at(-1)){const arr=geo.getAttribute('position');for(let k=0;k<arr.count;k+=3){const x=arr.getX(k+1),y=arr.getY(k+1),z=arr.getZ(k+1);arr.setXYZ(k+1,arr.getX(k+2),arr.getY(k+2),arr.getZ(k+2));arr.setXYZ(k+2,x,y,z);}geo.computeVertexNormals();}
-   put('spoiler','paint',geo);
+   put('spoiler',wingMaterial,geo);
+  }
+ }
+ if(!lip&&!boxed&&cfg.endPlateHeight>0){
+  const ep=bounded(cfg.endPlateHeight,.01,.26,.08),edgeChord=chord*(1-taper);
+  for(const side of [-1,1]){
+   const end=boxMesh(.014,ep,edgeChord*1.04,[side*(w+.002),base+h+Math.min(ep*.16,(elements-1)*.021),z+sweep]);
+   put('spoiler',wingMaterial,end);
   }
  }
  if(boxed){
@@ -92,7 +100,7 @@ function wingGeometry({cfg,sp,put,sample,dims,evalFormula,quality,compact=0}){
     [top+thickness*.44,w*.96,atTop,.37*chord,plate*.31]
    ];
    const rows=shapes.map(([height,x,c,span,wide])=>ring([s*x,height,c],wide,span,compact?8:12,'rectangle',[1,0,0],[0,0,-1]));
-   put('spoiler','paint',loft(rows,true));
+   put('spoiler',wingMaterial,loft(rows,true));
    const first=rows[0],last=rows.at(-1);
    for(const [section,flip] of [[first,true],[last,false]]){
     const mid=section.reduce((a,p)=>add(a,mul(p,1/section.length)),[0,0,0]),pos=[],tris=[];
@@ -101,7 +109,7 @@ function wingGeometry({cfg,sp,put,sample,dims,evalFormula,quality,compact=0}){
      pos.push(...mid,...section[i],...section[j]);tris.push(a,flip?a+2:a+1,flip?a+1:a+2);
     }
     const t=new T.BufferGeometry();t.setAttribute('position',new T.Float32BufferAttribute(pos,3));t.setIndex(tris);t.computeVertexNormals();
-    put('spoiler','paint',t);
+    put('spoiler',wingMaterial,t);
    }
   }
   return {elements:1,supports:2,boxed:true};
@@ -135,12 +143,12 @@ function wingGeometry({cfg,sp,put,sample,dims,evalFormula,quality,compact=0}){
    const t=j/4,p=[x+Math.sign(x)*.023*Math.sin(Math.PI*t),mix(y,top,t),Z+.075*(1-t)-.046*t*t];
    return ring(p,mix(.045,.025,t),mix(.098,.058,t),10,'rectangle',[1,0,0],[0,0,-1]);
   });
-  put('spoiler','paint',loft(rows));
+  put('spoiler',wingMaterial,loft(rows));
   if(elements>1){
    const brZ=Z-.039;
    const y2=top+(elements-1)*(thickness+.017)+.016;
    const br=Array.from({length:4},(_,i)=>{const f=i/3;return ring([x,mix(top,y2,f),brZ-(elements-1)*.025*f],.013,.032,8,'rectangle',[1,0,0],[0,0,-1]);});
-   put('spoiler','paint',loft(br));
+   put('spoiler',wingMaterial,loft(br));
   }
  }
  return swan?{elements,supports,mount:'top'}:{elements,supports};

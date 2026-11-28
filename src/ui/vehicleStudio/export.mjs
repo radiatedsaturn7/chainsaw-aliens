@@ -17,7 +17,7 @@ const PALETTE={
  roofPaint:['Contrast hardtop paint','paint'],paint:['Coachwork paint','paint'],wheel:['Wheel alloy','alloy'],glass:['Cabin glass','glass'],rubber:['Tire rubber','rubber'],whitewall:['Matte white sidewall','rubber'],
  trim:['Exterior trim','trim'],chrome:['Machined steel','machined'],head:['[studio9:head] Front optical lens','optic'],tail:['Rear optical lens','optic'],opticCover:['Clear optical cover','glass'],indicator:['Amber indicator','optic'],seamDark:['Recess and seam backing','trim'],projector:['[studio9:head] Projector glass','optic'],reflector:['Optical reflector','machined'],reflectorFluted:['Fluted optical reflector','machined'],rotor:['Swept brake steel','machined'],barrel:['Wheel barrel','alloy'],caliper:['[studio9:static-caliper] Brake caliper','trim'],underbody:['Coated underbody','trim'],
  heatShield:['Brushed heat shield','machined'],leather:['Seat leather','upholstery'],cloth:['Seat cloth','upholstery'],stitch:['Upholstery stitching','upholstery'],
- opticRed:['[studio9:brake] Layered red lens','optic'],opticClear:['[studio9:reverse] Clear optical segment','optic'],opticSilver:['Silver-clear rear reflector','machined'],runningRed:['[studio9:running] Rear light guide','optic'],signalL:['[studio9:signal-left] Left amber signal','optic'],signalR:['[studio9:signal-right] Right amber signal','optic'],
+ guideMilk:['Passive milky light-guide insert','optic'],opticRed:['[studio9:brake] Layered red lens','optic'],opticClear:['[studio9:reverse] Clear optical segment','optic'],opticSilver:['Silver-clear rear reflector','machined'],runningRed:['[studio9:running] Rear light guide','optic'],signalL:['[studio9:signal-left] Left amber signal','optic'],signalR:['[studio9:signal-right] Right amber signal','optic'],
  interior:['Interior vinyl','trim'],seat:['Seat upholstery','upholstery'],floor:['Floor carpet','upholstery']
 };
 const solidTexture=(pixel)=>({width:1,height:1,pixels:[pixel]});
@@ -82,16 +82,21 @@ function stripeTexture(g){
  for(let i=0;i<height;i++)for(let j=0;j<width;j++){
   const z=(j+.5)/width,x=Math.abs((i+.5)/height-.5);
   const core=.129+.040*z;
-  pixels.push(z>.042&&z<.984&&Math.abs(x-core)<.029?stripe:paint);
+  // Same continuous hood UV chart and finish controls; racing color
+  // blocks are unbranded and do not allocate any additional geometry.
+  const secondary=g.construction.hood.diagonalCoachwork
+   ?(i+.5)/height>.20+z*.55
+   :z>.042&&z<.984&&Math.abs(x-core)<.029;
+  pixels.push(secondary?stripe:paint);
  }
  return {width,height,pixels};
 }
 
 export function materialDoc(g,key,{texture=true}={}){
  const [name,preset]=PALETTE[key];const fascia=key.startsWith('fascia-')?key.slice(7):null;const rimFace=key==='wheel',maps=texture?studioMaps(key==='rubber'?'tire':key.startsWith('signal')?'indicator':key==='runningRed'?'opticRed':key):{};
- return {id:'studio-mat-'+key,name,color:fascia||key==='lower-clad'||key==='bonnet-stripes'||key.endsWith('-duct')?'#ffffff':g.materials[key],
+ return {id:'studio-mat-'+key,name,color:fascia||key==='lower-clad'||key==='bonnet-stripes'||key.endsWith('-duct')?'#ffffff':key==='guideMilk'?'#e5eaf0':g.materials[key],
   texture:!texture?null:fascia?fasciaInsertTexture(g,fascia):key==='lower-clad'?claddingTexture(g):key==='bonnet-stripes'?stripeTexture(g):key==='quarter-duct'?ductTexture(g,quarterDuctMask):key==='fender-duct'?ductTexture(g,fenderGillMask):key==='side-duct'?ductTexture(g,sideDuctMask):key==='cowl-duct'?ductTexture(g,cowlDuctMask,g.body.cowlDuctAccent>0):key==='glass'?solidTexture(g.components.glass.type==='tinted'?'#ffffff70':'#ffffff48'):key==='opticCover'?solidTexture('#ffffff31'):key==='rubber'?wheelTireTexture(g.components.tires.type,g.components.tires.shape,g.components.tires.depth):key==='rotor'?wheelRotorTexture():null,
-  automotive:{preset:key==='rubber'?'rubber':preset,creaseAngle:0, ...maps,...(rimFace?{roughness:.27}:{}),...(key==='whitewall'?{roughness:.94,metalness:0}:{}),...(key==='ductMatte'?{roughness:.97,metalness:0}:{}),...(key==='rotor'?{roughness:1,metalness:1}:{}),...(key==='barrel'?{roughness:1,metalness:1}:{}),...(key==='opticSilver'?{metalness:.86,roughness:.26}:{}),...(preset==='paint'?{paintCalibration:true,
+  automotive:{preset:key==='rubber'?'rubber':preset,creaseAngle:0, ...maps,...(rimFace?{roughness:.27}:{}),...(key==='whitewall'?{roughness:.94,metalness:0}:{}),...(key==='ductMatte'?{roughness:.97,metalness:0}:{}),...(key==='rotor'?{roughness:1,metalness:1}:{}),...(key==='barrel'?{roughness:1,metalness:1}:{}),...(key==='guideMilk'?{metalness:0,roughness:.32}:{}),...(key==='opticSilver'?{metalness:.86,roughness:.26}:{}),...(preset==='paint'?{paintCalibration:true,
     ...(g.construction.finish.paintRoughness!==.44?{roughness:g.construction.finish.paintRoughness}:{}),
     ...(g.construction.finish.coatRoughness!==.12?{paintClearcoatRoughness:g.construction.finish.coatRoughness}:{})}:{} )}};
 }

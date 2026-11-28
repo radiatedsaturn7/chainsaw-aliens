@@ -146,16 +146,23 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  }
  const canopy=g.construction.cabin,extension=(canopy.canopyLength-.5)*.15;
  const nominalRoofFront=mix(cabinFront,doorRear,.37+.10*c.glass.shape-extension);
- const roofFront=canopy.frontScreenRake?clamp(nominalRoofFront-canopy.frontScreenRake,cabinRear+.48,cabinFront-.14):nominalRoofFront;
+ const roofFront=canopy.cargoPanel?clamp(cabinFront-.48,cabinRear+.8,cabinFront-.18):canopy.frontScreenRake?clamp(nominalRoofFront-canopy.frontScreenRake,cabinRear+.48,cabinFront-.14):nominalRoofFront;
  const rearFraction=(g.family==='fastback'?.45:.22+.10*c.glass.shape)-extension;
  const rearDatum=mix(cabinRear,doorFront,rearFraction);
  const roofRear=canopy.rearPillarFoot||canopy.rearRoofShift||hatchUpright||targaBulk?clamp(rearDatum+canopy.rearPillarFoot*(1-rearFraction)-canopy.rearRoofShift-.38*hatchUpright-.24*targaBulk,cabinRear+mix(.18,.078,hatchUpright),roofFront-.34):rearDatum;
  const nose=B-(.14+.10*(1-wide))*c.frontBumper.depth,deck=B-(c.trunk.type==='fastback'?.13:.065)*c.rearBumper.depth;
  const standardY=z=>z>cabinFront?mix(B,nose,((z-cabinFront)/(Lf-cabinFront))**1.4):z<cabinRear?mix(B,deck,((cabinRear-z)/(cabinRear-Lr))**1.38):B;
  const vintage=g.body.vintageFenders,cycles=g.body.cycleGuardPull;
- const skinY=z=>vintage
+ const baseSkinY=z=>vintage
   ?standardY(z)-vintage*.132*clamp((Math.abs(z)-L*.43)/Math.max(.29,(z>0?Lf:-Lr)-L*.43))**2.3
   :standardY(z);
+ const prototypeFenderRise=g.body.prototypeFenderRise;
+ const skinY=prototypeFenderRise?z=>{
+  // The shared side/top rail crowns over each tire and fades to the
+  // unmodified sill between axles, allowing a low canopy and valances.
+  const t=clamp(1-Math.abs(Math.abs(z)-L)/.635);
+  return baseSkinY(z)+prototypeFenderRise*unitSmooth(t);
+ }:baseSkinY;
  const regionalBox=z=>clamp(wide+(z>0?d.frontBox:d.rearBox)*clamp(Math.abs(z)/L));
  function skinX(z){const noseT=clamp((Math.abs(z-(Lf+Lr)*.5)/(.5*length)-.70)/.30);let plain=X*(1-(.058+.13*(1-regionalBox(z)))*noseT**2);
   if(g.body.pickupBedDepth&&g.body.pickupBedStep&&z<cabinRear&&z>bumperRear){
@@ -1055,7 +1062,10 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
      f('paint',mirrored?right:0,mirrored?1:left,top,hi,Math.max(1,n-stations),1);
     }
    }else{f('paint',0,left,lo,hi,n,1);f('paint',right,1,lo,hi,n,1);}
-   f('glass',left,right,lo,hi,n,m);
+   if(canopy.cargoPanel){
+    const a=.496,b=.504;
+    f('paint',left,a,lo,hi,n,Math.max(3,m>>1));f('seamDark',a,b,lo,hi,n,1);f('paint',b,right,lo,hi,n,Math.max(3,m>>1));
+   }else f('glass',left,right,lo,hi,n,m);
   }else if(pickupFrame){
    const edge=s>0?.041+.043*pickupFrame:.063+.087*pickupFrame;
    const b=s>0?.032+.053*pickupFrame:.085+.13*pickupFrame;
@@ -1148,6 +1158,13 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     put(mat==='glass'?'glass':'pillars',mat,patch(res,1,(u,v)=>side(mix(u0,u1,u),mix(v0,v1,v)),s<0));
    };
    for(const [a,b,m] of [[0,uMid,'paint'],[uMid,1,rearMat]]){
+    if(canopy.cargoPanel&&a>0){
+     // The cargo side has a shallow rolled seam rather than passenger glass.
+     zone(m,a,b,0,.101,small(12,8,6,5));
+     zone('seamDark',a,b,.101,.109,small(12,8,6,5));
+     zone(m,a,b,.109,1,small(12,8,6,5));
+     continue;
+    }
     const l=a+.031,r=b-.053,lo=.105,hi=.862,k=.010,n=small(10,6,5,4);
     zone(m,a,b,0,lo,n);zone(m,a,b,hi,canopy.hardtopContrast?.935:1,n);
     if(canopy.hardtopContrast)zone('roofPaint',a,b,.935,1,n);

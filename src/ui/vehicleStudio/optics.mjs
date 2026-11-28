@@ -282,6 +282,25 @@ export function makeOpenings({end,g,segments=32,face=null}){
   for(const s of [-1,1]){
    const sideFog=getSideSettings(g,'fogs',s>0?'R':'L',fog);
    if(sideFog.type==='off')continue;
+   if(sideFog.type==='chevron LED guide'){
+    // A separate, recessed light guide. Fit in the land below the main
+    // lens and outside the central mouth, using the same fascia chart.
+    const eye=out.find(o=>o.kind==='lamp'&&Math.sign(o.center[0]-.5)===s);
+    if(!eye)continue;
+    const bottom=Math.max(...eye.outline.map(q=>q[1]));
+    const knee=Math.max(.565,bottom+.106),guide=.045+.032*sat(num(sideFog.size,1)*.5);
+    if(knee>.74)continue;
+    const station=(x,y)=>[.5+s*x,y],t=.016+.008*sat(num(sideFog.depth,1)*.5);
+    const center=station(.305,knee-.010);
+    const outline=[station(.246,knee-.039),station(.303,knee-.017),station(.303+guide,knee-.096),
+     station(.303+guide,knee-.072),station(.307,knee+t*.42),station(.246,knee-.018)];
+    const bounds=poly=>[0,1].map(d=>[Math.min(...poly.map(q=>q[d])),Math.max(...poly.map(q=>q[d]))]);
+    const span=bounds(outline);
+    if(out.some(a=>bounds(a.outline).every(([lo,hi],d)=>lo<span[d][1]+.003&&hi>span[d][0]-.003)))continue;
+    out.push({id:'front-chevron-guide-'+(s<0?'r':'l'),component:'fogs',kind:'front-guide',side:s,
+     center,outline,width:.13,height:.13,opt:{passive:true}});
+    continue;
+   }
    if(sideFog.type==='vertical LED strip'){
     // A separate fascia DRL below each main housing, with dark housing
     // returns and a clear strip. Track the lamp edge to prevent overlap.
@@ -611,7 +630,8 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
   }
   if(kind==='front-guide'){
    putGeo('seamDark',[seat,ring(.85,.021)],pt(cx,cy,.021));
-   putGeo('head',[ring(.74,.012),ring(.58,.009)],pt(cx,cy,.009));
+   if(opt.passive)putGeo('guideMilk',[ring(.78,.009)],pt(cx,cy,.009));
+   else putGeo('head',[ring(.74,.012),ring(.58,.009)],pt(cx,cy,.009));
    putGeo('opticCover',[ring(.88,.006)],pt(cx,cy,.005));
    continue;
   }

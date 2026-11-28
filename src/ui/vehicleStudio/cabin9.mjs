@@ -181,7 +181,7 @@ export function buildCabin({g,quality='preview',compact=0,put,sample,dims}){
  const central=layout==='center-driver', driverOnly=layout==='driver-only';
  const rowCount=layout==='three-row'?3:layout==='front-only'||central||driverOnly?1:2;
  const limits={
-  1:{u:[.31],zLength:[.49]},
+  1:{u:[cfg.cargoPanel?.18:.31],zLength:[.49]},
   2:{u:[.31,.76],zLength:[.49,.43]},
   3:{u:[.31,.56,.84],zLength:[.45,.37,.32]}
  }[rowCount];

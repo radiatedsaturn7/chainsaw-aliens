@@ -12,7 +12,10 @@ export function emitFlushHoodLids({cover,hoodLength,settings,across,along,compac
  const surface=(u,v)=>cover(u,v);
  const inset=settings.lampLids==='inset';
  const section=inset?Array.from({length:compact?12:20},(_,i)=>{
-  const a=i/(compact?12:20)*Math.PI*2;return [Math.cos(a),Math.sin(a)];
+  const a=i/(compact?12:20)*Math.PI*2,x=Math.cos(a),y=Math.sin(a);
+  if(!settings.lidBoxiness)return [x,y];
+  const power=1-settings.lidBoxiness*.65;
+  return [Math.sign(x)*Math.abs(x)**power,Math.sign(y)*Math.abs(y)**power];
  }):profile;
  const wide=surface(1,.14)[0]-surface(0,.14)[0];
  const yLen=hoodLength;
