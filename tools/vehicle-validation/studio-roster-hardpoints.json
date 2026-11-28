@@ -17476,5 +17476,285 @@
         }
       ]
     }
+  },
+  {
+    "id": "mercedes-s123-300td-turbodiesel-1984",
+    "label": "Twayblade 1984",
+    "capability": "1984 Europe S123 300 TD Turbodiesel estate",
+    "carId": "3d-twayblade-1984-3d-a113f9ea2dea",
+    "bodyRef": "Twayblade-1984-body",
+    "wheelRef": "Twayblade-1984-wheel",
+    "radius": 0.31429999999999997,
+    "axles": [
+      {
+        "track": 1.4880000352859497,
+        "y": 0.314300000667572,
+        "z": 1.44350004196167
+      },
+      {
+        "track": 1.4529999494552612,
+        "y": 0.314300000667572,
+        "z": -1.3515000343322754
+      }
+    ],
+    "reference": "1984 continental European Mercedes-Benz 300 TD Turbodiesel S123 type123.193, OM617.952 2998cc turbo indirect-injection diesel five, RWD standard four-speed automatic with post-September1981 ratios, LHD steel14inch wheels. Not NorthAmerican emissions variant, non-turbo300TD, sedan300D,300SD or300SL.",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6489999890327454,
+            0.5950000286102295,
+            -2.450500011444092
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6489999890327454,
+            0.5950000286102295,
+            -2.450500011444092
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6919999718666077,
+            0.5460000038146973,
+            2.4165000915527344
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6919999718666077,
+            0.5460000038146973,
+            2.4165000915527344
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7440000176429749,
+            0.314300000667572,
+            -1.44350004196167
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7440000176429749,
+            0.314300000667572,
+            -1.44350004196167
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7264999747276306,
+            0.314300000667572,
+            1.3515000343322754
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7264999747276306,
+            0.314300000667572,
+            1.3515000343322754
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "lotus-carlton-uk-1990",
+    "label": "Wild Carrot 1990",
+    "capability": "1990 UK Lotus Carlton twin turbo production saloon",
+    "carId": "3d-wild-carrot-1990-3d-839cb3a0de9c",
+    "bodyRef": "Wild-Carrot-1990-body",
+    "wheelRef": "Wild-Carrot-1990-wheel",
+    "radius": 0.32165,
+    "axles": [
+      {
+        "track": 1.4909800291061401,
+        "y": 0.3216499984264374,
+        "z": 1.3869999647140503
+      },
+      {
+        "track": 1.5240000486373901,
+        "y": 0.3216499984264374,
+        "z": -1.343000054359436
+      }
+    ],
+    "reference": "1990 United Kingdom Vauxhall Lotus Carlton production 3.6 twin-turbo RWD6MT; not1989prototype or ordinary CarltonGSi",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.5860000252723694,
+            0.5699999928474426,
+            -2.4670000076293945
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.5860000252723694,
+            0.5699999928474426,
+            -2.4670000076293945
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.628000020980835,
+            0.5580000281333923,
+            2.4639999866485596
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.628000020980835,
+            0.5580000281333923,
+            2.4639999866485596
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7454900145530701,
+            0.3216499984264374,
+            -1.3869999647140503
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7454900145530701,
+            0.3216499984264374,
+            -1.3869999647140503
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7620000243186951,
+            0.3216499984264374,
+            1.343000054359436
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7620000243186951,
+            0.3216499984264374,
+            1.343000054359436
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
   }
 ]
