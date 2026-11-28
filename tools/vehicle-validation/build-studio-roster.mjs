@@ -71,6 +71,15 @@ export function buildStudioRoster(target){
   if(exact){j.position=exact.position;if(!key)j.rotation=exact.rotation;}
   else if(key){const a=key[1]==='F'?tf:tr;j.position=[(key[2]==='L'?-1:1)*a.track/2,a.y,a.z];}
  }
+ if(target.canonicalLampSides&&!exactStock){
+  // Studio viewport names use a viewer-facing convention, unlike race
+  // chassis slots. Keep the optical positions/rotation and name by local X.
+  for(const prefix of ['HeadlightMount_','TaillightMount_']){
+   const mounts=body.joints.filter(j=>j.name===prefix+'L'||j.name===prefix+'R').sort((a,b)=>a.position[0]-b.position[0]);
+   assert.ok(mounts.length===2&&mounts[0].position[0]<0&&mounts[1].position[0]>0,'Optical mounting pair must straddle chassis');
+   mounts[0].name=prefix+'L';mounts[1].name=prefix+'R';
+  }
+ }
  // Align the replacement tire's visible radius to the physics wheel without
  // touching physics. The original visual's positive-X outboard uses the
  // same single wheel asset mirrored by the regular engine paths.

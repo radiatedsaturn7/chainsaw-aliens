@@ -23,3 +23,18 @@ test('Williams stock right and left rotate into signed chassis landmarks by basi
  const sameFrame=structuredClone(w);sameFrame.axles[0].z+=.01;
  assert.throws(()=>buildStudioRoster(sameFrame),/normalized axles disagree/);
 });
+
+test('opt-in beam anchor sides follow physical chassis X and preserve all lamp transforms',()=>{
+ const r=JSON.parse(fs.readFileSync(new URL('../../tools/vehicle-validation/studio-roster-hardpoints.json',import.meta.url)))
+   .find(row=>row.id==='mini-r56-jcw-2009');
+ assert.equal(r.canonicalLampSides,true);
+ const {body}=buildStudioRoster(r).pair, old=buildStudioRoster({...r,canonicalLampSides:false}).pair.body;
+ for(const [part,z] of [['Headlight',1],['Taillight',-1]])for(const [side,x] of [['L',-1],['R',1]]){
+  const lamp=body.joints.find(j=>j.name===part+'Mount_'+side);
+  assert.equal(Math.sign(lamp.position[0]),x);
+  assert.equal(Math.sign(lamp.position[2]),z);
+  assert.ok(old.joints.some(j=>j.id===lamp.id&&j.rotation.every((v,i)=>Object.is(v,lamp.rotation[i]))
+    &&j.position.every((v,i)=>Object.is(v,lamp.position[i]))));
+ }
+ assert.deepEqual(old.faces,body.faces);
+});

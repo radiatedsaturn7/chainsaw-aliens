@@ -416,3 +416,26 @@ parked lids, and the two Mercedes' closed gullwing roof seams, do not
 animate. The Solstice nose curvature, Skyline roof framing, and 037
 road trim remain first-pass approximations. Cars using source-frame
 normalization retain the original chassis and handling.
+
+### Full-roster rollout, Z-cars, Alfa, Ford pickups, and MINI
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Harebell 1970 | US Datsun 240-Z S30 base two-seat manual. [Period US brochure](https://retrojdm.com/ScanView.asp?ScanID=12). |
+| Trailing Tormentil 1994 | Japanese Nissan Fairlady Z CZ32 Version S Twin Turbo fixed-roof two-seater. [Nissan Z archive](https://global.nissannews.com/en/channels/nissanz?selectedTabId=nissanz-photo-galleries) (generation views); [Japanese fixed-roof specification](https://gazoo.com/catalog/maker/NISSAN/FAIRLADY_Z/198907/1501108/). |
+| Foxglove Z 2003 | US Nissan 350Z Z33 base 6MT, including base seven-spoke wheels. [Nissan press kit](https://usa.nissannews.com/en-US/releases/2003-350z-press-kit?origin=channel-2730). |
+| Common Comfrey 1965 | Alfa Romeo Giulia Sprint GTA road car. [Period homologation](https://historicdb.fia.com/sites/default/files/car_attachment/1606233601/homologation_form_number_1395_group_t.pdf); [1965 gallery](https://girardo.com/car/1965-alfa-romeo-giulia-sprint-gta-1/). |
+| Cicada Turbo 2015 | US Alfa Romeo 4C base Coupe. [US factory brochure](https://www.alfaromeobr.com.br/assets/catalogos/Alfa-Romeo-4C-2015-USA.pdf). |
+| Marsh Violet 2007 | Italian Alfa Romeo 8C Competizione production coupe. [Factory release](https://www.media.stellantis.com/em-en/alfa-romeo/press/alfa-romeo-at-the-77th-geneva-international-motor-show-2007); [multi-view gallery](https://www.ultimatecarpage.com/cg/2891/Alfa-Romeo-8C-Competizione.html). |
+| Tufted Vetch 1956 | US Ford F-100 standard cab 110-inch wheelbase. [Ford archive](https://fordimages.com/products/0400-8397-jpg). |
+| Brooklime 2003 | US Ford Ranger XL 2.3 regular cab 2WD. [Ford dealer catalogue](https://www.therangerstation.com/resources/pdf_documents/2003_ford_ranger_brochure.pdf). |
+| Toadflax 1999 | US Ford SVT F-150 Lightning regular cab Flareside. [Factory period brochure](https://www.oldcarbrochures.org/United%20States/Ford%20Motor%20Company%20Trucks-Vans/1999-Trucks-and-Vans/1999-Ford-SVT-F-150-Lightning-Brochure/slides/1999_Ford_SVT_F-150_Lightning-02.html). |
+| Corn Mint 2009 | UK MINI JCW R56 hatch. [Manufacturer press kit](https://www.press.bmwgroup.com/united-kingdom/article/detail/T0020030EN_GB/the-new-mini-john-cooper-works-press-kit?language=en_GB). |
+| Water Mint 2012 | European MINI JCW GP R56. [Manufacturer archive](https://www.press.bmwgroup.com/deutschland/article/detail/T0131227DE/der-mini-john-cooper-works-gp?language=de). |
+| Lesser Trefoil 2018 | Mexico MINI JCW Countryman ALL4 F60. [Manufacturer press kit](https://www.press.bmwgroup.com/mexico/article/detail/T0286274ES/el-nuevo-mini-john-cooper-works-countryman-llega-a-m%C3%A9xico-con-un-estilo-atl%C3%A9tico-m%C3%A1s-rabioso-y-m%C3%A1s-vers%C3%A1til?language=es). |
+
+The Lightning's pair of exhaust tips exits on the passenger side ahead
+of the rear axle. The MINI GP has a roof-mounted wing. Its signed beam
+anchors are explicit in the exported studies; this does not alter the
+studio's visible optical mesh. Remaining first-pass gaps include 350Z
+lamp wrap, R56 lamp height, and F-100 bolt-on fender details.

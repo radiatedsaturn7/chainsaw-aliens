@@ -151,7 +151,15 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   ?standardY(z)-vintage*.132*clamp((Math.abs(z)-L*.43)/Math.max(.29,(z>0?Lf:-Lr)-L*.43))**2.3
   :standardY(z);
  const regionalBox=z=>clamp(wide+(z>0?d.frontBox:d.rearBox)*clamp(Math.abs(z)/L));
- function skinX(z){const noseT=clamp((Math.abs(z-(Lf+Lr)*.5)/(.5*length)-.70)/.30);const plain=X*(1-(.058+.13*(1-regionalBox(z)))*noseT**2);
+ function skinX(z){const noseT=clamp((Math.abs(z-(Lf+Lr)*.5)/(.5*length)-.70)/.30);let plain=X*(1-(.058+.13*(1-regionalBox(z)))*noseT**2);
+  if(g.body.pickupBedDepth&&g.body.pickupBedStep&&z<cabinRear&&z>bumperRear){
+   // Step the cargo-box shell, not the wheel, aft seam, or cab. Fade at
+   // seams and preserve the envelope across the rear wheel arch shoulders.
+   const step=(lo,hi,v)=>{const t=clamp((v-lo)/Math.max(.001,hi-lo));return t*t*(3-2*t);};
+   const edge=step(0,.20,cabinRear-z)*step(0,.19,z-bumperRear);
+   const offArch=step(.25,.75,Math.abs(z+L));
+   plain-=g.body.pickupBedStep*edge*offArch;
+  }
   if(!vintage)return plain;
   const taper=clamp((Math.abs(z)-L*.86)/Math.max(.28,(z>0?Lf:-Lr)-L*.86));
   return plain-vintage*.17*taper**1.55;}
@@ -677,16 +685,16 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     return [center[0]+x,center[1]+height*.5*power(Math.sin(angle))*scale-s*x*.105,center[2]+z+s*x*.21];
    };
    const ringPatch=(z0,z1,r0,r1,flip=true)=>patch(small(3,1,1,1),small(lod?24:32,14,12,10),(t,u)=>local(u,mix(r0,r1,unitSmooth(t)),mix(z0,z1,t)),flip);
-   put('mirrors','paint',ringPatch(-depth*.43,-depth*.29,.93,1));
-   put('mirrors','paint',ringPatch(-depth*.29,depth*.16,1,.96));
-   put('mirrors','paint',ringPatch(depth*.16,depth*.48,.96,.51));
-   put('mirrors','paint',ringPatch(depth*.48,depth*.55,.51,.005));
+   put('mirrors',g.construction.cabin.contrastMirrorCaps?'roofPaint':'paint',ringPatch(-depth*.43,-depth*.29,.93,1));
+   put('mirrors',g.construction.cabin.contrastMirrorCaps?'roofPaint':'paint',ringPatch(-depth*.29,depth*.16,1,.96));
+   put('mirrors',g.construction.cabin.contrastMirrorCaps?'roofPaint':'paint',ringPatch(depth*.16,depth*.48,.96,.51));
+   put('mirrors',g.construction.cabin.contrastMirrorCaps?'roofPaint':'paint',ringPatch(depth*.48,depth*.55,.51,.005));
    put('mirrors','trim',ringPatch(-depth*.43,-depth*.449,.93,.84,false));
    put('mirrors','chrome',ringPatch(-depth*.449,-depth*.452,.84,.001,false));
    put('mirrors','trim',box(.165,.044,.074),[s*(sx+.017),sy-.022,mz-.015]);
   }else{
   put('mirrors','trim',box(.19,.032,.055),[s*(sx+.085),sy-.026,mz]);
-  put('mirrors','paint',ellipsoid(.25*mirror.size,.115*mirror.depth,.185*mirror.size*(mirror.type==='aero'?1.42:1)),[s*(sx+.19),sy,mz],[mirror.angle*RAD,s*(mirror.shape-.5)*.52,0]);
+  put('mirrors',g.construction.cabin.contrastMirrorCaps?'roofPaint':'paint',ellipsoid(.25*mirror.size,.115*mirror.depth,.185*mirror.size*(mirror.type==='aero'?1.42:1)),[s*(sx+.19),sy,mz],[mirror.angle*RAD,s*(mirror.shape-.5)*.52,0]);
   put('mirrors','chrome',ellipsoid(.19*mirror.size,.087,.019),[s*(sx+.20),sy,mz-.081*mirror.size]);
   }
   for(const z of handleStations){
@@ -740,6 +748,25 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    q[2]-=Math.max(0,reach)*hatchFold*tent;
   }
   return q;};
+ if(!roadster&&canopy.roofLipReach>.01){
+  // A roof-hinge spoiler not the decklid aerodynamics primitive. Airfoil
+  // and faying feet follow the shared roof and hatch charts as rake changes.
+  const chord=canopy.roofLipReach,half=canopy.roofLipSpan/2,lift=canopy.roofLipLift;
+  const join=u=>canopyRoof(roofRear,mix(.5-half,.5+half,u));
+  const skin=(u,v)=>{
+   const a=v*Math.PI*2,p=join(u),s=Math.abs(u*2-1);
+   return [p[0],p[1]+lift*(.82+.18*s)+.012*Math.sin(a), p[2]-chord*(.45+.5*Math.cos(a))*(1-.17*s*s)];
+  };
+  put('spoiler','trim',patch(small(11,8,6,5),6,skin,true));
+  for(const end of [0,1]){
+   put('spoiler','trim',patch(1,6,(u,v)=>lerp3(skin(end,v),skin(end,.5),u),end===0));
+   const left=end===0?.045:.835,right=end===0?.165:.955;
+   put('spoiler','trim',patch(2,2,(u,v)=>{
+    const s=mix(left,right,u), w=mix(.5-half,.5+half,s),a=glassPoint(-1,.94,w),b=skin(s,mix(.40,.79,u));
+    return lerp3(a,b,v);
+   },end===0));
+  }
+ }
  if(!roadster){
   const roofMode=coveredTarga?0:Math.round(canopy.roofGlazing);
   const roofFinish=coveredTarga?'trim':canopy.hardtopContrast?'roofPaint':'paint';
@@ -1154,7 +1181,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  buildUtilitySuspension({put,dims,compact,amount:canopy.rallyTubework,tireWidth:d.tireWidth});
  buildUtilityBumper({put,dims,cfg:canopy});
  buildRearSpare({put,dims,compact,cfg:canopy,finish:c.wheels.type==='stamped steel'?'wheel':'trim',tireWidth:d.tireWidth});
- const aero=buildAero({g,compact,quality:lod?'lod':quality,put,sample:{trunk:trunkPoint,rear:ends.rear.face,exhaustMount:(id,side)=>exhaustMounts.get(id+':'+side)},dims,evalFormula});
+ const aero=buildAero({g,compact,quality:lod?'lod':quality,put,sample:{trunk:trunkPoint,rear:ends.rear.face,sideExhaust:(sign,z)=>skinPoint(z,.98,sign,z>doorRear?'doors':'rearFenders'),exhaustMount:(id,side)=>exhaustMounts.get(id+':'+side)},dims:{...dims,axleHalf:L},evalFormula});
  for(const f of styleCurves)for(const side of (f.side==='both'?['L','R']:[f.side])){
   const sign=side==='R'?1:-1;
   const points=curvePoints(u=>{const z=mix(Lr,Lf,mix(f.start,f.end,u));return bodySide(z,featureHeight(f,z),sign);});
