@@ -1854,5 +1854,387 @@
       }
     ],
     "reference": "1994 France Peugeot106 Rallye Series1 1294cc catalyst five-speed manual, base unassisted steering/no optional ABS or radio. October/December1993 French brochure specification. Not UK825kg, Series2 1.6, XSi or competition kit."
+  },
+  {
+    "id": "lotus-esprit-v8",
+    "label": "Marsh Arrowgrass 2002",
+    "capability": "Late Esprit V8 road wedge with closed covers and four round rear lenses",
+    "carId": "3d-marsh-arrowgrass-2002-3d-c6a423460d66",
+    "bodyRef": "Marsh Arrowgrass 2002 Body",
+    "wheelRef": "Marsh Arrowgrass 2002 Wheel",
+    "radius": 0.30989999999999995,
+    "axles": [
+      {
+        "track": 1.5189199447631836,
+        "y": 0.3098999857902527,
+        "z": 1.2100000381469727
+      },
+      {
+        "track": 1.5519399642944336,
+        "y": 0.3098999857902527,
+        "z": -1.2100000381469727
+      }
+    ],
+    "reference": "2002 Lotus Esprit V8 5MT, UK"
+  },
+  {
+    "id": "lotus-exige-s-v6",
+    "label": "Marsh Gentian 2012",
+    "capability": "Compact track-bred V6 road coupe with teardrop cabin, elliptical mouth, corner scoops and fixed wing",
+    "carId": "3d-marsh-gentian-2012-3d-94ff3797ec0e",
+    "bodyRef": "Marsh-Gentian-2012",
+    "wheelRef": "Marsh-Gentian-2012-Wheel",
+    "radius": 0.30815,
+    "axles": [
+      {
+        "track": 1.4528800249099731,
+        "y": 0.3081499934196472,
+        "z": 1.4694000482559204
+      },
+      {
+        "track": 1.4986000061035156,
+        "y": 0.3202120065689087,
+        "z": -0.900600016117096
+      }
+    ],
+    "reference": "2012 Lotus Exige S V6 6MT, UK"
+  },
+  {
+    "id": "lotus-emira-v6",
+    "label": "Wood Forgetmenot 2023",
+    "capability": "First Edition V6, sculpted front corners, flowing side air intakes and integrated tail lip",
+    "carId": "3d-wood-forgetmenot-2023-3d-5918dc726b60",
+    "bodyRef": "Wood Forgetmenot 2023 Body",
+    "wheelRef": "Wood Forgetmenot 2023 Wheel",
+    "radius": 0.33975,
+    "axles": [
+      {
+        "track": 1.6261080503463745,
+        "y": 0.3397499918937683,
+        "z": 1.287500023841858
+      },
+      {
+        "track": 1.6080739498138428,
+        "y": 0.3397499918937683,
+        "z": -1.287500023841858
+      }
+    ],
+    "reference": "2023 Lotus Emira V6 First Edition 6MT, UK"
+  },
+  {
+    "id": "mitsubishi-eclipse-rs-1995",
+    "label": "Bur Medick 1995",
+    "carId": "3d-bur-medick-1995-3d-02362f1dcd26",
+    "capability": "1995 United States Mitsubishi Eclipse RS 420A naturally aspirated FWD five-speed manual coupe, standard14-inch steel wheels, without optional ABS; stock representative production car, not film-car replica",
+    "bodyRef": "Bur Medick 1995 Body",
+    "wheelRef": "Bur Medick 1995 Wheel",
+    "radius": 0.3143,
+    "axles": [
+      {
+        "track": 1.5138399600982666,
+        "y": 0.314300000667572,
+        "z": 1.2547600269317627
+      },
+      {
+        "track": 1.5087599754333496,
+        "y": 0.314300000667572,
+        "z": -1.2547600269317627
+      }
+    ],
+    "reference": "1995 Mitsubishi Eclipse RS 420A FWD 5MT, US"
+  },
+  {
+    "id": "mitsubishi-eclipse-gsx-1995",
+    "label": "Nightcoil GT 1995",
+    "carId": "3d-nightcoil-gt-1995-3d-44cd30641f9e",
+    "capability": "1995 US Mitsubishi Eclipse GSX AWD 5MT, D33A",
+    "bodyRef": "Nightcoil-GT",
+    "wheelRef": "Nightcoil-GT-Wheel",
+    "radius": 0.32145,
+    "axles": [
+      {
+        "track": 1.5149999856948853,
+        "y": 0.32144999504089355,
+        "z": 1.029099941253662
+      },
+      {
+        "track": 1.5099999904632568,
+        "y": 0.32189100980758667,
+        "z": -1.4809000492095947
+      }
+    ],
+    "reference": "1995 Mitsubishi Eclipse GSX AWD 5MT, US"
+  },
+  {
+    "id": "mitsubishi-eclipse-gt-2006",
+    "label": "Bluebell GT 2006",
+    "carId": "3d-bluebell-gt-2006-3d-3ff735ad6e5a",
+    "capability": "2006 US Mitsubishi Eclipse GT 3.8 V6 six-speed manual coupe",
+    "bodyRef": "Bluebell GT 2006 Body",
+    "wheelRef": "Bluebell GT 2006 Wheel",
+    "radius": 0.3284,
+    "axles": [
+      {
+        "track": 1.5700000524520874,
+        "y": 0.32839998602867126,
+        "z": 1.287500023841858
+      },
+      {
+        "track": 1.5700000524520874,
+        "y": 0.32839998602867126,
+        "z": -1.287500023841858
+      }
+    ],
+    "reference": "2006 Mitsubishi Eclipse GT V6 6MT, US"
+  },
+  {
+    "id": "subaru-impreza-22b-sti",
+    "label": "Copperleaf 22 1998",
+    "capability": "Wide two-door homologation shell, big fenders, covers and boxed rear wing",
+    "carId": "3d-copperleaf-22-1998-3d-d7656e975648",
+    "bodyRef": "Copperleaf-22-1998-body",
+    "wheelRef": "Copperleaf-22-1998-wheel",
+    "radius": 0.3099,
+    "axles": [
+      {
+        "track": 1.4800000190734863,
+        "y": 0.3098999857902527,
+        "z": 1.2979999780654907
+      },
+      {
+        "track": 1.5,
+        "y": 0.3098999857902527,
+        "z": -1.222000002861023
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7400000095367432,
+            0.3098999857902527,
+            -1.2979999780654907
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7400000095367432,
+            0.3098999857902527,
+            -1.2979999780654907
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.75,
+            0.3098999857902527,
+            1.222000002861023
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.75,
+            0.3098999857902527,
+            1.222000002861023
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6179999709129333,
+            0.6299999952316284,
+            -2.240000009536743
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6179999709129333,
+            0.6299999952316284,
+            -2.240000009536743
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.593999981880188,
+            0.7059999704360962,
+            2.234999895095825
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.593999981880188,
+            0.7059999704360962,
+            2.234999895095825
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "1998 Subaru Impreza 22B-STI road coupe, JDM"
+  },
+  {
+    "id": "subaru-impreza-555-grpa",
+    "label": "Knapweed 1995",
+    "capability": "RAC-winning tall four-door gravel car, compact wing and round driving lamps",
+    "carId": "3d-knapweed-1995-3d-d2758c7e16f9",
+    "bodyRef": "Knapweed 1995 Body",
+    "wheelRef": "Knapweed 1995 Wheel",
+    "radius": 0.32375,
+    "axles": [
+      {
+        "track": 1.465000033378601,
+        "y": 0.32374998927116394,
+        "z": 1.2599999904632568
+      },
+      {
+        "track": 1.465000033378601,
+        "y": 0.32374998927116394,
+        "z": -1.2599999904632568
+      }
+    ],
+    "reference": "1995 Subaru Impreza 555 Group A four-door, McRae/Ringer"
+  },
+  {
+    "id": "subaru-sti-s209",
+    "label": "Heath Bedstraw 2019",
+    "capability": "Wide modern four-door body with carbon roof, angular optics and quad exhaust",
+    "carId": "3d-heath-bedstraw-2019-3d-c749254a5ad5",
+    "bodyRef": "Heath Bedstraw 2019 Body",
+    "wheelRef": "Heath Bedstraw 2019 Wheel",
+    "radius": 0.33404999999999996,
+    "axles": [
+      {
+        "track": 1.544319987297058,
+        "y": 0.3340499997138977,
+        "z": 1.3246099948883057
+      },
+      {
+        "track": 1.554479956626892,
+        "y": 0.3340499997138977,
+        "z": -1.3246099948883057
+      }
+    ],
+    "reference": "2019 Subaru STI S209, US"
+  },
+  {
+    "id": "volkswagen-golf-gti-mk1",
+    "label": "Fumitory 1983",
+    "capability": "Round lights, upright black grille band and angular short hatch",
+    "carId": "3d-fumitory-1983-3d-b0e462e4b095",
+    "bodyRef": "Fumitory 1983 Body",
+    "wheelRef": "Fumitory 1983 Wheel",
+    "radius": 0.28759999999999997,
+    "axles": [
+      {
+        "track": 1.4040000438690186,
+        "y": 0.28760001063346863,
+        "z": 1.2000000476837158
+      },
+      {
+        "track": 1.371999979019165,
+        "y": 0.28760001063346863,
+        "z": -1.2000000476837158
+      }
+    ],
+    "reference": "1983 Volkswagen Golf I GTI German1.8 standard three-door 4+E manual"
+  },
+  {
+    "id": "volkswagen-golf-r32-mk4",
+    "label": "Quaking Grass 2003",
+    "capability": "Rounded Golf IV body, triple intake and paired outboard exhaust",
+    "carId": "3d-quaking-grass-2003-3d-c43656ce85f8",
+    "bodyRef": "Quaking Grass 2003 Body",
+    "wheelRef": "Quaking Grass 2003 Wheel",
+    "radius": 0.3186,
+    "axles": [
+      {
+        "track": 1.5130000114440918,
+        "y": 0.31859999895095825,
+        "z": 1.2589999437332153
+      },
+      {
+        "track": 1.49399995803833,
+        "y": 0.31859999895095825,
+        "z": -1.2589999437332153
+      }
+    ],
+    "reference": "2003 Volkswagen Golf IV R32 Europe3.2 VR6 4MOTION three-door6MT"
+  },
+  {
+    "id": "volkswagen-golf-r-mk6",
+    "label": "Marsh Mallow R 2010",
+    "capability": "Wide horizontal light band and twin central exhaust",
+    "carId": "3d-marsh-mallow-r-2010-3d-40e507209511",
+    "bodyRef": "Marsh-Mallow-R-2010",
+    "wheelRef": "Marsh-Mallow-R-2010-Wheel",
+    "radius": 0.3186,
+    "axles": [
+      {
+        "track": 1.5399999618530273,
+        "y": 0.31859999895095825,
+        "z": 1.2890000343322754
+      },
+      {
+        "track": 1.5099999904632568,
+        "y": 0.31859999895095825,
+        "z": -1.2890000343322754
+      }
+    ],
+    "reference": "2010 Germany Volkswagen Golf VI R German three-door EA1132.0TSI6MT"
   }
 ]

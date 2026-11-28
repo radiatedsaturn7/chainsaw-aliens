@@ -280,7 +280,7 @@ export function buildCabin({g,quality='preview',compact=0,put,sample,dims}){
  add('dash','trim',patch(lod?7:15,2,(u,v)=>{
   const p=dash(u,0);p[1]-=.052+.018*v;p[2]-=.002;return p;
  }));
- const driver=seats.find(x=>x.row===0&&x.center[0]<0)??seats[0];
+ const driver=seats.find(x=>x.row===0&&x.center[0]*(cfg.driverSide==='right'?-1:1)<0)??seats[0];
  const steeringX=driver.center[0], steeringY=dashY-.052, steeringZ=dashZ-dashD-.123;
  const st=c.steering, sr=.153*clamp(st.size,.82,1.22);
  const steeringAngle=-.32;
@@ -338,14 +338,17 @@ export function buildCabin({g,quality='preview',compact=0,put,sample,dims}){
  const gear=[tunnelX,consoleTop+.105+cp.shape*.035,centerZ+.115];
  add('console','chrome',rod([tunnelX,consoleTop,centerZ+.14],gear,.012,7));
  add('console','trim',new T.SphereGeometry(cp.type==='manual'?.027:.039,lod?8:13,lod?5:8).scale(1,.85,.88),gear);
+ const pedalCenters=[];
  if(!lod){
   const py=floorY+.081, pz=floorFront-.13;
   for(const x of [-.071,.007,.076]){
    add('dash','trim',rod([steeringX+x,py+.079,pz+.023],[steeringX+x,py,pz],.009,6));
-   add('dash','rubber',box(.044,.026,.057),[steeringX+x,py-.006,pz-.025],[.51,0,0]);
+   const pedal=[steeringX+x,py-.006,pz-.025];
+   pedalCenters.push(pedal);
+   add('dash','rubber',box(.044,.026,.057),pedal,[.51,0,0]);
   }
  }
  return {layout,rows:rowMeta,seats,capacity:rowMeta.reduce((s,r)=>s+r.count,0),
   driverEye:[steeringX,Math.min(profileY(driver.center[2],steeringX)-.083,driver.center[1]+.63),driver.center[2]-.044],
-  steeringCenter:[steeringX,steeringY,steeringZ],floorY,triangles:triangleCount,detail:lod?'driving-lod':high?'cockpit':'studio'};
+  steeringCenter:[steeringX,steeringY,steeringZ],pedalCenters,floorY,triangles:triangleCount,detail:lod?'driving-lod':high?'cockpit':'studio'};
 }

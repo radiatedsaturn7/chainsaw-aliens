@@ -229,15 +229,16 @@ export function makeOpenings({end,g,segments=32,face=null}){
  }
  if(front){
   const gr=c.grille??{},fog=c.fogs??{};
-  if(gr.type==='twin vertical slats'){
+  if(gr.type==='twin vertical slats'||gr.type==='twin mesh'){
+   const mesh=gr.type==='twin mesh';
    // Keep a painted center ligament and derive both recesses from the
    // lamp apertures so changing headlamp width cannot create an overlap.
    const free=Math.min(.140,.48-Math.max(...out.filter(o=>o.center[0]<.5).flatMap(o=>o.outline.map(p=>p[0]))),
     Math.min(...out.filter(o=>o.center[0]>.5).flatMap(o=>o.outline.map(p=>p[0])))-.52);
-   const w=Math.min(free,.077+.061*num(fascia.grilleWidth,.5)),h=(.10+.133*num(fascia.grilleHeight,.5))*num(gr.depth,1);
+   const w=Math.min(free,.077+.061*num(fascia.grilleWidth,.5)),h=mesh?(.043+.092*num(fascia.grilleHeight,.5))*num(gr.depth,1):(.10+.133*num(fascia.grilleHeight,.5))*num(gr.depth,1);
    if(w>.025)for(const side of [-1,1])out.push(aperture({id:'upper-grille-'+(side<0?'r':'l'),component:'grille',
-    housing:'round-rect',cx:.5+side*(.012+w/2),cy:.415+(num(fascia.grilleHeightPosition,.5)-.5)*.43,width:w,height:h,
-    opt:{corner:.74},kind:'duct',segments,style:'vertical'}));
+    housing:mesh?(fascia.grilleShape??'round-rect'):'round-rect',cx:.5+side*((mesh?.019:.012)+w/2),cy:.415+(num(fascia.grilleHeightPosition,.5)-.5)*.43,width:mesh?Math.max(.025,w-.014):w,height:h,...(mesh?{side}:{}),
+    opt:mesh?{corner:.64,angle:.42,sweep:.67}:{corner:.74},kind:'duct',segments,style:mesh?'mesh':'vertical'}));
   }else if(gr.type!=='closed')out.push(aperture({id:'upper-grille',component:'grille',housing:fascia.grilleShape??'trapezoid',cx:.5,cy:.415+(num(fascia.grilleHeightPosition,.5)-.5)*.43,
    width:Math.min(mix(.155,.256,sat((num(gr.size,1)-.68)/.60))*(.56+.88*num(fascia.grilleWidth,.5)),2*(.49-Math.max(...out.filter(o=>o.center[0]<.5).flatMap(o=>o.outline.map(p=>p[0])))),2*(Math.min(...out.filter(o=>o.center[0]>.5).flatMap(o=>o.outline.map(p=>p[0])))-.51)),height:mix(.13,(gr.type==='vertical slats'||gr.type==='seven-slot')?.35:.238,sat((num(gr.depth,1)-.68)/.60))*(.58+.84*num(fascia.grilleHeight,.5)),
    kind:'duct',segments,opt:{bezel:num(fascia.grilleBezel,0)},style:gr.type==='crosshair'?'crosshair':gr.type==='seven-slot'?'seven-slot':gr.type==='vertical slats'?'vertical':gr.type==='bars'?'bars':'mesh'}));
@@ -342,10 +343,10 @@ export function makeOpenings({end,g,segments=32,face=null}){
   }
  }
  if(mode!=='closed'&&(front||!fascia.rearTrayDepth)){
-  const grp=front?'frontBumper':'rearBumper',iMode=mode==='split'?'split':'single';
+  const grp=front?'frontBumper':'rearBumper',triple=front&&mode==='triple',iMode=mode==='split'?'split':'single';
   const wideDucts=front&&c.fogs?.type==='off';
   const pair=wideDucts?[.285,.715]:[.395,.605];
-  for(const k of iMode==='split'?pair:[.5]){
+  for(const k of triple?[.5,.183,.817]:iMode==='split'?pair:[.5]){
    let cy=(front?.789:.78)+(num(fascia.intakeHeightPosition,.5)-.5)*.29;
    let height=(front?(wideDucts&&iMode==='split'?.23:.19):.14)*(.57+.86*num(fascia.intakeHeight,.5));
    if(!front)cy=Math.max(cy,.685+height*.5);
@@ -359,7 +360,8 @@ export function makeOpenings({end,g,segments=32,face=null}){
     // width-clearance checks against fog covers/lamp apertures.
     height+=rise;cy-=rise*.5;
    }
-   let width=(iMode==='split'?(wideDucts?.24:.17):.365)*(.63+.74*num(fascia.intakeWidth,.5));
+   if(triple&&k!==.5){height*=.84;cy=Math.min(.96-height/2,cy+.023);}
+   let width=triple?(k===.5?.329:.202)*(.63+.74*num(fascia.intakeWidth,.5)):(iMode==='split'?(wideDucts?.24:.17):.365)*(.63+.74*num(fascia.intakeWidth,.5));
    if(iMode==='split')width=Math.min(width,pair[1]-pair[0]-.014);
    for(const aperture of out){
     const ys=aperture.outline.map(p=>p[1]);if(Math.max(...ys)+.007<cy-height/2||Math.min(...ys)-.007>cy+height/2)continue;

@@ -89,13 +89,13 @@ function tire(r,c,rim,shape,depth,size,rally,n,compact=0){
 
 function spoke(r,face,dish,i,count,style,depth,low){
  const a=i*TAU/count;
- const lean=(style==='mesh'?(i%2===0?-.097:.097):style==='5-spoke'?-.105:style==='10-spoke'?.009:-.052);
+ const lean=(style==='mesh'?(i%2===0?-.097:.097):style==='5-spoke'?-.105:style==='15-spoke'?0:style==='10-spoke'?.009:-.052);
  const P=[],U=[],I=[];
  const section=[[-.52,-.85],[-.52,-.14],[-.30,.53],[.30,.53],[.52,-.14],[.52,-.85]];
  const radii=low?[0,1]:[0,.46,1];
  for(const s of radii){
   const rr=mix(.212,.968,s)*r;
-  const fullWidth=(style==='5-spoke'?mix(.159,.111,s):style==='mesh'?mix(.072,.052,s):style==='10-spoke'?mix(.099,.060,s):style==='8-spoke'?mix(.145,.112,s):mix(.122,.070,s))*depth;
+  const fullWidth=(style==='5-spoke'?mix(.159,.111,s):style==='mesh'?mix(.072,.052,s):style==='15-spoke'?mix(.079,.048,s):style==='10-spoke'?mix(.099,.060,s):style==='8-spoke'?mix(.145,.112,s):mix(.122,.070,s))*depth;
   const angle=a+lean*s*s;
   for(const [side,b] of section){
    const x=face-(.005+dish*(1-s)**1.45)+b*r*(.043-.010*s);
@@ -199,7 +199,7 @@ export function buildWheels(g,{quality='preview',compact=0,emit,rear=false}={}){
    put('wheels','seamDark',recess);
   }
  }else{
- const nSpokes=w.type==='6-spoke'?6:w.type==='5-spoke'?5:w.type==='10-spoke'?10:w.type==='8-spoke'?8:low?8:12;
+ const nSpokes=w.type==='6-spoke'?6:w.type==='5-spoke'?5:w.type==='15-spoke'?15:w.type==='10-spoke'?10:w.type==='8-spoke'?8:low?8:12;
  for(let k=0;k<nSpokes;k++)put('wheels','wheel',spoke(rim,face,dish,k,nSpokes,w.type,w.depth,low||nSpokes>7&&!detail));
   }
  if(!low)for(let k=0;k<5;k++)put('wheels','trim',boltSocket(hub+.0042,rim*.134,k));

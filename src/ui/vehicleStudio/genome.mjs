@@ -25,10 +25,10 @@ export const COMPONENTS={
  glass:style('Windshield, rear and side glass',['clear','tinted'],'rake'),rockers:style('Rockers and side skirts',['stock','deep','blade']),
  trunk:style('Trunk / rear deck',['notch','fastback','ducktail'],'crown'),
  headlights:style('Headlights',['swept','rectangular','round']),tails:style('Taillights',['stacked','strip','round']),
- fogs:style('Fog lights',['round','strip','blank','off','amber strip']),grille:style('Grille',['mesh','bars','closed','vertical slats','seven-slot','twin vertical slats','crosshair']),
+ fogs:style('Fog lights',['round','strip','blank','off','amber strip']),grille:style('Grille',['mesh','bars','closed','vertical slats','seven-slot','twin vertical slats','twin mesh','crosshair']),
  scoop:style('Scoop and vents',['scoop','vents','off']),spoiler:style('Spoiler',['wing','lip','off','boxed wing']),
  mirrors:style('Mirrors',['standard','aero','folded rectangle'],'corner radius'),handles:style('Door handles',['lever','flush','painted lever']),
- wheels:style('Wheels',['6-spoke','5-spoke','mesh','10-spoke','stamped steel','8-spoke'],'dish'),tires:style('Tires',['road','rally'],'sidewall'),
+ wheels:style('Wheels',['6-spoke','5-spoke','mesh','10-spoke','stamped steel','8-spoke','15-spoke'],'dish'),tires:style('Tires',['road','rally'],'sidewall'),
  exhaust:style('Exhaust',['single','dual','quad']),dash:style('Dashboard',['road','sport']),
  seats:style('Seats',['bucket','touring']),steering:style('Steering wheel',['round','flat-bottom']),
  instruments:style('Instrument cluster',['analog','digital']),console:style('Center console',['manual','automatic'])
@@ -37,7 +37,7 @@ export const NOSE_PROFILES={square:'Square / classic',round:'Rounded / rally',v:
 export const NOSE_FIELDS={sweep:F('Corner sweep',0,1,.01),rollover:F('Hood-to-bumper roll',0,1,.01),drop:F('Nose drop',0,1,.01)};
 const NOSE_DEFAULTS={sedan:{profile:'round',sweep:.55,rollover:.56,drop:.30},coupe:{profile:'square',sweep:.33,rollover:.32,drop:.19},fastback:{profile:'round',sweep:.70,rollover:.65,drop:.51}};
 export const FASCIA_PROFILES={...NOSE_PROFILES,aero:'Tapered / aero'};
-export const INTAKE_TYPES={single:'Central opening',split:'Split ducts',closed:'Closed skin'};
+export const INTAKE_TYPES={single:'Central opening',split:'Split ducts',triple:'Three separate lower ducts',closed:'Closed skin'};
 const unit=label=>F(label,0,1,.01),signed=label=>F(label,-1,1,.01);
 export const FASCIA_FIELDS={
  rallyAuxiliary:{...F('Rally auxiliary lamp count (0 = off)',0,6,1),group:'intake'},
@@ -211,6 +211,7 @@ export const EXHAUST_FIELDS={
 export const STYLE_FIELDS={start:F('Start station',0,1,.01),end:F('End station',0,1,.01),height:F('Curve height',.08,.92,.01),width:F('Feature width (m)',.008,.17,.001),depth:F('Feature depth (m)',.001,.045,.001),sharpness:F('Sharpness',0,1,.01),falloff:F('Endpoint blend',.02,.42,.01)};
 export const EXHAUST_SHAPES={round:'Round',oval:'Oval',rect:'Rectangular',square:'Square'};
 export const EXHAUST_FINISHES={steel:'Brushed steel',polished:'Polished',dark:'Dark coated'};
+export const DRIVER_SIDES={left:'Left',right:'Right'};
 export const CABIN_LAYOUTS={bench:'Rear bench',individual:'Separate rear seats','three-row':'Three rows','front-only':'Front seats only','center-driver':'Center driver / endurance single-seater'};
 export const newOutlet=(id='outlet-left',x=-.51,count=1,mirror=false)=>({id,x,y:.022,fasciaHeight:0,spacing:.091,count,diameter:.084,shape:'round',protrusion:.026,
  curvature:.21,pitch:0,yaw:0,roll:0,wall:.0035,bevel:.004,recess:.018,finish:'steel',mirror});
@@ -218,7 +219,7 @@ export const newStyle=(id='styling-1')=>({id,kind:'ridge',side:'both',start:.24,
 const constructionDefaults=()=>({
  symmetry:Object.fromEntries(Object.keys(PAIR_GROUPS).map(k=>[k,'mirrored'])),
  sides:{L:{},R:{}},
- cabin:{roofGlazing:0,raisedEngineLid:0,layout:'bench',bolster:.53,lumbar:.45,trim:.54,targaRearBulkhead:0,hatchBridge:0,hatchBridgeWidth:.84,hatchQuarterTaper:0,hatchLampFill:0,wagonTallTail:0,wagonTailWidth:.5,rearDeckButtresses:0,rearPillarFoot:0,rearRoofShift:0,rearPillarWidth:0,pickupCabFrame:0,utilityCabinSplit:0,hardtopRearSide:0,utilityBumper:0,utilityBumperPlate:0,bubbleCanopy:0,hardtopContrast:0,rearSpareRadius:0,rearSpareOffset:0,rearSpareHeight:1.04,vanSideTrim:0,utilityRoofRails:0,rallyTubework:0,rearGlassArc:0,rearHatchFold:0,hatchEdgeLamps:0,rearHatchUpright:0,rearBenchSeats:2,canopyLength:.5,frontScreenRake:0,sideGlassRise:0,darkWindscreenFrame:0,canopyShoulder:.5,glassBow:.5},
+ cabin:{roofGlazing:0,raisedEngineLid:0,layout:'bench',driverSide:'left',bolster:.53,lumbar:.45,trim:.54,targaRearBulkhead:0,hatchBridge:0,hatchBridgeWidth:.84,hatchQuarterTaper:0,hatchLampFill:0,wagonTallTail:0,wagonTailWidth:.5,rearDeckButtresses:0,rearPillarFoot:0,rearRoofShift:0,rearPillarWidth:0,pickupCabFrame:0,utilityCabinSplit:0,hardtopRearSide:0,utilityBumper:0,utilityBumperPlate:0,bubbleCanopy:0,hardtopContrast:0,rearSpareRadius:0,rearSpareOffset:0,rearSpareHeight:1.04,vanSideTrim:0,utilityRoofRails:0,rallyTubework:0,rearGlassArc:0,rearHatchFold:0,hatchEdgeLamps:0,rearHatchUpright:0,rearBenchSeats:2,canopyLength:.5,frontScreenRake:0,sideGlassRise:0,darkWindscreenFrame:0,canopyShoulder:.5,glassBow:.5},
  finish:{paintRoughness:.44,coatRoughness:.12},
  hood:{lampLids:'off',insetLampMounts:0,parkedPopups:0,lidWidth:.25,lidLength:.25,lidSpread:.30,lidSetback:.065,lidGap:.004,classicLampBezel:0,bonnetStripes:0,crossCrown:0,noseFairing:0,lampPodRise:0,shoulderRise:0,shoulderWidth:.087,shoulderAt:.65,shoulderSweep:0,scoopWidth:0,scoopHeight:0,scoopCorner:0},
  wing:{supportMount:'under',elevation:0,boxWallWidth:.041,boxWallRake:0,camber:.34,sweep:.08,taper:.42,thickness:.097,angle:4,supports:2,spacing:.67,formula:'',elements:1},
@@ -342,6 +343,7 @@ export function normalizeVehicle(x){
    k.sides[side][key]=cleaned;
   }
  }
+ if(cc.cabin?.driverSide!==undefined)k.cabin.driverSide=enumValue(cc.cabin.driverSide,DRIVER_SIDES,'driver side');
  if(cc.cabin?.layout!==undefined)k.cabin.layout=enumValue(cc.cabin.layout,CABIN_LAYOUTS,'seating layout');
  for(const [p,s] of Object.entries(BODY_EDITOR_FIELDS))if(cc.cabin?.[p]!==undefined)k.cabin[p]=number(cc.cabin[p],s,p);
  if(!Number.isInteger(k.cabin.rearBenchSeats))throw Error("Third-row bench positions must be 2 or 3.");

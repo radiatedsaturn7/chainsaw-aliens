@@ -325,3 +325,26 @@ The 205 wheel cutouts and side strips, 106 lamp outlines, and Williams
 roof/glazing need more reference fitting. For the Williams, an explicit
 stock-frame half-turn now normalizes its legacy rear-facing visual anchors
 to the unchanged chassis. No source car or handling values are edited.
+
+### Full-roster rollout, Subaru, Lotus, Eclipse, and Golf
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Copperleaf 22 1998 | JDM Subaru Impreza 22B-STI road coupe. [Subaru launch](https://www.subaru.co.jp/news/archives/98_1_3/3_16_1.html); [factory archive image](https://www.subaru.co.jp/license/pdf/licensing-opportunities-260415.pdf). |
+| Knapweed 1995 | Colin McRae and Derek Ringer's Subaru Impreza 555 Group A four-door, 1995 RAC winner. [Period event gallery](https://www.pro-rally.co.uk/gallery/1995-network-q-rac-rally/); [period action photo](https://www.gettyimages.dk/detail/news-photo/colin-mcrae-derek-ringer-subaru-impreza-during-the-rac-news-photo/2201295985). |
+| Heath Bedstraw 2019 | US Subaru STI S209. [Factory studio front and rear angles](https://www.subaru.co.jp/press/file/uploads/news-en/en2019_0115_01.pdf); [Subaru release](https://www.subaru.co.jp/press/news-en/2019_01_15_6739/). |
+| Marsh Arrowgrass 2002 | UK Lotus Esprit V8 5MT. [Period brochure](https://lotusesprit.com.au/carspecs/V8USA.pdf); [UK example](https://www.carandclassic.com/us/car/C1472493). |
+| Marsh Gentian 2012 | UK Lotus Exige S V6 6MT. [Factory parts catalog](https://www.espritengineering.co.uk/wp-content/uploads/2018/11/Service_Parts_List_12MY_Exige.pdf); [period UK multi-view gallery](https://www.seloc.org/articles/galleries/exige-s-2012/). |
+| Wood Forgetmenot 2023 | UK Lotus Emira V6 First Edition 6MT. [Exact UK variant](https://www.tomhartleyjnr.com/car/stock/2023/lotus/emira-v6-first-edition/lotus-emira-v6-first-edition/); [2023 factory paint specification](https://www.lotus-cars.jp/our-cars/current-range/emira/pdf/Emira_v6_first_edition_price_2023.3.10.pdf). |
+| Bur Medick 1995 | US Mitsubishi Eclipse RS 420A FWD 5MT. [Period trim brochure](https://manuals.plus/m/0d45779f1ce48cfa4209b5f2ec33d7d73b986d42fae1b0bf6f5650e843623c1d.pdf). |
+| Nightcoil GT 1995 | US Mitsubishi Eclipse GSX AWD 5MT. [Period trim brochure](https://manuals.plus/m/0d45779f1ce48cfa4209b5f2ec33d7d73b986d42fae1b0bf6f5650e843623c1d.pdf); [trim photo](https://classiccardb.com/uploads/postfotos/1995-mitsubishi-eclipse-gsx-2.jpg). |
+| Bluebell GT 2006 | US Mitsubishi Eclipse GT V6, six-speed manual. [Exact road test](https://www.auto123.com/en/news/2006-mitsubishi-eclipse-gt-v6-road-test/28472/?page=3); [GT exterior](https://veh-markets.com/uploads/postfotos/2006-mitsubishi-gt-1.jpg). |
+| Fumitory 1983 | German VW Golf GTI Mk1 1.8 three-door. [Volkswagen archive](https://www.volkswagen-newsroom.com/en/images/albums/golf-gti-1st-generation-1976-1983-7155). |
+| Quaking Grass 2003 | European VW Golf R32 Mk4 three-door 6MT. [Period factory brochure](https://xr793.com/wp-content/uploads/2022/12/2003-VW-Golf-R32-UK.pdf). |
+| Marsh Mallow R 2010 | German VW Golf R Mk6 three-door 6MT. [Volkswagen archive](https://www.volkswagen-newsroom.com/en/images/detail/volkswagen-golf-r-12251). |
+
+The 22B's preserved raw anchors sit under a half-turned source joint;
+the normalized pack reproduces those chassis-space coordinates without
+rewriting the stock binding. The Lotus cockpits are right-hand drive in
+the editable model; existing production camera settings are untouched.
+The S209's sharp canards and the 4G Eclipse's rear shoulder are simplified.
