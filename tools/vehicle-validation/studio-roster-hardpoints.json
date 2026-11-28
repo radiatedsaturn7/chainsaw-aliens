@@ -17892,5 +17892,51 @@
     ],
     "reference": "2005 Fiat Croma Dynamic2.2 16V, UK launch five-door high-roof estate/crossover, petrol5MT, standard16inch wheels; notautomatic,diesel oroldCroma",
     "canonicalLampSides": true
+  },
+  {
+    "id": "oldsmobile-aurora-35-us-2001",
+    "label": "Youngberry Clover 2001",
+    "capability": "2001 US Oldsmobile Aurora 3.5",
+    "carId": "3d-youngberry-clover-2001-3d-0c8a077ce675",
+    "bodyRef": "Youngberry-Clover-2001",
+    "wheelRef": "Youngberry-Clover-2001-Wheel",
+    "radius": 0.3382,
+    "axles": [
+      {
+        "track": 1.582419991493225,
+        "y": 0.33820000290870667,
+        "z": 1.4249399900436401
+      },
+      {
+        "track": 1.582419991493225,
+        "y": 0.33820000290870667,
+        "z": -1.4249399900436401
+      }
+    ],
+    "reference": "2001 United States Oldsmobile Aurora, 3.5TwinCamV6 front-drive four-speedautomatic, standard16-inchwheels; not4.0V8 orfirstgeneration",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "chrysler-200-lx-us-2012",
+    "label": "Blackthorn Clover 2012",
+    "capability": "2012 US Chrysler 200 LX 2.4",
+    "carId": "3d-blackthorn-clover-2012-3d-5a3d70b1e79a",
+    "bodyRef": "Blackthorn-Clover-2012-finished",
+    "wheelRef": "Blackthorn-Clover-2012-wheel",
+    "radius": 0.33965,
+    "axles": [
+      {
+        "track": 1.5671800374984741,
+        "y": 0.3396500051021576,
+        "z": 1.3830300569534302
+      },
+      {
+        "track": 1.592579960823059,
+        "y": 0.34030500054359436,
+        "z": -1.3830300569534302
+      }
+    ],
+    "reference": "2012 United States Chrysler 200, LX2.4 gasoline non-PZEV sedan, package24H, four-speed automatic, standard17-inch wheelcovers; not convertible,200S,V6 orsecond-generation9AT",
+    "canonicalLampSides": true
   }
 ]

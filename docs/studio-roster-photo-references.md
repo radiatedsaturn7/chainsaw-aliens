@@ -942,3 +942,10 @@ The R5's stock authored rear track is 0.130 m wider than its front track. The de
 - Lush Clover 2005: UK Fiat Croma Dynamic 2.2 16V petrol manual, not diesel or automatic. [Exact UK launch](https://www.media.stellantis.com/uk-en/fiat/press/new-fiat-croma-in-uk), taller curved roof and rounded rear hatch distinguish it from the Stilo.
 
 The Tipo, Idea, Espace and all contemporary Acura/Infiniti/Lexus studies from this batch remain held for distinctive front, glazing or rear fit. No shared software or stock dynamics changes.
+
+### Full-roster rollout: North American sedans
+
+- [Original 2001 Oldsmobile Aurora brochure](https://www.outrightolds.com/PDFBrochure/2001OldsmobileAurora.pdf), [exact 3.5 photo angles](https://www.edmunds.com/oldsmobile/aurora/2001/pictures/), [rear of exact 3.5](https://www.virtualparking.net/post/3446/2001-oldsmobile-aurora). Removed the upper grille entirely because the original brochure explicitly describes its absence. Wider swept optical cuts, domed backlight, stand-alone wrap rear clusters, dual lower outlets. Native deck shoulder and lens sweep remain more abrupt/shorter than exact body.
+- Chrysler [official 2012 US sedan specifications](https://s3.amazonaws.com/chryslermedia.iconicweb.com/mediasite/specs/2012_CH_200_Specs.pdf), [2012 brochure with standard LX 17-inch steel wheel cover](https://www.auto-brochures.com/makes/Chrysler/200/Chrysler_US%20200_2012.pdf), [actual 2012 LX photo gallery](https://www.crainhyundailittlerock.com/used-Little%2BRock-2012-Chrysler-200-LX-1C3CCBAB3CN105062). Chrome horizontal bar opening, swept lamp envelopes, covered steel wheel material rather than alloys. Native chrome perimeter and lamps do not reproduce the actual upper aperture/lenses precisely.
+
+The DTS remains held: its headlight/grille and rear proportions depart too far from the photographed car. No vehicle dynamics or shared editor changes.
