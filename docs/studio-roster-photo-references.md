@@ -687,3 +687,29 @@ nose, DB11 roof rails and Juke split lamps are editable shapes. Škoda
 clear notches do not alter active lamp assignments. Rear optical contours,
 Jaguar hatch/door transitions, Juke body wrap, and some aero construction
 remain approximations.
+
+### Full-roster rollout, Aston Martin, Toyota, historic cars, Nissan, and Bentley
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Spiny Restharrow 2001 | UK original Aston Martin V12 Vanquish 5.935 ASM, not S. [Aston Martin archive](https://media.astonmartin.com/v12-vanquish/?lang=eng). |
+| Yellow Vetchling 2013 | UK Aston Martin V12 Vantage S launch coupe AM28, 7-speed Sportshift III. [Aston Martin archive](https://www.astonmartin.com/en/models/past-models/v12-vantage-s). |
+| Yellow Vetchling 2016 | Original production Aston Martin Vulcan 7.0, not AMR Pro. [Aston Martin archive](https://media.astonmartin.com/vulcan/?lang=eng). |
+| Marjoram 2003 | US Toyota Camry LE 2.4 four-speed automatic, not SE or V6. [Factory US brochure](https://www.auto-brochures.com/makes/Toyota/Camry/Toyota_US%20Camry_2003.pdf). |
+| Tutsan 2003 | US Toyota ECHO base four-door sedan 5MT. [Factory US brochure](https://www.auto-brochures.com/makes/Toyota/Echo/Toyota_US%20Echo_2003.pdf). |
+| Strawberry Trefoil 2012 | US Toyota Yaris L three-door liftback 5MT. [Toyota press kit](https://pressroom.toyota.com/presskit/toyota-yaris-2012/); [three-door exterior](https://commons.wikimedia.org/wiki/File:2012_Toyota_Yaris_3-door_--_2012_NYIAS.JPG). |
+| Alsike Clover 1930 | Bentley 4½ Litre supercharged Vanden Plas road tourer GH6951 four-seater. [Exact car record](https://www.vintagebentleys.org/carpages/gh6951.php). |
+| Fenugreek 1939 | Mercedes-Benz W154 Grand Prix two-stage M163, not streamliner or W165. [Mercedes archive](https://media.mercedes-benz.com/en/article/f9a48175-8964-490e-9909-9f35cbea8a6f). |
+| Slender Birdsfoot 1953 | Works Jaguar C-type Le Mans triple-Weber and disc brakes, not continuation. [Jaguar Heritage images](https://media.jlr.com/archive-jaguar/en-us/image-packs/photo-credit-cjdhtjaguar-c-type-heritage-images). |
+| 2024 Sentinel Sedan | US Nissan Sentra S CVT. [Nissan USA press kit](https://usa.nissannews.com/en-US/releases/2024-nissan-sentra-press-kit). |
+| Bighead Clover 2012 | US Nissan Versa 1.6 S N17 sedan 5MT, not carryover hatch. [Nissan USA press kit](https://usa.nissannews.com/en-US/releases/us-2012-nissan-versa-press-kit). |
+| Coast Clover 2008 | US Federal Nissan Altima Coupe 2.5 S 6MT with 16-inch covered steel wheels. [Nissan USA press kit](https://usa.nissannews.com/en-US/releases/2008-altima-coupe-press-kit). |
+| Dog Violet 2016 | UK original Bentley Bentayga W12 five-seater, not Speed or V8. [Bentley history](https://www.bentleymotors.com/en/about-bentley/history-and-heritage/bentayga.html). |
+| Pale Clover 2017 | Bentley Continental Supersports second-generation W12 steel-roof coupe. [Bentley marque archive](https://www.bentleymotors.com/uk/en/about-bentley/history-and-heritage/continental.html). |
+| Sulphur Clover 2021 | Bentley Flying Spur third-generation V8 five-seat standard trim. [Period Bentley brochure](https://cdn.dealereprocess.org/cdn/brochures/bentley/2021-flyingspur.pdf). |
+
+The W154 is open-wheel with independently sized rear tires. Small
+functional gameplay lamps are intentionally nonhistorical. Vulcan rear
+blades are native separate red elements; ECHO instruments moved to
+center without moving steering or the driver. Vintage sheet metal,
+Flying Spur brightwork, and Nissan lamp contours remain simplified.

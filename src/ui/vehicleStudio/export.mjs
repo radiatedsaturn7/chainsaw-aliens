@@ -176,6 +176,10 @@ export function exportVehicle(genome,{id=null,quality='drive'}={}){
     hood:{heightM:.27,lengthM:d.wheelbaseM/2+g.dimensions.front-design.stations.cabinFront,widthM:d.widthM*.9},
     cabin:{heightM:d.heightM*(1-g.dimensions.belt),lengthM:design.stations.cabinFront-design.stations.cabinRear,
      widthM:d.widthM*g.dimensions.cabinWidth,centerZM:(design.stations.cabinFront+design.stations.cabinRear)*.5-cgZ}}}};
+  if(g.dimensions.rearWheelRadiusDelta){
+   const f=d.wheelRadiusM,r=f+g.dimensions.rearWheelRadiusDelta;
+   car.tuning.wheelRadiusByWheelM={fl:f,fr:f,rl:r,rr:r};
+  }
   if(g.family==='sedan'){
    car.tuning.drivetrain='awd';car.tuning.engineDisplacementL=2.5;car.tuning.aspiration='Turbocharged';
    car.tuning.engineCurve={rpmMin:750,rpmMax:7200,torquePoints:[{rpm:750,torqueLbFt:120},{rpm:1800,torqueLbFt:225},{rpm:4000,torqueLbFt:300},{rpm:6000,torqueLbFt:262.6},{rpm:7200,torqueLbFt:180}]};

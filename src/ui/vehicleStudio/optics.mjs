@@ -161,7 +161,7 @@ export function makeOpenings({end,g,segments=32,face=null}){
    width:sat(num(raw.width,.5)),height:sat(num(raw.height,.5)),corner:sat(num(raw.corner,.5)),
    angle:signed(num(raw.angle,(legacy.angle||0)/18)),sweep:sat(num(raw.sweep,.5)),
    curvature:sat(num(raw.curvature,.5)),recess:sat(num(raw.recess,.5)),convexity:sat(num(raw.convexity,.5)),
-   sideWrap:sat(num(raw.sideWrap,0)),silverFront:sat(num(raw.silverFront,0)),silverUpper:sat(num(raw.silverUpper,0)),silverUpperSplit:Math.max(-.08,Math.min(.20,num(raw.silverUpperSplit,-.018))),tripleBowls:sat(num(raw.tripleBowls,0)),rearCells:sat(num(raw.rearCells,0)),rearClearNotch:sat(num(raw.rearClearNotch,0)),rearTriBars:sat(num(raw.rearTriBars,0)),roundBowls:sat(num(raw.roundBowls,0)),flutedBowls:sat(num(raw.flutedBowls,0)),position:sat(num(raw.position,.5)),protrusion:sat(num(raw.protrusion,0)),formula:raw.formula??'',modules:Math.max(0,Math.min(8,Math.round(raw.modules??0))),spacing:sat(num(raw.spacing,.5)),inboardReach:sat(num(raw.inboardReach,.5)),formulaSide:g.construction?.symmetry?.[group]==='linked'?s:1,outline:Array.isArray(raw.outline)?raw.outline:[]};
+   sideWrap:sat(num(raw.sideWrap,0)),silverFront:sat(num(raw.silverFront,0)),silverUpper:sat(num(raw.silverUpper,0)),silverUpperSplit:Math.max(-.08,Math.min(.20,num(raw.silverUpperSplit,-.018))),tripleBowls:sat(num(raw.tripleBowls,0)),rearLightBlades:Math.max(0,Math.min(27,Math.round(num(raw.rearLightBlades,0)))),rearCells:sat(num(raw.rearCells,0)),rearClearNotch:sat(num(raw.rearClearNotch,0)),rearTriBars:sat(num(raw.rearTriBars,0)),roundBowls:sat(num(raw.roundBowls,0)),flutedBowls:sat(num(raw.flutedBowls,0)),position:sat(num(raw.position,.5)),protrusion:sat(num(raw.protrusion,0)),formula:raw.formula??'',modules:Math.max(0,Math.min(8,Math.round(raw.modules??0))),spacing:sat(num(raw.spacing,.5)),inboardReach:sat(num(raw.inboardReach,.5)),formulaSide:g.construction?.symmetry?.[group]==='linked'?s:1,outline:Array.isArray(raw.outline)?raw.outline:[]};
 
  // The bands are deliberately disjoint even at all slider extremes:
  // lamp inside <= .366; center grille starts >= .388; lower intakes start >= .31.
@@ -249,7 +249,7 @@ export function makeOpenings({end,g,segments=32,face=null}){
  }
  if(front){
   const gr=c.grille??{},fog=c.fogs??{};
-  if(gr.type==='deep mesh frame'){
+  if(gr.type==='deep mesh frame'||gr.type==='deep vertical frame'){
    const cy=.479+(num(fascia.grilleHeightPosition,.5)-.5)*.27;
    const h=Math.min(mix(.360,.681,num(fascia.grilleHeight,.5)),2*(cy-.096),2*(.933-cy));
    const free=Math.min(.49-Math.max(...out.filter(o=>o.center[0]<.5).flatMap(o=>o.outline.map(p=>p[0]))),
@@ -257,7 +257,7 @@ export function makeOpenings({end,g,segments=32,face=null}){
    const w=Math.min(mix(.234,.475,num(fascia.grilleWidth,.5)),2*free);
    if(w>.075)out.push(aperture({id:'upper-grille',component:'grille',kind:'duct',
     housing:fascia.grilleShape??'trapezoid',cx:.5,cy,width:w,height:h,
-    opt:{corner:.58,bezel:num(fascia.grilleBezel,0),throatDepth:num(fascia.lowerIntakeDepth,0)},segments,style:'mesh'}));
+    opt:{corner:.58,bezel:num(fascia.grilleBezel,0),throatDepth:num(fascia.lowerIntakeDepth,0)},segments,style:gr.type==='deep vertical frame'?'vertical':'mesh'}));
   }else if(gr.type==='twin deep mesh'){
    const cy=.488+(num(fascia.grilleHeightPosition,.5)-.5)*.32;
    const h=mix(.16,.44,num(fascia.grilleHeight,.5))*num(gr.depth,1);
@@ -418,7 +418,7 @@ export function makeOpenings({end,g,segments=32,face=null}){
   const grp=front?'frontBumper':'rearBumper',triple=front&&mode==='triple',iMode=mode==='split'?'split':'single';
   const wideDucts=front&&c.fogs?.type==='off';
   const pair=wideDucts?[.285,.715]:[.395,.605];
-  const deepFrame=front&&c.grille?.type==='deep mesh frame';
+  const deepFrame=front&&['deep mesh frame','deep vertical frame'].includes(c.grille?.type);
   for(const k of deepFrame?(mode==='triple'||mode==='split'?[.183,.817]:[]):triple?[.5,.183,.817]:iMode==='split'?pair:[.5]){
    let cy=(front?.789:.78)+(num(fascia.intakeHeightPosition,.5)-.5)*.29;
    let height=(front?(wideDucts&&iMode==='split'?.23:.19):.14)*(.57+.86*num(fascia.intakeHeight,.5));
@@ -809,7 +809,32 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
     putGeo(m,[ring(1,d*.52,p.p,p.x,p.y)],pt(p.x,p.y,d*.51));
    }
   }
-  if(oLayout==='factory-split'&&!triBars){
+  const bladeCount=!front&&oLayout==='factory-split'&&!triBars?opt.rearLightBlades||0:0;
+  if(bladeCount){
+   // An exposed light-bar array replaces the common outer lens. Every
+   // upright bar is fitted inside the curvature-defined pocket; compact
+   // models keep alternate lenses instead of baking directional glows.
+   const count=compact?Math.min(13,bladeCount):bladeCount;
+   const chart=outline.map(([x,y])=>[y,x]);
+   for(let i=0;i<count;i++){
+    const x=cx+side*w*(.65*((i+.5)/count-.5));
+    const [low,high]=spanAt(chart,x);
+    const height=Math.min(h*.400,(high-low)*.55);
+    const half=w*.205/count;
+    if(!Number.isFinite(height)||height<.014)continue;
+    const y=mix(low,high,.49);
+    const shape=(a,b)=>[[x-half,y+a*height],[x+half,y+a*height],[x+half,y+b*height],[x-half,y+b*height]];
+    const run=shape(-.5,-.01),stop=shape(.015,.5);
+    if(![...run,...stop].every(([a,b])=>contains(outline,a,b)))continue;
+    putGeo('runningRed',[ring(1,d*.215,run,x,y)],pt(x,y-.255*height,d*.164));
+    putGeo('opticRed',[ring(1,d*.215,stop,x,y)],pt(x,y+.254*height,d*.164));
+   }
+   for(const [i,m] of [['inner','opticClear'],['outer',side>0?'signalR':'signalL']]){
+    const p=fitted(cx+side*w*(i==='inner'?-.24:.24),cy+h*.32,w*.041,h*.056,8);
+    putGeo(m,[ring(1,d*.46,p.p,p.x,p.y)],pt(p.x,p.y,d*.45));
+   }
+  }
+  if(oLayout==='factory-split'&&!triBars&&!bladeCount){
    // Inside the sealed housing, divide the lens into two shallow molded
    // sections, independently of its external profile and cavity.
    const clip=(pol,line,keep)=>{
@@ -908,7 +933,7 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
   const coverOuter=mix(.010,.017,num(opt.curvature,.5))-maxProtrusion*.010;
   const convex=mix(.002,.012,num(opt.convexity,.5));
   const coverCenter=coverOuter-convex;
-  putGeo('opticCover',[ring(.925,coverOuter),...(compact?[ring(.48,coverOuter-convex*.76)]:[ring(.68,coverOuter-convex*.53),ring(.31,coverOuter-convex*.89)])],pt(cx,cy,coverCenter));
+  if(!bladeCount)putGeo('opticCover',[ring(.925,coverOuter),...(compact?[ring(.48,coverOuter-convex*.76)]:[ring(.68,coverOuter-convex*.53),ring(.31,coverOuter-convex*.89)])],pt(cx,cy,coverCenter));
   if(kind==='lamp')mount(oLayout,d);
  }
  for(const {component,material,geos} of batches.values())put(component,material,together(geos));

@@ -305,7 +305,7 @@ export function buildCabin({g,quality='preview',compact=0,put,sample,dims}){
   [steeringX+sr*.94*Math.cos(a),steeringY+sr*.94*Math.sin(a)*Math.cos(steeringAngle),steeringZ+sr*.94*Math.sin(a)*Math.sin(steeringAngle)],
   lod?.012:.013,6));
  add('steering','interior',new T.CylinderGeometry(.051,.055,.040,lod?9:16).rotateX(pi/2),hub);
- const instr=c.instruments, ix=steeringX,iy=dashY+.018, iz=dashZ-dashD+.027, iw=.255*c.instruments.size;
+ const instr=c.instruments, ix=cfg.centerInstruments?0:steeringX,iy=dashY+.018+(cfg.centerInstruments?.031:0), iz=dashZ-dashD+.027, iw=.255*c.instruments.size;
  add('instruments','interior',closedLoft(lod?3:6,lod?9:14,(u,a)=>{
   const ev=.8+.20*Math.sin(pi*u);return [ix+iw*.55*ev*f(Math.cos(a),.72),iy+.070*ev*f(Math.sin(a),.70),iz+.115*u];
  }));

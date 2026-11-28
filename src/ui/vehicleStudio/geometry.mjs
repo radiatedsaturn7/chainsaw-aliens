@@ -1,3 +1,4 @@
+import {buildOpenWheelVintage,buildVintageBlower} from './vintage21.mjs';
 import {sideDuctMask,cowlDuctMask,quarterDuctMask,fenderGillMask} from './sideDuct.mjs';
 import * as T from '../../vendorBridge/three.js';
 import {createEndSurface,fasciaMesh} from './fascia.mjs';
@@ -103,9 +104,9 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  const radius=R+Math.max(g.body.frontArchFore,g.body.rearArchFore);
  let t=(X*d.track),clearance=X-t-d.tireWidth/2;
  if(clearance<d.archReserve){t=X-d.tireWidth/2-d.archReserve;warnings.push('Track narrowed to keep tires inside the arch lips.');}
- const rearFit=rearWheelDimensions(d), staggered=d.rearTireWidthOffset!==0||d.rearRimRatioOffset!==0;
+ const rearFit=rearWheelDimensions(d), staggered=d.rearTireWidthOffset!==0||d.rearRimRatioOffset!==0||d.rearWheelRadiusDelta!==0;
  const rearTrack=Math.min(X-rearFit.tireWidth/2-d.archReserve,t+d.rearTrackBias*.5);
- if(t*2<1.2){issues.push('Track below the runtime suspension envelope.');}
+ if(t*2<1.2&&!g.body.openWheelShell){issues.push('Track below the runtime suspension envelope.');}
 
  if(floor>R-.03)warnings.push('Rocker sits above the hub; this is an elevated stance.');
  const hatchUpright=g.construction.cabin.rearHatchUpright;
@@ -179,6 +180,12 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    const envelope=Math.exp(-((Math.abs(Math.abs(z)-L)/.47)**2));
    plain-=cycles*(.48+.52*envelope);
   }
+  if(g.body.vintageBlower){
+   // The external wings keep their stock tire-centered charts, but the
+   // tapering bonnet/body over the main frame leaves a running-board gap.
+   const bonnet=unitSmooth(clamp((z-cabinFront+.15)/Math.max(.28,Lf-cabinFront+.15)));
+   plain-=g.body.vintageBlower*(.068+.145*bonnet);
+  }
   if(!vintage)return plain;
   const taper=clamp((Math.abs(z)-L*.86)/Math.max(.28,(z>0?Lf:-Lr)-L*.86));
   return plain-vintage*.17*taper**1.55;}
@@ -198,7 +205,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   const {fore,upper}=archData(axle);
   for(const trial of [-.55,-.30,0,.30,.55]){
    const z=axle+fore*trial,needed=R+upper*Math.sqrt(1-trial*trial);
-   if(skinY(z)-needed<.025){issues.push('Beltline intersects the '+(axle>0?'front':'rear')+' wheel opening; raise the beltline or fit smaller tires.');break;}
+   if(skinY(z)-needed<.025&&!g.body.openWheelShell){issues.push('Beltline intersects the '+(axle>0?'front':'rear')+' wheel opening; raise the beltline or fit smaller tires.');break;}
   }
  }
  const surface=buildFender(g.surfaces.frontFenders,{uSteps:quality==='export'?36:23,vSteps:quality==='export'?20:13,lipSteps:4});
@@ -1368,7 +1375,8 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   // from the midbody. Its radius clears the stock steering/tire envelope.
   const xf=side*(axle>0?t:rearTrack), width=(axle>0?d.tireWidth:rearFit.tireWidth)*1.17;
   const chart=(z,v,rise=.0)=>{
-   const th=mix(-1.05,1.05,z), edge=(2*v-1), rr=R+.053-.016*Math.abs(edge)**4+rise;
+   const stock=g.body.vintageBlower?(axle>0?[-1.49,1.30]:[-1.28,1.41]):[-1.05,1.05];
+   const th=mix(stock[0],stock[1],z), edge=(2*v-1), rr=R+.053-.016*Math.abs(edge)**4+rise;
    return [xf+edge*width*.5,R+rr*Math.cos(th),axle+rr*Math.sin(th)];
   };
   const tag=axle>0?'frontFenders':'rearFenders';
@@ -1381,7 +1389,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   const points=curvePoints(u=>{const z=mix(Lr,Lf,mix(f.start,f.end,u));return bodySide(z,featureHeight(f,z),sign);});
   features.push(guideFeature('style-'+f.id+'-'+side,'style-curve','Styling curve · '+f.id+' · '+side,'doors',points,{key:f.id,side,view:'side',axis:1,scale:-.50}));
  }
- const wheels=Object.fromEntries([['fl',-1,L],['fr',1,L],['rl',-1,-L],['rr',1,-L]].map(([id,s,z])=>[id,[s*(z>0?t:rearTrack),R,z]]));
+ const wheels=Object.fromEntries([['fl',-1,L],['fr',1,L],['rl',-1,-L],['rr',1,-L]].map(([id,s,z])=>[id,[s*(z>0?t:rearTrack),R+(z<0?d.rearWheelRadiusDelta:0),z]]));
  // Competition splash guards hang behind the physical tire centers.
  // Keep their visual mesh independent of tire clearance and attachment joints.
  if(canopy.rallyMudflaps>.005)for(const [id,[x,y,z]] of Object.entries(wheels)){
@@ -1394,10 +1402,17 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   flap.userData.constructionRole='rally mudflap';
   put(rear?'rearFenders':'frontFenders','rubber',flap,[x,top-drop*.5,z-R-.047]);
  }
+ if(g.body.openWheelShell){
+  for(const part of parts.splice(0))part.geometry.dispose();
+  // Open-wheel shells do not emit any donor panel, arch or headlamp part.
+  // Runtime wheels and mount metadata remain on their normal code path.
+  features.length=0;seamChecks.length=0;joins.length=0;
+  buildOpenWheelVintage({g,put,dims,quality,compact});
+ }else if(g.body.vintageBlower)buildVintageBlower({g,put,dims});
  const wp=[];buildWheels(g,{quality,compact,emit:(k,m,geo,p,r)=>addModelPart(wp,k,m,geo,p,r)});
  const rearWp=staggered?[]:null;
  if(rearWp)buildWheels(g,{quality,compact,rear:true,emit:(k,m,geo,p,r)=>addModelPart(rearWp,k,m,geo,p,r)});
- const floorContact=Math.min(...Object.values(wheels).map(v=>v[1]-R));
+ const floorContact=Math.min(...Object.values(wheels).map(v=>v[1]-R-(v[2]<0?d.rearWheelRadiusDelta:0)));
  for(const part of [...parts,...wp,...(rearWp??[])]){
   const {geometry,component}=part,a=geometry.attributes.position;
   for(const v of a.array)if(!Number.isFinite(v)){issues.push('Nonfinite geometry in '+component);break;}

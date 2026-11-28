@@ -10854,5 +10854,903 @@
     ],
     "reference": "2012 UK/Europe Jaguar XKR-S Coupe5.0supercharged6AT;notConvertible,GTorXFR-S",
     "canonicalLampSides": true
+  },
+  {
+    "id": "aston-martin-vanquish-v12-uk-2001",
+    "label": "Spiny Restharrow 2001",
+    "capability": "2001 original V12 Vanquish soft round shoulders, smaller grille and shallow integral deck",
+    "carId": "3d-spiny-restharrow-2001-3d-00882861fc8c",
+    "bodyRef": "Spiny Restharrow 2001 Body",
+    "wheelRef": "Spiny Restharrow 2001 Wheel",
+    "radius": 0.3433,
+    "axles": [
+      {
+        "track": 1.5722600221633911,
+        "y": 0.3433000147342682,
+        "z": 1.3450000286102295
+      },
+      {
+        "track": 1.5849599838256836,
+        "y": 0.3433000147342682,
+        "z": -1.3450000286102295
+      }
+    ],
+    "reference": "2001 UK Aston Martin original Vanquish 5.935 V12 ASM coupe"
+  },
+  {
+    "id": "aston-martin-v12-vantage-s-uk-2013",
+    "label": "Yellow Vetchling 2013",
+    "capability": "V12 Vantage S short hood vents and compact carbon inset nose",
+    "carId": "3d-yellow-vetchling-2013-3d-635e2afb300d",
+    "bodyRef": "Yellow-Vetchling-2013",
+    "wheelRef": "Yellow-Vetchling-2013-Wheel",
+    "radius": 0.33055,
+    "axles": [
+      {
+        "track": 1.5700000524520874,
+        "y": 0.3305499851703644,
+        "z": 1.2740000486373901
+      },
+      {
+        "track": 1.5750000476837158,
+        "y": 0.3301500082015991,
+        "z": -1.3259999752044678
+      }
+    ],
+    "reference": "2013 UK Aston Martin V12 Vantage S launch Sportshift coupe"
+  },
+  {
+    "id": "aston-martin-vulcan-2016",
+    "label": "Yellow Vetchling 2016",
+    "capability": "stock Vulcan narrow headlights, single plane wing and side exit exhaust",
+    "carId": "3d-yellow-vetchling-2016-3d-d396a7a9ed8d",
+    "bodyRef": "Yellow-Vetchling-2016-body",
+    "wheelRef": "Yellow-Vetchling-2016-wheel",
+    "radius": 0.3328,
+    "axles": [
+      {
+        "track": 1.6891000270843506,
+        "y": 0.3328000009059906,
+        "z": 1.434499979019165
+      },
+      {
+        "track": 1.67385995388031,
+        "y": 0.3328000009059906,
+        "z": -1.3565000295639038
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.8445500135421753,
+            0.3328000009059906,
+            -1.434499979019165
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.8445500135421753,
+            0.3328000009059906,
+            -1.434499979019165
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.836929976940155,
+            0.3328000009059906,
+            1.3565000295639038
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.836929976940155,
+            0.3328000009059906,
+            1.3565000295639038
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6949999928474426,
+            0.5699999928474426,
+            -2.499500036239624
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6949999928474426,
+            0.5699999928474426,
+            -2.499500036239624
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.7450000047683716,
+            0.5370000004768372,
+            2.508500099182129
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.7450000047683716,
+            0.5370000004768372,
+            2.508500099182129
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "2016 Aston Martin original customer Vulcan 7.0 track coupe"
+  },
+  {
+    "reference": "2003 mainland-US Toyota Camry LE four-cylinder 2.4-liter, optional four-speed ECT-i automatic, standard P205/65R15 tires. Stock family sedan, not SE, XLE, V6, Solara, Accord, or an individual historic chassis.",
+    "canonicalLampSides": true,
+    "stockWheelPositions": {
+      "FR": [
+        0.7721598744392395,
+        0.32374998927116394,
+        1.3601701259613037
+      ],
+      "FL": [
+        -0.7721601128578186,
+        0.32374998927116394,
+        1.3601698875427246
+      ],
+      "RR": [
+        0.7670801281929016,
+        0.32374998927116394,
+        -1.3601698875427246
+      ],
+      "RL": [
+        -0.7670798897743225,
+        0.32374998927116394,
+        -1.3601701259613037
+      ]
+    },
+    "id": "toyota-camry-le-2003",
+    "label": "Marjoram 2003",
+    "capability": "Mid-size XV30 pre-facelift four-door with full arch and body-color sedan trim",
+    "carId": "3d-marjoram-2003-3d-18795e41dbb7",
+    "bodyRef": "Marjoram 2003 Body",
+    "wheelRef": "Marjoram 2003 Wheel",
+    "radius": 0.32375,
+    "axles": [
+      {
+        "track": 1.544319987297058,
+        "y": 0.32374998927116394,
+        "z": 1.3601700067520142
+      },
+      {
+        "track": 1.5341600179672241,
+        "y": 0.32374998927116394,
+        "z": -1.3601700067520142
+      }
+    ]
+  },
+  {
+    "reference": "Mainland-US 2003 Toyota ECHO four-door sedan, standard five-speed manual, ordinary base equipment; not two-door, automatic, hatchback, Scion xB or GR Yaris.",
+    "canonicalLampSides": true,
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.5630000233650208,
+            0.5419999957084656,
+            -2.1466400623321533
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.5630000233650208,
+            0.5419999957084656,
+            -2.1466400623321533
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6579999923706055,
+            0.6840000152587891,
+            2.1376399993896484
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6579999923706055,
+            0.6840000152587891,
+            2.1376399993896484
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7226300239562988,
+            0.29155001044273376,
+            -1.231909990310669
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7226300239562988,
+            0.29155001044273376,
+            -1.231909990310669
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7099300026893616,
+            0.29155001044273376,
+            1.137910008430481
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7099300026893616,
+            0.29155001044273376,
+            1.137910008430481
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "id": "toyota-echo-sedan-2003",
+    "label": "Tutsan 2003",
+    "capability": "Tall narrow facelift four-door sedan, centered original dashboard instruments and short 14-inch tires",
+    "carId": "3d-tutsan-2003-3d-57b304743d81",
+    "bodyRef": "Tutsan-2003-body",
+    "wheelRef": "Tutsan-2003-wheel",
+    "radius": 0.29155,
+    "axles": [
+      {
+        "track": 1.4452600479125977,
+        "y": 0.29155001044273376,
+        "z": 1.231909990310669
+      },
+      {
+        "track": 1.4198600053787231,
+        "y": 0.29155001044273376,
+        "z": -1.137910008430481
+      }
+    ]
+  },
+  {
+    "reference": "2012 United States Toyota Yaris, L third-generationXP130 THREE-door liftback5MT,1NZ-FEgasoline,15-inchsteel wheels; notfive-doorLautomatic,SE,hybrid orGR",
+    "canonicalLampSides": true,
+    "stockWheelPositions": {
+      "FR": [
+        0.742949903011322,
+        0.30425000190734863,
+        1.2547601461410522
+      ],
+      "FL": [
+        -0.7429501414299011,
+        0.30425000190734863,
+        1.2547599077224731
+      ],
+      "RR": [
+        0.7353301048278809,
+        0.30425000190734863,
+        -1.2547599077224731
+      ],
+      "RL": [
+        -0.7353298664093018,
+        0.30425000190734863,
+        -1.2547601461410522
+      ]
+    },
+    "id": "toyota-yaris-l-2012",
+    "label": "Strawberry Trefoil 2012",
+    "capability": "Third-generation short three-door liftback, longer front doors and rear corner lamps",
+    "carId": "3d-strawberry-trefoil-2012-3d-b3e18bacb6f5",
+    "bodyRef": "Strawberry Trefoil 2012 Body",
+    "wheelRef": "Strawberry Trefoil 2012 Wheel",
+    "radius": 0.30425,
+    "axles": [
+      {
+        "track": 1.4859000444412231,
+        "y": 0.30425000190734863,
+        "z": 1.2547600269317627
+      },
+      {
+        "track": 1.4706599712371826,
+        "y": 0.30425000190734863,
+        "z": -1.2547600269317627
+      }
+    ]
+  },
+  {
+    "id": "bentley-blower-gh6951-1930",
+    "label": "Alsike Clover 1930",
+    "carId": "3d-alsike-clover-1930-3d-88aa6f83b5ac",
+    "capability": "1930 Bentley 4½ Litre Supercharged Blower, roadgoingVandenPlas openfour-seat tourer,GH6951heritagereference; notBirkin220bhpracer ormoderncontinuation",
+    "bodyRef": "Alsike-Clover-1930-body",
+    "wheelRef": "Alsike-Clover-1930-wheel",
+    "radius": 0.41469999999999996,
+    "axles": [
+      {
+        "track": 1.3842999935150146,
+        "y": 0.4147000014781952,
+        "z": 1.6720000505447388
+      },
+      {
+        "track": 1.3842999935150146,
+        "y": 0.4147000014781952,
+        "z": -1.6299999952316284
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.5519999861717224,
+            0.8230000138282776,
+            -2.2939999103546143
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.5519999861717224,
+            0.8230000138282776,
+            -2.2939999103546143
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6140000224113464,
+            0.5460000038146973,
+            2.2709999084472656
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6140000224113464,
+            0.5460000038146973,
+            2.2709999084472656
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.6921499967575073,
+            0.4147000014781952,
+            -1.6720000505447388
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.6921499967575073,
+            0.4147000014781952,
+            -1.6720000505447388
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.6921499967575073,
+            0.4147000014781952,
+            1.6299999952316284
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.6921499967575073,
+            0.4147000014781952,
+            1.6299999952316284
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "https://www.vintagebentleys.org/carpages/gh6951.php"
+  },
+  {
+    "id": "mercedes-w154-m163-1939",
+    "label": "Fenugreek 1939",
+    "carId": "3d-fenugreek-1939-3d-4891ff203e8f",
+    "capability": "1939 Mercedes-Benz W154 GrandPrix M1633.0V12 two-stageRoots supercharged RWD5MT; not1938M154,recordstreamliner,hillclimb45Ltank orW165",
+    "bodyRef": "fenugreek-finished",
+    "wheelRef": "fenugreek-wheel",
+    "radius": 0.36729999999999996,
+    "axles": [
+      {
+        "track": 1.475000023841858,
+        "y": 0.3671500086784363,
+        "z": 1.419600009918213
+      },
+      {
+        "track": 1.4119999408721924,
+        "y": 0.4024139940738678,
+        "z": -1.3104000091552734
+      }
+    ],
+    "reference": "https://media.mercedes-benz.com/en/article/f9a48175-8964-490e-9909-9f35cbea8a6f"
+  },
+  {
+    "id": "jaguar-c-type-le-mans-1953",
+    "label": "Slender Birdsfoot 1953",
+    "carId": "3d-slender-birdsfoot-1953-3d-9f7ce1395604",
+    "capability": "1953 Jaguar C-type, 1953 works Le Mans specification 3.4 triple-Weber disc-brake competition roadster; not SU/drum customer XKC045 or modern continuation",
+    "bodyRef": "Slender-Birdsfoot",
+    "wheelRef": "Slender-Birdsfoot-Wheel",
+    "radius": 0.35119999999999996,
+    "axles": [
+      {
+        "track": 1.2954000234603882,
+        "y": 0.35120001435279846,
+        "z": 1.218999981880188
+      },
+      {
+        "track": 1.2954000234603882,
+        "y": 0.3506830036640167,
+        "z": -1.218999981880188
+      }
+    ],
+    "reference": "https://media.jlr.com/archive-jaguar/en-us/image-packs/photo-credit-cjdhtjaguar-c-type-heritage-images"
+  },
+  {
+    "id": "nissan-sentra-s-2024",
+    "label": "2024 Sentinel Sedan",
+    "capability": "Facelift V-motion nose and 16-inch covered steel wheels, four-door sedan",
+    "carId": "3d-2024-sentinel-sedan-3d-1d4cb9e4c22b",
+    "bodyRef": "2024 Sentinel Sedan Body",
+    "wheelRef": "Sentinel Sedan Wheel",
+    "radius": 0.3262,
+    "axles": [
+      {
+        "track": 1.587499976158142,
+        "y": 0.326200008392334,
+        "z": 1.3538199663162231
+      },
+      {
+        "track": 1.5849599838256836,
+        "y": 0.326200008392334,
+        "z": -1.3538199663162231
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2024 US Nissan Sentra S 2.0 Xtronic CVT",
+    "stockWheelPositions": {
+      "FL": [
+        -0.7937501072883606,
+        0.326200008392334,
+        1.3538198471069336
+      ],
+      "FR": [
+        0.7937498688697815,
+        0.326200008392334,
+        1.3538200855255127
+      ],
+      "RL": [
+        -0.7924798727035522,
+        0.326200008392334,
+        -1.3538200855255127
+      ],
+      "RR": [
+        0.7924801111221313,
+        0.326200008392334,
+        -1.3538198471069336
+      ]
+    }
+  },
+  {
+    "id": "nissan-versa-s-n17-2012",
+    "label": "Bighead Clover 2012",
+    "capability": "Tall softened 4-door sedan, oval halogen housings and 15-inch full covers",
+    "carId": "3d-bighead-clover-2012-3d-be5efe94b03f",
+    "bodyRef": "Bighead Clover 2012 Body",
+    "wheelRef": "Bighead Clover 2012 Wheel",
+    "radius": 0.31074999999999997,
+    "axles": [
+      {
+        "track": 1.4808199405670166,
+        "y": 0.31075000762939453,
+        "z": 1.3004800081253052
+      },
+      {
+        "track": 1.4859000444412231,
+        "y": 0.31075000762939453,
+        "z": -1.3004800081253052
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2012 US Nissan Versa Sedan 1.6 S N17 five-speed manual",
+    "stockWheelPositions": {
+      "FL": [
+        -0.7404100894927979,
+        0.31075000762939453,
+        1.3004798889160156
+      ],
+      "FR": [
+        0.7404098510742188,
+        0.31075000762939453,
+        1.3004801273345947
+      ],
+      "RL": [
+        -0.742949903011322,
+        0.31075000762939453,
+        -1.3004801273345947
+      ],
+      "RR": [
+        0.7429501414299011,
+        0.31075000762939453,
+        -1.3004798889160156
+      ]
+    }
+  },
+  {
+    "id": "nissan-altima-coupe-25s-2008",
+    "label": "Coast Clover 2008",
+    "capability": "Long hood and low 2-door roof, first-year fascia and 16-inch full covers",
+    "carId": "3d-coast-clover-2008-3d-762743e604bd",
+    "bodyRef": "Coast-Clover-2008-finished",
+    "wheelRef": "Coast-Clover-2008-wheel",
+    "radius": 0.3322,
+    "axles": [
+      {
+        "track": 1.549399971961975,
+        "y": 0.33219999074935913,
+        "z": 1.3373099565505981
+      },
+      {
+        "track": 1.549399971961975,
+        "y": 0.3328700065612793,
+        "z": -1.3373099565505981
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2008 US Nissan Altima Coupe Federal 2.5 S six-speed manual"
+  },
+  {
+    "id": "bentley-bentayga-w12-2016",
+    "label": "Dog Violet 2016",
+    "capability": "2016 original W12 Bentayga five-seat SUV, twin round housing pairs and upright mesh",
+    "carId": "3d-dog-violet-2016-3d-9be67f85f594",
+    "bodyRef": "Dog-Violet-2016-body",
+    "wheelRef": "Dog-Violet-2016-wheel",
+    "radius": 0.3915,
+    "axles": [
+      {
+        "track": 1.686560034751892,
+        "y": 0.39149999618530273,
+        "z": 1.5759999752044678
+      },
+      {
+        "track": 1.70687997341156,
+        "y": 0.39149999618530273,
+        "z": -1.4160000085830688
+      }
+    ],
+    "reference": "2016UK BentleyBentayga originalfive-seat5.950LW12 twin-turbo8AT permanentAWD;notSpeed,V8,DieselorHybrid",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.7350000143051147,
+            0.8560000061988831,
+            -2.621999979019165
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.7350000143051147,
+            0.8560000061988831,
+            -2.621999979019165
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6330000162124634,
+            0.9599999785423279,
+            2.627999782562256
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6330000162124634,
+            0.9599999785423279,
+            2.627999782562256
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.843280017375946,
+            0.39149999618530273,
+            -1.5759999752044678
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.843280017375946,
+            0.39149999618530273,
+            -1.5759999752044678
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.85343998670578,
+            0.39149999618530273,
+            1.4160000085830688
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.85343998670578,
+            0.39149999618530273,
+            1.4160000085830688
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "bentley-continental-supersports-2017",
+    "label": "Pale Clover 2017",
+    "capability": "2017 second-generation Supersports coupe, dark aero lower fascia, twin bonnet vents and steel roof",
+    "carId": "3d-pale-clover-2017-3d-739f61bcabfc",
+    "bodyRef": "Pale Clover 2017 Body",
+    "wheelRef": "Pale Clover 2017 Wheel",
+    "radius": 0.36295,
+    "axles": [
+      {
+        "track": 1.6611599922180176,
+        "y": 0.36294999718666077,
+        "z": 1.3730000257492065
+      },
+      {
+        "track": 1.6611599922180176,
+        "y": 0.36294999718666077,
+        "z": -1.3730000257492065
+      }
+    ],
+    "reference": "2017 Bentley Continental Supersports, second-generation W12 coupe permanentAWD ZF8AT,standardsteelroof;notConvertible,2009modelor2027V8",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "bentley-flying-spur-v8-2021",
+    "label": "Sulphur Clover 2021",
+    "capability": "2021 third-generation Flying Spur V8 long luxury five-seat body, quad optics and four outlets",
+    "carId": "3d-sulphur-clover-2021-3d-16a9c3d36a0a",
+    "bodyRef": "Sulphur-Clover-2021-finished",
+    "wheelRef": "Sulphur-Clover-2021-wheel",
+    "radius": 0.37324999999999997,
+    "axles": [
+      {
+        "track": 1.67385995388031,
+        "y": 0.37325000762939453,
+        "z": 1.597000002861023
+      },
+      {
+        "track": 1.6611599922180176,
+        "y": 0.37307798862457275,
+        "z": -1.597000002861023
+      }
+    ],
+    "reference": "2021 Bentley Flying Spur, third-generation V8 standard five-seat AWD eight-speed DCT luxury sedan,4.0 twin turbo;notW12,hybrid,MullinerorSpeed",
+    "canonicalLampSides": true
   }
 ]

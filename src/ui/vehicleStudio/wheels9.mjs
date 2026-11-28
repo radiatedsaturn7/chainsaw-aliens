@@ -175,7 +175,7 @@ export function buildWheels(g,{quality='preview',compact=0,emit,rear=false}={}){
  const put=(k,m,x)=>{if(emit)emit(k,m,x);else out.push({component:k,material:m,geometry:x});};
  const {diameter}=g.dimensions;
  const {tireWidth,rimRatio}=rear?rearWheelDimensions(g.dimensions):g.dimensions;
- const r=diameter/2,c=tireWidth/2,w=g.components.wheels,t=g.components.tires;
+ const r=diameter/2+(rear?(g.dimensions.rearWheelRadiusDelta??0):0),c=tireWidth/2,w=g.components.wheels,t=g.components.tires;
  const detail=quality==='export'||quality==='preview'||quality==='garage';
  const low=quality==='opponent'||quality==='lod'||compact>0;
  const n=compact?[0,20,20,16][compact]:detail?24:low?16:20,innerN=compact?[0,12,10,9][compact]:detail?20:low?12:16;
@@ -276,7 +276,11 @@ export function buildWheels(g,{quality='preview',compact=0,emit,rear=false}={}){
   [disk*.417,rotorX+panel*.28],[0,rotorX+panel*.28]
  ];
  const rotor=lathe(compact?rotorProfile.filter((p,i)=>[1,2,3,6,7].includes(i)):rotorProfile,innerN);
- put('wheels','rotor',radial(rotor,disk));
+ put('wheels',g.body.periodBrakeDrums?'barrel':'rotor',radial(rotor,disk));
+ if(g.body.periodBrakeDrums){
+  const drum=[[disk*.98,rotorX-.012],[disk*.98,rotorX+.007],[disk*.92,rotorX+.019],[disk*.29,rotorX+.025],[0,rotorX+.026]];
+  put('wheels','barrel',lathe(drum,innerN));return out;
+ }
  const cal=caliper(disk,Math.min(c*1.02,panel*3.12),low);cal.translate(rotorX+.008,0,0);
  put('wheels','caliper',cal);
  return out;
