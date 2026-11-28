@@ -109,4 +109,18 @@ export function buildUtilityBumper({put,dims,cfg}){
    put(s===1?'frontBumper':'rearBumper','trim',cap);
   }
  }
+ const guard=cfg.utilityBrushGuard;
+ if(!guard)return;
+ const start=floor+h*.52+.030,z=Lf+.057,top=start+guard*.62;
+ const spanX=X*.68,barRadius=.025;
+ // The two loops meet the separate front beam and leave the original
+ // radiator and active headlamp housings unmodified.
+ for(const side of [-1,1]){
+  const points=[[side*X*.41,start,z],[side*X*.44,start+.19,z+.057],
+   [side*X*.44,top-.04,z+.055],[side*X*.37,top,z+.045]];
+  for(let i=1;i<points.length;i++)tube(put,'frontBumper','chrome',points[i-1],points[i],barRadius,barRadius,6);
+ }
+ for(const y of [start+.09,top-.065]){
+  tube(put,'frontBumper','chrome',[-spanX,y,z+.027],[spanX,y,z+.027],barRadius,barRadius,6);
+ }
 }

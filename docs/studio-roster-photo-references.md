@@ -791,3 +791,24 @@ The Suzuki Carry study is withheld: the original game model's 2.10 m
 wheel mount span differs from its 1.855 m wheelbase and did not align in a
 live drive. The experimental Mazda Furai is withheld for nose/canopy
 fidelity despite passing runtime checks. Neither counts as a conversion.
+
+### Full-roster rollout, Dodge, Honda utilities, Infiniti/Acura, and Mercedes utilities
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Cornsalad 2005 | US Dodge Neon SE naturally aspirated four-door 5MT, not SXT/SRT4. [Factory specifications](https://s3.amazonaws.com/chryslermedia.iconicweb.com/mediasite/specs/2005NeonSpecs.pdf); [US brochure](https://xr793.com/wp-content/uploads/2016/11/2005-Dodge-Neon.pdf). |
+| Firethorn Turbo 2005 | US Dodge SRT-4 standard four-door turbo manual, not ACR. [US factory brochure](https://www.auto-brochures.com/makes/Dodge/Neon/Dodge_US%20Neon_2005-SRT4.pdf); [period trim angles](https://www.groovecar.com/research/2005/dodge/neon-srt-4/4dr-turbo-sedan/). |
+| Arrowleaf GT 2013 | US Dodge Dart GT 2.4 Multiair 6MT, not SXT. [Dodge launch](https://www.prnewswire.com/news-releases/new-2013-dodge-dart-gt-model-to-debut-at-north-american-international-auto-show-186012022.html); [manufacturer views](https://www.caricos.com/cars/d/dodge/2013_dodge_dart_gt/). |
+| Meadow Trefoil 2002 | US Honda CR-V EX Real Time 4WD 2.4 five-speed, not LX/automatic. [Honda introduction and gallery](https://hondanews.com/en-US/releases/release-c9b5bc245f997c654b7dcf004c34c80a-2002-honda-cr-v-introduction). |
+| Pink Trefoil 2003 | US Honda Pilot LX VTM-4 eight seats, styled steel wheels. [Honda specifications](https://hondanews.com/en-US/releases/release-1fb14ca9294ff6735e8e81004c34c71e-2003-honda-pilot-specifications); [period body angles](https://www.consumerreports.org/cars/honda/pilot/2003/photos-and-video/). |
+| Island Clover 2006 | US Honda Ridgeline RT, first-generation VTM-4 five-speed automatic. [Honda launch equipment](https://hondanews.com/en-US/honda-automobiles/releases/release-6b5f4c2fc8de8c77c9c6fc004c34c28f-2006-honda-ridgeline-overview). |
+| Corn Gromwell 2003 | US Infiniti G35 Sport Coupe rear-drive six-speed, not later Rev-Up. [Period multi-angle test](https://www.caranddriver.com/photos/g34585710/tested-2003-infiniti-g35-coupe-gallery/). |
+| Elm Clover 2003 | US Infiniti M45 Y34 base 4.5 V8, no optional packages. [Original brochure](https://www.centuryu.com/uploads/1/4/4/6/144698822/2003_m45.pdf); [period exterior gallery](https://www.carsinvasion.com/infiniti/2003-m45/). |
+| Broadleaf Trefoil 2004 | US Acura TSX 2.4 six-speed without navigation, 17-inch standard seven spokes. [Acura launch](https://acuranews.com/en-US/releases/release-a5f8332c8f3611c3080cca004c34c61b-2004-acura-tsx-introduction). |
+| Boysenberry Clover 2010 | US Mercedes-Benz W463 G550 naturally aspirated five-door, not G55. [Factory brochure](https://www.auto-brochures.com/makes/Mercedes_Benz/G-Class/Mercedes%20Benz_US%20G-Class_2010.pdf). |
+| Cedar Clover 2010 | US Mercedes-Benz GLK350 X204 RWD standard, not 4MATIC/AMG. [Factory US brochure](https://autocatalogarchive.com/wp-content/uploads/2017/08/Mercedes-GLK-2010-USA.pdf); [RWD exterior views](https://www.jdpower.com/cars/2010/mercedes-benz/glk-class/utility-4d-glk350-2wd/exterior-photos). |
+| Dogwood Clover 2008 | US Mercedes-Benz R350 W251 long-wheelbase 2WD standard six-seat layout. [Factory SUV range brochure](https://w124performance.com/docs/mb/brochures/2008_brochures/2008_SUV-lineup.pdf). |
+
+The Senna, 720S, and Agera design experiments are withheld from this
+release. Their roof and upper bumper-to-fender transitions do not match
+closely enough even with a prototype two-stage headlight/duct opening.

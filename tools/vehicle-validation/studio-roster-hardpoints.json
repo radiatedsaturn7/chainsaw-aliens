@@ -13745,5 +13745,462 @@
     ],
     "reference": "2011 US Mazda RX-8 Sport 6MT, 232 hp Renesis, Series II, not R3",
     "canonicalLampSides": true
+  },
+  {
+    "reference": "2005 US Dodge Neon SE four-door sedan, standard five-speed manual, naturally aspirated 1995cc SOHC16v, front-wheel drive. No SXT, SRT4, SRT Design, sport package or optional ABS. Original fictional Cornsalad 2005.",
+    "canonicalLampSides": true,
+    "stockWheelPositions": {
+      "FR": [
+        0.7369998693466187,
+        0.3003000020980835,
+        1.3335001468658447
+      ],
+      "FL": [
+        -0.7370001077651978,
+        0.3003000020980835,
+        1.3334999084472656
+      ],
+      "RR": [
+        0.736000120639801,
+        0.3003000020980835,
+        -1.3334999084472656
+      ],
+      "RL": [
+        -0.7359998822212219,
+        0.3003000020980835,
+        -1.3335001468658447
+      ]
+    },
+    "id": "dodge-neon-se-2005",
+    "label": "Cornsalad 2005",
+    "capability": "Base manual economy sedan: oval reflectors, no spoiler, factory steel covers",
+    "carId": "3d-cornsalad-2005-3d-6d3f680f4f93",
+    "bodyRef": "Cornsalad 2005 Body",
+    "wheelRef": "Cornsalad 2005 Wheel",
+    "radius": 0.3003,
+    "axles": [
+      {
+        "track": 1.4739999771118164,
+        "y": 0.3003000020980835,
+        "z": 1.3335000276565552
+      },
+      {
+        "track": 1.472000002861023,
+        "y": 0.3003000020980835,
+        "z": -1.3335000276565552
+      }
+    ]
+  },
+  {
+    "reference": "2005 US Dodge Neon SRT-4 base 2.4T five-speed, excluding ACR and SRT Design",
+    "canonicalLampSides": true,
+    "stockWheelPositions": {
+      "FR": [
+        0.7369999885559082,
+        0.31839999556541443,
+        1.3335000276565552
+      ],
+      "FL": [
+        -0.7369999885559082,
+        0.31839999556541443,
+        1.3335000276565552
+      ],
+      "RR": [
+        0.7379999756813049,
+        0.31839999556541443,
+        -1.3335000276565552
+      ],
+      "RL": [
+        -0.7379999756813049,
+        0.31839999556541443,
+        -1.3335000276565552
+      ]
+    },
+    "id": "dodge-neon-srt4-2005",
+    "label": "Firethorn Turbo 2005",
+    "capability": "SRT-4 performance fascia, scoop, wing, five-spoke alloys and dual outlets",
+    "carId": "3d-firethorn-turbo-2005-3d-4f616c83ad52",
+    "bodyRef": "Firethorn Turbo 2005 Body",
+    "wheelRef": "Firethorn Turbo 2005 Wheel",
+    "radius": 0.3184,
+    "axles": [
+      {
+        "track": 1.4739999771118164,
+        "y": 0.31839999556541443,
+        "z": 1.3335000276565552
+      },
+      {
+        "track": 1.4759999513626099,
+        "y": 0.31839999556541443,
+        "z": -1.3335000276565552
+      }
+    ]
+  },
+  {
+    "reference": "2013 US Dodge Dart GT, 2.4L Tigershark MultiAir2, six-speed manual sedan; not SE/SXT, proposed R/T or optional automatic",
+    "canonicalLampSides": true,
+    "stockWheelPositions": {
+      "FR": [
+        0.7835900187492371,
+        0.31859999895095825,
+        1.053998351097107
+      ],
+      "FL": [
+        -0.7835900187492371,
+        0.31859999895095825,
+        1.053998351097107
+      ],
+      "RR": [
+        0.7823200225830078,
+        0.319350004196167,
+        -1.6485615968704224
+      ],
+      "RL": [
+        -0.7823200225830078,
+        0.319350004196167,
+        -1.6485615968704224
+      ]
+    },
+    "id": "dodge-dart-gt-2013",
+    "label": "Arrowleaf GT 2013",
+    "capability": "Dart GT smoked projectors, racetrack lights and dual rear outlets",
+    "carId": "3d-arrowleaf-gt-2013-3d-f66d71b8a2eb",
+    "bodyRef": "Arrowleaf-GT",
+    "wheelRef": "Arrowleaf-GT-Wheel",
+    "radius": 0.3186,
+    "axles": [
+      {
+        "track": 1.5671800374984741,
+        "y": 0.31859999895095825,
+        "z": 1.053998351097107
+      },
+      {
+        "track": 1.5646400451660156,
+        "y": 0.319350004196167,
+        "z": -1.6485615968704224
+      }
+    ]
+  },
+  {
+    "id": "honda-crv-ex-2002",
+    "label": "Meadow Trefoil 2002",
+    "carId": "3d-meadow-trefoil-2002-3d-452b4ac48d7e",
+    "capability": "2002 United States Honda CR-V, EX Real Time 4WD 2.4 gasoline five-speed manual, standard 15-inch alloy wheels; not LX, automatic or later generation",
+    "bodyRef": "Meadow Trefoil 2002 Body",
+    "wheelRef": "Meadow Trefoil 2002 Wheel",
+    "radius": 0.33399999999999996,
+    "axles": [
+      {
+        "track": 1.5341600179672241,
+        "y": 0.33399999141693115,
+        "z": 1.309999942779541
+      },
+      {
+        "track": 1.5392400026321411,
+        "y": 0.33399999141693115,
+        "z": -1.309999942779541
+      }
+    ],
+    "reference": "https://hondanews.com/en-US/releases/release-c9b5bc245f997c654b7dcf004c34c80a-2002-honda-cr-v-introduction"
+  },
+  {
+    "id": "honda-pilot-lx-2003",
+    "label": "Pink Trefoil 2003",
+    "carId": "3d-pink-trefoil-2003-3d-a8dc5a250495",
+    "capability": "2003 United States Honda Pilot, LX VTM-4 3.5 V6 five-speed automatic, eight seats, standard steel wheels; not EX or later generation",
+    "bodyRef": "Pink-Trefoil-2003-body",
+    "wheelRef": "Pink-Trefoil-2003-wheel",
+    "radius": 0.3677,
+    "axles": [
+      {
+        "track": 1.6840200424194336,
+        "y": 0.3677000105381012,
+        "z": 1.4330099821090698
+      },
+      {
+        "track": 1.6891000270843506,
+        "y": 0.3677000105381012,
+        "z": -1.267009973526001
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6909999847412109,
+            0.628000020980835,
+            -2.470599889755249
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6909999847412109,
+            0.628000020980835,
+            -2.470599889755249
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.8339999914169312,
+            0.9200000166893005,
+            2.466599941253662
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.8339999914169312,
+            0.9200000166893005,
+            2.466599941253662
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.8420100212097168,
+            0.3677000105381012,
+            -1.4330099821090698
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.8420100212097168,
+            0.3677000105381012,
+            -1.4330099821090698
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.8445500135421753,
+            0.3677000105381012,
+            1.267009973526001
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.8445500135421753,
+            0.3677000105381012,
+            1.267009973526001
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "https://hondanews.com/en-US/releases/release-1fb14ca9294ff6735e8e81004c34c71e-2003-honda-pilot-specifications"
+  },
+  {
+    "id": "honda-ridgeline-rt-2006",
+    "label": "Island Clover 2006",
+    "carId": "3d-island-clover-2006-3d-0262c78b8ed6",
+    "capability": "2006 United States Honda Ridgeline, RT first-generation3.5V6 VTM-4 five-speed automatic crew-cab pickup, standard steel wheels/covers; no accessories or moonroof",
+    "bodyRef": "Island-Clover-2006-finished",
+    "wheelRef": "Island-Clover-2006-wheel",
+    "radius": 0.37515,
+    "axles": [
+      {
+        "track": 1.7043399810791016,
+        "y": 0.37514999508857727,
+        "z": 1.549399971961975
+      },
+      {
+        "track": 1.6992599964141846,
+        "y": 0.37569499015808105,
+        "z": -1.549399971961975
+      }
+    ],
+    "reference": "https://hondanews.com/en-US/honda-automobiles/releases/release-6b5f4c2fc8de8c77c9c6fc004c34c28f-2006-honda-ridgeline-overview"
+  },
+  {
+    "id": "infiniti-g35-sport-coupe-2003",
+    "label": "Corn Gromwell 2003",
+    "capability": "Low long-door coupe, swept lens and raked rear glass, 18-in seven spokes and staggered tire widths",
+    "carId": "3d-corn-gromwell-2003-3d-b86cc320b859",
+    "bodyRef": "Corn Gromwell 2003 Body",
+    "wheelRef": "Corn Gromwell 2003 Wheel",
+    "radius": 0.32985,
+    "axles": [
+      {
+        "track": 1.5392400026321411,
+        "y": 0.3298499882221222,
+        "z": 1.4249999523162842
+      },
+      {
+        "track": 1.549399971961975,
+        "y": 0.3298499882221222,
+        "z": -1.4249999523162842
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2003 US Infiniti G35 Sport Coupe 6MT"
+  },
+  {
+    "id": "infiniti-m45-y34-2003",
+    "label": "Elm Clover 2003",
+    "capability": "Long first-generation formal sedan with rectangular lamp surround, bright horizontal grille and 18-in multi spokes",
+    "carId": "3d-elm-clover-2003-3d-d82dc04ae2a3",
+    "bodyRef": "Elm-Clover-2003-finished",
+    "wheelRef": "Elm-Clover-2003-wheel",
+    "radius": 0.33435,
+    "axles": [
+      {
+        "track": 1.5189199447631836,
+        "y": 0.33434998989105225,
+        "z": 1.3995399475097656
+      },
+      {
+        "track": 1.5290800333023071,
+        "y": 0.3343049883842468,
+        "z": -1.3995399475097656
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2003 US Infiniti M45 Y34 V8 base 5AT"
+  },
+  {
+    "id": "acura-tsx-cl9-2004",
+    "label": "Broadleaf Trefoil 2004",
+    "capability": "Taut early Acura sports sedan profile, sharp shield grille, low HID-look lamp recesses and midrise roof",
+    "carId": "3d-broadleaf-trefoil-2004-3d-4802dfdac1dd",
+    "bodyRef": "Broadleaf-Trefoil-2004",
+    "wheelRef": "Broadleaf-Trefoil-2004-Wheel",
+    "radius": 0.32339999999999997,
+    "axles": [
+      {
+        "track": 1.5138399600982666,
+        "y": 0.32339999079704285,
+        "z": 1.3350000381469727
+      },
+      {
+        "track": 1.5138399600982666,
+        "y": 0.32339999079704285,
+        "z": -1.3350000381469727
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2004 US Acura TSX CL9 2.4 six-speed no navigation"
+  },
+  {
+    "id": "mercedes-g550-w463-2010",
+    "label": "Boysenberry Clover 2010",
+    "capability": "2010 US G550 long five-door with upright signed aperture, body-color hardtop and rear spare",
+    "carId": "3d-boysenberry-clover-2010-3d-00099999c684",
+    "bodyRef": "Boysenberry-Clover-2010",
+    "wheelRef": "Boysenberry-Clover-2010-Wheel",
+    "radius": 0.3876,
+    "axles": [
+      {
+        "track": 1.5138399600982666,
+        "y": 0.38760000467300415,
+        "z": 1.4249999523162842
+      },
+      {
+        "track": 1.5138399600982666,
+        "y": 0.38760000467300415,
+        "z": -1.4249999523162842
+      }
+    ],
+    "reference": "2010 United States Mercedes-Benz G550 W463 long-wheelbase five-door5.5 naturally aspirated gasolineV8 seven-speedautomatic permanent4WD high-range, standard18inch wheels; not superchargedG55AMG",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "mercedes-glk350-x204-2010",
+    "label": "Cedar Clover 2010",
+    "capability": "2010 US GLK350 X204 base RWD five-door, angular lights with roof rails and 19 inch wheels",
+    "carId": "3d-cedar-clover-2010-3d-961942bd487e",
+    "bodyRef": "Cedar-Clover-2010-finished",
+    "wheelRef": "Cedar-Clover-2010-wheel",
+    "radius": 0.3588,
+    "axles": [
+      {
+        "track": 1.5671800374984741,
+        "y": 0.3587999939918518,
+        "z": 1.3779499530792236
+      },
+      {
+        "track": 1.5748000144958496,
+        "y": 0.3586199879646301,
+        "z": -1.3779499530792236
+      }
+    ],
+    "reference": "2010 United States Mercedes-Benz GLK350 X204 baseRWD3.5gasolineV6 seven-speedautomatic,standard19-inchwheels,noPremiumorAppearancePackage;not4MATIC,diesel orAMG",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "mercedes-r350-w251-2008",
+    "label": "Dogwood Clover 2008",
+    "capability": "2008 US R350 2WD long W251 with six seats and swept early front, not 4Matic",
+    "carId": "3d-dogwood-clover-2008-3d-0e9537b25c84",
+    "bodyRef": "Dogwood-Clover-2008",
+    "wheelRef": "Dogwood-Clover-2008-Wheel",
+    "radius": 0.36885,
+    "axles": [
+      {
+        "track": 1.663699984550476,
+        "y": 0.3688499927520752,
+        "z": 1.6078200340270996
+      },
+      {
+        "track": 1.658619999885559,
+        "y": 0.3688499927520752,
+        "z": -1.6078200340270996
+      }
+    ],
+    "reference": "2008 United States Mercedes-Benz R350 W251 long-wheelbase 2WD rear-drive 3498cc naturally aspirated V6 seven-speed automatic, standard18-inch wheels, non-Airmatic; not R320CDI or4MATIC",
+    "canonicalLampSides": true
   }
 ]

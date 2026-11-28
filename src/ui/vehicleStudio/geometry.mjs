@@ -547,6 +547,23 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  else sheet('hood',hoodDesign.bonnetStripes?'bonnet-stripes':hoodDesign.contrastBonnet?'roofPaint':'paint',hoodStart,hoodEdge,hoodCover,hoodAlong,across);
  const trunkCover=(z,u)=>coverPoint(trunkPoint,trunkEdge,g.seams.trunkSeam,z,u);
  const bedEnd=cabinRear-G, pickupDepth=g.body.pickupBedDepth;
+ const emitPickupSails=(base,za,zb,tag,material)=>{
+  for(const s of [-1,1]){
+   const a=.5+s*.365,b=.5+s*.489;
+   const fore=bedEnd+.021,aft=mix(za,zb,.18);
+   const foot=(z,u)=>{const p=base(clamp(z,trunkEdge,bedEnd),u);p[1]-=.024;return p;};
+   const surf=(u,v)=>{
+    const z=mix(aft,fore,u),p=foot(z,mix(a,b,v)),rise=g.body.pickupSailRise*u**1.68;
+    p[1]+=rise*(.84+.16*Math.sin(Math.PI*v));
+    p[2]+=clamp(roofRear-bedEnd-.024,.04,.37)*u**3.8;
+    p[0]*=1-.138*u**2;
+    return p;
+   };
+   tag(material,patch(12,6,surf,s<0),'pickup molded sail buttress');
+   for(const [v,flip] of [[0,s<0],[1,s>0]])tag(material,patch(12,2,(u,h)=>lerp3(foot(mix(aft,fore,u),mix(a,b,v)),surf(u,v),h),flip),'pickup sail return');
+   tag(material,patch(1,6,(h,v)=>lerp3(foot(fore,mix(a,b,v)),surf(1,v),h),s>0),'pickup sail cab-facing backing');
+  }
+ };
  let pickupWellCeiling=null;
  if(g.body.pickupBedCover&&bedEnd-trunkEdge>.45){
   const za=trunkEdge+.071,zb=bedEnd-.046,span=zb-za,e=.075;
@@ -563,21 +580,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    tag('trim',patch(5,across,(u,v)=>sample(mix(a,b,u),mix(e,1-e,v))),'pickup cover removable leaf');
   }
   pickupWellCeiling=(z,x)=>z<za||z>zb?Infinity:sample(z,.5,true)[1]-.018;
-  if(g.body.pickupSailRise)for(const s of [-1,1]){
-   const a=.5+s*.365,b=.5+s*.489;
-   const fore=bedEnd+.021,aft=mix(za,zb,.18);
-   const foot=(z,u)=>{const p=base(clamp(z,trunkEdge,bedEnd),u);p[1]-=.024;return p;};
-   const surf=(u,v)=>{
-    const z=mix(aft,fore,u),p=foot(z,mix(a,b,v)),rise=g.body.pickupSailRise*u**1.68;
-    p[1]+=rise*(.84+.16*Math.sin(Math.PI*v));
-    p[2]+=clamp(roofRear-bedEnd-.024,.04,.37)*u**3.8;
-    p[0]*=1-.138*u**2;
-    return p;
-   };
-   tag('trim',patch(12,6,surf,s<0),'pickup molded sail buttress');
-   for(const [v,flip] of [[0,s<0],[1,s>0]])tag('trim',patch(12,2,(u,h)=>lerp3(foot(mix(aft,fore,u),mix(a,b,v)),surf(u,v),h),flip),'pickup sail return');
-   tag('trim',patch(1,6,(h,v)=>lerp3(foot(fore,mix(a,b,v)),surf(1,v),h),s>0),'pickup sail cab-facing backing');
-  }
+  if(g.body.pickupSailRise)emitPickupSails(base,za,zb,tag,'trim');
  }else if(pickupDepth>0&&bedEnd-trunkEdge>.45){
   const aft=trunkEdge+.087,fore=bedEnd-.067,l=.073,r=1-l,steps=small(18,10,9,7);
   const rim=(z,u)=>trunkCover(z,u);
@@ -598,17 +601,21 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    return bottom(z,(a+b)*.5)[1]-.018;
   };
   const mark=(mat,geo)=>{geo.userData.section='pickup-bed';put('trunk',mat,geo);};
+  const inside=g.body.pickupCompositeBed?'trim':'paint';
   for(const [z0,z1] of [[trunkEdge,aft],[fore,bedEnd]])for(const [u0,u1,n] of [[0,l,1],[l,r,across],[r,1,1]]){
    mark('paint',patch(1,n,(t,u)=>rim(mix(z0,z1,t),mix(u0,u1,u))));
   }
   for(const [a,b] of [[0,l],[r,1]])mark('paint',patch(steps,1,(t,u)=>rim(mix(aft,fore,t),mix(a,b,u))));
-  mark('paint',patch(steps,across,(t,u)=>bottom(mix(aft,fore,t),mix(l,r,u))));
-  for(const [u,flip] of [[l,false],[r,true]])mark('paint',patch(steps,1,(t,h)=>{
+  mark(inside,patch(steps,across,(t,u)=>bottom(mix(aft,fore,t),mix(l,r,u))));
+  for(const [u,flip] of [[l,false],[r,true]])mark(inside,patch(steps,1,(t,h)=>{
    const z=mix(aft,fore,t);return lerp3(rim(z,u),bottom(z,u),h);
   },flip));
-  for(const [z,flip] of [[aft,true],[fore,false]])mark('paint',patch(across,1,(t,h)=>{
+  for(const [z,flip] of [[aft,true],[fore,false]])mark(inside,patch(across,1,(t,h)=>{
    const u=mix(l,r,t);return lerp3(rim(z,u),bottom(z,u),h);
   },flip));
+  if(g.body.pickupSailRise)emitPickupSails(rim,aft,fore,(mat,geo,name)=>{
+   geo.userData.section=name;put('trunk',mat,geo);
+  },'paint');
  }else sheet('trunk',hoodDesign.deckStripes?'bonnet-stripes':'paint',trunkEdge,bedEnd,trunkCover,small(lod?8:14,5,4,4),across);
  if(canopy.raisedEngineLid&&pickupDepth===0&&bedEnd-trunkEdge>.16){
   const amount=canopy.raisedEngineLid;
@@ -979,7 +986,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   else{
    // The glass and weatherstrips partition the same master surface; no
    // duplicate paint underneath panes, including underneath the T-bar.
-   const tbar=roofMode===2,metal=roofMode===3, zStops=tbar?[0,.155,.172,.862,.879,1]:[0,.305,.322,.826,.843,1];
+   const tbar=roofMode===2,metal=roofMode===3, zStops=tbar?[0,.155,.172,.862,.879,1]:[0,.305+.264*canopy.roofPaneShortening,.322+.264*canopy.roofPaneShortening,.826,.843,1];
    const uStops=tbar?[0,.018,.448,.464,.536,.552,.982,1]:[0,.158,.175,.825,.842,1];
    for(let iz=0;iz<zStops.length-1;iz++)for(let iu=0;iu<uStops.length-1;iu++){
     const pane=iz===2&&(tbar?iu===1||iu===5:iu===2);
@@ -1159,14 +1166,14 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
        const half=mix(.155,.409,canopy.wagonTailWidth)*(1-(functionalTowers?.29:.46)*t**2);
        const rails=[0,(c-half)*left,(c-half+.060)*left,(c+half-.060)*left,(c+half)*left,left];
        const p=band(y,mix(rails[low],rails[high],u));
-       if(color==='runningRed'||color==='opticRed'||functionalTowers&&['opticClear','rearSignalL','rearSignalR'].includes(color))p[2]-=(functionalTowers?.008:.004)*Math.sin(Math.PI*u);
+       if(color==='runningRed'||color==='opticRed'||functionalTowers&&['opticClear','rearSignalL','rearSignalR','signalL','signalR'].includes(color))p[2]-=(functionalTowers?.008:.004)*Math.sin(Math.PI*u);
        return p;
       },!mirrored));
      for(const [k,mat] of ['paint','seamDark',functionalTowers?null:'runningRed','seamDark','paint'].entries())if(mat)add(mat,k,k+1,lo,top);
      if(functionalTowers){
       // Same physical tower chart as the old decorative trim: working
       // sections share boundary samples, cavity lands and solid body skins.
-      const z=t=>mix(lo,top,t),leftHand=mirrored?'R':'L', signal=mirrored?'rearSignalR':'rearSignalL';
+      const z=t=>mix(lo,top,t),leftHand=mirrored?'R':'L', signal=canopy.towerAmberTurns?(mirrored?'signalR':'signalL'):(mirrored?'rearSignalR':'rearSignalL');
       for(const [mat,a,b,r] of [
        ['runningRed',0,.284,4],['opticClear',.284,.469,2],
        [signal,.469,.68,3],['opticRed',.68,1,5],
