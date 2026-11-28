@@ -851,7 +851,18 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    return [master.at(z,.99)[0]+s*(.008*p.depth+.020*bell(v)*p.shape),floor+sillLift(z)-.019+sillHeight*v,z];
   },s>0));
   const mirror=getSideSettings(g,'mirrors',letter,c.mirrors),sx=X*.87,sy=B+.105*mirror.depth,mz=cabinFront-.19+mirror.bias*.08;
-  if(mirror.type==='folded rectangle'){
+  const reach=g.construction.hood.fenderMirrorReach;
+  if(reach){
+   // Follow the actual painted wheel-top chart. The base overlaps the
+   // surface by 2 mm; the post and retro convex cap are independent parts.
+   const q=hoodPoint(mix(cabinFront,bumperFront,reach),s>0?.911:.089);
+   const stem=.068+.043*mirror.depth;
+   put('mirrors','chrome',new T.CylinderGeometry(.033,.029,.016,small(14,10,9,8)),[q[0],q[1]+.006,q[2]]);
+   put('mirrors','chrome',new T.CylinderGeometry(.012,.017,stem,small(12,9,8,7)),[q[0],q[1]+stem*.5+.012,q[2]-.004]);
+   const x=q[0]+s*.006,y=q[1]+stem+.018,z=q[2];
+   put('mirrors','trim',ellipsoid(.121*mirror.size,.080*mirror.depth,.080*mirror.size),[x,y,z]);
+   put('mirrors','chrome',ellipsoid(.099*mirror.size,.064*mirror.depth,.015),[x,y,z-.036*mirror.size]);
+  }else if(mirror.type==='folded rectangle'){
    const center=[s*(sx+.106),sy+.009,mz],width=.239*mirror.size,height=.125*mirror.depth,depth=.123*mirror.size;
    const exponent=.32+.36*mirror.shape,power=t=>Math.sign(t)*Math.abs(t)**exponent;
    const local=(u,scale,z)=>{const angle=u*2*Math.PI; const x=width*.5*power(Math.cos(angle))*scale;
