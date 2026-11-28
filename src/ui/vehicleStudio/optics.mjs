@@ -24,7 +24,7 @@ const profiles={
   [1,-.25],[.95,.39],[.70,.83],[.34,1],[-.08,.91],[-.38,.79],[-.72,.86],[-.94,.62],[-1,.22]],
  compound:[[-1,-.36],[-.79,-.77],[-.29,-.99],[.24,-.87],[.83,-.98],[1,-.69],[.95,.33],[.72,.89],[.27,.82],[-.36,1],[-.82,.78],[-1,.31]]
 };
-export const HOUSING_FAMILIES=['round-rect','circle','oval','rectangle','trapezoid','angular','swept','wrap','upright-wrap','compound','round-twin','dual-round'];
+export const HOUSING_FAMILIES=['round-rect','circle','oval','rectangle','trapezoid','angular','swept','wrap','upright-wrap','compound','round-twin','dual-round','stacked-round'];
 const layouts=new Set(['projector','twin','led','mixed','factory-split','round-stack']);
 function curvePolygon(points,r,n){
  const controls=(p,q,t)=>p.map((x,i)=>mix(x,q[i],t));
@@ -184,6 +184,19 @@ export function makeOpenings({end,g,segments=32,face=null}){
  // Keep a solid band to the tallest possible fog cover underneath.
  const reach=front?Math.min(.11,Math.max(0,num(raw.lowerLensReach,0)),Math.max(0,.585-(cyBase+hBase/2))):0;
  const h=hBase+reach,cy=cyBase+reach/2;
+ if(front&&housing==='stacked-round'){
+  const hw=.033+.011*opt.width,hh=.074+.020*opt.height;
+  const x=Math.max(.079,Math.min(.216,sideX-.055)),y=.388+(.5-opt.position)*.16;
+  for(let i=0;i<2;i++){
+   const cx=s>0?1-x:x,cy=y+(i?1:-1)*(hh+.014);
+   const roundOpt={...opt,angle:0,sweep:.5,inboardReach:.5,outline:[],formula:'',layout:'projector',sideWrap:0,secondaryLamp:i>0};
+   const opening=aperture({id:'head-'+(s>0?'l':'r')+(i?'-lower':''),component:'headlights',
+    housing:'circle',cx,cy,width:hw*2,height:hh*2,side:s,opt:roundOpt,segments});
+   if(face&&raw.physicalDiameter>0)projectRoundLamp(opening,face,Math.min(raw.physicalDiameter,g.dimensions.width*hw*1.65),0);
+   out.push(opening);
+  }
+  continue;
+ }
  if(front&&housing==='dual-round'){
   // A pair of physically separate front projector recesses, with a painted
   // web between them. Keep both in the existing side tiles and end the
@@ -238,6 +251,15 @@ export function makeOpenings({end,g,segments=32,face=null}){
    if(w>.075)out.push(aperture({id:'upper-grille',component:'grille',kind:'duct',
     housing:fascia.grilleShape??'trapezoid',cx:.5,cy,width:w,height:h,
     opt:{corner:.58,bezel:num(fascia.grilleBezel,0),throatDepth:num(fascia.lowerIntakeDepth,0)},segments,style:'mesh'}));
+  }else if(gr.type==='twin deep mesh'){
+   const cy=.488+(num(fascia.grilleHeightPosition,.5)-.5)*.32;
+   const h=mix(.16,.44,num(fascia.grilleHeight,.5))*num(gr.depth,1);
+   const free=Math.min(.200,.475-Math.max(...out.filter(o=>o.kind==='lamp'&&o.center[0]<.5).flatMap(o=>o.outline.map(p=>p[0]))),
+    Math.min(...out.filter(o=>o.kind==='lamp'&&o.center[0]>.5).flatMap(o=>o.outline.map(p=>p[0])))-.525);
+   const w=Math.min(free,.088+.12*num(fascia.grilleWidth,.5));
+   if(w>.04)for(const side of [-1,1])out.push(aperture({id:'upper-grille-'+(side<0?'r':'l'),component:'grille',kind:'duct',
+    housing:fascia.grilleShape??'round-rect',cx:.5+side*(.026+w/2),cy,width:w,height:Math.min(h,1.9*Math.min(cy-.03,.965-cy)),side,segments,
+    opt:{corner:.68,angle:.13,sweep:.59,bezel:num(fascia.grilleBezel,0)},style:'mesh'}));
   }else if(gr.type==='twin vertical slats'||gr.type==='twin mesh'){
    const mesh=gr.type==='twin mesh';
    // Keep a painted center ligament and derive both recesses from the

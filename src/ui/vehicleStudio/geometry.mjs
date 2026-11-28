@@ -743,7 +743,22 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  if(!roadster){
   const roofMode=coveredTarga?0:Math.round(canopy.roofGlazing);
   const roofFinish=coveredTarga?'trim':canopy.hardtopContrast?'roofPaint':'paint';
-  if(!roofMode)sheet('roof',roofFinish,roofRear,roofFront,canopyRoof,small(17,9,8,7),small(12,9,8,7));
+  if(!roofMode&&!coveredTarga&&canopy.gullwingRoofSeams){
+   // Partition closed roof skin on its own chart: left/right door leaves
+   // and the retained center spine share the identical crown and rails.
+   const width=.0045/Math.max(.55,roofW*2),half=width/2,n=small(17,9,8,7);
+   for(const [a,b,seal] of [[0,.38-half,false],[.38-half,.38+half,true],
+    [.38+half,.62-half,false],[.62-half,.62+half,true],[.62+half,1,false]]){
+    const gran=seal?2:Math.max(3,Math.ceil((b-a)*small(12,9,8,7)));
+    const mesh=patch(n,gran,(t,u)=>{
+     const p=canopyRoof(mix(roofRear,roofFront,t),mix(a,b,u));
+     if(seal)p[1]-=Math.sin(Math.PI*u)*.003;
+     return p;
+    });
+    mesh.userData.constructionRole=seal?'gullwing / recessed roof seal':'gullwing / closed roof section';
+    put('roof',seal?'seamDark':roofFinish,mesh);
+   }
+  }else if(!roofMode)sheet('roof',roofFinish,roofRear,roofFront,canopyRoof,small(17,9,8,7),small(12,9,8,7));
   else{
    // The glass and weatherstrips partition the same master surface; no
    // duplicate paint underneath panes, including underneath the T-bar.

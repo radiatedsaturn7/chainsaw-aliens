@@ -393,3 +393,26 @@ is closed. UK Volvo wagons use right-hand cabin geometry. The RX-7's
 parked covers remain static, and the Charger's dark recessed lamps
 approximate the concealed face without animated covers. The Cosmo roof,
 NA2 lamp wrap, and V60 rear light towers remain simplified.
+
+### Full-roster rollout, Skyline, Pontiac, Mercedes, and Lancia
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Moschatel 1973 | Nissan Skyline 2000GT-R KPGC110 hardtop. [Nissan archive](https://www.nissan-global.com/EN/HERITAGE_COLLECTION/skyline_h_t_2000_kpgc110.html); [period brochure](https://www.nissan-global.com/EN/HERITAGE/GALLERY/ITEM/193.html). |
+| Storksbill R 1987 | Nissan Skyline 2000GTS-R KHR31. [Nissan archive](https://www.nissan-global.com/EN/HERITAGE_COLLECTION/skyline_2000gts-r.html); [original R31 brochure](https://www.nengun.com/oem/nissan/skyline-r31/skyline-gts-r-august-1987-brochure). |
+| Hop Trefoil 1993 | Nissan Skyline GT-R BNR32 V-spec I. [V-spec gallery](https://commons.wikimedia.org/wiki/Category:Nissan_Skyline_GT-R_V-spec_(R32)); [contemporaneous Nissan road shell](https://www.nissan-global.com/EN/HERITAGE_COLLECTION/skyline_gt-r_1992.html). |
+| Common Mullein 1965 | US Pontiac GTO 389 four-barrel Hardtop. [Period Pontiac documents](https://www.gtoaa.org/1965-pontiac-gto). |
+| Anemone 1986 | US Pontiac Fiero GT early fastback, V6 four-speed. [1986 GT dealer brochure](https://www.brochure-catalogue-voiture-neuve.fr/en/brochures/pontiac/fiero/pontiac-fiero-1984/ANG-1986-GT-US/); [period four-speed test](https://www.caranddriver.com/reviews/a70783877/1986-pontiac-fiero-gt-archive-test/). |
+| Sunmallow 2006 | US Pontiac Solstice base 2.4. [Period base 2.4 test](https://www.motortrend.com/reviews/2006-pontiac-solstice-1). |
+| Hempnettle 1955 | Mercedes-Benz 300 SL W198 I standard steel-bodied road car. [1955 trim gallery](https://rmsothebys.com/auctions/mu24/lots/r0044-1955-mercedesbenz-300-sl-gullwing). |
+| Ribwort Plantain 2011 | Mercedes-Benz SLS AMG C197 standard German model. [Exact German-delivery example](https://www.classicdriver.com/de/car/mercedes-benz/sls-amg/2011/784653); [original brochure](https://cache4.pakwheels.com/system/brochures/651/original/Mercedes-AMG-SLS-2011-UK.pdf?1750244019). |
+| Sea Aster 2012 | Japanese Mercedes-Benz C63 AMG Black Series Coupe. [Mercedes-Benz Japan release](https://www.mercedes-benz.jp/news/release/2011/20111003.pdf); [period profiles](https://openers.jp/en/car/13596). |
+| Centaury 1983 | Lancia Rally 037, Monte-Carlo-winning 1983 competition fit. [WRC history](https://www.wrc.com/en/misc/lancia-rally-037); [period car photo](https://www.lanciarally037.com/montecarlo/rohrl-gazzetta.htm). |
+| Sea Arrowgrass 1982 | Lancia Rally 037 Stradale. [Factory Heritage Hub](https://www.media.stellantis.com/it-it/heritage-hub-italy/press/fca-heritage-protagonista-alla-28esima-edizione-di-autopromotec). |
+| Meadow Vetchling 1986 | Lancia Delta S4 Stradale road coupe. [1986 example](https://commons.wikimedia.org/wiki/File:1986_Lancia_Delta_S4_Stradale_LC26.jpg). |
+
+The GTO uses four discrete stacked round front openings. The Fiero's
+parked lids, and the two Mercedes' closed gullwing roof seams, do not
+animate. The Solstice nose curvature, Skyline roof framing, and 037
+road trim remain first-pass approximations. Cars using source-frame
+normalization retain the original chassis and handling.

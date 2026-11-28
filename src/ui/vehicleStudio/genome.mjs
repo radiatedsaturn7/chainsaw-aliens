@@ -25,7 +25,7 @@ export const COMPONENTS={
  glass:style('Windshield, rear and side glass',['clear','tinted'],'rake'),rockers:style('Rockers and side skirts',['stock','deep','blade']),
  trunk:style('Trunk / rear deck',['notch','fastback','ducktail'],'crown'),
  headlights:style('Headlights',['swept','rectangular','round']),tails:style('Taillights',['stacked','strip','round']),
- fogs:style('Fog lights',['round','strip','blank','off','amber strip']),grille:style('Grille',['mesh','bars','closed','vertical slats','seven-slot','twin vertical slats','twin mesh','crosshair','deep mesh frame']),
+ fogs:style('Fog lights',['round','strip','blank','off','amber strip']),grille:style('Grille',['mesh','bars','closed','vertical slats','seven-slot','twin vertical slats','twin mesh','twin deep mesh','crosshair','deep mesh frame']),
  scoop:style('Scoop and vents',['scoop','vents','off']),spoiler:style('Spoiler',['wing','lip','off','boxed wing']),
  mirrors:style('Mirrors',['standard','aero','folded rectangle'],'corner radius'),handles:style('Door handles',['lever','flush','painted lever']),
  wheels:style('Wheels',['6-spoke','5-spoke','mesh','10-spoke','stamped steel','8-spoke','15-spoke'],'dish'),tires:style('Tires',['road','rally'],'sidewall'),
@@ -89,7 +89,7 @@ export const FASCIA_FIELDS={
  shoulder:unit('Shoulder crown'),chin:signed('Chin / diffuser projection'),recess:unit('Center recess'),crease:unit('Character crease'),boxiness:unit('Regional boxiness')
 };
 export const OPTIC_HOUSINGS={'circle':'Circular',oval:'Oval',rectangle:'Rectangular','upright-wrap':'Upright rounded wrap','round-rect':'Rounded rectangle',
- trapezoid:'Trapezoidal',angular:'Angular',swept:'Swept',wrap:'Wraparound',compound:'Compound', 'round-twin':'Rounded twin-bowl','dual-round':'Dual round rear lamps'};
+ trapezoid:'Trapezoidal',angular:'Angular',swept:'Swept',wrap:'Wraparound',compound:'Compound', 'round-twin':'Rounded twin-bowl','dual-round':'Paired round lamps','stacked-round':'Stacked round front lamps'};
 export const OPTIC_LAYOUTS={projector:'Single projector',twin:'Twin elements',led:'LED signature',mixed:'Projector + LED','factory-split':'Factory split lens','round-stack':'Round rear lamp with running-light ring'};
 export const OPTIC_FIELDS={width:unit('Housing width'),height:unit('Housing height'),corner:unit('Corner radius'),angle:signed('Housing angle'),
  sweep:unit('Housing sweep'),curvature:unit('Lens curvature'),recess:unit('Recess depth'),convexity:unit('Lens convexity'),
@@ -182,6 +182,7 @@ export const PAIR_GROUPS={headlights:'Headlights',taillights:'Taillights',fogs:'
 export const STYLE_KINDS={ridge:'Stamped ridge',groove:'Recessed groove',crease:'Styling crease',trim:'Raised molding',shoulder:'Raised shoulder',recess:'Local recess'};
 export const BODY_EDITOR_FIELDS={bolster:F('Seat bolster',0,1,.01),lumbar:F('Lumbar curve',0,1,.01),trim:F('Interior trim',0,1,.01),
  rearDeckVents:F('Rear deck: 0 none, 1 louvers, 2 twin ram scoops',0,2,1),
+ gullwingRoofSeams:F('Closed gullwing roof seams',0,1,1),
  roofGlazing:F('Roof insert (0 none / 1 glass / 2 T-bar / 3 metal)',0,3,1),
  raisedEngineLid:F('Raised twin engine-deck louver banks',0,1,.01),
  targaRearBulkhead:F('Targa rear screen and roll hoop',0,1,.01),
@@ -223,7 +224,7 @@ export const newStyle=(id='styling-1')=>({id,kind:'ridge',side:'both',start:.24,
 const constructionDefaults=()=>({
  symmetry:Object.fromEntries(Object.keys(PAIR_GROUPS).map(k=>[k,'mirrored'])),
  sides:{L:{},R:{}},
- cabin:{rearDeckVents:0,roofGlazing:0,raisedEngineLid:0,layout:'bench',driverSide:'left',bolster:.53,lumbar:.45,trim:.54,targaRearBulkhead:0,hatchBridge:0,hatchBridgeWidth:.84,hatchQuarterTaper:0,hatchLampFill:0,wagonTallTail:0,wagonTailWidth:.5,wagonGlassPillar:0,wagonGlassPillarWidth:.030,wagonGlassPillarLean:.018,rearDeckButtresses:0,rearPillarFoot:0,rearRoofShift:0,rearPillarWidth:0,pickupCabFrame:0,utilityCabinSplit:0,hardtopRearSide:0,utilityBumper:0,utilityBumperPlate:0,bubbleCanopy:0,hardtopContrast:0,rearSpareRadius:0,rearSpareOffset:0,rearSpareHeight:1.04,vanSideTrim:0,utilityRoofRails:0,rallyTubework:0,rearGlassArc:0,rearHatchFold:0,hatchEdgeLamps:0,rearHatchUpright:0,rearBenchSeats:2,canopyLength:.5,frontScreenRake:0,sideGlassRise:0,darkWindscreenFrame:0,canopyShoulder:.5,glassBow:.5},
+ cabin:{gullwingRoofSeams:0,rearDeckVents:0,roofGlazing:0,raisedEngineLid:0,layout:'bench',driverSide:'left',bolster:.53,lumbar:.45,trim:.54,targaRearBulkhead:0,hatchBridge:0,hatchBridgeWidth:.84,hatchQuarterTaper:0,hatchLampFill:0,wagonTallTail:0,wagonTailWidth:.5,wagonGlassPillar:0,wagonGlassPillarWidth:.030,wagonGlassPillarLean:.018,rearDeckButtresses:0,rearPillarFoot:0,rearRoofShift:0,rearPillarWidth:0,pickupCabFrame:0,utilityCabinSplit:0,hardtopRearSide:0,utilityBumper:0,utilityBumperPlate:0,bubbleCanopy:0,hardtopContrast:0,rearSpareRadius:0,rearSpareOffset:0,rearSpareHeight:1.04,vanSideTrim:0,utilityRoofRails:0,rallyTubework:0,rearGlassArc:0,rearHatchFold:0,hatchEdgeLamps:0,rearHatchUpright:0,rearBenchSeats:2,canopyLength:.5,frontScreenRake:0,sideGlassRise:0,darkWindscreenFrame:0,canopyShoulder:.5,glassBow:.5},
  finish:{paintRoughness:.44,coatRoughness:.12},
  hood:{lampLids:'off',insetLampMounts:0,parkedPopups:0,lidWidth:.25,lidLength:.25,lidSpread:.30,lidSetback:.065,lidGap:.004,classicLampBezel:0,bonnetStripes:0,crossCrown:0,noseFairing:0,lampPodRise:0,shoulderRise:0,shoulderWidth:.087,shoulderAt:.65,shoulderSweep:0,scoopWidth:0,scoopHeight:0,scoopCorner:0},
  wing:{supportMount:'under',elevation:0,boxWallWidth:.041,boxWallRake:0,camber:.34,sweep:.08,taper:.42,thickness:.097,angle:4,supports:2,spacing:.67,formula:'',elements:1},

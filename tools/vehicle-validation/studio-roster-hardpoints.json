@@ -3590,5 +3590,623 @@
       ]
     },
     "reference": "2012 Dodge Challenger SRT8 392, Canada"
+  },
+  {
+    "id": "nissan-skyline-kpgc110",
+    "label": "Moschatel 1973",
+    "capability": "KPGC110 fastback hardtop with GT-R overfenders and round lamps",
+    "carId": "3d-moschatel-1973-3d-4b0724492b63",
+    "bodyRef": "Moschatel-1973",
+    "wheelRef": "Moschatel-1973-Wheel",
+    "radius": 0.31779999999999997,
+    "axles": [
+      {
+        "track": 1.3949999809265137,
+        "y": 0.31779998540878296,
+        "z": 1.3049999475479126
+      },
+      {
+        "track": 1.375,
+        "y": 0.31779998540878296,
+        "z": -1.3049999475479126
+      }
+    ],
+    "reference": "1973 Nissan Skyline 2000GT-R KPGC110 hardtop, JDM"
+  },
+  {
+    "id": "nissan-skyline-khr31-gts-r",
+    "label": "Storksbill R 1987",
+    "capability": "KHR31 homologation coupe with upright notchback and projector fascias",
+    "carId": "3d-storksbill-r-1987-3d-7859ebf17a81",
+    "bodyRef": "Storksbill R 1987 Body",
+    "wheelRef": "Storksbill R 1987 Wheel",
+    "radius": 0.3135,
+    "axles": [
+      {
+        "track": 1.4249999523162842,
+        "y": 0.31349998712539673,
+        "z": 1.3075000047683716
+      },
+      {
+        "track": 1.4199999570846558,
+        "y": 0.31349998712539673,
+        "z": -1.3075000047683716
+      }
+    ],
+    "reference": "1987 Nissan Skyline 2000GTS-R KHR31, JDM"
+  },
+  {
+    "id": "nissan-skyline-bnr32-v-spec",
+    "label": "Hop Trefoil 1993",
+    "capability": "R32 V-spec with wide arches, twin-round tails and BBS-style mesh wheels",
+    "carId": "3d-hop-trefoil-1993-3d-bf16fbd107a6",
+    "bodyRef": "Hop-Trefoil-1993",
+    "wheelRef": "Hop-Trefoil-1993-Wheel",
+    "radius": 0.32839999999999997,
+    "axles": [
+      {
+        "track": 1.4800000190734863,
+        "y": 0.32839998602867126,
+        "z": 1.3075000047683716
+      },
+      {
+        "track": 1.4800000190734863,
+        "y": 0.32839998602867126,
+        "z": -1.3075000047683716
+      }
+    ],
+    "reference": "1993 Nissan Skyline GT-R BNR32 V-spec I, JDM"
+  },
+  {
+    "id": "pontiac-gto-1965",
+    "label": "Common Mullein 1965",
+    "carId": "3d-common-mullein-1965-3d-68224eb6b775",
+    "capability": "1965 US Pontiac GTO, two-door hardtop,standard389cuin four-barrel335hp reference,optionalwide-ratio4MT,standard3.23axle",
+    "bodyRef": "Common-Mullein-1965",
+    "wheelRef": "Common-Mullein-1965-Wheel",
+    "radius": 0.33155,
+    "axles": [
+      {
+        "track": 1.4731999635696411,
+        "y": 0.3315500020980835,
+        "z": 1.3144500255584717
+      },
+      {
+        "track": 1.4731999635696411,
+        "y": 0.3316270112991333,
+        "z": -1.6065499782562256
+      }
+    ],
+    "reference": "1965 Pontiac GTO 389 four-barrel Hardtop, US"
+  },
+  {
+    "id": "pontiac-fiero-gt-1986",
+    "label": "Anemone 1986",
+    "carId": "3d-anemone-1986-3d-d87f0295b4b5",
+    "capability": "Early fastback 1986 US Pontiac Fiero GT 2.8 V6 4MT, optional rear wing; not later five-speed, 1988 suspension, notchback or engine swap. Canadian GM brochure corroborates body dimensions/equipment; US contemporary road-test mass selected.",
+    "bodyRef": "Anemone",
+    "wheelRef": "Anemone-Wheel",
+    "radius": 0.3165,
+    "axles": [
+      {
+        "track": 1.468000054359436,
+        "y": 0.3165000081062317,
+        "z": 1.328879952430725
+      },
+      {
+        "track": 1.4919999837875366,
+        "y": 0.32158800959587097,
+        "z": -1.044119954109192
+      }
+    ],
+    "reference": "1986 Pontiac Fiero GT fastback 2.8 V6 4MT, US"
+  },
+  {
+    "id": "pontiac-solstice-2006",
+    "label": "Sunmallow 2006",
+    "carId": "3d-sunmallow-2006-3d-219867735fa1",
+    "capability": "2006 US Pontiac Solstice 2.4 L LE5 base roadster",
+    "bodyRef": "Sunmallow-2006-body",
+    "wheelRef": "Sunmallow-2006-wheel",
+    "radius": 0.33885,
+    "axles": [
+      {
+        "track": 1.5429999828338623,
+        "y": 0.3388499915599823,
+        "z": 1.2604999542236328
+      },
+      {
+        "track": 1.5609999895095825,
+        "y": 0.3388499915599823,
+        "z": -1.1545000076293945
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6499999761581421,
+            0.5979999899864197,
+            -2.0840001106262207
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6499999761581421,
+            0.5979999899864197,
+            -2.0840001106262207
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.5820000171661377,
+            0.6370000243186951,
+            2.0759999752044678
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.5820000171661377,
+            0.6370000243186951,
+            2.0759999752044678
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7714999914169312,
+            0.3388499915599823,
+            -1.2604999542236328
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7714999914169312,
+            0.3388499915599823,
+            -1.2604999542236328
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7804999947547913,
+            0.3388499915599823,
+            1.1545000076293945
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7804999947547913,
+            0.3388499915599823,
+            1.1545000076293945
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "2006 Pontiac Solstice base 2.4 5MT, US"
+  },
+  {
+    "id": "mercedes-300sl-w198",
+    "label": "Hempnettle 1955",
+    "capability": "1955 steel gullwing, silver sweep, slim bright bumpers and tall oval lamp pods",
+    "carId": "3d-hempnettle-1955-3d-7440f68943ef",
+    "bodyRef": "Hempnettle-1955-body",
+    "wheelRef": "Hempnettle-1955-wheel",
+    "radius": 0.339,
+    "axles": [
+      {
+        "track": 1.3849999904632568,
+        "y": 0.33899998664855957,
+        "z": 1.2920000553131104
+      },
+      {
+        "track": 1.434999942779541,
+        "y": 0.33899998664855957,
+        "z": -1.1080000400543213
+      }
+    ],
+    "reference": "1955 Mercedes-Benz 300 SL W198 I steel coupe, Europe",
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6510000228881836,
+            0.6129999756813049,
+            -2.322000026702881
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6510000228881836,
+            0.6129999756813049,
+            -2.322000026702881
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.5910000205039978,
+            0.4650000035762787,
+            2.319000005722046
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.5910000205039978,
+            0.4650000035762787,
+            2.319000005722046
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.6924999952316284,
+            0.33899998664855957,
+            -1.2920000553131104
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.6924999952316284,
+            0.33899998664855957,
+            -1.2920000553131104
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7174999713897705,
+            0.33899998664855957,
+            1.1080000400543213
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7174999713897705,
+            0.33899998664855957,
+            1.1080000400543213
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "mercedes-sls-amg",
+    "label": "Ribwort Plantain 2011",
+    "capability": "Standard German 2011 gullwing, long nose, wide black grille and slim wrap lamps",
+    "carId": "3d-ribwort-plantain-2011-3d-9916a67b0ea6",
+    "bodyRef": "Ribwort Plantain 2011 Body",
+    "wheelRef": "Ribwort Plantain 2011 Wheel",
+    "radius": 0.33404999999999996,
+    "axles": [
+      {
+        "track": 1.6820000410079956,
+        "y": 0.3340499997138977,
+        "z": 1.340000033378601
+      },
+      {
+        "track": 1.652999997138977,
+        "y": 0.3340499997138977,
+        "z": -1.340000033378601
+      }
+    ],
+    "reference": "2011 Mercedes-Benz SLS AMG C197, Germany"
+  },
+  {
+    "id": "mercedes-c63-black",
+    "label": "Sea Aster 2012",
+    "capability": "Japan Black Series without wing pack, squared coupe, broad shoulders and deep cooling intakes",
+    "carId": "3d-sea-aster-2012-3d-4ee2000c3677",
+    "bodyRef": "Sea-Aster-2012",
+    "wheelRef": "Sea-Aster-2012-Wheel",
+    "radius": 0.33055,
+    "axles": [
+      {
+        "track": 1.6089999675750732,
+        "y": 0.3305499851703644,
+        "z": 1.3825000524520874
+      },
+      {
+        "track": 1.6299999952316284,
+        "y": 0.3305499851703644,
+        "z": -1.3825000524520874
+      }
+    ],
+    "reference": "2012 Mercedes-Benz C63 AMG Coupe Black Series C204, Japan"
+  },
+  {
+    "id": "lancia-037-monte-carlo-1983",
+    "label": "Centaury 1983",
+    "capability": "Monte-Carlo era high cooling, triple-set rally optics and box wing",
+    "carId": "3d-centaury-1983-3d-fea6142fbf53",
+    "bodyRef": "Centaury-1983-body",
+    "wheelRef": "Centaury-1983-wheel",
+    "radius": 0.3135,
+    "axles": [
+      {
+        "track": 1.5,
+        "y": 0.31349998712539673,
+        "z": 1.2259999513626099
+      },
+      {
+        "track": 1.5499999523162842,
+        "y": 0.31349998712539673,
+        "z": -1.2139999866485596
+      }
+    ],
+    "reference": "Walter Rohrl1983 Rallye Monte-Carlo overall-winning Lancia Rally037 GroupB tribute. Pre-1984 2.0L supercharged mid-engine RWD basis,not road Stradale205HP,DeltaS4 or later2.111L Evo2. No exact chassis or event setup claim.",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6359999775886536,
+            0.5339999794960022,
+            -2.0239999294281006
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6359999775886536,
+            0.5339999794960022,
+            -2.0239999294281006
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.6230000257492065,
+            0.6100000143051147,
+            2.015000104904175
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.6230000257492065,
+            0.6100000143051147,
+            2.015000104904175
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.75,
+            0.31349998712539673,
+            -1.2259999513626099
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.75,
+            0.31349998712539673,
+            -1.2259999513626099
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7749999761581421,
+            0.31349998712539673,
+            1.2139999866485596
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7749999761581421,
+            0.31349998712539673,
+            1.2139999866485596
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "lancia-037-stradale-1982",
+    "label": "Sea Arrowgrass 1982",
+    "capability": "Red low road 037 with four inset round lamps and no rally lamp bank",
+    "carId": "3d-sea-arrowgrass-1982-3d-3265e364f732",
+    "bodyRef": "Sea-Arrowgrass",
+    "wheelRef": "Sea-Arrowgrass-Wheel",
+    "radius": 0.31595,
+    "axles": [
+      {
+        "track": 1.5011399984359741,
+        "y": 0.3159500062465668,
+        "z": 1.2544000148773193
+      },
+      {
+        "track": 1.5138399600982666,
+        "y": 0.31452301144599915,
+        "z": -0.9855999946594238
+      }
+    ],
+    "reference": "1982 Italian Lancia Rally 037 Stradale road homologation coupe,1995cc supercharged16V inline-four205metricCV; not1983 MonteCarlo GroupB race specification or laterEvo2."
+  },
+  {
+    "id": "lancia-delta-s4-stradale-1986",
+    "label": "Meadow Vetchling 1986",
+    "capability": "Wide Stradale rear quarters, road cooling ducts and integrated box wing",
+    "carId": "3d-meadow-vetchling-1986-3d-b4c26f936cee",
+    "bodyRef": "Meadow-Vetchling-1986",
+    "wheelRef": "Meadow-Vetchling-1986-Wheel",
+    "radius": 0.31595,
+    "axles": [
+      {
+        "track": 1.5011399984359741,
+        "y": 0.3159500062465668,
+        "z": 1.3420000076293945
+      },
+      {
+        "track": 1.5240000486373901,
+        "y": 0.3146379888057709,
+        "z": -1.0980000495910645
+      }
+    ],
+    "reference": "1986 Italian Lancia Delta S4 Stradale road homologation coupe,1759cc twincharged DOHC16V four250metricCV,AWD5MT; notToivonen1985RACGroupB,front-enginedDeltaHFIntegrale or ordinaryDelta."
   }
 ]
