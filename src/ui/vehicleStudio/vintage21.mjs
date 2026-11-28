@@ -25,7 +25,11 @@ export function buildOpenWheelVintage({g,put,dims,quality,compact}){
  const map=(u,v)=>{
   const j=Math.max(1,topPts.findIndex(p=>p[0]>=u)),[f,w,h]=topPts[j-1],[f2,w2,h2]=topPts[j],t=clamp((u-f)/(f2-f));const a=(v-.5)*2*pi, c=Math.cos(a);
   const z=mix(Lr,Lf,u),lo=floor+.042+(.033*(1-u)**3),hi=height*mix(h,h2,t)-.045;
-  let r=width*mix(w,w2,t),x=r*Math.sin(a)*(c<0?.85+.10*c:1),y=mix(lo,hi,(1+c)*.5);
+  const corner=g.body.openWheelNoseBoxiness;
+  const q=clamp((u-.72)/.28),cornerEase=q*q*(3-2*q),power=1-corner*cornerEase*.65,sin=Math.sin(a);
+  const sx=corner?Math.sign(sin)*Math.abs(sin)**power:sin;
+  const sy=corner?Math.sign(c)*Math.abs(c)**power:c;
+  let r=width*mix(w,w2,t),x=r*sx*(c<0?.85+.10*c:1),y=mix(lo,hi,(1+sy)*.5);
   // Width independently constrained near carrier suspension and tires. It
   // does not follow or intrude on any rotating wheel/steering matrices.
   const hub=z>0?tireTrack:rearTireTrack; const reserve=hub-d.tireWidth/2-.10;
@@ -75,7 +79,20 @@ export function buildOpenWheelVintage({g,put,dims,quality,compact}){
  for(let i=1;i<outline.length;i++)put('grille','chrome',span(outline[i-1],outline[i],.009));
  for(let i=-4;i<=4;i++){
   const x=i*width*.098,q=Math.sqrt(1-(x/(width*.52))**2);
-  put('grille','chrome',span([x,height*.49-(height*.24)*q,nose],[x,height*.49+(height*.24)*q,nose],.006));
+  if(!g.body.openWheelNoseBoxiness){
+   put('grille','chrome',span([x,height*.49-(height*.24)*q,nose],[x,height*.49+(height*.24)*q,nose],.006));
+   continue;
+  }
+  // Keep bars inside the authored radiator rim instead of extending the
+  // oval default's fixed height above the new painted nose silhouette.
+  const cuts=outline.slice(1).flatMap((b,j)=>{
+   const a=outline[j], den=b[0]-a[0],t=(x-a[0])/den;
+   return Math.abs(den)>1e-8&&t>=0&&t<=1?[mix(a[1],b[1],t)]:[];
+  });
+  if(cuts.length>=2){
+   const lo=Math.min(...cuts)+.012,hi=Math.max(...cuts)-.012;
+   if(hi>lo)put('grille','chrome',span([x,lo,nose],[x,hi,nose],.006));
+  }
  }
  for(const s of [-1,1]){
   for(let v=0;v<7;v++){
@@ -83,7 +100,9 @@ export function buildOpenWheelVintage({g,put,dims,quality,compact}){
    put('hood','seamDark',span([x+s*.002,y-.044,z],[x+s*.003,y+.044,z-.028],.0075,6));
   }
   const xe=s*width*.84,exY=floor+.20;
-  put('exhaust','chrome',span([xe,exY,.87],[xe,exY,-1.01],.039));
+  const exhaustSide=g.body.openWheelExhaustSide;
+  if(!exhaustSide||exhaustSide===s)
+   put('exhaust','chrome',span([xe,exY,.87],[xe,exY,-1.01],.039));
   // Small gameplay lamps, not claimed as original GP fixtures.
   put('headlights','head',dome(.018,.012,.007,s*.102,height*.51,nose+.018));
   put('headlights',s>0?'signalR':'signalL',dome(.014,.010,.007,s*.147,height*.43,nose+.012));

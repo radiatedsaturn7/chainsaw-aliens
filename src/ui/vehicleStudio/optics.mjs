@@ -436,6 +436,20 @@ export function makeOpenings({end,g,segments=32,face=null}){
    if(triple&&k!==.5){height*=.84;cy=Math.min(.96-height/2,cy+.023);}
    let width=triple?(k===.5?.329:.202)*(.63+.74*num(fascia.intakeWidth,.5)):(iMode==='split'?(wideDucts?.24:.17):.365)*(.63+.74*num(fascia.intakeWidth,.5));
    if(iMode==='split')width=Math.min(width,pair[1]-pair[0]-.014);
+   const originalHeight=height, originalCenter=cy;
+   const cornerRise=front&&k!==.5&&(iMode==='split'||triple)?num(fascia.cornerIntakeRise,0):0;
+   if(cornerRise>0){
+    // Lift the outer intake upper edge, not the undertray. Do not
+    // approach any of the already-fit openings inside this lateral span.
+    let stop=.35;
+    for(const a of out){
+     const xs=a.outline.map(pt=>pt[0]),ys=a.outline.map(pt=>pt[1]);
+     if(Math.max(...xs)<k-width/2-.006||Math.min(...xs)>k+width/2+.006||Math.min(...ys)>cy)continue;
+     stop=Math.max(stop,Math.max(...ys)+.012);
+    }
+    const rise=Math.min(cornerRise,Math.max(0,cy-height/2-stop));
+    height+=rise;cy-=rise*.5;
+   }
    for(const aperture of out){
     const ys=aperture.outline.map(p=>p[1]);if(Math.max(...ys)+.007<cy-height/2||Math.min(...ys)-.007>cy+height/2)continue;
     const xs=aperture.outline.map(p=>p[0]);
@@ -444,8 +458,19 @@ export function makeOpenings({end,g,segments=32,face=null}){
     else if(aperture.style==='vertical')width=0; // Centered tall grille already occupies this portion of fascia.
    }
    if(width<.032)continue;
-   out.push(aperture({id:(front?'lower-':'rear-')+'duct'+(k<.48?'-r':k>.52?'-l':''),component:grp,
-    housing:fascia.intakeShape??(front?'angular':'trapezoid'),cx:k,cy,width,height,kind:'duct',segments,style:fascia.ductStyle??'mesh',opt:{throatDepth:front?num(fascia.lowerIntakeDepth,0):0,upperBar:front&&iMode==='single'?num(fascia.lowerDuctCap,0):0,matte:num(fascia.lowerDuctMatte,0)}}));
+   const duct=aperture({id:(front?'lower-':'rear-')+'duct'+(k<.48?'-r':k>.52?'-l':''),component:grp,
+    housing:fascia.intakeShape??(front?'angular':'trapezoid'),cx:k,cy,width,height,kind:'duct',segments,style:fascia.ductStyle??'mesh',opt:{throatDepth:front?num(fascia.lowerIntakeDepth,0):0,upperBar:front&&iMode==='single'?num(fascia.lowerDuctCap,0):0,matte:num(fascia.lowerDuctMatte,0)}});
+   if(cornerRise>0&&height>originalHeight){
+    // Angular profiles need not fill their entire authoring boxes.
+    // Keep the actual contour lip (not merely its box) fixed.
+    const lo=Math.min(...duct.outline.map(p=>p[1])),hi=Math.max(...duct.outline.map(p=>p[1]));
+    const oldLip=originalCenter+(hi-cy)*originalHeight/height;
+    const remap=y=>mix(lo,oldLip,(y-lo)/(hi-lo));
+    duct.outline=duct.outline.map(([x,y])=>[x,remap(y)]);
+    duct.center[1]=remap(cy);
+    duct.height*=Math.abs((oldLip-lo)/(hi-lo));
+   }
+   out.push(duct);
   }
  }
  return out;

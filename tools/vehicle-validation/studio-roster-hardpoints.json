@@ -12371,5 +12371,807 @@
     ],
     "reference": "1953 Maserati A6GCS/53 Pinin Farina Berlinetta, 1953–1954 closed-body2.0NAstraight-six sportscar; notopenA6GCS orlaterA6G54roadGT",
     "canonicalLampSides": true
+  },
+  {
+    "id": "lamborghini-lm002-eu-1986",
+    "label": "Egyptian Clover 1986",
+    "capability": "LM002 utility cabin separated from squared pickup bed and tall hood",
+    "carId": "3d-egyptian-clover-1986-3d-04efb2bd7ccd",
+    "bodyRef": "Egyptian-Clover-1986-body",
+    "wheelRef": "Egyptian-Clover-1986-wheel",
+    "radius": 0.42289999999999994,
+    "axles": [
+      {
+        "track": 1.6150000095367432,
+        "y": 0.42289999127388,
+        "z": 1.5390000343322754
+      },
+      {
+        "track": 1.6150000095367432,
+        "y": 0.42289999127388,
+        "z": -1.4110000133514404
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.8075000047683716,
+            0.42289999127388,
+            -1.5390000343322754
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.8075000047683716,
+            0.42289999127388,
+            -1.5390000343322754
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.8075000047683716,
+            0.42289999127388,
+            1.4110000133514404
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.8075000047683716,
+            0.42289999127388,
+            1.4110000133514404
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.5950000286102295,
+            0.7900000214576721,
+            -2.568000078201294
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.5950000286102295,
+            0.7900000214576721,
+            -2.568000078201294
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.8059999942779541,
+            0.9110000133514404,
+            2.5269999504089355
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.8059999942779541,
+            0.9110000133514404,
+            2.5269999504089355
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "1986 European Lamborghini LM002 launch civilian carbureted 5MT"
+  },
+  {
+    "id": "lamborghini-huracan-lp6104-eu-2014",
+    "label": "Seaside Clover 2014",
+    "capability": "2014 LP610-4 launch single sweep canopy angular snake-eye lamp and dual deep front ducts",
+    "carId": "3d-seaside-clover-2014-3d-c4d80d2ed619",
+    "bodyRef": "Seaside-Clover-2014",
+    "wheelRef": "Seaside-Clover-2014-Wheel",
+    "radius": 0.3275,
+    "axles": [
+      {
+        "track": 1.6679999828338623,
+        "y": 0.32749998569488525,
+        "z": 1.309999942779541
+      },
+      {
+        "track": 1.6200000047683716,
+        "y": 0.32749998569488525,
+        "z": -1.309999942779541
+      }
+    ],
+    "reference": "2014 European Lamborghini Huracan LP610-4 launch coupe"
+  },
+  {
+    "id": "maserati-granturismo-s-automatic-eu-2010",
+    "label": "Sea Bindweed 2010",
+    "capability": "GranTurismo S automatic long factory passenger cabin and open grille",
+    "carId": "3d-sea-bindweed-2010-3d-4ca980547cdf",
+    "bodyRef": "Sea Bindweed 2010 Body",
+    "wheelRef": "Sea Bindweed 2010 Wheel",
+    "radius": 0.33975,
+    "axles": [
+      {
+        "track": 1.5849599838256836,
+        "y": 0.3397499918937683,
+        "z": 1.4709999561309814
+      },
+      {
+        "track": 1.5900399684906006,
+        "y": 0.3397499918937683,
+        "z": -1.4709999561309814
+      }
+    ],
+    "reference": "2010 European Maserati GranTurismo S Automatic ZF 4.7 coupe"
+  },
+  {
+    "reference": "1988 UnitedStates MitsubishiStarion ESI-R widebody2.555LG54B intercooledturbo RWDfive-speedmanual",
+    "canonicalLampSides": true,
+    "stockWheelPositions": {
+      "FR": [
+        0.7251698970794678,
+        0.3159500062465668,
+        1.21750009059906
+      ],
+      "FL": [
+        -0.7251701354980469,
+        0.3159500062465668,
+        1.217499852180481
+      ],
+      "RR": [
+        0.7277101278305054,
+        0.3159500062465668,
+        -1.217499852180481
+      ],
+      "RL": [
+        -0.7277098894119263,
+        0.3159500062465668,
+        -1.21750009059906
+      ]
+    },
+    "id": "mitsubishi-starion-widebody-1988",
+    "label": "Crimson Clover 1988",
+    "capability": "Flush pop-up wedges, angular stamped widebody walls, long hatch roof and staggered factory-era wheels",
+    "carId": "3d-crimson-clover-1988-3d-36e7c27e4c11",
+    "bodyRef": "Crimson Clover 1988 Body",
+    "wheelRef": "Crimson Clover 1988 Wheel",
+    "radius": 0.31595,
+    "axles": [
+      {
+        "track": 1.4503400325775146,
+        "y": 0.3159500062465668,
+        "z": 1.2174999713897705
+      },
+      {
+        "track": 1.4554200172424316,
+        "y": 0.3159500062465668,
+        "z": -1.2174999713897705
+      }
+    ]
+  },
+  {
+    "reference": "1992 Japan Mitsubishi Galant VR-4 May1992 seventh-generation E-E84A 6A12 1998cc twin-turbo V6 AWD4AT, not sixth-generation E39A4G63 or manual240PS",
+    "canonicalLampSides": true,
+    "stockWheelPositions": {
+      "FR": [
+        0.7549998760223389,
+        0.31349998712539673,
+        1.317500114440918
+      ],
+      "FL": [
+        -0.755000114440918,
+        0.31349998712539673,
+        1.3174998760223389
+      ],
+      "RR": [
+        0.7525001168251038,
+        0.31349998712539673,
+        -1.3174998760223389
+      ],
+      "RL": [
+        -0.7524998784065247,
+        0.31349998712539673,
+        -1.317500114440918
+      ]
+    },
+    "id": "mitsubishi-galant-vr4-1992",
+    "label": "Ivy Speedwell 1992",
+    "capability": "Japanese E84A sedan with correct low dual fogs and round cabin, automatic right-hand drive",
+    "carId": "3d-ivy-speedwell-1992-3d-88d9f014ccc9",
+    "bodyRef": "Ivy Speedwell 1992 Body",
+    "wheelRef": "Ivy Speedwell 1992 Wheel",
+    "radius": 0.3135,
+    "axles": [
+      {
+        "track": 1.5099999904632568,
+        "y": 0.31349998712539673,
+        "z": 1.3174999952316284
+      },
+      {
+        "track": 1.5049999952316284,
+        "y": 0.31349998712539673,
+        "z": -1.3174999952316284
+      }
+    ]
+  },
+  {
+    "reference": "1998 Japan Mitsubishi FTO GPVersionR E-DE3A 1998cc6A12MIVECV6 FWD5MT1150kg; February1997–August1999 version, not automatic,GPX,GPVersionRaeroseries or1999GF emissionsupdate",
+    "canonicalLampSides": true,
+    "stockWheelPositions": {
+      "FR": [
+        0.7450000047683716,
+        0.30570000410079956,
+        0.9750000238418579
+      ],
+      "FL": [
+        -0.7450000047683716,
+        0.30570000410079956,
+        0.9750000238418579
+      ],
+      "RR": [
+        0.7425000071525574,
+        0.3066050112247467,
+        -1.524999976158142
+      ],
+      "RL": [
+        -0.7425000071525574,
+        0.3066050112247467,
+        -1.524999976158142
+      ]
+    },
+    "id": "mitsubishi-fto-gpvr-1998",
+    "label": "Marsh Cinquefoil 1998",
+    "capability": "Japanese Version R coupe with oval upper lamp, curved body, mid-height raised wing and right-hand drive",
+    "carId": "3d-marsh-cinquefoil-1998-3d-5458f64f7e1d",
+    "bodyRef": "Marsh-Cinquefoil",
+    "wheelRef": "Marsh-Cinquefoil-Wheel",
+    "radius": 0.30569999999999997,
+    "axles": [
+      {
+        "track": 1.4900000095367432,
+        "y": 0.30570000410079956,
+        "z": 0.9750000238418579
+      },
+      {
+        "track": 1.4850000143051147,
+        "y": 0.3066050112247467,
+        "z": -1.524999976158142
+      }
+    ]
+  },
+  {
+    "id": "chevrolet-impala-ls-2012",
+    "label": "Barberry Clover 2012",
+    "carId": "3d-barberry-clover-2012-3d-f371b8b5f785",
+    "capability": "2012 United States Chevrolet Impala, LS3.6SIDI DOHCV6 FWD six-speedautomatic,standard16-inchaluminumwheels andfrontbucketseats; notpolice,LTZ,SS or1964rear-drive",
+    "bodyRef": "Barberry Clover 2012 Body",
+    "wheelRef": "Barberry Clover 2012 Wheel",
+    "radius": 0.3382,
+    "axles": [
+      {
+        "track": 1.5849599838256836,
+        "y": 0.33820000290870667,
+        "z": 1.4033499956130981
+      },
+      {
+        "track": 1.5621000528335571,
+        "y": 0.33820000290870667,
+        "z": -1.4033499956130981
+      }
+    ],
+    "reference": "https://s3.amazonaws.com/cdn.autoipacket.com/brochures/chevrolet/2012/2012-chevrolet-impala.pdf"
+  },
+  {
+    "id": "chevrolet-caprice-wagon-1996",
+    "label": "Goldenrod 1996",
+    "carId": "3d-goldenrod-1996-3d-5da061f95d9c",
+    "capability": "1996 US Chevrolet Caprice Classic wagon, standard LT1 5.7 V8 RWD4AT, standard2.56 axle and225/75R15 tires, eight seats, unladen. No trailering/handling package, woodgrain option, Impala SS wheels, police sedan or Roadmaster.",
+    "bodyRef": "Goldenrod-1996-body",
+    "wheelRef": "Goldenrod-1996-wheel",
+    "radius": 0.35925,
+    "axles": [
+      {
+        "track": 1.5770000219345093,
+        "y": 0.359250009059906,
+        "z": 1.6269999742507935
+      },
+      {
+        "track": 1.628000020980835,
+        "y": 0.359250009059906,
+        "z": -1.3170000314712524
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6600000262260437,
+            0.6309999823570251,
+            -2.8534998893737793
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6600000262260437,
+            0.6309999823570251,
+            -2.8534998893737793
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.8370000123977661,
+            0.8199999928474426,
+            2.8315000534057617
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.8370000123977661,
+            0.8199999928474426,
+            2.8315000534057617
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7885000109672546,
+            0.359250009059906,
+            -1.6269999742507935
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7885000109672546,
+            0.359250009059906,
+            -1.6269999742507935
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.8140000104904175,
+            0.359250009059906,
+            1.3170000314712524
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.8140000104904175,
+            0.359250009059906,
+            1.3170000314712524
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "https://www.gm.com/content/dam/company/no_search/heritage-archive-docs/vehicle-information-kits/chevrolet/1996-Chevrolet-Impala.pdf"
+  },
+  {
+    "id": "chevrolet-malibu-base-2005",
+    "label": "Henbit 2005",
+    "carId": "3d-henbit-2005-3d-cabd17110482",
+    "capability": "2005 mainland-US Chevrolet Malibu base Sedan,2.2L Ecotec DOHC inline4,4T45-E four-speed automatic,FWD,LHD. NotMaxx,Classic,LS/LT,V6,SS,sport or appearance package.",
+    "bodyRef": "Henbit 2005 Body",
+    "wheelRef": "Henbit 2005 Wheel",
+    "radius": 0.32375,
+    "axles": [
+      {
+        "track": 1.5240000486373901,
+        "y": 0.32374998927116394,
+        "z": 1.350000023841858
+      },
+      {
+        "track": 1.50600004196167,
+        "y": 0.32374998927116394,
+        "z": -1.350000023841858
+      }
+    ],
+    "reference": "https://www.brochure-catalogue-voiture-neuve.fr/en/brochures/chevrolet/malibu/chevrolet-malibu-1996/5-ANG-2005-US/"
+  },
+  {
+    "id": "mitsubishi-gto-twin-turbo-mr-1997",
+    "label": "Slender Speedwell 1997",
+    "capability": "Low fixed-roof fastback, dual projector slant lenses in hood, 18-inch many-spoke alloys",
+    "carId": "3d-slender-speedwell-1997-3d-e6576971b8a4",
+    "bodyRef": "Slender Speedwell 1997 Body",
+    "wheelRef": "Slender Speedwell 1997 Wheel",
+    "radius": 0.3266,
+    "axles": [
+      {
+        "track": 1.559999942779541,
+        "y": 0.32659998536109924,
+        "z": 1.2350000143051147
+      },
+      {
+        "track": 1.5800000429153442,
+        "y": 0.32659998536109924,
+        "z": -1.2350000143051147
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "1997 August Japan Mitsubishi GTO Twin Turbo MR E-Z15A 6MT fixed roof",
+    "stockWheelPositions": {
+      "FL": [
+        -0.7800000905990601,
+        0.32659998536109924,
+        1.2349998950958252
+      ],
+      "FR": [
+        0.779999852180481,
+        0.32659998536109924,
+        1.2350001335144043
+      ],
+      "RL": [
+        -0.7899999022483826,
+        0.32659998536109924,
+        -1.2350001335144043
+      ],
+      "RR": [
+        0.7900001406669617,
+        0.32659998536109924,
+        -1.2349998950958252
+      ]
+    }
+  },
+  {
+    "id": "mitsubishi-pajero-evolution-v55w-1997",
+    "label": "White Melilot 1997",
+    "capability": "Upright road homologation off-roader, roof lip, hooped wheel extensions and tailgate spare",
+    "carId": "3d-white-melilot-1997-3d-5e33de64ee54",
+    "bodyRef": "White Melilot 1997 Body",
+    "wheelRef": "White Melilot 1997 Wheel",
+    "radius": 0.3887,
+    "axles": [
+      {
+        "track": 1.590000033378601,
+        "y": 0.388700008392334,
+        "z": 1.2100000381469727
+      },
+      {
+        "track": 1.590000033378601,
+        "y": 0.388700008392334,
+        "z": -1.2100000381469727
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "1997 Japan Mitsubishi Pajero Evolution E-V55W road 5MT",
+    "stockWheelPositions": {
+      "FL": [
+        -0.7950001358985901,
+        0.388700008392334,
+        1.209999918937683
+      ],
+      "FR": [
+        0.794999897480011,
+        0.388700008392334,
+        1.2100001573562622
+      ],
+      "RL": [
+        -0.794999897480011,
+        0.388700008392334,
+        -1.2100001573562622
+      ],
+      "RR": [
+        0.7950001358985901,
+        0.388700008392334,
+        -1.209999918937683
+      ]
+    }
+  },
+  {
+    "id": "mitsubishi-pajero-evolution-mpr11-2005",
+    "label": "Burnet 2005",
+    "capability": "Rounded Super Production silhouette, short bumper, rally cage and internal spare, no sponsors",
+    "carId": "3d-burnet-2005-3d-cb29134769a2",
+    "bodyRef": "Burnet 2005 Body",
+    "wheelRef": "Burnet 2005 Wheel",
+    "radius": 0.40295,
+    "axles": [
+      {
+        "track": 1.75,
+        "y": 0.4029499888420105,
+        "z": 1.3875000476837158
+      },
+      {
+        "track": 1.7359999418258667,
+        "y": 0.4029499888420105,
+        "z": -1.3875000476837158
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2005 Barcelona-Dakar-winning Mitsubishi Pajero Evolution MPR11, Peterhansel/Cottret"
+  },
+  {
+    "id": "maserati-8ctf-1939",
+    "label": "Sainfoin 1939",
+    "capability": "1939-output 8CTF open-wheel single-seater with exposed carriers, long bonnet and tall radiator",
+    "carId": "3d-sainfoin-1939-3d-7ec863b66d26",
+    "bodyRef": "Sainfoin-1939",
+    "wheelRef": "Sainfoin-1939-Wheel",
+    "radius": 0.3893,
+    "axles": [
+      {
+        "track": 1.3487399816513062,
+        "y": 0.38929998874664307,
+        "z": 1.3056000471115112
+      },
+      {
+        "track": 1.3487399816513062,
+        "y": 0.40503400564193726,
+        "z": -1.4143999814987183
+      }
+    ],
+    "reference": "1939 Maserati 8CTF, 1939-output3.0twinsuperchargedstraight-eight single-seatcompetitioncar4MT; noexactIndysetup claim",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "maserati-tipo61-1961",
+    "label": "Water Figwort 1961",
+    "capability": "1961 Tipo 61 Birdcage family open two-seat sports racer with coved lenses and front engine hood",
+    "carId": "3d-water-figwort-1961-3d-7fe72d96775f",
+    "bodyRef": "Water-Figwort-1961-body",
+    "wheelRef": "Water-Figwort-1961-wheel",
+    "radius": 0.32,
+    "axles": [
+      {
+        "track": 1.2000000476837158,
+        "y": 0.3199999928474426,
+        "z": 1.1449999809265137
+      },
+      {
+        "track": 1.2000000476837158,
+        "y": 0.3199999928474426,
+        "z": -1.0549999475479126
+      }
+    ],
+    "reference": "1961 Maserati Tipo 61 Birdcage, front-engine2.89NAfour two-seat sportsracer5MT,1961familyreference; noexactcrew/eventsetup claim",
+    "stockFrame": {
+      "basis": "raw-stock-model",
+      "forward": "-z",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.5730000138282776,
+            0.6520000100135803,
+            -1.7519999742507935
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.5730000138282776,
+            0.6520000100135803,
+            -1.7519999742507935
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.5360000133514404,
+            0.4880000054836273,
+            1.9279999732971191
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.5360000133514404,
+            0.4880000054836273,
+            1.9279999732971191
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.6000000238418579,
+            0.3199999928474426,
+            -1.1449999809265137
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.6000000238418579,
+            0.3199999928474426,
+            -1.1449999809265137
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.6000000238418579,
+            0.3199999928474426,
+            1.0549999475479126
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.6000000238418579,
+            0.3199999928474426,
+            1.0549999475479126
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "maserati-levante-s-2017",
+    "label": "Western Clover 2017",
+    "capability": "2017 UK petrol Levante S, standard five-seat SUV with broad native vertical grille and 19in wheels",
+    "carId": "3d-western-clover-2017-3d-8036a970520c",
+    "bodyRef": "Western Clover 2017 Body",
+    "wheelRef": "Western Clover 2017 Wheel",
+    "radius": 0.3738,
+    "axles": [
+      {
+        "track": 1.63100004196167,
+        "y": 0.37380000948905945,
+        "z": 1.5019999742507935
+      },
+      {
+        "track": 1.6619999408721924,
+        "y": 0.37380000948905945,
+        "z": -1.5019999742507935
+      }
+    ],
+    "reference": "2017 Maserati Levante S, UKSeptember2017 petrol3.0 twin-turboV6 Q4 eight-speed automatic SUV,standard19-inch wheels;notDiesel,350CVbase,GTS,Trofeo orlaterfacelift",
+    "canonicalLampSides": true
   }
 ]

@@ -65,7 +65,19 @@ export function emitFlushHoodLids({cover,hoodLength,settings,across,along,compac
     put('headlights','seamDark',strip([lid.inner,bezel],[.004,.018]));
    }else put('headlights','seamDark',strip([lid.outline,lid.inner,bezel],[0,.008,.026]));
    put('headlights','reflector',strip([bezel,bowl,core],[.026,.030,.035]));
-   put('headlights','projector',strip([core,blend(.14)],[.034,.024],lid.center));
+   if(settings.activeInsetLamps){
+    // Reuse the real projector rim and render only its central element as
+    // a headlight channel. Keep the silver holder passive with lights off.
+    put('headlights','projector',strip([core,blend(.14)],[.034,.024]));
+    put('headlights','head',strip([blend(.14)],[.024],lid.center));
+    // The amber element belongs to the outboard sector of the recessed
+    // cavity. Fit the small reflector in the same trimmed surface chart.
+    const sign=lid.center[0]>.5?1:-1;
+    const [u,v]=lid.center;
+    const x=u+sign*(hw-insetU)*.55,y=v+(hv-insetV)*.12;
+    const indicator=k=>section.map(([a,b])=>[x+k*a*(hw-insetU)*.19,y+k*b*(hv-insetV)*.23]);
+    put('headlights',sign>0?'signalR':'signalL',strip([indicator(1),indicator(.75)],[.014,.012],[x,y]));
+   }else put('headlights','projector',strip([core,blend(.14)],[.034,.024],lid.center));
    put('headlights','opticCover',strip([lid.inner,cover],[.006,.004],lid.center));
    continue;
   }

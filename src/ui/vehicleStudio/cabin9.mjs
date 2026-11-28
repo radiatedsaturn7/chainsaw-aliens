@@ -195,13 +195,19 @@ export function buildCabin({g,quality='preview',compact=0,put,sample,dims}){
   for(let i=0;i<12;i++){const t=(lo+hi)*.5;if((glassAt(end,t,u)[2]-z)*dir<0)lo=t;else hi=t;}
   return glassAt(end,(lo+hi)*.5,u)[1];
  };
- function addSeat({x,z,w,l,y,bench=false,positions=2,row=0,jump=false}){
+ function addSeat({x,z,w,l,y,bench=false,positions=2,row=0,jump=false,aft=false}){
   const rearZ=z-l*.48,foreZ=z+l*.51,stand=.052;
-  const hh=clamp((profileY(rearZ-.12,x)-y-.204)/.82,.234,bench?.52:.65);
+  const emit=(part,material,geo,p=null)=>{
+   // Reorient only the rear upholstery around its own center. Cabin,
+   // driving eye, and dashboard stay in the ordinary LHD cabin frame.
+   if(aft){if(p)geo.translate(...p);geo.translate(-x,0,-z).rotateY(Math.PI).translate(x,0,z);p=null;}
+   return add(part,material,geo,p);
+  };
+  const hh=clamp((profileY(aft?2*z-rearZ+.12:rearZ-.12,x)-y-.204)/.82,.234,bench?.52:.65);
   const cushionH=(bench?.098:.106)*clamp(c.seats.depth,.80,1.2);
   const tilt=.084+.062*clamp(c.seats.shape,0,1)+(row?.017:0);
   const sec=[[-.5,.78,.24],[-.39,.94,.78],[-.16,1,1],[.09,1,.98],[.30,.99,.83],[.48,.86,.43]];
-  add('seats','seat',closedLoft(small(lod?5:high?11:8,3,3,2),small(lod?10:18,8,6,6),(u,a)=>{
+  emit('seats','seat',closedLoft(small(lod?5:high?11:8,3,3,2),small(lod?10:18,8,6,6),(u,a)=>{
    const [zc,width,h]=shellProfile(sec,u), ac=f(Math.cos(a),.65), sn=f(Math.sin(a),.68),ed=Math.abs(ac);
    const rail=Math.max(0,sn)*Math.max(0,(ed-.54)/.46)**1.5*(bench?.008:.017+.017*bolster);
    return [x+ac*w*.5*width,y+cushionH*.30+sn*cushionH*.58*h+rail,z+zc*l];
@@ -212,7 +218,7 @@ export function buildCabin({g,quality='preview',compact=0,put,sample,dims}){
   const periodLow=Boolean(g.construction.cabin.periodLowSeat&&row===0);
   const hBack=hh*(jump?.54:periodLow?.69:.82);
   const up=y+cushionH*.62;
-  add('seats','seat',closedLoft(small(lod?6:high?14:10,4,3,3),small(lod?10:18,8,6,6),(u,a)=>{
+  emit('seats','seat',closedLoft(small(lod?6:high?14:10,4,3,3),small(lod?10:18,8,6,6),(u,a)=>{
    const [t,wi,dd]=shellProfile(backs,u), ac=f(Math.cos(a),.62), sn=f(Math.sin(a),.69);
    const wing=bench?.010:.055*bolster;
    const panel=Math.max(0,sn)*(wing*Math.abs(ac)**1.9+.019*lumbar*Math.sin(pi*t)**2);
@@ -229,24 +235,24 @@ export function buildCabin({g,quality='preview',compact=0,put,sample,dims}){
      const [,wi,dd]=shellProfile(backs,t);
      return [x+w*aw*wi,up+hBack*t,rearZ+.037-tilt*t+dd*.045+.029*bolster*Math.abs(s)+.014*lumbar*Math.sin(pi*t)**2];
     });
-    add('seats','interior',sweptTube(px,.0019+.0013*trim,5));
+    emit('seats','interior',sweptTube(px,.0019+.0013*trim,5));
    }
    for(const s of [-1,1]){
-    add('seats','trim',box(.024,.038,l*.76),[x+s*w*.26,y-stand,z]);
-    add('seats','interior',box(.052,.028,.07),[x+s*w*.26,y-stand-.020,foreZ-.065]);
-    add('seats','interior',box(.052,.028,.07),[x+s*w*.26,y-stand-.020,rearZ+.035]);
+    emit('seats','trim',box(.024,.038,l*.76),[x+s*w*.26,y-stand,z]);
+    emit('seats','interior',box(.052,.028,.07),[x+s*w*.26,y-stand-.020,foreZ-.065]);
+    emit('seats','interior',box(.052,.028,.07),[x+s*w*.26,y-stand-.020,rearZ+.035]);
    }
   }
   const headW=bench?w*(positions===3?.17:.21):w*.51,headL=.079,headH=.10;
   const headrests=periodLow||jump?[]:bench?(positions===3?[-1,0,1]:[-1,1]):[0];
   for(const s of headrests){
    const hx=x+s*w*.28,hy=up+hBack-.009,hz=rearZ+.028-tilt;
-   if(!lod)for(const sign of [-1,1])add('seats','chrome',rod([hx+sign*headW*.24,hy-.036,hz],[hx+sign*headW*.24,hy+.065,hz],.005,6));
-   add('seats','seat',closedLoft(small(lod?4:7,4,4,3),small(lod?8:12,8,8,6),(u,a)=>{
+   if(!lod)for(const sign of [-1,1])emit('seats','chrome',rod([hx+sign*headW*.24,hy-.036,hz],[hx+sign*headW*.24,hy+.065,hz],.005,6));
+   emit('seats','seat',closedLoft(small(lod?4:7,4,4,3),small(lod?8:12,8,8,6),(u,a)=>{
     const sw=.76+.24*Math.sin(pi*u);return [hx+headW*.5*sw*f(Math.cos(a),.59),hy+.040+headH*u,hz+headL*.5*sw*f(Math.sin(a),.57)];
    },true));
   }
-  seats.push({row,center:[x,y,z],width:w,length:l,bench,headrests:headrests.length});
+  seats.push({row,center:[x,y,z],width:w,length:l,bench,headrests:headrests.length,...(aft?{facing:'rear'}:{})});
   return {height:up+hBack};
  }
  for(let i=0;i<rowCount;i++){
@@ -261,13 +267,14 @@ export function buildCabin({g,quality='preview',compact=0,put,sample,dims}){
   const middlePlaces=cfg.middleBenchSeats??3;
   const ordered=isBench||central?[0]:driverOnly?[cfg.driverSide==='right'?1:-1]:[-1,1];
   const rowStart=seats.length;
+  const aft=layout==='three-row'&&i===2&&Boolean(cfg.rearBenchFacingAft);
   const captainW=Math.min(width*.43,.51*c.seats.size,middleJump?width*.295:Infinity);
   for(const s of ordered){
    const x=s*width*.247;
-   addSeat({x,z,w:isBench?width*.93:captainW,l:length,y,bench:isBench,positions:frontBench?3:middleBench?middlePlaces:rowCount===3&&i===2?g.construction.cabin.rearBenchSeats:2,row:i});
+   addSeat({x,z,w:isBench?width*.93:captainW,l:length,y,bench:isBench,positions:frontBench?3:middleBench?middlePlaces:rowCount===3&&i===2?g.construction.cabin.rearBenchSeats:2,row:i,aft});
   }
   if(middleJump)addSeat({x:0,z:z-.018,w:Math.min(width*.194,.284),l:length*.77,y:y-.009,row:i,jump:true});
-  rowMeta.push({index:i,z,layout:isBench?'bench':'individual',count:central||driverOnly?1:middleJump||frontBench?3:middleBench?middlePlaces:isBench?(layout==='three-row'?g.construction.cabin.rearBenchSeats:3):2,parts:seats.length-rowStart});
+  rowMeta.push({index:i,z,layout:isBench?'bench':'individual',count:central||driverOnly?1:middleJump||frontBench?3:middleBench?middlePlaces:isBench?(layout==='three-row'?g.construction.cabin.rearBenchSeats:3):2,parts:seats.length-rowStart,...(aft?{facing:'rear'}:{})});
  }
 
  const dashZ=front-.118, dw=Math.min(widthAt(dashZ)*1.95,xBound(dashZ)*2*c.dash.size);

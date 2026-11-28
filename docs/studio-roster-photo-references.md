@@ -738,3 +738,28 @@ The Jarama lens brows and Reventón chevron internals are separate native
 options. The Avalanche has physically backed cover leaves, without animated
 Midgate. Fit optical sweep, Prelude glass transitions, and Maserati
 window surrounds are still simplified.
+
+### Full-roster rollout, Italian road cars, Mitsubishi, and Chevrolet
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Egyptian Clover 1986 | European civilian carbureted Lamborghini LM002 launch V12, 5MT. [Lamborghini archive](https://www.lamborghini.com/en-en/news/lamborghini-lm002-turns-40-first-super-suv); [exact 1986 photo set](https://supercarnostalgia.com/blog/one-to-buy-13000km-omani-delivered-1986-lamborghini-lm002). |
+| Seaside Clover 2014 | European Lamborghini Huracán LP610-4 launch coupé, not later derivative or roadster. [2014 multi-angle launch gallery](https://www.ultimatecarpage.com/cg/5744/Lamborghini-Huracan-LP610-4.html). |
+| Sea Bindweed 2010 | European Maserati GranTurismo S Automatic 4.7 ZF, not MC Shift. [Maserati launch](https://www.media.stellantis.com/uk-en/maserati/press/maserati-granturismo-s-automatic-unveiled-at-the-geneva-auto-show-1); [multi-angle photographs](https://www.caricos.com/cars/m/maserati/2010_maserati_granturismo_s_automatic/). |
+| Crimson Clover 1988 | US Mitsubishi Starion ESI-R intercooled widebody 2.6 five-speed. [Period brochure](https://xr793.com/wp-content/uploads/2024/02/1988-Mitsubishi-Starion.pdf); [period-equivalent gallery](https://www.premierauctiongroup.com/inventory-item/14668/1988-mitsubishi-starion-esi-r-coupe). |
+| Ivy Speedwell 1992 | Japanese Mitsubishi Galant VR-4 E84A seventh-generation 6A12 4AT. [Japanese period catalogue](https://www.en.japanclassic.ru/booklets/161-mitsubishi-galant-1992-vii.html). |
+| Marsh Cinquefoil 1998 | Japanese Mitsubishi FTO GP Version R late pre-emissions-change manual. [Japanese model gallery](https://www.carsensor.net/catalog/mitsubishi/fto/F001/M003G007/). |
+| Barberry Clover 2012 | US Chevrolet Impala LS civilian base 3.6 FWD with buckets, not police. [Factory brochure](https://s3.amazonaws.com/cdn.autoipacket.com/brochures/chevrolet/2012/2012-chevrolet-impala.pdf); [same-body views](https://www.consumerreports.org/cars/chevrolet/impala/2012/photos-and-video/). |
+| Goldenrod 1996 | US Chevrolet Caprice Classic LT1 wagon, eight seats without woodgrain. [GM information kit](https://www.gm.com/content/dam/company/no_search/heritage-archive-docs/vehicle-information-kits/chevrolet/1996-Chevrolet-Impala.pdf); [wagon photo set](https://www.autoevolution.com/news/this-1996-chevrolet-caprice-classic-station-wagon-looks-ready-for-spring-break-roadtrips-265916.html). |
+| Henbit 2005 | US Chevrolet Malibu base 2.2 Ecotec sedan, not Classic or Maxx. [Exterior angles](https://www.consumerreports.org/cars/chevrolet/malibu/2005/photos-and-video/). |
+| Slender Speedwell 1997 | Japanese Mitsubishi GTO Twin Turbo MR fixed-roof Z15A manual. [Japanese specifications](https://gazoo.com/catalog/maker/MITSUBISHI/GTO/199010/4007994/); [model photo gallery](https://www.j-spec.com.au/featured/1997-Mitsubishi-GTO-Twin_Turbo_MR-15512.html). |
+| White Melilot 1997 | Japanese Mitsubishi Pajero Evolution E-V55W homologation 5MT. [Factory history](https://www.mitsubishi-motors.com/en/company/history/car/index.html); [actual homologation packet](https://historicdb.fia.com/sites/default/files/car_attachment/1601085301/homologation_form_number_1094_group_t1.pdf). |
+| Burnet 2005 | Barcelona–Dakar Mitsubishi Pajero/Montero Evolution MPR11, Peterhansel/Cottret. [Mitsubishi Dakar archive](https://www.mitsubishi-motors.com/en/brand/motorsports/dakar/2005/index.html); [period car gallery](https://commons.wikimedia.org/wiki/Category:Mitsubishi_Pajero_Evolution_of_St%C3%A9phane_Peterhansel_in_2005). |
+| Sainfoin 1939 | Maserati 8CTF 1939 competition build, no particular Indy setup claimed. [Maserati period history](https://www.maserati.com/gb/en/news/maserati-8ctf-indianapolis-1939). |
+| Water Figwort 1961 | Maserati Tipo 61 Birdcage family two-seat sports racer. [Maserati archive](https://www.maserati.com/global/en/brand/maserati-classic-cars/post-war-racing-cars/birdcage-tipo-60-tipo-61); [period variants and photos](https://www.media.stellantis.com/em-en/maserati/press/maserati-tipo-61-the-60th-anniversary-of-its-triumph-at-the-nurburgring). |
+| Western Clover 2017 | UK Maserati Levante S petrol original 19-inch configuration, not later GTS/Trofeo. [Maserati UK](https://www.maserati.com/gb/en/news/levante-s-available-in-the-uk); [period brochure](https://cdn.dealereprocess.org/cdn/brochures/maserati/2017-levante.pdf). |
+
+The front intake and seated marker controls are reusable and opt-in.
+The Caprice has a physical aft-facing third row. The FTO's recessed hood
+optics use the six independent gameplay roles. The Huracán and Galant
+front shapes and the race Pajero wheel arches remain approximations.
