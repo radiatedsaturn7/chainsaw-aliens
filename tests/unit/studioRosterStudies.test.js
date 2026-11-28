@@ -99,3 +99,16 @@ test('compact packs reject truncated binary attributes while legacy packs remain
  const before=packed(studioRoster[0]);
  assert.equal(decodeStudioRosterPair(before),before);
 });
+
+test('a rejected shared pair can recover without reloading the page',async()=>{
+ const r=studioRoster[0];let calls=0;
+ const load=createStudioRosterLoader({fetchPair:()=>{
+  if(++calls===1)throw new DOMException('Request timed out','TimeoutError');
+  return packed(r);
+ }});
+ assert.deepEqual(await Promise.all([load(r.bodyRef),load(r.wheelRef)]),[null,null]);
+ const [body,wheel]=await Promise.all([load(r.bodyRef),load(r.wheelRef)]);
+ assert.equal(body.name,r.label+' · Studio body');
+ assert.equal(wheel.name,r.label+' · Studio wheel');
+ assert.equal(calls,2);
+});

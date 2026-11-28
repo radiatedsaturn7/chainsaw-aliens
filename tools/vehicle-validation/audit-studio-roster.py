@@ -95,10 +95,10 @@ def collect(revision, approved):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--revision", default="HEAD", help="Git revision that supplies stock cars")
+    parser.add_argument("--revision", default="HEAD", help="Git revision that supplies both stock cars and enrolled studies")
     parser.add_argument("--queue", type=Path, help="Optional machine-readable authoring queue output")
     args = parser.parse_args()
-    studies = json.loads((ROOT / "tools/vehicle-validation/studio-roster-hardpoints.json").read_text())
+    studies = json.loads(git("show", f"{args.revision}:tools/vehicle-validation/studio-roster-hardpoints.json"))
     approved = {WRX[0]: WRX[1:]}
     for row in studies:
         if row["carId"] in approved:

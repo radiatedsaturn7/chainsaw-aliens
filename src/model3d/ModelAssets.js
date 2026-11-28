@@ -1,6 +1,6 @@
 import {applyAutomotiveEnvironment,automotivePilotEnabled,automotiveFleetEnabled} from './AutomotiveMaterials.js';
 import {wrxBundledModelUrl,loadWrxBundledModel,isWrxStudioDocument} from './WrxBundledModels.js';
-import {studioRosterModelUrl,loadStudioRosterModel} from './StudioRosterModels.js';
+import {studioRosterModelUrl,loadStudioRosterModel,studioRosterEntry,isValidatedStudioPackModel,STUDIO_ROSTER_CACHE_PAIRS} from './StudioRosterModels.js';
 import {wrxPilotPart} from './WrxVisualPilot.js';
 import {normalizeModelBinding} from './ModelBinding.js';
 const bundledModelUrl=ref=>wrxBundledModelUrl(ref)??studioRosterModelUrl(ref);
@@ -13,16 +13,46 @@ import {loadProjectFile,hydrateProjectFilePayload} from '../ui/projectFiles.js';
 // One loading cache per engine, shared by all placements of a saved model.
 // Placements own geometry and pose; animating one never changes another.
 export class ModelAssetLibrary {
-  constructor({load=loadProjectFile,hydrate=hydrateProjectFilePayload,bundled=null}={}){
-    this.load=load;this.hydrate=hydrate;this.bundled=bundled;this.entries=new Map();this.temporary=new Map();this.pending=new Map();this.errors=new Map();this.revision=0;
+  constructor({load=loadProjectFile,hydrate=hydrateProjectFilePayload,bundled=null,studioRetryMs=30000,now=Date.now}={}){
+    this.load=load;this.hydrate=hydrate;this.bundled=bundled;this.studioRetryMs=studioRetryMs;this.now=now;this.studioRetryAfter=new Map();this.studioHot=new Map();this.studioWeak=new Map();this.entries=new Map();this.temporary=new Map();this.pending=new Map();this.errors=new Map();this.revision=0;
   }
-  adopt(ref,payload){
+  touchStudio(ref){
+    const group=studioRosterEntry(ref);
+    if(!group)return;
+    this.studioHot.delete(group.id);this.studioHot.set(group.id,group);
+    while(this.studioHot.size>STUDIO_ROSTER_CACHE_PAIRS){
+      const [oldId,oldest]=this.studioHot.entries().next().value;
+      this.studioHot.delete(oldId);
+      for(const oldRef of [oldest.bodyRef,oldest.wheelRef]){
+        const value=this.entries.get(oldRef);
+        // A live scene may hold the model after eviction. Reuse it rather than re-fetching or rebuilding.
+        if(value&&typeof WeakRef==='function')this.studioWeak.set(oldRef,{model:new WeakRef(value.model),revision:value.revision,fromBundle:value.fromBundle});
+        this.entries.delete(oldRef);
+      }
+    }
+  }
+  bundledEntry(ref){
+    let value=this.entries.get(ref);
+    if(!value){
+      const weak=this.studioWeak.get(ref),model=weak?.model.deref();
+      if(model){value={model,source:model,revision:weak.revision,fromBundle:weak.fromBundle};this.entries.set(ref,value);}
+      this.studioWeak.delete(ref);
+    }
+    if(value&&studioRosterModelUrl(ref))this.touchStudio(ref);
+    return value;
+  }
+  adopt(ref,payload,{fromBundle=false}={}){
     const document=payload?.data||payload;
     if(!document)return null;
     const previous=this.entries.get(ref);
     if(previous?.source===document)return previous.model;
-    const model=validateModelDocument(structuredClone(document));
-    this.entries.set(ref,{source:document,model,revision:++this.revision});this.errors.delete(ref);return model;
+    // Studio bundle validation is atomic at the pair boundary, on a fresh decoded document.
+    // Other documents remain isolated from their mutable editor sources.
+    const model=fromBundle&&isValidatedStudioPackModel(document)?document:validateModelDocument(structuredClone(document));
+    this.entries.set(ref,{source:document,model,fromBundle,revision:++this.revision});this.errors.delete(ref);
+    this.studioWeak.delete(ref);
+    if(this.bundled&&studioRosterModelUrl(ref))this.touchStudio(ref);
+    return model;
   }
   adoptTemporary(ref,document){
     if(typeof ref!=='string'||!ref.startsWith('studio-session-')||this.temporary.has(ref))throw Error('Invalid temporary model reference');
@@ -33,8 +63,15 @@ export class ModelAssetLibrary {
   get(ref){
     if(!ref)return null;
     if(this.temporary.has(ref))return this.temporary.get(ref);
+    // The Studio route is still authoritative after a transient miss. Keep
+    // drawing the stock fallback while retrying, without fetching every frame.
+    const retryAfter=this.studioRetryAfter.get(ref);
+    if(this.bundled&&studioRosterModelUrl(ref)&&retryAfter!==undefined){
+      if(this.now()>=retryAfter&&!this.pending.has(ref))void this.prepare(ref).catch(()=>{});
+      return this.bundledEntry(ref)?.model??null;
+    }
     if(this.bundled&&bundledModelUrl(ref)&&!this.errors.has(ref)){
-      if(this.entries.has(ref))return this.entries.get(ref).model;
+      const entry=this.bundledEntry(ref);if(entry)return entry.model;
       if(!this.pending.has(ref))void this.prepare(ref).catch(()=>{});
       return null;
     }
@@ -48,13 +85,25 @@ export class ModelAssetLibrary {
     if(!ref)return Promise.reject(Error('Select a saved 3D model'));
     if(this.temporary.has(ref))return Promise.resolve(this.temporary.get(ref));
     if(this.pending.has(ref))return this.pending.get(ref);
+    if(this.bundled&&studioRosterModelUrl(ref)&&!this.studioRetryAfter.has(ref)&&!this.errors.has(ref)){
+      const entry=this.bundledEntry(ref);if(entry?.fromBundle)return Promise.resolve(entry.model);
+    }
     const request=Promise.resolve().then(async()=>{
       let visual=null;
       if(this.bundled&&bundledModelUrl(ref)){
         try{
           visual=await this.bundled(ref);
-          if(visual)return this.adopt(ref,visual);
-        }catch(error){console.warn('Using the stock WRX model',error);}
+          if(visual){
+            const model=this.adopt(ref,visual,{fromBundle:true});
+            this.studioRetryAfter.delete(ref);
+            return model;
+          }
+        }catch(error){console.warn('Using the stock vehicle model',error);}
+        if(studioRosterModelUrl(ref)){
+          this.studioRetryAfter.set(ref,this.now()+this.studioRetryMs);
+          const stock=this.bundledEntry(ref)?.model;
+          if(stock)return stock;
+        }
       }
       const payload=this.load('models',ref)||await this.hydrate('models',ref);
       if(!payload)throw Error(`3D model not found: ${ref}`);
