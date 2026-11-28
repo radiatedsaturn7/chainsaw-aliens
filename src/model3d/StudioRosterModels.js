@@ -1,3 +1,4 @@
+import {decodeStudioRosterPair} from './StudioRosterPack.js';
 import {studioRoster} from './studio-roster/index.js';
 
 const parts=new Map(studioRoster.flatMap(entry=>[
@@ -32,7 +33,7 @@ async function readPair(url){
  if(typeof DecompressionStream!=='function')return null;
  const response=await fetch(url,{signal:globalThis.AbortSignal?.timeout?.(12000)});
  if(!response.ok||!response.body)return null;
- return new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).json();
+ return decodeStudioRosterPair(await new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).json());
 }
 
 export const loadStudioRosterModel=createStudioRosterLoader();

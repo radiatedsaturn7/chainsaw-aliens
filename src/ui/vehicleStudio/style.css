@@ -115,3 +115,5 @@ footer{padding:4px max(6px,env(safe-area-inset-right)) max(5px,env(safe-area-ins
 
 #roster-study{display:grid;gap:5px;padding:8px;border:1px solid var(--line);border-radius:7px}
 #roster-study p{margin:0;padding:3px 0}
+#roster-study input,#roster-study select{min-width:0;width:100%;min-height:44px}
+#roster-study-count{font-variant-numeric:tabular-nums}

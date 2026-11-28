@@ -178,8 +178,22 @@ export function buildWheels(g,{quality='preview',compact=0,emit,rear=false}={}){
   [rim*.188,hub+.004],[0,hub+.004]
  ];
  put('wheels','wheel',lathe(compact?hubProfile.filter((p,i)=>i!==1&&i!==3):hubProfile,innerN));
+
+ if(w.type==='stamped steel'){
+  // Pressed wheel centers are shallow metal discs, not cast spokes.
+  // Recess the web between the wheel's central cap and turned outer lip.
+  const b=face-.013, web=[[rim*.931,b],[rim*.795,b-.020],[rim*.709,b-.027],[rim*.465,b-.027],[rim*.31,b],[rim*.239,b]];
+  put('wheels','wheel',lathe(web,n));
+  // Small dark stamped vent pockets; they are blind relief, not texture.
+  for(let k=0;k<8;k++){
+   const a=k*TAU/8,r=rim*.587,rr=rim*.10;
+   const recess=new T.CircleGeometry(rr,compact?5:8).rotateY(Math.PI*.5).translate(b-.026,Math.cos(a)*r,Math.sin(a)*r);
+   put('wheels','seamDark',recess);
+  }
+ }else{
  const nSpokes=w.type==='6-spoke'?6:w.type==='5-spoke'?5:w.type==='10-spoke'?10:low?8:12;
  for(let k=0;k<nSpokes;k++)put('wheels','wheel',spoke(rim,face,dish,k,nSpokes,w.type,w.depth,low||nSpokes>7&&!detail));
+  }
  if(!low)for(let k=0;k<5;k++)put('wheels','trim',boltSocket(hub+.0042,rim*.134,k));
  const disk=Math.max(.053,rim*.743),rotorX=Math.min(-.004,face-dish-.026),panel=.027+clamp(tireWidth-.225,-.045,.07)*.14;
  const rotorProfile=[

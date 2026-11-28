@@ -38,7 +38,7 @@
  <div><strong>Design file</strong><button id="menu-close" aria-label="Close menu">Done</button></div>
  <button id="save">Save design</button><button id="load">Load design</button><button id="duplicate">Duplicate</button><button id="reset">Reset to preset</button><button id="export">Export game vehicle</button>
  <button id="roster-study-toggle" type="button" aria-controls="roster-study" aria-expanded="false">Roster studies</button>
- <section id="roster-study" hidden aria-label="Editable roster studies"><label for="roster-study-id">Choose a car to edit</label><select id="roster-study-id"></select><p id="roster-study-detail"></p><button id="roster-study-load" type="button">Open study</button></section>
+ <section id="roster-study" hidden aria-label="Editable roster studies"><label for="roster-study-search">Find a car</label><input id="roster-study-search" type="search" autocomplete="off" enterkeyhint="search" placeholder="Name, year or reference"><p id="roster-study-count" role="status"></p><label for="roster-study-id">Choose a car to edit</label><select id="roster-study-id"></select><p id="roster-study-detail"></p><button id="roster-study-load" type="button">Open study</button></section>
  <p>Design files keep sliders and panel edits. The game export includes body, wheels, attachments, materials and vehicle data.</p>
 </div>
 <input id="design-file" type="file" accept="application/json,.json" hidden>

@@ -24,7 +24,7 @@ const profiles={
   [1,-.25],[.95,.39],[.70,.83],[.34,1],[-.08,.91],[-.38,.79],[-.72,.86],[-.94,.62],[-1,.22]],
  compound:[[-1,-.36],[-.79,-.77],[-.29,-.99],[.24,-.87],[.83,-.98],[1,-.69],[.95,.33],[.72,.89],[.27,.82],[-.36,1],[-.82,.78],[-1,.31]]
 };
-export const HOUSING_FAMILIES=['round-rect','circle','oval','rectangle','trapezoid','angular','swept','wrap','upright-wrap','compound','round-twin'];
+export const HOUSING_FAMILIES=['round-rect','circle','oval','rectangle','trapezoid','angular','swept','wrap','upright-wrap','compound','round-twin','dual-round'];
 const layouts=new Set(['projector','twin','led','mixed','factory-split','round-stack']);
 function curvePolygon(points,r,n){
  const controls=(p,q,t)=>p.map((x,i)=>mix(x,q[i],t));
@@ -174,6 +174,26 @@ export function makeOpenings({end,g,segments=32,face=null}){
  // Keep a solid band to the tallest possible fog cover underneath.
  const reach=front?Math.min(.11,Math.max(0,num(raw.lowerLensReach,0)),Math.max(0,.585-(cyBase+hBase/2))):0;
  const h=hBase+reach,cy=cyBase+reach/2;
+ if(!front&&housing==='dual-round'){
+  // Two independent recesses per side. Keep a physical painted land between
+  // lenses and reserve the middle third for a plate, handle or deck badge.
+  const halfWidth=Math.min(.069,.029+opt.width*.035);
+  const halfHeight=Math.min(.108,.046+opt.height*.062);
+  const primaryX=Math.max(.115,Math.min(.276,sideX-(halfWidth+.010)));
+  const centers=[Math.max(.038+halfWidth,primaryX),Math.min(.423-halfWidth,primaryX+2*halfWidth+.028)];
+  const y=Math.max(.115+halfHeight,Math.min(.51,cyBase));
+  for(let i=0;i<centers.length;i++){
+   const cx=s>0?1-centers[i]:centers[i],cy=y+(i?opt.angle*.018:0);
+   const roundOpt={...opt,angle:0,sweep:.5,inboardReach:.5,outline:[],formula:'',layout:'round-stack',sideWrap:0,secondaryLamp:i>0};
+   const opening=aperture({id:'tail-'+(s>0?'l':'r')+(i?'-inner':''),
+    component:'tails',housing:'circle',cx,cy,width:halfWidth*2,height:halfHeight*2,side:s,opt:roundOpt,segments});
+   // Spacing remains authoritative: an oversize physical diameter is capped
+   // to the available pair envelope before attempting true projected circles.
+   if(face&&raw.physicalDiameter>0)projectRoundLamp(opening,face,Math.min(raw.physicalDiameter,g.dimensions.width*halfWidth*1.80),0);
+   out.push(opening);
+  }
+  continue;
+ }
  const opening=aperture({id:(front?'head':'tail')+(s>0?'-l':'-r'),
   component:front?'headlights':'tails',housing,cx:s>0?1-sideX:sideX,cy,width:w,height:h,side:s,opt,segments});
  if(!front&&face&&housing==='circle'&&raw.physicalDiameter>0&&!raw.sideWrap)projectRoundLamp(opening,face,raw.physicalDiameter,raw.circleLift);
@@ -182,8 +202,8 @@ export function makeOpenings({end,g,segments=32,face=null}){
  if(front){
   const gr=c.grille??{},fog=c.fogs??{};
   if(gr.type!=='closed')out.push(aperture({id:'upper-grille',component:'grille',housing:fascia.grilleShape??'trapezoid',cx:.5,cy:.415+(num(fascia.grilleHeightPosition,.5)-.5)*.43,
-   width:Math.min(mix(.155,.256,sat((num(gr.size,1)-.68)/.60))*(.56+.88*num(fascia.grilleWidth,.5)),2*(.49-Math.max(...out.filter(o=>o.center[0]<.5).flatMap(o=>o.outline.map(p=>p[0])))),2*(Math.min(...out.filter(o=>o.center[0]>.5).flatMap(o=>o.outline.map(p=>p[0])))-.51)),height:mix(.13,gr.type==='vertical slats'?.35:.238,sat((num(gr.depth,1)-.68)/.60))*(.58+.84*num(fascia.grilleHeight,.5)),
-   kind:'duct',segments,style:gr.type==='vertical slats'?'vertical':gr.type==='bars'?'bars':'mesh'}));
+   width:Math.min(mix(.155,.256,sat((num(gr.size,1)-.68)/.60))*(.56+.88*num(fascia.grilleWidth,.5)),2*(.49-Math.max(...out.filter(o=>o.center[0]<.5).flatMap(o=>o.outline.map(p=>p[0])))),2*(Math.min(...out.filter(o=>o.center[0]>.5).flatMap(o=>o.outline.map(p=>p[0])))-.51)),height:mix(.13,(gr.type==='vertical slats'||gr.type==='seven-slot')?.35:.238,sat((num(gr.depth,1)-.68)/.60))*(.58+.84*num(fascia.grilleHeight,.5)),
+   kind:'duct',segments,style:gr.type==='seven-slot'?'seven-slot':gr.type==='vertical slats'?'vertical':gr.type==='bars'?'bars':'mesh'}));
   for(const s of [-1,1]){
    const sideFog=getSideSettings(g,'fogs',s>0?'R':'L',fog);
    if(sideFog.type==='off')continue;
@@ -375,7 +395,7 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
   };
   const mount=(layout,d)=>{
    const x=cx+(layout==='twin'||layout==='factory-split'&&front?-.19:layout==='mixed'?-.14:0)*side*w;
-   mounts[(front?'HeadlightMount_':'TaillightMount_')+(side>0?'L':'R')]=pt(x,cy,d*.47).pos;
+   if(!opt.secondaryLamp)mounts[(front?'HeadlightMount_':'TaillightMount_')+(side>0?'L':'R')]=pt(x,cy,d*.47).pos;
   };
   if(front&&kind==='lamp'&&suppressHeadlamps){
    mount(opt.layout,mix(.044,.084,num(opt.recess,.5)));continue;
@@ -519,17 +539,17 @@ export function emitOpenings({end,openings,surface,put,lod=false,compact=0,spati
       pt(cx,(top+bottom)*.5,depth));
     }
    }
-   if(a.style==='vertical'){
+   if(a.style==='vertical'||a.style==='seven-slot'){
     const inner=outline.map(([x,y])=>[mix(cy,y,.86),mix(cx,x,.91)]);
-    const slats=compact?9:11;
+    const jeep=a.style==='seven-slot',slats=jeep?6:compact?9:11;
     for(let j=0;j<slats;j++){
-     const x=cx+w*.82*((j+.5)/slats-.5),r=w*.012;
+     const x=cx+w*(jeep?.78:.82)*((j+.5)/slats-.5),r=w*(jeep?.035:.012);
      const [low,high]=spanAt(inner,x-r),[low2,high2]=spanAt(inner,x+r);
      const lo=Math.max(low,low2),hi=Math.min(high,high2);
      if(hi<=lo)continue;
      const blade=[[x-r,lo],[x+r,lo],[x+r,hi],[x-r,hi]];
      const bladeDepth=v=>blade.map(([u,y])=>pt(u,y,v));
-     putGeo('chrome',[bladeDepth(.029),bladeDepth(.035)],pt(x,(lo+hi)/2,.028));
+     putGeo(jeep?'paint':'chrome',[bladeDepth(jeep?.027:.029),bladeDepth(.035)],pt(x,(lo+hi)/2,.028));
     }
     continue;
    }

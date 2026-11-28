@@ -7,7 +7,7 @@ import {createMasterSide,buildPanelGap} from './seams.mjs';
 import {buildCabin} from './cabin9.mjs';
 import {buildStructure} from './structure9.mjs';
 import {buildAero} from './aero9.mjs';
-import {buildRoofRails,buildUtilitySuspension} from './utility9.mjs';
+import {buildRoofRails,buildUtilitySuspension,buildRearSpare,buildUtilityBumper} from './utility9.mjs';
 import {buildWheels,rearWheelDimensions} from './wheels9.mjs';
 import {evalFormula,compileFormula} from './formula9.mjs';
 import {normalizeVehicle,SEAM_KEYS,getSideSettings,evaluateInteriorPatch,math} from './genome.mjs';
@@ -106,7 +106,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  const rearFit=rearWheelDimensions(d), staggered=d.rearTireWidthOffset!==0||d.rearRimRatioOffset!==0;
  const rearTrack=Math.min(X-rearFit.tireWidth/2-d.archReserve,t+d.rearTrackBias*.5);
  if(t*2<1.2){issues.push('Track below the runtime suspension envelope.');}
- 
+
  if(floor>R-.03)warnings.push('Rocker sits above the hub; this is an elevated stance.');
  const hatchUpright=g.construction.cabin.rearHatchUpright;
  const targaBulk=c.roof.type==='targa fabric'?g.construction.cabin.targaRearBulkhead:0;
@@ -334,7 +334,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   const faceColumns=columns?columns.length-1:across;
   for(const opening of faceOpenings){
    const right=opening.center[0]>.5,p=opening.outline.map(uv=>chart(...uv)),letter=right?'R':'L';
-   const id=opening.kind==='lamp'?end+'-lamp-'+letter:opening.id;
+   const id=opening.kind==='lamp'?end+'-lamp-'+letter+(opening.opt.secondaryLamp?'-inner':''):opening.id;
    const xSide=right?1:-1;
    features.push(guideFeature(id,opening.kind==='lamp'?'lamp':'opening',opening.kind==='lamp'?(front?'Headlight outline':'Taillight outline')+' · '+letter:opening.kind==='deck'?'Trunk perimeter':opening.component==='grille'?'Grille perimeter':opening.kind==='fog'?'Fog-light perimeter':'Intake / valance perimeter',opening.component,p,
     {end,side:letter,closed:true,view:end,axis:0,scale:.18*xSide,anchor:p.reduce((a,b)=>xSide*b[0]>xSide*a[0]?b:a)}));
@@ -594,7 +594,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   }
   return q;};
  if(!roadster){
-  sheet('roof',coveredTarga?'trim':'paint',roofRear,roofFront,roofPoint,small(17,9,8,7),small(12,9,8,7));
+  sheet('roof',coveredTarga?'trim':canopy.hardtopContrast?'roofPaint':'paint',roofRear,roofFront,roofPoint,small(17,9,8,7),small(12,9,8,7));
   buildRoofRails({put,roof:roofPoint,front:roofFront,rear:roofRear,amount:canopy.utilityRoofRails,compact});
  }else{
   // Roadster's fixed windscreen header and a restrained tonneau over the
@@ -734,7 +734,26 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    const p=side(u,1-(.016+rs.gap*3)*v);p[0]+=s*(.003+rs.radius);p[1]-=rs.thickness*.7;return p;
   },s<0));
   const taper=canopy.hatchQuarterTaper;
-  if(!roadster&&taper){
+  const split=canopy.utilityCabinSplit;
+  if(!roadster&&split>=.25){
+   // Door and cargo glazing are separate parts of the same side chart.
+   // A thick painted belt / pillar and small black seals replace the
+   // coupe's unbroken DLO; use body or composite rear hardtop color.
+   const uMid=clamp(split,.30,.68),rearMat=canopy.hardtopRearSide&&canopy.hardtopContrast?'roofPaint':'paint';
+   const zone=(mat,u0,u1,v0,v1,res=1)=>{
+    if(u1-u0<=1e-5||v1-v0<=1e-5)return;
+    put(mat==='glass'?'glass':'pillars',mat,patch(res,1,(u,v)=>side(mix(u0,u1,u),mix(v0,v1,v)),s<0));
+   };
+   for(const [a,b,m] of [[0,uMid,'paint'],[uMid,1,rearMat]]){
+    const l=a+.031,r=b-.053,lo=.105,hi=.862,k=.010,n=small(10,6,5,4);
+    zone(m,a,b,0,lo,n);zone(m,a,b,hi,canopy.hardtopContrast?.935:1,n);
+    if(canopy.hardtopContrast)zone('roofPaint',a,b,.935,1,n);
+    zone(m,a,l,lo,hi);zone(m,r,b,lo,hi);
+    zone('seamDark',l,r,lo,lo+k,n);zone('seamDark',l,r,hi-k,hi,n);
+    zone('seamDark',l,l+k,lo+k,hi-k);zone('seamDark',r-k,r,lo+k,hi-k);
+    zone('glass',l+k,r-k,lo+k,hi-k,n);
+   }
+  }else if(!roadster&&taper){
    // Split side DLO on the same chart: red C-quarter mass below and aft,
    // following the narrowing rear glass contour. No coplanar overlay.
    const end=t=>1-taper*(.044+.260*Math.abs(t-.52)**1.66);
@@ -758,7 +777,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    return [s*mix(Math.abs(q[0]),outer,v),q[1]+(skinY(q[2])-q[1])*v,q[2]];
   },s<0));
   const framed=c.pillars.type==='painted frame';
-  for(const u of roadster?[0]:taper?[0,c.doors.type==='four door'?.50:.65]:[0,c.doors.type==='four door'?.50:.65,1]){
+  for(const u of roadster?[0]:split>=.25?[]:taper?[0,c.doors.type==='four door'?.50:.65]:[0,c.doors.type==='four door'?.50:.65,1]){
    const outer=u===0||u===1;
    const mat=(c.pillars.type==='painted'||framed&&outer)&&!(u===0&&canopy.darkWindscreenFrame)?'paint':'trim',w=(.013+.027*c.pillars.shape)*c.pillars.size+(u===1?canopy.rearPillarWidth:0);
    const pillar=(v,j)=>{
@@ -770,10 +789,10 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     q[0]+=s*.0012;return q;
    },(s<0)!==(u===1)));
   }
-  if(framed&&!roadster)put('pillars','paint',patch(small(20,12,10,9),small(3,1,1,1),(u,j)=>{
+  if(framed&&!roadster&&split<.25)put('pillars','paint',patch(small(20,12,10,9),small(3,1,1,1),(u,j)=>{
    const q=side(u,1-j*.046);q[0]+=s*.006;return q;
   },s<0));
-  put('pillars','trim',patch(small(18,10,9,8),small(3,1,1,1),(u,v)=>{const q=side(u,v*.060);q[0]+=s*.010;return q;}));
+  if(split<.25)put('pillars','trim',patch(small(18,10,9,8),small(3,1,1,1),(u,v)=>{const q=side(u,v*.060);q[0]+=s*.010;return q;}));
  }
  // Optical and trim dimensions are tied to fascia, not independent world coordinates.
  const sc=c.scoop;
@@ -827,17 +846,20 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   side:(z,v,s)=>glassSides[s](clamp((cabinFront-z)/(cabinFront-cabinRear)),v),roof:roofPoint,
   frontGlass:(t,u)=>glassPoint(1,t,u),rearGlass:(t,u)=>glassPoint(-1,t,u)
  }});
- const upperSkin=roadster||pickupWellCeiling?(z,x)=>{
+ const capFrontLiner=roadster||g.body.lowHoodLinerCap;
+ const upperSkin=capFrontLiner||pickupWellCeiling?(z,x)=>{
   if(pickupWellCeiling){const y=pickupWellCeiling(z,x);if(Number.isFinite(y))return y;}
-  if(!roadster||z<cabinFront||z>hoodEdge)return Infinity;
+  if(!capFrontLiner||z<cabinFront||z>hoodEdge)return Infinity;
   // Invert the actual hood chart's transverse X before evaluating its height.
   let a=0,b=1;
   for(let i=0;i<12;i++){const m=(a+b)*.5;if(hoodPoint(z,m)[0]<x)a=m;else b=m;}
-  return hoodPoint(z,(a+b)*.5)[1];
+  return hoodPoint(z,(a+b)*.5)[1]-(g.body.lowHoodLinerCap?.025:0);
  }:null;
  const structure=buildStructure({g,compact,quality:lod?'drive':quality,put,dims,sample:{side:bodySide,arch:(z,s)=>sampleLowerRail(lowerPanelRails[s],z)??bodySide(z,1,s),front:ends.front.face,rear:ends.rear.face,upperSkin}});
  issues.push(...(structure.issues??[]));
  buildUtilitySuspension({put,dims,compact,amount:canopy.rallyTubework,tireWidth:d.tireWidth});
+ buildUtilityBumper({put,dims,cfg:canopy});
+ buildRearSpare({put,dims,compact,cfg:canopy,finish:c.wheels.type==='stamped steel'?'wheel':'trim',tireWidth:d.tireWidth});
  const aero=buildAero({g,compact,quality:lod?'lod':quality,put,sample:{trunk:trunkPoint,rear:ends.rear.face,exhaustMount:(id,side)=>exhaustMounts.get(id+':'+side)},dims,evalFormula});
  for(const f of styleCurves)for(const side of (f.side==='both'?['L','R']:[f.side])){
   const sign=side==='R'?1:-1;

@@ -54,3 +54,38 @@ The packs bind only to those existing model references. Compact geometry is capp
 If a pair fails to load, the game uses that car's earlier assets.
 
 See [the exact variants and photo sources](studio-roster-photo-references.md).
+
+## Scaling to the verified 660-car roster
+
+The native editor generator remains the source for each editable design. Use
+the **Find a car** field inside **Roster studies** to search by in-game name,
+real-world reference, or year. Only finished, bundled studies are listed.
+Queued cars keep their current assets; they aren't counted as conversions.
+
+To create or refresh the authoring queue from an exact Git revision:
+
+```sh
+python3 tools/vehicle-validation/audit-studio-roster.py --revision HEAD --queue /tmp/studio-queue.json
+```
+
+The audit reads committed vehicle documents (including compact-v1 wrappers),
+checks 660 unique 3D IDs and independent body/wheel references, then validates
+each enrolled study against its original car. It checks equivalent named 2D
+car provenance only when the 3D document does not carry a reference. A blank
+reference means investigate original art or catalog notes; don't guess a donor
+or claim a photo match. This audit needs the local car blobs, not the full art
+checkout. It doesn't auto-enroll anything.
+
+Per batch: confirm the exact trim and compare independent views, fit each
+editable genome to the stock hardpoints, enforce 15,000 total gameplay
+triangles including all four wheels, verify deterministic exports, then inspect
+the model in the editor and in the game renderer. Original car documents,
+suspension and handling stay intact. Keep all other cars on existing assets.
+
+New static packs can be generated with `--write --compact <id ...>`.
+The compact format keeps the same faces, materials, lamp roles, and exact
+joint transforms, with at most 0.005 mm of rounding per position axis.
+The editable genome and editable engine export are not quantized.
+Texture coordinates retain their wrap across the atlas edge. Both pack
+versions are readable, so cached assets remain usable. The site size gate
+continues to apply; record actual package sizes as more cars are added.

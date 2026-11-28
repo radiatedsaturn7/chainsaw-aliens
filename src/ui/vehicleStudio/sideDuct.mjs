@@ -18,6 +18,9 @@ function crescent(body,u,v){
 export function sideDuctMask(body,u,v){
  if(body.sideDuctCrescent)return crescent(body,u,v);
  if(body.pairedSideDucts)return pairedDoorDuctMask(body,u,v);
+ // Both body shape and coating evaluate this chart. A rear-facing wedge
+ // moves toward the rear wheel (u=0) without repainting or moving the door.
+ if(body.rearwardSideDuct)u=1-u;
  const {sideDuctWidth:w,sideDuctSweep:s,sideDuctHeight:h}=body;
  const t=(u-(.95-w))/w;
  const top=h+s*(1-t),bottom=top+.61*Math.pow(clamp(t),.71);

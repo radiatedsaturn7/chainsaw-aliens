@@ -274,6 +274,7 @@ function fasciaInspector(root,g,end){
   for(const k of keys)range(parent,'components',key,{...COMPONENT_FIELDS[k],label:c.label+' '+k},p[k],k);
  };
 
+  const singleOutlines=Object.fromEntries(Object.entries(phenotype.OPTIC_HOUSINGS).filter(([id])=>id!=='dual-round'));
  if(cfg.category==='shape'){
   choose('fascia-profile',end==='front'?'Nose profile':'Tail profile',Object.fromEntries(profileOptions()),'fascia','profile');
   fieldsFor('fascia',(k,s)=>!isIntake(k,s)&&(end==='rear'||!k.startsWith('deck')&&!k.startsWith('bumperFace')&&k!=='lampShoulderRoll'&&!k.toLowerCase().includes('plate')&&!k.startsWith('paintedPocket'))&&(end==='front'||k!=='fogCoverHeight'&&!k.startsWith('hoodNose')));
@@ -284,8 +285,8 @@ function fasciaInspector(root,g,end){
  }else if(cfg.category==='intakes'){
   choose('fascia-intakes',end==='front'?'Intake layout':'Valance opening',phenotype.INTAKE_TYPES,'fascia','intakes');
   fieldsFor('fascia',(k,s)=>isIntake(k,s)&&(end==='front'||!['lowerIntakeRise','lowerIntakeDepth','fogCoverStamp'].includes(k)));
-  if(end==='front')choose('fascia-grille-shape','Upper grille outline',phenotype.OPTIC_HOUSINGS,'fascia','grilleShape');
-  choose('fascia-intake-shape','Lower intake outline',phenotype.OPTIC_HOUSINGS,'fascia','intakeShape');
+  if(end==='front')choose('fascia-grille-shape','Upper grille outline',singleOutlines,'fascia','grilleShape');
+  choose('fascia-intake-shape','Lower intake outline',singleOutlines,'fascia','intakeShape');
   const bumper=group(root,'Bumper styling',false);partFields(bumper,end==='front'?'frontBumper':'rearBumper');
   if(end==='front'){
    partFields(group(root,'Grille',false),'grille',['size','depth']);
@@ -293,7 +294,7 @@ function fasciaInspector(root,g,end){
   }else partFields(group(root,'Exhaust',false),'exhaust',['size','depth','shape','bias','angle']);
  }else{
   constructionButton(root,'construction-optics','Paired lamp settings','pairs',end);
-  choose('optic-housing','Housing',phenotype.OPTIC_HOUSINGS,'optics','housing');
+  choose('optic-housing','Housing',end==='front'?singleOutlines:phenotype.OPTIC_HOUSINGS,'optics','housing');
   choose('optic-layout','Internal lamp layout',phenotype.OPTIC_LAYOUTS,'optics','layout');
   fieldsFor('optics',k=>end==='rear'?k!=='lowerLensReach':!['silverUpper','silverUpperSplit','tallHousing','rearCells'].includes(k));
   const palette=group(root,'Optic materials',true);
@@ -547,7 +548,7 @@ function inspector(){
    for(const key of keys)range(details,'dimensions',key,GLOBAL[key]??DIMENSIONS[key],g.dimensions[key]);
   }
   noseControls(group(root,'Front-end shape',true),g);
-  const data=group(root,'Materials',false);color(data,'paint','Body paint',g);color(data,'wheel','Wheel finish',g);
+  const data=group(root,'Materials',false);color(data,'paint','Body paint',g);if(g.construction.cabin.hardtopContrast)color(data,'roofPaint','Hardtop paint',g);color(data,'wheel','Wheel finish',g);
   color(data,'glass','Glass tint',g);color(data,'seat','Seat upholstery',g);
   root.append(element('p',{id:'setup-status',textContent:geo?.diagnostics.warnings.join(' ')||'Shared body stations and suspension mounts update together.'}));
  }else if(tab==='parts'){
@@ -576,11 +577,11 @@ function inspector(){
  }
  if(part==='hood'){
   const duct=group(root,'Twin cowl ducts',true);
-  for(const k of ['cowlDuct','cowlDuctWidth','cowlDuctLength','cowlDuctDepth'])range(duct,'body',k,phenotype.BODY_FIELDS[k],g.body[k]);
+  for(const k of ['lowHoodLinerCap','cowlDuct','cowlDuctWidth','cowlDuctLength','cowlDuctDepth'])range(duct,'body',k,phenotype.BODY_FIELDS[k],g.body[k]);
  }
  if(part==='doors'){
   const duct=group(root,'Side duct / door insert',true);
-  for(const k of ['sideDuct','pairedSideDucts','sideDuctDepth','sideDuctWidth','sideDuctSweep','sideDuctHeight','sideDuctCrescent'])range(duct,'body',k,phenotype.BODY_FIELDS[k],g.body[k]);
+  for(const k of ['sideDuct','rearwardSideDuct','pairedSideDucts','sideDuctDepth','sideDuctWidth','sideDuctSweep','sideDuctHeight','sideDuctCrescent'])range(duct,'body',k,phenotype.BODY_FIELDS[k],g.body[k]);
   const stamp=group(root,'Door character line',true);
   for(const k of ['doorStamp','doorStampHeight','doorStampSweep','doorStampWidth','doorStampFade','doorStampFront','doorStampRear'])range(stamp,'body',k,phenotype.BODY_FIELDS[k],g.body[k]);
  }
@@ -704,10 +705,31 @@ $('menu').onclick=()=>menu($('menu-sheet').hidden);$('menu-close').onclick=()=>m
 $('save').onclick=()=>{download(work.save(),work.get().name+' design.json');menu(false);announce('Design saved.');};
 $('load').onclick=()=>$('design-file').click();
 const studyToggle=$('roster-study-toggle'),studyPanel=$('roster-study'),studySelect=$('roster-study-id'),studyLoad=$('roster-study-load');
-const editorStudies=[{id:'wrx-sti',label:'Field Forgetmenot 2004',capability:'2004 rally sedan and recessed optical assemblies'},...studioRoster];
+const editorStudies=[{id:'wrx-sti',label:'Field Forgetmenot 2004',capability:'2004 rally sedan and recessed optical assemblies',reference:'Subaru Impreza WRX STI'},...studioRoster];
 const studyById=new Map(editorStudies.map(row=>[row.id,row]));
-for(const study of editorStudies)studySelect.add(element('option',{value:study.id,textContent:study.label+' 3D'}));
-const showStudy=()=>{$('roster-study-detail').textContent=studyById.get(studySelect.value)?.capability??'';};
+const studySearch=$('roster-study-search');
+const foldStudyText=value=>String(value??'').normalize('NFKD').replace(/\p{Diacritic}/gu,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+const studyKeywords=new Map(editorStudies.map(study=>[study.id,foldStudyText([study.id,study.label,study.reference,study.capability].join(' '))]));
+let openingStudy=false;
+const showStudy=()=>{
+ const chosen=studyById.get(studySelect.value);
+ $('roster-study-detail').textContent=chosen?[chosen.reference,chosen.capability].filter(Boolean).join(' · '):'';
+ studyLoad.disabled=openingStudy||!chosen;
+};
+const updateStudyOptions=()=>{
+ const tokens=foldStudyText(studySearch.value).split(' ').filter(Boolean);
+ const matches=editorStudies.filter(study=>tokens.every(token=>studyKeywords.get(study.id).includes(token)));
+ const previous=studySelect.value;
+ studySelect.replaceChildren(...matches.map(study=>element('option',{value:study.id,textContent:study.label+' 3D'})));
+ if(matches.some(study=>study.id===previous))studySelect.value=previous;
+ studySelect.disabled=!matches.length;
+ $('roster-study-count').textContent=matches.length===editorStudies.length
+  ?editorStudies.length+' editable cars'
+  :matches.length?matches.length+' of '+editorStudies.length+' editable cars':'No matching editable cars.';
+ showStudy();
+};
+studySearch.addEventListener('input',updateStudyOptions);
+updateStudyOptions();
 studyToggle.hidden=!editorStudies.length;
 studyToggle.onclick=()=>{studyPanel.hidden=!studyPanel.hidden;studyToggle.setAttribute('aria-expanded',String(!studyPanel.hidden));if(!studyPanel.hidden)showStudy();};
 studySelect.onchange=showStudy;
@@ -724,9 +746,10 @@ async function loadRosterStudy(id){
  return work.get();
 }
 studyLoad.onclick=async()=>{
- studyLoad.disabled=true;
+ if(openingStudy||!studySelect.value)return;
+ openingStudy=true;showStudy();
  try{await loadRosterStudy(studySelect.value);}catch(e){announce(e.message,true);}
- finally{studyLoad.disabled=false;}
+ finally{openingStudy=false;showStudy();}
 };
 $('design-file').onchange=async e=>{
  const f=e.target.files[0];if(!f)return;e.target.value='';

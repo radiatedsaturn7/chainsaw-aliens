@@ -164,3 +164,28 @@ measurements in the renderer's axes and physics rolling radius. They do not
 edit the car documents, vehicle physics, or suspension setup. All four
 wheel meshes count toward the 15,000-triangle limit. The previous nine
 roster exports and the separately bound WRX remain available.
+
+### Full-roster rollout, first expansion
+
+| In-game 3D car | Exact visual target and primary reference |
+| --- | --- |
+| Sunstriker GT 1994 | 1994 US Supra Turbo, A80. [Toyota's A80 photo gallery](https://pressroom.toyota.com/album/1993-1998-toyota-supra-fourth-4th-generation/) |
+| Stormline 2002 | R34 GT-R V-Spec II Nür. [Exact vehicle auction photos](https://rmsothebys.com/auctions/lf22/lots/r0005-2002-nissan-skyline-gtr-vspec-ii-nur/) |
+| Purple Vetch 1999 | Road Evo VI GSR, not a Group A rally car. [GSR reference gallery](https://www.squadralupo.com/inventories/1999-mitsubishi-lancer-evolution-vi-gsr/) |
+| Bogbean 2020 | Ferrari Roma coupe. [Ferrari brochure](https://www.ferrari.com/content/dam/ferrari-fcom/old/pdf/cs_reveal_ferrari_roma_gbr_.pdf) |
+| Spearleaf Clover 1988 | Countach LP5000 Quattrovalvole. [QV multi-angle photos](https://www.ultimatecarpage.com/cg/3924/Lamborghini-Countach-LP5000-QV.html) |
+| Rampion 1987 | E30 M3 Group A, Ravaglia archive car, not a street M3. [BMW Motorsport photo](https://www.press.bmwgroup.com/usa/photo/detail/P90093400) |
+| Sea Holly 2024 | Mustang Dark Horse, Tremec, standard aero. [Ford technical specs](https://media.ford.com/content/dam/fordmedia/North%20America/US/2022/09/14/2024-mustang-technical-specifications.pdf) |
+| Lobelia 2005 | C6 Corvette base LS2 manual coupe, not Z06. [GM Heritage Corvette reference](https://www.gm.com/content/dam/company/no_search/heritage-archive-docs/vehicle-information-kits/chevrolet/2005-Chevrolet-Corvette.pdf) |
+| Thornapple ACR 2016 | Standard-aero Viper ACR, not Extreme Aero. [Dodge technical specs](https://s3.amazonaws.com/chryslermedia.iconicweb.com/mediasite/attachments/2016_Dodge_Viper_Specs8p8494relih5em1i7jbcj7sinc.pdf) |
+| Gorse 2015 | Short-wheelbase Defender 90 2.2 TDCi station wagon. [2015 Land Rover Defender 90](https://www.autoexpress.co.uk/land-rover/defender/92627/land-rover-defender-90-2015-review-pictures) |
+| Least Clover 1979 | Short-wheelbase United States Land Cruiser FJ40 hardtop. [1979 FJ40 restoration reference photos](https://www.legacyoverland.com/1979-toyota-land-cruiser-fj40) |
+| Biting Stonecrop 2012 | Two-door US Wrangler JK Rubicon. [2012 Wrangler media kit](https://www.fcapresskit.ca/2012/data/jp_wrangler-unltd.html) |
+
+These remain reference studies. The Japanese cars need sharper lamp and wing
+geometry; the Countach has an open rear side duct but simplified trim.
+The Corvette has four separate rear lamp cavities; its reverse/indicator
+layout is approximate. The standard-aero Viper lacks a dedicated rocker
+exhaust, and the Mustang light signature is simplified. The utility cars
+have distinct roof finishes, spare tires and bumpers, but their seals,
+exterior hinges and fine fascia detailing are not complete.

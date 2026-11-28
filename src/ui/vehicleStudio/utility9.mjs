@@ -77,3 +77,36 @@ export function buildRoofRails({put,roof,front,rear,amount,compact}){
   for(const i of [0,3])tube(put,'roof','trim',p[i],rail[i],.020,.017,n);
  }
 }
+
+/** Compact fixed carrier, entirely body geometry; keeps the four road-wheel
+ * hardpoints, steering and suspension interfaces unchanged. The profiles
+ * turn about the rearward Z axis so the wheel face remains visible from aft.
+ */
+export function buildRearSpare({put,dims,compact,cfg,finish,tireWidth}){
+ const r=cfg.rearSpareRadius;if(r<.10)return;
+ const x=cfg.rearSpareOffset,y=cfg.rearSpareHeight,z=dims.Lr-.045;
+ const n=compact?16:24,w=Math.min(.130,tireWidth*.51),rim=r*.55;
+ const lathe=p=>new T.LatheGeometry(p.map(([a,b])=>new T.Vector2(a,b)),n).rotateX(-Math.PI*.5).translate(x,y,z);
+ const tire=[[rim,-w],[r*.80,-w*1.04],[r*.98,-w*.77],[r,-w*.40],[r,w*.55],[r*.96,w*.88],[r*.79,w],[rim,w*.92],[rim,-w]];
+ put('trunk','rubber',lathe(tire));
+ put('trunk',finish,lathe([[0,w*.88],[rim*.42,w*.88],[rim*.53,w*.71],[rim*.83,w*.75],[rim,w*.98],[rim*1.01,w*.82],[0,w*.64]]));
+ const brace=new T.BoxGeometry(r*.76,r*.53,.26).translate(x,y,z+.115);
+ put('trunk','trim',brace);
+}
+
+/** Ladder-frame bumper beam under the molded nose. Short bevel box ends
+ * remain visible in three-quarter views. Stock appearance when amount is zero.
+ */
+export function buildUtilityBumper({put,dims,cfg}){
+ const k=cfg.utilityBumper;if(!k)return;
+ const {X,floor,Lf,Lr}=dims,w=X*1.88,h=.072+.082*k,t=.105+.076*k;
+ for(const s of [-1,1]){
+  const z=s===1?Lf:Lr,y=floor+h*.52+.030;
+  put(s===1?'frontBumper':'rearBumper','trim',new T.BoxGeometry(w*.92,h,t).translate(0,y,z+s*.043));
+  if(cfg.utilityBumperPlate)put(s===1?'frontBumper':'rearBumper','chrome',new T.BoxGeometry(w*.88,h*.73,.012).translate(0,y,z+s*(.05+t*.5)));
+  for(const side of [-1,1]){
+   const cap=new T.BoxGeometry(w*.060,h*.88,t*.87).rotateY(side*s*.19).translate(side*w*.471,y,z+s*.018);
+   put(s===1?'frontBumper':'rearBumper','trim',cap);
+  }
+ }
+}

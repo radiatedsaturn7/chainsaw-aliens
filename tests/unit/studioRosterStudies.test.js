@@ -5,15 +5,20 @@ import {gunzipSync} from 'node:zlib';
 import {studioRoster} from '../../src/model3d/studio-roster/index.js';
 import {placeOutboardWheelFace} from '../../src/model3d/ModelBinding.js';
 import {studioRosterModelUrl,createStudioRosterLoader,isStudioRosterWheel} from '../../src/model3d/StudioRosterModels.js';
+import {decodeStudioRosterPair,encodeStudioRosterPair} from '../../src/model3d/StudioRosterPack.js';
 import {buildStudioRoster} from '../../tools/vehicle-validation/build-studio-roster.mjs';
 
 const json=path=>JSON.parse(readFileSync(new URL(path,import.meta.url)));
 const hardpoints=json('../../tools/vehicle-validation/studio-roster-hardpoints.json');
-const packed=e=>JSON.parse(gunzipSync(readFileSync(e.pack)));
-test('only the nineteen enumerated 3D roster pairs route to the Studio studies',()=>{
+const packedRaw=e=>JSON.parse(gunzipSync(readFileSync(e.pack)));
+const packed=e=>decodeStudioRosterPair(packedRaw(e));
+test('only unique, enumerated 3D roster pairs route to Studio studies',()=>{
  const refs=studioRoster.flatMap(r=>[r.bodyRef,r.wheelRef]);
- assert.equal(studioRoster.length,19);
- assert.equal(new Set(refs).size,38);
+ assert.equal(studioRoster.length,hardpoints.length);
+ assert.ok(studioRoster.length>=19);
+ assert.equal(new Set(studioRoster.map(r=>r.id)).size,studioRoster.length);
+ assert.equal(new Set(hardpoints.map(r=>r.carId)).size,hardpoints.length);
+ assert.equal(new Set(refs).size,studioRoster.length*2);
  for(const ref of refs)assert.ok(studioRosterModelUrl(ref));
  assert.equal(studioRosterModelUrl('Field-Forgetmenot'),null);
  assert.equal(studioRosterModelUrl('RTG-001'),null);
@@ -40,7 +45,11 @@ for(const r of studioRoster)test(r.label+' keeps exact hubs and builds a determi
  const t=hardpoints.find(h=>h.id===r.id);
  assert.ok(t.carId.startsWith('3d-'));
  const {pair,metrics}=buildStudioRoster(t),{body,wheel}=pair;
- assert.equal(JSON.stringify(pair),JSON.stringify(packed(r)));
+ const raw=packedRaw(r),codec=raw.format==='lotg-studio-pack-2';
+ if(codec){
+  assert.deepEqual(raw,encodeStudioRosterPair(pair));
+  for(const key of ['body','wheel'])assertCompactEquivalent(pair[key],decodeStudioRosterPair(raw)[key]);
+ }else assert.equal(JSON.stringify(pair),JSON.stringify(raw));
  assert.ok(metrics.triangles<=15000);
  assert.ok(body.joints.find(j=>j.name==='WheelMount_FL').position[2]>body.joints.find(j=>j.name==='WheelMount_RL').position[2]);
  for(const [i,axle] of ['F','R'].entries())for(const [side,sign] of [['L',-1],['R',1]]){
@@ -50,4 +59,40 @@ for(const r of studioRoster)test(r.label+' keeps exact hubs and builds a determi
  const wheels=wheel.vertices.map(({position:[,y,z]})=>Math.hypot(y,z));
  assert.ok(Math.abs(Math.max(...wheels)-t.radius)<.005);
  for(const role of ['head','brake','reverse'])assert.ok(body.materials.some(m=>m.name.startsWith('[studio9:'+role+']')));
+});
+
+function assertCompactEquivalent(before, after){
+ const {vertices:v0,faces:f0,rearAxleModel:r0,...meta0}=before;
+ const {vertices:v1,faces:f1,rearAxleModel:r1,...meta1}=after;
+ assert.deepEqual(meta1,meta0);
+ assert.equal(v1.length,v0.length);
+ assert.equal(f1.length,f0.length);
+ const near=(a,b,t)=>assert.ok(Math.abs(a-b)<=t,`${a} vs ${b} (tolerance ${t})`);
+ v0.forEach((vertex,k)=>{
+  assert.equal(v1[k].id,vertex.id);assert.deepEqual(v1[k].weights,vertex.weights);
+  vertex.position.forEach((x,i)=>near(x,v1[k].position[i],.000005000001));
+ });
+ const positions=vs=>new Map(vs.map(v=>[v.id,v.position]));
+ const a=positions(v0),b=positions(v1);
+ const area=(mesh,ids)=>{
+  const [p,q,r]=ids.map(id=>mesh.get(id));
+  const [ux,uy,uz]=q.map((x,i)=>x-p[i]),[vx,vy,vz]=r.map((x,i)=>x-p[i]);
+  return Math.hypot(uy*vz-uz*vy,uz*vx-ux*vz,ux*vy-uy*vx);
+ };
+ f0.forEach((f,k)=>{
+  const {uv,cornerNormals:n,...face}=f,{uv:t,cornerNormals:m,...decoded}=f1[k];
+  assert.deepEqual(decoded,face);
+  uv.forEach((at,i)=>at.forEach((x,j)=>near(x,t[i][j],.00001526)));
+  n.forEach((at,i)=>at.forEach((x,j)=>near(x,m[i][j],.00001526)));
+  if(area(a,f.vertices)>1e-12)assert.ok(area(b,f.vertices)>1e-12,'Packing collapsed face '+f.id);
+ });
+ if(r0){assert.ok(r1);assertCompactEquivalent(r0,r1);}else assert.equal(r1,undefined);
+}
+
+test('compact packs reject truncated binary attributes while legacy packs remain readable',()=>{
+ const raw=encodeStudioRosterPair(packed(studioRoster[0]));
+ const body={...raw.body,vi:raw.body.vi.slice(4)};
+ assert.throws(()=>decodeStudioRosterPair({...raw,body}),/attribute length/);
+ const before=packed(studioRoster[0]);
+ assert.equal(decodeStudioRosterPair(before),before);
 });

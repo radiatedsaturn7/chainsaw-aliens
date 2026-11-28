@@ -18,7 +18,8 @@
         "y": 0.3612000048160553,
         "z": -1.153499960899353
       }
-    ]
+    ],
+    "reference": "2021 Porsche 911 GT3 (992)"
   },
   {
     "id": "audi-quattro",
@@ -39,7 +40,8 @@
         "y": 0.31419700384140015,
         "z": -1.5144000053405762
       }
-    ]
+    ],
+    "reference": "1983 Audi quattro A1 R44"
   },
   {
     "id": "tamo-racemo",
@@ -60,7 +62,8 @@
         "y": 0.33434998989105225,
         "z": -1.1749999523162842
       }
-    ]
+    ],
+    "reference": "Tata TAMO Racemo"
   },
   {
     "id": "honda-s660",
@@ -81,7 +84,8 @@
         "y": 0.2879999876022339,
         "z": -1.1425000429153442
       }
-    ]
+    ],
+    "reference": "2018 Honda S660"
   },
   {
     "id": "citroen-c4",
@@ -102,7 +106,8 @@
         "y": 0.32899999618530273,
         "z": -1.3040000200271606
       }
-    ]
+    ],
+    "reference": "2005 Citroën C4 Coupé VTS"
   },
   {
     "id": "kia-carnival",
@@ -123,7 +128,8 @@
         "y": 0.36864998936653137,
         "z": -1.6455899477005005
       }
-    ]
+    ],
+    "reference": "2024 Kia Carnival"
   },
   {
     "id": "rally-fighter",
@@ -144,7 +150,8 @@
         "y": 0.4083999991416931,
         "z": -1.4605000019073486
       }
-    ]
+    ],
+    "reference": "Local Motors Rally Fighter"
   },
   {
     "id": "mazda-miata",
@@ -165,7 +172,8 @@
         "y": 0.28827598690986633,
         "z": -1.1328400373458862
       }
-    ]
+    ],
+    "reference": "1990 Mazda MX-5 Miata NA"
   },
   {
     "id": "subaru-forester",
@@ -186,7 +194,8 @@
         "y": 0.33219999074935913,
         "z": -1.2625000476837158
       }
-    ]
+    ],
+    "reference": "2004 Subaru Forester 2.5XT"
   },
   {
     "id": "audi-rs2-avant",
@@ -207,7 +216,8 @@
         "y": 0.3138999938964844,
         "z": -1.2315000295639038
       }
-    ]
+    ],
+    "reference": "1994 Audi RS2 Avant"
   },
   {
     "id": "buick-gnx",
@@ -228,7 +238,8 @@
         "y": 0.33070001006126404,
         "z": -1.3730000257492065
       }
-    ]
+    ],
+    "reference": "1987 Buick GNX"
   },
   {
     "id": "cadillac-ct5-blackwing",
@@ -249,7 +260,8 @@
         "y": 0.33755001425743103,
         "z": -1.4014999866485596
       }
-    ]
+    ],
+    "reference": "2022 Cadillac CT5-V Blackwing"
   },
   {
     "id": "datsun-520",
@@ -270,7 +282,8 @@
         "y": 0.30940499901771545,
         "z": -1.3914999961853027
       }
-    ]
+    ],
+    "reference": "1966 Datsun 520"
   },
   {
     "id": "dodge-durango-srt",
@@ -291,7 +304,8 @@
         "y": 0.3867500126361847,
         "z": -1.4864599704742432
       }
-    ]
+    ],
+    "reference": "2018 Dodge Durango SRT"
   },
   {
     "id": "fiat-124-abarth",
@@ -312,7 +326,8 @@
         "y": 0.3079510033130646,
         "z": -1.223770022392273
       }
-    ]
+    ],
+    "reference": "2017 Fiat 124 Abarth"
   },
   {
     "id": "kia-ev6-gt",
@@ -333,7 +348,8 @@
         "y": 0.36800000071525574,
         "z": -1.4503400325775146
       }
-    ]
+    ],
+    "reference": "2023 Kia EV6 GT"
   },
   {
     "id": "mercedes-amg-gt-r",
@@ -354,7 +370,8 @@
         "y": 0.33755001425743103,
         "z": -1.315000057220459
       }
-    ]
+    ],
+    "reference": "2017 Mercedes-AMG GT R"
   },
   {
     "id": "pontiac-gto-judge",
@@ -375,7 +392,8 @@
         "y": 0.3352999985218048,
         "z": -1.4223999977111816
       }
-    ]
+    ],
+    "reference": "1969 Pontiac GTO Judge"
   },
   {
     "id": "toyota-gr-yaris",
@@ -396,6 +414,271 @@
         "y": 0.31859999895095825,
         "z": -1.2799999713897705
       }
-    ]
+    ],
+    "reference": "2021 Toyota GR Yaris"
+  },
+  {
+    "id": "toyota-supra-a80",
+    "label": "Sunstriker GT 1994",
+    "capability": "A80 rounded liftback, swept optics and arch rear wing",
+    "carId": "3d-sunstriker-gt-1994-3d-90d6c9c2cca2",
+    "bodyRef": "Sunstriker-GT",
+    "wheelRef": "Sunstriker-GT-Wheel",
+    "radius": 0.3179,
+    "axles": [
+      {
+        "track": 1.5214600563049316,
+        "y": 0.31790000200271606,
+        "z": 1.173073649406433
+      },
+      {
+        "track": 1.5265400409698486,
+        "y": 0.3140699863433838,
+        "z": -1.3770864009857178
+      }
+    ],
+    "reference": "1994 Toyota Supra Turbo (A80)"
+  },
+  {
+    "id": "nissan-skyline-r34",
+    "label": "Stormline 2002",
+    "capability": "Boxed coupe with rectangular intakes and four separate rear lamp elements",
+    "carId": "3d-stormline-2002-3d-58030b5c963f",
+    "bodyRef": "Stormline",
+    "wheelRef": "Stormline-Wheel",
+    "radius": 0.3266,
+    "axles": [
+      {
+        "track": 1.4800000190734863,
+        "y": 0.32659998536109924,
+        "z": 1.1459499597549438
+      },
+      {
+        "track": 1.4900000095367432,
+        "y": 0.32686400413513184,
+        "z": -1.5190500020980835
+      }
+    ],
+    "reference": "2002 Nissan Skyline GT-R V-Spec II Nür"
+  },
+  {
+    "id": "mitsubishi-evo-vi",
+    "label": "Purple Vetch 1999",
+    "capability": "Wide rally sedan, offset round fogs and twin-plane wing",
+    "carId": "3d-purple-vetch-1999-3d-560f13da8c49",
+    "bodyRef": "Purple-Vetch",
+    "wheelRef": "Purple-Vetch-Wheel",
+    "radius": 0.31715,
+    "axles": [
+      {
+        "track": 1.5099999904632568,
+        "y": 0.3171499967575073,
+        "z": 1.029099941253662
+      },
+      {
+        "track": 1.5049999952316284,
+        "y": 0.3176240026950836,
+        "z": -1.4809000492095947
+      }
+    ],
+    "reference": "1999 Mitsubishi Lancer Evolution VI GSR"
+  },
+  {
+    "id": "ferrari-roma",
+    "label": "Bogbean 2020",
+    "capability": "Long-hood modern GT, sleek body-color grille",
+    "carId": "3d-bogbean-2020-3d-ff4586031218",
+    "bodyRef": "Bogbean-2020-finished",
+    "wheelRef": "Bogbean-2020-wheel",
+    "radius": 0.33975,
+    "axles": [
+      {
+        "track": 1.6510000228881836,
+        "y": 0.3397499918937683,
+        "z": 1.4150999784469604
+      },
+      {
+        "track": 1.6789400577545166,
+        "y": 0.3388659954071045,
+        "z": -1.2548999786376953
+      }
+    ],
+    "reference": "2020 Ferrari Roma"
+  },
+  {
+    "id": "lamborghini-countach-qv",
+    "label": "Spearleaf Clover 1988",
+    "capability": "Low wedge, closed pop-up headlight panels and side intake",
+    "carId": "3d-spearleaf-clover-1988-3d-6b6bb8c9be5e",
+    "bodyRef": "Spearleaf-Clover-1988-body",
+    "wheelRef": "Spearleaf-Clover-1988-wheel",
+    "radius": 0.303,
+    "axles": [
+      {
+        "track": 1.5011399984359741,
+        "y": 0.30300000309944153,
+        "z": 1.2949999570846558
+      },
+      {
+        "track": 1.6052800416946411,
+        "y": 0.30300000309944153,
+        "z": -1.1549999713897705
+      }
+    ],
+    "reference": "1988 Lamborghini Countach LP5000 QV"
+  },
+  {
+    "id": "bmw-e30-m3-group-a",
+    "label": "Rampion 1987",
+    "capability": "Short notchback touring car, boxed flares, four round lamp bowls",
+    "carId": "3d-rampion-1987-3d-25e498997d21",
+    "bodyRef": "Rampion",
+    "wheelRef": "Rampion-Wheel",
+    "radius": 0.30445,
+    "axles": [
+      {
+        "track": 1.4299999475479126,
+        "y": 0.30445000529289246,
+        "z": 1.2570949792861938
+      },
+      {
+        "track": 1.4600000381469727,
+        "y": 0.3040730059146881,
+        "z": -1.3084050416946411
+      }
+    ],
+    "reference": "1987 BMW M3 E30 Group A"
+  },
+  {
+    "id": "ford-mustang-dark-horse",
+    "label": "Sea Holly 2024",
+    "carId": "3d-sea-holly-2024-3d-acc04684e32e",
+    "capability": "2024 US Ford Mustang Dark Horse standard six-speed TREMEC manual, premium fuel, no Handling Package; not European 453 PS or GTD",
+    "bodyRef": "Sea-Holly",
+    "wheelRef": "Sea-Holly-Wheel",
+    "radius": 0.3433,
+    "axles": [
+      {
+        "track": 1.5748000144958496,
+        "y": 0.3433000147342682,
+        "z": 1.2502800226211548
+      },
+      {
+        "track": 1.5748000144958496,
+        "y": 0.34328100085258484,
+        "z": -1.4677200317382812
+      }
+    ],
+    "reference": "2024 Ford Mustang Dark Horse"
+  },
+  {
+    "id": "chevrolet-corvette-c6",
+    "label": "Lobelia 2005",
+    "carId": "3d-lobelia-2005-3d-3169e2b31bf6",
+    "capability": "US2005 Chevrolet Corvette C6 base hatchback coupe, LS2 6.0V8 and standard Tremec T56 six-speed manual; not Z51 Sport Package, convertible, Z06 or automatic",
+    "bodyRef": "Lobelia-2005-body",
+    "wheelRef": "Lobelia-2005-wheel",
+    "radius": 0.3266,
+    "axles": [
+      {
+        "track": 1.5770000219345093,
+        "y": 0.32659998536109924,
+        "z": 1.406000018119812
+      },
+      {
+        "track": 1.5420000553131104,
+        "y": 0.32659998536109924,
+        "z": -1.2799999713897705
+      }
+    ],
+    "reference": "2005 Chevrolet Corvette C6"
+  },
+  {
+    "id": "dodge-viper-acr",
+    "label": "Thornapple ACR 2016",
+    "carId": "3d-thornapple-acr-2016-3d-aaee45c9ed29",
+    "capability": "2016 US Dodge Viper ACR six-speed manual, standard ACR aero, no optional Extreme Aero Package; not base SRT or earlier 600hp ACR",
+    "bodyRef": "thornapple-acr-finished",
+    "wheelRef": "thornapple-acr-wheel",
+    "radius": 0.31505,
+    "axles": [
+      {
+        "track": 1.5748000144958496,
+        "y": 0.3148530125617981,
+        "z": 1.2549999952316284
+      },
+      {
+        "track": 1.5748000144958496,
+        "y": 0.3471280038356781,
+        "z": -1.2549999952316284
+      }
+    ],
+    "reference": "2016 Dodge Viper ACR"
+  },
+  {
+    "id": "land-rover-defender-90",
+    "label": "Gorse 2015",
+    "capability": "Square cabin and steel-step bumper, round lights and rear spare",
+    "carId": "3d-gorse-2015-3d-124bf91c9451",
+    "bodyRef": "Gorse-2015",
+    "wheelRef": "Gorse-2015-Wheel",
+    "radius": 0.40295,
+    "axles": [
+      {
+        "track": 1.4859999418258667,
+        "y": 0.4029499888420105,
+        "z": 1.1799999475479126
+      },
+      {
+        "track": 1.4859999418258667,
+        "y": 0.4029499888420105,
+        "z": -1.1799999475479126
+      }
+    ],
+    "reference": "2015 Land Rover Defender 90 Station Wagon 2.2 TDCi"
+  },
+  {
+    "id": "toyota-land-cruiser-fj40",
+    "label": "Least Clover 1979",
+    "capability": "Two-tone compact utility hardtop, ivory grille surround and separate front wings",
+    "carId": "3d-least-clover-1979-3d-b4374da1b570",
+    "bodyRef": "Least Clover 1979 Body",
+    "wheelRef": "Least Clover 1979 Wheel",
+    "radius": 0.36675,
+    "axles": [
+      {
+        "track": 1.4097000360488892,
+        "y": 0.36675000190734863,
+        "z": 1.1430000066757202
+      },
+      {
+        "track": 1.3995399475097656,
+        "y": 0.36675000190734863,
+        "z": -1.1430000066757202
+      }
+    ],
+    "reference": "1979 Toyota Land Cruiser FJ40 US hardtop"
+  },
+  {
+    "id": "jeep-wrangler-rubicon-jk",
+    "label": "Biting Stonecrop 2012",
+    "capability": "Seven slots, circular lights, dark composite hardtop and central spare",
+    "carId": "3d-biting-stonecrop-2012-3d-c741adcca033",
+    "bodyRef": "Biting-Stonecrop",
+    "wheelRef": "Biting-Stonecrop-Wheel",
+    "radius": 0.40715,
+    "axles": [
+      {
+        "track": 1.5722600221633911,
+        "y": 0.407150000333786,
+        "z": 1.2115800380706787
+      },
+      {
+        "track": 1.5722600221633911,
+        "y": 0.407150000333786,
+        "z": -1.2115800380706787
+      }
+    ],
+    "reference": "2012 Jeep Wrangler Rubicon JK two-door 6-speed"
   }
 ]

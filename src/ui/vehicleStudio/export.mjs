@@ -10,7 +10,7 @@ const PALETTE={
  'side-duct':['Sculpted door-side duct','paint'],
  'fascia-front':['Front fascia insert skin','paint'],'fascia-rear':['Rear fascia insert skin','paint'],
  ductMatte:['Matte intake backing','trim'],
- paint:['Coachwork paint','paint'],wheel:['Wheel alloy','alloy'],glass:['Cabin glass','glass'],rubber:['Tire rubber','rubber'],
+ roofPaint:['Contrast hardtop paint','paint'],paint:['Coachwork paint','paint'],wheel:['Wheel alloy','alloy'],glass:['Cabin glass','glass'],rubber:['Tire rubber','rubber'],
  trim:['Exterior trim','trim'],chrome:['Machined steel','machined'],head:['[studio9:head] Front optical lens','optic'],tail:['Rear optical lens','optic'],opticCover:['Clear optical cover','glass'],indicator:['Amber indicator','optic'],seamDark:['Recess and seam backing','trim'],projector:['[studio9:head] Projector glass','optic'],reflector:['Optical reflector','machined'],reflectorFluted:['Fluted optical reflector','machined'],rotor:['Swept brake steel','machined'],barrel:['Wheel barrel','alloy'],caliper:['[studio9:static-caliper] Brake caliper','trim'],underbody:['Coated underbody','trim'],
  heatShield:['Brushed heat shield','machined'],leather:['Seat leather','upholstery'],cloth:['Seat cloth','upholstery'],stitch:['Upholstery stitching','upholstery'],
  opticRed:['[studio9:brake] Layered red lens','optic'],opticClear:['[studio9:reverse] Clear optical segment','optic'],opticSilver:['Silver-clear rear reflector','machined'],runningRed:['[studio9:running] Rear light guide','optic'],signalL:['[studio9:signal-left] Left amber signal','optic'],signalR:['[studio9:signal-right] Right amber signal','optic'],
@@ -22,7 +22,7 @@ const solidTexture=(pixel)=>({width:1,height:1,pixels:[pixel]});
 function fasciaInsertTexture(g,end){
  const f=g.fascia[end],width=128,height=64,pixels=new Array(width*height);
  const bytes=hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
- const paint=bytes(g.materials.paint),trim=bytes(g.materials.trim);
+ const paint=bytes(g.materials.paint),trim=bytes(g.materials.trim),roof=bytes(g.materials.roofPaint);
  const smooth=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};
  for(let y=0;y<height;y++)for(let x=0;x<width;x++){
   // Model data textures flip on upload, as do the Studio preview's maps.
@@ -40,7 +40,8 @@ function fasciaInsertTexture(g,end){
   // optical lenses / real running-light aperture. Keep its bottom vent dark.
   const satin=(f.insertSatinCenter??0)*upper*(1-smooth(span-.019,span+.019,q))
    *smooth(.065,.15,h)*(1-smooth(.69,.82,h));
-  pixels[y*width+x]='#'+paint.map((p,k)=>Math.round(p+(trim[k]-p)*a+([116,124,132][k]-trim[k])*satin).toString(16).padStart(2,'0')).join('');
+  const light=(f.utilityLightInsert??0)*upper*(1-smooth(.92,1,q))*smooth(.10,.14,h)*(1-smooth(.81,.92,h));
+  pixels[y*width+x]='#'+paint.map((p,k)=>Math.round(p+(trim[k]-p)*a+([116,124,132][k]-trim[k])*satin*(1-light)+(roof[k]-trim[k])*light).toString(16).padStart(2,'0')).join('');
  }
  return {width,height,pixels};
 }
