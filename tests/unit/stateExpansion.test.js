@@ -24,7 +24,22 @@ test('installed expansion events have native terrain, scenery, textures and land
   const packed=read('data/server-storage/files/'+e.documentPath);
   const {race}=packed.__chainsawStorage?JSON.parse(zlib.gunzipSync(Buffer.from(packed.data,'base64'))):packed;
   assert.ok(race.road.nodes.length>20,e.id);assert.ok(Object.keys(race.road.tileMap.cells).length>0,e.id);
-  assert.equal(race.road.autoExtend,false);assert.equal(race.campaign.optional,true);
+  assert.equal(race.road.autoExtend,false);
+  if(e.id==='city-ri'){
+   // Providence is an expansion-authored city run and the required opening route.
+   const name='Providence, RI — Landmark Run';
+   const main=read(root+'catalog.json').filter(route=>route.id==='city-ri');
+   assert.equal(main.length,1,e.id);
+   assert.equal(main[0].branch,'middle',e.id);assert.equal(main[0].stage,1,e.id);
+   assert.equal(main[0].name,name,e.id);assert.equal(main[0].documentPath,e.documentPath,e.id);
+   assert.equal(e.raceRef,name,e.id);assert.equal(e.hubStage,1,e.id);
+   assert.equal(race.id,e.id,e.id);assert.equal(race.name,name,e.id);
+   assert.equal(race.campaign.optional,false,e.id);
+   assert.equal(race.campaign.stage,1,e.id);assert.equal(race.campaign.hubStage,1,e.id);
+   assert.equal(race.campaign.hubBoss,name,e.id);assert.equal(race.campaign.eventType,'City run',e.id);
+  }else{
+   assert.equal(race.campaign.optional,true,e.id);
+  }
   assert.ok(race.scenery.length>20,e.id);assert.ok(race.roadTextures.road.artRef);
   assert.ok(race.road.nodes.every(n=>Number.isFinite(n.elevation)),e.id);
   assert.ok(!race.source.warnings.some(w=>/flat editable|unavailable/i.test(w)),e.id);
@@ -43,11 +58,22 @@ test('installed expansion events have native terrain, scenery, textures and land
 });
 test('new events appear exactly once under campaign hubs and never exceed eight menu buttons',()=>{
  const all=[...read(root+'side-races/catalog.json'),...read(root+'raceways/catalog.json')];
- const {screens}=createCampaignHubMenus(read(root+'catalog.json'),read('AI/last-on-the-grid/last_on_the_grid_99_side_races.json'),all);
+ const {screens,progression}=createCampaignHubMenus(read(root+'catalog.json'),read('AI/last-on-the-grid/last_on_the_grid_99_side_races.json'),all);
  for(const s of screens)assert.ok(s.elements.filter(e=>e.type==='button').length<=8,s.id);
  const selected=screens.flatMap(s=>s.elements).filter(e=>e.action?.parameter==='raceRef');
  for(const e of extras())assert.equal(selected.filter(s=>s.action.value===e.raceRef).length,1,e.id);
- for(const screen of screens.filter(s=>/^campaign-hub-\d+$/.test(s.id)))assert.ok(screen.elements.some(e=>e.label==='City Runs'));
+ for(const region of progression.regions){
+  const hubId=`campaign-hub-${region.stage}`;
+  const hub=screens.find(s=>s.id===hubId);
+  assert.ok(hub,hubId);
+  if(region.mainPath)assert.ok(hub.elements.some(e=>e.type==='world-map'&&e.property==='campaign-path'),hubId);
+  const eventScreenId=region.mainPath?`${hubId}-events`:hubId;
+  const eventScreen=screens.find(s=>s.id===eventScreenId);
+  assert.ok(eventScreen,eventScreenId);
+  const citiesId=`${hubId}-cities`;
+  assert.ok(eventScreen.elements.some(e=>e.label==='City Runs'&&e.action?.type==='screen'&&e.action.target===citiesId),eventScreenId);
+  assert.ok(screens.some(s=>s.id===citiesId),citiesId);
+ }
 });
 
 test('the complete saved campaign menu retains every linked page beyond 100 screens',()=>{

@@ -31,3 +31,43 @@ test('model instances animate independently and preserve placement transforms',(
   a.dispose();b.dispose();assert.equal(a.object.children.length,0);
   assert.deepEqual(normalizeModelBinding('Box').scale,[1,1,1]);
 });
+
+test('a Studio fallback remains visible during a throttled retry and is replaced on success',async()=>{
+ const {studioRoster}=await import('../../src/model3d/studio-roster/index.js');
+ const {bodyRef,label}=studioRoster[0];
+ let now=0,requests=0;
+ const stock=createModelDocument();stock.name='Stock body';
+ const upgraded=structuredClone(stock);upgraded.name=label+' · Studio body';
+ const library=new ModelAssetLibrary({load:()=>stock,hydrate:async()=>null,
+  bundled:async()=>++requests===1?null:upgraded,studioRetryMs:30000,now:()=>now});
+ assert.equal((await library.prepare(bodyRef)).name,'Stock body');
+ now=29999;
+ for(let i=0;i<100;i++)assert.equal(library.get(bodyRef).name,'Stock body');
+ assert.equal(requests,1);
+ now=30000;
+ assert.equal(library.get(bodyRef).name,'Stock body');
+ const loaded=await library.prepare(bodyRef);
+ assert.equal(requests,2);
+ assert.equal(loaded.name,upgraded.name);
+ assert.equal(library.get(bodyRef),loaded);
+});
+
+test('Studio pairs are capped without evicting normal editor models or reloading live scenes',async()=>{
+ const {studioRoster}=await import('../../src/model3d/studio-roster/index.js');
+ const {STUDIO_ROSTER_CACHE_PAIRS}=await import('../../src/model3d/StudioRosterModels.js');
+ let requests=0;
+ const make=ref=>Object.assign(createModelDocument(),{name:ref});
+ const library=new ModelAssetLibrary({load:()=>null,hydrate:async()=>null,bundled:async ref=>{requests++;return make(ref);}});
+ const normal=library.adopt('An unrelated prop',make('prop'));
+ const studies=studioRoster.slice(0,STUDIO_ROSTER_CACHE_PAIRS+3);
+ const original=await library.prepare(studies[0].bodyRef);
+ const originalRevision=library.entries.get(studies[0].bodyRef).revision;
+ for(const {bodyRef,wheelRef} of studies)await Promise.all([library.prepare(bodyRef),library.prepare(wheelRef)]);
+ assert.equal(library.entries.size,STUDIO_ROSTER_CACHE_PAIRS*2+1);
+ assert.equal(library.entries.has(studies[0].bodyRef),false);
+ const before=requests;
+ assert.equal(library.get(studies[0].bodyRef),original);
+ assert.equal(library.entries.get(studies[0].bodyRef).revision,originalRevision);
+ assert.equal(requests,before);
+ assert.equal(library.get('An unrelated prop'),normal);
+});

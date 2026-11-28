@@ -64,3 +64,30 @@ test('real 30-car race runs at most three full vehicle solvers and the cheap fle
  session.aiRuntime.slice(3).forEach((a,i)=>assert.deepEqual({x:a.worldX,z:a.worldZ},before[i]));
 });
 
+
+test('persistent distant holds receive one time-bounded physical recovery slot',()=>{
+ const near=Array.from({length:3},(_,i)=>({id:`near-${i}`,worldX:20+i*10,worldZ:0}));
+ const far=Array.from({length:3},(_,i)=>({id:`held-${i}`,worldX:200+i*20,worldZ:0,
+  cheapPhysicsHeld:true,cheapHeldSeconds:3,distantPhysicsReason:'traffic'}));
+ const s={worldX:0,worldZ:0,aiRuntime:[...near,...far]};
+ assignRaceAiPhysicsBudget(s,{seconds:1/60});
+ assert.equal(s.aiDetailedPhysicsCount,4);
+ assert.deepEqual(far.filter(c=>c.physicsBudgetDetail==='full').map(c=>c.id),['held-0']);
+ assert.equal(far[0].physicsBudgetReason,'blocked-recovery');
+ // Restoring detailed physics clears the hold, but retain its one-second lease
+ // so it can actually move instead of being demoted on the next frame.
+ far[0].cheapPhysicsHeld=false;far[0].cheapHeldSeconds=0;
+ assignRaceAiPhysicsBudget(s,{seconds:.5});assert.equal(far[0].physicsBudgetDetail,'full');
+ assignRaceAiPhysicsBudget(s,{seconds:.6});
+ assert.equal(far[0].physicsBudgetDetail,'cheap');assert.equal(far[1].physicsBudgetDetail,'full');
+ assert.equal(s.aiDetailedPhysicsCount,4);
+});
+
+test('small circuit fields retain equal authoritative physics even when the leaders pull away',()=>{
+ const s={routeRuntimeType:'circuit',worldX:0,worldZ:0,aiRuntime:Array.from({length:5},(_,i)=>({id:i,worldX:i*100,worldZ:0}))};
+ assignRaceAiPhysicsBudget(s);
+ assert.equal(s.aiDetailedPhysicsCount,5);assert.equal(s.aiCheapPhysicsCount,0);
+ for(const ai of s.aiRuntime){assert.equal(ai.physicsBudgetDetail,'full');consumeRaceAiSimulationStep(ai,s,1/90);assert.equal(ai.simulationPipelineHz,60);}
+ s.worldX=1000;assignRaceAiPhysicsBudget(s);
+ assert.ok(s.aiRuntime.every(ai=>ai.physicsBudgetDetail==='full'));
+});

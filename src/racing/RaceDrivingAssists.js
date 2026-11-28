@@ -1,6 +1,7 @@
+import {RACE_PEDAL_INPUT} from './simulation/RaceSimulationConfig.js';
 import {updateVehicleFeedback} from './RaceVehicleFeedback.js';
 import {paceNoteLookahead, callSeconds, codriverBody, codriverChain, codriverPhrase, speakCodriver, updateCodriverEvents} from './RaceCodriver.js';
-import {getRaceAiPlannedSpeed} from './RaceAiRoadPlan.js';
+import {raceGuideCapabilities,raceGuidePlannedSpeed} from './RaceGuideSpeed.js';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 export const drivingGuideSettings = race => ({line: race?.drivingGuide?.line !== false,
@@ -50,17 +51,43 @@ export function updateWrongWay(state, {x, z, yaw, dt, active}) {
   if (state.wrongSeconds <= .1) state.wrongWay = false;
 }
 
-export function drivingSpeedAdvice(plan, distance, speed, grip = 1, tuning = {}, brakeCondition = 1) {
+export function drivingSpeedAdvice(plan, distance, speed, grip = 1, tuning = {}, brakeCondition = 1, capabilities = null) {
   if (!plan) return {action: 'COAST', color: '#ffd34e', target: 0};
   const traction = clamp(grip, .08, 1.2) * clamp(Number(tuning.tireGrip) || 1, .35, 1.4);
   const lateral = 9.81 * traction * .78;
   const capability = Number.isFinite(tuning.brakeForceN) && Number.isFinite(tuning.weightKg)
     ? tuning.brakeForceN / Math.max(450, tuning.weightKg) : 9.81;
   const deceleration = Math.min(9.81 * traction * .8, capability) * clamp(brakeCondition, 0, 1);
-  const target = getRaceAiPlannedSpeed(plan, distance, Math.abs(speed), lateral, deceleration);
+  const target = raceGuidePlannedSpeed(plan, distance, Math.abs(speed), capabilities?.lateral??lateral, capabilities?.braking??deceleration, capabilities||{});
   return speed > target + 1 ? {action:'BRAKE',color:'#ff5252',target}
     : speed > target - 3 ? {action:'COAST',color:'#ffd34e',target}
     : {action:'ACCELERATE',color:'#51ed91',target};
+}
+
+// Walk the visible road in order. A future arrow must use the speed remaining
+// after earlier braking, not pretend the car carries today's speed through
+// every corner. Reaction time belongs to the immediate instruction, not every
+// future station (which would shift the entire painted braking zone upstream).
+export function drivingGuidePreview(plan, distance, speed, stations, grip=1, tuning={}, brakeCondition=1, capabilities=null) {
+  const result=[];
+  let predicted=Math.abs(speed), previousDistance=distance;
+  const immediate=drivingSpeedAdvice(plan,distance,predicted,grip,tuning,brakeCondition,capabilities);
+  const futureCapabilities={...capabilities,responseSeconds:0};
+  let previous=drivingSpeedAdvice(plan,distance,predicted,grip,tuning,brakeCondition,futureCapabilities);
+  for(const at of stations){
+    const advice=drivingSpeedAdvice(plan,at,predicted,grip,tuning,brakeCondition,futureCapabilities);
+    const ds=Math.max(.01,at-previousDistance);
+    const slowing=(previous.target**2-advice.target**2)/(2*ds)>.3;
+    // At the correct speed on a falling envelope, maintaining that speed is
+    // not enough: keep braking. At a steady apex, yellow means hold/coast.
+    const braking=predicted>advice.target+1 || (slowing&&predicted>=advice.target-1)
+      || (result.length===0&&immediate.action==='BRAKE');
+    const action=braking?'BRAKE':predicted>advice.target-3?'COAST':'ACCELERATE';
+    result.push({...advice,action,color:action==='BRAKE'?'#ff5252':action==='COAST'?'#ffd34e':'#51ed91',predictedSpeedMps:predicted});
+    predicted=Math.min(predicted,advice.target);
+    previous=advice;previousDistance=at;
+  }
+  return result;
 }
 
 export function updateRaceDrivingAssists(editor, dt) {
@@ -85,7 +112,13 @@ export function updateRaceDrivingAssists(editor, dt) {
     state.car = car;
     state.tuning = {...editor.getRaceCarTuning(car), tireGrip:1};
   }
-  const brakes = session.vehicleDynamicsRunner?.state?.mechanical?.effects?.brakes || {};
+  const mechanical=physics?.mechanical||session.mechanical;
+  const brakes = mechanical?.effects?.brakes || {};
+  state.capabilities=raceGuideCapabilities(physics,state.tuning,state.grip,mechanical,physics?.damage||session.damage);
+  const pedalRise=editor.raceInput.analogBrakeActive?0:editor.raceInput.brakeAssistEnabled
+    ?(editor.raceInput.absEnabled!==false?.2:.35):1/RACE_PEDAL_INPUT.digitalBrakePressRate;
+  state.capabilities.responseSeconds=.25+pedalRise*.5;
+  if(state.capabilities.live)state.grip=state.capabilities.grip;
   state.brakeCondition = Math.min(1, ...Object.values(brakes).map(v => clamp(Number(v) || 0, 0, 1)));
   const settings = drivingGuideSettings(editor.selectedRace);
   const circuit=session.routeRuntimeType==='circuit',lap=Number(session.lap||1);

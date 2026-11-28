@@ -1,3 +1,4 @@
+// Navigation tests use ready assets; deferred readiness is covered explicitly in menuScreenTransition.test.js.
 import {CampaignSaves} from '../../src/menus/CampaignSaves.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -11,7 +12,7 @@ globalThis.window||={location:{search:''},addEventListener(){},removeEventListen
 const {default:Game}=await import('../../src/game/GameCore.js');
 async function fixture(){
  const game={input:{},world:{tileSize:32},transitionTo(state){this.state=state},setActiveMusicTrack(){},menuProgress:{}};
- const player=new MenuPlayer(game);game.menuPlayer=player;player.settings.load=async()=>{};player.resources.prepareGarage=async()=>{};
+ const player=new MenuPlayer(game);game.menuPlayer=player;player.settings.load=async()=>{};player.resources.prepareScreen=()=>null;player.resources.prepareGarage=async()=>{};
  player.resources.choices=source=>source==='races'?[{label:'First',value:'First'},{label:'Final',value:'Final'}]:[{label:'Car',value:'car'}];
  await player.open(createMenuDocument(),{preview:true,screenId:'world-map'});return {game,player};
 }
@@ -53,9 +54,25 @@ test('race completion opens a fresh world map, preserves car, and sets completio
  // New navigation works, but B cannot resurrect the pre-race garage/tuning stack.
  player.flow.goTo('garage');player.flow.back();assert.equal(player.flow.screenId,'world-map');
  assert.deepEqual(player.flow.history,[]);
- let stopped=false;player.flow.adapter.stop=()=>{stopped=true;};
- player.update({wasGamepadPressed:key=>key==='gamepadB'},.016);
- assert.equal(player.flow.screenId,'world-map');assert.equal(stopped,true);
+ const returnedParameters=structuredClone(player.flow.parameters);
+ const persistedProgress={selectedGameCar:'saved-car',completed:true};
+ game.menuProgress=structuredClone(persistedProgress);
+ const slots=new CampaignSaves(game,{load:async()=>({}),save:async()=>assert.fail('Exiting must not rewrite saves')});
+ game.campaignSaves=slots;
+ let stopCount=0;const stop=player.flow.adapter.stop;
+ player.flow.adapter.stop=()=>{stopCount++;stop();};
+ const pressBack=()=>player.update({wasGamepadPressed:key=>key==='gamepadB'},.016);
+ pressBack();assert.equal(player.flow.screenId,'world-map-quit');assert.equal(stopCount,0);
+ await player.activate(player.interactive().find(element=>element.label==='Cancel'));
+ assert.equal(player.flow.screenId,'world-map');assert.equal(stopCount,0);
+ assert.deepEqual(player.flow.history,[]);assert.equal(player.flow.lockedCarRef,'car');
+ assert.deepEqual(player.flow.parameters,returnedParameters);
+ assert.deepEqual(game.menuProgress,persistedProgress);
+ pressBack();assert.equal(player.flow.screenId,'world-map-quit');
+ await player.activate(player.interactive().find(element=>element.label==='Quit'));
+ assert.equal(player.flow.active,false);assert.equal(stopCount,1);
+ assert.equal(game.state,'menu-editor','preview exit returns to editing, not the pre-race stack');
+ assert.deepEqual(game.menuProgress,persistedProgress);
 });
 test('menu variable trigger continues its queue and open-menu trigger ends its queue',async()=>{
  const {game,player}=await fixture();let done=false;

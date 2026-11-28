@@ -1,11 +1,15 @@
+import {filterPlayableCarVersions,canonicalCarVersionRef,activeCarVersionRef} from '../racing/CarVersions.js';
+import {getRaceCarVersions,hydrateRaceCarVersions,resolveRaceCarVersionFile,hydrateRaceCarVersionFile} from '../ui/RaceCarVersionFiles.js';
+import {applyMotorsportRace} from '../menus/MotorsportEvents.js';
 import {WheelService} from '../hardware/wheels/WheelService.js';
 import {openWheelSettings} from '../hardware/wheels/WheelSettings.js';
 import {RaceHaptics} from '../racing/RaceHaptics.js';
 import {openFontEditor} from '../ui/FontEditor.js';
 import AudioMusicPlayer from '../audio/AudioMusicPlayer.js';
-import {isAudioMusic} from '../audio/MusicAsset.js';
+import {getEmbeddedCutsceneMusic, isAudioMusic} from '../audio/MusicAsset.js';
 import {musicMediaVolume} from '../audio/musicVolume.js';
 import {setMenuProgress} from '../menus/MenuProgress.js';
+import {captureCampaignWorldReturn} from '../menus/CampaignWorldReveal.js';
 import {raceCompletionKey} from '../menus/MenuWorldMap.js';
 import { isSystemCarDocument } from '../racing/CarPresets.js';
 import {itemLibrary} from '../items/ItemLibrary.js';
@@ -25,6 +29,8 @@ import Input from './Input.js';
 import StateManager from './state/StateManager.js';
 import TitleState from './state/states/TitleState.js';
 import GameplayState from './state/states/GameplayState.js';
+import {finishStudioDrive} from './state/states/StudioDriveState.js';
+import SurfaceStudioState from './state/states/SurfaceStudioState.js';
 import { createDelegatedState } from './state/states/DelegatedState.js';
 import RobterSessionState from './state/states/RobterSessionState.js';
 import Camera from './Camera.js';
@@ -495,7 +501,7 @@ export default class Game {
       'item-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'doodad-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height]
     };
-    this.editorStateKeys = new Set(Object.keys(this.editorStateTargetKeys));
+    this.editorStateKeys = new Set([...Object.keys(this.editorStateTargetKeys), 'surface-studio']);
     this.robterSession = new RobterSession({ input: this.input, audio: this.audio, isMobile: this.deviceIsMobile });
     this.editorReturnState = 'title';
     this.pixelStudioReturnState = 'title';
@@ -924,6 +930,8 @@ export default class Game {
         void openFontEditor().catch(error=>window.alert(error.message));
       } else if (action === 'menu-editor') {
         this.enterMenuEditor();
+      } else if (action === 'surface-studio') {
+        this.enterSurfaceStudio();
       } else if (action === 'model-editor') {
         this.enterModelEditor();
       } else if (action === 'tire-editor') {
@@ -1756,9 +1764,11 @@ export default class Game {
   }
 
   resolveRaceTravelCar(carRef = '') {
-    const ref = sanitizeProjectFileName(carRef);
-    if (!ref || !this.raceEditor) return null;
-    const liveCar = this.getLiveRaceTravelCarDocument(ref);
+    const requested = sanitizeProjectFileName(carRef);
+    if (!requested || !this.raceEditor) return null;
+    const versions=getRaceCarVersions();
+    const ref=canonicalCarVersionRef(versions,requested);
+    const liveCar = activeCarVersionRef(versions,ref)===ref?this.getLiveRaceTravelCarDocument(ref):null;
     if (liveCar) {
       return this.registerRaceTravelCarDocument({
         schemaVersion: 2,
@@ -1770,9 +1780,9 @@ export default class Game {
         liveRevision: JSON.stringify(liveCar)
       });
     }
-    const payload = loadProjectFile('cars', ref);
+    const {ref:resolvedRef,payload}=resolveRaceCarVersionFile(requested,{versions});
     if (!payload?.data) return null;
-    return this.registerRaceTravelCarDocument(payload.data, ref, {
+    return this.registerRaceTravelCarDocument(payload.data, resolvedRef, {
       source: String(payload.storageSource || 'cache'),
       savedAt: Number(payload.savedAt || payload.data?.savedAt || 0)
     });
@@ -1816,9 +1826,11 @@ export default class Game {
   }
 
   async resolveRaceTravelCarAsync(carRef = '') {
-    const ref = sanitizeProjectFileName(carRef);
-    if (!ref) return null;
-    const liveCar = this.getLiveRaceTravelCarDocument(ref);
+    const requested = sanitizeProjectFileName(carRef);
+    if (!requested) return null;
+    const versions=await hydrateRaceCarVersions();
+    const ref=canonicalCarVersionRef(versions,requested);
+    const liveCar = activeCarVersionRef(versions,ref)===ref?this.getLiveRaceTravelCarDocument(ref):null;
     if (liveCar) {
       return this.registerRaceTravelCarDocument({
         schemaVersion: 2,
@@ -1830,33 +1842,28 @@ export default class Game {
         liveRevision: JSON.stringify(liveCar)
       });
     }
-    const payload = await hydrateProjectFilePayload('cars', ref, {
-      freshness: 'newest'
-    });
+    const {ref:resolvedRef,payload}=await hydrateRaceCarVersionFile(requested,{versions,freshness:'newest'});
     if (!payload?.data) return null;
-    return this.registerRaceTravelCarDocument(payload.data, ref, {
+    return this.registerRaceTravelCarDocument(payload.data, resolvedRef, {
       source: String(payload.storageSource || 'server'),
       savedAt: Number(payload.savedAt || payload.data?.savedAt || 0)
     });
   }
 
   async chooseRaceTravelCar() {
+    const versions=await hydrateRaceCarVersions();
     if (typeof document === 'undefined') {
-      const first = listProjectFiles('cars')[0]?.name || '';
-      return this.resolveRaceTravelCar(first);
+      const first = filterPlayableCarVersions(listProjectFiles('cars'),versions)[0]?.name || '';
+      return this.resolveRaceTravelCarAsync(first);
     }
-    let selected = null;
     const picked = await openProjectBrowser({
       mode: 'open',
       fixedFolder: 'cars',
       initialFolder: 'cars',
       title: 'Choose Race Car',
-      onOpen: ({ name }) => {
-        selected = this.resolveRaceTravelCar(name);
-      }
+      filterEntries: (folder,entries)=>folder==='cars'?filterPlayableCarVersions(entries,versions):entries
     });
-    if (!selected && picked?.action === 'open') selected = this.resolveRaceTravelCar(picked.name);
-    return selected;
+    return picked?.action==='open'?this.resolveRaceTravelCarAsync(picked.name):null;
   }
 
   createRaceTravelSession({ originState = this.state, car = null } = {}) {
@@ -1908,7 +1915,7 @@ export default class Game {
     if (!raceName) {
       return fail('Choose a race first.');
     }
-    if(params.menuFlow){
+    if(params.menuFlow&&!params.motorsportEvent){
       const flow=params.menuFlow,generation=flow.generation;
       try{
         const payload=await hydrateProjectFilePayload('races',raceName);
@@ -1936,9 +1943,18 @@ export default class Game {
     let runtimeCar = car.car || car;
     try {
       const garage=params.garage||continuation?.garage||this.items?.garage;
-      if(garage)runtimeCar=await garage.build(car.documentName||car.name||params.carRef,runtimeCar);
+      if(garage){
+        const canonical=car.documentName||car.name||params.carRef;
+        const previous=sanitizeProjectFileName(params.carRef);
+        // Only old saves that still explicitly select their alternate key
+        // use that existing setup; canonical and alternate saves stay intact.
+        const key=previous&&previous!==canonical&&canonicalCarVersionRef(getRaceCarVersions(),previous)===canonical
+          &&garage.progress?.cars?.[previous]?previous:canonical;
+        runtimeCar=await garage.build(key,runtimeCar);
+      }
     }catch(error){return fail(`Garage could not prepare car: ${error.message}`);}
     if (params.menuFlow && (!params.menuFlow.active || params.menuFlow !== this.menuPlayer?.flow)) return false;
+    if(params.motorsportEvent)runtimeCar={...runtimeCar,condition:structuredClone(params.motorsportEvent.condition)};
     const engineSfxRef = String(runtimeCar.audio?.engineSoundId || '').trim();
     const engineSfxPreparation = this.prepareRacePlaytestAudio({
       engineSoundId: engineSfxRef
@@ -1952,6 +1968,8 @@ export default class Game {
       travelSession.menuFlow = params.menuFlow || null;
       travelSession.menuConfiguration = structuredClone(params.menuConfiguration || {});
     }
+    travelSession.campaignWorldReturn=!this.menuPlayer?.preview&&params.menuFlow?.active
+      ? captureCampaignWorldReturn(params.menuFlow.document,raceName,this.menuPlayer?.resources,params.menuFlow.parameters) : null;
     this.raceEditor.beginRaceTravelLoading?.(raceName, car.id, {car:runtimeCar});
     this.transitionTo('race-editor', { forceCleanup: true });
     this.setRevAudio(false);
@@ -1974,6 +1992,7 @@ export default class Game {
       try {
         const payload = await hydrateProjectFilePayload('races', raceName);
         gridRace = payload?.data?.race || payload?.data;
+        if(params.motorsportEvent)gridRace=applyMotorsportRace(gridRace,params.motorsportEvent);
         const competition = gridRace?.competition;
         soloWithoutTraffic = competition?.mode === 'solo'
           && competition.trafficEnabled === false
@@ -1981,10 +2000,19 @@ export default class Game {
           && !competition.aiDrivers.some(driver => driver.enabled !== false);
       } catch { /* Let the existing worker/fallback path report loading errors. */ }
       let savedCars = soloWithoutTraffic ? []
-        : await this.raceEditor.hydrateSavedRaceCarsForTravel?.() || [];
+        : await this.raceEditor.hydrateSavedRaceCarsForTravel?.({deferModels:true,preserveCarId:car.id}) || [];
       if (this.raceTravelSession !== travelSession) return false;
       if (gridRace && this.raceEditor.selectRaceTravelGridCars) {
-        preparedAiCarIds = this.raceEditor.selectRaceTravelGridCars(gridRace, car.id);
+        preparedAiCarIds = this.raceEditor.selectRaceTravelGridCars(gridRace, car.id,
+          {matchedCar:params.motorsportEvent ? runtimeCar : null});
+        // The roster prepass downloads only original car data; native models
+        // are needed for the selected player and the already-chosen grid only.
+        {
+          const nativeGrid=await this.raceEditor.prepareRaceTravelGridCarVersions?.(preparedAiCarIds)||[];
+          if(this.raceTravelSession!==travelSession)return false;
+          const byID=new Map(nativeGrid.map(candidate=>[this.raceEditor.getRaceCarProjectIdentity(candidate),candidate]));
+          savedCars=savedCars.map(candidate=>byID.get(this.raceEditor.getRaceCarProjectIdentity(candidate))||candidate);
+        }
         // Select once, then use this exact grid when the runtime starts. Random
         // selection must not pick different cars after their artwork was packed.
         if (gridRace.competition?.trafficEnabled === false) {
@@ -2091,7 +2119,11 @@ export default class Game {
         else setTimeout(resolve, 0);
       });
       if (this.raceTravelSession !== travelSession) return false;
-      if (['easy','medium','hard'].includes(travelSession.menuConfiguration.difficulty)) {
+      if(params.motorsportEvent){
+        const selected=this.raceEditor.selectedRace;
+        Object.assign(selected,applyMotorsportRace(selected,params.motorsportEvent));
+      }
+      if (!params.motorsportEvent && ['easy','medium','hard'].includes(travelSession.menuConfiguration.difficulty)) {
         const difficulty = travelSession.menuConfiguration.difficulty;
         for (const driver of this.raceEditor.selectedRace.competition?.aiDrivers || []) {
           driver.difficulty = difficulty;
@@ -2106,6 +2138,8 @@ export default class Game {
         preparedArtOnly: true,
         runtimeCarOverrides: runtimeCar,
         preparedAiCarIds,
+        preserveMechanicalCondition:!!params.motorsportEvent,
+        matchedAiCar:!!params.motorsportEvent,
         trackStateSnapshot: travelSession.trackStateByRace?.[raceName]
           || travelSession.trackStateByRace?.[raceDocument.id]
           || null
@@ -2166,12 +2200,16 @@ export default class Game {
     return true;
   }
 
-  async openMenuDestination({menuRef='',menuScreen='world-map',variables={}}={}) {
+  async openMenuDestination({menuRef='',menuScreen='world-map',variables={},campaignWorldReturn=null}={}) {
     await setMenuProgress(this,variables);
     const player=this.menuPlayer,session=this.raceTravelSession;
     const previous=player?.flow?.active?{...player.flow.parameters}:{};
     if(!menuRef&&player?.flow?.active&&player.flow.document.screens.some(s=>s.id===menuScreen)){
       this.raceTravelSession=null;this.raceEditorPlaytestReturn=false;this.playtestActive=false;
+      if(campaignWorldReturn){
+        player.flow.setParameter(campaignWorldReturn.binding,campaignWorldReturn.bossRef);
+        player.pendingCampaignWorldReveal=campaignWorldReturn.reveal;
+      }
       player.flow.busy=false;player.flow.history=[];player.flow.goTo(menuScreen,{remember:false});this.transitionTo('menu-player',{forceCleanup:true});return true;
     }
     let doc;
@@ -2204,6 +2242,9 @@ export default class Game {
     trackStateSnapshot = null
   } = {}) {
     const session = this.ensureRaceTravelSession(carId);
+    if(session.menuConfiguration?.motorsportId){
+      return this.menuPlayer.motorsport.finish(this.raceEditor.playtestSession);
+    }
     session.trackStateByRace ||= {};
     if (trackStateSnapshot) {
       if (raceId) session.trackStateByRace[raceId] = trackStateSnapshot;
@@ -2211,6 +2252,10 @@ export default class Game {
     }
     const completedRef=raceDocumentName||raceId;
     const variables={...(completedRef?{[raceCompletionKey(completedRef)]:finishBehavior.mechanicalMissionSuccess!==false,lastCompletedRace:completedRef,garageReturnCount:Number(this.menuProgress?.garageReturnCount||0)+(finishBehavior.progressSaved?0:1),garageDialogueEvent:''}:{}),...finishBehavior.variables};
+    const campaignWorldReturn=finishBehavior.mechanicalMissionSuccess!==false
+      && session.menuFlow===this.menuPlayer?.flow&&session.menuFlow?.active
+      && (session.campaignWorldReturn?.finaleRef||session.campaignWorldReturn?.bossRef)===completedRef ? session.campaignWorldReturn : null;
+    if(campaignWorldReturn)finishBehavior={...finishBehavior,type:'menu',menuRef:'',menuScreen:'world-map',campaignWorldReturn};
     if(finishBehavior.type==='menu'){
       // Keep the race presentation alive until progress and menu assets are ready.
       if(finishBehavior.cutsceneRef)return this.playRaceFinishCutscene({...finishBehavior,variables});
@@ -2315,6 +2360,19 @@ export default class Game {
     finally { this.menuLaunchPending = false; }
   }
 
+  enterSurfaceStudio() {
+    this.transitionTo('surface-studio');
+    this.setRevAudio(false);
+    this.playtestActive = false;
+  }
+
+  exitSurfaceStudio() {
+    if (this.state !== 'surface-studio') return;
+    this.transitionTo('title', {forceCleanup:true});
+    this.title.setScreen('graphics');
+    this.title.folderSelections.graphics = this.title.folderOrders.graphics.indexOf('surface-studio');
+  }
+
   enterModelEditor() {
     this.transitionTo('model-editor');
     this.setRevAudio(false);
@@ -2343,6 +2401,7 @@ export default class Game {
   }
 
   exitRaceEditor() {
+    if (finishStudioDrive(this)) return;
     this.raceEditor?.disposeRaceEditorSessions?.('global-exit');
     this.carEditor?.disposeRaceEditorSessions?.('global-exit');
     this.playtestActive = false;
@@ -7065,21 +7124,26 @@ export default class Game {
     const clips = Array.isArray(document?.clips) ? document.clips : [];
     const assetById = new Map(assets.map((asset) => [asset?.id, asset]));
     const musicIds = new Set();
+    const preparedMusic = new Map();
     const sfxIds = new Set();
     clips.forEach((clip) => {
       if (!clip || (clip.type !== 'music' && clip.type !== 'sfx')) return;
       const asset = assetById.get(clip.assetId) || null;
       const ref = String(asset?.ref || clip.assetId || '').trim();
       if (!ref) return;
-      if (clip.type === 'music') musicIds.add(ref);
+      if (clip.type === 'music') {
+        const song = getEmbeddedCutsceneMusic(asset);
+        if (song) preparedMusic.set(ref, {id: ref, name: asset.name || ref, song});
+        else musicIds.add(ref);
+      }
       if (clip.type === 'sfx') sfxIds.add(ref);
     });
-    const preparedMusic = new Map();
     const preparedSfx = new Map();
     const loads = [];
-    await Promise.all([...musicIds].map(id=>hydrateProjectFilePayload('music',id)));
+    await Promise.all([...musicIds].filter(id=>!preparedMusic.has(id)).map(id=>hydrateProjectFilePayload('music',id)));
     await Promise.all([...sfxIds].map(id=>hydrateProjectFilePayload('sfx',id)));
     musicIds.forEach((trackId) => {
+      if (preparedMusic.has(trackId)) return;
       const libraryEntry = this.getLibrarySong(trackId);
       if (libraryEntry?.song) {
         preparedMusic.set(trackId, libraryEntry);
@@ -11502,6 +11566,7 @@ export default class Game {
     this.stateManager.register('race-editor', createDelegatedState(this, 'raceEditor'));
     this.stateManager.register('car-editor', createDelegatedState(this, 'carEditor'));
     this.stateManager.register('tire-editor', createDelegatedState(this, 'tireEditor'));
+    this.stateManager.register('surface-studio', new SurfaceStudioState(this));
     this.stateManager.register('model-editor', createDelegatedState(this, 'modelEditor'));
     this.stateManager.register('radio-editor', createDelegatedState(this, 'radioEditor'));
     this.stateManager.register('menu-editor', createDelegatedState(this, 'menuEditor'));

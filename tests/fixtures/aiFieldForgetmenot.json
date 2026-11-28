@@ -1,0 +1,428 @@
+{
+  "id": "field-forgetmenot-2004",
+  "name": "Field Forgetmenot 2004",
+  "class": "road",
+  "description": "Phase2 shared RTG-001 placeholder art; unique sourced vehicle specification. Original graphics and driving acceptance pending.",
+  "camera": {
+    "trackingMode": "fixed-rear"
+  },
+  "dimensions": {
+    "lengthM": 4.41452,
+    "widthM": 1.7399,
+    "wheelbaseM": 2.54,
+    "trackFrontM": 1.49098,
+    "trackRearM": 1.4859
+  },
+  "defaultTransmissionType": "manual",
+  "transmissions": {
+    "manual": {
+      "type": "manual",
+      "label": "6-speed manual (estimated individual ratios)",
+      "shiftMode": "manual",
+      "gearRatios": [
+        3.636,
+        2.375,
+        1.761,
+        1.346,
+        0.971,
+        0.756
+      ],
+      "gearFinalDrive": 3.9,
+      "reverseRatio": 3.545,
+      "drivetrainEfficiency": 0.84,
+      "shiftTimeMs": 260,
+      "clutchDelayMs": 100,
+      "launchRpm": 2200,
+      "autoUpshiftRpm": 6000,
+      "autoDownshiftRpm": 1800,
+      "torqueConverterSlip": 0,
+      "torqueConverterMultiplication": 1,
+      "engineProfile": null
+    }
+  },
+  "tuning": {
+    "drivetrain": "awd",
+    "powerHp": 300,
+    "torqueLbFt": 300,
+    "weightKg": 1480.0719033100002,
+    "engineDisplacementL": 2.5,
+    "aspiration": "Turbocharged",
+    "frontWeightDistribution": 0.59,
+    "cgHeightM": 0.51,
+    "wheelbaseM": 2.54,
+    "wheelRadiusM": 0.31715,
+    "dragCoefficient": 0.36,
+    "tireGrip": 1.02,
+    "redlineRpm": 7000,
+    "revLimitRpm": 7200,
+    "idleRpm": 750,
+    "torquePeakStartRpm": 4000,
+    "torquePeakEndRpm": 4000,
+    "torqueFalloffRpm": 6000,
+    "gearRatios": [
+      3.636,
+      2.375,
+      1.761,
+      1.346,
+      0.971,
+      0.756
+    ],
+    "gearFinalDrive": 3.9,
+    "reverseRatio": 3.545,
+    "drivetrainEfficiency": 0.84,
+    "accelerationCalibration": 1,
+    "brakeBalance": 0.65,
+    "brakePressure": 1,
+    "frontDifferentialAccel": 0.24,
+    "frontDifferentialDecel": 0,
+    "rearDifferentialAccel": 0.45,
+    "rearDifferentialDecel": 0,
+    "centerDifferentialBalance": 0.5,
+    "differentialAccel": 0,
+    "differentialDecel": 0,
+    "aeroFront": 0,
+    "aeroRear": 0,
+    "steeringRatio": 15,
+    "springFront": 0.58,
+    "springRear": 0.5599999999999999,
+    "dampingFront": 0.44,
+    "dampingRear": 0.42,
+    "antiRollFront": 0.25,
+    "antiRollRear": 0.39,
+    "suspensionTravelFront": 0.17,
+    "suspensionTravelRear": 0.17,
+    "rideHeightFront": 0.45,
+    "rideHeightRear": 0.45,
+    "absEnabled": true,
+    "tractionControlEnabled": false,
+    "topSpeedMph": 155,
+    "zeroToSixtySec": 4.8,
+    "engineCurve": {
+      "rpmMin": 750,
+      "rpmMax": 7200,
+      "torquePoints": [
+        {
+          "rpm": 750,
+          "torqueLbFt": 120
+        },
+        {
+          "rpm": 1800,
+          "torqueLbFt": 225
+        },
+        {
+          "rpm": 4000,
+          "torqueLbFt": 300
+        },
+        {
+          "rpm": 6000,
+          "torqueLbFt": 262.6
+        },
+        {
+          "rpm": 7200,
+          "torqueLbFt": 180
+        }
+      ]
+    },
+    "physics": {
+      "bodyShapePreset": "car",
+      "bodyProfile": {
+        "preset": "car",
+        "overallLengthM": 4.41452,
+        "overallWidthM": 1.7399,
+        "overallHeightM": 1.4300199999999998,
+        "groundClearanceM": 0.145,
+        "frontOverhangM": 0.94,
+        "rearOverhangM": 0.9345200000000005,
+        "lowerBodyHeightM": 0.45,
+        "hood": {
+          "lengthM": 1.1,
+          "widthM": 1.65,
+          "heightM": 0.3
+        },
+        "cabin": {
+          "centerZM": -0.12,
+          "lengthM": 2.35,
+          "widthM": 1.6,
+          "heightM": 0.75
+        },
+        "bed": {
+          "centerZM": -1.2,
+          "lengthM": 0,
+          "widthM": 0,
+          "heightM": 0
+        },
+        "cgPositionM": {
+          "x": 0,
+          "y": 0.51,
+          "z": 0
+        },
+        "collisionFriction": 0.62,
+        "collisionRestitution": 0.08,
+        "wheelWellAware": true,
+        "wheelWellClearanceMarginM": 0.06,
+        "maximumTireDeflectionM": 0.04,
+        "wheelRadiusM": 0.31715,
+        "trackWidthM": 1.48844,
+        "frontAxleDistanceFromCgM": 1.0414,
+        "rearAxleDistanceFromCgM": 1.4986,
+        "customColliders": [],
+        "pieces": [
+          {
+            "id": "central-underfloor",
+            "type": "box",
+            "centerM": {
+              "x": 0,
+              "y": -0.265,
+              "z": -0.22859999999999991
+            },
+            "sizeM": {
+              "x": 0.63414,
+              "y": 0.2,
+              "z": 1.6857000000000002
+            },
+            "exposedFaces": [
+              "bottom",
+              "front",
+              "rear"
+            ],
+            "vertices": []
+          },
+          {
+            "id": "transmission-tunnel",
+            "type": "box",
+            "centerM": {
+              "x": 0,
+              "y": -0.135,
+              "z": 0
+            },
+            "sizeM": {
+              "x": 0.3043872,
+              "y": 0.29250000000000004,
+              "z": 1.6857000000000002
+            },
+            "exposedFaces": [
+              "left",
+              "right",
+              "front",
+              "rear"
+            ],
+            "vertices": []
+          },
+          {
+            "id": "left-rocker-rail",
+            "type": "box",
+            "centerM": {
+              "x": -0.7704316,
+              "y": -0.225,
+              "z": -0.22859999999999991
+            },
+            "sizeM": {
+              "x": 0.1990368,
+              "y": 0.28,
+              "z": 1.6857000000000002
+            },
+            "exposedFaces": [
+              "left",
+              "bottom",
+              "front",
+              "rear"
+            ],
+            "vertices": []
+          },
+          {
+            "id": "right-rocker-rail",
+            "type": "box",
+            "centerM": {
+              "x": 0.7704316,
+              "y": -0.225,
+              "z": -0.22859999999999991
+            },
+            "sizeM": {
+              "x": 0.1990368,
+              "y": 0.28,
+              "z": 1.6857000000000002
+            },
+            "exposedFaces": [
+              "right",
+              "bottom",
+              "front",
+              "rear"
+            ],
+            "vertices": []
+          },
+          {
+            "id": "front-subframe",
+            "type": "box",
+            "centerM": {
+              "x": 0,
+              "y": -0.23500000000000001,
+              "z": 1.0414
+            },
+            "sizeM": {
+              "x": 0.63414,
+              "y": 0.26,
+              "z": 0.625725
+            },
+            "exposedFaces": [
+              "bottom",
+              "front",
+              "rear"
+            ],
+            "vertices": []
+          },
+          {
+            "id": "rear-subframe",
+            "type": "box",
+            "centerM": {
+              "x": 0,
+              "y": -0.23500000000000001,
+              "z": -1.4986
+            },
+            "sizeM": {
+              "x": 0.63414,
+              "y": 0.26,
+              "z": 0.625725
+            },
+            "exposedFaces": [
+              "bottom",
+              "front",
+              "rear"
+            ],
+            "vertices": []
+          },
+          {
+            "id": "front-bumper-structure",
+            "type": "box",
+            "centerM": {
+              "x": 0,
+              "y": -0.08599999999999997,
+              "z": 1.837905
+            },
+            "sizeM": {
+              "x": 1.7399,
+              "y": 0.324,
+              "z": 0.7387100000000002
+            },
+            "exposedFaces": [
+              "left",
+              "right",
+              "bottom",
+              "top",
+              "front"
+            ],
+            "vertices": []
+          },
+          {
+            "id": "rear-bumper-structure",
+            "type": "box",
+            "centerM": {
+              "x": 0,
+              "y": -0.08599999999999997,
+              "z": -2.0665050000000003
+            },
+            "sizeM": {
+              "x": 1.7399,
+              "y": 0.324,
+              "z": 0.2815100000000003
+            },
+            "exposedFaces": [
+              "left",
+              "right",
+              "bottom",
+              "top",
+              "rear"
+            ],
+            "vertices": []
+          },
+          {
+            "id": "front-body-hood",
+            "type": "box",
+            "centerM": {
+              "x": 0,
+              "y": 0.23500000000000001,
+              "z": 0.7172600000000002
+            },
+            "sizeM": {
+              "x": 0.63414,
+              "y": 0.3,
+              "z": 1.1
+            },
+            "exposedFaces": [
+              "left",
+              "right",
+              "top",
+              "front"
+            ],
+            "vertices": []
+          },
+          {
+            "id": "cabin",
+            "type": "box",
+            "centerM": {
+              "x": 0,
+              "y": 0.46,
+              "z": -0.12
+            },
+            "sizeM": {
+              "x": 0.63414,
+              "y": 0.75,
+              "z": 2.35
+            },
+            "exposedFaces": [
+              "left",
+              "right",
+              "top"
+            ],
+            "vertices": []
+          },
+          {
+            "id": "rear-body-trunk",
+            "type": "box",
+            "centerM": {
+              "x": 0,
+              "y": 0.21100000000000002,
+              "z": -1.0977399999999997
+            },
+            "sizeM": {
+              "x": 0.63414,
+              "y": 0.252,
+              "z": 0.35
+            },
+            "exposedFaces": [
+              "left",
+              "right",
+              "top",
+              "rear"
+            ],
+            "vertices": []
+          }
+        ]
+      }
+    }
+  },
+  "setup": {
+    "defaultTireCompound": "street",
+    "tireSize": {
+      "widthMm": 225,
+      "aspectRatio": 45,
+      "wheelDiameterIn": 17
+    },
+    "tirePressurePsi": {
+      "fl": 33,
+      "fr": 33,
+      "rl": 32,
+      "rr": 32
+    },
+    "tireCompoundByWheel": {
+      "fl": "tarmac",
+      "fr": "tarmac",
+      "rl": "tarmac",
+      "rr": "tarmac"
+    }
+  },
+  "mechanics": {
+    "fuelTankGallons": 15.9
+  },
+  "category": "car",
+  "audio": {}
+}

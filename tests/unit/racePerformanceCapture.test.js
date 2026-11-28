@@ -214,3 +214,32 @@ test('worker recordings use delivered state rather than stale local runner',()=>
  assert.equal(sample.state.wheels.fl.loadN,4000);assert.equal(sample.state.wheels.fl.rawSlipRatio,null);
  c.stop();
 });
+
+test('AI trajectories are sampled in standard and detailed recordings without per-frame snapshots',()=>{
+ for(const detailed of [false,true]){
+  const {e,c,advance}=fixture({detailed});
+  e.playtestSession.aiRuntime=[{id:'rival',difficulty:'hard',lap:1,distance:10,worldX:0,bodyY:0,worldZ:10}];
+  e.playtestSession.distance=0;e.playtestSession.lap=1;e.playtestSession.worldX=0;
+  e.playtestSession.worldZ=0;e.playtestSession.bodyY=0;
+  e.update();e.draw();assert.equal(c.frames[0].ai.cars[1].difficulty,'hard');
+  e.update();e.draw();assert.equal(c.frames[1].ai,undefined);
+  e.playtestSession.aiRuntime[0].worldZ=20;
+  advance(detailed?100:500);e.update();e.draw();
+  assert.equal(c.frames[2].ai.cars[1].position.z,20);
+  assert.equal(c.frames[0].ai.cars[1].position.z,10);
+  const report=c.stop();
+  assert.equal(c.metadata.aiCapture.sampleIntervalMs,detailed?100:500);
+  assert.ok(c.report().frames[0].ai);
+ }
+});
+
+test('guide recording preserves the displayed cue and capabilities independently of later frames',()=>{
+ const {e,c}=fixture();
+ e.playtestSession.drivingAssists={guidePreview:{distanceM:120,target:20,action:'BRAKE',color:'#ff5252',predictedSpeedMps:25},capabilities:{lateral:6,braking:5,live:true}};
+ e.update();e.draw();e.update();
+ const cue=c.frames[0].context.drivingGuide;
+ e.playtestSession.drivingAssists.guidePreview.action='ACCELERATE';
+ e.playtestSession.drivingAssists.capabilities.braking=1;
+ assert.equal(cue.action,'BRAKE');assert.equal(cue.capabilities.braking,5);
+ c.stop();
+});

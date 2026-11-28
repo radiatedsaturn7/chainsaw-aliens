@@ -1,0 +1,1504 @@
+{
+  "date": "2026-11-17",
+  "category": "International",
+  "addedEvents": 16,
+  "existingNordschleifePreserved": true,
+  "events": [
+    {
+      "id": "raceway-nordschleife-gp",
+      "raceRef": "N\u00fcrburgring \u2014 Grand Prix",
+      "venueKey": "nordschleife",
+      "layoutLabel": "Grand Prix",
+      "sourceLengthM": 5125.868091887461,
+      "nativeRouteLengthM": 5105.867612832345,
+      "laps": 3,
+      "timedDistanceM": 15317.602838497034,
+      "previewDistanceM": 15356,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "renderSurfaceStepM": 2.5,
+      "documentPath": "races/N%C3%BCrburgring %E2%80%94 Grand Prix/document.json",
+      "origin": {
+        "name": "N\u00fcrburgring",
+        "lat": 50.36,
+        "lon": 6.96,
+        "country": "de"
+      },
+      "reference": "https://media.adac-motorsport.de/dl.php?dID=2%2C10&fID=86440",
+      "sourceSnapshot": "data/campaigns/america/raceways/sources/nordschleife.json",
+      "geometryMethod": "Reviewed mapped course shapes, named connectors and published venue diagrams. Clockwise layouts. Pit lanes, rallycross shortcuts and unverified combinations excluded. OSM centerline lengths differ slightly from published homologation lengths; widths are estimates where unmapped, DEM does not survey banking.",
+      "linePlacement": {
+        "beforeDegrees": [
+          29.76,
+          96.46
+        ],
+        "lengthBeforeM": 5118.59,
+        "gridWindowM": 80,
+        "rotatedM": 4498.62,
+        "seamDegrees": 0,
+        "status": "adjusted",
+        "afterDegrees": [
+          0,
+          0
+        ],
+        "lengthAfterM": 5118.59
+      }
+    },
+    {
+      "id": "raceway-nordschleife-sprint",
+      "raceRef": "N\u00fcrburgring \u2014 Sprint",
+      "venueKey": "nordschleife",
+      "layoutLabel": "Sprint",
+      "sourceLengthM": 3610.951031337329,
+      "nativeRouteLengthM": 3597.0900020818735,
+      "laps": 3,
+      "timedDistanceM": 10791.27000624562,
+      "previewDistanceM": 10818,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "renderSurfaceStepM": 2.5,
+      "documentPath": "races/N%C3%BCrburgring %E2%80%94 Sprint/document.json",
+      "origin": {
+        "name": "N\u00fcrburgring",
+        "lat": 50.36,
+        "lon": 6.96,
+        "country": "de"
+      },
+      "reference": "https://media.adac-motorsport.de/dl.php?dID=2%2C10&fID=86440",
+      "sourceSnapshot": "data/campaigns/america/raceways/sources/nordschleife.json",
+      "geometryMethod": "Reviewed mapped course shapes, named connectors and published venue diagrams. Clockwise layouts. Pit lanes, rallycross shortcuts and unverified combinations excluded. OSM centerline lengths differ slightly from published homologation lengths; widths are estimates where unmapped, DEM does not survey banking.",
+      "linePlacement": {
+        "beforeDegrees": [
+          29.76,
+          96.46
+        ],
+        "lengthBeforeM": 3606.05,
+        "gridWindowM": 80,
+        "rotatedM": 2986.08,
+        "seamDegrees": 0,
+        "status": "adjusted",
+        "afterDegrees": [
+          0,
+          0
+        ],
+        "lengthAfterM": 3606.05
+      }
+    },
+    {
+      "id": "raceway-nordschleife-mullenbach",
+      "raceRef": "N\u00fcrburgring \u2014 M\u00fcllenbachschleife",
+      "venueKey": "nordschleife",
+      "layoutLabel": "M\u00fcllenbachschleife",
+      "sourceLengthM": 1487.522783842115,
+      "nativeRouteLengthM": 1479.9672902989291,
+      "laps": 3,
+      "timedDistanceM": 4439.901870896787,
+      "previewDistanceM": 4455,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "renderSurfaceStepM": 2.5,
+      "documentPath": "races/N%C3%BCrburgring %E2%80%94 M%C3%BCllenbachschleife/document.json",
+      "origin": {
+        "name": "N\u00fcrburgring",
+        "lat": 50.36,
+        "lon": 6.96,
+        "country": "de"
+      },
+      "reference": "https://media.adac-motorsport.de/dl.php?dID=2%2C10&fID=86440",
+      "sourceSnapshot": "data/campaigns/america/raceways/sources/nordschleife.json",
+      "geometryMethod": "Reviewed mapped course shapes, named connectors and published venue diagrams. Clockwise layouts. Pit lanes, rallycross shortcuts and unverified combinations excluded. OSM centerline lengths differ slightly from published homologation lengths; widths are estimates where unmapped, DEM does not survey banking.",
+      "linePlacement": {
+        "beforeDegrees": [
+          0,
+          3.43
+        ],
+        "lengthBeforeM": 1484.98,
+        "gridWindowM": 80,
+        "status": "already-straight",
+        "seamDegrees": 6.41
+      }
+    },
+    {
+      "id": "raceway-nordschleife-24h",
+      "raceRef": "N\u00fcrburgring \u2014 24 Hours Combined",
+      "venueKey": "nordschleife",
+      "layoutLabel": "24 Hours Combined",
+      "sourceLengthM": 25320.79802920643,
+      "nativeRouteLengthM": 25255.213096095355,
+      "laps": 1,
+      "timedDistanceM": 25255.213096095355,
+      "previewDistanceM": 25298,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "renderSurfaceStepM": 5,
+      "documentPath": "races/N%C3%BCrburgring %E2%80%94 24 Hours Combined/document.json",
+      "origin": {
+        "name": "N\u00fcrburgring",
+        "lat": 50.36,
+        "lon": 6.96,
+        "country": "de"
+      },
+      "reference": "https://media.adac-motorsport.de/dl.php?dID=2%2C10&fID=86440",
+      "sourceSnapshot": "data/campaigns/america/raceways/sources/nordschleife.json",
+      "geometryMethod": "Reviewed mapped course shapes, named connectors and published venue diagrams. Clockwise layouts. Pit lanes, rallycross shortcuts and unverified combinations excluded. OSM centerline lengths differ slightly from published homologation lengths; widths are estimates where unmapped, DEM does not survey banking.",
+      "linePlacement": {
+        "beforeDegrees": [
+          41.51,
+          75.43
+        ],
+        "lengthBeforeM": 25298.09,
+        "gridWindowM": 80,
+        "rotatedM": 25106.02,
+        "seamDegrees": 0,
+        "status": "adjusted",
+        "afterDegrees": [
+          0,
+          0
+        ],
+        "lengthAfterM": 25298.09
+      }
+    },
+    {
+      "id": "raceway-nordschleife-nls",
+      "raceRef": "N\u00fcrburgring \u2014 NLS Combined",
+      "venueKey": "nordschleife",
+      "layoutLabel": "NLS Combined",
+      "sourceLengthM": 24321.950343272572,
+      "nativeRouteLengthM": 24256.87042370467,
+      "laps": 1,
+      "timedDistanceM": 24256.87042370467,
+      "previewDistanceM": 24299,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "renderSurfaceStepM": 5,
+      "documentPath": "races/N%C3%BCrburgring %E2%80%94 NLS Combined/document.json",
+      "origin": {
+        "name": "N\u00fcrburgring",
+        "lat": 50.36,
+        "lon": 6.96,
+        "country": "de"
+      },
+      "reference": "https://teilnehmer.vln.de/download.php?file=onb%2F2022-07-09%2FBRIEFING+PRESENTATION+Drivers+Briefing+NLS+2022.en.pdf",
+      "sourceSnapshot": "data/campaigns/america/raceways/sources/nordschleife.json",
+      "geometryMethod": "Reviewed mapped course shapes, named connectors and published venue diagrams. Clockwise layouts. Pit lanes, rallycross shortcuts and unverified combinations excluded. OSM centerline lengths differ slightly from published homologation lengths; widths are estimates where unmapped, DEM does not survey banking. NLS uses the Sprint course WITH the arena and motorcycle chicane (published 24.358 km); 24h bypasses the arena and uses the full GP course.",
+      "linePlacement": {
+        "beforeDegrees": [
+          37.18,
+          75.43
+        ],
+        "lengthBeforeM": 24299.36,
+        "gridWindowM": 80,
+        "rotatedM": 24107.29,
+        "seamDegrees": 0,
+        "status": "adjusted",
+        "afterDegrees": [
+          0,
+          0
+        ],
+        "lengthAfterM": 24299.36
+      }
+    },
+    {
+      "id": "raceway-hockenheim-gp",
+      "raceRef": "Hockenheimring \u2014 Grand Prix",
+      "venueKey": "hockenheim",
+      "layoutLabel": "Grand Prix",
+      "sourceLengthM": 4564.781199289075,
+      "nativeRouteLengthM": 4551.975609316234,
+      "laps": 3,
+      "timedDistanceM": 13655.926827948702,
+      "previewDistanceM": 13680,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "renderSurfaceStepM": 2.5,
+      "documentPath": "races/Hockenheimring %E2%80%94 Grand Prix/document.json",
+      "origin": {
+        "name": "Hockenheimring",
+        "lat": 49.3288,
+        "lon": 8.5708,
+        "country": "de"
+      },
+      "reference": "https://www.hockenheimring.de/en/info/hockenheimring/data-facts/",
+      "sourceSnapshot": "data/campaigns/america/raceways/sources/hockenheim.json",
+      "geometryMethod": "Reviewed mapped course shapes, named connectors and published venue diagrams. Clockwise layouts. Pit lanes, rallycross shortcuts and unverified combinations excluded. OSM centerline lengths differ slightly from published homologation lengths; widths are estimates where unmapped, DEM does not survey banking.",
+      "linePlacement": {
+        "beforeDegrees": [
+          0,
+          0
+        ],
+        "lengthBeforeM": 4560.15,
+        "gridWindowM": 80,
+        "status": "already-straight",
+        "seamDegrees": 0.31
+      }
+    },
+    {
+      "id": "raceway-hockenheim-short",
+      "raceRef": "Hockenheimring \u2014 Short Course",
+      "venueKey": "hockenheim",
+      "layoutLabel": "Short Course",
+      "sourceLengthM": 2604.270422276254,
+      "nativeRouteLengthM": 2592.371851150822,
+      "laps": 3,
+      "timedDistanceM": 7777.115553452466,
+      "previewDistanceM": 7802,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "renderSurfaceStepM": 2.5,
+      "documentPath": "races/Hockenheimring %E2%80%94 Short Course/document.json",
+      "origin": {
+        "name": "Hockenheimring",
+        "lat": 49.3288,
+        "lon": 8.5708,
+        "country": "de"
+      },
+      "reference": "https://www.hockenheimring.de/en/info/hockenheimring/data-facts/",
+      "sourceSnapshot": "data/campaigns/america/raceways/sources/hockenheim.json",
+      "geometryMethod": "Reviewed mapped course shapes, named connectors and published venue diagrams. Clockwise layouts. Pit lanes, rallycross shortcuts and unverified combinations excluded. OSM centerline lengths differ slightly from published homologation lengths; widths are estimates where unmapped, DEM does not survey banking.",
+      "linePlacement": {
+        "beforeDegrees": [
+          66.08,
+          0
+        ],
+        "lengthBeforeM": 2600.75,
+        "gridWindowM": 80,
+        "rotatedM": 366.97,
+        "seamDegrees": 0,
+        "status": "adjusted",
+        "afterDegrees": [
+          0,
+          0
+        ],
+        "lengthAfterM": 2600.75
+      }
+    },
+    {
+      "id": "raceway-hungaroring-gp",
+      "raceRef": "Hungaroring \u2014 Grand Prix",
+      "venueKey": "hungaroring",
+      "layoutLabel": "Grand Prix",
+      "sourceLengthM": 4366.615036781052,
+      "nativeRouteLengthM": 4349.59933727629,
+      "laps": 3,
+      "timedDistanceM": 13048.798011828869,
+      "previewDistanceM": 13082,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "renderSurfaceStepM": 2.5,
+      "documentPath": "races/Hungaroring %E2%80%94 Grand Prix/document.json",
+      "origin": {
+        "name": "Hungaroring",
+        "lat": 47.583,
+        "lon": 19.251,
+        "country": "hu"
+      },
+      "reference": "https://hungaroring.hu/site/en/services/track-rental",
+      "sourceSnapshot": "data/campaigns/america/raceways/sources/hungaroring.json",
+      "geometryMethod": "Reviewed mapped course shapes, named connectors and published venue diagrams. Clockwise layouts. Pit lanes, rallycross shortcuts and unverified combinations excluded. OSM centerline lengths differ slightly from published homologation lengths; widths are estimates where unmapped, DEM does not survey banking.",
+      "linePlacement": {
+        "beforeDegrees": [
+          131.08,
+          0
+        ],
+        "lengthBeforeM": 4360.61,
+        "gridWindowM": 80,
+        "rotatedM": 4311.93,
+        "seamDegrees": 0,
+        "status": "adjusted",
+        "afterDegrees": [
+          0,
+          0
+        ],
+        "lengthAfterM": 4360.61
+      }
+    },
+    {
+      "id": "raceway-sepang-gp",
+      "raceRef": "Sepang International Circuit \u2014 Grand Prix",
+      "venueKey": "sepang",
+      "layoutLabel": "Grand Prix",
+      "sourceLengthM": 5546.214952338125,
+      "nativeRouteLengthM": 5528.870998472391,
+      "laps": 3,
+      "timedDistanceM": 16586.612995417174,
+      "previewDistanceM": 16624,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "renderSurfaceStepM": 2.5,
+      "documentPath": "races/Sepang International Circuit %E2%80%94 Grand Prix/document.json",
+      "origin": {
+        "name": "Sepang International Circuit",
+        "lat": 2.76,
+        "lon": 101.738,
+        "country": "my"
+      },
+      "reference": "https://www.lamborghini.com/en-en/motorsport/super-trofeo/calendar-%26-results/sepang",
+      "sourceSnapshot": "data/campaigns/america/raceways/sources/sepang.json",
+      "geometryMethod": "Reviewed mapped course shapes, named connectors and published venue diagrams. Clockwise layouts. Pit lanes, rallycross shortcuts and unverified combinations excluded. OSM centerline lengths differ slightly from published homologation lengths; widths are estimates where unmapped, DEM does not survey banking.",
+      "linePlacement": {
+        "beforeDegrees": [
+          0,
+          0
+        ],
+        "lengthBeforeM": 5541.34,
+        "gridWindowM": 80,
+        "status": "already-straight",
+        "seamDegrees": 0.75
+      }
+    },
+    {
+      "id": "raceway-sepang-north",
+      "raceRef": "Sepang International Circuit \u2014 North Circuit",
+      "venueKey": "sepang",
+      "layoutLabel": "North Circuit",
+      "sourceLengthM": 2790.7613651391252,
+      "nativeRouteLengthM": 2781.0575568587833,
+      "laps": 3,
+      "timedDistanceM": 8343.17267057635,
+      "previewDistanceM": 8364,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "renderSurfaceStepM": 2.5,
+      "documentPath": "races/Sepang International Circuit %E2%80%94 North Circuit/document.json",
+      "origin": {
+        "name": "Sepang International Circuit",
+        "lat": 2.76,
+        "lon": 101.738,
+        "country": "my"
+      },
+      "reference": "https://www.lamborghini.com/en-en/motorsport/super-trofeo/calendar-%26-results/sepang",
+      "sourceSnapshot": "data/campaigns/america/raceways/sources/sepang.json",
+      "geometryMethod": "Reviewed mapped course shapes, named connectors and published venue diagrams. Clockwise layouts. Pit lanes, rallycross shortcuts and unverified combinations excluded. OSM centerline lengths differ slightly from published homologation lengths; widths are estimates where unmapped, DEM does not survey banking.",
+      "linePlacement": {
+        "beforeDegrees": [
+          8.66,
+          33.96
+        ],
+        "lengthBeforeM": 2788.1,
+        "gridWindowM": 80,
+        "rotatedM": 182.24,
+        "seamDegrees": 0,
+        "status": "adjusted",
+        "afterDegrees": [
+          0,
+          0
+        ],
+        "lengthAfterM": 2788.1
+      }
+    },
+    {
+      "id": "raceway-sepang-south",
+      "raceRef": "Sepang International Circuit \u2014 South Circuit",
+      "venueKey": "sepang",
+      "layoutLabel": "South Circuit",
+      "sourceLengthM": 2615.5344605621885,
+      "nativeRouteLengthM": 2606.9998791054923,
+      "laps": 3,
+      "timedDistanceM": 7820.999637316477,
+      "previewDistanceM": 7840,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "renderSurfaceStepM": 2.5,
+      "documentPath": "races/Sepang International Circuit %E2%80%94 South Circuit/document.json",
+      "origin": {
+        "name": "Sepang International Circuit",
+        "lat": 2.76,
+        "lon": 101.738,
+        "country": "my"
+      },
+      "reference": "https://www.lamborghini.com/en-en/motorsport/super-trofeo/calendar-%26-results/sepang",
+      "sourceSnapshot": "data/campaigns/america/raceways/sources/sepang.json",
+      "geometryMethod": "Reviewed mapped course shapes, named connectors and published venue diagrams. Clockwise layouts. Pit lanes, rallycross shortcuts and unverified combinations excluded. OSM centerline lengths differ slightly from published homologation lengths; widths are estimates where unmapped, DEM does not survey banking.",
+      "linePlacement": {
+        "beforeDegrees": [
+          11.09,
+          0
+        ],
+        "lengthBeforeM": 2613.27,
+        "gridWindowM": 80,
+        "rotatedM": 327.67,
+        "seamDegrees": 0,
+        "status": "adjusted",
+        "afterDegrees": [
+          0,
+          0
+        ],
+        "lengthAfterM": 2613.27
+      }
+    },
+    {
+      "id": "rally-fafe",
+      "raceRef": "Fafe \u2014 Rally Portugal",
+      "venueKey": "fafe",
+      "layoutLabel": "Rally stage",
+      "sourceLengthM": 11079.263682977064,
+      "nativeRouteLengthM": 10590.826620984277,
+      "laps": 1,
+      "timedDistanceM": 10590.826620984277,
+      "previewDistanceM": 10630,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 99,
+        "asphalt": 1
+      },
+      "renderSurfaceStepM": 2.5,
+      "documentPath": "races/Fafe %E2%80%94 Rally Portugal/document.json",
+      "origin": {
+        "name": "Fafe \u2014 Rally Portugal",
+        "lat": 41.4582537392542,
+        "lon": -8.12019561570453,
+        "country": "pt"
+      },
+      "reference": "https://www.rallydeportugal.pt/content.aspx?idioma=2&menuid=5534",
+      "sourceSnapshot": "data/campaigns/america/raceways/sources/fafe-official.json",
+      "geometryMethod": "Official ACP 2026 SS21/23 stage coordinate trace. DEM approximates terrain; jump profiles are not surveyed.",
+      "linePlacement": {
+        "beforeDegrees": [
+          23.94,
+          4.72
+        ],
+        "lengthBeforeM": 11059.65,
+        "lineWindowsM": [
+          80,
+          80
+        ],
+        "corridorDegrees": [
+          6.56,
+          6.43
+        ],
+        "trimStartM": 247.53,
+        "trimFinishM": 182.49,
+        "status": "adjusted",
+        "afterDegrees": [
+          0,
+          6.43
+        ],
+        "lengthAfterM": 10629.63
+      }
+    },
+    {
+      "id": "rally-condor",
+      "raceRef": "El C\u00f3ndor \u2014 Copina",
+      "venueKey": "condor",
+      "layoutLabel": "Rally stage",
+      "sourceLengthM": 15363.5745467417,
+      "nativeRouteLengthM": 14519.109576473775,
+      "laps": 1,
+      "timedDistanceM": 14519.109576473775,
+      "previewDistanceM": 14987,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "renderSurfaceStepM": 5,
+      "documentPath": "races/El C%C3%B3ndor %E2%80%94 Copina/document.json",
+      "origin": {
+        "name": "El C\u00f3ndor \u2014 Copina",
+        "lat": -31.611197,
+        "lon": -64.768293,
+        "country": "ar"
+      },
+      "reference": "https://cordobaturismo.gov.ar/experiencias/circuito-condor-copina/",
+      "sourceSnapshot": "data/campaigns/america/raceways/sources/condor-official.json",
+      "geometryMethod": "C\u00f3rdoba Turismo GPS route for the historic RP14 rally road, reversed downhill from El C\u00f3ndor to Copina. Geographic recreation, not exact WRC timing lines; suspension bridge deck details are approximate.",
+      "linePlacement": {
+        "beforeDegrees": [
+          30.24,
+          34.5
+        ],
+        "lengthBeforeM": 15363.57,
+        "lineWindowsM": [
+          80,
+          40
+        ],
+        "corridorDegrees": [
+          0,
+          0
+        ],
+        "trimStartM": 212.95,
+        "trimFinishM": 163.89,
+        "status": "adjusted",
+        "afterDegrees": [
+          0,
+          0
+        ],
+        "lengthAfterM": 14986.74
+      }
+    },
+    {
+      "id": "rally-ruuhimaki",
+      "raceRef": "Ruuhim\u00e4ki \u2014 Gravel Road",
+      "venueKey": "ruuhimaki",
+      "layoutLabel": "Rally stage",
+      "sourceLengthM": 4612.6163115417885,
+      "nativeRouteLengthM": 4116.820986614564,
+      "laps": 1,
+      "timedDistanceM": 4116.820986614564,
+      "previewDistanceM": 4127,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 100,
+        "asphalt": 0
+      },
+      "renderSurfaceStepM": 2.5,
+      "documentPath": "races/Ruuhim%C3%A4ki %E2%80%94 Gravel Road/document.json",
+      "origin": {
+        "name": "Ruuhim\u00e4ki \u2014 Gravel Road",
+        "lat": 62.2093242,
+        "lon": 26.1654249,
+        "country": "fi"
+      },
+      "reference": "https://sectorallyfinland.fi/wp-content/uploads/2021/07/Vetomies_Tiekirja-2024_web.pdf",
+      "sourceSnapshot": "data/campaigns/america/raceways/sources/ruuhimaki.json",
+      "geometryMethod": "Continuous Ruuhim\u00e4entie gravel road section within the famous rally area. Not the full 7.76 km stage: arena loop, approach and exact timing lines are omitted. DEM cannot reproduce surveyed jump profiles.",
+      "linePlacement": {
+        "beforeDegrees": [
+          30.3,
+          20.19
+        ],
+        "lengthBeforeM": 4612.39,
+        "lineWindowsM": [
+          80,
+          40
+        ],
+        "corridorDegrees": [
+          3.05,
+          6.96
+        ],
+        "trimStartM": 115.85,
+        "trimFinishM": 369.1,
+        "status": "adjusted",
+        "afterDegrees": [
+          0,
+          0
+        ],
+        "lengthAfterM": 4127.44
+      }
+    },
+    {
+      "id": "rally-sisteron",
+      "raceRef": "Sisteron \u2014 Authon",
+      "venueKey": "sisteron",
+      "layoutLabel": "Rally stage",
+      "sourceLengthM": 15804.946343241085,
+      "nativeRouteLengthM": 15362.333337403423,
+      "laps": 1,
+      "timedDistanceM": 15362.333337403423,
+      "previewDistanceM": 15424,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "renderSurfaceStepM": 5,
+      "documentPath": "races/Sisteron %E2%80%94 Authon/document.json",
+      "origin": {
+        "name": "Sisteron \u2014 Authon",
+        "lat": 44.2065,
+        "lon": 5.9481,
+        "country": "fr"
+      },
+      "reference": "https://acm.mc/wp-content/uploads/2024/11/4.-RAMCH-2025-ITINERAIRE-DETAILLE-ETAPE-COMMUNE-2-VERSION-2-06.01.2025.pdf",
+      "sourceSnapshot": "data/campaigns/america/raceways/sources/sisteron.json",
+      "geometryMethod": "Western section of the Sisteron-Thoard rally corridor: mapped D3 via Saint-Geniez to Authon. Split from the eastern Col de Fontbelle section to keep mobile terrain baking bounded. Game timing lines, not an exact WRC edition.",
+      "linePlacement": {
+        "beforeDegrees": [
+          134.13,
+          24.8
+        ],
+        "lengthBeforeM": 15789.87,
+        "lineWindowsM": [
+          80,
+          80
+        ],
+        "corridorDegrees": [
+          4.96,
+          4.74
+        ],
+        "trimStartM": 271.6,
+        "trimFinishM": 94.23,
+        "status": "adjusted",
+        "afterDegrees": [
+          0,
+          0
+        ],
+        "lengthAfterM": 15424.04
+      }
+    },
+    {
+      "id": "rally-fontbelle",
+      "raceRef": "Col de Fontbelle \u2014 Authon to Thoard",
+      "venueKey": "fontbelle",
+      "layoutLabel": "Rally stage",
+      "sourceLengthM": 21901.03441285788,
+      "nativeRouteLengthM": 21515.646488142553,
+      "laps": 1,
+      "timedDistanceM": 21515.646488142553,
+      "previewDistanceM": 21605,
+      "surfaces": {
+        "dirt": 0,
+        "snow": 0,
+        "gravel": 0,
+        "asphalt": 100
+      },
+      "renderSurfaceStepM": 5,
+      "documentPath": "races/Col de Fontbelle %E2%80%94 Authon to Thoard/document.json",
+      "origin": {
+        "name": "Col de Fontbelle \u2014 Authon to Thoard",
+        "lat": 44.2417374,
+        "lon": 6.0714281,
+        "country": "fr"
+      },
+      "reference": "https://acm.mc/wp-content/uploads/2024/11/4.-RAMCH-2025-ITINERAIRE-DETAILLE-ETAPE-COMMUNE-2-VERSION-2-06.01.2025.pdf",
+      "sourceSnapshot": "data/campaigns/america/raceways/sources/sisteron.json",
+      "geometryMethod": "Eastern section of the Sisteron-Thoard rally corridor: mapped D3 from Authon over Col de Fontbelle to Thoard. Separate playable section to bound mobile terrain baking. Game timing lines, not an exact WRC edition.",
+      "linePlacement": {
+        "beforeDegrees": [
+          0,
+          11.41
+        ],
+        "lengthBeforeM": 21869.35,
+        "lineWindowsM": [
+          80,
+          80
+        ],
+        "corridorDegrees": [
+          0,
+          8.94
+        ],
+        "trimStartM": 179.45,
+        "trimFinishM": 84.58,
+        "status": "adjusted",
+        "afterDegrees": [
+          0,
+          4.77
+        ],
+        "lengthAfterM": 21605.31
+      }
+    }
+  ],
+  "sources": {
+    "circuitGeometry": "OpenStreetMap contributors, ODbL; reviewed frozen snapshots in sources/",
+    "terrain": "https://registry.opendata.aws/terrain-tiles/",
+    "fafe": "https://www.rallydeportugal.pt/ResourcesUser/Imagens/Espectadores/OndeVer2026/MAPAS/Mapas-2/FAFE.html",
+    "condor": "https://cordobaturismo.gov.ar/experiencias/circuito-condor-copina/",
+    "sisteron": "https://acm.mc/wp-content/uploads/2024/11/4.-RAMCH-2025-ITINERAIRE-DETAILLE-ETAPE-COMMUNE-2-VERSION-2-06.01.2025.pdf",
+    "ruuhimaki": "https://sectorallyfinland.fi/wp-content/uploads/2021/07/Vetomies_Tiekirja-2024_web.pdf"
+  },
+  "limitations": [
+    "Geographic recreations, not laser scans. Unmapped widths and bank angles are approximate.",
+    "Mapzen DEM cannot resolve exact racing kerbs, bridge decks, ruts or engineered rally jumps.",
+    "Fafe follows the official coordinate trace; the other rally routes are geographic road recreations, not exact WRC event-year timing lines.",
+    "Game timing lines move onto suitable straights. Source, native timed and menu-preview lengths are recorded separately.",
+    "Ruuhim\u00e4ki is a mapped Ruuhim\u00e4entie road section, omitting the full competition approach and arena loop.",
+    "The 37.7 km Sisteron-Thoard corridor is split at Authon to bound mobile terrain-bake memory. Long imports use existing 5 m road mesh sampling; the 24h combined circuit uses an 80 m bilinearly resampled surrounding terrain grid. Road control points are retained.",
+    "Regional saved scenery is reused; optional landmark art requests are in ai/needed-graphics.txt.",
+    "Moon/Mars retain current handling.",
+    "Terrain diagnostics retain 2 tolerance flags at one Sepang GP roadside point (~5.047 cm vs 5 cm threshold), and 247 flags on Fontbelle, including 160 at minimum cell size. Meshes are finite and load successfully; these remain terrain-quality limitations, not a claim of surveyed accuracy."
+  ],
+  "rebuild": [
+    "python tools/campaigns/fetch_circuit_map.py hockenheim hungaroring sepang",
+    "python tools/campaigns/import_raceways.py --only nordschleife hockenheim hungaroring sepang",
+    "python tools/campaigns/fetch_famous_rally.py",
+    "python tools/campaigns/import_famous_rally.py",
+    "node tools/campaigns/install_raceways.mjs --only=nordschleife,hockenheim,hungaroring,sepang,fafe,condor,sisteron,fontbelle,ruuhimaki"
+  ],
+  "validation": {
+    "sourceTests": "tools/campaigns/test_international_rally_expansion.py and test_world_circuits.py",
+    "nativeTests": "tests/unit/internationalRallyExpansion.test.js, raceIndex.test.js, campaignRoutePreview.test.js, worldCircuits.test.js",
+    "loadingReports": [
+      "artifacts/international-rally-loading.json",
+      "artifacts/rally-sections-loading.json",
+      "artifacts/nurb24h-loading-resampled.json"
+    ],
+    "passed": 16,
+    "total": 16,
+    "results": [
+      {
+        "id": "raceway-nordschleife-gp",
+        "name": "N\u00fcrburgring \u2014 Grand Prix",
+        "physicsProbeMeanMs": 0.0032184644487933504,
+        "ok": true,
+        "terrainStats": {
+          "constrainedRoadFirst": true,
+          "algorithm": "adaptive-ground-v4",
+          "unresolvedHeightErrors": 0,
+          "maxHeightErrorM": 0.5429999999999995,
+          "leafCells": 92713,
+          "minimumCellSizeM": 0.46875,
+          "refineMs": 3653,
+          "balanceMs": 537,
+          "connectMs": 4243,
+          "reusedPolygons": 223620,
+          "unresolvedAtMinimumCellSize": 0,
+          "conformancePasses": 2,
+          "vertices": 128935,
+          "triangles": 177743,
+          "terrainTopology": "road-origin-indexed",
+          "explicitHeightmapCells": 177743,
+          "corridorJoinCells": 0,
+          "conformingOuterJoin": false,
+          "roadOriginIndexed": true,
+          "guardDistanceM": 2880,
+          "terrainCoverageMode": "road-origin-full-domain",
+          "canonicalVertices": 94549,
+          "canonicalTriangles": 181415,
+          "rejectedDegenerateTriangles": 16768,
+          "correctedWindingTriangles": 181511,
+          "terrainBaseTriangles": 177329
+        },
+        "peakRssKB": 687520,
+        "triangles": 181415,
+        "seconds": 13.07
+      },
+      {
+        "id": "raceway-nordschleife-sprint",
+        "name": "N\u00fcrburgring \u2014 Sprint",
+        "physicsProbeMeanMs": 0.0029613717592593715,
+        "ok": true,
+        "terrainStats": {
+          "constrainedRoadFirst": true,
+          "algorithm": "adaptive-ground-v4",
+          "unresolvedHeightErrors": 0,
+          "maxHeightErrorM": 0.3059999999999983,
+          "leafCells": 45417,
+          "minimumCellSizeM": 0.625,
+          "refineMs": 3051,
+          "balanceMs": 343,
+          "connectMs": 3294,
+          "reusedPolygons": 112711,
+          "unresolvedAtMinimumCellSize": 0,
+          "conformancePasses": 2,
+          "vertices": 68324,
+          "triangles": 93361,
+          "terrainTopology": "road-origin-indexed",
+          "explicitHeightmapCells": 93361,
+          "corridorJoinCells": 0,
+          "conformingOuterJoin": false,
+          "roadOriginIndexed": true,
+          "guardDistanceM": 1920,
+          "terrainCoverageMode": "road-origin-full-domain",
+          "canonicalVertices": 50166,
+          "canonicalTriangles": 96038,
+          "rejectedDegenerateTriangles": 11723,
+          "correctedWindingTriangles": 96083,
+          "terrainBaseTriangles": 93160
+        },
+        "peakRssKB": 530188,
+        "triangles": 96038,
+        "seconds": 10.406
+      },
+      {
+        "id": "raceway-nordschleife-mullenbach",
+        "name": "N\u00fcrburgring \u2014 M\u00fcllenbachschleife",
+        "physicsProbeMeanMs": 0.0031651680719503063,
+        "ok": true,
+        "terrainStats": {
+          "constrainedRoadFirst": true,
+          "algorithm": "adaptive-ground-v4",
+          "unresolvedHeightErrors": 0,
+          "maxHeightErrorM": 0.4800000000000004,
+          "leafCells": 16800,
+          "minimumCellSizeM": 1.25,
+          "refineMs": 1231,
+          "balanceMs": 72,
+          "connectMs": 693,
+          "reusedPolygons": 18782,
+          "unresolvedAtMinimumCellSize": 0,
+          "conformancePasses": 1,
+          "vertices": 26610,
+          "triangles": 34911,
+          "terrainTopology": "road-origin-indexed",
+          "explicitHeightmapCells": 34911,
+          "corridorJoinCells": 0,
+          "conformingOuterJoin": false,
+          "roadOriginIndexed": true,
+          "guardDistanceM": 1920,
+          "terrainCoverageMode": "road-origin-full-domain",
+          "canonicalVertices": 18929,
+          "canonicalTriangles": 35949,
+          "rejectedDegenerateTriangles": 4892,
+          "correctedWindingTriangles": 35979,
+          "terrainBaseTriangles": 34765
+        },
+        "peakRssKB": 267416,
+        "triangles": 35949,
+        "seconds": 3.857
+      },
+      {
+        "id": "raceway-nordschleife-24h",
+        "name": "N\u00fcrburgring \u2014 24 Hours Combined",
+        "renderSurfaceStepM": 5,
+        "physicsProbeMeanMs": 0.02587900000000448,
+        "ok": true,
+        "terrainStats": {
+          "constrainedRoadFirst": true,
+          "algorithm": "adaptive-ground-v4",
+          "unresolvedHeightErrors": 0,
+          "maxHeightErrorM": 1.4969999999999857,
+          "leafCells": 292576,
+          "minimumCellSizeM": 0.625,
+          "refineMs": 29762,
+          "balanceMs": 4570,
+          "connectMs": 23920,
+          "reusedPolygons": 586901,
+          "unresolvedAtMinimumCellSize": 0,
+          "conformancePasses": 2,
+          "vertices": 370466,
+          "triangles": 600128,
+          "terrainTopology": "road-origin-indexed",
+          "explicitHeightmapCells": 600128,
+          "corridorJoinCells": 0,
+          "conformingOuterJoin": false,
+          "roadOriginIndexed": true,
+          "guardDistanceM": 15360,
+          "terrainCoverageMode": "road-origin-full-domain",
+          "canonicalVertices": 318322,
+          "canonicalTriangles": 609383,
+          "rejectedDegenerateTriangles": 41275,
+          "correctedWindingTriangles": 609641,
+          "terrainBaseTriangles": 599279
+        },
+        "peakRssKB": 1136648,
+        "triangles": 609383,
+        "seconds": 84.973
+      },
+      {
+        "id": "raceway-nordschleife-nls",
+        "name": "N\u00fcrburgring \u2014 NLS Combined",
+        "physicsProbeMeanMs": 0.011266750000001515,
+        "ok": true,
+        "terrainStats": {
+          "constrainedRoadFirst": true,
+          "algorithm": "adaptive-ground-v4",
+          "unresolvedHeightErrors": 0,
+          "maxHeightErrorM": 1.443358058291965,
+          "leafCells": 283251,
+          "minimumCellSizeM": 0.625,
+          "refineMs": 16962,
+          "balanceMs": 3456,
+          "connectMs": 17715,
+          "reusedPolygons": 566427,
+          "unresolvedAtMinimumCellSize": 0,
+          "conformancePasses": 2,
+          "vertices": 358547,
+          "triangles": 582607,
+          "terrainTopology": "road-origin-indexed",
+          "explicitHeightmapCells": 582607,
+          "corridorJoinCells": 0,
+          "conformingOuterJoin": false,
+          "roadOriginIndexed": true,
+          "guardDistanceM": 8791.043267479645,
+          "terrainCoverageMode": "road-origin-full-domain",
+          "canonicalVertices": 308899,
+          "canonicalTriangles": 591519,
+          "rejectedDegenerateTriangles": 39618,
+          "correctedWindingTriangles": 591761,
+          "terrainBaseTriangles": 581815
+        },
+        "peakRssKB": 1075272,
+        "triangles": 591519,
+        "seconds": 60.202
+      },
+      {
+        "id": "raceway-hockenheim-gp",
+        "name": "Hockenheimring \u2014 Grand Prix",
+        "physicsProbeMeanMs": 0.005102310307018087,
+        "ok": true,
+        "terrainStats": {
+          "constrainedRoadFirst": true,
+          "algorithm": "adaptive-ground-v4",
+          "unresolvedHeightErrors": 0,
+          "maxHeightErrorM": 0.23399999999999996,
+          "leafCells": 80802,
+          "minimumCellSizeM": 0.9375,
+          "refineMs": 5251,
+          "balanceMs": 428,
+          "connectMs": 2889,
+          "reusedPolygons": 89235,
+          "unresolvedAtMinimumCellSize": 0,
+          "conformancePasses": 1,
+          "vertices": 113427,
+          "triangles": 154509,
+          "terrainTopology": "road-origin-indexed",
+          "explicitHeightmapCells": 154509,
+          "corridorJoinCells": 0,
+          "conformingOuterJoin": false,
+          "roadOriginIndexed": true,
+          "guardDistanceM": 2880,
+          "terrainCoverageMode": "road-origin-full-domain",
+          "canonicalVertices": 82312,
+          "canonicalTriangles": 157746,
+          "rejectedDegenerateTriangles": 14983,
+          "correctedWindingTriangles": 157842,
+          "terrainBaseTriangles": 154104
+        },
+        "peakRssKB": 604944,
+        "triangles": 157746,
+        "seconds": 14.744
+      },
+      {
+        "id": "raceway-hockenheim-short",
+        "name": "Hockenheimring \u2014 Short Course",
+        "physicsProbeMeanMs": 0.01433030956968563,
+        "ok": true,
+        "terrainStats": {
+          "constrainedRoadFirst": true,
+          "algorithm": "adaptive-ground-v4",
+          "unresolvedHeightErrors": 0,
+          "maxHeightErrorM": 0.21300000000000052,
+          "leafCells": 31914,
+          "minimumCellSizeM": 1.25,
+          "refineMs": 2674,
+          "balanceMs": 340,
+          "connectMs": 3057,
+          "reusedPolygons": 82386,
+          "unresolvedAtMinimumCellSize": 0,
+          "conformancePasses": 2,
+          "vertices": 49572,
+          "triangles": 66752,
+          "terrainTopology": "road-origin-indexed",
+          "explicitHeightmapCells": 66752,
+          "corridorJoinCells": 0,
+          "conformingOuterJoin": false,
+          "roadOriginIndexed": true,
+          "guardDistanceM": 1920,
+          "terrainCoverageMode": "road-origin-full-domain",
+          "canonicalVertices": 35932,
+          "canonicalTriangles": 68652,
+          "rejectedDegenerateTriangles": 8480,
+          "correctedWindingTriangles": 68688,
+          "terrainBaseTriangles": 66578
+        },
+        "peakRssKB": 356876,
+        "triangles": 68652,
+        "seconds": 9.77
+      },
+      {
+        "id": "raceway-hungaroring-gp",
+        "name": "Hungaroring \u2014 Grand Prix",
+        "physicsProbeMeanMs": 0.0049569110728632185,
+        "ok": true,
+        "terrainStats": {
+          "constrainedRoadFirst": true,
+          "algorithm": "adaptive-ground-v4",
+          "unresolvedHeightErrors": 0,
+          "maxHeightErrorM": 0.4065000000000012,
+          "leafCells": 68969,
+          "minimumCellSizeM": 0.625,
+          "refineMs": 5942,
+          "balanceMs": 847,
+          "connectMs": 5457,
+          "reusedPolygons": 161339,
+          "unresolvedAtMinimumCellSize": 0,
+          "conformancePasses": 2,
+          "vertices": 100292,
+          "triangles": 145250,
+          "terrainTopology": "road-origin-indexed",
+          "explicitHeightmapCells": 145250,
+          "corridorJoinCells": 0,
+          "conformingOuterJoin": false,
+          "roadOriginIndexed": true,
+          "guardDistanceM": 1945.8764238652489,
+          "terrainCoverageMode": "road-origin-full-domain",
+          "canonicalVertices": 76868,
+          "canonicalTriangles": 148476,
+          "rejectedDegenerateTriangles": 14184,
+          "correctedWindingTriangles": 148538,
+          "terrainBaseTriangles": 144996
+        },
+        "peakRssKB": 572100,
+        "triangles": 148476,
+        "seconds": 18.736
+      },
+      {
+        "id": "raceway-sepang-gp",
+        "name": "Sepang International Circuit \u2014 Grand Prix",
+        "physicsProbeMeanMs": 0.007106930204573308,
+        "ok": true,
+        "terrainStats": {
+          "constrainedRoadFirst": true,
+          "algorithm": "adaptive-ground-v4",
+          "unresolvedHeightErrors": 2,
+          "maxHeightErrorM": 0.28499999999999925,
+          "leafCells": 68188,
+          "minimumCellSizeM": 0.625,
+          "refineMs": 5734,
+          "balanceMs": 642,
+          "connectMs": 5681,
+          "reusedPolygons": 170915,
+          "unresolvedAtMinimumCellSize": 0,
+          "heightErrorExamples": [
+            {
+              "x": -528.125,
+              "z": -381.25,
+              "distanceToRoad": 9.763757610631664,
+              "toleranceM": 0.05,
+              "errorM": 0.05047309465179772,
+              "cellSizeM": 2.5
+            },
+            {
+              "x": -528.125,
+              "z": -381.25,
+              "distanceToRoad": 9.763757610631664,
+              "toleranceM": 0.05,
+              "errorM": 0.05047309465179772,
+              "cellSizeM": 2.5
+            }
+          ],
+          "conformancePasses": 2,
+          "vertices": 102232,
+          "triangles": 140101,
+          "terrainTopology": "road-origin-indexed",
+          "explicitHeightmapCells": 140101,
+          "corridorJoinCells": 0,
+          "conformingOuterJoin": false,
+          "roadOriginIndexed": true,
+          "guardDistanceM": 1920,
+          "terrainCoverageMode": "road-origin-full-domain",
+          "canonicalVertices": 75138,
+          "canonicalTriangles": 144269,
+          "rejectedDegenerateTriangles": 17962,
+          "correctedWindingTriangles": 144320,
+          "terrainBaseTriangles": 139845
+        },
+        "peakRssKB": 611728,
+        "triangles": 144269,
+        "seconds": 17.61
+      },
+      {
+        "id": "raceway-sepang-north",
+        "name": "Sepang International Circuit \u2014 North Circuit",
+        "physicsProbeMeanMs": 0.002474472770796025,
+        "ok": true,
+        "terrainStats": {
+          "constrainedRoadFirst": true,
+          "algorithm": "adaptive-ground-v4",
+          "unresolvedHeightErrors": 0,
+          "maxHeightErrorM": 0.34350000000000014,
+          "leafCells": 34647,
+          "minimumCellSizeM": 0.625,
+          "refineMs": 1448,
+          "balanceMs": 208,
+          "connectMs": 1834,
+          "reusedPolygons": 86250,
+          "unresolvedAtMinimumCellSize": 0,
+          "conformancePasses": 2,
+          "vertices": 51799,
+          "triangles": 70912,
+          "terrainTopology": "road-origin-indexed",
+          "explicitHeightmapCells": 70912,
+          "corridorJoinCells": 0,
+          "conformingOuterJoin": false,
+          "roadOriginIndexed": true,
+          "guardDistanceM": 1920,
+          "terrainCoverageMode": "road-origin-full-domain",
+          "canonicalVertices": 38076,
+          "canonicalTriangles": 73006,
+          "rejectedDegenerateTriangles": 9046,
+          "correctedWindingTriangles": 73036,
+          "terrainBaseTriangles": 70780
+        },
+        "peakRssKB": 398960,
+        "triangles": 73006,
+        "seconds": 5.763
+      },
+      {
+        "id": "raceway-sepang-south",
+        "name": "Sepang International Circuit \u2014 South Circuit",
+        "physicsProbeMeanMs": 0.0036118429118775623,
+        "ok": true,
+        "terrainStats": {
+          "constrainedRoadFirst": true,
+          "algorithm": "adaptive-ground-v4",
+          "unresolvedHeightErrors": 0,
+          "maxHeightErrorM": 0.381,
+          "leafCells": 30999,
+          "minimumCellSizeM": 0.625,
+          "refineMs": 2047,
+          "balanceMs": 259,
+          "connectMs": 2114,
+          "reusedPolygons": 78360,
+          "unresolvedAtMinimumCellSize": 0,
+          "conformancePasses": 2,
+          "vertices": 46605,
+          "triangles": 63043,
+          "terrainTopology": "road-origin-indexed",
+          "explicitHeightmapCells": 63043,
+          "corridorJoinCells": 0,
+          "conformingOuterJoin": false,
+          "roadOriginIndexed": true,
+          "guardDistanceM": 1920,
+          "terrainCoverageMode": "road-origin-full-domain",
+          "canonicalVertices": 33972,
+          "canonicalTriangles": 65007,
+          "rejectedDegenerateTriangles": 8476,
+          "correctedWindingTriangles": 65028,
+          "terrainBaseTriangles": 62921
+        },
+        "peakRssKB": 326948,
+        "triangles": 65007,
+        "seconds": 7.016
+      },
+      {
+        "id": "rally-fafe",
+        "name": "Fafe \u2014 Rally Portugal",
+        "renderSurfaceStepM": 2.5,
+        "physicsProbeMeanMs": 0.015996158582089463,
+        "ok": true,
+        "terrainStats": {
+          "constrainedRoadFirst": true,
+          "algorithm": "adaptive-ground-v4",
+          "unresolvedHeightErrors": 0,
+          "maxHeightErrorM": 1.7445000000000004,
+          "leafCells": 116165,
+          "minimumCellSizeM": 1.25,
+          "refineMs": 7025,
+          "balanceMs": 1656,
+          "connectMs": 12888,
+          "reusedPolygons": 269612,
+          "unresolvedAtMinimumCellSize": 0,
+          "conformancePasses": 2,
+          "vertices": 168688,
+          "triangles": 265823,
+          "terrainTopology": "road-origin-indexed",
+          "explicitHeightmapCells": 265823,
+          "corridorJoinCells": 0,
+          "conformingOuterJoin": false,
+          "roadOriginIndexed": true,
+          "guardDistanceM": 7680,
+          "terrainCoverageMode": "road-origin-full-domain",
+          "canonicalVertices": 142841,
+          "canonicalTriangles": 273498,
+          "rejectedDegenerateTriangles": 35125,
+          "correctedWindingTriangles": 273738,
+          "terrainBaseTriangles": 264938
+        },
+        "peakRssKB": 742192,
+        "triangles": 273498,
+        "seconds": 33.494
+      },
+      {
+        "id": "rally-condor",
+        "name": "El C\u00f3ndor \u2014 Copina",
+        "renderSurfaceStepM": 5,
+        "physicsProbeMeanMs": 0.018901593095638308,
+        "ok": true,
+        "terrainStats": {
+          "constrainedRoadFirst": true,
+          "algorithm": "adaptive-ground-v4",
+          "unresolvedHeightErrors": 0,
+          "maxHeightErrorM": 1.999499999999955,
+          "leafCells": 413763,
+          "minimumCellSizeM": 0.3515625,
+          "refineMs": 19495,
+          "balanceMs": 5597,
+          "connectMs": 21471,
+          "reusedPolygons": 778890,
+          "unresolvedAtMinimumCellSize": 0,
+          "conformancePasses": 2,
+          "vertices": 466764,
+          "triangles": 835486,
+          "terrainTopology": "road-origin-indexed",
+          "explicitHeightmapCells": 835486,
+          "corridorJoinCells": 0,
+          "conformingOuterJoin": false,
+          "roadOriginIndexed": true,
+          "guardDistanceM": 9045.27700405921,
+          "terrainCoverageMode": "road-origin-full-domain",
+          "canonicalVertices": 434237,
+          "canonicalTriangles": 840801,
+          "rejectedDegenerateTriangles": 24105,
+          "correctedWindingTriangles": 840894,
+          "terrainBaseTriangles": 834917
+        },
+        "peakRssKB": 1261636,
+        "triangles": 840801,
+        "seconds": 84.448
+      },
+      {
+        "id": "rally-ruuhimaki",
+        "name": "Ruuhim\u00e4ki \u2014 Gravel Road",
+        "renderSurfaceStepM": 2.5,
+        "physicsProbeMeanMs": 0.00722596466431114,
+        "ok": true,
+        "terrainStats": {
+          "constrainedRoadFirst": true,
+          "algorithm": "adaptive-ground-v4",
+          "unresolvedHeightErrors": 0,
+          "maxHeightErrorM": 1.8735000000000035,
+          "leafCells": 81394,
+          "minimumCellSizeM": 0.9375,
+          "refineMs": 7870,
+          "balanceMs": 1581,
+          "connectMs": 5219,
+          "reusedPolygons": 174311,
+          "unresolvedAtMinimumCellSize": 0,
+          "conformancePasses": 2,
+          "vertices": 105219,
+          "triangles": 171509,
+          "terrainTopology": "road-origin-indexed",
+          "explicitHeightmapCells": 171509,
+          "corridorJoinCells": 0,
+          "conformingOuterJoin": false,
+          "roadOriginIndexed": true,
+          "guardDistanceM": 5760,
+          "terrainCoverageMode": "road-origin-full-domain",
+          "canonicalVertices": 90590,
+          "canonicalTriangles": 174563,
+          "rejectedDegenerateTriangles": 13896,
+          "correctedWindingTriangles": 174677,
+          "terrainBaseTriangles": 171173
+        },
+        "peakRssKB": 636652,
+        "triangles": 174563,
+        "seconds": 21.664
+      },
+      {
+        "id": "rally-sisteron",
+        "name": "Sisteron \u2014 Authon",
+        "renderSurfaceStepM": 5,
+        "physicsProbeMeanMs": 0.015652296082206762,
+        "ok": true,
+        "terrainStats": {
+          "constrainedRoadFirst": true,
+          "algorithm": "adaptive-ground-v4",
+          "unresolvedHeightErrors": 0,
+          "maxHeightErrorM": 1.9559999999999604,
+          "leafCells": 234501,
+          "minimumCellSizeM": 0.5078125,
+          "refineMs": 18859,
+          "balanceMs": 2867,
+          "connectMs": 14736,
+          "reusedPolygons": 459177,
+          "unresolvedAtMinimumCellSize": 0,
+          "conformancePasses": 2,
+          "vertices": 286240,
+          "triangles": 494821,
+          "terrainTopology": "road-origin-indexed",
+          "explicitHeightmapCells": 494821,
+          "corridorJoinCells": 0,
+          "conformingOuterJoin": false,
+          "roadOriginIndexed": true,
+          "guardDistanceM": 12480,
+          "terrainCoverageMode": "road-origin-full-domain",
+          "canonicalVertices": 260506,
+          "canonicalTriangles": 500474,
+          "rejectedDegenerateTriangles": 25447,
+          "correctedWindingTriangles": 500629,
+          "terrainBaseTriangles": 494254
+        },
+        "peakRssKB": 1013912,
+        "triangles": 500474,
+        "seconds": 51.411
+      },
+      {
+        "id": "rally-fontbelle",
+        "name": "Col de Fontbelle \u2014 Authon to Thoard",
+        "renderSurfaceStepM": 5,
+        "physicsProbeMeanMs": 0.03399808487084452,
+        "ok": true,
+        "terrainStats": {
+          "constrainedRoadFirst": true,
+          "algorithm": "adaptive-ground-v4",
+          "unresolvedHeightErrors": 247,
+          "maxHeightErrorM": 1.8975000000000062,
+          "leafCells": 313630,
+          "minimumCellSizeM": 0.5859375,
+          "refineMs": 18341,
+          "balanceMs": 3647,
+          "connectMs": 18408,
+          "reusedPolygons": 600404,
+          "unresolvedAtMinimumCellSize": 160,
+          "heightErrorExamples": [
+            {
+              "x": 1272.0703125,
+              "z": -322.265625,
+              "distanceToRoad": 8.110475486424606,
+              "toleranceM": 0.05,
+              "errorM": 0.056121356806613676,
+              "cellSizeM": 2.34375
+            },
+            {
+              "x": 1272.0703125,
+              "z": -322.265625,
+              "distanceToRoad": 8.110475486424606,
+              "toleranceM": 0.05,
+              "errorM": 0.056121356806613676,
+              "cellSizeM": 2.34375
+            },
+            {
+              "x": 1261.5234375,
+              "z": -319.921875,
+              "distanceToRoad": 11.920794544119575,
+              "toleranceM": 0.05,
+              "errorM": 0.05091280279188837,
+              "cellSizeM": 2.34375
+            },
+            {
+              "x": 1261.5234375,
+              "z": -319.921875,
+              "distanceToRoad": 11.920794544119575,
+              "toleranceM": 0.05,
+              "errorM": 0.05091280279188837,
+              "cellSizeM": 2.34375
+            },
+            {
+              "x": 1254.4921875,
+              "z": -315.234375,
+              "distanceToRoad": 11.41078248159684,
+              "toleranceM": 0.05,
+              "errorM": 0.050832283019310864,
+              "cellSizeM": 2.34375
+            }
+          ],
+          "conformancePasses": 2,
+          "vertices": 391104,
+          "triangles": 685431,
+          "terrainTopology": "road-origin-indexed",
+          "explicitHeightmapCells": 685431,
+          "corridorJoinCells": 0,
+          "conformingOuterJoin": false,
+          "roadOriginIndexed": true,
+          "guardDistanceM": 14400,
+          "terrainCoverageMode": "road-origin-full-domain",
+          "canonicalVertices": 359689,
+          "canonicalTriangles": 693299,
+          "rejectedDegenerateTriangles": 35422,
+          "correctedWindingTriangles": 693548,
+          "terrainBaseTriangles": 684641
+        },
+        "peakRssKB": 1175724,
+        "triangles": 693299,
+        "seconds": 74.931
+      }
+    ],
+    "sourceTestResults": {
+      "passed": 9,
+      "failed": 0
+    },
+    "nativeTestResults": {
+      "passed": 22,
+      "failed": 0
+    },
+    "terrainWarnings": [
+      {
+        "id": "raceway-sepang-gp",
+        "unresolvedHeightErrors": 2,
+        "examples": [
+          {
+            "x": -528.125,
+            "z": -381.25,
+            "distanceToRoad": 9.763757610631664,
+            "toleranceM": 0.05,
+            "errorM": 0.05047309465179772,
+            "cellSizeM": 2.5
+          },
+          {
+            "x": -528.125,
+            "z": -381.25,
+            "distanceToRoad": 9.763757610631664,
+            "toleranceM": 0.05,
+            "errorM": 0.05047309465179772,
+            "cellSizeM": 2.5
+          }
+        ]
+      },
+      {
+        "id": "rally-fontbelle",
+        "unresolvedHeightErrors": 247,
+        "examples": [
+          {
+            "x": 1272.0703125,
+            "z": -322.265625,
+            "distanceToRoad": 8.110475486424606,
+            "toleranceM": 0.05,
+            "errorM": 0.056121356806613676,
+            "cellSizeM": 2.34375
+          },
+          {
+            "x": 1272.0703125,
+            "z": -322.265625,
+            "distanceToRoad": 8.110475486424606,
+            "toleranceM": 0.05,
+            "errorM": 0.056121356806613676,
+            "cellSizeM": 2.34375
+          },
+          {
+            "x": 1261.5234375,
+            "z": -319.921875,
+            "distanceToRoad": 11.920794544119575,
+            "toleranceM": 0.05,
+            "errorM": 0.05091280279188837,
+            "cellSizeM": 2.34375
+          },
+          {
+            "x": 1261.5234375,
+            "z": -319.921875,
+            "distanceToRoad": 11.920794544119575,
+            "toleranceM": 0.05,
+            "errorM": 0.05091280279188837,
+            "cellSizeM": 2.34375
+          },
+          {
+            "x": 1254.4921875,
+            "z": -315.234375,
+            "distanceToRoad": 11.41078248159684,
+            "toleranceM": 0.05,
+            "errorM": 0.050832283019310864,
+            "cellSizeM": 2.34375
+          }
+        ]
+      }
+    ]
+  }
+}

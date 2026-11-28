@@ -1,0 +1,25 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {test} from 'node:test';
+import {createVehicle,loadVehicle} from '../../src/ui/vehicleStudio/genome.mjs';
+import {makeOpenings} from '../../src/ui/vehicleStudio/optics.mjs';
+import {generateVehicle} from '../../src/ui/vehicleStudio/geometry.mjs';
+import {exportVehicle} from '../../src/ui/vehicleStudio/export.mjs';
+test('opt-in recessed outboard guides mirror and do not change the six powered lamp roles',()=>{
+ const g=loadVehicle(readFileSync(new URL('../../src/ui/vehicleStudio/examples/lexus-is350-f-sport-us-2014.json',import.meta.url),'utf8'));
+ const guides=v=>makeOpenings({end:'front',g:v}).filter(o=>o.opt.passive);
+ assert.deepEqual(guides(createVehicle()),[]);
+ const [l,r]=guides(g);
+ assert.equal(guides(g).length,2);
+ assert.equal(r.outline.length,6);
+ r.outline.forEach(([x,y],i)=>{assert.ok(Math.abs(x+l.outline[i][0]-1)<1e-8);assert.equal(y,l.outline[i][1]);});
+ assert.ok(r.outline[2][1]<r.outline[1][1],'the outer tip must rise above the knee');
+ const off=structuredClone(g);off.components.fogs.type='off';
+ const before=generateVehicle(off,{quality:'drive',compact:2}),after=generateVehicle(g,{quality:'drive',compact:2});
+ assert.deepEqual(after.lampMounts,before.lampMounts);
+ assert.deepEqual(after.diagnostics.issues,[]);
+ const [body,wheel]=Object.values(exportVehicle(g,{quality:'drive'}).models);
+ assert.equal(body.materials.find(m=>m.id==="studio-mat-guideMilk").color,"#e5eaf0");
+ assert.ok(!body.materials.find(m=>m.id==="studio-mat-guideMilk").name.includes("[studio9:"));
+ assert.ok(body.faces.length+2*(wheel.faces.length+(wheel.rearAxleModel?.faces.length??wheel.faces.length))<=15000);
+});

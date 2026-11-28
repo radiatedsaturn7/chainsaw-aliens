@@ -3,10 +3,18 @@ import {getRaceAiRoadPlan} from './RaceAiDirector.js';
 import {raceAiRoadPlanIndex} from './RaceAiRoadPlan.js';
 import {clamp,RACE_WHEEL_IDS} from './simulation/SimulationMath.js';
 
+// A sideways car has little forward speed but still carries kinetic energy.
+// Never interpret that loss of forward projection as a request to accelerate.
+export function raceAiGroundSpeed(ai) {
+ const runner=ai.vehicleDynamicsRunner;
+ const state=runner && !runner.dormant && ai.physicsBudgetDetail!=='cheap' ? runner.state : null;
+ return Number.isFinite(state?.groundSpeedMps) ? Math.max(0,state.groundSpeedMps) : Math.max(0,Number(ai.speedMps)||0);
+}
+
 // Shared driver decisions. Physical forces belong to whichever chassis model
 // is active, rather than being calculated twice for detailed opponents.
 export function planRaceAiControls(editor,ai,tuning,targetMps,profile={}) {
- const speed=Math.max(0,Number(ai.speedMps||0));
+ const speed=raceAiGroundSpeed(ai);
  const target=Math.max(0,Number(targetMps)||0);
  const error=target-speed;
  // A stopped traffic queue still needs brake pressure on a grade. Releasing
@@ -36,10 +44,10 @@ export function planRaceAiControls(editor,ai,tuning,targetMps,profile={}) {
    || targetRpm*2*Math.PI*Math.max(.01,tuning.wheelRadiusM)/(60*Math.max(.01,speed)*tuning.finalDrive),cvt.minRatio,cvt.maxRatio) : 0;
  const rpm=clamp(cvt ? speed/Math.max(.01,tuning.wheelRadiusM)*cvtRatio*tuning.finalDrive*60/(2*Math.PI)
    : editor.getRaceProjectedEngineRpmForGear(tuning,speed,gear),tuning.idleRpm,tuning.revLimitRpm);
- // Proportional speed control alone cannot restart a slow uphill queue: a
- // 0.5 m/s target requested almost no torque, less than gravity/resistance.
- // Add force-based launch feed-forward, fading out as the car gains speed.
- if(!braking && target>.05 && speed<3 && editor.getRaceDriveForceComponents
+ // Speed error alone does not supply the torque needed to hold speed on a
+ // grade or overcome drag. Feed those physical loads forward at every speed;
+ // the error term remains responsible for acceleration and braking.
+ if(!braking && target>.05 && editor.getRaceDriveForceComponents
    && editor.getRaceRoadSurfaceProfileAtDistance && editor.getRaceLongitudinalResistanceForces){
   const mass=Math.max(450,Number(tuning.weightKg)||1400);
   const roadPlan=getRaceAiRoadPlan(editor);
@@ -49,11 +57,18 @@ export function planRaceAiControls(editor,ai,tuning,targetMps,profile={}) {
    setupModifiers:editor.getRaceSetupPhysicsModifiers(tuning,speed),terrainResistance:1,
    looseSurfaceFactor:0,tirePressureRollingMultiplier:1,tireContactScale:1});
   const force=editor.getRaceDriveForceComponents({tuning,gearRatio:cvt ? cvtRatio : editor.getRaceGearRatio(tuning,gear),
-   engineTorqueNm:editor.getRaceTorqueNmAtRpm(rpm,tuning),availablePowerW:tuning.powerHp*745.7,speedMps:speed}).baseForceN
-   * tuning.accelerationCalibration;
+   engineTorqueNm:editor.getRaceTorqueNmAtRpm(rpm,tuning),availablePowerW:tuning.powerHp*745.7,speedMps:speed}).baseForceN;
+  // Ask for acceleration as well as road-load torque. The old .75 m/s²
+  // ceiling made a small speed deficit persist for seconds on corner exit.
+  // This is a pedal request only: clutch, tire limits, TC and engine torque
+  // still determine how much acceleration the car actually produces.
   const required=Math.max(0,mass*9.81*editor.getRaceGradeGravityRatio(grade)
-   + resistance.totalN + mass*clamp(error*.5,.05,.75));
-  throttle=Math.max(throttle,clamp(required/Math.max(1,force),0,1)*clamp(3-speed,0,1));
+   + resistance.totalN + mass*clamp(error*(ai.difficulty==='hard'||ai.difficulty==='expert'?1.8:.8),.05,6));
+  const liftDrag=Math.abs(Number(editor.getRaceEngineBrakingForce?.({tuning,
+    gearRatio:cvt?cvtRatio:editor.getRaceGearRatio(tuning,gear),throttle:0,speedMps:speed,
+    engineRpm:rpm,drivenTractionLimit:Infinity,tireContactScale:1})?.force)||0);
+  const torqueFraction=clamp((required+liftDrag)/Math.max(1,force+liftDrag),0,1);
+  throttle=Math.max(throttle,torqueFraction**(1/(2-clamp(Number(tuning.throttleResponse)||1,.5,1.5))));
  }
  return {throttle,brake,braking,gear,automaticOverrevUpshifts,automaticUpshiftRpm:upshift,rpm};
 }

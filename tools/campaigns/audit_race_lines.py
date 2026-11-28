@@ -99,7 +99,7 @@ def continuations(road,oldnodes,d,start,end):
 
 def signature(nodes):return hashlib.sha256(json.dumps(nodes,sort_keys=True).encode()).hexdigest()
 
-def place(r):
+def place(r, max_search_m=None):
  road=r.get('road',{});nodes=road.get('nodes',[]);segments=road.get('segments',[])
  if len(nodes)<4:return {'status':'too-short'}
  prior=r.get('source',{}).get('linePlacement',{})
@@ -142,7 +142,7 @@ def place(r):
   for side in [0,1]:
    original=0 if side==0 else len(nodes)-1
    if line_corridor(road,nodes,d,original,side)<=10:continue
-   for window,limit in [(80,cap),(40,cap),(40,min(1000,length*.2))]:
+   for window,limit in [(80,cap),(40,cap),(40,min(max_search_m or 1000,length*(.4 if max_search_m else .2)))]:
     candidates=range(len(nodes)-3) if side==0 else range(len(nodes)-1,2,-1)
     choices=[i for i in candidates if (d[i] if side==0 else length-d[i])<=limit and line_corridor(road,nodes,d,i,side,window)<=10]
     if choices:

@@ -207,10 +207,6 @@ export function createVehicleRenderStateFromRunner(runner, {
     });
     const patch = state.contactPatches?.[wheelId] || {};
     const suspension = state.suspensionState?.[wheelId] || {};
-    const compression = finite(
-      suspension.compressionM,
-      state.suspensionTravel?.[wheelId] ?? suspension.compressionRatio
-    );
     const halfTrack = finite(front ? config.frontTrackWidthM : config.rearTrackWidthM, 1.58) * 0.5;
     const suspensionAxisBody = normalizedVector(
       patch.suspensionAxisLocal
@@ -230,6 +226,13 @@ export function createVehicleRenderStateFromRunner(runner, {
       suspension.staticSagTargetM,
       suspensionTravelM * staticSagRatio
     );
+    // No suspension solution exists during the first showcase frame. A
+    // grounded spawn is at static sag, not full droop (which puts the tread
+    // below the road). Airborne spawns still start fully extended.
+    const compression = finite(suspension.compressionM,
+      state.grounded !== false && suspension.compressionM == null && suspension.compressionRatio == null
+        ? staticSagM
+        : state.suspensionTravel?.[wheelId] ?? suspension.compressionRatio);
     const staticHubBody = {
       x: left ? -halfTrack : halfTrack,
       y: -finite(config.cgHeightM, 0.55) + finite(wheelRadiusFor(config, wheelId), 0.337),

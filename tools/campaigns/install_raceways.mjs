@@ -1,3 +1,5 @@
+import {normalizeRaceLocation} from '../../src/racing/RaceLocation.js';
+import {attachCampaignRoutePreviews} from './route_previews.mjs';
 import {addBayardLandmarks} from './bayard_landmarks.mjs';
 import {wildernessParent,addWildernessDistantScenery} from './wilderness_dressing.mjs';
 // Reuse the side-event dressing and native menu system for reviewed circuit imports.
@@ -22,7 +24,7 @@ const touchedRaces=new Map(),removedRaces=new Set();
 for(const row of read(`${reportBase}/report.json`)){
  if(row.status!=='imported')continue;
  const only=process.argv.find(a=>a.startsWith('--only='))?.slice(7).split(',');
- if(only&&!only.includes(row.venueKey||row.id))continue;
+ if(only&&!only.includes(row.venueKey||row.id)&&!only.includes(row.id))continue;
  if(row.city){row.name=`${row.city}, ${row.stateCode} — Landmark Run`;row.displayName=`${row.city}, ${row.stateCode}`;}
  const race=read(row.generatedPath);if(row.city)race.name=row.name;
  const hub=main.find(h=>h.stage===(row.hubStage||row.artHubStage||3));
@@ -45,6 +47,13 @@ for(const row of read(`${reportBase}/report.json`)){
  if(prior&&!row.hubStage&&prior.weather)race.weather=prior.weather;
  // Independent editor/free-race imports must not claim a US campaign location.
  if(!row.hubStage)delete race.campaign;
+ if(row.driftChallenge){
+  race.campaign={optional:true,eventType:'Drift challenge',scoring:'drift'};
+  race.weather='clear';race.timeOfDay='day';race.brightness=1;
+  race.competition={...race.competition,mode:'solo',trafficEnabled:false,aiDrivers:[]};
+  race.source.driftLayoutNotes='Full mapped loop for game score attacks; not a replica of professional judged zones. See layoutReview and layoutReference.';
+ }
+
  if(row.city){
   editor.applyLoadedRaceDocument(race);
   const origin=race.source.origin,R=6371008.8,rad=Math.PI/180;
@@ -58,12 +67,13 @@ for(const row of read(`${reportBase}/report.json`)){
   write(race.source.landmarkNotesPath,{raceRef,state:row.state,city:row.city,routeLengthM:editor.getRaceRouteLength(),distanceReference:'Native timed route from start line; nearest road projection. Landmark may be set back or obscured.',references:row.references,landmarks});
  }
  const documentPath=priorPath||`races/${encodeURIComponent(raceRef).replace(/%20/g,' ')}/document.json`;
+ race.location=normalizeRaceLocation(race);
  write(`${root}/${documentPath}`,encode({schemaVersion:1,kind:'race-track',savedAt,selectedRaceId:race.id,race}));
  const metaPath=`${root}/${documentPath.replace(/document.json$/,'metadata.json')}`;
  write(metaPath,{...(fs.existsSync(metaPath)?read(metaPath):{version:1}),name:raceRef,folder:'races',savedAt});
  manifest.folders.races[raceRef]=documentPath;touchedRaces.set(raceRef,documentPath);
  const superseded=installed.get(row.id);
- if(expansion&&/^(city|state)-/.test(row.id)&&superseded?.raceRef!==raceRef&&superseded?.documentPath){
+ if(((expansion&&/^(city|state)-/.test(row.id))||/^(rally|raceway)-/.test(row.id))&&superseded?.raceRef!==raceRef&&superseded?.documentPath){
   const oldPath=`${root}/${superseded.documentPath}`;
   // Only retire this importer's own superseded event document, never user races.
   if(fs.existsSync(oldPath)&&read(oldPath).race?.id===row.id){
@@ -87,8 +97,8 @@ for(const [name,file] of touchedRaces)latestManifest.folders.races[name]=file;
 for(const name of removedRaces)latestManifest.folders.races[name]&&delete latestManifest.folders.races[name];
 write(`${root}/manifest.json`,latestManifest);
 const menuPath=`${root}/menus/Game Menu/document.json`,menu=read(menuPath),research=read('AI/last-on-the-grid/last_on_the_grid_99_side_races.json');
-const all=[...side,...installed.values()],{screens,hubs,sideGates}=createCampaignHubMenus(main,research,all);
+const all=[...side,...installed.values()],{screens,hubs,sideGates,progression}=createCampaignHubMenus(main,research,all);
 menu.screens=menu.screens.filter(s=>!s.id.startsWith('campaign-hub-')).concat(screens);
-Object.assign(menu.parameters,{campaignHubs:hubs,campaignSideGates:sideGates,campaignEventHubs:Object.fromEntries(all.filter(e=>e.status==='installed'&&e.hubRaceRef).map(e=>[e.raceRef,e.hubRaceRef]))});
-write(menuPath,menu);
+Object.assign(menu.parameters,{campaignHubs:hubs,campaignSideGates:sideGates,campaignProgression:progression,campaignEventHubs:Object.fromEntries(all.filter(e=>e.status==='installed'&&e.hubRaceRef).map(e=>[e.raceRef,e.hubRaceRef]))});
+attachCampaignRoutePreviews(menu);write(menuPath,menu);
 const menuMeta=menuPath.replace(/document.json$/,'metadata.json');write(menuMeta,{...read(menuMeta),savedAt});

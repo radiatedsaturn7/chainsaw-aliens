@@ -1,0 +1,22 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {gunzipSync} from 'node:zlib';
+import {importModelFiles} from '../../src/model3d/ModelImport.js';
+import {isWrxFit10Document} from '../../src/model3d/WrxBundledModels.js';
+const pack=async name=>gunzipSync(await readFile(new URL('../../src/model3d/wrx/'+name+'.pack',import.meta.url))).toString('utf8');
+const hubs=m=>m.joints.filter(j=>/^WheelMount_/.test(j.name)).map(j=>j.position.join(',')).sort();
+test('Field Forgetmenot Fit 10 packs are editable model documents and match the original hubs at the drive budget',async()=>{
+ const [body,wheel,previous]=await Promise.all(['fit10-body','fit10-wheel','body'].map(pack));
+ const read=(name,text)=>importModelFiles([{name:name+'.rtg.json',text:async()=>text}]);
+ const b=await read('body',body),w=await read('wheel',wheel);
+ assert.equal(isWrxFit10Document(b,'body'),true);
+ assert.equal(isWrxFit10Document(w,'wheel'),true);
+ assert.deepEqual(hubs(b),hubs(JSON.parse(previous)));
+ assert.equal(b.faces.length+w.faces.length*4,14840);
+ assert.ok(w.materials.some(m=>m.name.startsWith('[studio9:static-caliper]')));
+ assert.ok(w.materials.some(m=>m.id==='studio-mat-rotor'));
+ assert.ok(b.materials.some(m=>m.name.startsWith('[studio9:brake]')));
+ assert.ok(b.materials.some(m=>m.name.startsWith('[studio9:reverse]')));
+ assert.equal(b.joints.filter(j=>/^(Headlight|Taillight)Mount_/.test(j.name)).length,4);
+});

@@ -36,6 +36,9 @@ Mission 05 is located in the eastern Ozark foothills / St. Francois Mountains ne
 | **Pikes Peak social world** | Must give Cait a real option and Rob a credible moment of non-utility | Name one peer with a life beyond the central romance |
 | **When the “I love you” refusal occurs** | Must precede the argument where Rob recognizes her care | Propose late Mission 09; test alternative after Mission 08 |
 
+## Full screenplay calibration draft — Mission 06 (November 22)
+[**Heaven — Full Playable Chapter Draft v0.1**](SCRIPTS/06-heaven-full-draft.md) now contains arrival, the playable service loop, Cait's extended conversation with Evelyn, Evelyn's disagreement with Rob, departure, game outcome notes and literary analysis. **UNREVIEWED:** this is not a replacement for the prior [voice benchmark](LITERARY_COMPANION/SCENE_BENCHMARK_HEAVEN.md), and no runtime cutscene/race JSON was changed. Review race plausibility, Evelyn's independence, whether the reunion feels earned, and whether the chapter is too dialogue-heavy before developing the next full script.
+
 ## First scripts to write *after treatment review*
 **01 Tower Hill:** preserve implemented text, only write the map scene that reveals Cait's choice without replacing playable opening. Test restraint.
 

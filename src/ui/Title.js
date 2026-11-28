@@ -14,6 +14,7 @@ export default class Title {
       graphics: [
         'pixel-editor',
         'model-editor',
+        'surface-studio',
         'menu-editor',
         'font-editor',
         'cutscene-editor',
@@ -493,7 +494,7 @@ export default class Title {
     order.forEach((action, index) => {
       const y = layout.startY + index * (layout.buttonHeight + layout.gap);
       const selected = order[this.folderSelections[folder] || 0] === action;
-      const label = action === 'font-editor' ? 'Font Editor' : action === 'item-editor' ? 'Item Editor' : action === 'radio-editor' ? 'Radio Editor' : action === 'level-editor'
+      const label = action === 'surface-studio' ? '3D Car Design' : action === 'font-editor' ? 'Font Editor' : action === 'item-editor' ? 'Item Editor' : action === 'radio-editor' ? 'Radio Editor' : action === 'level-editor'
         ? 'Level Editor'
         : action === 'tile-editor'
           ? 'Tile Editor'

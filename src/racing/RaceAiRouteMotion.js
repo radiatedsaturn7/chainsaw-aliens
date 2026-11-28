@@ -1,16 +1,21 @@
+import {raceAiFinishStopDistance} from './RaceAiFinishRunoff.js';
+import {raceAiLaunchLaneOffset} from './RaceAiLaunchLane.js';
+import {sampleRaceRacingLine} from './RaceRacingLine.js';
+import {getRaceAiRoadPlan} from './RaceAiDirector.js';
 import {clamp} from './simulation/SimulationMath.js';
 const angleDelta=(a,b)=>Math.atan2(Math.sin(a-b),Math.cos(a-b));
 
 // A far car follows the authored road corridor instead of accumulating bicycle
 // steering error. Entry is continuous: preserve its measured lateral position
 // and blend toward the driver's chosen lane at a bounded lateral speed.
-export function getRaceAiRouteMotion(editor,ai,{tuning,averageSpeed,seconds}) {
+export function getRaceAiRouteMotion(editor,ai,{tuning,averageSpeed,seconds,holdLane=false}) {
   const session=editor.playtestSession;
+  if(!session || ![ai.worldX,ai.worldZ,ai.carYaw].every(Number.isFinite))return null;
   if(session?.debugAiBicycleOnly || !editor.getRaceWorldPoseAtDistance
     || (ai.physicsBudgetDetail !== 'cheap' && Math.hypot(ai.worldX-session.worldX,ai.worldZ-session.worldZ)<120)) return null;
   const distance=Number(ai.projectedDistance??ai.distance);
   if(!Number.isFinite(distance) || !(seconds>0) || !(averageSpeed>0)) return null;
-  const options={runtimeType:session.routeRuntimeType};
+  const options={runtimeType:session.routeRuntimeType,allowVisualExtension:true};
   const current=editor.getRaceWorldPoseAtDistance(distance,options);
   if(![current?.x,current?.z,current?.yaw].every(Number.isFinite))return null;
   const halfWidth=editor.getRaceRoadHalfWidthWorld(current.segment);
@@ -28,12 +33,18 @@ export function getRaceAiRouteMotion(editor,ai,{tuning,averageSpeed,seconds}) {
   let nextDistance=distance+travel;
   const length=Number(session.routeLength);
   if(length>0)nextDistance=session.routeRuntimeType==='circuit'
-    ? ((nextDistance%length)+length)%length : Math.min(nextDistance,length);
+    ? ((nextDistance%length)+length)%length : Math.min(nextDistance,raceAiFinishStopDistance(editor.selectedRace?.road,length));
   const next=editor.getRaceWorldPoseAtDistance(nextDistance,options);
   if(![next?.x,next?.z,next?.yaw].every(Number.isFinite))return null;
   const nextUsable=Math.max(0,editor.getRaceRoadHalfWidthWorld(next.segment)-width*.5-.25);
-  const target=clamp(Number(ai.lineOffset)||0,-.78,.78)*Math.min(halfWidth,nextUsable);
-  const lateralStep=clamp(target-offset,-Math.min(.8,averageSpeed*.1)*seconds,Math.min(.8,averageSpeed*.1)*seconds);
+  // Detailed steering follows the optimized racing line, not the road centre.
+  // Use that same target here so promotion does not introduce a sudden lane change.
+  const racingPoint=sampleRaceRacingLine(length>0 && !session.debugAiCenterSlow && (options.runtimeType==='circuit' || nextDistance<length) ? getRaceAiRoadPlan(editor) : null,nextDistance);
+  const racingOffset=racingPoint ? -(racingPoint.x-next.x)*Math.cos(next.yaw)
+    +(racingPoint.z-next.z)*Math.sin(next.yaw) : 0;
+  const desiredOffset=racingOffset+clamp(Number(ai.lineOffset)||0,-.78,.78)*halfWidth;
+  const target=clamp(raceAiLaunchLaneOffset(ai,session,current,distance,desiredOffset),-nextUsable,nextUsable);
+  const lateralStep=holdLane ? 0 : clamp(target-offset,-Math.min(.8,averageSpeed*.1)*seconds,Math.min(.8,averageSpeed*.1)*seconds);
   const lateral=offset+lateralStep;
   if(Math.abs(lateral)>nextUsable+.1)return null;
   // Preserve the small along-road projection residual too. Dropping it

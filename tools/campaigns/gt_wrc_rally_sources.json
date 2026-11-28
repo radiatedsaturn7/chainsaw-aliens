@@ -1,0 +1,425 @@
+[
+  {
+    "key": "latvia-mapped-1-2024",
+    "collection": "latvia",
+    "collectionName": "Rally Latvia",
+    "stageName": "Milzkalne",
+    "year": 2024,
+    "country": "lv",
+    "width": 5.5,
+    "artHubStage": 5,
+    "format": "kml",
+    "url": "https://www.google.com/maps/d/kml?mid=1ZrZ-oGPSN606HHz7AZfQ4E15X65Jzrc&forcekml=1",
+    "selector": "SS2/5 Milzkalne",
+    "provider": "Tet Rally Latvia spectator map linked by RallySupport",
+    "surface": "gravel",
+    "bumpiness": 0.04,
+    "method": "Public 2024 spectator map coordinate trace of Milzkalne; source: Tet Rally Latvia spectator map linked by RallySupport. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved."
+  },
+  {
+    "key": "latvia-mapped-2-2024",
+    "collection": "latvia",
+    "collectionName": "Rally Latvia",
+    "stageName": "Tukums",
+    "year": 2024,
+    "country": "lv",
+    "width": 5.5,
+    "artHubStage": 5,
+    "format": "kml",
+    "url": "https://www.google.com/maps/d/kml?mid=1ZrZ-oGPSN606HHz7AZfQ4E15X65Jzrc&forcekml=1",
+    "selector": "SS3/6 Tukums",
+    "provider": "Tet Rally Latvia spectator map linked by RallySupport",
+    "surface": "gravel",
+    "bumpiness": 0.04,
+    "method": "Public 2024 spectator map coordinate trace of Tukums; source: Tet Rally Latvia spectator map linked by RallySupport. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved."
+  },
+  {
+    "key": "latvia-mapped-3-2024",
+    "collection": "latvia",
+    "collectionName": "Rally Latvia",
+    "stageName": "Andumi",
+    "year": 2024,
+    "country": "lv",
+    "width": 5.5,
+    "artHubStage": 5,
+    "format": "kml",
+    "url": "https://www.google.com/maps/d/kml?mid=1ZrZ-oGPSN606HHz7AZfQ4E15X65Jzrc&forcekml=1",
+    "selector": "SS4 Andumi",
+    "provider": "Tet Rally Latvia spectator map linked by RallySupport",
+    "surface": "gravel",
+    "bumpiness": 0.04,
+    "method": "Public 2024 spectator map coordinate trace of Andumi; source: Tet Rally Latvia spectator map linked by RallySupport. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved."
+  },
+  {
+    "key": "estonia-mapped-1-2020",
+    "collection": "estonia",
+    "collectionName": "Rally Estonia",
+    "stageName": "RÜA",
+    "year": 2020,
+    "country": "ee",
+    "width": 5.5,
+    "artHubStage": 5,
+    "format": "kml",
+    "url": "https://www.google.com/maps/d/kml?mid=1JCSqr-AfkYL02CA2VNQFGu1Dn4yNrp_W&forcekml=1",
+    "selector": "RÜA 9.60KM",
+    "provider": "Rally Estonia public 2020 restriction/stage map linked by Arula village",
+    "surface": "gravel",
+    "bumpiness": 0.04,
+    "method": "Public 2020 spectator map coordinate trace of RÜA; source: Rally Estonia public 2020 restriction/stage map linked by Arula village. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved."
+  },
+  {
+    "key": "estonia-mapped-2-2020",
+    "collection": "estonia",
+    "collectionName": "Rally Estonia",
+    "stageName": "MÄEKÜLA",
+    "year": 2020,
+    "country": "ee",
+    "width": 5.5,
+    "artHubStage": 5,
+    "format": "kml",
+    "url": "https://www.google.com/maps/d/kml?mid=1JCSqr-AfkYL02CA2VNQFGu1Dn4yNrp_W&forcekml=1",
+    "selector": "MÄEKÜLA 14.9 KM",
+    "provider": "Rally Estonia public 2020 restriction/stage map linked by Arula village",
+    "surface": "gravel",
+    "bumpiness": 0.04,
+    "method": "Public 2020 spectator map coordinate trace of MÄEKÜLA; source: Rally Estonia public 2020 restriction/stage map linked by Arula village. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved."
+  },
+  {
+    "key": "estonia-mapped-3-2020",
+    "collection": "estonia",
+    "collectionName": "Rally Estonia",
+    "stageName": "ARULA",
+    "year": 2020,
+    "country": "ee",
+    "width": 5.5,
+    "artHubStage": 5,
+    "format": "kml",
+    "url": "https://www.google.com/maps/d/kml?mid=1JCSqr-AfkYL02CA2VNQFGu1Dn4yNrp_W&forcekml=1",
+    "selector": "ARULA 6.90KM",
+    "provider": "Rally Estonia public 2020 restriction/stage map linked by Arula village",
+    "surface": "gravel",
+    "bumpiness": 0.04,
+    "method": "Public 2020 spectator map coordinate trace of ARULA; source: Rally Estonia public 2020 restriction/stage map linked by Arula village. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved."
+  },
+  {
+    "key": "sardinia-mapped-1-2024",
+    "collection": "sardinia",
+    "collectionName": "Rally Italia Sardegna",
+    "stageName": "Monte Lerno — Monti di Alà",
+    "year": 2024,
+    "country": "it",
+    "width": 5.5,
+    "artHubStage": 9,
+    "format": "kml",
+    "url": "https://www.google.com/maps/d/kml?mid=1R5lLGax9AiQMlezXSNZdc8PdHYK0_MQ&forcekml=1",
+    "selector": "Stage",
+    "provider": "Public Reccemaps spectator preview — Monte Lerno / Monti di Alà",
+    "surface": "gravel",
+    "bumpiness": 0.055,
+    "method": "Public 2024 spectator map coordinate trace of Monte Lerno — Monti di Alà; source: Public Reccemaps spectator preview — Monte Lerno / Monti di Alà. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved."
+  },
+  {
+    "key": "croatia-mapped-1-2026",
+    "collection": "croatia",
+    "collectionName": "Croatia Rally",
+    "stageName": "Ucka",
+    "year": 2026,
+    "country": "hr",
+    "width": 5.5,
+    "artHubStage": 3,
+    "format": "kml",
+    "url": "https://www.google.com/maps/d/kml?mid=13R08CrtH5H1Q4aeZToSrmczho1oHkA8&forcekml=1",
+    "selector": "Ucka",
+    "provider": "Public Croatia 2026 spectator route map; unofficial trace",
+    "surface": "asphalt",
+    "bumpiness": 0.04,
+    "method": "Public 2026 spectator map coordinate trace of Ucka; source: Public Croatia 2026 spectator route map; unofficial trace. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved."
+  },
+  {
+    "key": "croatia-mapped-2-2026",
+    "collection": "croatia",
+    "collectionName": "Croatia Rally",
+    "stageName": "Platak",
+    "year": 2026,
+    "country": "hr",
+    "width": 5.5,
+    "artHubStage": 3,
+    "format": "kml",
+    "url": "https://www.google.com/maps/d/kml?mid=13R08CrtH5H1Q4aeZToSrmczho1oHkA8&forcekml=1",
+    "selector": "Platak",
+    "provider": "Public Croatia 2026 spectator route map; unofficial trace",
+    "surface": "asphalt",
+    "bumpiness": 0.04,
+    "method": "Public 2026 spectator map coordinate trace of Platak; source: Public Croatia 2026 spectator route map; unofficial trace. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved."
+  },
+  {
+    "key": "croatia-mapped-3-2026",
+    "collection": "croatia",
+    "collectionName": "Croatia Rally",
+    "stageName": "Ravna Gora - Skrad",
+    "year": 2026,
+    "country": "hr",
+    "width": 5.5,
+    "artHubStage": 3,
+    "format": "kml",
+    "url": "https://www.google.com/maps/d/kml?mid=13R08CrtH5H1Q4aeZToSrmczho1oHkA8&forcekml=1",
+    "selector": "Ravna Gora - Skrad",
+    "provider": "Public Croatia 2026 spectator route map; unofficial trace",
+    "surface": "asphalt",
+    "bumpiness": 0.04,
+    "method": "Public 2026 spectator map coordinate trace of Ravna Gora - Skrad; source: Public Croatia 2026 spectator route map; unofficial trace. Geographic recreation with game timing lines, not certified official stage boundaries. Road widths and roughness estimated; DEM cannot resolve ruts, camber or engineered jumps. Short material changes absent from the source are unresolved."
+  },
+  {
+    "key": "corsica-la-porta",
+    "collection": "corsica",
+    "collectionName": "Tour de Corse",
+    "stageName": "La Porta — Barchetta — Road Recreation",
+    "year": null,
+    "country": "fr",
+    "width": 5.5,
+    "artHubStage": 3,
+    "format": "mapped-road",
+    "waypoints": [
+      [
+        42.42305,
+        9.3527
+      ],
+      [
+        42.4393288,
+        9.3496187
+      ],
+      [
+        42.48696,
+        9.3563303
+      ],
+      [
+        42.5061007,
+        9.3734206
+      ]
+    ],
+    "url": "https://www.haute-corse.gouv.fr/contenu/telechargement/13154/106558/file/RAA%20N%C2%B06%20du%202%20octobre%202025.pdf",
+    "surface": "asphalt",
+    "bumpiness": 0.015,
+    "method": "D515 portion of La Porta–Barchetta, documented in the 2025 Tour de Corse Historique road closures. Omits the D205 competition approach. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate."
+  },
+  {
+    "key": "ypres-kemmelberg",
+    "collection": "ypres",
+    "collectionName": "Ypres Rally",
+    "stageName": "Kemmelberg — Road Recreation",
+    "year": null,
+    "country": "be",
+    "width": 5.5,
+    "artHubStage": 3,
+    "format": "mapped-road",
+    "waypoints": [
+      [
+        50.7901459,
+        2.8059951
+      ],
+      [
+        50.7842537,
+        2.790573
+      ],
+      [
+        50.7805845,
+        2.8009544
+      ],
+      [
+        50.779043,
+        2.7905522
+      ],
+      [
+        50.7703532,
+        2.7918505
+      ],
+      [
+        50.7713618,
+        2.8017008
+      ],
+      [
+        50.7656638,
+        2.8037236
+      ],
+      [
+        50.7663302,
+        2.8074978
+      ],
+      [
+        50.7646511,
+        2.8177802
+      ],
+      [
+        50.768099,
+        2.8151272
+      ],
+      [
+        50.7703794,
+        2.8202738
+      ],
+      [
+        50.7746206,
+        2.8128226
+      ],
+      [
+        50.7768544,
+        2.810105
+      ],
+      [
+        50.7784123,
+        2.8111602
+      ],
+      [
+        50.7769518,
+        2.8184056
+      ],
+      [
+        50.7768,
+        2.8194
+      ]
+    ],
+    "url": "https://app-cdn.sportity.com/a5ae5f4a-da53-4da5-a1a9-9d4cb4ac0ad9/f99fc26c-1591-4258-b09f-637b9f7e3a1e_Recce%20Maps.pdf",
+    "surface": "asphalt",
+    "bumpiness": 0.015,
+    "method": "Mapped Kemmelberg roads reviewed against the organizer 2025 recce map. Starts on Noordstraat, omitting the initial Kemmel village/Katteput loop. This is a partial geographic recreation rather than the identical stage. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate."
+  },
+  {
+    "key": "central-europe-strasinska",
+    "collection": "central-europe",
+    "collectionName": "Central European Rally",
+    "stageName": "Strašínská — Road Recreation",
+    "year": null,
+    "country": "cz",
+    "width": 5.5,
+    "artHubStage": 3,
+    "format": "mapped-road",
+    "waypoints": [
+      [
+        49.1819509,
+        13.6433276
+      ],
+      [
+        49.181593,
+        13.6503764
+      ],
+      [
+        49.1737032,
+        13.6767137
+      ],
+      [
+        49.1511803,
+        13.7013888
+      ],
+      [
+        49.164295,
+        13.7250343
+      ],
+      [
+        49.1755953,
+        13.7364436
+      ],
+      [
+        49.1825115,
+        13.7364785
+      ],
+      [
+        49.1873286,
+        13.7336237
+      ]
+    ],
+    "url": "https://www.hoslovice.cz/evt_file.php?file=1274",
+    "surface": "asphalt",
+    "bumpiness": 0.015,
+    "method": "Southern portion of the Strašínská route published by Hoslovice municipality for Central European Rally 2024; current paved village roads through Maleč and Zálesí, ending at Nová Ves before the northern stage loop. Village-center waypoints are snapped to through roads, up to 166 m. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate. Reviewed genuine sharp junctions: OSM 69465111/30406194 at the southern 171/17019 turn, and 218840136/436846217 at 17224/17220, both visible in the published map; source node topology retained.",
+    "reviewedLayoutIssues": [
+      "Abrupt 165-degree reversal at point 321; verify junction continuity",
+      "Abrupt 121-degree reversal at point 497; verify junction continuity"
+    ]
+  },
+  {
+    "key": "poland-swietajno",
+    "collection": "poland",
+    "collectionName": "Rally Poland",
+    "stageName": "Świętajno — Pietrasze to Chełchy — Road Recreation",
+    "year": null,
+    "country": "pl",
+    "width": 5.5,
+    "artHubStage": 5,
+    "format": "mapped-road",
+    "waypoints": [
+      [
+        54.021,
+        22.182
+      ],
+      [
+        54.0412088,
+        22.2122749
+      ],
+      [
+        54.0408,
+        22.24311
+      ],
+      [
+        54.04312,
+        22.293
+      ]
+    ],
+    "url": "https://rally-poland-maps.topracing.pl/wp-content/uploads/2024/05/Swietajno-v6.jpg",
+    "surface": "gravel",
+    "bumpiness": 0.05,
+    "method": "Southern part of the published 2024 Świętajno spectator map: Pietrasze, Jelonek, Zalesie and Chełchy. Ends before the northern Gryzy/Mazury competition loop. Current drivable roads, not an exact historical timing-control reconstruction. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate. The mapped southern approach uses a short 655 section before joining the gravel corridor; this differs from the competition forest approach. Jelonek waypoint is on the through-road junction, not the village spur. Sharp current-road junction 749553159/178760572 is topologically connected; the alternate southern approach makes this turn sharper than the published competition approach.",
+    "reviewedLayoutIssues": [
+      "Abrupt 128-degree reversal at point 118; verify junction continuity"
+    ]
+  },
+  {
+    "key": "australia-sherwood",
+    "collection": "australia",
+    "collectionName": "Rally Australia",
+    "stageName": "Sherwood Road — Road Recreation",
+    "year": null,
+    "country": "au",
+    "width": 5.5,
+    "artHubStage": 5,
+    "format": "mapped-road",
+    "waypoints": [
+      [
+        -30.12315,
+        153.1068472
+      ],
+      [
+        -30.0570856,
+        153.0097162
+      ]
+    ],
+    "url": "https://www.rallypedia.com.au/wp-content/uploads/2026/02/2018-Rally-Australia-RG2.pdf",
+    "surface": "gravel",
+    "bumpiness": 0.05,
+    "method": "Continuous mapped Sherwood Road in the Coffs Coast rally area documented by the organizer 2018 Rally Guide 2. A named-road recreation, not the full same-named WRC stage; competition loops, connecting forest roads and exact controls omitted. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate."
+  },
+  {
+    "key": "australia-coldwater",
+    "collection": "australia",
+    "collectionName": "Rally Australia",
+    "stageName": "Coldwater Creek Road — Road Recreation",
+    "year": null,
+    "country": "au",
+    "width": 5.5,
+    "artHubStage": 5,
+    "format": "mapped-road",
+    "waypoints": [
+      [
+        -30.1945327,
+        152.9365201
+      ],
+      [
+        -30.1514505,
+        152.9934716
+      ]
+    ],
+    "url": "https://www.rallypedia.com.au/wp-content/uploads/2026/02/2018-Rally-Australia-RG2.pdf",
+    "surface": "gravel",
+    "bumpiness": 0.05,
+    "method": "Continuous mapped Coldwater Creek Road in the Coffs Coast rally area documented by the organizer 2018 Rally Guide 2. A named-road recreation, not the full same-named WRC stage; competition loops, connecting forest roads and exact controls omitted. Current OSM road geometry, game timing boundaries and DEM terrain; not a surveyed official stage. Width, camber, local material changes and jumps are approximate."
+  }
+]

@@ -2,7 +2,8 @@ import {campaignCourse,campaignTargets} from './CampaignChallenges.js';
 import {MECHANICAL_COMPONENTS} from '../racing/simulation/MechanicalModel.js';
 // Optional goals: finishing and progression never depend on these bonuses.
 export const OPENING_MISSIONS = {
- 'Tower Hill Road': {bonus:150,brief:'Get through the storm. Snow tires won here will help on Mount Washington.',maxDamage:15},
+ 'Tower Hill Road': {bonus:150,brief:'Get through the storm and bring the car home.',maxDamage:15},
+ 'Providence, RI — Landmark Run': {bonus:150,brief:'Finish the city run. Snow tires won here will help on Mount Washington.',maxDamage:15},
  'Mount Washington Auto Road — point-to-point': {bonus:250,brief:'Climb steadily. Fit your snow tires in Upgrade; rally suspension is the prize for Laurel Highlands.',maxDamage:10},
  'Laurel Highlands Scenic Byway': {bonus:250,brief:'Manage the broken pavement. Rally suspension helps; rain tires prepare you for Ohio.',maxDamage:10},
  'Ohio River Crossing': {bonus:300,brief:'Keep it tidy on the wet crossing.',maxDamage:8},

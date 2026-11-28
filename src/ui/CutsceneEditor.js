@@ -54,6 +54,8 @@ import {
   mapPitchToDrumRow
 } from '../audio/gm.js';
 import { getGmSustainProfile } from '../game/Audio.js';
+import { getEmbeddedCutsceneMusic, isAudioMusic } from '../audio/MusicAsset.js';
+import { musicMediaVolume } from '../audio/musicVolume.js';
 
 const DEFAULT_CUTSCENE_NAME = 'New Cutscene';
 const CUTSCENE_SCHEMA_VERSION = 2;
@@ -447,6 +449,40 @@ export function collectCutsceneMidiRenderEvents(doc = createDefaultCutscene(), r
     events.push(...collectSongMidiRenderEvents(song, clip, ref, masterVolume));
   });
   return events.sort((a, b) => a.startSec - b.startSec || a.pitch - b.pitch);
+}
+
+export function collectCutsceneRecordedAudio(doc, resolveSong = () => null) {
+  const assets = new Map((doc.assets || []).map(asset => [asset.id, asset]));
+  return (doc.clips || []).flatMap(clip => {
+    if (clip.type !== 'music') return [];
+    const asset = assets.get(clip.assetId);
+    const ref = asset?.ref || clip.assetId;
+    const entry = getEmbeddedCutsceneMusic(asset) || resolveSong(ref);
+    const song = entry?.song || entry;
+    return isAudioMusic(song) ? [{clip, song}] : [];
+  });
+}
+
+function scheduleOfflineRecordedClip(ctx, output, buffer, clip, volume, timelineDuration) {
+  const start = clip.startMs / 1000;
+  const end = Math.min(timelineDuration, (clip.startMs + clip.durationMs) / 1000);
+  if (!(start < end)) return;
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  source.loop = clip.loop === true;
+  const gain = ctx.createGain();
+  // Match the timeline's existing volume/easing with a 25ms automation grid.
+  const fade = Math.max(0, Number(clip.fadeMs || 0) / 1000);
+  const gainAt = time => sampleCutsceneAudioVolume(clip, time * 1000) * volume
+    * (fade ? Math.min(1, (time - start) / fade, (end - time) / fade) : 1);
+  gain.gain.setValueAtTime(gainAt(start), start);
+  for (let t = start + .025; t < end; t += .025) {
+    gain.gain.linearRampToValueAtTime(gainAt(t), t);
+  }
+  gain.gain.linearRampToValueAtTime(gainAt(end), end);
+  source.connect(gain).connect(output);
+  source.start(start);
+  source.stop(end);
 }
 
 function normalizeCutsceneTracks(sourceTracks = [], clips = []) {
@@ -975,6 +1011,51 @@ export function getCutsceneTriggerActionDefaults(cutsceneId = '') {
   return { cutsceneId, pauseGameplay: true, skippable: true };
 }
 
+const SKIP_CUE_MAX_MS = 1650;
+const SKIP_CUE_GAP_MS = 100;
+const SKIP_CUE_MIN_MS = 420;
+
+function getCutsceneSkipCueEndMs(doc, ignorePauseMarkers) {
+  const visibleLayers = new Set(doc.layers.filter(layer => layer.visible !== false).map(layer => layer.id));
+  let firstOverlayMs = doc.durationMs;
+  for (const clip of doc.clips) {
+    if ((clip.type === 'text' && visibleLayers.has(clip.layerId))
+        || (!ignorePauseMarkers && clip.type === 'pause' && clip.waitForInput !== false)) {
+      firstOverlayMs = Math.min(firstOverlayMs, clip.startMs);
+    }
+  }
+  const endMs = Math.min(SKIP_CUE_MAX_MS, firstOverlayMs - SKIP_CUE_GAP_MS);
+  return endMs >= SKIP_CUE_MIN_MS ? endMs : 0;
+}
+
+export function cutsceneSkipHintAlpha(elapsedMs, endMs = SKIP_CUE_MAX_MS) {
+  if (elapsedMs <= 0 || elapsedMs >= endMs) return 0;
+  return .65 * Math.min(1, elapsedMs / 120, (endMs - elapsedMs) / 220);
+}
+
+export function drawCutsceneSkipHint(ctx, bounds, { elapsedMs = 0, holdMs = 0, endMs = SKIP_CUE_MAX_MS } = {}) {
+  const alpha = cutsceneSkipHintAlpha(elapsedMs, endMs);
+  if (!alpha) return;
+  const unit = Math.max(1, Math.min(2, Math.floor(bounds.w / 180)));
+  const label = 'Hold G to skip', w = measureBitmapText(label, unit);
+  const margin = Math.max(8, unit * 6);
+  const x = Math.round(bounds.x + bounds.w - w - margin);
+  const y = Math.round(bounds.y + bounds.h - unit * 7 - margin - 5);
+  ctx.save();
+  ctx.globalAlpha *= alpha;
+  // Same terminal bitmap lettering as scene dialogue; a small shadow keeps
+  // it readable over bright artwork without a large opaque instruction box.
+  drawBitmapText(ctx, label, x + unit, y + unit, unit, '#000');
+  drawBitmapText(ctx, label, x, y, unit, UI_SUITE.colors.text);
+  if (holdMs > 0) {
+    ctx.fillStyle = UI_SUITE.colors.muted;
+    ctx.fillRect(x, y + unit * 8 + 2, w, 2);
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.fillRect(x, y + unit * 8 + 2, Math.round(w * clamp(holdMs / 1000, 0, 1)), 2);
+  }
+  ctx.restore();
+}
+
 export class CutscenePlayer {
   constructor(game) {
     this.game = game;
@@ -1002,6 +1083,9 @@ export class CutscenePlayer {
     this.skippable = skippable !== false;
     this.skipHoldMs = 0;
     this.ignorePauseMarkers = Boolean(ignorePauseMarkers);
+    this.skipHintEndMs = this.skippable && this.startTimeMs === 0
+      ? getCutsceneSkipCueEndMs(this.doc, this.ignorePauseMarkers)
+      : 0;
     this.firedAudio.clear();
     this.stopLoopingAudio();
     this.audioClipById = new Map((this.doc.clips || []).map((clip) => [clip.id, clip]));
@@ -1154,11 +1238,11 @@ export class CutscenePlayer {
   draw(ctx, width, height) {
     if (!this.active || !this.doc) return;
     drawCutsceneDocument(ctx, this.doc, this.timeMs, { x: 0, y: 0, w: width, h: height }, this, { fit: 'contain', drawBorder: false });
-    if(this.skippable){
-      const size=Math.max(10,Math.min(18,height*.035)),w=size*9,x=width-w-12,y=height-size-20;
-      ctx.save();ctx.fillStyle='rgba(0,0,0,.65)';ctx.fillRect(x-6,y-4,w+12,size+14);
-      ctx.fillStyle='#fff';ctx.font=`${size}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='top';ctx.fillText('Hold G to skip',x+w/2,y);
-      ctx.fillStyle='#666';ctx.fillRect(x,y+size+4,w,3);ctx.fillStyle='#fff';ctx.fillRect(x,y+size+4,w*Math.min(1,(this.skipHoldMs||0)/1000),3);ctx.restore();
+    if (this.timeMs < this.skipHintEndMs && !this.waitingPauseClipId) {
+      const { stageRect } = getCutsceneStageProjection(this.doc, { x: 0, y: 0, w: width, h: height });
+      drawCutsceneSkipHint(ctx, stageRect, {
+        elapsedMs: this.timeMs, holdMs: this.skipHoldMs, endMs: this.skipHintEndMs
+      });
     }
   }
 
@@ -5223,7 +5307,7 @@ export default class CutsceneEditor {
 
   getMovieExportContentKey(safeDoc, { durationMs, fps, frameCount, layout, segmentMs, segmentCount }) {
     const source = JSON.stringify({
-      version: 7,
+      version: 8,
       doc: safeDoc,
       durationMs,
       fps,
@@ -5240,7 +5324,7 @@ export default class CutsceneEditor {
       hash ^= source.charCodeAt(index);
       hash = Math.imul(hash, 16777619);
     }
-    return `cutscene-mp4-v7-${safeDoc.name || 'cutscene'}-${durationMs}-${fps}-${frameCount}-${segmentMs}-${(hash >>> 0).toString(16)}`;
+    return `cutscene-mp4-v8-${safeDoc.name || 'cutscene'}-${durationMs}-${fps}-${frameCount}-${segmentMs}-${(hash >>> 0).toString(16)}`;
   }
 
   async createMovieExportSession(metadata) {
@@ -5575,7 +5659,7 @@ export default class CutsceneEditor {
     return new Blob([buffer], { type: 'audio/wav' });
   }
 
-  async renderCutsceneMidiAudioBlob(safeDoc, durationMs, progress = null) {
+  async renderCutsceneAudioBlob(safeDoc, durationMs, progress = null) {
     const OfflineCtor = window.OfflineAudioContext || window.webkitOfflineAudioContext;
     if (!OfflineCtor) return null;
     const resolveSong = (trackId) => (
@@ -5587,9 +5671,10 @@ export default class CutsceneEditor {
       })()
     );
     const events = collectCutsceneMidiRenderEvents(safeDoc, resolveSong);
-    if (!events.length) return null;
-    this.game?.audio?.ensureMidiSampler?.();
-    progress?.update?.(13, 'Loading MIDI instruments...');
+    const recorded = collectCutsceneRecordedAudio(safeDoc, resolveSong);
+    if (!events.length && !recorded.length) return null;
+    if (events.length) this.game?.audio?.ensureMidiSampler?.();
+    if (events.length) progress?.update?.(13, 'Loading MIDI instruments...');
     const samplePromises = new Map();
     await Promise.all(events.map(async (event) => {
       const key = [event.pitch, event.program, event.channel, event.bankMSB, event.bankLSB].join(':');
@@ -5618,7 +5703,19 @@ export default class CutsceneEditor {
     master.connect(limiter);
     limiter.connect(ctx.destination);
     events.forEach((event) => this.scheduleOfflineMidiEvent(ctx, master, event));
-    progress?.update?.(14, 'Rendering MIDI audio...');
+    const sampleBuffers = new Map();
+    const clipMasterVolume = clamp(safeNumber(safeDoc.masterVolume, 1), 0, 1);
+    await Promise.all(recorded.map(async ({clip, song}) => {
+      if (!sampleBuffers.has(song.src)) {
+        sampleBuffers.set(song.src, fetch(song.src).then(response => {
+          if (!response.ok) throw new Error('Could not load recorded cutscene audio');
+          return response.arrayBuffer();
+        }).then(bytes => ctx.decodeAudioData(bytes)));
+      }
+      const volume = musicMediaVolume(this.game?.audio, song.dialogue) * clipMasterVolume;
+      scheduleOfflineRecordedClip(ctx, limiter, await sampleBuffers.get(song.src), clip, volume, durationMs / 1000);
+    }));
+    progress?.update?.(14, 'Rendering movie audio...');
     const rendered = await ctx.startRendering();
     return this.encodeOfflineWav(rendered);
   }
@@ -5710,10 +5807,10 @@ export default class CutsceneEditor {
 
     progress.update(8, 'Preparing audio...');
     await this.preparePreviewAudioResources(safeDoc);
-    progress.update(12, 'Rendering MIDI audio and movie segments...');
+    progress.update(12, 'Rendering audio and movie segments...');
     const audioPromise = session.audioReady
       ? Promise.resolve(null)
-      : this.renderCutsceneMidiAudioBlob(safeDoc, durationMs, progress)
+      : this.renderCutsceneAudioBlob(safeDoc, durationMs, progress)
         .catch(() => null)
         .then((blob) => blob || this.recordCutsceneAudioBlob(safeDoc, durationMs).catch(() => null));
     const runtime = this.buildMovieExportRuntime();
@@ -5753,7 +5850,7 @@ export default class CutsceneEditor {
     progress.update(76, 'Segments checkpointed.');
     const audioBlob = await audioPromise;
     if (audioBlob?.size && !session.audioReady) {
-      progress.update(82, audioBlob.type === 'audio/wav' ? 'Uploading rendered MIDI audio...' : 'Uploading captured audio...');
+      progress.update(82, audioBlob.type === 'audio/wav' ? 'Uploading rendered movie audio...' : 'Uploading captured audio...');
       await this.uploadMovieExportAudio(session.id, audioBlob);
     }
     progress.update(88, 'Finalizing MP4...');
@@ -5921,7 +6018,7 @@ export default class CutsceneEditor {
       });
       const runtime = this.buildMovieExportRuntime();
       recorder.start(250);
-      audioPromise = this.renderCutsceneMidiAudioBlob(safeDoc, durationMs, progress)
+      audioPromise = this.renderCutsceneAudioBlob(safeDoc, durationMs, progress)
         .catch(() => null)
         .then((blob) => blob || this.recordCutsceneAudioBlob(safeDoc, durationMs).catch(() => null));
       const start = getNowMs();

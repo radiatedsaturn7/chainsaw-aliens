@@ -99,3 +99,14 @@ test('a node can be dragged directly without first entering a hidden editing mod
  const p=point(e,'a');e.elementId=null;e.handlePointerDown(p);e.handlePointerMove({...p,x:p.x+40});e.handlePointerUp(p);
  assert.equal(e.mapDesigner.nodeId,'a');assert.ok(e.element.nodes[0].x>.2);assert.equal(e.element.x,0);
 });
+test('Bezier controls can be authored, dragged, undone and saved',async()=>{
+ const e=editor(),d=e.mapDesigner;d.linkId='aj';
+ await d.editLink(async()=>({from:'a',to:'j',curve:'bezier',control1x:30,control1y:10,control2x:60,control2y:20,inherit:true}));
+ assert.deepEqual(e.element.connections[0].control1,{x:.3,y:.1});
+ const before=e.undoMenus.length,p={x:288,y:50.4,id:9};
+ d.pointerDown(p);d.pointerMove({...p,x:384});d.pointerUp(p);
+ assert.ok(Math.abs(e.element.connections[0].control1.x-.4)<1e-9);assert.equal(e.undoMenus.length,before+1);
+ e.history();assert.equal(e.element.connections[0].control1.x,.3);e.history(true);
+ const saved=normalizeMenuDocument(JSON.parse(JSON.stringify(e.menu))).screens[0].elements[0];
+ assert.equal(saved.connections[0].curve,'bezier');assert.ok(Math.abs(saved.connections[0].control1.x-.4)<1e-9);
+});

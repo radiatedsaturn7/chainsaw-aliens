@@ -101,3 +101,36 @@ test('Bayard paved-section camera profiles stay finite and gradual along the sav
   }
  });
 });
+
+
+test('native 3D cars use a lower chase eye without moving the car or changing sprite framing',()=>{
+ const {e,session}=fixture(0);
+ e.isCarExteriorArtPreview=()=>true;
+ const pose={x:0,z:0,elevation:.05};e.getRacePlayerRenderPose=()=>pose;
+ const sprite=e.getRaceThirdPersonCameraEyeHeight(session,0);
+ e.getRaceSessionCar=()=>({art:{bodyModel:{ref:'Chassis'}}});
+ const model=e.getRaceThirdPersonCameraEyeHeight(session,0);
+ assert.ok(Math.abs((model-.05)*12-1.6)<1e-9);
+ assert.ok(Math.abs((sprite-model)*12-1.4)<1e-9);
+ assert.deepEqual(pose,{x:0,z:0,elevation:.05});
+ // A raised road anchor cancels out in absolute eye height.
+ assert.ok(Math.abs(e.getRaceThirdPersonCameraEyeHeight(session,.04)+.04-model)<1e-9);
+});
+
+
+test('low model chase camera places the body in the lower screen without moving the camera',()=>{
+ for(const aspect of [16/9,9/16]){
+  const {e,session}=fixture(0);e.playtestSession=session;
+  e.getRaceSessionCar=()=>({art:{bodyModel:{ref:'Chassis'}}});
+  e.getRacePlayerRenderPose=()=>({x:0,z:0,elevation:.05});
+  const camera=new THREE.PerspectiveCamera(48,aspect,.06,2000);
+  camera.position.set(0,2.2,-10);camera.lookAt(0,1,70);camera.updateProjectionMatrix();
+  const position=camera.position.clone();
+  e.alignRaceThreeCameraHorizon(camera,{x:0,z:-10,horizonRatio:.31},0,{});
+  const body=new THREE.Vector3(0,.6,0).project(camera);
+  assert.ok(Math.abs((1-body.y)/2-.72)<1e-9);
+  assert.ok(camera.position.equals(position));
+  const identity=camera.projectionMatrix.clone().multiply(camera.projectionMatrixInverse);
+  assert.ok(identity.elements.every((v,i)=>Math.abs(v-(i%5===0?1:0))<1e-9));
+ }
+});

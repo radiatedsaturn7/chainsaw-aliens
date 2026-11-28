@@ -168,7 +168,8 @@ test('AI crosses the finish before slowing down on a destination route', () => {
   const editor = road();
   editor.playtestSession.routeRuntimeType = 'destination';
   assert.ok(planRaceAiDriving(editor, racer({ projectedDistance: 1999, worldZ: 1999 }), car).targetSpeedMps > 0);
-  assert.equal(planRaceAiDriving(editor, racer({ projectedDistance: 2000, worldZ: 2000 }), car).targetSpeedMps, 0);
+  assert.ok(planRaceAiDriving(editor, racer({ projectedDistance: 2000, worldZ: 2000 }), car).targetSpeedMps > 0);
+  assert.equal(planRaceAiDriving(editor, racer({ projectedDistance: 2212, worldZ: 2212 }), car).targetSpeedMps, 0);
 });
 
 test('AI corrects a displaced car using the actual tire and chassis simulation', () => {
@@ -300,4 +301,89 @@ test('speed and lightweight traffic advice alternate after initialization and su
  // Sudden loss of grip bypasses deferral and refreshes both plans.
  const rev=ai.speedPlanUpdates;planRaceAiDriving(e,ai,car,{...options,grip:.2,surfacePlanRefreshed:true});
  assert.equal(ai.speedPlanUpdates,rev+1);
+});
+
+test('a slow backwards-facing AI turns around instead of losing steering at a 180 degree target',()=>{
+ for(const direction of [-1,1]){
+  const e=road(),ai=racer({carYaw:direction*(Math.PI-.02),speedMps:2});
+  const plan=planRaceAiDriving(e,ai,car,{topSpeedMps:60});
+  assert.equal(Math.abs(plan.steeringAngleRad),.52);
+  assert.equal(Math.sign(plan.steeringAngleRad),Math.sign(plan.headingError));
+  assert.ok(plan.targetSpeedMps<=3);
+  ai.speedMps=20;
+  const fast=planRaceAiDriving(e,ai,car,{topSpeedMps:60});
+  assert.ok(Math.abs(fast.steeringAngleRad)<.1,'brake before requesting full lock');
+  assert.ok(fast.targetSpeedMps<=3);
+ }
+});
+
+test('Hard follows closer without ignoring a stopped car or physical braking limits',()=>{
+ const e=road();
+ const leader=racer({worldZ:18,speedMps:15});
+ e.playtestSession.aiRuntime=[leader];
+ const medium=planRaceAiDriving(e,racer({difficulty:'medium'}),car);
+ const hard=planRaceAiDriving(e,racer({difficulty:'hard'}),car);
+ assert.ok(hard.targetSpeedMps>medium.targetSpeedMps);
+ assert.ok(hard.targetSpeedMps<25,'retain a finite following cap');
+ leader.worldZ=4;leader.speedMps=0;
+ assert.equal(planRaceAiDriving(e,racer({difficulty:'hard'}),car).targetSpeedMps,0);
+});
+
+test('AI countersteers a developing slide before its nose points away from the target',()=>{
+ const e=road(),ai=racer({physicsBudgetDetail:'full',vehicleDynamicsRunner:{state:{
+  groundSpeedMps:20,bodyLongitudinalSpeedMps:19.4,bodyLateralSpeedMps:-4.7,
+  angularVelocityWorld:{y:.545}}}});
+ const slide=planRaceAiDriving(e,ai,car);
+ assert.ok(slide.steeringAngleRad<-.1,'countersteer even with target directly ahead');
+ ai.vehicleDynamicsRunner.state.bodyLateralSpeedMps=0;
+ ai.vehicleDynamicsRunner.state.angularVelocityWorld.y=0;
+ assert.equal(planRaceAiDriving(e,ai,car).steeringAngleRad,0,'ordinary straight driving stays straight');
+ ai.vehicleDynamicsRunner.state.bodyLateralSpeedMps=-4.7;
+ ai.physicsBudgetDetail='cheap';
+ assert.equal(planRaceAiDriving(e,ai,car).steeringAngleRad,0,'stale full-physics slip must not steer distant cars');
+});
+
+test('AI leaves room for a car alongside instead of crossing its lane to reach the racing line',()=>{
+ const e=road(),ai=racer({worldX:2,lineOffset:.5});
+ const other=racer({worldX:0,worldZ:1});
+ e.playtestSession.aiRuntime=[ai,other];
+ const plan=planRaceAiDriving(e,ai,car);
+ assert.ok(plan.targetX>=2.1,'stay on the current side with body clearance');
+ e.playtestSession.aiRuntime=[ai];
+ assert.ok(planRaceAiDriving(e,ai,car).targetX<0,'unobstructed chosen lane can be reached');
+});
+
+test('hard following closes a usable race gap but still stops for a blocked lane',()=>{
+ const run=(difficulty,leaderSpeed,gap)=>{
+  const e=road(),ai=racer({difficulty,physicsBudgetDetail:'full'}),leader=racer({worldZ:gap,speedMps:leaderSpeed});
+  e.playtestSession.aiRuntime=[ai,leader];
+  return planRaceAiDriving(e,ai,car,{seconds:1/60,roadSafety:{risk:0,maxLineOffset:.78}});
+ };
+ assert.ok(run('hard',20,12).targetSpeedMps>run('easy',20,12).targetSpeedMps);
+ assert.equal(run('hard',0,5).targetSpeedMps,0);
+});
+
+test('a racer in a physically clear passing lane is not capped to the slower leader speed',()=>{
+ const e=road(),ai=racer({difficulty:'hard',physicsBudgetDetail:'full'}),leader=racer({worldX:2.25,worldZ:7,speedMps:10});
+ e.playtestSession.aiRuntime=[ai,leader];
+ const clear=planRaceAiDriving(e,ai,car,{seconds:1/60,roadSafety:{risk:0,maxLineOffset:.78}});
+ leader.worldX=0;
+ const blocked=planRaceAiDriving(e,ai,car,{seconds:1/60,roadSafety:{risk:0,maxLineOffset:.78}});
+ assert.ok(clear.targetSpeedMps>blocked.targetSpeedMps+5);
+});
+
+test('destination racers drive through timing line, follow runoff bend and brake beyond it',()=>{
+ const e=road(d=>d<=2000?{x:0,z:d,yaw:0}:{x:(d-2000)*.6,z:2000+(d-2000)*.8,yaw:Math.atan2(.6,.8)});
+ e.playtestSession.routeRuntimeType='destination';
+ e.selectedRace={road:{autoExtend:false,continuations:{finish:[{offset:137}]}}};
+ e.playtestSession.debugAiIndependentPlanning=true;
+ const options={topSpeedMps:40,roadSafety:{risk:0,maxLineOffset:.78}};
+ const atLine=racer({worldZ:2000,projectedDistance:2000,speedMps:15});
+ const crossing=planRaceAiDriving(e,atLine,car,options);
+ assert.ok(crossing.targetSpeedMps>5,'must drive across line');
+ assert.ok(crossing.steeringAngleRad>0,'must follow bend after finish');
+ const nearEnd=racer({worldX:128*.6,worldZ:2000+128*.8,carYaw:Math.atan2(.6,.8),projectedDistance:2128,speedMps:5});
+ assert.ok(planRaceAiDriving(e,nearEnd,car,options).targetSpeedMps<5);
+ nearEnd.projectedDistance=2129;
+ assert.equal(planRaceAiDriving(e,nearEnd,car,options).targetSpeedMps,0);
 });

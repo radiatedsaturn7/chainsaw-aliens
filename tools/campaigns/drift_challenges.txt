@@ -1,0 +1,97 @@
+Drift challenge provenance — 2026-11-21
+=======================================
+Uses existing OSM / Mapzen imported geometry; no replacement road geometry.
+These are game-authored full-circuit score attacks, NOT official judged drift
+sections, professional scoring rules, or tandem AI competition.
+
+Horse Thief Slide: Willow Springs — Horse Thief Mile, 2 laps, ~3.22 km.
+  Real drift use confirmed by organizer:
+  https://sdrscca.com/willow-springs-weekend-2026/
+  https://www.extremespeedtrackevents.com/3-este/general-info/17-htm-detail
+Sideways Streets: Willow Springs — Streets of Willow, 2 laps, ~5.14 km.
+  Selected as a varied technical game challenge on our existing imported layout.
+  No claim that this is an official drift competition layout.
+Atlanta Angle: Road Atlanta — Short Course, 2 laps, ~5.70 km.
+  Formula Drift venue confirmed by organizer:
+  https://news.formulad.com/2026/fd-news/2026-formula-drift-tickets-available-now/
+  Our Short Course differs from the Formula Drift judged section.
+
+Two-lap scores: bronze/silver/gold are authored starting targets (not calibrated
+with an AI drifter). Each completed attack stores a profile personal best.
+Scoring uses forward progress, slide angle, road contact and road boundaries.
+Reversing to retry a corner, donuts, spins, airborne/off-course driving do not
+award additional points. Race restart begins a new attempt.
+Clear/daylight overlay applies only during the challenge; saved tracks are unchanged.
+
+Other researched candidates:
+Ebisu https://www.ebisu-circuit.com/course.html
+  Not imported for this batch. Current South is a dirt Slide Park; do not
+  mislabel historical Minami pavement as a current layout.
+Tsukuba https://www.tsukuba-circuit.jp/more-info/pdf/1000drift.pdf?2026=
+  Real Course 1000 drifting runs opposite the standard course direction.
+  Do not label our standard-direction course as its official drift layout.
+
+Expansion — 2026-11-21
+======================
+Ten additional layouts, each installed as an independently playable Index race
+and a two-lap Championships / Drift challenge. Total challenges: 13.
+
+Venue                   Layout                   Mapped / published metres
+Ebisu Circuit           School                   409 / 420
+Ebisu Circuit           North                    950 / 1155
+Ebisu Circuit           Touge                    881 / 1200
+Ebisu Circuit           West Drift               636 / not separately verified
+Ebisu Circuit           West                     1917 / 2103
+Nikko Circuit           Main                     1021 / 1027
+Mobara Twin Circuit     East                     1121 / 1270
+Bihoku Highland         A                        667 / 710
+Bihoku Highland         B                        1004 / 1100
+Tsukuba                 Course 1000 Drift Reverse 943 / 1000
+
+Primary operator / organizer sources:
+https://www.ebisu-circuit.com/course.html
+https://www.ebisu-circuit.com/run_howto/drift.html
+https://www.ebisu-circuit.com/c-images/kita.pdf
+https://www.ebisu-circuit.com/c-images/school.pdf
+https://www.ebisu-circuit.com/c-images/nishi.pdf
+https://www.ebisu-circuit.com/race-event/2026/d-matsuri/Autumn/Autumn_Timeschedule.pdf
+https://www.nikko-circuit.jp/
+https://www.nikko-circuit.jp/base114.html
+https://www.mobara-tc.com/1/1-1.html
+https://www.mobara-tc.com/_userdata/east_map.pdf
+https://bihoku-circuit.com/course-guide/
+https://bihoku-circuit.com/
+https://www.tsukuba-circuit.jp/more-info/pdf/1000drift.pdf
+
+Geometry: OSM API snapshots retained in data/campaigns/america/raceways/sources.
+Attribution: OpenStreetMap contributors; ODbL-1.0.
+Elevation: GSI Japan 5 m DEM5A/DEM5B tiles (zoom 15) via the shared importer.
+Attribution: Geospatial Information Authority of Japan (GSI),
+https://maps.gsi.go.jp/development/ichiran.html#dem
+The adapter supports 10 m DEM fallback, but all ten final imports used 5 m data.
+The initial coarse Mapzen pass was rejected after the grade audit.
+Widths: preserve OSM width tags; otherwise documented conservative defaults.
+Banking is not surveyed. Terrain elevation is approximate, not laser-scanned.
+Control-point gap capped at 20 m and render surface step 2 m for tight layouts.
+North, West, School shapes checked against operator PDFs; source-way alternatives
+using pit lanes excluded. Touge retains the mapped connected loop, shorter than
+the operator's stated course length; no artificial extension was invented.
+Bihoku A/B lengths and outline identify each independently mapped course.
+Mobara's real restricted drift zones are not reproduced: score attack uses the
+full loop. Tsukuba is reversed to the operator's specified anticlockwise drift
+direction, retaining the existing Course 1000 normal-direction race separately.
+These are distinct layouts, not ten distinct venues. Shared regional art is used;
+track-specific buildings, clipping zones and event judging markers are not surveyed.
+
+Rebuild:
+ python tools/campaigns/import_drift_courses.py
+ node tools/campaigns/install_raceways.mjs --report-root=data/campaigns/america/drift-courses
+
+Earlier candidate notes above are superseded for Ebisu and Tsukuba.
+Meihan was also researched but its mapped training-maze connectors could not be
+confidently identified as the C course; it is not installed under a guessed name.
+
+Final GSI road-height audit is recorded in data/campaigns/america/drift-courses/elevation-audit.json.
+Five-metre ground DEM still is not a surveyed racing surface. OSM centerline offsets,
+road cuttings and embankments can affect the height profile; no artificial jumps
+or forced length scaling are added. Medal targets are initial game calibration.

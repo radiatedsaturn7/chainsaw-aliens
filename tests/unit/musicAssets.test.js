@@ -66,9 +66,9 @@ test('menu playback passes screen music settings and ignores stale hydration aft
  const {upsertCachedProjectFile}=await import('../../src/ui/serverStorage.js');
  upsertCachedProjectFile('music','menu-test.mp3',JSON.stringify({savedAt:1,data:{kind:'audio-music',src:'test.mp3'}}));
  const calls=[],player=new MenuPlayer({setActiveMusicTrack:(...args)=>calls.push(args)});
- const doc=createMenuDocument(),screen=doc.screens[0];Object.assign(screen,{elements:[],musicRef:'menu-test.mp3',musicLoop:false,musicVolume:.7,musicFadeIn:1.5,musicFadeOut:2,musicStart:8});
- player.flow={screen,time:0};player.finishEnterScreen();await new Promise(r=>setImmediate(r));
- assert.deepEqual(calls.at(-1),['menu-test.mp3',{restart:true,loop:false,volume:.7,fadeIn:1.5,fadeOut:0,offsetMs:8000}]);
+ const doc=createMenuDocument(),screen=doc.screens[0];Object.assign(screen,{elements:[],musicMode:'track',musicRef:'menu-test.mp3',musicLoop:false,musicVolume:.7,musicFadeIn:1.5,musicFadeOut:2,musicStart:8});
+ player.flow={screen,document:doc,parameters:{},time:0};player.finishEnterScreen();await new Promise(r=>setImmediate(r));
+ assert.deepEqual(calls.at(-1),['menu-test.mp3',{restart:false,loop:false,volume:.7,fadeIn:1.5,fadeOut:.4,offsetMs:8000}]);
  player.cleanupScreen();assert.deepEqual(calls.at(-1),[null,{fadeOut:2}]);
  calls.length=0;player.finishEnterScreen();player.cleanupScreen();await new Promise(r=>setImmediate(r));
  assert.ok(calls.every(([ref])=>ref===null));

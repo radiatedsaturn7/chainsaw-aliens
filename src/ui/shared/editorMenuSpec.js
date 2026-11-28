@@ -131,6 +131,7 @@ const EDITOR_ACTION_LABEL_OVERRIDES = {
   'car-category': 'Category & Performance',
   'car-installable-parts':'Installable Upgrades',
   'car-load-preset': 'Load Preset',
+  'car-availability': 'Car Availability',
   'race-ai-cars': 'AI Cars & Classes',
   'load-preset': 'Load Preset',
   'tire-select': 'Select Tire',
@@ -161,6 +162,7 @@ const EDITOR_ACTION_LABEL_OVERRIDES = {
   'car-gauges-interior': 'Interior Gauges',
   'car-camera-settings': 'Camera Settings',
   'draw-road': 'Add',
+  'race-location': 'Location',
   'race-complete': 'On Race Complete',
   gearing: 'Gearing'
 };
@@ -459,7 +461,7 @@ export const EDITOR_MENU_SPECS = {
         'ground-brush-strength-100'
       ]),
       sprites: section('sprites', 'Paint', ['paint-kind-doodad', 'paint-kind-fence', 'paint-kind-decal', 'paint-kind-tile', 'paint-kind-sprite']),
-      settings: section('settings', 'Settings', ['race-reverse', 'race-ground-texture', 'race-radio', 'race-music', 'race-cutscenes', 'race-countdown', 'race-auto-extend', 'race-driving-guide', 'race-pace-notes', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-ai-cars', 'race-complete', 'skybox-next', 'race-weather', 'race-mechanics', 'race-fuel', 'race-road-textures', 'race-timing-lines', 'race-shoulder-textures', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug'])
+      settings: section('settings', 'Settings', ['race-location', 'race-reverse', 'race-ground-texture', 'race-radio', 'race-music', 'race-cutscenes', 'race-countdown', 'race-auto-extend', 'race-driving-guide', 'race-pace-notes', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-ai-cars', 'race-complete', 'skybox-next', 'race-weather', 'race-mechanics', 'race-fuel', 'race-road-textures', 'race-timing-lines', 'race-shoulder-textures', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug'])
     }
   },
   model3d: {
@@ -527,7 +529,7 @@ export const EDITOR_MENU_SPECS = {
       { id: 'tuning', label: 'Tune' }
     ],
     sections: {
-      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'car-load-preset', 'car-description', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'car-load-preset', 'car-description', 'car-availability', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo']),
       view: section('view', 'View', ['zoom-fit']),
       art: section('art', 'Art', ['car-art-exterior', 'car-art-interior', 'car-gauges-exterior', 'car-gauges-interior', 'car-indicators', 'car-smoke', 'car-import-graphic', 'car-body-model', 'car-wheel-model', 'car-clear-body-model', 'car-clear-wheel-model', 'car-art-settings', 'car-camera-settings']),
@@ -1220,3 +1222,4 @@ export function validateEditorStandardReferenceMetadata() {
   });
   return Array.from(new Set(errors));
 }
+

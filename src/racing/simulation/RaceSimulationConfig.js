@@ -6,6 +6,7 @@ export const RACE_CONTROLLER_STEERING = Object.freeze({
   digitalCalibration: Object.freeze({
     pressRateLowSpeed: 2.8,
     pressRateHighSpeed: 1.4,
+    recoveryPressRate: 5,
     unwindRate: 7,
     releaseRate: 3.5
   }),

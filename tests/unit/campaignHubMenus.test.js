@@ -84,7 +84,7 @@ test('venue layouts paginate with eight controls and Back returns to venue paren
  const next=()=>flow.screen.elements.find(e=>e.label==='Next');
  await flow.run(next().action);await flow.run(next().action);
  assert.equal(flow.screenId,'campaign-hub-1-venue-example-page-3');
- assert.equal(sideGates[flow.screenId],catalog[0].name);
+ assert.equal(sideGates[flow.screenId],undefined);
  await flow.run({type:'back'});assert.equal(flow.screenId,'campaign-hub-1-raceways');
  const choices=screens.flatMap(s=>s.elements).filter(e=>e.action?.parameter==='raceRef');
  for(const e of extra)assert.equal(choices.filter(c=>c.action.value===e.raceRef).length,1);

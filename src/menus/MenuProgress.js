@@ -1,3 +1,5 @@
+import {canonicalCarVersionRef} from '../racing/CarVersions.js';
+import {hydrateRaceCarVersions} from '../ui/RaceCarVersionFiles.js';
 import {loadServerPreferenceAsync,saveServerPreference} from '../ui/serverPreferences.js';
 async function persistProgress(game,snapshot,save=saveServerPreference){
  return game.campaignSaves?.hasActive ? game.campaignSaves.save({progress:snapshot}) : save('menu-progress',snapshot);
@@ -14,6 +16,7 @@ export async function setMenuProgress(game,variables){
  await loadMenuProgress(game);
  delete values.selectedGameCar;
  game.menuProgressSaving=(game.menuProgressSaving||Promise.resolve()).catch(()=>{}).then(async()=>{
+  for(const key of Object.keys(values))if(key.startsWith('raceCompleted.')&&game.menuProgress[key]===true)values[key]=true;
   const snapshot={...game.menuProgress,...values};
   const result=await persistProgress(game,snapshot);if(!result.ok)throw Error('Could not save menu progress');
   game.menuProgress=snapshot;
@@ -24,7 +27,9 @@ export async function setMenuProgress(game,variables){
 
 export async function commitMenuCar(game,carRef,{save=saveServerPreference,newGame=false,allowSwitch=false}={}){
  await loadMenuProgress(game);
- if(allowSwitch&&!game.items?.progress?.garage?.ownedCars?.includes(carRef))throw Error('You do not own this car');
+ const versions=await hydrateRaceCarVersions(),canonical=ref=>canonicalCarVersionRef(versions,ref);
+ carRef=canonical(carRef);
+ if(allowSwitch&&!game.items?.progress?.garage?.ownedCars?.some(ref=>canonical(ref)===carRef))throw Error('You do not own this car');
  if(!newGame&&!allowSwitch&&game.menuProgress.selectedGameCar)return game.menuProgress.selectedGameCar;
  const task=(game.menuProgressSaving||Promise.resolve()).catch(()=>{}).then(async()=>{
   if(!newGame&&!allowSwitch&&game.menuProgress.selectedGameCar)return game.menuProgress.selectedGameCar;

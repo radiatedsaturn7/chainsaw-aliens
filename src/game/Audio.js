@@ -1,3 +1,4 @@
+import {RoadMotionSound} from '../audio/RoadMotionSound.js';
 import { ThunderPreparation } from '../audio/ThunderPreparation.js';
 import {thunderProfile} from '../racing/Thunderstorm.js';
 import {DEFAULT_MUSIC_VOLUME, DEFAULT_MASTER_VOLUME} from '../audio/musicVolume.js';
@@ -2802,6 +2803,13 @@ export default class AudioSystem {
       this.revGain = null;
     }
     this.revActive = active;
+  }
+
+  setRoadMotion(active, options={}) {
+    if(!active){this.roadMotion?.stop();this.roadMotion=null;return;}
+    this.ensure();if(!this.ctx)return;
+    this.roadMotion ||= new RoadMotionSound(this.ctx,this.effectsBus||this.master);
+    this.roadMotion.update(options);
   }
 
   setVehicleSound(active, options={}) {

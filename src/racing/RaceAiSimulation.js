@@ -1,3 +1,4 @@
+import {raceAiOpenRoadDistance} from './RaceAiFinishRunoff.js';
 import { tireSizeForWheel } from './TireSizes.js';
 import {getRaceAiRoadPlan} from './RaceAiDirector.js';
 import {raceAiRoadPlanIndex} from './RaceAiRoadPlan.js';
@@ -306,8 +307,8 @@ export function recoverUpsideDownRaceAi(editor, ai, { car, tuning, seconds = 0, 
 }
 
 export function updateRaceAiVehiclePhysics(editor, ai = {}, {
-  car = editor.selectedCar,
-  tuning = editor.getRaceCarTuning(car),
+  car = ai.runtimeCar || editor.selectedCar,
+  tuning = getRaceAiRuntimeTuning(editor, ai, car),
   seconds = 0,
   previousSpeedMps = Number(ai.speedMps || 0),
   targetVelocityWorld = null,
@@ -555,8 +556,12 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
     steeringInputMode: 'ai',
     throttle: Number(engineDrive.throttle || 0),
     brake: Number(engineDrive.brake || 0),
+    clutch: engineDrive.launchControlStaging ? 1 : 0,
     requestedGear: Number(ai.gear || 1),
-    assists: { stabilityControlEnabled: true }
+    // Use the shared staged RPM hold, then let the ordinary automatic clutch
+    // take up at GO. Launch wheelspin regulation otherwise slows some rivals.
+    assists: { stabilityControlEnabled: true, autoShift: true,
+      launchControlEnabled: engineDrive.launchControlStaging === true, launchControlStaging: engineDrive.launchControlStaging === true }
   };
   const workerBridge = editor.vehicleDynamicsAuthority?.workerBridge;
   const workerSnapshot = workerBridge && ai.workerVehicleId
@@ -1193,9 +1198,12 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
     session.aiRuntime.forEach((ai) => {
       const car = ai.runtimeCar || editor.findRaceProjectCarById?.(ai.carId) || editor.project.cars.find((candidate) => candidate.id === ai.carId) || editor.selectedCar;
       const tuning = getRaceAiRuntimeTuning(editor, ai, car);
-      ai.rpm = tuning.idleRpm;
+      // Stage the engine with the clutch open, just as a player holding launch
+      // control does. Rolling starts must not arm a standing launch.
+      const launchControlStaging = preStartMode === 'standing' && tuning.powertrainType !== 'electric';
       ai.engineDrive = {
-        throttle: 0,
+        launchControlStaging,
+        throttle: launchControlStaging ? 1 : 0,
         brake: 0,
         driveForceN: 0,
         demandedForceN: 0,
@@ -1404,14 +1412,16 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
           ai.awaitingStartLine = false;
         } else {
           ai.lap += 1;
+          if(session.menuConfiguration?.motorsportId && ai.lap>Number(editor.selectedRace.laps||1) && !ai.seriesFinishMs)ai.seriesFinishMs=Math.max(1,session.elapsedMs||1);
           if (!ai.bestLapMs || ai.currentLapMs < ai.bestLapMs) ai.bestLapMs = ai.currentLapMs;
         }
         ai.currentLapMs = 0;
       }
       ai.projectedDistance = ((ai.distance % routeLength) + routeLength) % routeLength;
     } else {
-      ai.distance = Math.min(ai.distance, routeLength);
-      ai.projectedDistance = clamp(ai.distance, 0, routeLength);
+      ai.distance = raceAiOpenRoadDistance(editor, physicalProjection, ai, routeLength);
+      ai.projectedDistance = Math.max(0, ai.distance);
+      if (ai.distance >= routeLength && !ai.seriesFinishMs) ai.seriesFinishMs = Math.max(1, session.elapsedMs || 1);
     }
     if (session.trackState) {
       const aiSurfaceSession = {

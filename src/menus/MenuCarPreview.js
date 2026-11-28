@@ -1,5 +1,7 @@
 import * as THREE from '../vendorBridge/three.js';
 import {RACE_THREE_ELEVATION_M} from '../racing/simulation/RaceSimulationConfig.js';
+import {modelAssets} from '../model3d/ModelAssets.js';
+import {GarageModelPreview,garageModelStance,menuModelWheelPoses} from './GarageModelPreview.js';
 import {resolveCarAngleLayers} from '../racing/CarDirectionalArt.js';
 
 const opaqueBoundsCache=new WeakMap();
@@ -63,12 +65,21 @@ export class MenuCarPreview {
     const framing=menuSpriteFraming(bounds,canvas,opaqueBounds(canvas),this.editor.getCarArtScale(resolved),this.editor.getCarArtOffsets(resolved),resolved.art||{},choice.mirrored);
     return this.editor.drawRaceCarBillboardLayers(ctx,{car,session:null,...framing,artChoice:choice,drawShadowLayer:false,showroomArt});
   }
+  drawGarageModel(ctx,bounds,car){
+    this.garageModel??=new GarageModelPreview();
+    return this.garageModel.draw(ctx,bounds,car);
+  }
   draw(ctx,bounds,car,yaw,time){
     if(typeof document==='undefined')return false;
+    if(car.art?.wheelModel?.ref&&!modelAssets.get(car.art.wheelModel.ref))return false;
     if(!this.renderer){this.renderer=new THREE.WebGLRenderer({alpha:true,antialias:true});this.renderer.setPixelRatio(1);this.holder={scene:new THREE.Scene()};}
     const width=Math.max(1,Math.round(bounds.w)),height=Math.max(1,Math.round(bounds.h));this.renderer.setSize(width,height,false);
-    const dimensions=this.editor.getRaceCarDimensions(car),cg=Number(car.tuning?.cgHeightM)||0.56;
+    const dimensions=this.editor.getRaceCarDimensions(car);
+    const model=car.art?.bodyModel?.ref?modelAssets.get(car.art.bodyModel.ref):null;
+    const stance=model?garageModelStance(model,car):null;
+    const cg=stance?stance.radius-stance.hubY:Number(car.tuning?.cgHeightM)||0.56;
     const session={worldX:0,worldZ:0,carYaw:0,bodyY:cg,elapsedMs:time*1000};
+    if(model)session.vehicleRenderState={wheelPoses:menuModelWheelPoses(model,car,cg)};
     this.editor.addRaceThreeProceduralCar(this.holder,{car,session,x:0,z:0,elevation:cg/RACE_THREE_ELEVATION_M,yaw:0,drawShadow:false,color:car.paint?.body||'#58d6ff'});
     const box=menuCarVisualBounds(this.holder.dynamicCarGroup);
     const center=box.isEmpty()?new THREE.Vector3(0,cg,0):box.getCenter(new THREE.Vector3());
@@ -77,5 +88,5 @@ export class MenuCarPreview {
     const distance=radius/Math.sin(halfFov)*1.08;
     const camera=new THREE.PerspectiveCamera(40,width/height,0.01,1000);camera.position.set(center.x+Math.sin(yaw)*distance,center.y+distance*0.35,center.z+Math.cos(yaw)*distance);camera.lookAt(center);camera.updateProjectionMatrix();centerMenuCarCamera(camera,this.holder.dynamicCarGroup,width,height);this.renderer.render(this.holder.scene,camera);ctx.drawImage(this.renderer.domElement,bounds.x,bounds.y,bounds.w,bounds.h);return true;
   }
-  dispose(){if(this.holder){this.editor.clearRaceThreeDynamicCar(this.holder);for(const material of this.holder.solidMaterialCache?.values()||[])material.dispose();}this.renderer?.dispose();this.holder=null;this.renderer=null;}
+  dispose(){this.garageModel?.dispose();this.garageModel=null;if(this.holder){this.editor.clearRaceThreeDynamicCar(this.holder);for(const material of this.holder.solidMaterialCache?.values()||[])material.dispose();}this.renderer?.dispose();this.holder=null;this.renderer=null;}
 }

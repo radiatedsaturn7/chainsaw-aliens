@@ -163,12 +163,16 @@ test('the application can start a published race playtest on a static project ho
 });
 
 
-test('Race Editor car picker downloads opponents before starting a static-host AI grid',async({page})=>{
+test('Race Editor car picker downloads opponents before starting a static-host AI grid',async({page},testInfo)=>{
  test.setTimeout(120000);
  await page.goto(origin+'/index.html');
  await page.waitForFunction(()=>window.__gameReady,null,{timeout:60000});
- let release;const gate=new Promise(resolve=>{release=resolve;});
- await page.route('**/cars/Opponent/document.json',async route=>{await gate;await route.continue();});
+ let release,opponentDocumentRequests=0,fullscreenCancels=0;const gate=new Promise(resolve=>{release=resolve;});
+ await page.route('**/cars/Opponent/document.json',async route=>{
+  opponentDocumentRequests++;
+  await gate;
+  await route.continue();
+ });
  await page.evaluate(async()=>{
   const {hydrateProjectFilePayload}=await import('./src/ui/projectFiles.js');
   const payload=await hydrateProjectFilePayload('races','Published loop');
@@ -181,9 +185,29 @@ test('Race Editor car picker downloads opponents before starting a static-host A
  await page.locator('.project-browser-row[data-name="Player"]').getByRole('button',{name:'Open',exact:true}).click();
  try{
   await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.status)).toContain('Loading race cars');
+  await expect.poll(()=>opponentDocumentRequests).toBeGreaterThan(0);
   expect(await page.evaluate(()=>Boolean(window.__game.raceEditor.playtestSession?.running))).toBe(false);
  }finally{release();}
- await expect.poll(()=>page.evaluate(()=>({running:window.__game.raceEditor.playtestSession?.running,failure:window.__game.raceEditor.lastRaceFailure})),{timeout:60000}).toMatchObject({running:true});
+ const fullscreen=page.getByRole('dialog',{name:'Full screen',exact:true});
+ try{await expect.poll(async()=>{
+  // The optional prompt pauses the game loop until the player chooses.
+  // Cancel normally rather than bypassing startup or fullscreen behavior.
+  if(await fullscreen.isVisible()){
+   await fullscreen.getByRole('button',{name:'Cancel',exact:true}).click();
+   fullscreenCancels++;
+  }
+  return page.evaluate(()=>{
+   const game=window.__game,editor=game.raceEditor,session=editor.playtestSession;
+   return {running:session?.running,state:game.state,status:editor.status,
+    preparing:session?.preparing,startupFramePending:session?.startupFramePending,
+    firstPlayableFrameAt:session?.firstPlayableFrameAt,
+    framePresented:Number.isFinite(session?.firstPlayableFrameAt)&&session.firstPlayableFrameAt>0,
+    preparationError:editor.racePlaytestPreparation?.error,failure:editor.lastRaceFailure};
+  });
+ },{timeout:60000}).toMatchObject({running:true,preparing:false,startupFramePending:false,framePresented:true});}
+ finally{
+  await testInfo.attach('static-host-ai-grid-startup',{body:JSON.stringify({opponentDocumentRequests,fullscreenCancels}),contentType:'application/json'});
+ }
  const cars=await page.evaluate(()=>window.__game.raceEditor.playtestSession.aiRuntime.map(ai=>({id:ai.carId,art:ai.runtimeCar.art.body})));
  expect(cars).toEqual(Array.from({length:3},()=>({id:'saved-car:Opponent',art:'Sheet 50% #'})));
 });

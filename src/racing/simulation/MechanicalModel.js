@@ -3,6 +3,21 @@ import {normalizeFuelConfig,fuelBurnGallons,startingFuelFraction} from './FuelMo
 // No wall clock, Math.random, render-rate state, or replacement vehicle physics.
 const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,Number.isFinite(Number(v))?Number(v):a));
 const number=(v,d)=>Number.isFinite(Number(v))?Number(v):d;
+const componentHealth=(part,tick)=>part.failed?0:(1-part.damage/125)*(part.malfunctionUntil>tick?.35:1);
+const lampSupply=(state)=>componentHealth(state.components.lights,state.tick)*clamp((state.voltage-9)/3.5);
+
+// The daytime switch zeros effects.lights even when the vehicle can still
+// operate stop, reverse and indicator lamps. Recover available electrical
+// supply only from a complete v1 simulation snapshot, not legacy/custom zeros.
+export function daytimeMechanicalLampSupply(state){
+ if(state?.version!==1||state.headlights!==false||state.auxLights!==false||
+    state.effects?.lights!==0||!Number.isFinite(state.voltage)||
+    typeof state.config?.enabled!=='boolean'||!Number.isFinite(state.tick))return null;
+ const part=state.components?.lights;
+ if(typeof part?.failed!=='boolean'||!Number.isFinite(part.damage)||!Number.isFinite(part.malfunctionUntil))return null;
+ if(part.failed||state.voltage<=9)return 0;
+ return state.config.enabled?lampSupply(state):1;
+}
 export const MECHANICAL_WHEELS=['fl','fr','rl','rr'];
 const definitions=[
  ['ignition','Ignition','engine',90],['pistons','Pistons','engine',300],['bearings','Engine bearings','engine',280],
@@ -82,7 +97,7 @@ export function stepMechanicalState(s,dt,telemetry={},damage={}){
 }
 function mechanicalTick(s,t){
  s.tick++;const dt=.1,scaled=dt*s.config.timeScale,c=s.components;
- const failed=id=>c[id].failed,malfunction=id=>failed(id)||c[id].malfunctionUntil>s.tick,health=id=>failed(id)?0:(1-c[id].damage/125)*(malfunction(id)?.35:1);
+ const failed=id=>c[id].failed,malfunction=id=>failed(id)||c[id].malfunctionUntil>s.tick,health=id=>componentHealth(c[id],s.tick);
  const rpm=clamp(t.rpm??900,0,20000),rpmRatio=clamp(rpm/Math.max(1000,number(t.maxRpm,7000)),0,1.5),load=clamp(t.throttle),speed=Math.abs(number(t.speedMps,0)),brake=clamp(t.brake),ambient=clamp(t.ambientTemperatureC??20,-50,60);
  if(typeof t.headlights==='boolean')s.headlights=t.headlights;
  const wear=(id,amount)=>{c[id].damage=clamp(c[id].damage+Math.max(0,amount)/s.config.components[id].durability,0,100);};
@@ -174,7 +189,7 @@ function mechanicalTick(s,t){
  s.effects={torque,drive:!s.engineRunning||malfunction('axles')||malfunction('differential')||c.gearbox.malfunctionUntil>s.tick||s.lostGears.includes(Math.round(number(t.gear,1)))?0:failed('clutch')?.08:1-Math.max(0,c.clutch.damage-50)*.008*load,
  brakes:Object.fromEntries(MECHANICAL_WHEELS.map(w=>[w,malfunction(`hydraulics_${w}`)?0:(failed(`pads_${w}`)?.15:1)*clamp(1-(s.tires[w].brakeTemperatureC-400)/700,.2,1)])),
  pull:clamp((c.alignment_fl.damage+c.spring_fl.damage-c.alignment_fr.damage-c.spring_fr.damage)*.0006,-.2,.2),
- lights:health('lights')*clamp((s.voltage-9)/3.5)*((s.headlights||s.auxLights)?1:0),instruments:clamp((s.voltage-9)/3)};
+ lights:lampSupply(s)*((s.headlights||s.auxLights)?1:0),instruments:clamp((s.voltage-9)/3)};
  s.warnings=[];
  if(!s.engineRunning)s.warnings.push(seized?'ENGINE SEIZED':'ENGINE STALLED');
  if(Object.values(s.tires).some(t=>t.brakeTemperatureC>500))s.warnings.push('BRAKES HOT');

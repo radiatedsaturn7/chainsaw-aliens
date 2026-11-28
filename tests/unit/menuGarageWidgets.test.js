@@ -1,3 +1,4 @@
+// Navigation tests use ready assets; deferred readiness is covered explicitly in menuScreenTransition.test.js.
 import {savedTireForRef} from '../helpers/savedGarageTires.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -12,7 +13,7 @@ import {drawMenuScreen,drawCarDescription} from '../../src/menus/MenuRenderer.js
 const cars=Array.from({length:6},(_,i)=>({label:`Car ${i}`,value:`car-${i}`}));
 async function player(){
  const p=new MenuPlayer({input:{},transitionTo(){},setActiveMusicTrack(){}});
- p.settings.load=async()=>{};p.resources.prepareGarage=async()=>{};
+ p.settings.load=async()=>{};p.resources.prepareScreen=()=>null;p.resources.prepareGarage=async()=>{};
  p.resources.choices=()=>cars;
  await p.open(createMenuDocument(),{preview:true,screenId:'cars'});return p;
 }
@@ -70,6 +71,8 @@ test('buy and install is atomic on dependency or save failure and stock restores
 async function captureThumbnailFrames(times,{selected='car-1',count=4}={}){
  const {clearCachedProjectFilesForTests}=await import('../../src/ui/serverStorage.js');
  clearCachedProjectFilesForTests();
+ const {resetCarPreviewThumbnailsForTests}=await import('../../src/ui/shared/carPreviewThumbnails.js');
+ resetCarPreviewThumbnailsForTests();
  const previous={document:globalThis.document,fetch:globalThis.fetch,Image:globalThis.Image};
  const doc=createMenuDocument(),screen=doc.screens.find(s=>s.id==='cars');
  screen.elements=screen.elements.filter(e=>e.type==='car-showroom');
@@ -169,7 +172,7 @@ test('showroom statistics follow highlighted cars, including the authoring fallb
  const labels=[];const ctx=new Proxy({globalAlpha:1,fillText:text=>labels.push(text)},{get:(o,k)=>k in o?o[k]:(()=>{})});
  p.resources.choices=()=>cars.slice(0,2);p.resources.car=ref=>vehicles[Number(ref?.split('-')[1])]||null;
  p.resources.tuning=car=>car.tuning;p.resources.art=()=>null;
- p.resources.game.carEditor={getRaceCarProjectedArtRef:()=>({artRef:'test'}),getRaceTorqueNmAtRpm:(_rpm,t)=>t.torqueLbFt*1.355817948};
+ p.resources.game.carEditor={collectRaceCarArtRefs:()=>[],getRaceCarProjectedArtRef:()=>({artRef:'test'}),getRaceTorqueNmAtRpm:(_rpm,t)=>t.torqueLbFt*1.355817948};
  p.resources.carPreview.drawSprite=()=>{};
  const render=parameters=>{labels.length=0;drawMenuScreen(ctx,{x:0,y:0,w:960,h:540},doc,screen,parameters,{resources:p.resources,editing:true});return [...labels]};
  const initial={carRef:''},first=render(initial);

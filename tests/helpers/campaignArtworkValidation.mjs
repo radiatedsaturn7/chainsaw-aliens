@@ -3,6 +3,7 @@ import {createCampaignHubMenus} from '../../src/menus/CampaignHubMenus.js';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {normalizeRaceDoodadDocument} from '../../src/racing/raceDoodads.js';
+import {isVisualOnlyRaceScenery} from '../../src/racing/simulation/DamageModel.js';
 
 // Independent authoring manifests, never the import ledger itself, define scope.
 export function assertCampaignImportInventory(imports, inventory, expanded, fences) {
@@ -152,14 +153,14 @@ export function validateArtworkIntent(policy, imports, used, editorLoaded, confi
 }
 
 // Separate authored free-race scope: exact registry bindings must be selected by
-// the shipped Game Menu and resolve to active saved sky/ground slots, not preloads.
+// the shipped Game Menu and resolve to active saved slots or placements, not preloads.
 export function authoredFreeRaceArtwork(registry, menu, manifest, read, campaignPaths) {
   assert.equal(registry.schemaVersion, 1);
   const selectors=menu.screens.flatMap(s=>s.elements||[]);
   assert.ok(selectors.some(e=>e.source==='races'&&e.binding==='raceRef'),'Missing runtime free-race selector');
   const refs=new Set();
   for(const [ref,rule] of Object.entries(registry.assets)){
-    assert.ok(rule.reason && ['sky','ground'].includes(rule.slot),'Invalid free-race intent');
+    assert.ok(rule.reason && ['sky','ground','scenery'].includes(rule.slot),`Invalid free-race intent: ${ref}`);
     const path=manifest.folders.races[rule.raceRef];
     assert.ok(path,`Unreachable free race: ${rule.raceRef}`);
     assert.ok(!campaignPaths.includes(path),'Campaign asset must retain campaign guard');
@@ -169,7 +170,22 @@ export function authoredFreeRaceArtwork(registry, menu, manifest, read, campaign
     if(rule.slot==='sky'){
       assert.equal(race.skyboxArtRef,ref,`Free-race sky placement: ${ref}`);
       assert.equal(race.skyboxSettings?.artRef,ref,`Free-race sky settings: ${ref}`);
-    }else assert.equal(race.groundPlaneArtRef,ref,`Free-race ground placement: ${ref}`);
+    }else if(rule.slot==='ground'){
+      assert.equal(race.groundPlaneArtRef,ref,`Free-race ground placement: ${ref}`);
+    }else{
+      assert.ok(typeof rule.placementId==='string'&&rule.placementId.length>0&&typeof rule.doodadRef==='string'&&rule.doodadRef.length>0,
+        `Invalid free-race scenery witness: ${ref}`);
+      const placements=(race.scenery||[]).filter(p=>p.id===rule.placementId);
+      assert.equal(placements.length,1,`Free-race scenery must have one exact saved placement: ${ref}`);
+      const [placement]=placements;
+      assert.equal(placement.artRef,ref,`Free-race scenery placement art: ${ref}`);
+      assert.equal(placement.doodadRef,rule.doodadRef,`Free-race scenery placement doodad: ${ref}`);
+      assert.ok(isVisualOnlyRaceScenery(placement)&&placement.state!=='removed',`Free-race scenery must be an active visual-only placement: ${ref}`);
+      assert.equal(placement.previewDoodad.artRef,ref,`Free-race scenery preview art: ${ref}`);
+      const doodadPath=manifest.folders.doodads?.[rule.doodadRef];
+      assert.ok(doodadPath,`Missing free-race scenery doodad: ${rule.doodadRef}`);
+      assert.equal(read(doodadPath)?.doodad?.artRef,ref,`Free-race scenery native doodad art: ${ref}`);
+    }
     refs.add(ref);
   }
   return refs;

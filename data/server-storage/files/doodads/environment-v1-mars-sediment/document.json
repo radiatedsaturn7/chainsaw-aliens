@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "selectedDoodadId": "environment-v1-mars-sediment",
+  "doodad": {
+    "id": "environment-v1-mars-sediment",
+    "name": "Martian layered sediment slabs",
+    "artRef": "environment-v1-mars-sediment",
+    "isFence": false,
+    "itemType": "scenery",
+    "model": null,
+    "widthM": 7.2,
+    "heightM": 2.4,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 7.2,
+    "hitboxHeightM": 2.4,
+    "weightKg": 45,
+    "defaultRule": {
+      "minSpeedMph": 0,
+      "behavior": "flatten",
+      "speedDrainPercent": 0,
+      "damage": {
+        "panels": 0,
+        "suspension": 0,
+        "engine": 0
+      }
+    },
+    "rules": []
+  }
+}

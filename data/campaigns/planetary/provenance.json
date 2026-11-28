@@ -1,0 +1,155 @@
+{
+  "status": "Seven playable simulator stages installed; Earth car handling retained by user choice.",
+  "sourceDate": "2026-11-18",
+  "moon": {
+    "routeUrl": "https://planetarymaps.usgs.gov/mosaic/Apollo17/Apollo17_PDS_fullPackage_Haase.zip",
+    "attribution": "Haase et al. (2018), Apollo 17 traverse reconstruction; USGS Astrogeology; LRO/LROC, NASA and Arizona State University. See sources/AAREADME.TXT.",
+    "selectedRecord": 8,
+    "sourceLineCount": 9,
+    "routeAccuracy": "Reconstructed cartography; not GPS or a surveyed racing road.",
+    "terrainUrl": "https://data.lroc.im-ldi.com/lroc/view_rdr_product/NAC_DTM_APOLLO17",
+    "sourceTerrainResolutionM": 5,
+    "projection": "Lunar spherical transverse Mercator for route; lunar equirectangular DEM, latitude of true scale 20 degrees, central meridian 180 degrees."
+  },
+  "mars": {
+    "routeUrl": "https://pds-geosciences.wustl.edu/m2020/urn-nasa-pds-mars2020_rover_places/data_localizations/best_interp.csv",
+    "labelUrl": "https://pds-geosciences.wustl.edu/m2020/urn-nasa-pds-mars2020_rover_places/data_localizations/best_interp.csv.xml",
+    "attribution": "NASA/JPL-Caltech Mars 2020 Rover PLACES, PDS Geosciences Node; terrain NASA/USGS HiRISE Mars 2020 TRN mosaic.",
+    "solRange": [
+      379,
+      419
+    ],
+    "routeAccuracy": "Interpolated rover localizations, not wheel-track survey. Sub-5 m movements filtered for the racing corridor; no teleporting or invented links.",
+    "terrainUrl": "https://planetarymaps.usgs.gov/mosaic/mars2020_trn/HiRISE/JEZ_hirise_soc_006_DTM_MOLAtopography_DeltaGeoid_1m_Eqc_latTs0_lon0_blend40.tif",
+    "sourceTerrainResolutionM": 1,
+    "projection": "Mars 2000 sphere radius 3396190 m, equirectangular standard latitude 0 degrees. Road DEM values, not localization heights, determine race elevation.",
+    "sclkRange": [
+      700583343,
+      704139420
+    ],
+    "selectionReason": "Long continuous transit section; ends before a science-stop reversal. Earlier candidate sols 200-400 rejected because repeated corridors produced terrain conflicts.",
+    "localizationCsvSha256": "58fbc62f2676195a00b40b2da53a797a70284a8d2344b288c999d325b7ccb4cc"
+  },
+  "gameAdaptations": [
+    "Earth gravity, tires, suspension, powertrain and atmosphere handling unchanged.",
+    "8 m fictional racing corridor; gravel is the existing simulator surface approximation, not a calibrated lunar/Martian soil model.",
+    "Orbital terrain sampled at 40 m cells; road control elevations sampled directly from DEM. Existing road interpolation and terrain fitting apply.",
+    "Small untimed start/finish continuations are authored and identified separately from recorded path.",
+    "Rock placement and gray/red gravel art are fictional temporary dressing. Dedicated artwork listed in ai/needed-graphics.txt.",
+    "Source data is downloaded offline; playing a saved race does not contact NASA or USGS."
+  ],
+  "rebuildCommands": [
+    "python tools/planetary/probe_apollo.py --extract-traverse",
+    "Download Mars CSV to artifacts/planetary/m20-best_interp.csv using the mars.routeUrl above",
+    "python tools/planetary/inspect_sources.py",
+    "python tools/planetary/import_rover_races.py",
+    "node tools/planetary/install_rover_races.mjs"
+  ],
+  "sourceHashes": {
+    "sources/AAREADME.TXT": "bfc5c4157cf09fda536a6c26cb26077281696719999becfb5e2d8604d7d90bd2",
+    "sources/APOLLO17_TRAVERSE_2018.DBF": "346c370ba3c6e8baa31d907c897715e828c35abf2e4581b4c4bfaaedf9dc5779",
+    "sources/APOLLO17_TRAVERSE_2018.PRJ": "b75aaa03948cce2c76ac69f5b929c412cae2a4eb4d8ecf25fc6ef332ad0fd50f",
+    "sources/APOLLO17_TRAVERSE_2018.SHP": "db21e90257a1b5009b61d43538e062f35a1eebe671c1717b2214fc644d9396d7",
+    "sources/APOLLO17_TRAVERSE_2018.SHX": "ab11474e28cc147ff51d8bbdff4fe691cacff18fb2fc5979af30f6c63fa0ae80"
+  },
+  "validation": {
+    "targetedTestsPassed": 31,
+    "fullRaceLoading": "Both planetary races passed; final Mars report has zero unresolved road/terrain height conflicts.",
+    "reports": [
+      "artifacts/planetary-loading.json (Moon result)",
+      "artifacts/planetary-mars-final-loading.json"
+    ],
+    "browserValidation": "Headless native editor/world-bake tests ran locally; no browser driving session or Playwright execution on Termux."
+  },
+  "additionalMissions": [
+    {
+      "mission": "Apollo 15",
+      "route": "PDS Analyst\u2019s Notebook / Phil Stooke reconstructed rover traverse",
+      "sourceUrl": "https://anms.rsl.wustl.edu/arcgis/rest/services/Apollo/Apollo15_vec/MapServer/4/query?where=1%3D1&outFields=*&returnGeometry=true&f=pjson",
+      "sourceSnapshot": "data/campaigns/planetary/sources/apollo15-traverse.json",
+      "sourceSha256": "b94d4218a4a42b3c53799edca57ced6e0d2668e892d31ba5c8bceaa36625340d",
+      "sourceObjectId": 55,
+      "sourcePath": 0,
+      "nativeCrs": {
+        "wkt": "PROJCS[\"Moon_Equirectangular_Apollo15_CLat0\",GEOGCS[\"GCS_Moon_2000\",DATUM[\"D_Moon_2000\",SPHEROID[\"Moon_2000_IAU_IAG\",1737400.0,0.0]],PRIMEM[\"Reference_Meridian\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Plate_Carree\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",0.0],UNIT[\"Meter\",1.0]]"
+      },
+      "selection": "One complete continuous mapped source feature. No connections invented between features; not a complete EVA.",
+      "raceRef": "Moon \u2014 Apollo 15 Hadley\u2013Apennine",
+      "lengthM": 2809.687023980793,
+      "terrainUrl": "https://pds.mcp.nasa.gov/data/store/img/lunar_reconnaissance_orbiter/pds4/lroc/lro-l-lroc-5-rdr/LROLRC_2001/DATA/SDP/NAC_DTM/APOLLO15/NAC_DTM_APOLLO15.TIF"
+    },
+    {
+      "mission": "Apollo 16",
+      "route": "PDS Analyst\u2019s Notebook / Phil Stooke reconstructed rover traverse",
+      "sourceUrl": "https://anms.rsl.wustl.edu/arcgis/rest/services/Apollo/Apollo16_vec/MapServer/6/query?where=1%3D1&outFields=*&returnGeometry=true&f=pjson",
+      "sourceSnapshot": "data/campaigns/planetary/sources/apollo16-traverse.json",
+      "sourceSha256": "da8ca2beb8430b00d4de4cedaa2d444e3d4fe71afc24e87d92f9f2b3c4833fac",
+      "sourceObjectId": 84,
+      "sourcePath": 0,
+      "nativeCrs": {
+        "wkt": "PROJCS[\"Moon2000_Equidistant_Cylindrical_C0\",GEOGCS[\"GCS_Moon_2000\",DATUM[\"D_Moon_2000\",SPHEROID[\"Moon_2000_IAU_IAG\",1737400.0,0.0]],PRIMEM[\"Reference_Meridian\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Plate_Carree\"],PARAMETER[\"false_easting\",0.0],PARAMETER[\"false_northing\",0.0],PARAMETER[\"central_meridian\",0.0],UNIT[\"Meter\",1.0]]"
+      },
+      "selection": "One complete continuous mapped source feature. No connections invented between features; not a complete EVA.",
+      "raceRef": "Moon \u2014 Apollo 16 Descartes",
+      "lengthM": 3365.9675050816163,
+      "terrainUrl": "https://pds.mcp.nasa.gov/data/store/img/lunar_reconnaissance_orbiter/pds4/lroc/lro-l-lroc-5-rdr/LROLRC_2001/DATA/SDP/NAC_DTM/APOLLO16/NAC_DTM_APOLLO16.TIF"
+    },
+    {
+      "mission": "Curiosity",
+      "route": "NASA/JPL PDS MSL PLACES localized_interp",
+      "sourceUrl": "https://planetarydata.jpl.nasa.gov/img/data/msl/msl_places/data_localizations/localized_interp.csv",
+      "sourceSnapshot": "data/campaigns/planetary/sources/curiosity-section.json.gz",
+      "sourceSha256": "ab2028dd258e344c012e7f692552b773a600400b3877b7ae167cfa543a3a1e29",
+      "solStart": 402,
+      "solEnd": 597,
+      "selection": "Continuous sols 400\u2013600 traverse; sub-8 m localization movements omitted. No stitching around science-stop reversals.",
+      "terrainCredit": "Calef III and Parker, 2016; NASA/JPL-Caltech/USGS/UArizona, MSL Gale Merged DEM 1m v3; source mosaic includes lower-resolution infill.",
+      "raceRef": "Mars \u2014 Curiosity Gale Crater",
+      "lengthM": 3131.635221938533,
+      "terrainUrl": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/Mars/MSL/MSL_Gale_DEM_Mosaic_1m_v3.tif"
+    },
+    {
+      "mission": "Opportunity",
+      "route": "PDS Analyst\u2019s Notebook / Tim Parker corrected rover traverse",
+      "sourceUrl": "https://an.rsl.wustl.edu/mera/AN/meri/MER/traverse/MERB_traverse_5130.zip",
+      "sourceSnapshot": "data/campaigns/planetary/sources/MERB_TRAVERSE.dbf",
+      "sourceSha256": "49fc2689347076d99bdf20b6516aa09c922381027cd51d76bcd6812b5e3379c1",
+      "solStart": 3200,
+      "solEnd": 3400,
+      "selection": "One continuous sol interval; geographic coordinates from corrected source DBF, sub-8 m movements omitted. Source is interpolated localization, not certified wheel-track odometry.",
+      "terrainCredit": "NASA/JPL/UArizona/USGS HiRISE stereo DTM",
+      "demProjection": {
+        "radiusM": 3396190.0,
+        "standardParallel": 0.0,
+        "centralMeridian": 354.62
+      },
+      "raceRef": "Mars \u2014 Opportunity Endeavour Rim",
+      "lengthM": 2624.9096423036963,
+      "terrainUrl": "https://hirise-pds.lpl.arizona.edu/PDS/DTM/ESP/ORB_018700_018799/ESP_018701_1775_ESP_018846_1775/DTEEC_018701_1775_018846_1775_U01.IMG"
+    },
+    {
+      "mission": "Spirit",
+      "route": "PDS Analyst\u2019s Notebook / Tim Parker corrected rover traverse",
+      "sourceUrl": "https://an.rsl.wustl.edu/mera/AN/meri/MER/traverse/MERA_traverse.zip",
+      "sourceSnapshot": "data/campaigns/planetary/sources/MERA_TRAVERSE.dbf",
+      "sourceSha256": "198064d6fda093e96b98e61ee7b2359253553da0bec8d14e8a1278c9e543e4bc",
+      "solStart": 50,
+      "solEnd": 350,
+      "selection": "One continuous sol interval; geographic coordinates from corrected source DBF, sub-8 m movements omitted. Source is interpolated localization, not certified wheel-track odometry.",
+      "terrainCredit": "NASA/JPL/UArizona/USGS HiRISE stereo DTM",
+      "demProjection": {
+        "radiusM": 3395580.0,
+        "standardParallel": -10.0,
+        "centralMeridian": 175.5
+      },
+      "raceRef": "Mars \u2014 Spirit Columbia Hills",
+      "lengthM": 3150.759083748776,
+      "terrainUrl": "https://hirise-pds.lpl.arizona.edu/PDS/DTM/PSP/ORB_001500_001599/PSP_001513_1655_PSP_001777_1650/DTEEC_001513_1655_001777_1650_U01.IMG"
+    }
+  ],
+  "additionalRebuild": [
+    "python tools/planetary/import_additional_rovers.py --fetch",
+    "node tools/planetary/install_rover_races.mjs"
+  ],
+  "notesFile": "data/campaigns/planetary/rover-expansion-notes.txt"
+}

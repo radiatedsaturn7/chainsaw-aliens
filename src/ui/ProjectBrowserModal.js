@@ -1,4 +1,4 @@
-import {paintCarThumbnail,drawCarThumbnailPlaceholder} from './shared/carPreviewThumbnails.js';
+import {paintCarThumbnail} from './shared/carPreviewThumbnails.js';
 import {importMusicAsset,isAudioMusic} from '../audio/MusicAsset.js';
 import {
   PROJECT_FOLDERS,
@@ -179,7 +179,8 @@ export function openProjectBrowser({
   onImport = null,
   onExportZip = null,
   onCancel = null,
-  onPick = null
+  onPick = null,
+  filterEntries = null
 } = {}) {
   activePreviewTrackId = null;
   ensureProjectFileIndex();
@@ -309,7 +310,6 @@ export function openProjectBrowser({
       shell.className='project-browser-art-preview';
       shell.setAttribute('aria-hidden','true');
       shell.style.cssText='width:72px;height:40px;min-width:72px;display:grid;place-items:center';
-      shell.textContent='—';
       let visible=false,canvas;
       const usable=()=>visible&&!closed&&shell.isConnected;
       const paint=()=>{
@@ -318,12 +318,12 @@ export function openProjectBrowser({
         if(!ctx)return;
         ctx.clearRect(0,0,144,80);
         const box={x:0,y:0,w:144,h:80};
-        if(!paintCarThumbnail(ctx,box,entry.name,135,paint,usable))drawCarThumbnailPlaceholder(ctx,box);
+        paintCarThumbnail(ctx,box,entry.name,135,paint,usable);
       };
       previewVisibility.set(shell,show=>{
         if(show===visible)return;
         visible=show;
-        if(!visible){visibleCarPreviews.delete(paint);shell.textContent='—';canvas=null;return;}
+        if(!visible){visibleCarPreviews.delete(paint);shell.replaceChildren();canvas=null;return;}
         canvas=document.createElement('canvas');
         canvas.width=144;canvas.height=80;canvas.style.cssText='width:72px;height:40px';
         shell.replaceChildren(canvas);visibleCarPreviews.add(paint);paint();
@@ -518,7 +518,7 @@ export function openProjectBrowser({
     function renderFolder() {
       const folder = state.folder;
       const query = state.query.trim().toLowerCase();
-      const allEntries = listEntries(folder);
+      const allEntries = filterEntries ? filterEntries(folder,listEntries(folder)) : listEntries(folder);
       folderNameCache.set(folder, new Set(allEntries.map((entry) => String(entry.name || '').toLowerCase())));
       const entries = sortProjectBrowserEntries(
         allEntries.filter((entry) => !query || entry.name.toLowerCase().includes(query)),

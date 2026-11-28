@@ -1,37 +1,158 @@
+import {applyAutomotiveEnvironment,automotiveMaterial,automotivePilotEnabled} from './AutomotiveMaterials.js';
+import {benchmarkNormals,wrxMaterialKind,wrxPilotMaterial} from './WrxVisualPilot.js';
 import * as THREE from '../vendorBridge/three.js';
 import {faceNormal} from './ModelDocument.js';
 import {sampleAnimation,skinVertices} from './ModelRig.js';
 
-export function triangulateFace(model, face) {
-  const normal=faceNormal(model,face),components=[Math.abs(normal.x),Math.abs(normal.y),Math.abs(normal.z)],drop=components.indexOf(Math.max(...components));
-  const points=face.vertices.map(id=>model.vertices.find(v=>v.id===id).position.filter((_,i)=>i!==drop));
-  return THREE.ShapeUtils.triangulateShape(points.map(p=>new THREE.Vector2(...p)),[]);
-}
-function materialTexture(source){
-  if(!source?.pixels)return null;
-  const data=new Uint8Array(source.width*source.height*4),color=new THREE.Color();
-  for(let i=0;i<source.pixels.length;i++){
-    const pixel=source.pixels[i];if(!pixel)continue;
-    color.set(String(pixel).slice(0,7));const rgb=color.clone().convertLinearToSRGB();
-    data.set([Math.round(rgb.r*255),Math.round(rgb.g*255),Math.round(rgb.b*255),String(pixel).length===9?parseInt(pixel.slice(7),16):255],i*4);
+export function triangulateFace(model, face, vertexForId = id => model.vertices.find(v => v.id === id), preserveWinding = false) {
+  // Earcut emits consistent 2D winding in the chosen dominant projection,
+  // not the mesh's authored 3D orientation. With different drop axes,
+  // that can flip neighboring triangles and prevent their normal weld.
+  if(preserveWinding&&face.vertices.length===3)return [[0,1,2]];
+  const normal=faceNormal(model,face,vertexForId),components=[Math.abs(normal.x),Math.abs(normal.y),Math.abs(normal.z)],drop=components.indexOf(Math.max(...components));
+  const positions=face.vertices.map(id=>vertexForId(id).position);
+  const points=positions.map(p=>p.filter((_,i)=>i!==drop));
+  const triangles=THREE.ShapeUtils.triangulateShape(points.map(p=>new THREE.Vector2(...p)),[]);
+  if(preserveWinding){
+    // Dominant-plane projection retains polygon area. Match each ear's
+    // orientation to the sign of the original outline in that same plane.
+    const area=points.reduce((sum,p,i)=>{
+      const q=points[(i+1)%points.length];return sum+p[0]*q[1]-p[1]*q[0];
+    },0);
+    for(const triangle of triangles){
+      const [a,b,c]=triangle.map(i=>points[i]);
+      if(area*((b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]))<0)
+        [triangle[1],triangle[2]]=[triangle[2],triangle[1]];
+    }
   }
-  const texture=new THREE.DataTexture(data,source.width,source.height,THREE.RGBAFormat);
-  texture.colorSpace=THREE.SRGBColorSpace;texture.flipY=true;texture.magFilter=THREE.NearestFilter;texture.minFilter=THREE.NearestFilter;
+  return triangles;
+}
+function materialTexture(source, dataMap=false){
+  if(!source?.pixels)return null;
+  const {width,height,pixels}=source;
+  // Base-color hex values are already sRGB bytes. An ORM or tangent normal
+  // map uses the same authoring container but its bytes are linear data.
+  if(!Number.isInteger(width)||!Number.isInteger(height)||width<1||height<1||
+     width>4096||height>4096||pixels.length!==width*height)return null;
+  const data=new Uint8Array(width*height*4);
+  for(let i=0;i<pixels.length;i++){
+    const pixel=pixels[i];if(!pixel)continue;
+    const rgb=parseInt(pixel.slice(1,7),16), at=i*4;
+    data[at]=rgb>>16;data[at+1]=(rgb>>8)&255;data[at+2]=rgb&255;
+    data[at+3]=pixel.length===9?parseInt(pixel.slice(7),16):255;
+  }
+  const texture=new THREE.DataTexture(data,width,height,THREE.RGBAFormat);
+  texture.colorSpace=dataMap?THREE.NoColorSpace:THREE.SRGBColorSpace;
+  texture.flipY=true;texture.magFilter=dataMap?THREE.LinearFilter:THREE.NearestFilter;
+  const mip=dataMap&&THREE.MathUtils.isPowerOfTwo(width)&&THREE.MathUtils.isPowerOfTwo(height);
+  texture.minFilter=mip?THREE.LinearMipmapLinearFilter:texture.magFilter;
+  texture.generateMipmaps=mip;
   texture.needsUpdate=true;return texture;
 }
-export function buildModelObject(model){
+// Conservative vehicle-only defaults, not a migration of authored assets.
+export function classifyVehicleMaterial(name){
+  const label=String(name??'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+  if(/\b(decal|emissive|light|lens|optic|gauge|logo|mask|badge|sticker|stripe|screen|reflector|lightbar)\b/.test(label))return null;
+  if(/\b(glass|glazing|windshield|windscreen)\b/.test(label)&&!/\b(trim|seal|frame|gasket|rubber)\b/.test(label))return 'glass';
+  if(/\b(rubber|tire|tyre|tread|sidewall)\b/.test(label))return 'rubber';
+  if(/\b(alloy|rim)\b/.test(label))return 'alloy';
+  if(/\b(chrome|steel|machined|aluminum|aluminium|rotor)\b/.test(label))return 'machined';
+  if(/\b(rolled metal|vinyl|plastics?|trim)\b/.test(label))return 'trim';
+  if(/\b(upholstery|carpet|seat fabric)\b/.test(label))return 'upholstery';
+  if(/\b(paint|painted|enamel|clearcoat|bodypaint|bodywork|coachwork)\b/.test(label)||/^(body|body main|main body|car body)$/.test(label))return 'paint';
+  return null;
+}
+function automotiveSpecification(material,wrxPart,automotive){
+  const authored=material.automotive;
+  if(!automotive)return null;
+  if(authored&&typeof authored.preset==='string')return authored;
+  if(!wrxPart){
+    const preset=classifyVehicleMaterial(material.name);
+    if(!preset||preset!=='glass'&&modelMaterialNeedsBlending(material))return null;
+    // Keep existing pixel sampler, alpha, and normals; don't paint over
+    // textures or smooth deliberate low-poly edges on unnamed parts.
+    return {preset,creaseAngle:0,keepTextureSampling:true,
+      reflection:preset==='paint'?.55:preset==='glass'?.55:preset==='alloy'?.62:preset==='machined'?.54:.36};
+  }
+  const label=(material.name||'').toLowerCase();
+  if(label==='headlamp clear polycarbonate cover')return {preset:'clear-cover'};
+  const known=wrxMaterialKind(material.name,wrxPart);
+  if(known)return {preset:known};
+  if(/chrome|steel|machined|reflector|clamp|rotor|fastener/.test(label))return {preset:'machined'};
+  if(/seat|upholstery|carpet/.test(label))return {preset:'upholstery'};
+  return {preset:'trim'};
+}
+export function modelMaterialNeedsBlending(material) {
+  if(material.automotive?.preset==='gltf-pbr'){
+    if(material.automotive.alphaMode==='blend')return true;
+    if(material.automotive.alphaMode==='mask'||material.automotive.alphaMode==='opaque')return false;
+  }
+  // Binary alpha is an alpha-tested cutout. Only fractional alpha requires
+  // sorting/blending (and the two-sided transparent model render passes).
+  return Boolean(material.texture?.pixels?.some(pixel => {
+    if (typeof pixel !== 'string' || pixel.length !== 9) return false;
+    const alpha = parseInt(pixel.slice(7), 16);
+    return alpha > 0 && alpha < 255;
+  }));
+}
+export function buildModelObject(model,{wrxPart=null,automotive=(wrxPart&&automotivePilotEnabled)}={}){
+  const verticesById = new Map();
+  // Match Array.find on duplicate IDs and strict equality (which never matches NaN).
+  for (const vertex of model.vertices) {
+    if (!Number.isNaN(vertex.id) && !verticesById.has(vertex.id)) verticesById.set(vertex.id, vertex);
+  }
+  const vertexForId = id => verticesById.get(id);
   const root=new THREE.Group();root.name=model.name;root.userData.modelDocument=model;
-  const materials=new Map(model.materials.map(m=>[m.id,new THREE.MeshStandardMaterial({color:m.color||'#ffffff',map:materialTexture(m.texture),side:THREE.DoubleSide,roughness:0.8,transparent:true,alphaTest:0.01})]));
+  const materials=new Map(model.materials.map(m=>{
+    const options={color:m.color||'#ffffff',map:materialTexture(m.texture),side:THREE.DoubleSide,
+      roughness:.8,transparent:modelMaterialNeedsBlending(m),alphaTest:.01};
+    const spec=automotiveSpecification(m,wrxPart,automotive);
+    if(spec?.preset==='gltf-pbr'){
+      options.side=spec.doubleSided?THREE.DoubleSide:THREE.FrontSide;
+      options.opacity=spec.opacity??1;
+      options.alphaTest=spec.alphaMode==='mask'?spec.alphaCutoff??.5:0;
+      options.emissive=spec.emissive??'#000000';
+      options.emissiveIntensity=spec.emissiveIntensity??1;
+      options.depthWrite=!options.transparent;
+    }
+    let surface=null;
+    if(spec){
+      const ormMap=materialTexture(spec.orm,true),normalMap=materialTexture(spec.normal,true);
+      surface=automotiveMaterial(options,spec,{ormMap,normalMap});
+      if(!surface){ormMap?.dispose();normalMap?.dispose();}
+    }
+    return [m.id,surface||(wrxPart ? wrxPilotMaterial(options,m.name,wrxPart) : new THREE.MeshStandardMaterial(options))];
+  }));
+  root.userData.wrxVisualPilot=wrxPart;
   for(const material of model.materials){
-    const vertices=[],uvs=[],vertexIds=[],faceIds=[];
-    for(const face of model.faces.filter(f=>f.material===material.id))for(const triangle of triangulateFace(model,face))for(const index of triangle){
-      const vertex=model.vertices.find(v=>v.id===face.vertices[index]);vertices.push(...vertex.position);uvs.push(...face.uv[index]);vertexIds.push(vertex.id);faceIds.push(face.id);
+    const vertices=[],uvs=[],vertexIds=[],faceIds=[],authoredCorners=[];
+    const automotiveSurface=materials.get(material.id).userData.automotive;
+    for(const face of model.faces.filter(f=>f.material===material.id))for(const triangle of triangulateFace(model,face,vertexForId,Boolean(automotiveSurface)))for(const index of triangle){
+      const vertex=vertexForId(face.vertices[index]);vertices.push(...vertex.position);uvs.push(...face.uv[index]);vertexIds.push(vertex.id);faceIds.push(face.id);
+      const n=automotiveSurface&&face.cornerNormals?.[index];
+      if(Array.isArray(n)&&n.length===3&&n.every(Number.isFinite)){
+        const len=Math.hypot(...n);
+        if(len>.001) authoredCorners.push(vertexIds.length-1,n[0]/len,n[1]/len,n[2]/len);
+      }
     }
     if(!vertices.length)continue;
     const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));geometry.computeVertexNormals();geometry.computeBoundingSphere();
-    const mesh=new THREE.Mesh(geometry,materials.get(material.id));mesh.userData.vertexIds=vertexIds;mesh.userData.faceIds=faceIds;mesh.castShadow=true;mesh.receiveShadow=true;root.add(mesh);
+    const kind=wrxMaterialKind(material.name,wrxPart);
+    if(automotiveSurface?.crease>0){
+      benchmarkNormals(geometry,automotiveSurface.crease,true);
+    }else if(kind&&!automotiveSurface){
+      const stampedFenders=/stamped-door enamel/i.test(material.name);
+      benchmarkNormals(geometry,kind==='paint'?72:kind==='rubber'?52:44,stampedFenders);
+    }
+    // Panel cut-outs inherit source-cage normals, avoiding a fan of flat
+    // triangles around the cut without changing topology or affecting other models.
+    for(let i=0;i<authoredCorners.length;i+=4)
+      geometry.attributes.normal.setXYZ(authoredCorners[i],authoredCorners[i+1],authoredCorners[i+2],authoredCorners[i+3]);
+    const mesh=new THREE.Mesh(geometry,materials.get(material.id));mesh.material.name=material.name||'';mesh.userData.vertexIds=vertexIds;mesh.userData.faceIds=faceIds;mesh.castShadow=true;mesh.receiveShadow=true;root.add(mesh);
   }
-  root.userData.materials=[...materials.values()];return root;
+  root.userData.materials=[...materials.values()];
+  root.userData.automotiveMaterials=root.userData.materials.filter(m=>m.userData.automotive);
+  return root;
 }
 export function updateModelPose(root,model,{clip=null,time=0,pose=null}={}){
   const points=new Map(skinVertices(model,pose||sampleAnimation(model,clip,time)).map(v=>[v.id,v.position]));
@@ -42,7 +163,12 @@ export function updateModelPose(root,model,{clip=null,time=0,pose=null}={}){
 }
 export function disposeModelObject(root){
   for(const mesh of root.children)mesh.geometry?.dispose();
-  for(const material of root.userData.materials||[]){material.map?.dispose();material.dispose();}
+  for(const material of root.userData.materials||[]){
+    material.map?.dispose();
+    // All three ORM fields refer to one linear image. Shared environments
+    // are owned by the pipeline, never by an individual vehicle.
+    material.aoMap?.dispose();material.normalMap?.dispose();material.dispose();
+  }
 }
 
 export function getModelFrame(model) {
@@ -55,7 +181,7 @@ export function getModelFrame(model) {
 // Shared canvas renderer for editor work surfaces and side-view Level assets.
 // Race integration can attach buildModelObject directly to its existing scene.
 export class ModelCanvasRenderer {
-  constructor({cacheSize=1}={}){this.cacheSize=cacheSize;this.roots=new Map();this.renderer=null;this.model=null;this.root=null;this.revision=null;}
+  constructor({cacheSize=1,authoredVehiclePreview=false}={}){this.cacheSize=cacheSize;this.authoredVehiclePreview=authoredVehiclePreview;this.roots=new Map();this.renderer=null;this.model=null;this.root=null;this.revision=null;}
   frameModel(model){this.framing=getModelFrame(model);}
   ensure(){
     if(this.renderer)return true;if(typeof document==='undefined')return false;
@@ -70,7 +196,13 @@ export class ModelCanvasRenderer {
       if(this.root)this.scene.remove(this.root);
       const cached=this.roots.get(model);
       if(cached&&cached.revision!==revision){disposeModelObject(cached.root);this.roots.delete(model);}
-      const entry=this.roots.get(model)||{root:buildModelObject(model),revision};
+      let entry=this.roots.get(model);
+      if(!entry){
+        const authoredVehicle=this.authoredVehiclePreview&&model.materials.some(material=>typeof material.automotive?.preset==='string');
+        const root=buildModelObject(model,{automotive:authoredVehicle});
+        if(authoredVehicle)applyAutomotiveEnvironment(root,'studio',this.renderer);
+        entry={root,revision,authoredVehicle,restBuffers:null};
+      }
       this.roots.delete(model);this.roots.set(model,entry);
       while(this.roots.size>this.cacheSize){const [key,old]=this.roots.entries().next().value;disposeModelObject(old.root);this.roots.delete(key);}
       this.root=entry.root;this.scene.add(this.root);this.model=model;this.revision=revision;
@@ -78,7 +210,25 @@ export class ModelCanvasRenderer {
     this.root.position.fromArray(transform?.position||[0,0,0]);
     this.root.rotation.set(...(transform?.rotation||[0,0,0]));
     this.root.scale.fromArray(transform?.scale||[1,1,1]);
-    updateModelPose(this.root,model,{clip,time,pose});for(const material of this.root.userData.materials)material.wireframe=wireframe;
+    const entry=this.roots.get(model);
+    if(!entry.authoredVehicle){
+      updateModelPose(this.root,model,{clip,time,pose});
+    }else if(clip||Object.keys(pose||{}).length){
+      // Pose edits still deform the preview. Retain exactly the authored bind
+      // surface once, so exiting a pose restores the production corner normals.
+      entry.restBuffers ||= this.root.children.map(mesh=>['position','normal'].map(name=>mesh.geometry.getAttribute(name).array.slice()));
+      updateModelPose(this.root,model,{clip,time,pose});
+    }else if(entry.restBuffers){
+      this.root.children.forEach((mesh,i)=>{
+        for(const [j,name] of ['position','normal'].entries()){
+          const attribute=mesh.geometry.getAttribute(name);
+          attribute.array.set(entry.restBuffers[i][j]);attribute.needsUpdate=true;
+        }
+        mesh.geometry.computeBoundingSphere();
+      });
+      entry.restBuffers=null;
+    }
+    for(const material of this.root.userData.materials)material.wireframe=wireframe;
     const width=Math.max(1,Math.round(bounds.w)),height=Math.max(1,Math.round(bounds.h)),aspect=width/height;
     this.renderer.setSize(width,height,false);
     const extent=this.framing.extent;

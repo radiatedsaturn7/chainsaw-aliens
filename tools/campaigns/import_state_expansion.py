@@ -128,6 +128,7 @@ def circuit_layout(row,ways):
  (preview/f"{row['id']}.json").write_text(json.dumps(layouts,separators=(',',':'))+'\n')
  if 'layoutIndex' not in row:raise ValueError('Circuit candidates cached; review layoutIndex before import')
  layout=layouts[row['layoutIndex']]
+ if track.layout_review_issues(layout):raise ValueError('Circuit junction continuity needs review: '+'; '.join(track.layout_review_issues(layout)))
  if abs(layout['lengthM']-row['mappedLengthM'])>2:raise ValueError('Circuit selection changed; review again')
  return layout['points'],{'layoutIndex':row['layoutIndex'],'mappedLengthM':layout['lengthM'],'layoutReference':row['references'][0],'layoutNotes':row.get('layoutNotes',row.get('notes','Mapped centerline reviewed against published course information.'))}
 

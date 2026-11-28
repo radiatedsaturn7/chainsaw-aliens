@@ -1,0 +1,31 @@
+Additional rover missions — 2026-11-18
+
+The Space catalog is separate from the Earth campaign. These are simulator racing corridors on published rover paths, not real roads, full mission recreations, or low-gravity vehicle simulations. Earth car handling remains unchanged by user choice. Each corridor is 8 m wide, with fictional untimed extensions and decorative rocks. The road samples orbital elevation at its nodes; surrounding terrain is sampled on the existing 40 m grid.
+
+Apollo 15: Hadley–Apennine, PDS Analyst’s Notebook Apollo15_vec layer 4, OBJECTID 55. One complete continuous Phil Stooke reconstructed source feature. LROC NAC_DTM_APOLLO15, 2 m source pixels. Native source Plate Carree (lunar radius 1,737,400 m), local east scale corrected for latitude. DEM standard parallel 26 degrees, central meridian 180 degrees.
+Apollo 16: Descartes, Apollo16_vec layer 6, OBJECTID 84. One complete continuous Phil Stooke reconstructed source feature. LROC NAC_DTM_APOLLO16, 2 m source pixels. DEM standard parallel -9 degrees, central meridian 180 degrees. Neither lunar race connects separated source features or claims to cover a complete EVA.
+Curiosity: Gale crater, NASA/JPL MSL PLACES localized_interp ROVER records, sols 400–600. Calef III and Parker (2016) MSL Gale Merged DEM v3, nominal 1 m pixels with lower-resolution infill. Small localization movements below 8 m omitted. Large science-stop reversals were avoided by selecting a continuous interval, not removing excursions and joining across gaps.
+Spirit: Columbia Hills, corrected MERA traverse from Tim Parker/PDS Analyst’s Notebook, sols 50–350. NASA/JPL/UArizona/USGS HiRISE DTEEC_001513_1655_001777_1650_U01. Use published geographic coordinates: its raw and corrected XY columns are not the same frame as Opportunity’s.
+Opportunity: Endeavour western rim, corrected MERB traverse, sols 3200–3400. HiRISE DTEEC_018701_1775_018846_1775_U01. Localized paths include interpolated positions, not certified wheel-track surveys. Sub-8 m movements omitted; source gaps over 100 m are rejected.
+
+Sources and reproducibility:
+- Apollo route data: https://an.rsl.wustl.edu/apollo/map/apMap.aspx?m=15 and ?m=16 (source ArcGIS query URLs retained in each race).
+- Curiosity: https://planetarydata.jpl.nasa.gov/img/data/msl/msl_places/data_localizations/localized_interp.csv
+- Spirit/Opportunity: https://an.rsl.wustl.edu/mera/AN/pages/mer/mer_traverse.htm
+- HiRISE source DTMs: https://www.uahirise.org/dtm/dtm.php?ID=PSP_001513_1655 and ?ID=ESP_018701_1775
+- Source snapshots, projection labels and SHA-256 hashes are retained under sources/ and report.json. NASA/USGS data are sampled offline; the game never contacts planetary data servers during a race.
+- python tools/planetary/import_additional_rovers.py --fetch downloads/prepares routes and builds all five additions. Rebuild from stored snapshots without --fetch. Individual keys: apollo15 apollo16 curiosity spirit opportunity.
+- node tools/planetary/install_rover_races.mjs installs generated races, saved-art references, Space index entries and route previews. --only=comma-separated-race-ids preserves other saved races.
+- node tools/campaigns/validate_loading.mjs --planetary exercises the actual world preparation pipeline.
+- Gale LZW decoding was independently compared byte for byte against libtiff; the compressed fixture and expected digest are saved for regression tests.
+
+Other rover programs (Sojourner, Lunokhod, Yutu and Zhurong) have NOT been added in this batch. No invented route or flat substitute terrain was used to claim they were imported. Dedicated planetary scenery artwork remains pending; the existing gray/red gravel and rock artwork is reused.
+
+Mixed rally surfaces (saved previews, rounded percentages):
+Whaanga Coast: gravel 94%, tarmac 6%.
+Naekawa: gravel 97%, tarmac 3%.
+Concord Pond: gravel 83%, dirt 17%.
+Conuco: gravel 74%, dirt 26%.
+These are actual per-section game surfaces, not simply changing weather. Tiny rounded fractions in other stages are not counted as meaningful mixed-surface events. There is currently no balanced half-tarmac/half-gravel rally stage in this collection. Weather and tire physics were not changed for this rover expansion.
+
+Validation: 30 focused tests passed (7 Python source/terrain, 23 JavaScript index/preview/rally/planetary). All five additions passed full native world preparation. Residual height-tolerance diagnostics: Apollo 15 66; Apollo 16 117; Curiosity 4; Spirit 14; Opportunity 406. These are not load failures, but need a visual driving audit, especially Opportunity. See additional-rovers-review.json. No visual browser driving check has been performed.

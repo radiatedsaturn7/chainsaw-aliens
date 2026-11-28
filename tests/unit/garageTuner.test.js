@@ -76,7 +76,7 @@ test('renderer lays out two rows of four, grey locks, no exit button and bounded
 });
 test('MenuPlayer uses the tuner for keyboard, physical controller and virtual gamepad without number forms',async()=>{
  for(const mode of ['keyboard','gamepad','touch']){
-  const f=await fixture(),p=new MenuPlayer(f.game);p.settings.load=async()=>{};p.resources.prepareGarage=async()=>{};const doc=createMenuDocument();doc.parameters.carRef='car';await p.open(doc,{preview:true,screenId:'tuning'});await p.tuner.readyTask;assert.equal(p.tuner.ready,true);
+  const f=await fixture(),p=new MenuPlayer(f.game);p.settings.load=async()=>{};p.resources.prepareScreen=()=>null;p.resources.prepareGarage=async()=>{};const doc=createMenuDocument();doc.parameters.carRef='car';await p.open(doc,{preview:true,screenId:'tuning'});await p.tuner.readyTask;assert.equal(p.tuner.ready,true);
   let touch={};p.surface.controls.getActions=()=>touch;
   const press=(key,pad,action)=>{const input=mode==='keyboard'?{wasPressedCode:c=>c===key}:mode==='gamepad'?{wasGamepadPressed:a=>a===pad}:{};if(mode==='touch')touch={[action]:true};p.update(input,.016);touch={};p.update({},.016);};
   press('ArrowDown','dpadDown','down');press('ArrowRight','dpadRight','right');press('ArrowRight','dpadRight','right');press('Enter','jump','jump');press('Enter','jump','jump');assert.equal(p.tuner.mode,'list');press('Enter','jump','jump');assert.equal(p.tuner.mode,'edit');press('ArrowRight','dpadRight','right');assert.equal(p.tuner.draft,32.5);press('Escape','gamepadB','attack');assert.equal(p.tuner.mode,'list');assert.equal(p.tuner.row.value,32);
@@ -103,12 +103,12 @@ test('applied tuning reaches consecutive real race-travel launches and leaves th
  assert.deepEqual(starts.map(c=>c.setup.tirePressurePsi.fl),[31.5,31.5]);assert.equal(f.car.setup.tirePressurePsi.fl,32);
 });
 test('legacy Adjust Tuning actions open the in-game tuner and return to their original screen',async()=>{
- const f=await fixture(),p=new MenuPlayer(f.game);p.settings.load=async()=>{};p.resources.prepareGarage=async()=>{};const doc=createMenuDocument();doc.parameters.carRef='car';await p.open(doc,{preview:true,screenId:'garage'});
+ const f=await fixture(),p=new MenuPlayer(f.game);p.settings.load=async()=>{};p.resources.prepareScreen=()=>null;p.resources.prepareGarage=async()=>{};const doc=createMenuDocument();doc.parameters.carRef='car';await p.open(doc,{preview:true,screenId:'garage'});
  await p.flow.run({type:'garage-tune'});await p.tuner.readyTask;assert.equal(p.tunerModal,true);assert.equal(p.tuner.ready,true);p.tuner.cancel();assert.equal(p.tuner,null);assert.equal(p.flow.screenId,'garage');
 });
 
 test('live MenuPlayer applies to game progress and keeps settings after leaving and reopening tuning',async()=>{
- const f=await fixture(),p=new MenuPlayer(f.game);p.settings.load=async()=>{};p.resources.prepareGarage=async()=>{};const doc=createMenuDocument();doc.parameters.carRef='car';await p.open(doc);p.flow.goTo('garage');p.flow.goTo('tuning');await p.tuner.readyTask;
+ const f=await fixture(),p=new MenuPlayer(f.game);p.settings.load=async()=>{};p.resources.prepareScreen=()=>null;p.resources.prepareGarage=async()=>{};const doc=createMenuDocument();doc.parameters.carRef='car';await p.open(doc);p.flow.goTo('garage');p.flow.goTo('tuning');await p.tuner.readyTask;
  await editPressure(p.tuner);p.tuner.move('right');await p.tuner.confirm();assert.equal(f.items.garage.configuration('car').tune['pressure.fl'],32.5);
  p.tuner.cancel();p.tuner.cancel();p.tuner.cancel();assert.equal(p.flow.screenId,'garage');assert.equal(p.tuner,null);
  p.flow.goTo('tuning');await p.tuner.readyTask;await editPressure(p.tuner);assert.equal(p.tuner.row.value,32.5);assert.equal(f.saved().garage.cars.car.tune['pressure.fl'],32.5);

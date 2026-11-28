@@ -129,10 +129,9 @@ export function advanceRaceAiDistantPhysics(editor, ai, {car, tuning, contactSta
     let tightProbe,overlapProbe,blocked=false;
     for(const other of editor.playtestSession.aiRuntime || []) {
       if(!broadProbe(other))continue;
-      if(!routeMotion)return reject('traffic');
       // Broadphase padding is useful for selecting detailed physics but must
       // not deadlock an already-clear queue. Keep rotation sweep padding;
-      // remove only the speculative 15 cm clearance for route traffic.
+      // remove only the speculative 15 cm clearance before rejecting motion.
       tightProbe ||= createRaceAiTrafficProbe(ai,x,z,yaw,dt,{clearance:.01});
       if(!tightProbe(other))continue;
       ai.distantTrafficBlocker=other.id||other.carId||'unknown';
@@ -140,7 +139,28 @@ export function advanceRaceAiDistantPhysics(editor, ai, {car, tuning, contactSta
       // Holding both interpenetrating cars forever cannot resolve contact.
       // Let the existing collision solver separate an actual current overlap.
       if(overlapProbe(other))return reject('traffic-overlap');
+      if(!routeMotion)return reject('traffic');
       blocked=true;
+    }
+    if (blocked && routeMotion && averageSpeed > 0) {
+      // A blocked merge need not become an emergency stop. Follow the same
+      // road curve in our current lane, but recheck player, rivals and scenery.
+      const lane=getRaceAiRouteMotion(editor,ai,{tuning,averageSpeed,seconds:dt,holdLane:true});
+      if(lane) {
+        const maxYawRate=9.81*Math.max(.12,contactState.averageSurfaceGrip||1)/Math.max(1,averageSpeed);
+        lane.yawRate=clamp(lane.yawRate,-maxYawRate,maxYawRate);
+        lane.yaw=ai.carYaw+lane.yawRate*dt;
+        const probe=createRaceAiTrafficProbe(ai,lane.x,lane.z,lane.yaw,dt,{clearance:.01});
+        const laneBounds={...bounds,minX:Math.min(ai.worldX,lane.x)-reach,
+          maxX:Math.max(ai.worldX,lane.x)+reach,minZ:Math.min(ai.worldZ,lane.z)-reach,
+          maxZ:Math.max(ai.worldZ,lane.z)+reach};
+        if(!probe(editor.playtestSession)
+          && !(editor.playtestSession.aiRuntime || []).some(probe)
+          && !colliders?.querySweptAabb(laneBounds).length) {
+          x=lane.x;z=lane.z;yaw=lane.yaw;yawRate=lane.yawRate;blocked=false;
+          ai.distantTrafficBlocker=null;
+        }
+      }
     }
     if (blocked && routeMotion && averageSpeed > 0 && averageSpeed < 2) {
       // Defer a blocked lane change: a leader may pull straight ahead when its
@@ -171,8 +191,29 @@ export function advanceRaceAiDistantPhysics(editor, ai, {car, tuning, contactSta
     routeRuntimeType:editor.playtestSession.routeRuntimeType,
     trackState:editor.playtestSession.trackState
   }});
-  if (!RACE_WHEEL_IDS.every(id=>contacts.contacts?.[id]?.valid === true
-    && contacts.contacts[id].region === 'road') || !Number.isFinite(contacts.averageHeightM)) return reject('terrain-step');
+  // A smooth road/shoulder seam is not a step. Allow the transition band
+  // while at least half the tires remain on the road; actual off-road driving
+  // and rough/unsupported contacts still require the detailed solver.
+  let roadContacts = 0, hasTransition = false;
+  for (const id of RACE_WHEEL_IDS) {
+    const contact = contacts.contacts?.[id];
+    if (contact?.valid !== true) return reject('terrain-step');
+    if (contact.region === 'road') roadContacts++;
+    else if (contact.region === 'transition' || contact.region === 'shoulder'
+      || contact.region === 'margin') hasTransition = true;
+    else return reject('terrain-step');
+  }
+  if (roadContacts < 2 || !Number.isFinite(contacts.averageHeightM)) return reject('terrain-step');
+  if (hasTransition) {
+    for (const id of RACE_WHEEL_IDS) {
+      const previous = contactState.contacts.contacts[id], next = contacts.contacts[id];
+      const n = previous?.normal, nn = next?.normal;
+      if (!n || !nn || ![n.x,n.y,n.z,nn.x,nn.y,nn.z,previous.heightM,next.heightM].every(Number.isFinite)
+        || n.y < .8 || nn.y < .8 || Math.hypot(n.x-nn.x,n.y-nn.y,n.z-nn.z) > .15) return reject('terrain-step');
+      const rise = -(n.x*(x-ai.worldX)+n.z*(z-ai.worldZ))/n.y;
+      if (Math.abs(next.heightM-previous.heightM-rise) > .03) return reject('terrain-step');
+    }
+  }
   const normals=RACE_WHEEL_IDS.map(id=>contactState.contacts.contacts[id].normal || {x:0,y:1,z:0});
   if(normals.some(n=>![n.x,n.y,n.z].every(Number.isFinite))) return reject('invalid-normal');
   const normal={x:0,y:0,z:0};

@@ -1,3 +1,4 @@
+import {CAMPAIGN_PROGRESS_VERSION,migrateCampaignProgress} from './CampaignProgression.js';
 import {HAPTIC_DEFAULTS} from '../racing/RaceHaptics.js';
 import {normalizeCarCondition,repairRows,repairConditionSummary} from '../garage/GarageRepairs.js';
 import {loadServerPreferenceAsync, saveServerPreference} from '../ui/serverPreferences.js';
@@ -41,7 +42,7 @@ export class CampaignSaves {
         this.slots=Array.from({length:3},(_,i)=>saved.slots[i]?.progress && saved.slots[i]?.items ? copy(saved.slots[i]) : null);
       }else{
         const progress=normalizeMenuVariables(this.game.menuProgress||await this.loadPreference('menu-progress',{}));
-        if(Object.keys(progress).length){
+        if(Object.keys(progress).some(key=>key!=='campaignProgressionVersion')){
           const items=await this.loadPreference('rtg-item-progress',{});
           const slots=[{savedAt:this.now(),progress:copy(progress),items:copy(items),parameters:{carRef:progress.selectedGameCar}},null,null];
           await this.persist(slots);this.slots=slots;
@@ -84,7 +85,7 @@ export class CampaignSaves {
     if(!validSlot(index))throw Error('Choose a save slot.');
     await this.load();await this.settle();
     if(this.slots[index]&&!overwrite)throw Error('Confirm before overwriting this save slot.');
-    const snapshot={savedAt:this.now(),playTimeSeconds:0,progress:{},items:{...normalizeItemProgress(),stats:{...freshStats(),credits:500}},parameters:{}};
+    const snapshot={savedAt:this.now(),playTimeSeconds:0,progress:{campaignProgressionVersion:CAMPAIGN_PROGRESS_VERSION},items:{...normalizeItemProgress(),stats:{...freshStats(),credits:500}},parameters:{}};
     const slots=this.slots.slice();slots[index]=snapshot;
     await this.persist(slots);this.slots=slots;this.activeSlot=index;this.playTimes.set(index,0);this.restore(snapshot);return copy(snapshot);
   }
@@ -116,7 +117,7 @@ export class CampaignSaves {
   }
   restore(snapshot){
     const game=this.game,items=game.items;
-    game.menuProgress=normalizeMenuVariables(snapshot.progress);game.menuProgressLoading=Promise.resolve(game.menuProgress);
+    game.menuProgress=migrateCampaignProgress(normalizeMenuVariables(snapshot.progress));game.menuProgressLoading=Promise.resolve(game.menuProgress);
     game.menuPlayer?.settings?.restore(snapshot.settings||{});
     game.raceHaptics?.setSettings(snapshot.haptics||HAPTIC_DEFAULTS);
     if(!items)return;

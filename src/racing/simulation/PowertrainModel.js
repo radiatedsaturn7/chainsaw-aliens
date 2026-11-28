@@ -1,3 +1,4 @@
+import {advanceAbsPressure} from './AbsPressure.js';
 import { stepCvt } from './CvtTransmissionModel.js';
 import {advanceRaceLaunchControl} from './RaceLaunchControl.js';
 import { stepElectricPowertrain } from './ElectricPowertrainModel.js';
@@ -860,16 +861,13 @@ export class PowertrainModel {
       // ABS releases are inappropriate at a standstill: permit brake hold.
       const absEnabled = controls.assists?.absEnabled !== false && !rearHandbrakeWheel
         && Math.abs(Number(wheel.longitudinalVelocityMps || 0)) > 1;
-      const absTargetSlip = clamp(Number(tuning.absSlipTarget ?? 0.13), 0.06, 0.24);
-      const targetModulation = absEnabled && signedBrakeSlip > absTargetSlip
-        ? clamp(absTargetSlip / signedBrakeSlip, 0.05, 1)
-        : 1;
-      const previousModulation = clamp(Number(previousAbs[wheelId] ?? 1), 0.05, 1);
-      const modulationRate = targetModulation < previousModulation ? 30 : 14;
-      const modulation = absEnabled
-        ? previousModulation + (targetModulation - previousModulation)
-          * Math.min(1, seconds * modulationRate)
-        : 1;
+      // The tire model already reports its peak for this surface and load.
+      // A fixed tarmac target can be past peak on loose surfaces.
+      const peakSlip=Number(wheel.peakLongitudinalSlipRatio);
+      const absTargetSlip = clamp(Number(tuning.absSlipTarget ?? (peakSlip>0?peakSlip:0.13)), 0.025, 0.3);
+      const modulation = advanceAbsPressure(previousAbs[wheelId]??1,{
+        enabled:absEnabled,slip:signedBrakeSlip,target:absTargetSlip,dt:seconds
+      });
       const perWheelBrakeDamage = damage.brakes?.[wheelId];
       const brakeDamageValue = Number.isFinite(Number(perWheelBrakeDamage))
         ? Number(perWheelBrakeDamage)

@@ -1,0 +1,31 @@
+{
+  "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+  "modelRevision": "5ecdb67327fd37bb2e042aab12ff7391903235d3",
+  "generation": {
+    "seed": 177,
+    "top_k": 28,
+    "top_p": 0.93,
+    "temperature": 0.74,
+    "subtalker_temperature": 0.76
+  },
+  "casting": {
+    "rob": "American man, age 35, low-mid, dry and slightly worn but not gravelly. Subtle eastern Massachusetts vowels and a trace of Chicago Midwest; usually pronounce the R's. Clear but relaxed. Ordinary conversation close to one person, not a Boston caricature, not an announcer or a movie trailer.",
+    "cait": "Irish woman, age 35, native contemporary Dublin Irish English, distinctive natural lilt and light rhoticity. Warm alto, precise diction, quick alert edge. Intimate spoken dialogue, not theatrical or robotic. Use the exact words."
+  },
+  "sceneDirections": {
+    "r1-blue-hills-intro": "An intimate conversation in a cold garage; relaxed and dry until they notice Boston being taken apart.",
+    "r1-boston-intro": "Playful, close-range teasing that sounds spontaneous; affection underneath.",
+    "r1-boston-exit": "Quiet, dry, fond teasing in an abandoned music shop, never a studio read.",
+    "r1-garage-m3": "An unfinished conversation between two people who already know each other.",
+    "r1-pachaug-exit": "Here after a long exhausting day, wry and subdued, some hesitations and warmth.",
+    "r1-providence-exit": "A restrained, uneasy conversation amid the ruins of the workshop. Grief under practical words.",
+    "r1-ri116-exit": "Quietly intimate at a house with personal history. Reluctant, thoughtful, never melodramatic.",
+    "r1-ri116-intro": "An uneasy route discussion with dry interjections and a real tenderness underneath.",
+    "r1-ri44-exit": "A tense drive squeezed by machinery; early lines brisk with urgent control, later relief.",
+    "r1-ri44-intro": "A conversational road trip, some wry lightness with real concern.",
+    "r1-thompson-exit": "Competitive playful banter, quick dry timing, not shouted.",
+    "r1-thompson-intro": "Two friends competing; quick knowing wit, not overtly performed.",
+    "introtowerhill": "Direct and restrained over the car radio, progressively concerned about the storm.",
+    "lastongridintro": "Quiet, close, restrained, with just a little tenderness in a cold garage."
+  }
+}

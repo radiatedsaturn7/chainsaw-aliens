@@ -161,6 +161,7 @@ export function createWheelContactKinematicsScratch() {
       mountPosition: { x: 0, y: 0, z: 0 },
       normal: { x: 0, y: 1, z: 0 },
       steeringAngles: { fl: 0, fr: 0, rl: 0, rr: 0 },
+      steeringRequest: {},
       rawForward: { x: 0, y: 0, z: 1 },
       projectedForward: { x: 0, y: 0, z: 1 },
       wheelForward: { x: 0, y: 0, z: 1 },
@@ -576,7 +577,8 @@ export function classifySteeringResponseTelemetry(telemetry = {}) {
 export function resolvePhysicalCenterSteeringAngle(controls = {}, config = {}, state = {}) {
   const maximumAngleRad = Math.max(0.05, Number(config.maxSteerAngleRad) || 0.52);
   const direct = String(config.handlingPreset || 'sport').toLowerCase() === 'simulation'
-    || controls.steeringInputMode === 'simulation-wheel';
+    || controls.steeringInputMode === 'simulation-wheel'
+    || controls.steeringInputMode === 'ai';
   if (direct) {
     return typeof controls.centerSteeringAngleRad === 'number'
       && Number.isFinite(controls.centerSteeringAngleRad)
@@ -741,6 +743,12 @@ export function calculateAquaplaningState({
   return output;
 }
 
+function rotateContactVector(orientation, normalized, value, output) {
+  return normalized
+    ? rotateVectorByNormalizedQuaternionInto(value, normalized, output)
+    : rotateVectorByQuaternion(value, orientation);
+}
+
 export function calculateWheelContactKinematics({
   state,
   config,
@@ -799,11 +807,6 @@ export function calculateWheelContactKinematics({
   const normalizedOrientation = computationScratch
     ? normalizeQuaternionInto(orientation, computationScratch.normalizedOrientation)
     : null;
-  const rotateInto = computationScratch
-    ? (value, output) => rotateVectorByNormalizedQuaternionInto(
-        value, normalizedOrientation, output
-      )
-    : (value) => rotateVectorByQuaternion(value, orientation);
   const staticHubOffset = computationScratch?.staticHubOffset || {};
   staticHubOffset.x = (left ? -0.5 : 0.5) * track;
   staticHubOffset.y = -config.cgHeightM + wheelRadiusFor(config, wheelId);
@@ -837,7 +840,7 @@ export function calculateWheelContactKinematics({
         )
       )
     : add(fullDroopHubOffset, scale(suspensionAxisLocal, -suspensionRestLengthM));
-  const rotatedForward = rotateInto(
+  const rotatedForward = rotateContactVector(orientation, normalizedOrientation,
     computationScratch?.localForward || { x: 0, y: 0, z: 1 },
     computationScratch?.rotatedForward
   );
@@ -846,7 +849,7 @@ export function calculateWheelContactKinematics({
         computationScratch.chassisForward, rotatedForward, { x: 0, y: 0, z: 1 }
       )
     : normalize(rotatedForward, { x: 0, y: 0, z: 1 });
-  const rotatedRight = rotateInto(
+  const rotatedRight = rotateContactVector(orientation, normalizedOrientation,
     computationScratch?.localRight || { x: 1, y: 0, z: 0 },
     computationScratch?.rotatedRight
   );
@@ -855,15 +858,15 @@ export function calculateWheelContactKinematics({
         computationScratch.chassisRight, rotatedRight, { x: 1, y: 0, z: 0 }
       )
     : normalize(rotatedRight, { x: 1, y: 0, z: 0 });
-  const centerRadius = rotateInto(localOffset, computationScratch?.centerRadius);
+  const centerRadius = rotateContactVector(orientation, normalizedOrientation, localOffset, computationScratch?.centerRadius);
   const center = computationScratch
     ? addInto(computationScratch.center, state.position, centerRadius)
     : add(vector(state.position), centerRadius);
-  const mountRadius = rotateInto(suspensionMountOffset, computationScratch?.mountRadius);
+  const mountRadius = rotateContactVector(orientation, normalizedOrientation, suspensionMountOffset, computationScratch?.mountRadius);
   const mountPosition = computationScratch
     ? addInto(computationScratch.mountPosition, state.position, mountRadius)
     : add(vector(state.position), mountRadius);
-  const rotatedSuspensionAxis = rotateInto(
+  const rotatedSuspensionAxis = rotateContactVector(orientation, normalizedOrientation,
     suspensionAxisLocal, computationScratch?.suspensionAxisWorld
   );
   const suspensionAxisWorld = computationScratch
@@ -887,23 +890,25 @@ export function calculateWheelContactKinematics({
         { x: 0, y: 1, z: 0 }
       ));
   const centerSteeringAngleRad = resolvePhysicalCenterSteeringAngle(controls, config, state);
-  const steeringAngles = getAckermannSteeringAngles({
-    steeringAngleRad: centerSteeringAngleRad,
-    wheelbaseM: config.wheelbaseM,
-    frontTrackWidthM: config.frontTrackWidthM,
-    ackermannRatio: config.ackermannRatio,
-    // centerSteeringAngleRad is already the physical post-rack center angle.
-    steeringRackRatio: 1,
-    target: computationScratch?.steeringAngles
-  });
-  const fallbackAlignment = resolvePerWheelAlignment({
+  const steeringRequest = computationScratch?.steeringRequest || {};
+  steeringRequest.steeringAngleRad = centerSteeringAngleRad;
+  steeringRequest.wheelbaseM = config.wheelbaseM;
+  steeringRequest.frontTrackWidthM = config.frontTrackWidthM;
+  steeringRequest.ackermannRatio = config.ackermannRatio;
+  // Already the physical post-rack center angle.
+  steeringRequest.steeringRackRatio = 1;
+  steeringRequest.target = computationScratch?.steeringAngles;
+  const steeringAngles = getAckermannSteeringAngles(steeringRequest);
+  const resolvedToe = toeOverrideRad ?? environment.toeByWheel?.[wheelId];
+  const resolvedCamber = camberOverrideRad ?? environment.camberByWheel?.[wheelId];
+  const fallbackAlignment = resolvedToe == null || resolvedCamber == null ? resolvePerWheelAlignment({
     wheelId,
     axleCamberRad: front ? config.camberFrontRad : config.camberRearRad,
     axleToeRad: front ? config.toeFrontRad : config.toeRearRad
-  });
+  }) : null;
   const physicalSteeringAngleRad = steeringAngles[wheelId];
   const toeAngleRad = Number(
-    toeOverrideRad ?? environment.toeByWheel?.[wheelId] ?? fallbackAlignment.toeRad
+    resolvedToe ?? fallbackAlignment.toeRad
   );
   const steeringAngleRad = physicalSteeringAngleRad + toeAngleRad;
   let rawForward;
@@ -1016,9 +1021,7 @@ export function calculateWheelContactKinematics({
   const slipRatio = (rollingSpeedMps - longitudinalVelocityMps)
     / Math.max(0.5, Math.abs(longitudinalVelocityMps), Math.abs(rollingSpeedMps) * 0.12);
   const slipAngleRad = Math.atan2(lateralVelocityMps, Math.max(0.35, Math.abs(longitudinalVelocityMps)));
-  const camberAngleRad = Number(camberOverrideRad
-    ?? environment.camberByWheel?.[wheelId]
-    ?? fallbackAlignment.camberRad);
+  const camberAngleRad = Number(resolvedCamber ?? fallbackAlignment.camberRad);
   const output = target && typeof target === 'object' ? target : {};
   output.wheelId = wheelId;
   output.wheelCenterWorld = cleanVectorInto(output.wheelCenterWorld, center);
@@ -1170,8 +1173,9 @@ export function calculateBrushTireForce({
   const demandX = rawDemandX * naturalPeakSlip / Math.max(EPSILON, output.peakLongitudinalSlipRatio);
   const demandY = rawDemandY * peakSlipScale;
   const demand = Math.hypot(demandX, demandY);
-  const slidingFrictionRatio = clamp(Number(tire.slidingFrictionRatio ?? (0.66 + (Number(tire.compound?.snowSlidingRatio ?? .88) - .66) * snowResponseWeight)), 0.35, 1);
-  const postPeakFalloff = clamp(Number(tire.postPeakFalloff ?? 1.8), 0.1, 8);
+  const drySlidingRatio = Number(tire.compound?.slidingFrictionRatio ?? .66);
+  const slidingFrictionRatio = clamp(Number(tire.slidingFrictionRatio ?? (drySlidingRatio + (Number(tire.compound?.snowSlidingRatio ?? .88) - drySlidingRatio) * snowResponseWeight)), 0.35, 1);
+  const postPeakFalloff = clamp(Number(tire.postPeakFalloff ?? tire.compound?.postPeakFalloff ?? 1.8), 0.1, 8);
   const transition = Math.max(EPSILON, 3 * limit);
   let magnitude;
   let postPeakSlidingForceN = limit;
@@ -1612,6 +1616,10 @@ export class ContactPatchTireModel {
       }
       const overtravelM = initialContactValidity.valid
         ? Math.max(0, Number(rawRequestedCompressionM) - suspensionTravelM) : 0;
+      // Suspension travel limits the hub, not tire/ground penetration. Keep
+      // excess penetration in the tire solve so a bottomed-out wheel can
+      // develop the support needed to lift the chassis out of the ground.
+      const tireContactTargetM = Number(clampedCompressionM) + overtravelM;
       let unsprungVelocityMps = Number(previousSuspension.unsprungVelocityMps || 0);
       let compressionM = previousCompressionM;
       let tireSupportForceN = null;
@@ -1654,7 +1662,7 @@ export class ContactPatchTireModel {
           compressionM = previousCompressionM;
           unsprungVelocityMps = Number(previousSuspension.unsprungVelocityMps || 0);
           verticalCoupledActive = true;
-          const tireErrorM = Number(clampedCompressionM) - compressionM;
+          const tireErrorM = tireContactTargetM - compressionM;
           const normalizedUnsprungSpeed = unsprungVelocityMps / 0.32;
           const normalizedTireError = tireErrorM / 0.018;
           const lowSpeedTireModeBlend = Math.exp(-(normalizedUnsprungSpeed ** 2))
@@ -1670,7 +1678,7 @@ export class ContactPatchTireModel {
                 targetCompressionVelocityMps - unsprungVelocityMps
               ));
         } else {
-          const tireErrorM = Number(clampedCompressionM) - compressionM;
+          const tireErrorM = tireContactTargetM - compressionM;
           const unsprungMassKg = Number(config.unsprungMassByWheelKg?.[wheelId] || config.unsprungMassKg);
           const normalizedUnsprungSpeed = unsprungVelocityMps / 0.32;
           const normalizedTireError = tireErrorM / 0.018;
@@ -1746,8 +1754,14 @@ export class ContactPatchTireModel {
           unsprungVelocityMps = implicitNumerator
             / Math.max(EPSILON, implicitDenominator);
           compressionM = clamp(compressionM + unsprungVelocityMps * dt, 0, suspensionTravelM);
+          // Evaluate support using the constrained wheel velocity, not an
+          // inward velocity that will be discarded after calculating force.
+          if ((compressionM === suspensionTravelM && unsprungVelocityMps > 0)
+            || (compressionM === 0 && unsprungVelocityMps < 0)) {
+            unsprungVelocityMps = 0;
+          }
           tireSupportForceN = Math.max(0,
-            tireStiffnessNpm * (Number(clampedCompressionM) - compressionM)
+            tireStiffnessNpm * (tireContactTargetM - compressionM)
               + effectiveTireVerticalDampingNsM * (
                 targetCompressionVelocityMps - unsprungVelocityMps
               ));
@@ -1757,7 +1771,9 @@ export class ContactPatchTireModel {
             unsprungVelocityMps = 0;
           }
         }
-        if (overtravelM > 0) {
+        if (overtravelM > 0 && tireSupportForceN === null) {
+          // The coupled solve already constrained the hub and evaluated its
+          // tire deflection. Do not snap it to a different pose afterwards.
           compressionM = suspensionTravelM;
           // The bump stop is a unilateral constraint. Retaining inward wheel
           // velocity here reloads the stop on the next substep and can create
@@ -2063,7 +2079,7 @@ export class ContactPatchTireModel {
       const relaxationLengthM = clamp(Number(input.tire.relaxationLengthM ?? 0.03), 0.03, 3);
       const peakSlip = clamp(Number(input.tire.peakSlip ?? (getSnowResponseWeight(input.material) > 0 ? previousPatch.peakLongitudinalSlipRatio ?? .18 : .16)), 0.03, 1.5);
       const breakawayHysteresis = clamp(Number(input.tire.breakawayHysteresis ?? 0.025), 0, 0.3);
-      const recoveryHysteresis = clamp(Number(input.tire.recoveryHysteresis ?? 0.04), 0, 0.3);
+      const recoveryHysteresis = clamp(Number(input.tire.recoveryHysteresis ?? input.tire.compound?.recoveryHysteresis ?? 0.04), 0, 0.3);
       const rawCombinedSlip = Math.hypot(
         Number(rawKinematics.slipRatio || 0),
         Math.tan(Number(rawKinematics.slipAngleRad || 0))
@@ -2351,7 +2367,7 @@ export class ContactPatchTireModel {
       const staticTorqueCapacityNm = Math.max(0, Number(capacityByWheel[wheelId] || 0)) * rollingRadiusM;
       const tire = wheelInputs[wheelId].tire || {};
       const peakSlip = clamp(Number(tire.peakSlip ?? (force.snowResponseWeight > 0 ? force.peakLongitudinalSlipRatio : .16)), 0.03, 1.5);
-      const recoveryHysteresis = clamp(Number(tire.recoveryHysteresis ?? 0.04), 0, 0.3);
+      const recoveryHysteresis = clamp(Number(tire.recoveryHysteresis ?? tire.compound?.recoveryHysteresis ?? 0.04), 0, 0.3);
       const widthScale = clamp(Number(tire.widthMm ?? 245) / 245, 0.7, 1.4);
       const longitudinalStiffnessN = Math.max(
         1000,
@@ -2633,6 +2649,7 @@ export class ContactPatchTireModel {
       output.chassisWheelReactionImpulseWorldNms.y = q(chassisReactionImpulseWorldNms.y);
       output.chassisWheelReactionImpulseWorldNms.z = q(chassisReactionImpulseWorldNms.z);
       output.absModulation = q(powertrainStep.state.absModulationByWheel?.[wheelId] ?? 1);
+      output.tireParameters.compound = wheelInputs[wheelId].tire.compound;
       output.tireParameters.pressurePsi = q(wheelInputs[wheelId].tire.pressurePsi ?? 32);
       output.tireParameters.coldPressurePsi = q(wheelInputs[wheelId].tire.coldPressurePsi
         ?? wheelInputs[wheelId].tire.pressurePsi ?? 32);

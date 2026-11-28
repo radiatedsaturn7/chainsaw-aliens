@@ -1,6 +1,8 @@
+import {campaignCompletionMark,selectedCampaignPreview,drawCampaignRoutePreview} from './CampaignRoutePreview.js';
 import {campaignRegionDialogue} from './CampaignRegionDialogue.js';
 import {raceRewardQuote} from '../garage/CampaignEconomy.js';
 import {loadingFact} from './MenuLoadingScreen.js';
+import {campaignWorldOverview} from './CampaignWorldReveal.js';
 import {drawWorldMap} from './MenuWorldMapRenderer.js';
 import {menuTypedText} from './MenuTypewriter.js';
 import {garageDialogueContext,garageDialogueText} from '../garage/GarageDialogue.js';
@@ -15,9 +17,21 @@ import {showroomPage,garageBrowserRows,garageCardBounds} from './MenuGarageWidge
 import {menuPaintOrder,menuElementVisible} from './MenuLayout.js';
 import {menuElementPose,resolveMenuBackground} from './MenuDocument.js';
 import {drawCarComponent} from './MenuCarStats.js';
+import {MENU_MODEL_STILL_ANGLE,menuModelStillBounds,paintMenuModelStill} from './MenuModelStill.js';
 
-export const menuElementBounds=(element,bounds,pose=element)=>({x:bounds.x+pose.x*bounds.w,y:bounds.y+pose.y*bounds.h,w:element.w*bounds.w,h:element.h*bounds.h});
-import {paintCarThumbnail,drawCarThumbnailPlaceholder} from '../ui/shared/carPreviewThumbnails.js';
+export function menuElementBounds(element,bounds,pose=element,regionalScreen=false){
+  const {x,y,w,h}=bounds;
+  if(w<h&&(regionalScreen||element.property==='campaign-path')){
+    // Portrait presents the illustration as a wide map above the preview.
+    // Hit testing and rendering both use these same map bounds.
+    const mapTop=h*.105,mapHeight=Math.min(h*.53,w*.81+36),end=mapTop+mapHeight;
+    if(element.property==='campaign-path')return {x:x+w*.04,y:y+mapTop,w:w*.92,h:mapHeight};
+    if(element.id==='route-name')return {x:x+w*.04,y:y+end+h*.012,w:w*.92,h:h*.075};
+    if(element.id==='route-preview')return {x:x+w*.04,y:y+end+h*.09,w:w*.92,h:Math.max(0,h*.94-end-h*.09)};
+  }
+  return {x:x+pose.x*w,y:y+pose.y*h,w:element.w*w,h:element.h*h};
+}
+import {paintCarThumbnail,carThumbnailNeedsFallback,carThumbnailHasModelSource} from '../ui/shared/carPreviewThumbnails.js';
 
 export const menuElementInteractive=e=>['garage-tuner','code-entry','world-map','car-showroom','garage-browser','button','choice','slider','toggle','keybind'].includes(e.type);
 export const menuHit=(point,b)=>point.x>=b.x&&point.x<=b.x+b.w&&point.y>=b.y&&point.y<=b.y+b.h;
@@ -43,7 +57,7 @@ function drawCachedButton(ctx,bounds,document,screen,element,parameters,options)
   const transform=ctx.getTransform?.();
   const density=Math.min(3,Math.max(1,Math.abs(transform?.a||1),Math.abs(transform?.d||1)));
   const b=menuElementBounds(element,bounds),pad=4;
-  const key=[bounds.w,bounds.h,density,options.focus===element.id,options.selected===element.id,
+  const key=[element.action?.parameter==='raceRef'?campaignCompletionMark(element.action.value,parameters,resources.garage?.progress):'',bounds.w,bounds.h,density,options.focus===element.id,options.selected===element.id,
     JSON.stringify(Object.fromEntries(Object.entries(element).filter(([k,v])=>!['fontData','cursorData'].includes(k)&&typeof v!=='object'))),
     caption(element.label,parameters),font].join('|');
   let cache=buttonFrames.get(element);
@@ -72,7 +86,27 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
     if(choices.length&&!choices.some(choice=>choice.value===parameters[element.binding]))parameters={...parameters,[element.binding]:choices[0].value};
     showroomPages.set(element,{choices,page:showroomPage(choices,parameters[element.binding],element.maxVisible)});
   }
-  if(!buttonOnly)resources?.retainShowroomPage?.(editing?[...showroomPages.values()].flatMap(x=>x.page.entries):[]);
+  if(!buttonOnly){
+    const nativeEntries=[];
+    for(const [element,{page}] of showroomPages){
+      const state=widgetStates.get(element.id)||{},elapsed=Math.max(0,time-(state.selectedAt??time));
+      for(const entry of page.entries){
+        const selected=entry.value===parameters[element.binding];
+        const angle=element.angle+(selected&&!editing?elapsed/element.duration*360:0);
+        if(editing||carThumbnailNeedsFallback(entry.value,angle,selected))nativeEntries.push(entry);
+      }
+    }
+    for(const element of screen.elements)if(element.type==='car-preview'&&element.catalogThumbnail&&menuElementVisible(element,screen.elements)){
+      const name=element.assetRef||parameters[element.binding];
+      if(carThumbnailNeedsFallback(name,element.angle))nativeEntries.push({value:name});
+    }
+    for(const element of screen.elements)if(element.type==='world-map'&&element.mapStyle?.cursor==='car'&&menuElementVisible(element,screen.elements)){
+      const name=parameters.carRef||resources?.game?.menuProgress?.selectedGameCar;
+      const angle=widgetStates.get(`map-car:${element.id}`)?.angle??135;
+      if(name&&carThumbnailNeedsFallback(name,angle,true))nativeEntries.push({value:name});
+    }
+    resources?.retainShowroomPage?.(nativeEntries);
+  }
   ctx.save();ctx.beginPath();ctx.rect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.clip();
   if(!buttonOnly){ctx.fillStyle=screen.background;ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);
   const background=resources?.art(screen.backgroundArt,Math.floor(time*8));if(background)ctx.drawImage(background,bounds.x,bounds.y,bounds.w,bounds.h);
@@ -84,12 +118,15 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
     }ctx.restore();
   }
   }
+  const regionalScreen=screen.elements.some(e=>e.property==='campaign-path');
   for(const element of menuPaintOrder(screen.elements)){
-    if(!menuElementVisible(element,screen.elements))continue;const pose=editing?{x:element.x,y:element.y,opacity:1,scale:1,rotation:0}:menuElementPose(element,time),b=menuElementBounds(element,bounds,pose);
+    if(!menuElementVisible(element,screen.elements))continue;const pose=editing?{x:element.x,y:element.y,opacity:1,scale:1,rotation:0}:menuElementPose(element,time),b=menuElementBounds(element,bounds,pose,regionalScreen);
     if(!buttonOnly&&drawCachedButton(ctx,bounds,document,screen,element,parameters,{time,resources,focus,selected,editing,worldMapEditingId,videos,widgetStates}))continue;
     const drawText=(text,...args)=>drawMenuText(ctx,element,['text','button','choice','toggle','keybind','property-display'].includes(element.type)?menuTypedText(element,text,time,editing):text,...args);
     ctx.save();ctx.translate(b.x+b.w/2,b.y+b.h/2);ctx.rotate(pose.rotation*Math.PI/180);ctx.scale(pose.scale,pose.scale);ctx.translate(-b.x-b.w/2,-b.y-b.h/2);ctx.globalAlpha=pose.opacity;
-    ctx.beginPath();ctx.rect(b.x,b.y,b.w,b.h);ctx.clip();
+    const worldCar=element.type==='world-map'&&element.property!=='campaign-path'&&element.mapStyle?.cursor==='car';
+    const clipBounds=worldCar?bounds:b;
+    ctx.beginPath();ctx.rect(clipBounds.x,clipBounds.y,clipBounds.w,clipBounds.h);ctx.clip();
     const interactive=menuElementInteractive(element);
     if(interactive&&(element.disabled||['button','choice','slider','toggle','keybind'].includes(element.type)))ctx.filter=menuControlFilter(editing||element.id===focus,!element.disabled);
     if(interactive&&element.type!=='world-map'&&!element.transparentBackground){ctx.fillStyle=element.background;ctx.fillRect(b.x,b.y,b.w,b.h);}
@@ -134,22 +171,54 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
         ctx.fillStyle='#34434a';ctx.beginPath();ctx.ellipse(card.x+card.w/2,card.y+card.h*.8,card.w*.43,card.h*.09,0,0,Math.PI*2);ctx.fill();
         const preview={x:card.x+card.w*(1-scale)/2,y:card.y+card.h*(1-scale)/2,w:card.w*scale,h:card.h*.85*scale};
         const angle=element.angle+(selected&&!editing?elapsed/element.duration*360:0);
-        if(editing){
-          const car=resources?.car(entry.value),view={...element,type:'car-preview',showroomPreview:true,animation:'none',angleBinding:'',angle};
-          drawCarComponent(ctx,preview,view,car,resources,time,parameters,fontFamily);
-        }else if(!paintCarThumbnail(ctx,preview,entry.value,angle,undefined,undefined,selected))drawCarThumbnailPlaceholder(ctx,preview);
+        const fallback=editing||carThumbnailNeedsFallback(entry.value,angle,selected);
+        const modelHint=carThumbnailHasModelSource(entry.value)||resources?.hasActiveCarVersion?.(entry.value);
+        // A missing stock poster does not imply a sprite car. Resolve the
+        // actual body first, without waking the legacy exterior pipeline.
+        const car=fallback||modelHint?resources?.car(entry.value,{prepareExterior:false}):null;
+        if(car?.art?.bodyModel?.ref){
+          // A native body uses one clear front-quarter image, no elapsed-time
+          // angle or selected zoom. Do not shrink ordinary sprite cars.
+          const still=menuModelStillBounds({...card,h:card.h*.85});
+          if(!paintMenuModelStill(ctx,still,car,resources?.carPreview)&&modelHint)
+            paintCarThumbnail(ctx,still,entry.value,MENU_MODEL_STILL_ANGLE);
+        }else if(fallback&&car&&!resources?.activeCarVersionPending?.(entry.value)){
+          const view={...element,type:'car-preview',showroomPreview:true,animation:'none',angleBinding:'',angle};
+          // Procedural bodies do not draw a billboard, even if their garage
+          // setup references a legacy tire sheet. Prepare art only for a real sprite.
+          drawCarComponent(ctx,preview,view,car,resources,time,parameters,fontFamily,()=>{
+            for(const art of resources.exteriorArtRefs(car))resources.requestExteriorArt(entry.value,art);
+          });
+        }else if(!modelHint||car)paintCarThumbnail(ctx,preview,entry.value,angle,undefined,undefined,selected);
         ctx.fillStyle=element.color;drawText(entry.label,card.x+card.w/2,card.y+card.h-4,card.w-8);ctx.restore();
       }
 
     }
-    else if(element.type==='world-map'){const mapBackground=element.artRef?resources?.art(element.artRef,Math.floor(time*8)):null;if(mapBackground)drawMenuImage(ctx,mapBackground,b,element.imageFit);drawWorldMap(ctx,b,element,resources,document,parameters,value,{drawText,fontFamily});}
+    else if(element.type==='world-map'){const mapBackground=element.artRef?resources?.art(element.artRef,Math.floor(time*8)):null;if(mapBackground){const mapBounds=element.property==='campaign-path'?{...b,h:Math.max(1,b.h-36)}:b;ctx.imageSmoothingEnabled=element.property!=='campaign-path';drawMenuImage(ctx,mapBackground,mapBounds,element.imageFit);}drawWorldMap(ctx,b,element,resources,document,parameters,value,{drawText,fontFamily,time,widgetStates,editing,mapBackground,carViewport:bounds,campaignOverview:campaignWorldOverview(screen,document)===element,drawCar:(bounds,angle)=>{
+ const name=parameters.carRef||resources?.game?.menuProgress?.selectedGameCar;if(!name)return;
+ if(resources?.hasActiveCarVersion?.(name)&&paintMenuModelStill(ctx,bounds,resources.stockCar(name),resources.carPreview,{angle}))return;
+ if(carThumbnailNeedsFallback(name,angle,true))drawCarComponent(ctx,bounds,{type:'car-preview',showroomPreview:true,animation:'none',angle},resources?.stockCar?.(name),resources,time,parameters,fontFamily);
+ else paintCarThumbnail(ctx,bounds,name,angle,undefined,undefined,true);
+ }});}
     else if(element.type==='garage-browser')drawUpgradeGrid(ctx,b,element,resources,parameters,widgetStates.get(element.id),fontFamily);
     else if(element.type==='garage-tuner')drawGarageTuner(ctx,b,widgetStates.get(element.id)?.tuner,fontFamily,element,resources);
     else if(element.type==='code-entry')drawCodeEntry(ctx,b,element,value,widgetStates.get(element.id),element.id===focus);
     else if(element.type==='garage-dialogue')drawGarageDialogueText(ctx,b,widgetStates.get(element.id)?.text??garageDialogueText(garageDialogueContext(screen,resources,parameters,widgetStates,focus||selected)),fontFamily,element,{time,editing});
     else if(element.type==='race-description'){
+      if(element.property==='route-preview'){
+        const ref=element.assetRef||(screen.elements.some(e=>e.property==='campaign-path')?parameters[element.binding||'raceRef']:selectedCampaignPreview(screen,focus,widgetStates));
+        drawCampaignRoutePreview(ctx,b,document.parameters?.campaignRoutePreviews?.[ref],ref,resources,drawText,fontFamily);
+        ctx.restore();continue;
+      }
       const map=screen.elements.find(e=>e.type==='world-map'&&e.binding===element.binding);
       const ref=element.assetRef||value||(map?worldMapSelection(worldMapNodes(map,resources,document,parameters),parameters[map.binding])?.raceRef:'');
+      if(element.property==='route-title'){
+        const region=document.parameters?.campaignProgression?.regions?.find(r=>r.bossRef===ref||r.events?.includes(ref));
+        const index=region?.mainPath?.indexOf(ref)??-1;
+        const authoredLabel=screen.elements.find(e=>e.property==='campaign-path')?.nodes?.find(n=>n.raceRef===ref)?.label;
+        const prefix=authoredLabel||(region?.bossRef===ref?'Boss':index>=0?String(index+1):'Detour');
+        drawCarDescription(ctx,b,`${prefix} · ${ref}`,fontFamily,element,{time,editing});ctx.restore();continue;
+      }
       if(element.property==='region-dialogue'){
         drawCarDescription(ctx,b,campaignRegionDialogue(ref),fontFamily,element,{time,editing});
         ctx.restore();continue;
@@ -169,7 +238,10 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
       drawCarDescription(ctx,b,car?.description?.trim()||'No description yet.',fontFamily,element);
     }
     else if(element.type==='car-preview'&&element.catalogThumbnail&&!editing){
-      if(!paintCarThumbnail(ctx,b,element.assetRef||value,element.angle))drawCarThumbnailPlaceholder(ctx,b);
+      const name=element.assetRef||value;
+      if(resources?.hasActiveCarVersion?.(name)||carThumbnailNeedsFallback(name,element.angle)){
+        drawCarComponent(ctx,b,{...element,showroomPreview:true},resources?.stockCar(name),resources,time,parameters,fontFamily);
+      }else paintCarThumbnail(ctx,b,name,element.angle);
     }
     else if(['car-preview','car-stats','power-curve'].includes(element.type)){
       const options={prepareExterior:element.type==='car-preview'};
@@ -183,6 +255,11 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
         const number=Number.isFinite(Number(value))?Number(value):element.min,ratio=Math.max(0,Math.min(1,(number-element.min)/(element.max-element.min||1)));
         ctx.fillStyle='#18242d';ctx.fillRect(b.x+10,b.y+b.h*0.7,b.w-20,5);ctx.fillStyle=element.color;ctx.fillRect(b.x+10,b.y+b.h*0.7,(b.w-20)*ratio,5);
         label+=`: ${Number(number.toFixed(2))}`;ctx.fillStyle=menuTextFill(ctx,element,b,label,textSize,b.y+b.h*.35);drawText(label,b.x+b.w/2,b.y+b.h*0.35,b.w-16);
+      }else if(element.action?.parameter==='raceRef'&&screen.id.startsWith('campaign-hub-')){
+        const mark=campaignCompletionMark(element.action.value,parameters,resources?.garage?.progress);
+        const pad=Math.min(28,b.w*.12);
+        if(mark){ctx.strokeStyle=mark==='gold'?'#ffcf40':'#54db83';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(b.x+pad,b.y+b.h*.5);ctx.lineTo(b.x+pad+4,b.y+b.h*.65);ctx.lineTo(b.x+pad+11,b.y+b.h*.32);ctx.stroke();}
+        ctx.textAlign='left';ctx.fillStyle=element.color;drawText(label,b.x+pad+18,b.y+b.h/2,b.w-pad-22);
       }else {ctx.fillStyle=menuTextFill(ctx,element,b,label,textSize);cursorLabelWidth=label?Math.min(ctx.measureText(label)?.width||0,Math.max(1,b.w-16)):null;drawText(label,b.x+b.w/2,b.y+b.h/2,Math.max(1,b.w-16));}
     }
     ctx.restore();

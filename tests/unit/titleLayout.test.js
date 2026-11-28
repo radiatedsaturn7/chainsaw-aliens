@@ -203,6 +203,7 @@ test('controller selection order matches studio launcher hierarchy', () => {
   assert.deepEqual(title.folderOrders.graphics, [
     'pixel-editor',
     'model-editor',
+    'surface-studio',
     'menu-editor',
     'font-editor',
     'cutscene-editor',

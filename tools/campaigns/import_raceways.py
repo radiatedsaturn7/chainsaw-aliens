@@ -8,6 +8,8 @@ import race_track_import as track
 import terrain_tiles
 from audit_race_lines import place
 from inspect_raceways import candidate_layouts
+from circuit_grade_separation import apply_grade_separation
+from resample_import_terrain import resample_import_terrain
 ROOT=Path('data/campaigns/america/raceways')
 OUT=Path('artifacts/campaign-import/raceways')
 
@@ -47,10 +49,11 @@ def apply_banking(race, spec, points, selection):
     race['source']['bankingMethod']='Published nominal oval banking; OSM corner tags at Indianapolis, smoothed-plan curvature at Daytona/Homestead. Transition positions and progressive banking are approximate, not surveyed.'
 
 
-def build(spec,selection):
+def build(spec,selection,*,elevation_fetch=terrain_tiles.importer_fetch,elevation_provider=None):
  layouts=candidate_layouts(spec)
  layout=layouts[selection['index']]
  if abs(layout['lengthM']-selection['mappedLengthM'])>2:raise ValueError('Snapshot/layout changed; review selection again')
+ if track.layout_review_issues(layout):raise ValueError('Circuit junction continuity needs review: '+'; '.join(track.layout_review_issues(layout)))
  points=layout['points']
  way_ids=sorted({p.get('tags',{}).get('osmWayId') for p in points if p.get('tags',{}).get('osmWayId')})
  name=selection.get('raceRef',spec['name']+' — '+selection['label'])
@@ -59,21 +62,37 @@ def build(spec,selection):
  # The adapter is global DEM data, unlike the importer's default USGS endpoint.
  # Sample it explicitly outside the US without mislabelling the venue country.
  fetch_country=layout['place']['country'];layout['place']['country']='us'
- result=track.build(layout,width=selection.get('widthM',12),fetch=terrain_tiles.importer_fetch,max_segment_length_m=80 if spec['key']=='nordschleife' else 50)
+ result=track.build(layout,width=selection.get('widthM',12),reverse=selection.get('reverse',False),fetch=elevation_fetch,max_segment_length_m=selection.get('maxSegmentLengthM',80 if spec['key']=='nordschleife' else 50),max_control_points=1200 if layout['lengthM']>24000 else 600)
  race=result['race'];race['source']['origin']['country']=fetch_country
+ if spec.get('stateCode'):race['source']['stateCode']=spec['stateCode']
+ if selection.get('currentLayout'):race['source']['layoutEra']='current'
+ if selection.get('publishedLengthM'):race['source']['publishedLengthM']=selection['publishedLengthM']
+ if selection.get('renderSurfaceStepM') or layout['lengthM']>24000:race['renderSurfaceStepM']=selection.get('renderSurfaceStepM',5)
  if 'unavailable' in ' '.join(result['warnings']) or 'flat editable' in ' '.join(result['warnings']):raise ValueError('Elevation lookup failed; do not install a flat replacement')
  key=f"raceway-{spec['key']}-{selection['key']}";race['id']=selection.get('legacyId',key)
  race['source'].update(provider='OpenStreetMap / Mapzen Terrain Tiles',elevationProvider='Mapzen / Tilezen Terrarium DEM zoom 12',osmWayIds=way_ids,sourceSnapshot=str(ROOT/'sources'/f"{spec['key']}.json"),layoutName=selection['label'],layoutReference=selection.get('reference',spec.get('reference')),layoutGeometrySha256=hashlib.sha256(json.dumps(points,sort_keys=True).encode()).hexdigest(),elevationSmoothingRadiusM=20)
  race['source']['warnings']=[w.replace('USGS 3DEP','Mapzen DEM').replace('USGS','DEM') for w in result['warnings']]
+ if elevation_provider:
+  race['source'].update(provider='OpenStreetMap / '+elevation_provider,elevationProvider=elevation_provider)
+  race['source']['warnings']=[w.replace('Mapzen DEM',elevation_provider) for w in race['source']['warnings']]
+
  race['road']['autoExtend']=False
  for s in race['road']['segments']:s['bumpiness']=.018 if spec['key']=='sebring' else .008
  apply_banking(race,spec,points,selection)
+ sampled=track.densify(track.simplify(points),selection.get('maxSegmentLengthM',80 if spec['key']=='nordschleife' else 50))
+ if selection.get('reverse'):sampled=[{**p,'tags':sampled[i-1].get('tags',{})} for i,p in reversed(list(enumerate(sampled)))]
+ for segment,point in zip(race['road']['segments'],sampled):
+  tags=point.get('tags',{});segment['sourceOsmWayId']=tags.get('osmWayId')
+  if tags.get('bridge') in ('yes','viaduct'):segment['structure']='bridge'
+ if selection.get('terrainCellSizeM'):resample_import_terrain(race,selection['terrainCellSizeM'])
  race['source']['linePlacement']=place(race)
+ apply_grade_separation(race)
+ race['source']['layoutReview']=spec.get('reviewNotes','')
  race['laps']=selection.get('laps',3)
  race['campaign']={'optional':True,'eventType':'Circuit race','hubStage':spec.get('hubStage'),'sideEventId':key}
  race['description']=f"{spec['name']} / {selection['label']}. Mapped road geometry with sampled terrain elevations; see source notes for survey limitations."
  OUT.mkdir(parents=True,exist_ok=True);file=OUT/f'{key}.json';file.write_text(json.dumps(race,separators=(',',':'))+'\n')
- return {'id':key,'status':'imported','name':name,'raceRef':name,'displayName':name,'venueKey':spec['key'],'venueName':spec['name'],'layoutLabel':selection['label'],'hubStage':spec.get('hubStage'),'import_kind':'circuit','event_type':'Circuit race','surface':['asphalt'],'lengthM':layout['lengthM'],'laps':race['laps'],'generatedPath':str(file),'replaceRaceRef':selection.get('raceRef'),'existingSideId':selection.get('existingSideId'),'warnings':race['source']['warnings']}
+ return {'id':key,'status':'imported','name':name,'raceRef':name,'displayName':name,'venueKey':spec['key'],'venueName':spec['name'],'layoutLabel':selection['label'],'hubStage':spec.get('hubStage'),'artHubStage':spec.get('artHubStage'),'import_kind':'circuit','event_type':'Circuit race','surface':['asphalt'],'lengthM':layout['lengthM'],'laps':race['laps'],'generatedPath':str(file),'replaceRaceRef':selection.get('raceRef'),'existingSideId':selection.get('existingSideId'),'warnings':race['source']['warnings']}
 
 if __name__=='__main__':
  parser=argparse.ArgumentParser();parser.add_argument('--only',nargs='*');args=parser.parse_args()

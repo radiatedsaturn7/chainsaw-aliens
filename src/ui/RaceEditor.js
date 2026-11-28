@@ -1,3 +1,13 @@
+import {raceAutomotiveSkyProbe} from '../racing/RaceAutomotiveSkyProbe.js';
+import {compositeRace3dWorld, race3dTargetSize, readRace3dPresentationOptions} from '../racing/Race3dPresentation.js';
+import { roadCameraCue, roadsidePassMix } from '../racing/RaceMotionCues.js';
+import {raceAiRenderState} from '../racing/RaceAiRenderState.js';
+import {selectMatchedRaceGrid, matchRaceCarPI} from '../racing/RaceMatchedGrid.js';
+import {raceStartingGrid, raceGridDistance, raceGridLateral, raceGridColumns} from '../racing/RaceStartingGrid.js';
+import {activeCarVersionRef,canonicalCarVersionRef,filterPlayableCarVersions,legacyAlternateCarRef} from '../racing/CarVersions.js';
+import {getRaceCarVersions,hydrateRaceCarVersions,resolveRaceCarVersionFile,hydrateRaceCarVersionFile} from './RaceCarVersionFiles.js';
+import {US_STATES,normalizeRaceLocation} from '../racing/RaceLocation.js';
+import {carChaseClearanceLift} from '../racing/CarChaseFraming.js';
 import {startCampaignChallenge,updateCampaignSectors} from '../garage/CampaignChallenges.js';
 import {triangulateRaceSurfaceQuad} from '../racing/RaceTerrainClipping.js';
 import {vehicleFeedbackRows} from '../racing/RaceVehicleFeedback.js';
@@ -10,7 +20,7 @@ import {routeProjectionScore,isRaceRouteLoopClosed} from '../racing/RaceRoutePro
 import {restoreRaceDrivingPreferences,captureRaceDrivingPreferences} from '../racing/RaceDrivingPreferences.js';
 import {joinRaceAtGradeCrossings} from '../racing/RaceAtGradeJunctions.js';
 import { raceLineGraphic, distantRaceLineGraphic, RACE_LINE_DEPTH_M } from '../racing/RaceLineGraphics.js';
-import { axleTireGeometry, tireSizeForWheel } from '../racing/TireSizes.js';
+import { authoredStockAxleGeometry, axleTireGeometry, tireSizeForWheel } from '../racing/TireSizes.js';
 import {stopCodriver,updateCodriverEvents} from '../racing/RaceCodriver.js';
 import {cockpitDashboardRect,cockpitWheelLayout,cockpitGaugeBounds} from '../racing/CarCockpitLayout.js';
 import { normalizeCvtTuning, validateCvt } from '../racing/simulation/CvtTransmissionModel.js';
@@ -42,7 +52,7 @@ import {
   prepareManagedRaceScenery, getManagedRaceScenery, getManagedRaceSceneryVersion,
   invalidateRaceSceneryPresentation, releaseManagedRaceScenery
 } from '../racing/RaceVisibleScenery.js';
-import { syncManagedRaceSceneryChunks } from '../racing/RaceSceneryChunks.js';
+import { getRaceSceneryMeshStats, isRaceSceneryAnimated, syncManagedRaceSceneryChunks } from '../racing/RaceSceneryChunks.js';
 import { staticWorldKeyChanges } from '../racing/RaceStaticWorldCache.js';
 import {raceStartupWarmupReady,RACE_STARTUP_ART_WAIT_MS} from '../racing/RaceStartupWarmup.js';
 import {drawRacePerformanceStatus} from '../racing/RacePerformanceStatus.js';
@@ -51,7 +61,7 @@ import {RacePerformanceCapture} from '../racing/RacePerformanceCapture.js';
 import {disposeRaceSessionResources} from '../racing/RaceSessionResources.js';
 import {prepareRaceAiRoadPlan} from '../racing/RaceAiDirector.js';
 import { recordRaceRecoveryPosition, getRaceRecoveryHistoryCandidates } from '../racing/RaceRecoveryHistory.js';
-import {changeRaceDebugAi} from '../racing/RaceDebugAi.js';
+import {changeRaceDebugAi,changeRaceDebugAiDifficulty} from '../racing/RaceDebugAi.js';
 import {buildRaceRouteNearestIndex, nearestRaceRouteSegment} from '../racing/RaceRouteNearestIndex.js';
 import { buildAdaptiveRaceTerrain, ADAPTIVE_TERRAIN_REVISION } from '../racing/RaceAdaptiveTerrain.js';
 import {partitionRaceTerrainForRendering} from '../racing/RaceTerrainRenderChunks.js';
@@ -114,13 +124,17 @@ import { RaceCarDepthSprites } from '../racing/RaceCarDepthSprites.js';
 import { createRaceTireTrackBuffer, appendRaceTireTrackBuffer, trimRaceTireTrackBuffer, raceTireTrackSessionToken } from '../racing/RaceTireTrackBuffers.js';
 import { CAR_CATEGORIES, CAR_PERFORMANCE_CLASSES, carCategory, calculateCarPerformance, normalizeAiCarSelection, selectEligibleRaceAiCars } from '../racing/CarPerformance.js';
 import { openEditorForm } from './shared/editorForm.js';
+import {carAvailabilityLabel,openCarAvailability} from './CarAvailabilityEditor.js';
+import {hydrateRaceCarVersions as refreshEditorRaceCarVersions} from './RaceCarVersionFiles.js';
 import { applyCarImportPlacementDefaults } from '../racing/CarImportPlacementDefaults.js';
+import {batchStaticDoodadModels} from '../model3d/StaticModelBatch.js';
 import {syncRaceModelTiles} from '../model3d/RaceModelTiles.js';
 import {ensureModelSceneLighting} from '../model3d/ModelRender.js';
 import {modelAssets,ModelAssetInstance} from '../model3d/ModelAssets.js';
 import {pickModelBinding} from './ModelPicker.js';
 import {normalizeModelBinding} from '../model3d/ModelBinding.js';
-import {updateRaceModelParts} from '../model3d/RaceModelVehicle.js';
+import {updateRaceModelParts,syncRaceModelLamps,hasRaceModelLampMounts,getRaceModelLampWorldFrames} from '../model3d/RaceModelVehicle.js';
+import {createModelWheel,isDedicatedModelWheelCar,isNativeModelWheelCar,hasAuthoritativeModelWheelPose,setModelWheelPose} from '../model3d/ModelWheel.js';
 import { openTireLibrary } from './TireLibrary.js';
 import { applyTireDefinition, normalizeTireDefinition, resolveTireCompound, getTireArtRefs } from '../racing/raceTires.js';
 import { getArtDocumentFrames } from './shared/artDocumentPixels.js';
@@ -552,6 +566,8 @@ const RACE_TIRE_FX_SLOTS = [
 ];
 const RACE_TIRE_FX_SLOT_BY_ID = Object.fromEntries(RACE_TIRE_FX_SLOTS.map((entry) => [entry.id, entry]));
 const RACE_SKYBOX_PRESETS = [
+  {id:'lunar-simulator',label:'Lunar Simulator',skyTop:'#000000',skyBottom:'#000000',uphillSky:'#000000',downhillSky:'#000000',ground:'#777777',farColor:'#535353',nearColor:'#777777'},
+  {id:'martian-simulator',label:'Martian Simulator',skyTop:'#6b4a3a',skyBottom:'#c3916e',uphillSky:'#8f6650',downhillSky:'#9c6e50',ground:'#88513a',farColor:'#8c6550',nearColor:'#995b40'},
   {
     id: 'studio-hills',
     label: 'Studio Hills',
@@ -791,6 +807,7 @@ const RACE_EDITOR_AVAILABLE_ACTIONS = new Set([
   ...Object.keys(RACE_DIAGNOSTIC_ACTIONS),
   ...BUILT_IN_RACE_LOAD_ACTIONS.map((entry) => entry.id),
   'finish-return',
+  'race-location',
   'race-complete',
   'add-sprite',
   'sprite-select',
@@ -821,7 +838,19 @@ const CAR_ENGINE_SOUND_PROFILES = [
   { id: 'civic-turbo-manual', label: 'Civic Manual' },
   { id: 'civic-turbo-cvt', label: 'Civic CVT' },
   { id: 'race-inline-four', label: 'Inline Four' },
-  { id: 'race-v8', label: 'V8' }
+  { id: 'race-v8', label: 'V8' },
+  { id: 'race-twin', label: 'Twin' },
+  { id: 'race-triple', label: 'Inline Three' },
+  { id: 'race-inline-five', label: 'Inline Five' },
+  { id: 'race-inline-six', label: 'Inline Six' },
+  { id: 'race-flat-six', label: 'Flat Six' },
+  { id: 'race-v6', label: 'V6' },
+  { id: 'race-v10', label: 'V10' },
+  { id: 'race-v12', label: 'V12' },
+  { id: 'race-diesel-three', label: 'Diesel Three' },
+  { id: 'race-diesel-four', label: 'Diesel Four' },
+  { id: 'race-diesel-five', label: 'Diesel Five' },
+  { id: 'race-diesel-six', label: 'Diesel Six' }
 ];
 
 const CAR_ENGINE_SFX_SAMPLE_RATE = 44100;
@@ -839,7 +868,19 @@ const CAR_ENGINE_SFX_PRESETS = {
   'civic-turbo-manual': { cycles: 76, overtone: 3, wave: 'saw', roughness: 0.07, pulseCycles: 24 },
   'civic-turbo-cvt': { cycles: 74, overtone: 3, wave: 'saw', roughness: 0.06, pulseCycles: 18 },
   'race-inline-four': { cycles: 82, overtone: 3, wave: 'square', roughness: 0.08, pulseCycles: 26 },
-  'race-v8': { cycles: 48, overtone: 2, wave: 'saw', roughness: 0.09, pulseCycles: 12 }
+  'race-v8': { cycles: 48, overtone: 2, wave: 'saw', roughness: 0.09, pulseCycles: 12 },
+  'race-twin': { cycles: 40, overtone: 2, wave: 'triangle', roughness: 0.08, pulseCycles: 20 },
+  'race-triple': { cycles: 60, overtone: 3, wave: 'saw', roughness: 0.06, pulseCycles: 20 },
+  'race-inline-five': { cycles: 75, overtone: 5, wave: 'saw', roughness: 0.06, pulseCycles: 15 },
+  'race-inline-six': { cycles: 90, overtone: 3, wave: 'triangle', roughness: 0.04, pulseCycles: 15 },
+  'race-flat-six': { cycles: 86, overtone: 3, wave: 'saw', roughness: 0.06, pulseCycles: 17 },
+  'race-v6': { cycles: 84, overtone: 3, wave: 'saw', roughness: 0.07, pulseCycles: 21 },
+  'race-v10': { cycles: 110, overtone: 5, wave: 'triangle', roughness: 0.04, pulseCycles: 22 },
+  'race-v12': { cycles: 120, overtone: 6, wave: 'triangle', roughness: 0.03, pulseCycles: 20 },
+  'race-diesel-three': { cycles: 45, overtone: 3, wave: 'square', roughness: 0.14, pulseCycles: 15 },
+  'race-diesel-four': { cycles: 52, overtone: 2, wave: 'square', roughness: 0.14, pulseCycles: 13 },
+  'race-diesel-five': { cycles: 60, overtone: 5, wave: 'square', roughness: 0.12, pulseCycles: 12 },
+  'race-diesel-six': { cycles: 65, overtone: 3, wave: 'square', roughness: 0.11, pulseCycles: 13 }
 };
 
 function createRaceEditorDefaultEnvelope(type = 'volume') {
@@ -948,9 +989,18 @@ export function buildCarPortraitMenuModel() {
   return buildRacePortraitMenuModel('car');
 }
 
+function getRaceDoodadModelFallbackArtRef(sprite, doodad) {
+  // A scenery placement may retain its real sprite alongside its native model.
+  // Leave pre-existing model-only items and all fences on their original paths.
+  if (!doodad.model?.ref || doodad.itemType === 'item' || doodad.itemType === 'mix-tape' || doodad.isFence || sprite.fenceId) return '';
+  return doodad.artRef || sprite.artRef || '';
+}
+
 export default class RaceEditor {
   constructor(game, { mode = 'race' } = {}) {
     this.game = game;
+    this.race3dPresentation = readRace3dPresentationOptions(globalThis.location?.search);
+    this.raceUseAuthoredSkyProbe = new URLSearchParams(globalThis.location?.search).get('race3dProbe')==='sky';
     this.mode = mode;
     this.raceSimulationSystems = createRaceSimulationSystems({
       steeringConfig: RACE_CONTROLLER_STEERING
@@ -1221,12 +1271,19 @@ export default class RaceEditor {
     }
     this.deferRaceFrameBudgetFinish = true;
     try {
-      if (liveSession && !startupFramePending && !this.updatePlaytestSafely(dt)) return;
-      if (liveSession && !startupFramePending && !this.raceInput.paused && !this.playtestSession.carEditorPreview) {
-        this.game.items?.runtime.update(this.playtestSession.frameAdmittedSeconds ?? dt);
-      }
-      if (liveSession && !startupFramePending) updateRaceDrivingAssists(this, this.playtestSession.frameAdmittedSeconds ?? dt);
-      if (liveSession && !startupFramePending) this.updateRaceAutomaticVehicleRecovery(this.playtestSession.frameAdmittedSeconds ?? dt);
+      // Recovery verifies twelve tire-width points after simulation. Keep those
+      // reads and driving assists in the same geometry scope; otherwise each
+      // point reserializes the entire imported road just to validate cache keys.
+      const updated = this.withRaceGeometryReadCache(() => {
+        if (liveSession && !startupFramePending && !this.updatePlaytestSafely(dt)) return false;
+        if (liveSession && !startupFramePending && !this.raceInput.paused && !this.playtestSession.carEditorPreview) {
+          this.game.items?.runtime.update(this.playtestSession.frameAdmittedSeconds ?? dt);
+        }
+        if (liveSession && !startupFramePending) updateRaceDrivingAssists(this, this.playtestSession.frameAdmittedSeconds ?? dt);
+        if (liveSession && !startupFramePending) this.updateRaceAutomaticVehicleRecovery(this.playtestSession.frameAdmittedSeconds ?? dt);
+        return true;
+      });
+      if (!updated) return;
     } finally {
       this.deferRaceFrameBudgetFinish = false;
       if (liveSession && !startupFramePending && !this.raceInput.paused) {
@@ -1327,7 +1384,7 @@ export default class RaceEditor {
     this.resetRacePlaytestInputs();
     this.game?.audio?.stopWeatherThunder?.();
     this.game?.audio?.setEngineRev?.(false);
-    this.game?.audio?.setTireScreech?.(false);
+    this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
     this.game?.stopSfxById?.('', { key: 'race-engine' });
   }
 
@@ -1358,10 +1415,13 @@ export default class RaceEditor {
     if (!this.project || !Array.isArray(this.project.cars)) return 0;
     let loaded = 0;
     try {
-      listProjectFiles('cars').forEach((entry) => {
+      const versions=getRaceCarVersions();
+      const all=listProjectFiles('cars');
+      const entries=this.mode==='car'?all:filterPlayableCarVersions(all,versions,{includeDisabled:true});
+      entries.forEach((entry) => {
         const name = sanitizeProjectFileName(entry?.name || '');
         if (!name) return;
-        const payload = loadProjectFile('cars', name);
+        const payload=loadProjectFile('cars',name); // Index originals without loading a second vehicle's native assets.
         if (!payload?.data || isSystemCarDocument(payload.data, name)) return;
         const car = this.withSavedRaceCarRuntimeIdentity(
           this.normalizeLoadedCarDocument(payload?.data || payload, name, { preserveExistingArt: true }),
@@ -1377,21 +1437,61 @@ export default class RaceEditor {
     return loaded;
   }
 
-  async hydrateSavedRaceCarsForTravel() {
+  async hydrateSavedRaceCarsForTravel({deferModels=false,preserveCarId=''}={}) {
     // Pages lists documents without downloading them. Populate the catalog before
     // constructing the grid, even when no car browser has warmed the index.
     await hydrateServerStorage({ folder: 'cars' });
-    const entries = listProjectFiles('cars', { includeSystem: true });
+    const versions=await hydrateRaceCarVersions();
+    const entries=filterPlayableCarVersions(listProjectFiles('cars',{includeSystem:true}),versions,{includeDisabled:true});
+    const names=new Set(entries.map(entry=>entry.name));
+    const namesByRawID=new Map();
+    let completeRoster=true;
+    this.raceCarVersionRawIDs=null;
     const loaded = await Promise.all(entries.map(async ({name}) => {
-      const payload = await hydrateProjectFilePayload('cars', name);
-      if (!payload?.data || isSystemCarDocument(payload.data, name)) return null;
+      const payload=(await hydrateRaceCarVersionFile(name,{versions,originalOnly:deferModels,hydrateDependencies:!deferModels})).payload;
+      if (!payload?.data) {completeRoster=false;return null;}
+      if (isSystemCarDocument(payload.data,name))return null;
       const car = this.withSavedRaceCarRuntimeIdentity(
         this.normalizeLoadedCarDocument(payload.data, name, {preserveExistingArt:true}), name
       );
-      this.upsertRaceProjectCar(car);
+      if(!car?.id){completeRoster=false;return null;}
+      let rawNames=namesByRawID.get(car.id);
+      if(!rawNames)namesByRawID.set(car.id,rawNames=new Set());
+      rawNames.add(name);
+      if(this.getRaceCarProjectIdentity(car)!==preserveCarId)this.upsertRaceProjectCar(car);
       return car;
     }));
+    if(this.mode!=='car'){
+      this.raceCarVersions=versions;
+      // A partial catalog cannot establish uniqueness of a legacy bare ID.
+      this.raceCarVersionRawIDs=completeRoster?namesByRawID:null;
+      this.project.cars=this.project.cars.filter(car=>{
+        const ref=car.__playtestDocumentName;
+        return !ref||!names.has(canonicalCarVersionRef(versions,ref))||canonicalCarVersionRef(versions,ref)===ref;
+      });
+    }
     return loaded.filter(Boolean);
+  }
+
+  async prepareRaceTravelGridCarVersions(ids=[]){
+    const versions=this.raceCarVersions||await hydrateRaceCarVersions();
+    const byName=new Map();
+    for(const id of ids){
+      const original=this.findRaceProjectCarById(id),name=original?.__playtestDocumentName;
+      if(!name)continue;
+      const active=activeCarVersionRef(versions,name);
+      if(active&&active!==name&&!byName.has(name))byName.set(name,original);
+    }
+    return (await Promise.all([...byName].map(async([name,original])=>{
+      try{
+        const {payload}=await hydrateRaceCarVersionFile(name,{versions,hydrateDependencies:false});
+        if(!payload?.data)return original;
+        const car=this.withSavedRaceCarRuntimeIdentity(
+          this.normalizeLoadedCarDocument(payload.data,name,{preserveExistingArt:true}),name);
+        if(!car?.id)return original;
+        this.upsertRaceProjectCar(car);return car;
+      }catch{return original;}
+    }))).filter(Boolean);
   }
 
   get selectedRace() {
@@ -1474,16 +1574,34 @@ export default class RaceEditor {
   }
 
   findRaceProjectCarById(carId = '') {
-    const id = String(carId || '');
+    let id = String(carId || '');
     if (!id || !Array.isArray(this.project?.cars)) return null;
-    let fallback = null;
-    const cars = this.project.cars;
-    for (let index = 0; index < cars.length; index++) {
-      const car = cars[index];
-      if (this.getRaceCarProjectIdentity(car) === id) return car;
-      if (!fallback && car?.id === id) fallback = car;
+    const versions=this.mode!=='car'?(this.raceCarVersions||getRaceCarVersions()):null;
+    const cars=this.project.cars;
+    if(versions&&id.startsWith(SAVED_RACE_CAR_PLAYTEST_ID_PREFIX)){
+      const ref=id.slice(SAVED_RACE_CAR_PLAYTEST_ID_PREFIX.length);
+      const canonical=canonicalCarVersionRef(versions,ref);
+      const next=SAVED_RACE_CAR_PLAYTEST_ID_PREFIX+canonical;
+      if(cars.some(car=>this.getRaceCarProjectIdentity(car)===next))id=next;
+    }else if(versions){
+      const names=this.raceCarVersionRawIDs?.get(id);
+      if(names?.size===1){
+        const [ref]=names,active=activeCarVersionRef(versions,ref);
+        if(active&&active!==ref){
+          const replacement=cars.find(car=>car.__playtestDocumentName===ref&&car.art?.bodyModel?.ref);
+          if(replacement)return replacement;
+        }
+      }
     }
-    return fallback;
+    let fallback=null;
+    for (let index = 0; index < cars.length; index++) {
+      const car=cars[index];
+      if (this.getRaceCarProjectIdentity(car) === id) return car;
+      if (!fallback && car?.id === id) fallback=car;
+    }
+    if(fallback||!versions||!this.raceCarVersionRawIDs)return fallback;
+    const legacy=legacyAlternateCarRef(versions,id);
+    return legacy?cars.find(car=>car.__playtestDocumentName===legacy)||null:null;
   }
 
   upsertRaceProjectCar(car = null) {
@@ -6743,7 +6861,7 @@ export default class RaceEditor {
     const message = String(reason || 'Race could not present its first playable frame');
     const session = this.playtestSession;
     this.game?.audio?.setEngineRev?.(false);
-    this.game?.audio?.setTireScreech?.(false);
+    this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
     this.game?.stopSfxById?.('', { key: 'race-engine' });
     if (session?.carEditorPreview === true) {
       this.resetCarEditorPreviewPlaytest({ preserveEditorUi: true });
@@ -6769,7 +6887,7 @@ export default class RaceEditor {
     }
     if (session) session.startupPhase = 'failed';
     this.game?.audio?.setEngineRev?.(false);
-    this.game?.audio?.setTireScreech?.(false);
+    this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
     this.game?.stopSfxById?.('', { key: 'race-engine' });
     if (carEditorPreview) {
       const failedRevision = String(failureRevision || this.getCarEditorPreviewTuningRevision?.(
@@ -6908,7 +7026,7 @@ export default class RaceEditor {
       const section = spec?.sections?.file;
       return [...(section?.actions || [])].map((id) => ({
         id,
-        label: id === 'exit-main' ? 'Exit' : (spec.actions?.[id]?.label || this.getRaceActionLabel(id)),
+        label: id === 'exit-main' ? 'Exit' : id === 'car-availability' ? carAvailabilityLabel(this) : (spec.actions?.[id]?.label || this.getRaceActionLabel(id)),
         disabled: !this.isActionAvailable(id),
         onSelect: this.isActionAvailable(id) ? () => this.handleMenuAction(id) : null
       }));
@@ -7150,7 +7268,7 @@ export default class RaceEditor {
     const car = this.project.cars.find((candidate) => candidate.id === carId) || this.selectedCar;
     const engineSoundId = preview?.session?.activeEngineSoundId || preview?.session?.engineSoundId || preview?.activeEngineSoundId || car?.audio?.engineSoundId;
     this.game?.audio?.setEngineRev?.(false);
-    this.game?.audio?.setTireScreech?.(false);
+    this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
     if (engineSoundId) this.game?.stopSfxById?.(engineSoundId, { key: 'race-engine' });
     this.game?.stopSfxById?.('', { key: 'race-engine' });
   }
@@ -8774,6 +8892,7 @@ export default class RaceEditor {
   }
 
   isActionAvailable(action) {
+    if (action === 'car-availability') return this.mode === 'car' && Boolean(this.currentCarDocumentName) && !this.carAvailabilityBusy;
     if (action === 'undo') return this.raceHistory.length > 0;
     if (action === 'redo') return this.raceRedoStack.length > 0;
     if (NETWORK_ACTIONS[action]) return this.mode === 'race';
@@ -9296,6 +9415,7 @@ export default class RaceEditor {
     // Saved variants share the stock car id. The opened filename, not stale
     // runtime metadata from Save As, identifies the document being replaced.
     this.currentCarDocumentName = sanitizeProjectFileName(name || car.name || car.id);
+    if(this.mode==='car')void refreshEditorRaceCarVersions().catch(()=>{});
     this.withSavedRaceCarRuntimeIdentity(car, this.currentCarDocumentName);
     this.upsertRaceProjectCar(car);
     this.project.selectedCarId = this.getRaceCarProjectIdentity(car);
@@ -9924,6 +10044,7 @@ export default class RaceEditor {
     if (action === 'race-scale') { void this.openRaceScale(); return; }
     if (action === 'race-description') { void this.openRaceDescription(); return; }
     if (action === 'car-description') { void this.openCarDescription(); return; }
+    if (action === 'car-availability') { void openCarAvailability(this).catch(error=>{this.status=error.message;this.game.showSystemToast?.(error.message);}); return; }
     if (action === 'car-category') { void this.openCarCategorySettings(); return; }
     if (action === 'race-ai-cars') { void this.openRaceAiCarSettings(); return; }
     if (action === 'test-drive') {
@@ -10352,6 +10473,8 @@ export default class RaceEditor {
       this.openRaceTextureScaleDialog();
     } else if (action === 'race-debug') {
       this.openRaceDebugDialog();
+    } else if (action === 'race-location') {
+      this.openRaceLocation().catch(error=>{this.status=error.message;});
     } else if (action === 'race-complete') {
       this.openRaceCompleteDialog();
     } else if (action === 'skybox-next') {
@@ -10648,23 +10771,26 @@ export default class RaceEditor {
       this.openPlaytestPicker();
       return null;
     }
+    const versions=await hydrateRaceCarVersions();
     const picked = await openProjectBrowser({
       mode: 'open',
       fixedFolder: 'cars',
       initialFolder: 'cars',
-      title: 'Choose Race Car'
+      title: 'Choose Race Car',
+      filterEntries: (folder,entries)=>folder==='cars'?filterPlayableCarVersions(entries,versions):entries
     });
     if (picked?.action === 'open' && picked.name) {
+      const {ref:name,payload}=await hydrateRaceCarVersionFile(picked.name,{versions});
       const car = this.withSavedRaceCarRuntimeIdentity(
-        this.normalizeLoadedCarDocument(picked.payload?.data || picked.payload, picked.name, { preserveExistingArt: true }),
-        picked.name
+        this.normalizeLoadedCarDocument(payload?.data, name, { preserveExistingArt: true }),
+        name
       );
       if (!car?.id) {
         this.status = 'Car load failed';
         return null;
       }
       const playtestId = this.getRaceCarProjectIdentity(car);
-      this.selectPlaytestCarEntry({ id: playtestId, name: picked.name, car }, { silent: true });
+      this.selectPlaytestCarEntry({ id: playtestId, name, car }, { silent: true });
       await this.startSavedRacePlaytest(playtestId);
       return car;
     }
@@ -10676,10 +10802,11 @@ export default class RaceEditor {
     const seen = new Set();
     const cars = [];
     try {
-      listProjectFiles('cars').forEach((entry) => {
+      const versions=getRaceCarVersions();
+      filterPlayableCarVersions(listProjectFiles('cars'),versions).forEach((entry) => {
         const name = sanitizeProjectFileName(entry?.name || '');
         if (!name) return;
-        const payload = loadProjectFile('cars', name);
+        const payload = resolveRaceCarVersionFile(name,{versions}).payload;
         if (!payload?.data || isSystemCarDocument(payload.data, name)) return;
         const car = this.withSavedRaceCarRuntimeIdentity(
           this.normalizeLoadedCarDocument(payload?.data || payload, name, { preserveExistingArt: true }),
@@ -10842,8 +10969,10 @@ export default class RaceEditor {
     });
   }
 
-  selectRaceTravelGridCars(race, playerCarId) {
+  selectRaceTravelGridCars(race, playerCarId, {matchedCar=null}={}) {
     const count = (race?.competition?.aiDrivers || []).filter(driver => driver.enabled).length;
+    if(matchedCar)return selectMatchedRaceGrid(this.project.cars,matchedCar,Math.min(RACE_MAX_AI_DRIVERS,count),
+      car=>this.getRaceCarTuning(car)).map(entry=>entry.id);
     return selectEligibleRaceAiCars(this.project.cars, Math.min(RACE_MAX_AI_DRIVERS, count), {
       playerCarId, selection: normalizeAiCarSelection(race?.competition?.carSelection)
     });
@@ -10996,6 +11125,19 @@ export default class RaceEditor {
     }}), debugSurfaces:Object.fromEntries(DEBUG_ROAD_SURFACES.map(surface=>[surface.id,result['debugRoad_'+surface.id]||surface.artRef])), builtInLines: result.builtInLines !== false };
     this.raceStaticTrackSurfaceMeshCache = null;
     this.status = 'Road textures updated. Playtest to preview; save the race to keep changes.';
+  }
+
+  async openRaceLocation(showForm=openEditorForm){
+    const race=this.selectedRace;if(!race)return;
+    const location=normalizeRaceLocation(race);
+    const result=await showForm('Race Location',[
+      {id:'country',label:'Country code',value:location.country},
+      {id:'stateCode',label:'State',value:location.stateCode,options:[{value:'',label:'Unspecified'},...Object.entries(US_STATES).sort((a,b)=>a[1].localeCompare(b[1])).map(([value,label])=>({value,label}))]},
+      {id:'place',label:'Location',value:location.place}
+    ]);
+    if(!result||this.selectedRace!==race)return;
+    this.captureRaceHistory('Race location');race.location=normalizeRaceLocation({location:{...location,...result}});
+    this.status='Location updated. Save the race to keep it.';
   }
 
   async openRaceDescription(showForm = openEditorForm) {
@@ -12681,20 +12823,30 @@ export default class RaceEditor {
     };
   }
 
-  createRaceAiRuntime(aiDrivers = [], { routeLength = this.getRaceRouteLength() } = {}) {
+  createRaceAiRuntime(aiDrivers = [], { routeLength = this.getRaceRouteLength(), runtimeCarOverride = null, startingGrid = null, gridFrontDistance = 7.5, gridColumns = 2 } = {}) {
     return aiDrivers.slice(0, RACE_MAX_AI_DRIVERS).map((driver, index) => {
       const ai = this.normalizeRaceAiDriver(driver, index);
-      const car = ai.runtimeCar || this.findRaceProjectCarById(ai.carId) || this.selectedCar;
+      let car = ai.runtimeCar || this.findRaceProjectCarById(ai.carId) || this.selectedCar;
+      let competitionPI=null;
+      if(runtimeCarOverride){
+        const target=calculateCarPerformance({...runtimeCarOverride,tuning:this.getRaceCarTuning(runtimeCarOverride),transmissions:{}}).points;
+        const match=matchRaceCarPI(car,target,c=>this.getRaceCarTuning(c));
+        car=match.car;competitionPI={target,actual:match.points,powerScale:match.scale};
+      }
       const tuning = this.getRaceCarTuning(car, { transmissionType: ai.difficulty === 'expert' ? 'manual' : this.getRaceTransmissionType(car) });
-      const distance = -Math.max(12, this.getRaceCarWorldWidth(car) * 6) - index * 7;
+      const distance = startingGrid ? raceGridDistance(startingGrid, ai.id, gridFrontDistance,7,gridColumns)
+        : -Math.max(12, this.getRaceCarWorldWidth(car) * 6) - index * 7;
       const pose = this.getRaceWorldPoseAtDistance(distance, {
         runtimeType: this.getSelectedRaceRuntimeType(), allowVisualExtension: true
       });
-      const lineOffset = (index % 2 === 0 ? -1 : 1) * 0.28;
-      const lateral = lineOffset * this.getRaceRoadHalfWidthWorld(pose.segment);
+      const halfWidth=this.getRaceRoadHalfWidthWorld(pose.segment);
+      const lateral=startingGrid ? raceGridLateral(startingGrid,ai.id,halfWidth,tuning.widthM,gridColumns)
+        : (index%2===0?-1:1)*halfWidth*.28;
+      const lineOffset=lateral/Math.max(1,halfWidth);
       const right = this.getRaceRightVector(pose.yaw);
       return {
         ...ai,
+        competitionPI,
         runtimeCar: this.materializeRaceRuntimeCar(car),
         distance,
         awaitingStartLine: this.getSelectedRaceRuntimeType() === 'circuit',
@@ -12706,6 +12858,10 @@ export default class RaceEditor {
         worldX: Number(pose.x || 0) + right.x * lateral,
         worldZ: Number(pose.z || 0) + right.z * lateral,
         carYaw: Number(pose.yaw || 0),
+        // The intro renders before AI physics is stepped. Its body origin is
+        // the centre of gravity, not the road surface.
+        heightM: Number(pose.elevation || 0) * RACE_THREE_ELEVATION_M,
+        bodyY: Number(pose.elevation || 0) * RACE_THREE_ELEVATION_M + Number(tuning.cgHeightM || .55),
         terrainRollRad: 0,
         terrainPitchRad: 0,
         averageSurfaceGrip: 1,
@@ -13676,18 +13832,19 @@ export default class RaceEditor {
     // Cancellation clears a preparing session, so doing this afterwards can
     // discard the race we have just created on the asynchronous fallback path.
     if (!options?.preparedWorldBake) this.cancelRacePlaytestPreparation();
-    const startPose = this.getRaceStartPose(runtimeType);
+    let startPose = this.getRaceStartPose(runtimeType);
     const routeLength = this.getRaceRouteLength();
     const startAbsEnabled = tuning.absEnabled !== false && this.raceInput.absEnabled !== false;
     const startTractionControlEnabled = tuning.tractionControlEnabled !== false && this.raceInput.tractionControlEnabled !== false;
-    const startRoadProfile = this.getRaceRoadSurfaceProfileAtDistance(0, {
+    let startRoadProfile = this.getRaceRoadSurfaceProfileAtDistance(0, {
       runtimeType,
       routeLength,
       allowVisualExtension: true
     });
     const checkpointDistances = this.getRaceCheckpointDistances({ routeLength });
     const initialCheckpointIndex = checkpointDistances.findIndex((distance) => distance > Math.max(8, this.getRaceCarWorldWidth() * 2));
-    const startBackDistance = Math.max(7.5, this.getRaceCarWorldWidth(car) * 4.2);
+    const gridFrontDistance = Math.max(7.5, this.getRaceCarWorldWidth(car) * 4.2);
+    let startBackDistance = gridFrontDistance;
     this.project.selectedCarId = playtestCarId;
     this.playtestPickerOpen = false;
     this.preRaceTuningOpen = false;
@@ -13702,6 +13859,17 @@ export default class RaceEditor {
     const normalizedAiDrivers = aiDrivers.slice(0, gridCars.length).map((driver, index) => this.normalizeRaceAiDriver({
       ...driver, carId: gridCars[index] || this.selectedCar?.id
     }, index));
+    const startingGrid = raceStartingGrid(normalizedAiDrivers, {order: this.selectedRace.competition?.startingGrid, seed: `${this.selectedRace.id}:${playtestCarId}`});
+    const gridColumns=raceGridColumns(this.getRaceRoadHalfWidthWorld(startPose.segment),Math.max(tuning.widthM||1.8,
+      ...normalizedAiDrivers.map(driver=>this.getRaceCarTuning(this.findRaceProjectCarById(driver.carId)||car).widthM||1.8)));
+    if (normalizedAiDrivers.length) {
+      startBackDistance = -raceGridDistance(startingGrid, 'player', gridFrontDistance,7,gridColumns);
+      startPose = this.getRaceWorldPoseAtDistance(-startBackDistance, {runtimeType, allowVisualExtension: true});
+      startRoadProfile = this.getRaceRoadSurfaceProfileAtDistance(-startBackDistance, {runtimeType, routeLength, allowVisualExtension: true});
+      const lateral=raceGridLateral(startingGrid,'player',this.getRaceRoadHalfWidthWorld(startPose.segment),tuning.widthM,gridColumns);
+      const right=this.getRaceRightVector(startPose.yaw);
+      startPose={...startPose,x:startPose.x+right.x*lateral,z:startPose.z+right.z*lateral};
+    }
     const raceStart = this.getRaceStartSettings();
     const initialSpeedMps = raceStart.rollingStart ? raceStart.rollingStartSpeedMps : 0;
     this.disposeRacePlaytestSession(this.playtestSession, 'session-replaced');
@@ -13725,7 +13893,7 @@ export default class RaceEditor {
       speedMps: initialSpeedMps,
       countdownRemainingMs: options?.carEditorPreview === true
         ? 0
-        : (raceStart.countdown ? 6000 : 0),
+        : (raceStart.countdown ? 4000 : 0),
       rollingStart: raceStart.rollingStart,
       rollingStartSpeedMps: raceStart.rollingStartSpeedMps,
       firedTriggerIds: new Set(),
@@ -13808,8 +13976,9 @@ export default class RaceEditor {
       engineSoundProfile: this.getRaceEngineProfileForTransmission(car, tuning),
       diagnosticMode,
       diagnostics: this.createRaceDiagnosticsState(diagnosticMode),
+      startingGrid,
       aiDrivers: normalizedAiDrivers,
-      aiRuntime: this.createRaceAiRuntime(normalizedAiDrivers, { routeLength }),
+      aiRuntime: this.createRaceAiRuntime(normalizedAiDrivers, { routeLength, runtimeCarOverride: options?.matchedAiCar ? car : null, startingGrid, gridFrontDistance, gridColumns }),
       ghostRecording: [],
       activeGhost: this.bestRaceGhosts?.[this.selectedRace.id] || null,
       tireFxParticles: [],
@@ -13955,7 +14124,7 @@ export default class RaceEditor {
     this.playtestSession = null;
     this.resetRacePlaytestInputs();
     this.game?.audio?.setEngineRev?.(false);
-    this.game?.audio?.setTireScreech?.(false);
+    this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
     if (engineSoundId || car.audio?.engineSoundId) this.game?.stopSfxById?.(engineSoundId || car.audio.engineSoundId, { key: 'race-engine' });
     this.game?.stopSfxById?.('', { key: 'race-engine' });
     if (this.getRaceStartSettings().musicTrackId) this.game?.setActiveMusicTrack?.(null);
@@ -13968,6 +14137,17 @@ export default class RaceEditor {
   }
 
   saveCampaignRaceResult(session=this.playtestSession){
+    if(session?.menuConfiguration?.motorsportId && this.game?.menuPlayer?.motorsport){
+      if(session.campaignProgressSaved)return Promise.resolve();
+      if(session.campaignSaveTask)return session.campaignSaveTask;
+      session.campaignSaveTask=(async()=>{
+        await this.persistRaceMechanicalCondition(session);
+        await this.game.menuPlayer.motorsport.record(session);
+        session.campaignProgressSaved=true;
+      })().finally(()=>{session.campaignSaveTask=null;});
+      this.game.campaignSavePending=session.campaignSaveTask;
+      return session.campaignSaveTask;
+    }
     if(!session || session.campaignProgressSaved || !this.game?.campaignSaves?.hasActive
       || this.game.menuPlayer?.preview || this.mode!=='race' || !this.game.raceTravelSession)return Promise.resolve();
     if(session.campaignSaveTask)return session.campaignSaveTask;
@@ -14009,7 +14189,7 @@ export default class RaceEditor {
     session.finishFade={elapsedMs:0,durationMs:finish.fadeOutMs||800,blackDrawn:false,submitted:false};
     this.raceInput.paused=true;
     this.vehicleDynamicsAuthority?.workerBridge?.setPaused?.(true);
-    this.game?.audio?.setEngineRev?.(false);this.game?.audio?.setTireScreech?.(false);
+    this.game?.audio?.setEngineRev?.(false);this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
     this.game?.stopSfxById?.('',{key:'race-engine'});
   }
 
@@ -14023,7 +14203,7 @@ export default class RaceEditor {
     session.raceResults=true;
     void this.saveCampaignRaceResult(session).catch(error=>this.game?.showSystemToast?.(`Autosave failed: ${error.message}`));
     this.raceInput.paused=true;this.raceInput.pauseMenuMode='main';this.raceInput.pauseMenuIndex=this.getRacePauseMenuRows().length-1;
-    this.game?.audio?.setEngineRev?.(false);this.game?.audio?.setTireScreech?.(false);
+    this.game?.audio?.setEngineRev?.(false);this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
     this.game?.stopSfxById?.('',{key:'race-engine'});
   }
 
@@ -14043,6 +14223,7 @@ export default class RaceEditor {
     const trackStateSnapshot = this.playtestSession.trackState?.createSnapshot?.() || null;
     const finishBehavior = resolveRaceNodeFinish(this.selectedRace, this.playtestSession.networkProgress?.finishNodeId);
     const mission=mechanicalMissionVariables(finishedSession.mechanical,this.selectedRace?.mechanicalMission,this.game?.items?.progress?.bags?.items);
+    if(finishedSession.menuConfiguration?.motorsportId)Object.assign(finishBehavior,{type:'menu',menuScreen:'motorsport-event',cutsceneRef:'',variables:{}});
     finishBehavior.variables={...finishBehavior.variables,...mission.variables};
     finishBehavior.mechanicalMissionSuccess=mission.success;
     finishBehavior.progressSaved=finishedSession.campaignProgressSaved===true;
@@ -14060,7 +14241,7 @@ export default class RaceEditor {
       this.resetRacePlaytestInputs();
     }
     this.game?.audio?.setEngineRev?.(false);
-    this.game?.audio?.setTireScreech?.(false);
+    this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
     if (engineSoundId || car.audio?.engineSoundId) this.game?.stopSfxById?.(engineSoundId || car.audio.engineSoundId, { key: 'race-engine' });
     this.game?.stopSfxById?.('', { key: 'race-engine' });
     if (this.getRaceStartSettings().musicTrackId) this.game?.setActiveMusicTrack?.(null);
@@ -14782,9 +14963,17 @@ export default class RaceEditor {
     const projectionSearchRadiusM = 64;
     if (this.raceRouteProjectionIndex?.samples !== samples) {
       const buckets = new Map();
+      // Immutable numeric coefficients belong to the sample index, not each
+      // wheel, surface and rendered-car query. Preserve division order exactly.
+      const coefficients = new Float64Array(samples.length * 7);
       for (let index = 1; index < samples.length; index += 1) {
         const previous = samples[index - 1];
         const next = samples[index];
+        const offset = index * 7;
+        const ax = Number(previous.x || 0), az = Number(previous.z || 0);
+        const dx = Number(next.x || 0) - ax, dz = Number(next.z || 0) - az;
+        coefficients.set([ax, az, dx, dz, Math.max(0.0001, dx * dx + dz * dz),
+          Number(previous.distance || 0), Number(next.distance || 0) - Number(previous.distance || 0)], offset);
         const minX = Math.floor((Math.min(Number(previous.x || 0), Number(next.x || 0)) - projectionSearchRadiusM) / projectionCellSizeM);
         const maxX = Math.floor((Math.max(Number(previous.x || 0), Number(next.x || 0)) + projectionSearchRadiusM) / projectionCellSizeM);
         const minZ = Math.floor((Math.min(Number(previous.z || 0), Number(next.z || 0)) - projectionSearchRadiusM) / projectionCellSizeM);
@@ -14799,13 +14988,14 @@ export default class RaceEditor {
           }
         }
       }
-      this.raceRouteProjectionIndex = { samples, buckets };
+      this.raceRouteProjectionIndex = { samples, buckets, coefficients };
     }
     const projectionCandidates = this.raceRouteProjectionIndex.buckets
       .get(Math.floor(px / projectionCellSizeM))?.get(Math.floor(pz / projectionCellSizeM));
     let bestIndex = 0, bestDistanceSq = Infinity, bestScore = Infinity, bestT = 0;
-    const progressHint={hint:point.routeDistanceHint,window:point.routeHintWindowM??40,
-      length:routeSamples.at(-1)?.distance||0,circuit:this.getSelectedRaceRuntimeType()==='circuit'};
+    const coefficients = this.raceRouteProjectionIndex.coefficients;
+    const progressHint=Number.isFinite(point.routeDistanceHint) ? {hint:point.routeDistanceHint,window:point.routeHintWindowM??40,
+      length:routeSamples.at(-1)?.distance||0,circuit:this.getSelectedRaceRuntimeType()==='circuit'} : null;
     let bestX = 0, bestZ = 0, bestDx = 0, bestDz = 0, bestOffsetX = 0, bestOffsetZ = 0;
     // Same ordered candidates and exact fallback, without a per-query closure
     // or a freshly formatted spatial-bucket string.
@@ -14814,23 +15004,19 @@ export default class RaceEditor {
       const count = pass === 0 ? (projectionCandidates?.length || 0) : (fallbackIndex >= 1 ? 1 : 0);
       for (let candidate = 0; candidate < count; candidate += 1) {
         const index = pass === 0 ? projectionCandidates[candidate] : fallbackIndex;
-        const previous = samples[index - 1];
-        const next = samples[index];
-        const ax = Number(previous.x || 0);
-        const az = Number(previous.z || 0);
-        const bx = Number(next.x || 0);
-        const bz = Number(next.z || 0);
-        const dx = bx - ax;
-        const dz = bz - az;
-        const lengthSq = Math.max(0.0001, dx * dx + dz * dz);
+        const offset = index * 7;
+        const ax = coefficients[offset], az = coefficients[offset + 1];
+        const dx = coefficients[offset + 2], dz = coefficients[offset + 3];
+        const lengthSq = coefficients[offset + 4];
         const t = clamp(((px - ax) * dx + (pz - az) * dz) / lengthSq, 0, 1);
         const x = ax + dx * t;
         const z = az + dz * t;
         const offsetX = px - x;
         const offsetZ = pz - z;
         const distanceSq = offsetX * offsetX + offsetZ * offsetZ;
-        const along=Number(previous.distance||0)+(Number(next.distance||0)-Number(previous.distance||0))*t;
-        const score=routeProjectionScore(distanceSq,along,progressHint);
+        const score = progressHint
+          ? routeProjectionScore(distanceSq, coefficients[offset + 5] + coefficients[offset + 6] * t, progressHint)
+          : distanceSq;
         if (!bestIndex || score < bestScore) {
           bestIndex = index; bestDistanceSq = distanceSq; bestScore=score; bestT = t;
           bestX = x; bestZ = z; bestDx = dx; bestDz = dz;
@@ -15058,6 +15244,7 @@ export default class RaceEditor {
   }
 
   getRaceThirdPersonChaseDistance(car = this.selectedCar) {
+    if(car?.art?.bodyModel?.ref)return Math.max(8, (Number(car.dimensions?.lengthM)||4.5)/2+4);
     return RACE_THIRD_PERSON_CHASE_DISTANCE_M;
   }
 
@@ -15823,7 +16010,12 @@ export default class RaceEditor {
       0,
       Number(bodyElevation || 0)
         - Number(roadElevation || 0)
-        + RACE_THIRD_PERSON_CAMERA_HEIGHT_ABOVE_BODY_M / RACE_THREE_ELEVATION_M
+        + (this.getRaceSessionCar(session)?.art?.bodyModel?.ref
+          // Native bodies have physical dimensions: use a low chase view and
+          // do not inherit clearance compensation from their legacy sprites.
+          ? 1.6
+          : RACE_THIRD_PERSON_CAMERA_HEIGHT_ABOVE_BODY_M
+            + carChaseClearanceLift(this.getRaceSessionCar(session))) / RACE_THREE_ELEVATION_M
     );
   }
 
@@ -15839,7 +16031,8 @@ export default class RaceEditor {
   }
 
   getRaceThreeCameraFov(cameraView = 'third-person') {
-    return cameraView === 'first-person' ? 58 : 48;
+    if(cameraView==='first-person')return 58;
+    return this.getRaceSessionCar(this.playtestSession)?.art?.bodyModel?.ref ? 54 : 48;
   }
 
   getRaceThreeCameraLookDropScale(cameraView = 'third-person') {
@@ -16945,7 +17138,7 @@ export default class RaceEditor {
     if(!this.selectPlaytestCarEntry({id:carId,name:picked.name,car},{silent:true}))return;
     const worldBake=session.worldBake||this.raceWorldBakeCache,autoShift=this.raceInput.autoShift;
     this.disposeRacePlaytestSession(session,'debug-car-swap');
-    this.game?.audio?.setEngineRev?.(false);this.game?.audio?.setTireScreech?.(false);
+    this.game?.audio?.setEngineRev?.(false);this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
     this.game?.stopSfxById?.(session.activeEngineSoundId||session.engineSoundId||'',{key:'race-engine'});
     this.resetRacePlaytestInputs();
     if(this.raceThreeWorldRenderer){
@@ -18372,6 +18565,7 @@ export default class RaceEditor {
       reverseRatio: Math.max(0.1, Number(merged.reverseRatio) || 3.33),
       finalDrive: Math.max(0.5, Number(merged.gearFinalDrive) || 4.11),
       wheelRadiusM: Math.max(0.18, Number(merged.wheelRadiusM) || 0.337),
+      ...authoredStockAxleGeometry(merged),
       ...axleTireGeometry(car?.setup, merged),
       wheelInertiaKgM2: merged.wheelInertiaKgM2,
       unsprungMassKg: merged.unsprungMassKg,
@@ -18511,7 +18705,13 @@ export default class RaceEditor {
 
   updateRaceTireAudio({ slip = 0, surface = 'asphalt', speedMps = 0, slipSpeedMps = 0 } = {}) {
     const session = this.playtestSession;
-    if (!session || !this.game?.audio?.setTireScreech) return;
+    if (!session) return;
+    this.game?.audio?.setRoadMotion?.(session.running===true&&!session.startupFramePending&&!session.carEditorPreview, {
+      speedMps:Math.abs(Number(speedMps)||0),surface:getSurfaceById(surface).id,
+      grounded:session.airborne!==true,cockpit:session.cameraView==='first-person',
+      passing:roadsidePassMix(getManagedRaceScenery(this.selectedRace.scenery||[],session),session,session.roadPassMix ||= {left:0,right:0})
+    });
+    if(!this.game?.audio?.setTireScreech)return;
     const amount = clamp(Number(slip) || 0, 0, 1);
     if (amount <= 0.02 || Math.max(Math.abs(Number(speedMps) || 0),Number(slipSpeedMps)||0) < 0.45) {
       this.game.audio.setTireScreech(false);
@@ -18762,7 +18962,8 @@ export default class RaceEditor {
       && Math.abs(normalizeAngle(preliminaryVelocityYaw - carYaw)) < 0.2
       && Number.isFinite(session?.startYaw)) return Number(session.startYaw);
     const car = this.getRaceSessionCar(session);
-    if (this.raceInput.lookStickActive && this.getCarCameraTrackingMode(car) === 'dynamic-fixed') {
+    const discreteCamera=this.getCarCameraTrackingMode(car)==='dynamic-fixed'&&!isNativeModelWheelCar(car);
+    if (this.raceInput.lookStickActive && discreteCamera) {
       // Manual view selection follows the requested direction immediately.
       // Drift hysteresis must not hold it on the previous side/rear view.
       const requested = getRaceStickLook(this.raceInput.lookIntentX, this.raceInput.lookIntentY);
@@ -18775,7 +18976,7 @@ export default class RaceEditor {
       return normalizeAngle(carYaw + bearing);
     }
     if (this.getCarCameraTrackingMode(car) === 'fixed-rear'
-      || (this.raceInput.lookStickActive && this.getCarCameraTrackingMode(car) !== 'dynamic-fixed')) {
+      || (this.raceInput.lookStickActive && !discreteCamera)) {
       return normalizeAngle(carYaw + lookAngle);
     }
     const velocityYaw = preliminaryVelocityYaw;
@@ -18802,7 +19003,7 @@ export default class RaceEditor {
     );
     const travelYaw = carYaw + normalizeAngle(velocityYaw - carYaw) * velocityBlend;
     const targetYaw = (this.raceInput.lookStickActive ? carYaw : travelYaw) + lookAngle;
-    if (this.getCarCameraTrackingMode(car) === 'dynamic-fixed') {
+    if (discreteCamera) {
       // Follow travel while keeping the whole car projection on an authored
       // 45-degree bearing. Hysteresis avoids flickering between two frames.
       const step = Math.PI / 4;
@@ -19845,8 +20046,8 @@ export default class RaceEditor {
   }
 
   updateRaceAiVehiclePhysics(ai = {}, {
-    car = this.selectedCar,
-    tuning = this.getRaceCarTuning(car),
+    car = ai.runtimeCar || this.selectedCar,
+    tuning = undefined,
     seconds = 0,
     previousSpeedMps = Number(ai.speedMps || 0),
     targetVelocityWorld = null,
@@ -20501,7 +20702,14 @@ export default class RaceEditor {
 
   toggleRaceCameraView() {
     this.raceInput.cameraView = this.raceInput.cameraView === 'first-person' ? 'third-person' : 'first-person';
-    if (this.playtestSession) this.playtestSession.cameraView = this.raceInput.cameraView;
+    if (this.playtestSession) {
+      this.playtestSession.cameraView = this.raceInput.cameraView;
+      if (isNativeModelWheelCar(this.getRaceSessionCar(this.playtestSession))) {
+        delete this.playtestSession.thirdPersonCameraAnchor;
+        delete this.playtestSession.thirdPersonCameraPlacement;
+        delete this.playtestSession.thirdPersonCameraChaseDistanceM;
+      }
+    }
     void this.saveDrivingPreference({});
   }
 
@@ -20528,7 +20736,7 @@ export default class RaceEditor {
     const autoShift = this.raceInput.autoShift;
     this.disposeRacePlaytestSession(session, 'restart');
     this.game?.audio?.setEngineRev?.(false);
-    this.game?.audio?.setTireScreech?.(false);
+    this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
     this.game?.stopSfxById?.(session.activeEngineSoundId || session.engineSoundId || car?.audio?.engineSoundId || '', { key: 'race-engine' });
     this.resetRacePlaytestInputs();
     if (this.raceThreeWorldRenderer) {
@@ -20540,9 +20748,12 @@ export default class RaceEditor {
       runtimeCarOverrides: this.game?.raceTravelSession?{...car,condition:{damage:structuredClone(session.damage),mechanical:structuredClone(session.mechanical)}}:car,
       preserveMechanicalCondition:true,
       debugCarOverride:session.debugCarOverride===true,
+      matchedAiCar:!!session.menuConfiguration?.motorsportId,
+      preparedAiCarIds:session.menuConfiguration?.motorsportId?session.aiRuntime.map(ai=>ai.carId):undefined,
       preparedWorldBake: worldBake,
       raceTravel: Boolean(this.game?.raceTravelSession)
     });
+    if(this.playtestSession&&session.menuConfiguration)this.playtestSession.menuConfiguration=structuredClone(session.menuConfiguration);
     this.raceInput.autoShift = autoShift;
   }
 
@@ -20591,6 +20802,7 @@ export default class RaceEditor {
         {id:'race-perf-stop',label:'Stop',value:this.racePerformanceCapture?.active?'Recording':'',disabled:!this.racePerformanceCapture?.active,onClick:()=>this.stopRacePerformanceCapture()},
         {id:'race-perf-upload',label:'Upload',value:this.racePerformanceCapture?.uploadState||'',disabled:!this.racePerformanceCapture?.frames.length||this.racePerformanceCapture?.active||['queued','uploading','saved'].includes(this.racePerformanceCapture?.uploadState),onClick:()=>this.uploadRacePerformanceCapture()},
         {id:'race-perf-export',label:'Export',value:'JSON',disabled:!this.racePerformanceCapture?.frames.length,onClick:()=>this.exportRacePerformanceCapture()},
+        {id:'race-debug-ai-difficulty',label:'Difficulty',value:this.playtestSession?.debugAiDifficulty||this.playtestSession?.aiRuntime?.[0]?.difficulty||'medium',onClick:()=>changeRaceDebugAiDifficulty(this),onAdjust:d=>changeRaceDebugAiDifficulty(this,d)},
         {id:'race-debug-ai-add',label:'Add AI racer',value:`${this.playtestSession?.aiRuntime?.length || 0} / 29`,disabled:(this.playtestSession?.aiRuntime?.length || 0)>=29,onClick:()=>changeRaceDebugAi(this,1)},
         {id:'race-debug-ai-remove',label:'Remove AI racer',value:'',disabled:!this.playtestSession?.aiRuntime?.length,onClick:()=>changeRaceDebugAi(this,-1)},
         {id:'race-debug-visibility',label:'Visibility (Auto)',value:this.raceInput.pauseMenuMode!=='debug-weather'?'':Number.isFinite(this.getRaceWeatherState().visibilityDistanceM)?Math.round(this.getRaceWeatherState().visibilityDistanceM)+' m':'Clear',onClick:()=>this.adjustRaceDebugEnvironment('visibilityDistanceM'),onAdjust:d=>this.adjustRaceDebugEnvironment('visibilityDistanceM',d)},
@@ -21577,7 +21789,7 @@ export default class RaceEditor {
       const message = `Race render failed during the first frame: ${String(error?.message || error)}`;
       console.error(message, error);
       this.game?.audio?.setEngineRev?.(false);
-      this.game?.audio?.setTireScreech?.(false);
+      this.game?.audio?.setTireScreech?.(false);this.game?.audio?.setRoadMotion?.(false);
       this.game?.stopSfxById?.('', { key: 'race-engine' });
       if (session.carEditorPreview === true) {
         this.resetCarEditorPreviewPlaytest({ preserveEditorUi: true });
@@ -23015,9 +23227,10 @@ export default class RaceEditor {
       this.getAverageDamage(damage.tires)
     );
     const frontTireAngle = renderPose.frontTireAngle;
-    const hasAuthoredTireArt = this.hasCarTireArtOverride(car);
+    const dedicatedModelDrawn=isNativeModelWheelCar(car)&&Boolean(this.lastRaceRenderStats?.threeProceduralCar);
+    const hasAuthoredTireArt = !dedicatedModelDrawn&&this.hasCarTireArtOverride(car);
     const hasCustomShadowArt = Boolean(String(car?.art?.shadowArtRef || '').trim());
-    const hasBrakeArt = Boolean(car.art?.brakeLightArtRef || car.art?.fx?.length);
+    const hasBrakeArt = !dedicatedModelDrawn&&Boolean(car.art?.brakeLightArtRef || car.art?.fx?.length);
     const hasLayerArt = hasAuthoredTireArt || hasCustomShadowArt || hasBrakeArt;
     let proceduralCarShadowDrawn = false;
     if (!hasBodyArt && !hasLayerArt && this.lastRaceRenderStats?.threeProceduralCar) {
@@ -23808,6 +24021,7 @@ export default class RaceEditor {
     const rearZ = this.getRaceCarRearAxleBodyAnchor({}, car).longitudinalOffsetM;
     const cgHeight = Number(car.tuning?.cgHeightM) || 0.56;
     const distance = this.getRaceThirdPersonChaseDistance(car);
+    // Authored wheel anchors use the fixed projection reference, independent of live chase clearance.
     const cameraHeight = RACE_THIRD_PERSON_CAMERA_HEIGHT_ABOVE_BODY_M;
     const pitch = Math.atan2((cgHeight + cameraHeight) * this.getRaceThreeCameraLookDropScale('third-person'), 80);
     const yaw = getCarViewCameraYaw(viewSlot, 0);
@@ -24157,7 +24371,9 @@ export default class RaceEditor {
     car = this.selectedCar,
     { fallbackElevation = 0, fallbackPose = null } = {}
   ) {
-    const canonical = session?.vehicleRenderState;
+    const canonical = raceAiRenderState(session);
+    const renderSession = canonical && canonical !== session?.vehicleRenderState
+      ? {...session, vehicleRenderState:canonical} : session;
     const planarPosition = canonical?.position || fallbackPose || this.getRaceSessionPlanarWorldPosition(session);
     const bodyHeightM = Number.isFinite(Number(canonical?.position?.y))
       ? Number(canonical.position.y)
@@ -24185,7 +24401,7 @@ export default class RaceEditor {
       rollRad: Number(canonical?.rollRad ?? session?.rollRad ?? 0),
       frontTireAngle,
       car,
-      session
+      session: renderSession
     };
   }
 
@@ -24251,24 +24467,27 @@ export default class RaceEditor {
   } = {}) {
     if (!session || cameraView !== 'third-person') return null;
     const renderPose = this.getRacePlayerRenderPose(session, car, { fallbackElevation });
-    car = resolveCarAngleLayers(car, getCarViewSlot(renderPose.yaw, cameraYaw));
+    if(!isNativeModelWheelCar(car)&&!hasRaceModelLampMounts(car))car = resolveCarAngleLayers(car, getCarViewSlot(renderPose.yaw, cameraYaw));
     const artChoice = this.getRaceCarProjectedArtRef(car, renderPose.yaw, cameraYaw, {
       reversing: Number(session.speedMps || 0) < -0.3 || Number(this.raceInput?.gear || 0) < 0,
       steering: Number(this.raceInput?.steeringWheel || 0)
     });
     const hasBodyArt = Boolean(String(artChoice?.artRef || '').trim());
-    const hasTireArt = this.hasCarTireArtOverride(car);
+    const modelWheels=isDedicatedModelWheelCar(car);
+    const hasTireArt = !modelWheels && this.hasCarTireArtOverride(car);
     const hasCustomShadowArt = Boolean(String(car?.art?.shadowArtRef || '').trim());
     const visibility = this.getCarArtLayerVisibility(car);
     const damage = this.getRaceSessionDamage();
+    const lampState = carFxDrivingState(session, this.raceInput);
     return {
       ...renderPose,
       car,
-      braking: Boolean(this.isCarExteriorArtPreview(session) || this.raceInput.brake || this.raceInput.handbrake
-        || this.playtestSession?.authoritativeHandbrakeActive),
+      braking: this.isCarExteriorArtPreview(session) || lampState.braking,
+      reversing: lampState.reverse,
+      headlights: this.raceHeadlightsEnabled(),
       drawBody: !hasBodyArt && visibility.body,
       drawWheels: !hasTireArt && visibility.tires,
-      drawLights: !hasBodyArt && !car.art?.brakeLightArtRef && !car.art?.fx?.length && visibility.brakes,
+      drawLights: (modelWheels||hasRaceModelLampMounts(car)) ? visibility.brakes : !hasBodyArt && !car.art?.brakeLightArtRef && !car.art?.fx?.length && visibility.brakes,
       drawShadow: !hasCustomShadowArt && visibility.shadow,
       color: this.getDamageColor(Math.max(
         this.getMaxDamage(damage.panels),
@@ -24606,9 +24825,12 @@ export default class RaceEditor {
     drawRaceDrivingAssistHud(this, ctx, bounds, layout);
     if(this.selectedRace?.campaign?.scoring==='drift'){
       ctx.save();const x=bounds.x+8,y=bounds.y+bounds.h*.46;
-      ctx.fillStyle='rgba(0,0,0,.8)';ctx.fillRect(x,y,146,28);
+      ctx.fillStyle='rgba(0,0,0,.8)';ctx.fillRect(x,y,146,this.selectedRace?.driftChallenge?48:28);
       ctx.fillStyle=session.driftScore?.sliding?'#efc36b':'#fff';ctx.font=`600 13px ${UI_SUITE.font.family}`;
-      ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(`Drift ${Math.floor(session.driftScore?.points||0)}`,x+6,y+14);ctx.restore();
+      ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(`Drift ${Math.floor(session.driftScore?.points||0)}`,x+6,y+14);
+      const targets=this.selectedRace?.driftChallenge?.targets;
+      if(targets){const next=targets.findIndex(t=>t>(session.driftScore?.points||0));ctx.fillStyle='#fff';ctx.fillText(next<0?'Gold earned':`${['Bronze','Silver','Gold'][next]} ${targets[next]}`,x+6,y+34);}
+      ctx.restore();
     }
 
     if(this.raceInput.drivingIntentVisible && session.drivingIntent){
@@ -33003,17 +33225,24 @@ export default class RaceEditor {
       ctx.fillStyle = groundFillOverride || skybox.ground;
       ctx.fillRect(coverage.x, groundStart, coverage.w, Math.max(1, coverage.y + coverage.h - groundStart));
     }
-    const haze = ctx.createLinearGradient?.(0, horizon - hazeHeight * 0.62, 0, horizon + hazeHeight) || null;
-    if (haze) {
-      haze.addColorStop(0, 'rgba(217,230,210,0)');
-      haze.addColorStop(0.32, 'rgba(245,248,239,0.34)');
-      haze.addColorStop(0.58, 'rgba(217,230,210,0.18)');
-      haze.addColorStop(1, 'rgba(217,230,210,0)');
-      ctx.fillStyle = haze;
-      ctx.fillRect(coverage.x, horizon - hazeHeight * 0.62, coverage.w, hazeHeight * 1.62);
-    } else {
-      ctx.fillStyle = 'rgba(245,248,239,0.28)';
-      ctx.fillRect(coverage.x, horizon - 4, coverage.w, 10);
+    // Only verified Moon simulator routes are airless. A reused sky preset
+    // or a missing body marker alone keeps the existing atmosphere.
+    const source = this.selectedRace?.source;
+    const airlessMoon = this.selectedRace?.skybox === 'lunar-simulator'
+      && source?.planetarySimulator === true && source.origin?.body === 'Moon';
+    if (!airlessMoon) {
+      const haze = ctx.createLinearGradient?.(0, horizon - hazeHeight * 0.62, 0, horizon + hazeHeight) || null;
+      if (haze) {
+        haze.addColorStop(0, 'rgba(217,230,210,0)');
+        haze.addColorStop(0.32, 'rgba(245,248,239,0.34)');
+        haze.addColorStop(0.58, 'rgba(217,230,210,0.18)');
+        haze.addColorStop(1, 'rgba(217,230,210,0)');
+        ctx.fillStyle = haze;
+        ctx.fillRect(coverage.x, horizon - hazeHeight * 0.62, coverage.w, hazeHeight * 1.62);
+      } else {
+        ctx.fillStyle = 'rgba(245,248,239,0.28)';
+        ctx.fillRect(coverage.x, horizon - 4, coverage.w, 10);
+      }
     }
     this.drawRaceSkyVisibility(ctx, coverage);
     if(this.getRaceLightningFlash()>0)this.drawRaceWeatherLightning(ctx,{...bounds,h:Math.max(0,horizon-bounds.y)},this.playtestSession?.weatherFxState,{cameraYaw});
@@ -36567,10 +36796,11 @@ export default class RaceEditor {
     return count > 0;
   }
 
-  getRaceThreeWorldRendererForViewport(bounds, renderScale = this.getRaceWebGLTrackRenderResolution(this.getRaceGroundScanlineSettings())) {
-    const width = clamp(Math.round(Number(bounds?.w || 1) * renderScale), 1, 32768);
-    const height = clamp(Math.round(Number(bounds?.h || 1) * renderScale), 1, 18432);
-    return this.getRaceThreeWorldRenderer(width, height);
+  getRaceThreeWorldRendererForViewport(bounds, renderScale = this.getRaceWebGLTrackRenderResolution(this.getRaceGroundScanlineSettings()), context = null) {
+    const {width, height, density} = race3dTargetSize(bounds, renderScale, context, this.race3dPresentation);
+    const renderer = this.getRaceThreeWorldRenderer(width, height);
+    if (renderer) renderer.presentationDensity = density;
+    return renderer;
   }
 
   getRaceThreeWorldRenderer(width = 1, height = 1) {
@@ -36694,7 +36924,7 @@ export default class RaceEditor {
     if (this.playtestSession && cameraView !== 'first-person') {
       const car = this.getRaceSessionCar(this.playtestSession);
       const pose = this.getRacePlayerRenderPose(this.playtestSession, car);
-      submit(this.playtestSession, car, pose, ctx => this.drawRaceThirdPersonCar(ctx, bounds));
+      if(!(isNativeModelWheelCar(car)&&stats?.threeProceduralCar))submit(this.playtestSession, car, pose, ctx => this.drawRaceThirdPersonCar(ctx, bounds));
     }
     batch.end();
     // Car painters publish diagnostics by replacing lastRaceRenderStats. Merge
@@ -36713,7 +36943,7 @@ export default class RaceEditor {
     this.lastRaceRenderStats.threeCarSpriteMs = Math.max(0,this.getNowMs()-spriteStartMs);
   }
 
-  syncRaceThreeAiModels(renderer, cameraYaw = 0) {
+  syncRaceThreeAiModels(renderer, cameraYaw = 0, automotiveConditions = null) {
     const holders = renderer.aiModelCars ||= new Map();
     const active = new Set();
     for (const ai of this.playtestSession?.aiRuntime || []) {
@@ -36730,19 +36960,32 @@ export default class RaceEditor {
         carYaw: Number(ai.carYaw ?? road.yaw ?? 0),
         tireSlip: { ...ai.tireSlip, frontTireAngle: Number(ai.tireSlip?.frontTireAngle || 0) } };
       const pose = this.getRacePlayerRenderPose(session, car, { fallbackElevation: road.elevation });
-      car = resolveCarAngleLayers(car, getCarViewSlot(pose.yaw, cameraYaw));
+      if(!isNativeModelWheelCar(car)&&!hasRaceModelLampMounts(car))car = resolveCarAngleLayers(car, getCarViewSlot(pose.yaw, cameraYaw));
       const hasBodyArt = Boolean(this.getRaceCarProjectedArtRef(car, pose.yaw, cameraYaw).artRef);
       let holder = holders.get(ai);
       if (!holder) { holder = { scene: renderer.scene, solidMaterialCache: renderer.solidMaterialCache ||= new Map() }; holders.set(ai, holder); }
-      this.addRaceThreeProceduralCar(holder, { ...pose, car, session,
-        drawBody: !hasBodyArt, drawWheels: !this.hasCarTireArtOverride(car),
-        drawLights: !hasBodyArt && !car.art?.brakeLightArtRef && !car.art?.fx?.length,
+      const modelWheels=isDedicatedModelWheelCar(car);
+      this.addRaceThreeProceduralCar(holder, { ...pose, car, session:pose.session, braking:Boolean(ai.braking||ai.brake),
+        automotiveConditions, automotiveRenderer:renderer.threeRenderer,
+        drawBody: !hasBodyArt, drawWheels: modelWheels || !this.hasCarTireArtOverride(car),
+        drawLights: modelWheels || hasRaceModelLampMounts(car) || !hasBodyArt && !car.art?.brakeLightArtRef && !car.art?.fx?.length,
         drawShadow: !car.art?.shadowArtRef,
         color: ai.difficulty === 'expert' ? '#ff5f57' : ai.difficulty === 'hard' ? '#f2d45c' : ai.difficulty === 'medium' ? '#7ed957' : '#58d6ff' });
     }
     for (const [ai, holder] of holders) if (!active.has(ai)) {
       this.clearRaceThreeDynamicCar(holder); holders.delete(ai);
     }
+  }
+
+  syncRaceThreePlayerModel(renderer,dynamicCar,cameraView,stats,automotiveConditions = null) {
+    if (dynamicCar) {
+      this.addRaceThreeProceduralCar(renderer, { ...dynamicCar, stats, automotiveConditions });
+      if(renderer.dynamicCarGroup)renderer.dynamicCarGroup.visible=true;
+    } else if(cameraView==='first-person'&&renderer.dynamicCarGroup?.userData?.nativeModelWheels
+      &&isNativeModelWheelCar(this.getRaceSessionCar(this.playtestSession))){
+      // Keep the exterior buffered across camera changes, never inside view.
+      renderer.dynamicCarGroup.visible=false;
+    } else this.clearRaceThreeDynamicCar(renderer);
   }
 
   clearRaceThreeDynamicCar(renderer = null) {
@@ -36796,6 +37039,7 @@ export default class RaceEditor {
       const disposedMaterials = new Set();
       group.traverse?.((entry)=>entry.userData?.modelInstance?.dispose());
       group.traverse?.((entry) => {
+        if (entry.userData?.borrowedModelResources) { entry.dispose?.(); return; }
         entry.geometry?.dispose?.();
         if (entry.material && !entry.material.__raceSharedMaterial
           && !sharedMaterials.has(entry.material) && !disposedMaterials.has(entry.material)) {
@@ -37022,6 +37266,20 @@ export default class RaceEditor {
     if (!Number.isFinite(currentNdcY)) return;
     const delta = clamp(desiredNdcY - currentNdcY, -1.5, 1.5);
     threeCamera.projectionMatrix.elements[9] -= delta;
+    const session = this.playtestSession;
+    const car = session && this.getRaceSessionCar(session);
+    if (car?.art?.bodyModel?.ref && session.cameraView !== 'first-person') {
+      // A low chase eye needs its own composition. Shift the projection rather
+      // than raising the camera or moving the physical car to fit the viewport.
+      const pose = this.getRacePlayerRenderPose(session, car);
+      const body = new THREE.Vector3(pose.x, pose.elevation * RACE_THREE_ELEVATION_M, pose.z);
+      const depth = body.clone().applyMatrix4(threeCamera.matrixWorldInverse);
+      body.project(threeCamera);
+      if (depth.z < -threeCamera.near && Number.isFinite(body.y)) {
+        const bodyTargetNdcY = 1 - .72 * 2;
+        threeCamera.projectionMatrix.elements[9] -= clamp(bodyTargetNdcY - body.y, -.6, .6);
+      }
+    }
     threeCamera.projectionMatrixInverse?.copy?.(threeCamera.projectionMatrix)?.invert?.();
   }
 
@@ -37297,6 +37555,7 @@ export default class RaceEditor {
       map: texture,
       side: THREE.DoubleSide,
       transparent: true,
+      forceSinglePass: true, // Flat sprites have no separate back/front volume.
       alphaTest: 0.05,
       depthTest: true,
       depthWrite: true,
@@ -37314,10 +37573,12 @@ export default class RaceEditor {
   }
 
   getRaceDoodadVisualLayout(sprite = {}, doodad = this.getRaceDoodadForScenery(sprite), canvas = null) {
-    const source = { ...doodad, widthM: doodad.widthM || sprite.widthM, heightM: doodad.heightM || sprite.heightM,
+    const fallbackArtRef = getRaceDoodadModelFallbackArtRef(sprite, doodad);
+    const source = { ...doodad, model: fallbackArtRef ? null : doodad.model,
+      widthM: doodad.widthM || sprite.widthM, heightM: doodad.heightM || sprite.heightM,
       groundOffsetM: doodad.groundOffsetM ?? sprite.groundOffsetM };
-    const art = canvas || (!doodad.isFence && !sprite.fenceId && !doodad.model?.ref
-      ? this.getRaceArtSpriteCanvas(doodad.artRef || sprite.artRef) : null);
+    const art = canvas || (!doodad.isFence && !sprite.fenceId && !source.model?.ref
+      ? this.getRaceArtSpriteCanvas(fallbackArtRef || doodad.artRef || sprite.artRef) : null);
     return doodadVisualLayout(source, art, { fence: Boolean(sprite.fenceId) });
   }
 
@@ -37568,12 +37829,16 @@ export default class RaceEditor {
       const quad = this.getRaceDoodadWorldQuad(sprite);
       if (!quad) return;
       const { doodad } = quad;
-      if(doodad.model?.ref){
-        const model=modelAssets.get(doodad.model.ref);if(!model)return;
+      const fallbackArtRef = getRaceDoodadModelFallbackArtRef(sprite, doodad);
+      const model = doodad.model?.ref ? modelAssets.get(doodad.model.ref) : null;
+      if (model) {
         ensureModelSceneLighting(resourceRenderer.scene);
         const instance=new ModelAssetInstance();instance.setModel(model,doodad.model);
         const placement=new THREE.Group();placement.userData.modelInstance=instance;placement.userData.spriteId=sprite.id;
         placement.add(instance.object);
+        // Authored static props need their initial pose only; avoid per-frame
+        // reskinning and normal/bounds rebuilds for these dual-visual models.
+        placement.userData.staticDoodadModel = Boolean(fallbackArtRef && !instance.binding.clip);
         const ground={...quad.points[2],x:Number(sprite.x)||0,z:Number(sprite.z)||0};
         placement.position.set(Number(sprite.x)||0,this.getRaceThreeElevationM(ground),Number(sprite.z)||0);
         placement.rotation.y=Number(sprite.yaw)||0;
@@ -37581,12 +37846,17 @@ export default class RaceEditor {
         const box=new THREE.Box3();for(const vertex of model.vertices)box.expandByPoint(new THREE.Vector3(...vertex.position));
         if(!box.isEmpty()){
           const size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());
-          const sx=doodad.widthM/Math.max(0.001,size.x),sy=doodad.heightM/Math.max(0.001,size.y);
+          const widthM = fallbackArtRef ? quad.widthM : doodad.widthM;
+          const heightM = fallbackArtRef ? quad.heightM : doodad.heightM;
+          const sx=widthM/Math.max(0.001,size.x),sy=heightM/Math.max(0.001,size.y);
           instance.object.scale.set(sx,sy,sx);instance.object.position.set(-center.x*sx,-box.min.y*sy,-center.z*sx);
         }
         instance.time=Number(this.playtestSession?.elapsedMs||0)/1000*instance.binding.speed;instance.update(0);
         group.add(placement);this.addRaceThreeDoodadHitboxMeshes(resourceRenderer,group,sprite,{stats});return;
       }
+      // On a cold or failed native load, retain the original sprite. The model
+      // cache revision in the scene key rebuilds this batch when it becomes ready.
+      if (doodad.model?.ref && !fallbackArtRef) return;
       const material = this.getRaceThreeDoodadMaterial(resourceRenderer, doodad.artRef || sprite.artRef);
       if (!material) return;
       const vertices = [quad.points[0], quad.points[1], quad.points[2], quad.points[0], quad.points[2], quad.points[3]];
@@ -37594,7 +37864,11 @@ export default class RaceEditor {
       if (sprite.fenceId || staticScenery) {
         const key = `${sprite.fenceId || 'scenery'}:${doodad.artRef || sprite.artRef}:${Math.floor(sprite.x / 128)},${Math.floor(sprite.z / 128)}`;
         let batch = fenceBatches.get(key);
-        if (!batch) { batch = { material, artRef: doodad.artRef || sprite.artRef || '', positions: [], uvs: [] }; fenceBatches.set(key, batch); }
+        if (!batch) { batch = { material, artRef: doodad.artRef || sprite.artRef || '', positions: [], uvs: [], softVegetation: [] }; fenceBatches.set(key, batch); }
+        if (doodad.defaultRule?.behavior === 'flatten' && !doodad.defaultRule.speedDrainPercent
+          && !Object.values(doodad.defaultRule.damage || {}).some(Number) && !doodad.rules?.length) {
+          batch.softVegetation.push({id:sprite.id, start:batch.positions.length, count:vertices.length * 3});
+        }
         for (const point of vertices) {
           batch.positions.push(Number(point.x || 0), this.getRaceThreeElevationM(point), Number(point.z || 0));
           batch.uvs.push(Number(point.u || 0), Number(point.v || 0));
@@ -37633,22 +37907,25 @@ export default class RaceEditor {
       geometry.setAttribute('uv', new THREE.Float32BufferAttribute(batch.uvs, 2));
       geometry.computeVertexNormals(); geometry.computeBoundingSphere();
       const mesh = new THREE.Mesh(geometry, batch.material);
-      mesh.name = `raceFence:${key}`; mesh.renderOrder = 7; mesh.userData.sceneryArtRef = batch.artRef; group.add(mesh);
+      mesh.name = `raceFence:${key}`; mesh.renderOrder = 7; mesh.userData.sceneryArtRef = batch.artRef;
+      mesh.userData.softVegetation = batch.softVegetation; group.add(mesh);
     }
     if (!group.children.length) return false;
+    batchStaticDoodadModels(group);
     renderer.scene.add(group);
     renderer.dynamicDoodadGroup = group;
     renderer.dynamicDoodadAnimations = [];
     group.traverse(entry => {
-      if (entry.userData?.mixTape || entry.userData?.modelInstance) renderer.dynamicDoodadAnimations.push(entry);
+      if (isRaceSceneryAnimated(entry)) renderer.dynamicDoodadAnimations.push(entry);
     });
+    const meshStats = getRaceSceneryMeshStats(group);
+    renderer.dynamicDoodadDrawCalls = meshStats.drawCalls;
+    renderer.dynamicDoodadPolygons = meshStats.polygons;
     renderer.dynamicDoodadSceneKey = sceneKey;
     renderer.dynamicDoodadCount = sprites.length;
-    renderer.dynamicDoodadDrawCalls = group.children.length;
-    renderer.dynamicDoodadPolygons = group.children.reduce((sum, mesh) => sum + Math.floor((mesh.geometry?.getAttribute('position')?.count || 0) / 3), 0);
     if (stats) {
       stats.threeDoodads = sprites.length;
-      stats.drawCalls = (Number(stats.drawCalls) || 0) + group.children.length;
+      stats.drawCalls = (Number(stats.drawCalls) || 0) + renderer.dynamicDoodadDrawCalls;
       stats.polygons = (Number(stats.polygons) || 0) + renderer.dynamicDoodadPolygons;
       stats.dynamicDoodadRebuilds = (Number(stats.dynamicDoodadRebuilds) || 0) + 1;
     }
@@ -37922,6 +38199,10 @@ export default class RaceEditor {
     rollRad = 0,
     frontTireAngle = 0,
     braking = false,
+    reversing = null,
+    headlights = null,
+    automotiveConditions = null,
+    automotiveRenderer = renderer?.threeRenderer,
     car = this.selectedCar,
     session = this.playtestSession,
     color = '#58d6ff',
@@ -37942,6 +38223,11 @@ export default class RaceEditor {
     drawBody = drawBody && visibility.body;
     drawWheels = drawWheels && visibility.tires;
     drawLights = drawLights && visibility.brakes;
+    const dedicatedModelWheels=isDedicatedModelWheelCar(car);
+    const nativeModelWheels=isNativeModelWheelCar(car);
+    const hasMountedLamps=hasRaceModelLampMounts(car);
+    const mountedLights=hasMountedLamps&&drawLights;
+    if(hasMountedLamps)drawLights=false;
     drawShadow = drawShadow && visibility.shadow;
     const dimensions = this.getRaceCarDimensions(car);
     const threePitch = this.getRaceThreeVehiclePitch(pitchRad, session);
@@ -37958,6 +38244,8 @@ export default class RaceEditor {
       drawWheels ? 1 : 0,
       drawLights ? 1 : 0,
       drawShadow ? 1 : 0,
+      dedicatedModelWheels ? 1 : 0,
+      hasMountedLamps ? 1 : 0,
       Math.round(Number(dimensions.widthM || 1.8) * 1000),
       Math.round(Number(dimensions.lengthM || 4.6) * 1000),
       Math.round(bodyHeightM * 1000),
@@ -37997,6 +38285,19 @@ export default class RaceEditor {
     });
     const frontYaw = Number(yaw || 0) - Number(frontTireAngle || 0);
     const wheelVisualRoll = Number(rollRad || 0);
+    const syncModelWheel=(mesh,wheelId)=>{
+      const wheel=wheelCenters[wheelId]||{};
+      setModelWheelPose(mesh,{x:wheel.x??x,y:Number(wheel.elevation??elevation)*RACE_THREE_ELEVATION_M,z:wheel.z??z},
+        {yaw:wheelId==='fl'||wheelId==='fr'?frontYaw:yaw,pitch:threePitch,roll:wheelVisualRoll},
+        session?.vehicleRenderState?.wheelPoses?.[wheelId]);
+    };
+    const syncModelParts=group=>{
+      updateRaceModelParts(group,car,session,{automotiveConditions,automotiveRenderer});
+      if(hasMountedLamps)syncRaceModelLamps(group.userData.parts.body,session,{
+        enabled:mountedLights,braking,reversing:reversing??carFxDrivingState(session).reverse,
+        headlights,defaultHeadlights:raceStartsWithHeadlights(this.selectedRace)
+      });
+    };
     const updateExisting = renderer.dynamicCarGroup
       && renderer.dynamicCarGroup.userData?.structureKey === structureKey
       && renderer.dynamicCarGroup.userData?.parts;
@@ -38007,11 +38308,13 @@ export default class RaceEditor {
       if (drawWheels && parts.wheels) {
         RACE_WHEEL_IDS.forEach((wheelId) => {
           if (!this.isCarWheelVisible(visibility, wheelId)) return;
+          const canonicalWheel=hasAuthoritativeModelWheelPose(session?.vehicleRenderState?.wheelPoses?.[wheelId]);
+          if((dedicatedModelWheels||nativeModelWheels&&canonicalWheel)&&parts.wheels[wheelId]){syncModelWheel(parts.wheels[wheelId],wheelId);return;}
           const wheel = wheelCenters[wheelId] || {};
           setBoxPose(parts.wheels[wheelId], {
-            x: Number(wheel.x || x),
+            x: Number(wheel.x ?? x),
             y: Number(wheel.elevation ?? elevation) * RACE_THREE_ELEVATION_M,
-            z: Number(wheel.z || z)
+            z: Number(wheel.z ?? z)
           }, {
             yaw: wheelId === 'fl' || wheelId === 'fr' ? frontYaw : yaw,
             pitch: threePitch,
@@ -38045,7 +38348,7 @@ export default class RaceEditor {
           session
         });
       }
-      updateRaceModelParts(group,car,session);
+      syncModelParts(group);
       if (stats) {
         stats.threeProceduralCar = 1;
         stats.threeDynamicCarMeshes = group.children.length;
@@ -38059,6 +38362,7 @@ export default class RaceEditor {
     const group = new THREE.Group();
     group.name = 'raceDynamicProceduralCar';
     group.userData.structureKey = structureKey;
+    group.userData.nativeModelWheels=nativeModelWheels;
     group.userData.parts = {
       body: null,
       wheels: {},
@@ -38095,20 +38399,29 @@ export default class RaceEditor {
     if (drawWheels) {
       RACE_WHEEL_IDS.forEach((wheelId) => {
         if (!this.isCarWheelVisible(visibility, wheelId)) return;
+        if(dedicatedModelWheels){
+          const radius=Number(session?.vehicleRenderState?.wheels?.[wheelId]?.radiusM)||tireRadiusM;
+          const width=Number(car.tuning?.wheelWidthByWheelM?.[wheelId])||tireWidthM;
+          const wheel=createModelWheel(radius,width);
+          wheel.name='raceWheel-'+wheelId;group.add(wheel);group.userData.parts.wheels[wheelId]=wheel;
+          syncModelWheel(wheel,wheelId);return;
+        }
         const wheel = wheelCenters[wheelId] || {};
         group.userData.parts.wheels[wheelId] = makeBox(`raceWheel-${wheelId}`, {
           x: tireWidthM,
           y: tireRadiusM * 1.7,
           z: tireLengthM
         }, wheelMaterial, {
-          x: Number(wheel.x || x),
+          x: Number(wheel.x ?? x),
           y: Number(wheel.elevation ?? elevation) * RACE_THREE_ELEVATION_M,
-          z: Number(wheel.z || z)
+          z: Number(wheel.z ?? z)
         }, {
           yaw: wheelId === 'fl' || wheelId === 'fr' ? frontYaw : yaw,
           pitch: threePitch,
           roll: wheelVisualRoll
         });
+        if(nativeModelWheels&&hasAuthoritativeModelWheelPose(session?.vehicleRenderState?.wheelPoses?.[wheelId]))
+          syncModelWheel(group.userData.parts.wheels[wheelId],wheelId);
       });
     }
     if (drawLights) {
@@ -38143,7 +38456,7 @@ export default class RaceEditor {
       group.add(shadow);
       group.userData.parts.shadow = shadow;
     }
-    updateRaceModelParts(group,car,session);
+    syncModelParts(group);
     renderer.scene.add(group);
     renderer.dynamicCarGroup = group;
     if (stats) {
@@ -38552,7 +38865,7 @@ export default class RaceEditor {
       || typeof ctx.drawImage !== 'function') return false;
     const width = Math.max(1, Math.round(Number(bounds.w || 1)));
     const height = Math.max(1, Math.round(Number(bounds.h || 1)));
-    const renderer = this.getRaceThreeWorldRendererForViewport(bounds, renderScale);
+    const renderer = this.getRaceThreeWorldRendererForViewport(bounds, renderScale, ctx);
     if (!renderer?.threeRenderer) return false;
     if (stats) {
       stats.webglRenderWidth = Number(renderer.canvas.width);
@@ -38560,6 +38873,8 @@ export default class RaceEditor {
       stats.effectiveRenderScaleX = stats.webglRenderWidth / width;
       stats.effectiveRenderScaleY = stats.webglRenderHeight / height;
       stats.webglTargetScale = Math.min(stats.effectiveRenderScaleX, stats.effectiveRenderScaleY);
+      stats.threePresentationDensity = renderer.presentationDensity;
+      stats.threeCompositeFilter = this.race3dPresentation?.linearFilter ? 'linear' : 'nearest';
     }
     const textureUploadStart = Number(renderer.textureUploads || 0);
     const staticKey = this.getRaceThreeStaticWorldKey(cells, {
@@ -38650,9 +38965,18 @@ export default class RaceEditor {
     if(camera.firstPersonFrame)applyFirstPersonCameraFrame(renderer.camera,camera.firstPersonFrame);
     renderer.camera.updateProjectionMatrix();
     this.alignRaceThreeCameraHorizon(renderer.camera, camera, cameraYaw, bounds);
-    if (dynamicCar) this.addRaceThreeProceduralCar(renderer, { ...dynamicCar, stats });
-    else this.clearRaceThreeDynamicCar(renderer);
-    this.syncRaceThreeAiModels(renderer, cameraYaw);
+    const automotiveConditions={
+      night:Boolean(this.playtestSession&&this.selectedRace?.timeOfDay==='night'),
+      weather:weatherState.id
+    };
+    if(this.raceUseAuthoredSkyProbe&&weatherState.id==='clear'&&!automotiveConditions.night){
+      const sky=this.getRaceSkyboxSettings();
+      if(sky.artRef)automotiveConditions.skyProbe=raceAutomotiveSkyProbe(
+        this.getRaceSkyboxRenderCanvas(sky.artRef),sky,bounds,{ground:this.getSelectedRaceSkybox().ground}
+      );
+    }
+    this.syncRaceThreePlayerModel(renderer,dynamicCar,cameraView,stats,automotiveConditions);
+    this.syncRaceThreeAiModels(renderer,cameraYaw,automotiveConditions);
     this.addRaceThreeDoodads(renderer, { stats });
     this.syncRaceThreeDecals(renderer, { stats });
     this.syncRaceTileModels(renderer,camera);
@@ -38676,21 +39000,21 @@ export default class RaceEditor {
     this.syncRaceThreeCarSprites(renderer, bounds, { camera, cameraYaw, cameraView, stats });
     const lightCar=this.getRaceSessionCar(this.playtestSession)||this.selectedCar;
     const lightPose=this.playtestSession?this.getRacePlayerRenderPose(this.playtestSession,lightCar):null;
+    const mountedLamps=lightPose?getRaceModelLampWorldFrames(lightCar,{x:lightPose.x,y:lightPose.elevation*RACE_THREE_ELEVATION_M,
+      z:lightPose.z,yaw:lightPose.yaw,pitch:this.getRaceThreeVehiclePitch(lightPose.pitchRad,this.playtestSession),
+      roll:lightPose.rollRad}):null;
     const lightDimensions=this.getRaceCarDimensions(lightCar);
     const brightness=this.playtestSession?this.getRaceLightingBrightness():1;
     const rearLights=carFxDrivingState(this.playtestSession,this.raceInput);
-    updateRaceLighting(renderer,{brightness,night:Boolean(this.playtestSession&&this.selectedRace?.timeOfDay==='night'),braking:rearLights.braking,reverse:rearLights.reverse,lampPower:this.playtestSession?.mechanical?.effects?.lights??1,highBeams:this.playtestSession?.mechanical?.highBeams===true,auxIntensity:this.playtestSession?.mechanical?.auxLights?(this.playtestSession?.mechanical?.effects?.lights??1):0,visibilityDistanceM:weatherState.visibilityDistanceM,cameraPosition:{x:Number(camera.x||0),y:cameraY,z:Number(camera.z||0)},headlightIntensity:this.raceHeadlightsEnabled()?(this.playtestSession?.mechanical?.effects?.lights??1):0,pose:lightPose?{...lightPose,y:lightPose.elevation*RACE_THREE_ELEVATION_M}:null,dimensions:{width:lightDimensions.widthM,length:lightDimensions.lengthM}});
+    updateRaceLighting(renderer,{mountedLamps,brightness,night:automotiveConditions.night,braking:rearLights.braking,reverse:rearLights.reverse,lampPower:this.playtestSession?.mechanical?.effects?.lights??1,highBeams:this.playtestSession?.mechanical?.highBeams===true,auxIntensity:this.playtestSession?.mechanical?.auxLights?(this.playtestSession?.mechanical?.effects?.lights??1):0,visibilityDistanceM:weatherState.visibilityDistanceM,cameraPosition:{x:Number(camera.x||0),y:cameraY,z:Number(camera.z||0)},headlightIntensity:this.raceHeadlightsEnabled()?(this.playtestSession?.mechanical?.effects?.lights??1):0,pose:lightPose?{...lightPose,y:lightPose.elevation*RACE_THREE_ELEVATION_M}:null,dimensions:{width:lightDimensions.widthM,length:lightDimensions.lengthM}});
     renderer.threeRenderer.clear(true, true, true);
     syncRaceThreeDrivingLine(this, renderer);
     const renderStartMs = this.getNowMs();
     renderer.threeRenderer.render(renderer.scene, renderer.camera);
     const compositeStartMs = this.getNowMs();
-    const previousSmoothing = ctx.imageSmoothingEnabled;
-    ctx.imageSmoothingEnabled = false;
     // Sky brightness is applied by the background pass; world light affects only geometry.
-    ctx.drawImage(renderer.canvas, Number(bounds.x || 0), Number(bounds.y || 0), Number(bounds.w || 1), Number(bounds.h || 1));
+    compositeRace3dWorld(ctx, renderer.canvas, bounds, this.race3dPresentation);
     this.raceHeadlightsRendered=true;
-    ctx.imageSmoothingEnabled = previousSmoothing;
     if (stats) {
       if (compositeStartMs > 0) stats.compositeMs = Math.max(0, this.getNowMs() - compositeStartMs);
       stats.threeTerrainRenderer = 1;
@@ -39937,7 +40261,8 @@ export default class RaceEditor {
     const routeRuntimeType = session?.routeRuntimeType || this.getSelectedRaceRuntimeType();
     const visualTravel = this.getRaceVisualTravelDistance(session);
     const routeCamera = this.getRaceWorldPoseAtDistance(visualTravel, { runtimeType: routeRuntimeType });
-    const introShot = raceIntroShot(session);
+    const modelIntroFraming=isNativeModelWheelCar(car);
+    const introShot = raceIntroShot(session,{modelFraming:modelIntroFraming});
     const cameraView = introShot ? 'third-person' : session?.cameraView || this.raceInput.cameraView;
     const carYaw = Number.isFinite(session?.carYaw) ? session.carYaw : routeCamera.yaw;
     const desiredChaseDistance = cameraView === 'third-person'
@@ -40020,7 +40345,7 @@ export default class RaceEditor {
       cameraView
     });
     const camera = safeCameraPlacement.camera;
-    camera.horizonRatio = horizonRatio;
+    camera.horizonRatio = horizonRatio + (cameraView === 'third-person' && !introShot && !safeCameraPlacement.tunnelConstrained ? roadCameraCue(session) : 0);
     const chaseDistance = safeCameraPlacement.chaseDistance;
     let cameraYaw = liveCameraYaw;
     const liveNearPlane = Math.max(1.2, 1.35 + pitchProfile.nearPlaneBoost * 1.2 + Math.max(0, hillPitch) * 0.7);
@@ -40047,7 +40372,7 @@ export default class RaceEditor {
         lookAheadDistanceM: 0, routeCamera, cameraView: 'third-person', car
       });
       Object.assign(camera, placement.camera);
-      camera.cinematicTarget = { x: carWorldX, y: localCarGroundElevation * RACE_THREE_ELEVATION_M + .8, z: carWorldZ };
+      camera.cinematicTarget = { x: carWorldX, y: localCarGroundElevation * RACE_THREE_ELEVATION_M + (modelIntroFraming?1.05:.8), z: carWorldZ };
       camera.cinematicFov = introShot.fov;
       cameraYaw = Math.atan2(carWorldX - camera.x, carWorldZ - camera.z);
     }
@@ -40094,7 +40419,7 @@ export default class RaceEditor {
     const cinematicTarget=camera.cinematicTarget;
     const cinematicHorizon=cinematicTarget ? .5 + (cinematicTarget.y-camera.elevation*RACE_THREE_ELEVATION_M)
       / Math.max(.1,Math.hypot(cinematicTarget.x-camera.x,cinematicTarget.z-camera.z))
-      / (2*Math.tan(camera.cinematicFov*Math.PI/360)) : horizonRatio;
+      / (2*Math.tan(camera.cinematicFov*Math.PI/360)) : camera.horizonRatio;
     const horizon = bounds.y + bounds.h * cinematicHorizon;
     const terrainTop = this.getRaceProjectedTerrainTop(bounds, camera);
     const roadBottom = bounds.y + bounds.h;
@@ -40133,7 +40458,7 @@ export default class RaceEditor {
       && renderDebug.threeEnabled === true
       && (staticWorldBake?.terrainCells?.length || staticWorldBake?.packedTerrain?.positions?.length)
       && ['road-origin-indexed', 'corridor-first', 'constrained-road-first', 'route-network'].includes(String(staticWorldBake.terrainTopology || 'corridor-first'))
-      && Boolean(this.getRaceThreeWorldRendererForViewport(bounds)?.threeRenderer);
+      && Boolean(this.getRaceThreeWorldRendererForViewport(bounds, undefined, ctx)?.threeRenderer);
     const stableRoadSections = canUseStaticThreeWorld
       ? []
       : this.getRaceStableRoadSections({
@@ -40692,7 +41017,10 @@ export default class RaceEditor {
       const doodad = this.getRaceDoodadForScenery(sprite);
       const preset = RACE_SCENERY_PRESET_BY_ID[sprite.presetId] || RACE_SCENERY_PRESETS[0];
       const frameIndex = sprite.animated ? Math.floor(Math.max(0, Number(this.playtestSession?.elapsedMs || 0)-Number(sprite.spawnedAtMs || 0))/90) : 0;
-      const artCanvas = doodad.model?.ref ? modelSprites.snapshot(doodad.model,Number(this.playtestSession?.elapsedMs||0)/1000,{width:256,height:256}) : this.getRaceArtSpriteCanvas(doodad.artRef || sprite.artRef, { frameIndex });
+      const fallbackArtRef = getRaceDoodadModelFallbackArtRef(sprite, doodad);
+      const artCanvas = doodad.model?.ref && !fallbackArtRef
+        ? modelSprites.snapshot(doodad.model,Number(this.playtestSession?.elapsedMs||0)/1000,{width:256,height:256})
+        : this.getRaceArtSpriteCanvas(fallbackArtRef || doodad.artRef || sprite.artRef, { frameIndex });
       const visual = this.getRaceDoodadVisualLayout(sprite, doodad, artCanvas);
       const widthM = visual.widthM;
       const heightM = visual.heightM;

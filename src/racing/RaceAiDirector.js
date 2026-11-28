@@ -1,3 +1,4 @@
+import {roadContinuationExtent} from './RaceRoadContinuations.js';
 import { buildRaceAiRoadPlan, getRaceAiSpeedEnvelope, raceAiRoadPlanIndex } from './RaceAiRoadPlan.js';
 // Shared race knowledge, not a replacement for vehicle physics. Road curvature
 // is immutable during a playtest; traffic is rebuilt once before driver updates.
@@ -69,11 +70,11 @@ export function getRaceAiNearbyTraffic(editor,ai,radius) {
 export function getRaceAiSharedCurvature(editor,distance) {
   const director=getRaceAiDirector(editor);
   if(!director) return null;
-  if(director.plan && !editor.playtestSession?.debugAiNoRoadPlan)
+  if(director.plan && !editor.playtestSession?.debugAiNoRoadPlan && (director.runtimeType==='circuit' || distance<=director.routeLength))
     return director.plan.curvature[raceAiRoadPlanIndex(director.plan,distance)];
   const d=director.runtimeType==='circuit'
     ? ((distance%director.routeLength)+director.routeLength)%director.routeLength
-    : Math.max(0,Math.min(director.routeLength,distance));
+    : Math.max(0,Math.min(director.routeLength + (director.race?.road?.autoExtend === false ? roadContinuationExtent(director.race.road,'finish') : 220),distance));
   const index=Math.floor(d/ROAD_STEP_M);
   const cached=director.road.get(index);
   if(cached!==undefined){director.stats.roadHits++;return cached;}

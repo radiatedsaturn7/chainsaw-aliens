@@ -130,12 +130,14 @@ test('stock save-slot icons prepare without garage builds or tuning calculations
  }finally{globalThis.document=previous;}
 });
 
-test('showroom entry prepares the visible page instead of decoding the entire car catalog',async()=>{
+test('modified-car fallback prepares only the visible page instead of the entire catalog',async()=>{
  const {normalizeMenuDocument}=await import('../../src/menus/MenuDocument.js');
  const previous=globalThis.document;
  const ctx=new Proxy({measureText:()=>({width:20})},{get:(o,k)=>k in o?o[k]:()=>{},set:(o,k,v)=>(o[k]=v,true)});
  globalThis.document={createElement:()=>({getContext:()=>ctx})};
  try{
+  const {invalidateProjectCarThumbnail}=await import('../../src/ui/shared/carPreviewThumbnails.js');
+  for(let i=8;i<12;i++)invalidateProjectCarThumbnail(`Car ${i}`);
   const requested=new Set();
   const resources=new MenuResources({carEditor:{getRaceCarProjectedArtRef:()=>({artRef:''})}});
   resources.choices=()=>Array.from({length:60},(_,i)=>({value:`Car ${i}`,label:`Car ${i}`}));
@@ -143,7 +145,7 @@ test('showroom entry prepares the visible page instead of decoding the entire ca
   resources.exteriorArtRefs=()=>[];resources.carPreview.drawSprite=()=>true;resources.carPreview.draw=()=>true;
   const doc=normalizeMenuDocument({screens:[{id:'cars',elements:[{id:'showroom',type:'car-showroom',binding:'carRef',maxVisible:4}]}]});
   await resources.prepareScreen(doc,doc.screens[0],{carRef:'Car 9'});
-  assert.deepEqual([...requested],[],'thumbnail browsing does not hydrate any full vehicle');
+  assert.deepEqual([...requested],['Car 8','Car 9','Car 10','Car 11'],'native fallback is limited to the visible page');
   assert.equal(resources.cars.size,0);
  }finally{globalThis.document=previous;}
 });
@@ -166,7 +168,7 @@ test('car sheets decode sequentially into one renderer cache, including shared s
  }finally{globalThis.document=previous;resetProjectFilesForTests();}
 });
 
-test('static showroom fetches only its four cars, without cockpit or smoke dependencies',async()=>{
+test('missing-thumbnail fallback fetches only four cars, without cockpit or smoke dependencies',async()=>{
  const {resetProjectFilesForTests}=await import('../../src/ui/projectFiles.js');
  const {hydrateServerStorage}=await import('../../src/ui/serverStorage.js');
  const {normalizeMenuDocument}=await import('../../src/menus/MenuDocument.js');
@@ -193,9 +195,74 @@ test('static showroom fetches only its four cars, without cockpit or smoke depen
   const doc=normalizeMenuDocument({screens:[{id:'cars',elements:[{id:'showroom',type:'car-showroom',binding:'carRef',maxVisible:4}]}]});
   const before=resources.choices('cars').map(c=>c.value);
   await resources.prepareScreen(doc,doc.screens[0],{carRef:'Car 09'});
-  assert.deepEqual(downloads,[],'thumbnail browsing never downloads full car or art documents');
-  assert.equal(resources.cars.size,0);
+  assert.deepEqual([...downloads].sort(),['Car 08','Car 09','Car 10','Car 11'],'missing thumbnails load only the visible cars');
+  assert.equal(resources.cars.size,4);
   assert.equal(resources.errors.size,0);
   assert.deepEqual(resources.choices('cars').map(c=>c.value),before,'downloads must not reshuffle the carousel');
  }finally{globalThis.document=previousDocument;globalThis.fetch=previousFetch;resetProjectFilesForTests();}
+});
+
+test('a lightweight car card defers garage tire artwork without satisfying a later full-art request',async()=>{
+ const stock={id:'lightweight-fixture'},calls=[];
+ const garage={items:{ready:true,revision:1},revision:2,
+  async build(ref,car,options){calls.push({ref,car,options});return {...car};}};
+ const resources=new MenuResources({carEditor:{},items:{garage}});
+ resources.stockCar=()=>stock;
+ assert.equal(resources.car('Lightweight',{prepareExterior:false}),null);
+ await Promise.all(resources.pending.values());
+ assert.equal(resources.car('Lightweight',{prepareExterior:false})?.id,stock.id);
+ assert.equal(resources.car('Lightweight'),null);
+ await Promise.all(resources.pending.values());
+ assert.equal(resources.car('Lightweight')?.id,stock.id);
+ assert.deepEqual(calls.map(c=>c.options),[{hydrateArtwork:false},{hydrateArtwork:true}]);
+});
+
+test('picker resolves missing-preview cars before requesting legacy artwork',async()=>{
+ const {normalizeMenuDocument}=await import('../../src/menus/MenuDocument.js');
+ const {drawMenuScreen}=await import('../../src/menus/MenuRenderer.js');
+ const {invalidateProjectCarThumbnail,resetCarPreviewThumbnailsForTests}=await import('../../src/ui/shared/carPreviewThumbnails.js');
+ const {modelAssets}=await import('../../src/model3d/ModelAssets.js');
+ const ctx=new Proxy({measureText:()=>({width:20})},{get:(o,k)=>k in o?o[k]:()=>{},set:(o,k,v)=>(o[k]=v,true)});
+ const names=['Direct native','Alternate loading','Sprite fallback','Procedural fallback'];
+ const cars=[{art:{bodyModel:{ref:'bound model'}}},{art:{}},{art:{body:'authored-body',tires:'stock-tire-sheet'}},{art:{tires:'stock-tire-sheet'}}];
+ const requested=[],artwork=[];
+ const resources=new MenuResources({carEditor:{getRaceCarProjectedArtRef:car=>({artRef:car.art.body??''})}});
+ resources.choices=()=>names.map(value=>({label:value,value}));
+ resources.car=(ref,{prepareExterior=true}={})=>{requested.push([ref,prepareExterior]);return cars[names.indexOf(ref)];};
+ resources.activeCarVersionPending=ref=>ref==='Alternate loading';
+ resources.exteriorArtRefs=car=>[car.art.body,car.art.tires].filter(Boolean);
+ resources.requestExteriorArt=(ref,art)=>artwork.push([ref,art]);
+ resources.carPreview.drawSprite=()=>true;
+ resources.carPreview.draw=()=>true;
+ const get=modelAssets.get;modelAssets.get=()=>null;
+ try{
+  for(const name of names)invalidateProjectCarThumbnail(name);
+  const doc=normalizeMenuDocument({screens:[{id:'cars',elements:[{id:'showroom',type:'car-showroom',binding:'carRef',maxVisible:4}]}]});
+  drawMenuScreen(ctx,{x:0,y:0,w:960,h:540},doc,doc.screens[0],{carRef:names[0]},{resources});
+  assert.deepEqual(requested,names.map(name=>[name,false]));
+  assert.deepEqual(artwork,[[names[2],'authored-body'],[names[2],'stock-tire-sheet']]);
+ }finally{modelAssets.get=get;resetCarPreviewThumbnailsForTests();}
+});
+
+test('sprite fallback hydrates only visible exterior refs, not the garage tire sheets',async()=>{
+ const stock={id:'sprite-fixture',art:{body:'authored-body'}},builds=[],requested=[];
+ const garage={items:{ready:true,revision:1},revision:2,
+  async build(ref,car,opts){builds.push(opts);return {...car,art:{...car.art,tires:'actual-fit'}};}};
+ const resources=new MenuResources({carEditor:{},items:{garage}});
+ resources.stockCar=()=>stock;
+ resources.exteriorArtRefs=car=>[car.art.body,car.art.tires].filter(Boolean);
+ resources.requestExteriorArt=(_ref,asset)=>requested.push(asset);
+ resources.cars.set('Sprite',stock);
+ resources.retainShowroomPage([{value:'Sprite'}]);
+ assert.equal(resources.car('Sprite'),null);
+ await Promise.all(resources.pending.values());
+ assert.equal(resources.car('Sprite')?.art.tires,'actual-fit');
+ assert.deepEqual(builds,[{hydrateArtwork:false}]);
+ assert.deepEqual(requested,['authored-body','actual-fit']);
+ resources.retainShowroomPage([{value:'Sprite'}]);
+ assert.ok(resources.showroomWanted.has('actual-fit'));
+ resources.retainShowroomPage([]);
+ assert.equal(resources.car('Sprite'),null);
+ await Promise.all(resources.pending.values());
+ assert.deepEqual(builds,[{hydrateArtwork:false},{hydrateArtwork:true}]);
 });

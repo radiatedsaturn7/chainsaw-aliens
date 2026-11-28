@@ -1,3 +1,4 @@
+// Navigation tests use ready assets; deferred readiness is covered explicitly in menuScreenTransition.test.js.
 import fs from 'node:fs';
 import {createAmericaWorldMap} from '../../src/menus/AmericaWorldMap.js';
 import {worldMapNodes,worldMapSelectableNodes} from '../../src/menus/MenuWorldMap.js';
@@ -60,7 +61,7 @@ test('code picker uses A–Z wrapping and configurable length',()=>{
 });
 test('keyboard and controller cycle letters without moving menu focus; confirm submits and B returns',async()=>{
  for(const mode of ['keyboard','gamepad']){
-  const p=new MenuPlayer({input:{},menuProgress:{},transitionTo(){},setActiveMusicTrack(){}});p.settings.load=async()=>{};p.resources.prepareGarage=async()=>{};
+  const p=new MenuPlayer({input:{},menuProgress:{},transitionTo(){},setActiveMusicTrack(){}});p.settings.load=async()=>{};p.resources.prepareScreen=()=>null;p.resources.prepareGarage=async()=>{};
   await p.open(createMenuDocument(),{preview:true,screenId:'settings'});p.flow.goTo('cheats');
   const press=(key,pad)=>{p.update(mode==='keyboard'?{wasPressedCode:k=>k===key}:{wasGamepadPressed:k=>k===pad},.016);p.update({},.016);};
   press('ArrowUp','dpadUp');assert.equal(p.flow.parameters.cheatCode,'BAAAAA');assert.equal(p.focus,0);
@@ -74,7 +75,7 @@ test('keyboard and controller cycle letters without moving menu focus; confirm s
 test('preview code redemption changes only the preview inventory',async()=>{
  const f=fixture();await f.items.load();
  Object.assign(f.game,{input:{},menuProgress:{},transitionTo(){},setActiveMusicTrack(){}});
- const p=new MenuPlayer(f.game);p.settings.load=async()=>{};p.resources.prepareGarage=async()=>{};
+ const p=new MenuPlayer(f.game);p.settings.load=async()=>{};p.resources.prepareScreen=()=>null;p.resources.prepareGarage=async()=>{};
  await p.open(createMenuDocument(),{preview:true,screenId:'cheats'});
  p.flow.setParameter('cheatCode','NOLOVE');await p.activate(p.interactive()[0],1,{choose:true});
  assert.equal(p.resources.garage.items.game.player.credits,1000012);assert.equal(f.game.player.credits,12);assert.equal(f.saved(),undefined);
@@ -119,7 +120,7 @@ test('TRAVEL and HACKME grant nothing if saving fails',async()=>{
 test('code picker edges reach Enter, Up returns to first letter, and Down reaches Back',async()=>{
  for(const mode of ['keyboard','gamepad']){
   const p=new MenuPlayer({input:{},menuProgress:{},transitionTo(){},setActiveMusicTrack(){}});
-  p.settings.load=async()=>{};p.resources.prepareGarage=async()=>{};
+  p.settings.load=async()=>{};p.resources.prepareScreen=()=>null;p.resources.prepareGarage=async()=>{};
   await p.open(createMenuDocument(),{preview:true,screenId:'settings'});p.flow.goTo('cheats');
   const press=(key,pad)=>{p.update(mode==='keyboard'?{wasPressedCode:k=>k===key}:{wasGamepadPressed:k=>k===pad},.016);p.update({},.016);};
   const index=()=>p.widgetStates.get('code')?.index||0;

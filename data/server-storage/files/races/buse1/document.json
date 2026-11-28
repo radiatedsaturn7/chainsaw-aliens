@@ -1268,6 +1268,11 @@
         "refs": {}
       }
     },
-    "groundPlaneArtRef": "ground-temperate-grass-v1"
+    "groundPlaneArtRef": "ground-temperate-grass-v1",
+    "location": {
+      "country": "",
+      "stateCode": "",
+      "place": ""
+    }
   }
 }

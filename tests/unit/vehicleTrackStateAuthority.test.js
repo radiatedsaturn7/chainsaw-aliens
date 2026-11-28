@@ -90,3 +90,18 @@ test('worker Track State publishes bounded revisioned visual deltas', () => {
   )), true);
   assert.equal(visualDelta.cells.every((cell) => Number(cell.revision) > 0), true);
 });
+
+
+test('worker tire trails do not connect a reset destination to the old position',()=>{
+ const authority=createWorkerTrackStateAuthority({options:{seed:42,fixedStepMs:100}});
+ const vehicle={id:'player',runner:{state:{}}};
+ for(let i=1;i<=12;i++)authority.mutate({vehicle,telemetry:telemetry(i,.2)});
+ const before=authority.trackState.cells.size;
+ for(let i=13;i<=24;i++){
+  const sample=telemetry(i,300.2);sample.state.vehicleResetGeneration=1;
+  authority.mutate({vehicle,telemetry:sample});
+ }
+ assert.ok(authority.trackState.cells.size<=before+4,'only destination and local material-displacement neighbors');
+ assert.ok(!authority.trackState.cells.has('150,0'),'no cells along the reset jump');
+ assert.ok(authority.trackState.cells.has('300,0'));
+});

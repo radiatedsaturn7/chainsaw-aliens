@@ -1,5 +1,6 @@
 import {test,expect} from '@playwright/test';
 import fs from 'node:fs';
+import {selectCatalogTarget} from '../helpers/carCatalogBoundedPickerSetup.js';
 import {catalogCar,expectThumbnailOnCanvas,installThumbnailBrowseWitness} from '../helpers/carThumbnailBrowseWitness.js';
 for(const mobile of [false,true])test(`Centaury ${mobile?'handheld touch':'desktop keyboard'} static picker initial page, later page, cockpit and real input drive`,async({browser},info)=>{
  test.setTimeout(360000);
@@ -11,13 +12,7 @@ for(const mobile of [false,true])test(`Centaury ${mobile?'handheld touch':'deskt
  const snapshot=()=>page.evaluate(async()=>{const g=window.__game,p=g.menuPlayer,{showroomPage}=await import('/src/menus/MenuGarageWidgets.js'),e=p.flow.screen.elements.find(e=>e.type==='car-showroom'),choices=p.resources.choices('cars',p.flow.document,p.flow.parameters),shown=showroomPage(choices,p.flow.parameters[e.binding],e.maxVisible);return {selected:p.flow.parameters.carRef,start:shown.start,visible:shown.entries.map(e=>e.value),targetIndex:choices.findIndex(e=>e.value==='Centaury 1983'),selectedIndex:shown.index,loadedCars:p.resources.cars.size,totalChoices:choices.length,errors:[...p.resources.errors]};});
  const first=await snapshot();expect(first.start).toBe(0);expect(first.visible).toContain(first.selected);first.thumbnail=await expectThumbnailOnCanvas(page,qa,first.selected);qa.assertBrowseCold();expect(first.loadedCars).toBeLessThan(first.totalChoices);await page.screenshot({path:info.outputPath('picker-initial.png')});
  expect(first.targetIndex).toBeGreaterThan(3);
- const navigate=async(direction)=>{
-  if(!mobile){await page.keyboard.press(direction>0?'ArrowRight':'ArrowLeft');return;}
-  const pt=await page.evaluate(async(direction)=>{const p=window.__game.menuPlayer,e=p.flow.screen.elements.find(e=>e.type==='car-showroom');const {menuElementBounds}=await import('/src/menus/MenuRenderer.js');const {menuElementPose}=await import('/src/menus/MenuDocument.js');const b=menuElementBounds(e,p.bounds,menuElementPose(e,p.flow.time)),c=window.__game.canvas,r=c.getBoundingClientRect();return {x:r.x+(b.x+b.w*(direction>0?.75:.25))*r.width/c.width,y:r.y+(b.y+b.h-12)*r.height/c.height};},direction);
-  await page.touchscreen.tap(pt.x,pt.y);
- };
- const distanceForward=(first.targetIndex-first.selectedIndex+first.totalChoices)%first.totalChoices,distanceBackward=(first.selectedIndex-first.targetIndex+first.totalChoices)%first.totalChoices;
- for(let i=0;i<Math.min(distanceForward,distanceBackward);i++){await navigate(distanceForward<=distanceBackward?1:-1);await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));if(i%5===4)await menuReady();}await menuReady();
+ await selectCatalogTarget(page,{targetName:'Centaury 1983',mobile,menuReady,info,thumbnailQA:qa});
  // Wait for the target's decoded atlas to be drawn without loading its original art.
  const laterThumbnail=await expectThumbnailOnCanvas(page,qa,'Centaury 1983');
  const later=await snapshot();expect(later.selected).toBe('Centaury 1983');expect(later.start).toBeGreaterThan(0);expect(later.visible).toContain('Centaury 1983');later.thumbnail=laterThumbnail;qa.assertBrowseCold();expect(later.errors).toEqual([]);await page.screenshot({path:info.outputPath('picker-later.png')});fs.writeFileSync(info.outputPath('picker.json'),JSON.stringify({first,later},null,2));

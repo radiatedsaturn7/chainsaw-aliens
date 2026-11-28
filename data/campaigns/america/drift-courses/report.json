@@ -1,0 +1,292 @@
+[
+  {
+    "id": "raceway-tsukuba-1000-drift",
+    "status": "imported",
+    "name": "Tsukuba — Course 1000 — Drift Reverse",
+    "raceRef": "Tsukuba — Course 1000 — Drift Reverse",
+    "displayName": "Tsukuba — Course 1000 — Drift Reverse",
+    "venueKey": "tsukuba",
+    "venueName": "Tsukuba",
+    "layoutLabel": "Course 1000 — Drift Reverse",
+    "hubStage": null,
+    "artHubStage": null,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 942.5754230229556,
+    "laps": 2,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-tsukuba-1000-drift.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "GSI Japan DEM5A/DEM5B (5 m), DEM10B fallback (10 m) sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "driftChallenge": true
+  },
+  {
+    "id": "raceway-ebisu-north",
+    "status": "imported",
+    "name": "Ebisu Circuit — North Course",
+    "raceRef": "Ebisu Circuit — North Course",
+    "displayName": "Ebisu Circuit — North Course",
+    "venueKey": "ebisu",
+    "venueName": "Ebisu Circuit",
+    "layoutLabel": "North Course",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 950.3000417398737,
+    "laps": 2,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-ebisu-north.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "GSI Japan DEM5A/DEM5B (5 m), DEM10B fallback (10 m) sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "driftChallenge": true
+  },
+  {
+    "id": "raceway-ebisu-school",
+    "status": "imported",
+    "name": "Ebisu Circuit — School Course",
+    "raceRef": "Ebisu Circuit — School Course",
+    "displayName": "Ebisu Circuit — School Course",
+    "venueKey": "ebisu",
+    "venueName": "Ebisu Circuit",
+    "layoutLabel": "School Course",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 408.8804170739324,
+    "laps": 2,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-ebisu-school.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "GSI Japan DEM5A/DEM5B (5 m), DEM10B fallback (10 m) sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "driftChallenge": true
+  },
+  {
+    "id": "raceway-ebisu-touge",
+    "status": "imported",
+    "name": "Ebisu Circuit — Touge Course",
+    "raceRef": "Ebisu Circuit — Touge Course",
+    "displayName": "Ebisu Circuit — Touge Course",
+    "venueKey": "ebisu",
+    "venueName": "Ebisu Circuit",
+    "layoutLabel": "Touge Course",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 880.7513260874008,
+    "laps": 2,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-ebisu-touge.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "GSI Japan DEM5A/DEM5B (5 m), DEM10B fallback (10 m) sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "driftChallenge": true
+  },
+  {
+    "id": "raceway-ebisu-west-drift",
+    "status": "imported",
+    "name": "Ebisu Circuit — West Drift Course",
+    "raceRef": "Ebisu Circuit — West Drift Course",
+    "displayName": "Ebisu Circuit — West Drift Course",
+    "venueKey": "ebisu",
+    "venueName": "Ebisu Circuit",
+    "layoutLabel": "West Drift Course",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 635.6257273736247,
+    "laps": 2,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-ebisu-west-drift.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "GSI Japan DEM5A/DEM5B (5 m), DEM10B fallback (10 m) sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "driftChallenge": true
+  },
+  {
+    "id": "raceway-ebisu-west",
+    "status": "imported",
+    "name": "Ebisu Circuit — West Course",
+    "raceRef": "Ebisu Circuit — West Course",
+    "displayName": "Ebisu Circuit — West Course",
+    "venueKey": "ebisu",
+    "venueName": "Ebisu Circuit",
+    "layoutLabel": "West Course",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 1917.1164166560638,
+    "laps": 2,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-ebisu-west.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "GSI Japan DEM5A/DEM5B (5 m), DEM10B fallback (10 m) sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "driftChallenge": true
+  },
+  {
+    "id": "raceway-nikko-main",
+    "status": "imported",
+    "name": "Nikko Circuit — Main Course",
+    "raceRef": "Nikko Circuit — Main Course",
+    "displayName": "Nikko Circuit — Main Course",
+    "venueKey": "nikko",
+    "venueName": "Nikko Circuit",
+    "layoutLabel": "Main Course",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 1020.6631713423237,
+    "laps": 2,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-nikko-main.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "GSI Japan DEM5A/DEM5B (5 m), DEM10B fallback (10 m) sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "driftChallenge": true
+  },
+  {
+    "id": "raceway-mobara-east",
+    "status": "imported",
+    "name": "Mobara Twin Circuit — East Course",
+    "raceRef": "Mobara Twin Circuit — East Course",
+    "displayName": "Mobara Twin Circuit — East Course",
+    "venueKey": "mobara",
+    "venueName": "Mobara Twin Circuit",
+    "layoutLabel": "East Course",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 1121.4182426592674,
+    "laps": 2,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-mobara-east.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "GSI Japan DEM5A/DEM5B (5 m), DEM10B fallback (10 m) sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "driftChallenge": true
+  },
+  {
+    "id": "raceway-bihoku-a",
+    "status": "imported",
+    "name": "Bihoku Highland Circuit — Course A",
+    "raceRef": "Bihoku Highland Circuit — Course A",
+    "displayName": "Bihoku Highland Circuit — Course A",
+    "venueKey": "bihoku",
+    "venueName": "Bihoku Highland Circuit",
+    "layoutLabel": "Course A",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 666.5142174117198,
+    "laps": 2,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-bihoku-a.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "GSI Japan DEM5A/DEM5B (5 m), DEM10B fallback (10 m) sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "driftChallenge": true
+  },
+  {
+    "id": "raceway-bihoku-b",
+    "status": "imported",
+    "name": "Bihoku Highland Circuit — Course B",
+    "raceRef": "Bihoku Highland Circuit — Course B",
+    "displayName": "Bihoku Highland Circuit — Course B",
+    "venueKey": "bihoku",
+    "venueName": "Bihoku Highland Circuit",
+    "layoutLabel": "Course B",
+    "hubStage": null,
+    "artHubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 1004.0695439426498,
+    "laps": 2,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-bihoku-b.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "GSI Japan DEM5A/DEM5B (5 m), DEM10B fallback (10 m) sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "driftChallenge": true
+  }
+]

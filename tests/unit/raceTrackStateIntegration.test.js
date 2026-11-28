@@ -426,3 +426,38 @@ test('completed race ghosts embed the Track State replay contract', () => {
   editor.completeRaceGhost({ finished: true });
   assert.equal(editor.bestRaceGhosts.race.trackState, replay);
 });
+
+
+test('reset generations break tire trails without erasing history or clipping ordinary travel',()=>{
+ const state=create();
+ const contact=(vehicleId,resetGeneration,from,to)=>queueRaceTrackStateTireEvents(state,{
+  vehicleId,resetGeneration,normalLoads:{fl:3200},tireSlipByWheel:{fl:.5},
+  wheelContactScaleByWheel:{fl:1},wheelSurfaceState:{positions:{fl:{x:to,z:.2}}},
+  previousPositions:{fl:{x:from,z:.2}},contactDurationSeconds:.1,speedMps:10
+ });
+ contact('player',0,.2,1.2);state.advance(.1,{});
+ const before=new Set(state.cells.keys());
+ contact('player',1,1.2,300.2);state.advance(.1,{});
+ assert.ok(state.cells.has('300,0'),'new grounded contact still mutates its destination');
+ for(const key of before)assert.ok(state.cells.has(key),'existing track history remains');
+ assert.ok(state.cells.size<=before.size+1,'reset must not build hundreds of intervening cells');
+ contact('player',1,300.2,304.2);state.advance(.1,{});
+ for(let x=300;x<=304;x++)assert.ok(state.cells.has(`${x},0`),'normal sweep resumes');
+ contact('ai',0,10.2,15.2);state.advance(.1,{});
+ for(let x=10;x<=15;x++)assert.ok(state.cells.has(`${x},0`),'another vehicle has independent history');
+});
+
+test('live main-thread tire mutations include the authoritative reset generation',()=>{
+ const editor=createLiveRacePlaytest();
+ const generations=[];
+ const original=editor.raceSimulationSystems.surface.queueTrackStateTireEvents;
+ editor.raceSimulationSystems.surface.queueTrackStateTireEvents=(track,options)=>{
+  generations.push(options.resetGeneration);return original(track,options);
+ };
+ editor.updatePlaytest(1/60);
+ const runner=editor.playtestSession.vehicleDynamicsRunner;
+ runner.state.vehicleResetGeneration=7;
+ editor.updatePlaytest(1/60);
+ assert.ok(generations.length>0);
+ assert.equal(generations.at(-1),7);
+});

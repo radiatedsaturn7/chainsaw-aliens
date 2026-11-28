@@ -1,3 +1,4 @@
+import {captureRaceAi} from './RaceAiCapture.js';
 import {captureRaceHandling, captureRaceHandlingSetup} from './RaceHandlingCapture.js';
 import {createTrackEventQueueProbe} from './TrackEventQueueProbe.js';
 import {getRaceRecoveryHistoryDiagnostics} from './RaceRecoveryHistory.js';
@@ -168,7 +169,7 @@ export class RacePerformanceCapture {
   if(this.session && this.editor.playtestSession!==this.session){this.stop('session-changed');return;}
   const finishStarted=this.now();
   const e=this.editor,s=e.playtestSession||{},stats=e.lastRaceRenderStats||{},row=this.current;
-  row.context={digitalBrake:s.digitalBrake?{...s.digitalBrake,enabled:e.raceInput?.brakeAssistEnabled===true,raw:e.raceInput?.rawBrakeAxis}:null,digitalThrottle:s.digitalThrottle?{...s.digitalThrottle,mode:e.raceInput?.digitalThrottleMode||'off',raw:e.raceInput?.rawThrottleAxis}:null,drivingIntent:s.drivingIntent?{...s.drivingIntent}:null,elapsedMs:s.elapsedMs,countdownMs:s.countdownRemainingMs,intro:s.raceIntro?.active===true,aiCars:s.aiRuntime?.length||0,submittedCarSprites:stats.threeCarDepthSpriteCount||0,camera:e.raceInput?.cameraView||s.cameraView,viewport:e.lastRaceRenderCamera?.bounds?{...e.lastRaceRenderCamera.bounds}:null,cameraYaw:e.lastRaceRenderCamera?.cameraYaw,position:{x:s.worldX,z:s.worldZ},roadOverride:s.debugRoad?{...s.debugRoad}:null,weather:s.debugEnvironment?.weather||e.selectedRace?.weather,intensity:s.debugEnvironment?.weatherIntensity??e.selectedRace?.weatherIntensity,workerPhysics:!!e.vehicleDynamicsAuthority?.workerBridge,paused:e.raceInput?.paused===true};
+  row.context={drivingGuide:s.drivingAssists?.guidePreview?{...s.drivingAssists.guidePreview,capabilities:{...s.drivingAssists.capabilities}}:null,digitalBrake:s.digitalBrake?{...s.digitalBrake,enabled:e.raceInput?.brakeAssistEnabled===true,raw:e.raceInput?.rawBrakeAxis}:null,digitalThrottle:s.digitalThrottle?{...s.digitalThrottle,mode:e.raceInput?.digitalThrottleMode||'off',raw:e.raceInput?.rawThrottleAxis}:null,drivingIntent:s.drivingIntent?{...s.drivingIntent}:null,elapsedMs:s.elapsedMs,countdownMs:s.countdownRemainingMs,intro:s.raceIntro?.active===true,aiCars:s.aiRuntime?.length||0,submittedCarSprites:stats.threeCarDepthSpriteCount||0,camera:e.raceInput?.cameraView||s.cameraView,viewport:e.lastRaceRenderCamera?.bounds?{...e.lastRaceRenderCamera.bounds}:null,cameraYaw:e.lastRaceRenderCamera?.cameraYaw,position:{x:s.worldX,z:s.worldZ},roadOverride:s.debugRoad?{...s.debugRoad}:null,weather:s.debugEnvironment?.weather||e.selectedRace?.weather,intensity:s.debugEnvironment?.weatherIntensity??e.selectedRace?.weatherIntensity,workerPhysics:!!e.vehicleDynamicsAuthority?.workerBridge,paused:e.raceInput?.paused===true};
   const renderCanvas=e.raceThreeWorldRenderer?.canvas;
   row.context.renderTarget=renderCanvas?{width:renderCanvas.width,height:renderCanvas.height,dynamicScale:e.raceWebGLTrackDynamicScale??1}:null;
   if(this.detailed && (this.lastHandlingSampleMs == null || row.atMs-this.lastHandlingSampleMs >= 100)) {
@@ -190,6 +191,14 @@ export class RacePerformanceCapture {
    discardedSeconds:s.frameSimulationClock.discardedSeconds||0,
    totalExcludedSeconds:s.frameSimulationClock.excludedSeconds||0
   } : null;
+  const aiSampleIntervalMs=this.detailed?100:500;
+  if(this.lastAiSampleMs==null || row.atMs-this.lastAiSampleMs>=aiSampleIntervalMs){
+   row.ai=captureRaceAi(e,{detailed:this.detailed});
+   this.lastAiSampleMs=row.atMs;
+   this.metadata.aiCapture ||= {version:1,sampleIntervalMs:aiSampleIntervalMs,
+    gapUnits:'metres',progressRank:'lap-adjusted route progress, not finish classification',
+    wheelTelemetry:'detailed physics only; cheap-mode contact caches may be stale'};
+  }
   row.context.aiPhysics={full:s.aiDetailedPhysicsCount??null,cheap:s.aiCheapPhysicsCount??null,
    held:(s.aiRuntime||[]).filter(ai=>ai.physicsBudgetDetail==='cheap'&&ai.cheapPhysicsHeld===true).length,
    promotions:s.aiPhysicsPromotions||0,

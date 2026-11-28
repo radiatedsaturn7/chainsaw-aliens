@@ -48,6 +48,7 @@ export function normalizeMenuElement(source={},index=0){
     typewriterSpeed:number(source.typewriterSpeed,40,1,200),typewriterPause:number(source.typewriterPause,.35,0,3),
     animation:MENU_ANIMATIONS.includes(source.animation)?source.animation:'none',duration:number(source.duration,2,0.1,600),
     nodes:(Array.isArray(source.nodes)?source.nodes:[]).slice(0,100).map((n,i)=>({id:text(n.id,`node-${i+1}`),label:text(n.label,'Race'),raceRef:text(n.raceRef),kind:n.kind==='junction'?'junction':'race',disabled:n.disabled===true,artRef:text(n.artRef),selectedArtRef:text(n.selectedArtRef),disabledArtRef:text(n.disabledArtRef),x:number(n.x,.5,0,1),y:number(n.y,.5,0,1),unlockParameter:validMenuParameter(n.unlockParameter)?n.unlockParameter:'',unlockValue:structuredClone(n.unlockValue??true),completedParameter:validMenuParameter(n.completedParameter)?n.completedParameter:''})),
+    mapEntrance:['auto','left','right','up','down','none'].includes(source.mapEntrance)?source.mapEntrance:'none',
     mapManual:source.mapManual===true||Boolean(source.nodes?.length),
     connections:normalizeWorldMapConnections(source.connections),mapStyle:normalizeWorldMapStyle(source.mapStyle),
     maxVisible:Math.round(number(source.maxVisible,4,1,4)),selectedZoomDuration:number(source.selectedZoomDuration,.18,.05,3),selectedScale:number(source.selectedScale,1.25,1,1.4),inactiveOpacity:number(source.inactiveOpacity,.4,.1,1),

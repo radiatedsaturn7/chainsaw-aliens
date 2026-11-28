@@ -1,8 +1,10 @@
+import {getRaceAiRuntimeTuning} from './RaceAiSimulation.js';
+import {queueVehicleFleetCollisions} from './simulation/VehiclePairCollision.js';
 import { tireSizeForWheel } from './TireSizes.js';
-import {advanceRaceDriftScore} from './RaceDriftScore.js';
+import {advanceRaceDriftScore,driftContactCount} from './RaceDriftScore.js';
 import { advanceRaceSimulationClock } from './RaceFrameBudget.js';
 import {updateGlassWeather} from './GlassWeather.js';
-import {prepareRaceSceneryTriggers} from './simulation/DamageModel.js';
+import {isVisualOnlyRaceScenery,prepareRaceSceneryTriggers} from './simulation/DamageModel.js';
 import {advanceTurnSignals} from './TurnSignals.js';
 import { advanceNetworkRaceProgress, sampleNetworkEdge } from './RaceRouteNetwork.js';
 import { getRaceStickLook, stepRaceLookAngle } from './RaceCameraInput.js';
@@ -599,6 +601,7 @@ export function createRaceStaticColliderWorld(editor, {
     }
   }
   scenery.forEach((sprite) => {
+    if (isVisualOnlyRaceScenery(sprite)) return;
     const doodad = editor.getRaceDoodadForScenery?.(sprite) || {};
     if (sprite.state === 'removed') return;
     if (doodad.itemType === 'mix-tape' || doodad.itemType === 'item') return;
@@ -669,15 +672,22 @@ export function calculateAuthoritativeRouteAdvance({ velocityWorld = {}, roadYaw
 // Reconcile small route-measurement errors with the authoritative world pose.
 // The bound rejects jumps to nearby hairpins/crossings; this never moves the car.
 export function reconcileRaceRouteAdvance({ previousDistance, predictedAdvance, projectedDistance,
-  routeLength, circuit = false, travelM, onRoad = false } = {}) {
-  if (!onRoad || !Number.isFinite(projectedDistance)) return predictedAdvance;
+  routeLength, circuit = false, travelM, onRoad = false, routeOffsetM = 0, roadHalfWidthM = 0 } = {}) {
+  const offset = Math.max(0, Number(routeOffsetM) || 0);
+  const nearRoad = roadHalfWidthM > 0 && offset <= roadHalfWidthM + 3;
+  if (!(onRoad || nearRoad) || !Number.isFinite(projectedDistance)) return predictedAdvance;
   let measuredAdvance = projectedDistance - previousDistance;
   if (circuit && routeLength > 0) {
     measuredAdvance = ((measuredAdvance + routeLength / 2) % routeLength + routeLength) % routeLength - routeLength / 2;
   }
   // Nearest-point projection can move across a corner between samples even
   // when the chassis travels only centimetres. Allow that local corner span.
-  const maximumAdvance = Math.max(3, Math.max(0, Number(travelM) || 0) * 2 + 0.05);
+  // An offset driving line traverses a tight corner's centerline arc in less
+  // physical distance. Permit that local arc, including the road shoulder,
+  // rather than permanently integrating against a stale pre-corner heading.
+  // Keep the correction inside the projection's local continuity window.
+  const cornerSpan = roadHalfWidthM > 0 ? Math.PI * Math.min(offset, roadHalfWidthM + 3) : 0;
+  const maximumAdvance = Math.max(3, Math.min(40, Math.max(0, Number(travelM) || 0) * 2 + 0.05 + cornerSpan));
   return Math.abs(measuredAdvance) <= maximumAdvance ? measuredAdvance : predictedAdvance;
 }
 
@@ -813,13 +823,22 @@ function ensureVehicleDynamicsAuthority(editor, tuning, controls) {
 }
 
 // Seed the rendered car from the same grounded chassis state used by the first
-// physics step. Do this behind loading, without advancing clocks or AI.
+// physics step. Do this behind loading, without advancing simulation clocks.
 export function initializeRaceVehiclePresentation(editor) {
   const session=editor?.playtestSession;
-  if(!session?.running || session.vehicleRenderState)return;
-  const tuning=editor.getRaceCarTuning(editor.getRaceSessionCar(session));
-  const authority=ensureVehicleDynamicsAuthority(editor,tuning,{});
-  syncVehicleDynamicsCompatibilityOutputs(authority.runner,session);
+  if(!session?.running)return;
+  if(!session.vehicleRenderState){
+    const tuning=editor.getRaceCarTuning(editor.getRaceSessionCar(session));
+    const authority=ensureVehicleDynamicsAuthority(editor,tuning,{});
+    syncVehicleDynamicsCompatibilityOutputs(authority.runner,session);
+  }
+  // The showcase does not run simulation. Seed each rival's wheel/body pose
+  // against its own grid location before rendering, without advancing time.
+  for(const ai of session.aiRuntime || []){
+    if(ai.vehicleRenderState)continue;
+    const car=ai.runtimeCar || editor.findRaceProjectCarById(ai.carId) || editor.selectedCar;
+    editor.updateRaceAiVehiclePhysics(ai,{car,tuning:getRaceAiRuntimeTuning(editor,ai,car),seconds:0});
+  }
 }
 
 // Build immutable collision data while loading still covers the race. Do not
@@ -900,6 +919,7 @@ function createTrackStateStepScratch() {
     direction: { x: 0, z: 1 },
     queueOptions: {
       vehicleId: 'player',
+      resetGeneration: 0,
       wheelIds: RACE_WHEEL_IDS,
       collectAcceptedEvents: false,
       contactByWheel: trackStateContactByWheel,
@@ -999,6 +1019,7 @@ function emitAuthoritativeTrackStateStep({
   scratch.direction.z = Math.cos(yaw);
   const queueOptions = scratch.queueOptions;
   queueOptions.vehicleId = editor.playtestSession.carId || 'player';
+  queueOptions.resetGeneration = Number(telemetry.state?.vehicleResetGeneration) || 0;
   queueOptions.normalLoads = telemetry.state?.wheelLoadsN;
   queueOptions.tireSlipByWheel = telemetry.state?.wheelSlip;
   queueOptions.previousPositions = previousPositions;
@@ -2705,7 +2726,10 @@ export function updateRaceSimulation({
     ? 0
     : clamp(previousWheelContactCount / RACE_WHEEL_IDS.length, 0, 1);
   if (!controlsLockedByRollover && tireContactScale <= 0.001) controlLockReason = 'airborne-contact';
-  const isAutomatic = editor.raceInput.autoShift && tuning.shiftMode !== 'manual';
+  // Automatic driving is the player's control preference, even when the
+  // installed transmission is a manual gearbox. Match the authoritative
+  // powertrain assist so brake-to-reverse works on manual-only saved cars.
+  const isAutomatic = editor.raceInput.autoShift !== false;
   if (isAutomatic && gear <= 0 && throttle > RACE_PEDAL_INPUT.activeThreshold && absSpeedBefore < 1.1) {
     gear = 1;
     editor.raceInput.gear = 1;
@@ -2749,7 +2773,11 @@ export function updateRaceSimulation({
   editor.raceInput.steeringWheel = launchSteeringLocked ? 0 : digitalInput
     ? systems.handlingAssist.stepDigitalSteering({
       intent, currentOutput: editor.raceInput.steeringWheel,
-      speedMps: steeringSafetySpeedMps, seconds
+      speedMps: steeringSafetySpeedMps, seconds,
+      state: getAuthoritativeChassisState(editor.playtestSession),
+      vehicleConfig: editor.playtestSession.vehicleDynamicsRunner?.config || tuning,
+      // Menu/button steering is inverted when submitted to vehicle physics.
+      physicalIntent: -intent
     })
     : systems.handlingAssist.stepControllerToRackInput({
       mode: controllerInputMode, intent,
@@ -4001,6 +4029,13 @@ export function updateRaceSimulation({
     0.24
   );
   if (!countdownActive) editor.updateRaceSceneryCollisions(seconds);
+  // Resolve swept pairs before either side advances, including long frames.
+  // Worker races do this inside the owner clock instead.
+  if(!countdownActive && !editor.vehicleDynamicsAuthority?.workerBridge){
+    const session=editor.playtestSession;
+    const runners=[session.vehicleDynamicsRunner,...(session.aiRuntime||[]).map(ai=>ai.vehicleDynamicsRunner)].filter(Boolean);
+    session.vehiclePairContacts=queueVehicleFleetCollisions(runners,seconds);
+  }
   advanceVehicleDynamicsAuthority(editor, {
     car,
     systems,
@@ -4116,14 +4151,16 @@ export function updateRaceSimulation({
     routeLength,
     circuit: routeRuntimeType === 'circuit',
     travelM: Math.hypot(Number(authoritativeVelocity.x || 0), Number(authoritativeVelocity.z || 0)) * seconds,
-    onRoad: Number(projection.distanceToRoute) <= projectedRoadHalfWidth
+    onRoad: Number(projection.distanceToRoute) <= projectedRoadHalfWidth,
+    routeOffsetM: projection.distanceToRoute, roadHalfWidthM: projectedRoadHalfWidth
   });
   if(editor.selectedRace?.campaign?.scoring==='drift'){
     editor.playtestSession.driftScore=advanceRaceDriftScore(editor.playtestSession.driftScore,{
       distanceM:Math.max(0,Math.min(routeAdvance,Math.hypot(Number(authoritativeVelocity.x||0),Number(authoritativeVelocity.z||0))*seconds)),
       longitudinalSpeed:Number(presentationState.bodyLongitudinalSpeedMps)||0,
       lateralSpeed:Number(presentationState.bodyLateralSpeedMps)||0,
-      contactCount:Object.values(presentationState.contactPatches||{}).filter(p=>p?.inContact).length,
+      contactCount:driftContactCount(presentationState.contactPatches),
+      progressM:editor.selectedRace?.driftChallenge?Math.max(0,(Number(editor.playtestSession.lap)||1)-1)*routeLength+previousDistance+routeAdvance:undefined,
       onCourse:Math.abs(projectedLateralMeters)<=projectedRoadHalfWidth,
       active:!countdownActive&&!editor.playtestSession.pendingEdgeCenterReset
     });

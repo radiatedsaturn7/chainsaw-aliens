@@ -1,0 +1,23 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {test} from 'node:test';
+import {createVehicle,loadVehicle} from '../../src/ui/vehicleStudio/genome.mjs';
+import {generateVehicle} from '../../src/ui/vehicleStudio/geometry.mjs';
+import {exportVehicle} from '../../src/ui/vehicleStudio/export.mjs';
+test('rear blade lens banks preserve lamp anchors and independent optical roles within budget',()=>{
+ const g=loadVehicle(readFileSync(new URL('../../src/ui/vehicleStudio/examples/aston-martin-vulcan-2016.json',import.meta.url),'utf8'));
+ assert.equal(createVehicle().optics.rear.rearLightBlades,0);
+ const old=structuredClone(g);old.optics.rear.rearLightBlades=0;
+ const make=v=>generateVehicle(v,{quality:'drive',compact:2});
+ const a=make(g),b=make(old);
+ assert.deepEqual(a.lampMounts,b.lampMounts);
+ assert.deepEqual(a.diagnostics.issues,[]);
+ const tailParts=a.parts.filter(o=>o.component==='tails');
+ assert.equal(tailParts.some(o=>o.material==='opticCover'),false);
+ const count=m=>tailParts.filter(p=>p.material===m).reduce((n,p)=>n+p.geometry.index.count/3,0);
+ assert.equal(count('runningRed'),104);
+ assert.equal(count('opticRed'),104);
+ for(const m of ['opticClear','signalL','signalR'])assert.ok(count(m)>0);
+ const [body,wheel]=Object.values(exportVehicle(g,{quality:'drive'}).models);
+ assert.ok(body.faces.length+2*(wheel.faces.length+(wheel.rearAxleModel?.faces.length??wheel.faces.length))<=15000);
+});

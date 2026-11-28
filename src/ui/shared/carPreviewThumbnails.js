@@ -85,13 +85,16 @@ function verifyVisible(id,entry,name,whenReady,usable){
   const now=Date.now();
   const previous=verified.get(id);
   if(previous?.token===token&&previous.expires>now)return previous.ok;
-  if(previous?.pending||verificationActive>=MAX_LOADING)return false;
-  const state={token,expires:0,ok:false,pending:true};verified.set(id,state);verificationActive++;
+  // A periodic check must not blank an already verified preview. A changed
+  // source token still invalidates it immediately.
+  const reusable=previous?.token===token&&previous.ok===true;
+  if(previous?.pending||verificationActive>=MAX_LOADING)return reusable;
+  const state={token,expires:0,ok:reusable,pending:true,rejected:previous?.token===token&&previous.rejected===true};verified.set(id,state);verificationActive++;
   void verifyProjectCarPreviewStock(preparedCatalog.revision,id,name,entry.carId,entry.sources).then(ok=>{
-    state.ok=ok;state.expires=Date.now()+(isProjectStorageReadOnly()?60000:5000);state.pending=false;verificationActive--;
+    state.ok=ok;state.rejected=!ok;state.expires=Date.now()+(isProjectStorageReadOnly()?60000:5000);state.pending=false;verificationActive--;
     if(usable?.()!==false)whenReady?.();
   });
-  return false;
+  return reusable;
 }
 function requestPreview(name,frame,preferAtlas,whenReady,usable){
   if(locallyChanged.has(name))return null;
@@ -118,6 +121,23 @@ function requestPreview(name,frame,preferAtlas,whenReady,usable){
   pump();
   return record.status==='ready'?record:null;
 }
+// A source hint is not a body-model verdict: a sprite car can have model wheels.
+export function carThumbnailHasModelSource(name){
+  const id=preparedCatalog?.names.get(name);
+  return Boolean(id&&preparedCatalog.previews.get(id)?.sources?.some(source=>source.folder==='models'));
+}
+// Only fall back after a definite rejection/missing asset, never while a stock
+// preview is still loading. This keeps normal catalog browsing lightweight.
+export function carThumbnailNeedsFallback(name,angle=135,preferAtlas=false){
+  if(locallyChanged.has(name))return true;
+  if(preparedCatalog===undefined)return false;
+  const id=preparedCatalog?.names.get(name),entry=preparedCatalog?.previews.get(id);
+  if(!entry||!entry.sources||!preparedCatalog.revision)return true;
+  if(verified.get(id)?.rejected)return true;
+  const frame=((Math.round((Number(angle)||0)/45)%8)+8)%8;
+  const source=!preferAtlas&&entry.poster?.frameIndex===frame?entry.poster:entry;
+  return images.get(source.id)?.status==='missing';
+}
 export function paintCarThumbnail(ctx,bounds,name,angle=135,whenReady,usable,preferAtlas=false){
   const frame=((Math.round((Number(angle)||0)/45)%8)+8)%8;
   const found=requestPreview(name,frame,preferAtlas,whenReady,usable);
@@ -129,12 +149,7 @@ export function paintCarThumbnail(ctx,bounds,name,angle=135,whenReady,usable,pre
   ctx.drawImage(image,(entry.count===1?0:frame)*entry.w,0,entry.w,entry.h,bounds.x+(bounds.w-w)/2,bounds.y+(bounds.h-h)/2,w,h);
   return true;
 }
-export function drawCarThumbnailPlaceholder(ctx,{x,y,w,h}){
-  const s=Math.min(w/90,h/42),a=x+(w-90*s)/2,b=y+(h-42*s)/2;
-  if(!Number.isFinite(s)||s<=0)return;
-  ctx.save();ctx.translate(a,b);ctx.scale(s,s);ctx.fillStyle='#73848e';
-  ctx.beginPath();ctx.moveTo(3,27);ctx.lineTo(16,22);ctx.lineTo(29,10);ctx.lineTo(57,10);ctx.lineTo(73,22);ctx.lineTo(84,24);ctx.lineTo(88,32);ctx.lineTo(86,34);ctx.lineTo(4,34);ctx.closePath();ctx.fill();
-  ctx.fillStyle='#26333a';
-  for(const c of [19,70]){ctx.beginPath();ctx.arc(c,34,7,0,Math.PI*2);ctx.fill();}
-  ctx.restore();
+
+export function resetCarPreviewThumbnailsForTests(){
+  manifestTask=undefined;preparedCatalog=undefined;images.clear();verified.clear();locallyChanged.clear();verificationActive=0;active=0;
 }

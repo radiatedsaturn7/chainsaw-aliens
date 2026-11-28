@@ -1,0 +1,88 @@
+ADDITIONAL RALLY ROAD SECTIONS — 2026-11-18
+
+Implemented six standalone races in Rallies. Four overseas entries also appear in International; the two US entries retain MO/MN locations. Total: 45 rally stages, 21 collections, 346 saved races. Existing campaign progression is unchanged.
+
+IMPORTANT SCOPE LIMITATION
+These are continuous current-road sections/recreations, NOT six complete historical competitive stages. Do not describe them as exact WRC/ARA routes. No missing road was joined, no repeated road was used to pad distance, and no surveyed jump or camber is claimed.
+
+TRACKS
+
+Rally Spain — La Fatarella–Vilalba — Sant Francesc Road
+Timed distance: 14.09 km (8.76 mi).
+Planning estimate: 10.6–16.9 minutes at 50–80 km/h average; not measured player or AI lap times.
+Surfaces: 9% gravel, 91% asphalt
+Current connected Cami de Sant Francesc road from La Fatarella toward Sant Francesc, within the rally corridor. Partial geographic recreation, not the full 2019 stage: current mapped paving differs from the historical mixed-surface itinerary. OSM paved-to-gravel transition retained; no invented surface percentages. Width and small surface details estimated.
+Source: https://www.rallyracc.com/2019/en/ss_la-fatarella.html
+Snapshot: data/campaigns/america/raceways/sources/spain-fatarella.json
+Native world bake: passed; 33.15 seconds in this Termux run; terrain-tolerance warnings: 0.
+
+Wales — Sweet LambHafren — Sweet Lamb–Hafren — Western Section
+Timed distance: 6.52 km (4.05 mi).
+Planning estimate: 6.0–9.8 minutes at 40–65 km/h average; not measured player or AI lap times.
+Surfaces: 100% gravel
+Current OpenStreetMap road geometry matched to the public stage map. Selected continuous road recreation, not the complete competitive layout or exact timing controls. Widths and roughness are estimates; DEM does not resolve engineered jumps, ruts or camber. Sweet Lamb/Hafren corridor from the public RAC 2023 map; arena loops and artificial jumps omitted. Ends on the western Hafren forest climb; eastern forest loop omitted because current mapped connections need further verification. The two sharp bends are connected OSM track junctions (242278120/666309992 and 233409038/666309990), not retraced edges.
+Source: https://files.freethought.website/freethought27/file/sweetlamb-hafren_1.pdf
+Snapshot: data/campaigns/america/raceways/sources/wales-sweet-lamb.json
+Native world bake: passed; 16.68 seconds in this Termux run; terrain-tolerance warnings: 13.
+
+Rally Germany — Panzerplatte — Range Road Section
+Timed distance: 4.87 km (3.02 mi).
+Planning estimate: 2.9–4.5 minutes at 65–100 km/h average; not measured player or AI lap times.
+Surfaces: 100% asphalt
+Current OpenStreetMap road geometry matched to the public stage map. Selected continuous road recreation, not the complete competitive layout or exact timing controls. Widths and roughness are estimates; DEM does not resolve engineered jumps, ruts or camber. Selected Baumholder range roads in the ADAC 2018 stage area, not the full Panzerplatte competition itinerary. Concrete retains its mapped material in provenance and uses the game asphalt physics; no separate concrete grip model. No surveyed Gina jump.
+Source: https://media.adac-motorsport.de/dl.php?dID=3722%2C135%2C136%2C1768&fID=37355
+Snapshot: data/campaigns/america/raceways/sources/germany-panzerplatte.json
+Native world bake: passed; 9.93 seconds in this Termux run; terrain-tolerance warnings: 0.
+
+Rally Japan — Aichi — Isegami’s Tunnel — Road Section
+Timed distance: 3.43 km (2.13 mi).
+Planning estimate: 4.1–6.9 minutes at 30–50 km/h average; not measured player or AI lap times.
+Surfaces: 100% asphalt
+Current OpenStreetMap road geometry matched to the public stage map. Selected continuous road recreation, not the complete competitive layout or exact timing controls. Widths and roughness are estimates; DEM does not resolve engineered jumps, ruts or camber. Isegami old-road/tunnel portion of the 2025 corridor; excludes the full approach and northern finish. Tunnel deck interpolated between portal terrain estimates, not surveyed heights.
+Source: https://www.rallysupport.com/wp-content/uploads/2025/11/Rally-Japan-2025-Stage-Maps-Overview.pdf
+Snapshot: data/campaigns/america/raceways/sources/japan-isegami.json
+Native world bake: passed; 1.72 seconds in this Termux run; terrain-tolerance warnings: not reported by network renderer.
+
+100 Acre Wood Rally — Cattle Guard — Ollie Coleman Road
+Timed distance: 6.04 km (3.75 mi).
+Planning estimate: 4.0–6.0 minutes at 60–90 km/h average; not measured player or AI lap times.
+Surfaces: 100% gravel
+Current OpenStreetMap road geometry matched to the public stage map. Selected continuous road recreation, not the complete competitive layout or exact timing controls. Widths and roughness are estimates; DEM does not resolve engineered jumps, ruts or camber. Ollie Coleman Road section of the KP-to-Ollie/Cattle Guard corridor only. Exact cattle-guard jump location and profile are not surveyed; no artificial jump added.
+Source: https://www.americanrallyassociation.org/post/stpr-and-missouri-ozark-rally-set-for-ara-regional-doubleheader
+Snapshot: data/campaigns/america/raceways/sources/100aw-cattle-guard.json
+Native world bake: passed; 17.07 seconds in this Termux run; terrain-tolerance warnings: 0.
+
+Ojibwe Forests Rally — Steamboat — Forest Road Section
+Timed distance: 9.27 km (5.76 mi).
+Planning estimate: 6.5–10.1 minutes at 55–85 km/h average; not measured player or AI lap times.
+Surfaces: 100% gravel
+Current OpenStreetMap road geometry matched to the public stage map. Selected continuous road recreation, not the complete competitive layout or exact timing controls. Widths and roughness are estimates; DEM does not resolve engineered jumps, ruts or camber. Continuous Steamboat Forest Road, identified by the organizer map and ARA 2021 stage guide. Not the complete historic stage. Sandy gravel represented by the existing gravel surface model.
+Source: https://ojibweforestsrally.com/wp-content/uploads/2025/08/2025-Spectator-Guide-4.pdf
+Snapshot: data/campaigns/america/raceways/sources/ojibwe-steamboat.json
+Native world bake: passed; 23.36 seconds in this Termux run; terrain-tolerance warnings: 0.
+
+IMPLEMENTATION
+tools/campaigns/import_rally_collections.py: new data-driven specs, preserve asphalt fallback and support reviewed multi-bbox source fetches.
+data/campaigns/america/raceways/rally-additions.json: controls, references and limitations.
+data/campaigns/america/raceways/rally-road-sources.json and sources/: reproducible OSM road snapshots.
+tools/campaigns/import_famous_rally.py and rally_structures.py: retain material provenance, interpolate tunnel deck by distance, reuse the existing tunnel network after line placement.
+Saved race documents/metadata, manifest, raceway catalog/report, Game Menu previews/index, rally collections/review and race type inventory refreshed through existing utilities.
+tests/unit/rallyCollections.test.js, tests/unit/raceIndex.test.js and tools/campaigns/test_rally_collections.py: coverage, sources, surfaces, topology and tunnel regression checks.
+src/ui/latestChanges.js: dated change entry.
+
+VALIDATION
+53 distinct focused JavaScript tests passed (index/preview/rally and network runtime/topology); 11 Python importer tests passed. Six full saved-track worker bakes passed including render/physics transfer and hydrated scenery references. Japan regenerates identically with the final importer.
+Wales: 13 minimum-cell terrain-conformance warnings near sharp junctions; device visual review still required. Other five produced no terrain-height warnings, except the Japan network renderer does not provide that metric.
+No browser visual test or player drive-through performed. No standalone build script is configured in package.json. No push/merge requested this turn.
+
+REBUILD
+python tools/campaigns/import_rally_collections.py --only spain-fatarella wales-sweet-lamb germany-panzerplatte japan-isegami 100aw-cattle-guard ojibwe-steamboat
+node tools/campaigns/install_raceways.mjs --only=spain,wales,germany,japan-aichi,100-acre-wood,ojibwe
+node tools/campaigns/finalize_rally_collections.mjs
+node tools/campaigns/inventory_race_types.mjs
+
+SOURCE RESEARCH LIMITS
+Rally-Maps returned HTTP 468 to the importer; no protected content or exports were bypassed. The former 100AW 2026 spectator PDF now returns a website. Public organizer/ARA guides identify the regions and roads; OSM supplies current drivable topology.
+Complete 2019 La Fatarella–Vilalba (38.85 km, historically mostly unpaved), full Sweet Lamb/Hafren, full Panzerplatte, full modern Isegami, full KP-to-Ollie and a complete historical Ojibwe stage remain future work.
+Spanish current paving differs substantially from the 2019 gravel-heavy itinerary. German concrete currently uses asphalt physics. The Isegami shell and portal heights are approximations, and its width is adapted to the game; no claim of surveyed tunnel dimensions.
+Cattle Guard stage name identifies the corridor; the exact jump is not reconstructed. Existing saved regional artwork is reused; dedicated rally landmarks are not newly drawn.

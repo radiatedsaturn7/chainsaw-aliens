@@ -1,0 +1,4229 @@
+{
+  "minimumSectionM": 1500,
+  "minimumTimedSectionM": 1200,
+  "policy": "Four distinct sections for short; six distinct sections repeated twice for full. No reverse padding. Original full roads remain in Index.",
+  "collections": [
+    {
+      "id": "monte-carlo",
+      "name": "Monte Carlo Rally",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Monte Carlo Rally — Stage 1",
+          "id": "rally-section-monte-carlo-1",
+          "lengthM": 6395.250595315589,
+          "parentRef": "Col de Turini",
+          "firstNode": 0,
+          "lastNode": 287,
+          "startDistanceM": 0,
+          "endDistanceM": 6395.250595315589,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "6c3cd04b701cea55271c8c32405d7013c3d414dd40b9d56d41541cd63e9c8157",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              9.155556815083587,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Monte Carlo Rally — Stage 2",
+          "id": "rally-section-monte-carlo-2",
+          "lengthM": 8582.040608138706,
+          "parentRef": "Col de Turini",
+          "firstNode": 287,
+          "lastNode": 674,
+          "startDistanceM": 6395.250595315589,
+          "endDistanceM": 14977.291203454295,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "6c3cd04b701cea55271c8c32405d7013c3d414dd40b9d56d41541cd63e9c8157",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              6.043053894780682e-14,
+              6.3611093629270335e-15
+            ]
+          }
+        },
+        {
+          "ref": "Monte Carlo Rally — Stage 3",
+          "id": "rally-section-monte-carlo-3",
+          "lengthM": 7524.369131247684,
+          "parentRef": "Sisteron — Authon",
+          "firstNode": 0,
+          "lastNode": 280,
+          "startDistanceM": 0,
+          "endDistanceM": 7524.369131247684,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "33c102108b0ab4808ea5aef9627e810cb0c1c3497a92df2bab1bc2e1f124fbfb",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.958696929930685,
+              3.6418954694971113
+            ]
+          }
+        },
+        {
+          "ref": "Monte Carlo Rally — Stage 4",
+          "id": "rally-section-monte-carlo-4",
+          "lengthM": 7899.671100943271,
+          "parentRef": "Sisteron — Authon",
+          "firstNode": 280,
+          "lastNode": 506,
+          "startDistanceM": 7524.369131247684,
+          "endDistanceM": 15424.040232190955,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "33c102108b0ab4808ea5aef9627e810cb0c1c3497a92df2bab1bc2e1f124fbfb",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              3.6418954694971672,
+              4.742281089715026
+            ]
+          }
+        },
+        {
+          "ref": "Monte Carlo Rally — Stage 5",
+          "id": "rally-section-monte-carlo-5",
+          "lengthM": 10156.438196210618,
+          "parentRef": "Col de Fontbelle — Authon to Thoard",
+          "firstNode": 0,
+          "lastNode": 338,
+          "startDistanceM": 0,
+          "endDistanceM": 10156.438196210618,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "f78e04f01fc301f456340a847133f03b7141a2cf826b327033335d46e4042fc5",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.828818941841522e-14,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Monte Carlo Rally — Stage 6",
+          "id": "rally-section-monte-carlo-6",
+          "lengthM": 11448.87384432971,
+          "parentRef": "Col de Fontbelle — Authon to Thoard",
+          "firstNode": 338,
+          "lastNode": 740,
+          "startDistanceM": 10156.438196210618,
+          "endDistanceM": 21605.312040540328,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "f78e04f01fc301f456340a847133f03b7141a2cf826b327033335d46e4042fc5",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              3.8166656177562204e-13,
+              4.172153972017277
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "finland",
+      "name": "Rally Finland",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Rally Finland — Stage 1",
+          "id": "rally-section-finland-1",
+          "lengthM": 3415.1047132826097,
+          "parentRef": "Ouninpohja",
+          "firstNode": 0,
+          "lastNode": 96,
+          "startDistanceM": 0,
+          "endDistanceM": 3415.1047132826097,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "b55f8e223f7ae450755b0eddd7bb4c1afd1c12b5f4484057606ed430ed0d1b91",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              3.0490734028177084,
+              5.389218012079326
+            ]
+          }
+        },
+        {
+          "ref": "Rally Finland — Stage 2",
+          "id": "rally-section-finland-2",
+          "lengthM": 2950.9196726195223,
+          "parentRef": "Ouninpohja",
+          "firstNode": 96,
+          "lastNode": 187,
+          "startDistanceM": 3415.1047132826097,
+          "endDistanceM": 6366.024385902132,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "b55f8e223f7ae450755b0eddd7bb4c1afd1c12b5f4484057606ed430ed0d1b91",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              5.389218012079243,
+              9.058219732808095e-12
+            ]
+          }
+        },
+        {
+          "ref": "Rally Finland — Stage 3",
+          "id": "rally-section-finland-3",
+          "lengthM": 3846.670923941414,
+          "parentRef": "Ouninpohja",
+          "firstNode": 187,
+          "lastNode": 299,
+          "startDistanceM": 6366.024385902132,
+          "endDistanceM": 10212.695309843546,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "b55f8e223f7ae450755b0eddd7bb4c1afd1c12b5f4484057606ed430ed0d1b91",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.554554303855756e-12,
+              4.841307214605746
+            ]
+          }
+        },
+        {
+          "ref": "Rally Finland — Stage 4",
+          "id": "rally-section-finland-4",
+          "lengthM": 3319.2836812444457,
+          "parentRef": "Ouninpohja",
+          "firstNode": 299,
+          "lastNode": 387,
+          "startDistanceM": 10212.695309843546,
+          "endDistanceM": 13531.978991087992,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "b55f8e223f7ae450755b0eddd7bb4c1afd1c12b5f4484057606ed430ed0d1b91",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.841307214605771,
+              5.756803973448965e-13
+            ]
+          }
+        },
+        {
+          "ref": "Rally Finland — Stage 5",
+          "id": "rally-section-finland-5",
+          "lengthM": 3484.6674064585604,
+          "parentRef": "Ouninpohja",
+          "firstNode": 387,
+          "lastNode": 486,
+          "startDistanceM": 13531.978991087992,
+          "endDistanceM": 17016.646397546552,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "b55f8e223f7ae450755b0eddd7bb4c1afd1c12b5f4484057606ed430ed0d1b91",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.798888119687895e-13,
+              6.579928578295293
+            ]
+          }
+        },
+        {
+          "ref": "Rally Finland — Stage 6",
+          "id": "rally-section-finland-6",
+          "lengthM": 4127.438414339964,
+          "parentRef": "Ruuhimäki — Gravel Road",
+          "firstNode": 0,
+          "lastNode": 93,
+          "startDistanceM": 0,
+          "endDistanceM": 4127.438414339964,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "6d262da8d2be7c7ec6f29db6807c7266ab7005fe2a551291eacb757c66a54c3f",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              3.051008498632877,
+              6.95670394154308
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "portugal",
+      "name": "Rally Portugal",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Rally Portugal — Stage 1",
+          "id": "rally-section-portugal-1",
+          "lengthM": 10629.625167375623,
+          "parentRef": "Fafe — Rally Portugal",
+          "firstNode": 0,
+          "lastNode": 330,
+          "startDistanceM": 0,
+          "endDistanceM": 10629.625167375623,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "d8eb4098ccfb16c3163c8465d634c7ff1e4976de2d6821100b0213bf80bc2aa7",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              6.5554317510569415,
+              8.396664359063685e-13
+            ]
+          }
+        },
+        {
+          "ref": "Rally Portugal — Stage 2",
+          "id": "rally-section-portugal-2",
+          "lengthM": 8729.429350506198,
+          "parentRef": "Rally Portugal — Arganil 2026",
+          "firstNode": 0,
+          "lastNode": 291,
+          "startDistanceM": 0,
+          "endDistanceM": 8729.429350506198,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "02e14a9cdf41e149dc9bd8cf4e031211426bbae2c96c1a6578c59e8a431bca14",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              0.0,
+              3.81666561775622e-14
+            ]
+          }
+        },
+        {
+          "ref": "Rally Portugal — Stage 3",
+          "id": "rally-section-portugal-3",
+          "lengthM": 9170.256399672777,
+          "parentRef": "Rally Portugal — Arganil 2026",
+          "firstNode": 291,
+          "lastNode": 600,
+          "startDistanceM": 8729.429350506198,
+          "endDistanceM": 17899.685750178975,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "02e14a9cdf41e149dc9bd8cf4e031211426bbae2c96c1a6578c59e8a431bca14",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.671665932429354e-13,
+              1.2849440913112608e-12
+            ]
+          }
+        },
+        {
+          "ref": "Rally Portugal — Stage 4",
+          "id": "rally-section-portugal-4",
+          "lengthM": 7462.433768895014,
+          "parentRef": "Rally Portugal — Góis 2026",
+          "firstNode": 0,
+          "lastNode": 248,
+          "startDistanceM": 0,
+          "endDistanceM": 7462.433768895014,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "2e141f4a2c834b80c0156ff8ca00630e52740419db53029aaa9b9470ebe18e3b",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              0.0,
+              6.9211890920578165
+            ]
+          }
+        },
+        {
+          "ref": "Rally Portugal — Stage 5",
+          "id": "rally-section-portugal-5",
+          "lengthM": 7389.0135120925615,
+          "parentRef": "Rally Portugal — Góis 2026",
+          "firstNode": 248,
+          "lastNode": 538,
+          "startDistanceM": 7462.433768895014,
+          "endDistanceM": 14851.447280987575,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "2e141f4a2c834b80c0156ff8ca00630e52740419db53029aaa9b9470ebe18e3b",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              6.921189092057909,
+              3.7573213750728898
+            ]
+          }
+        },
+        {
+          "ref": "Rally Portugal — Stage 6",
+          "id": "rally-section-portugal-6",
+          "lengthM": 5872.379959251525,
+          "parentRef": "Rally Portugal — Lousã 2026",
+          "firstNode": 0,
+          "lastNode": 200,
+          "startDistanceM": 0,
+          "endDistanceM": 5872.379959251525,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "f11c2b84170b5ed18d9c8bc797a616e5d9127753ed97276dcfa806681027de20",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.5444437451708134e-14,
+              1.6538884343610288e-13
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "argentina",
+      "name": "Rally Argentina",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Rally Argentina — Stage 1",
+          "id": "rally-section-argentina-1",
+          "lengthM": 2566.800480112341,
+          "parentRef": "El Cóndor — Copina",
+          "firstNode": 0,
+          "lastNode": 57,
+          "startDistanceM": 0,
+          "endDistanceM": 2566.800480112341,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ed4e30608e735406c1d29b3f4732d270ed64b4ed9d47c04db8f000b1ba1e7263",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.770832022195275e-15,
+              3.180554681463517e-14
+            ]
+          }
+        },
+        {
+          "ref": "Rally Argentina — Stage 2",
+          "id": "rally-section-argentina-2",
+          "lengthM": 2453.3652832850444,
+          "parentRef": "El Cóndor — Copina",
+          "firstNode": 57,
+          "lastNode": 112,
+          "startDistanceM": 2566.800480112341,
+          "endDistanceM": 5020.1657633973855,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ed4e30608e735406c1d29b3f4732d270ed64b4ed9d47c04db8f000b1ba1e7263",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              8.269442171805144e-14,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Rally Argentina — Stage 3",
+          "id": "rally-section-argentina-3",
+          "lengthM": 2533.0043312918915,
+          "parentRef": "El Cóndor — Copina",
+          "firstNode": 112,
+          "lastNode": 169,
+          "startDistanceM": 5020.1657633973855,
+          "endDistanceM": 7553.170094689277,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ed4e30608e735406c1d29b3f4732d270ed64b4ed9d47c04db8f000b1ba1e7263",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.0355549961366507e-13,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Rally Argentina — Stage 4",
+          "id": "rally-section-argentina-4",
+          "lengthM": 2429.877577808008,
+          "parentRef": "El Cóndor — Copina",
+          "firstNode": 169,
+          "lastNode": 231,
+          "startDistanceM": 7553.170094689277,
+          "endDistanceM": 9983.047672497285,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ed4e30608e735406c1d29b3f4732d270ed64b4ed9d47c04db8f000b1ba1e7263",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.500484874270876e-13,
+              1.4630551534732177e-13
+            ]
+          }
+        },
+        {
+          "ref": "Rally Argentina — Stage 5",
+          "id": "rally-section-argentina-5",
+          "lengthM": 2999.4315115019635,
+          "parentRef": "El Cóndor — Copina",
+          "firstNode": 231,
+          "lastNode": 303,
+          "startDistanceM": 9983.047672497285,
+          "endDistanceM": 12982.479183999249,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ed4e30608e735406c1d29b3f4732d270ed64b4ed9d47c04db8f000b1ba1e7263",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.138638575963939e-12,
+              1.0495830448829606e-12
+            ]
+          }
+        },
+        {
+          "ref": "Rally Argentina — Stage 6",
+          "id": "rally-section-argentina-6",
+          "lengthM": 2004.256352274273,
+          "parentRef": "El Cóndor — Copina",
+          "firstNode": 303,
+          "lastNode": 354,
+          "startDistanceM": 12982.479183999249,
+          "endDistanceM": 14986.735536273522,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ed4e30608e735406c1d29b3f4732d270ed64b4ed9d47c04db8f000b1ba1e7263",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              5.279720771229438e-13,
+              9.764302872092996e-13
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "acropolis",
+      "name": "Acropolis Rally",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Acropolis Rally — Stage 1",
+          "id": "rally-section-acropolis-1",
+          "lengthM": 11131.203251768102,
+          "parentRef": "Acropolis Rally — Ano Pavliani 2024",
+          "firstNode": 0,
+          "lastNode": 418,
+          "startDistanceM": 0,
+          "endDistanceM": 11131.203251768102,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "f75c1bcb105965c9932301caade906ce80b9ab666e0180680b4a4e1e9cc682a4",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              6.854807668604049,
+              1.3994440598439474e-12
+            ]
+          }
+        },
+        {
+          "ref": "Acropolis Rally — Stage 2",
+          "id": "rally-section-acropolis-2",
+          "lengthM": 11386.179736530657,
+          "parentRef": "Acropolis Rally — Ano Pavliani 2024",
+          "firstNode": 418,
+          "lastNode": 848,
+          "startDistanceM": 11131.203251768102,
+          "endDistanceM": 22517.38298829876,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "f75c1bcb105965c9932301caade906ce80b9ab666e0180680b4a4e1e9cc682a4",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.6538884343610287e-12,
+              9.161400616560176
+            ]
+          }
+        },
+        {
+          "ref": "Acropolis Rally — Stage 3",
+          "id": "rally-section-acropolis-3",
+          "lengthM": 21839.954082029584,
+          "parentRef": "Acropolis Rally — Dafni 2024",
+          "firstNode": 0,
+          "lastNode": 894,
+          "startDistanceM": 0,
+          "endDistanceM": 21839.954082029584,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "87f7e617ff97ec57965517319b2f06a323400d0b01ca994144f9a188d8eb6f86",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              22.617542785735946,
+              13.787070377535072
+            ]
+          }
+        },
+        {
+          "ref": "Acropolis Rally — Stage 4",
+          "id": "rally-section-acropolis-4",
+          "lengthM": 11054.799597504747,
+          "parentRef": "Acropolis Rally — Tarzan 2024",
+          "firstNode": 0,
+          "lastNode": 427,
+          "startDistanceM": 0,
+          "endDistanceM": 11054.799597504747,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "f64ec3444f7efe441f0eacebc13f320a35b003436c8007cb67dd42d5fb76a08b",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              9.653632994257471,
+              5.552119334575695
+            ]
+          }
+        },
+        {
+          "ref": "Acropolis Rally — Stage 5",
+          "id": "rally-section-acropolis-5",
+          "lengthM": 12176.018571901854,
+          "parentRef": "Acropolis Rally — Tarzan 2024",
+          "firstNode": 427,
+          "lastNode": 920,
+          "startDistanceM": 11054.799597504747,
+          "endDistanceM": 23230.8181694066,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "f64ec3444f7efe441f0eacebc13f320a35b003436c8007cb67dd42d5fb76a08b",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              5.552119334575873,
+              3.231443556366933e-12
+            ]
+          }
+        },
+        {
+          "ref": "Acropolis Rally — Stage 6",
+          "id": "rally-section-acropolis-6",
+          "lengthM": 22115.74419865841,
+          "parentRef": "Acropolis Rally — Bauxites 2021",
+          "firstNode": 0,
+          "lastNode": 707,
+          "startDistanceM": 0,
+          "endDistanceM": 22115.74419865841,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "2310d6e231ecd104a72e00574586981e03878bebe01a8279a0d260f38186bc36",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              8.180669852351695,
+              0.0
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "new-england",
+      "name": "New England Forest Rally",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "New England Forest Rally — Stage 1",
+          "id": "rally-section-new-england-1",
+          "lengthM": 3709.600805103279,
+          "parentRef": "NEFR — Concord Pond — Road Section",
+          "firstNode": 0,
+          "lastNode": 74,
+          "startDistanceM": 0,
+          "endDistanceM": 3709.600805103279,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "cfb4bc6b4306d9d57406c40f9ad17d8ec84e2470643b2df43bf0c18a2f2c6a86",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              6.3611093629270335e-15,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "New England Forest Rally — Stage 2",
+          "id": "rally-section-new-england-2",
+          "lengthM": 3558.3892540127767,
+          "parentRef": "NEFR — Concord Pond — Road Section",
+          "firstNode": 74,
+          "lastNode": 154,
+          "startDistanceM": 3709.600805103279,
+          "endDistanceM": 7267.990059116056,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "cfb4bc6b4306d9d57406c40f9ad17d8ec84e2470643b2df43bf0c18a2f2c6a86",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.2899993706537323e-13,
+              6.043053894780682e-13
+            ]
+          }
+        },
+        {
+          "ref": "New England Forest Rally — Stage 3",
+          "id": "rally-section-new-england-3",
+          "lengthM": 3785.5604884894738,
+          "parentRef": "NEFR — Concord Pond — Road Section",
+          "firstNode": 154,
+          "lastNode": 243,
+          "startDistanceM": 7267.990059116056,
+          "endDistanceM": 11053.55054760553,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "cfb4bc6b4306d9d57406c40f9ad17d8ec84e2470643b2df43bf0c18a2f2c6a86",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              5.884026160707506e-13,
+              7.654521146740319
+            ]
+          }
+        },
+        {
+          "ref": "New England Forest Rally — Stage 4",
+          "id": "rally-section-new-england-4",
+          "lengthM": 2794.9060590659824,
+          "parentRef": "NEFR — Morton Cutoff — Road Section",
+          "firstNode": 0,
+          "lastNode": 62,
+          "startDistanceM": 0,
+          "endDistanceM": 2794.9060590659824,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "28eab29a0142c2a500404f2bedcda850ba13fdbbff9e389c4a62343369746932",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.2722218725854067e-14,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "New England Forest Rally — Stage 5",
+          "id": "rally-section-new-england-5",
+          "lengthM": 3028.9006563474686,
+          "parentRef": "NEFR — North Road — Road Section",
+          "firstNode": 0,
+          "lastNode": 74,
+          "startDistanceM": 0,
+          "endDistanceM": 3028.9006563474686,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "8e3fb34afe2efc6f2f8f9ffe7947db87c4bd16eb45c32fb098586876b9f60d64",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.5444437451708134e-14,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "New England Forest Rally — Stage 6",
+          "id": "rally-section-new-england-6",
+          "lengthM": 2893.9862695262345,
+          "parentRef": "NEFR — North Road — Road Section",
+          "firstNode": 74,
+          "lastNode": 143,
+          "startDistanceM": 3028.9006563474686,
+          "endDistanceM": 5922.886925873703,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "8e3fb34afe2efc6f2f8f9ffe7947db87c4bd16eb45c32fb098586876b9f60d64",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.0355549961366507e-13,
+              0.0
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "sweden",
+      "name": "Rally Sweden",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Rally Sweden — Stage 1",
+          "id": "rally-section-sweden-1",
+          "lengthM": 7027.7231956812575,
+          "parentRef": "Rally Sweden — Vargåsen — Road Recreation",
+          "firstNode": 0,
+          "lastNode": 158,
+          "startDistanceM": 0,
+          "endDistanceM": 7027.7231956812575,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "de81a846e0f39fe5206d638e2ac46e0d010197e1abdaf25233bc4f62a13102d9",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              0.0,
+              3.053332494204976e-13
+            ]
+          }
+        },
+        {
+          "ref": "Rally Sweden — Stage 2",
+          "id": "rally-section-sweden-2",
+          "lengthM": 6945.81001775093,
+          "parentRef": "Rally Sweden — Vargåsen — Road Recreation",
+          "firstNode": 158,
+          "lastNode": 345,
+          "startDistanceM": 7027.7231956812575,
+          "endDistanceM": 13973.533213432187,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "de81a846e0f39fe5206d638e2ac46e0d010197e1abdaf25233bc4f62a13102d9",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              3.562221243239139e-13,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Rally Sweden — Stage 3",
+          "id": "rally-section-sweden-3",
+          "lengthM": 8582.197972145268,
+          "parentRef": "Rally Sweden — Torsby — Road Recreation",
+          "firstNode": 0,
+          "lastNode": 241,
+          "startDistanceM": 0,
+          "endDistanceM": 8582.197972145268,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "3bcb07b24225cdea4699cdfb24124a204613bd28d8e654dbb4b674c2957f2890",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              9.607551259669542,
+              4.700781703832766
+            ]
+          }
+        },
+        {
+          "ref": "Rally Sweden — Stage 4",
+          "id": "rally-section-sweden-4",
+          "lengthM": 6254.5992391788595,
+          "parentRef": "Rally Sweden — Likenäs — Road Recreation",
+          "firstNode": 0,
+          "lastNode": 182,
+          "startDistanceM": 0,
+          "endDistanceM": 6254.5992391788595,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "314b9fab0cfd64495d0f333343a5db850779c6109d3cb6eedc09a8ba6a653acd",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              0.0,
+              4.007498898644031e-13
+            ]
+          }
+        },
+        {
+          "ref": "Rally Sweden — Stage 5",
+          "id": "rally-section-sweden-5",
+          "lengthM": 6979.669831327726,
+          "parentRef": "Rally Sweden — Likenäs — Road Recreation",
+          "firstNode": 182,
+          "lastNode": 355,
+          "startDistanceM": 6254.5992391788595,
+          "endDistanceM": 13234.269070506585,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "314b9fab0cfd64495d0f333343a5db850779c6109d3cb6eedc09a8ba6a653acd",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.834443115824545e-13,
+              3.6630491631446023
+            ]
+          }
+        },
+        {
+          "ref": "Rally Sweden — Stage 6",
+          "id": "rally-section-sweden-6",
+          "lengthM": 6512.1255600899585,
+          "parentRef": "Rally Sweden — Likenäs — Road Recreation",
+          "firstNode": 355,
+          "lastNode": 511,
+          "startDistanceM": 13234.269070506585,
+          "endDistanceM": 19746.394630596544,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "314b9fab0cfd64495d0f333343a5db850779c6109d3cb6eedc09a8ba6a653acd",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              3.663049163144539,
+              1.297666310037115e-12
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "sno-drift",
+      "name": "Sno*Drift Rally",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Sno*Drift Rally — Stage 1",
+          "id": "rally-section-sno-drift-1",
+          "lengthM": 3508.823387684498,
+          "parentRef": "SnoDrift Rally — Agren — Road Section",
+          "firstNode": 0,
+          "lastNode": 89,
+          "startDistanceM": 0,
+          "endDistanceM": 3508.823387684498,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "93647a82e468452b07ba2cfec282ceef804535328c0e6b44772b1ca05746fdf3",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.987846675914698e-16,
+              2.5444437451708134e-14
+            ]
+          }
+        },
+        {
+          "ref": "Sno*Drift Rally — Stage 2",
+          "id": "rally-section-sno-drift-2",
+          "lengthM": 3317.8101685977786,
+          "parentRef": "SnoDrift Rally — Shoreline — Road Section",
+          "firstNode": 0,
+          "lastNode": 103,
+          "startDistanceM": 0,
+          "endDistanceM": 3317.8101685977786,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "affc11dd0b97a17c425610e54928d056a6b758a58a9b89cde7478f43009071b8",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              0.0,
+              1.6538884343610288e-13
+            ]
+          }
+        },
+        {
+          "ref": "Sno*Drift Rally — Stage 3",
+          "id": "rally-section-sno-drift-3",
+          "lengthM": 2250.901062506219,
+          "parentRef": "SnoDrift Rally — Old State — Road Section",
+          "firstNode": 0,
+          "lastNode": 41,
+          "startDistanceM": 0,
+          "endDistanceM": 2250.901062506219,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "7f5cbefe0ab8e451b56d11aec4d6778cd151d45b6b35711955dfd416e1bea083",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              9.93923337957349e-17,
+              5.236842294635366
+            ]
+          }
+        },
+        {
+          "ref": "Sno*Drift Rally — Stage 4",
+          "id": "rally-section-sno-drift-4",
+          "lengthM": 2065.304129288569,
+          "parentRef": "SnoDrift Rally — Old State — Road Section",
+          "firstNode": 41,
+          "lastNode": 94,
+          "startDistanceM": 2250.901062506219,
+          "endDistanceM": 4316.205191794788,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "7f5cbefe0ab8e451b56d11aec4d6778cd151d45b6b35711955dfd416e1bea083",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              5.236842294635363,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Sno*Drift Rally — Stage 5",
+          "id": "rally-section-sno-drift-5",
+          "lengthM": 2545.5018842757,
+          "parentRef": "SnoDrift Rally — Old State — Road Section",
+          "firstNode": 94,
+          "lastNode": 153,
+          "startDistanceM": 4316.205191794788,
+          "endDistanceM": 6861.707076070488,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "7f5cbefe0ab8e451b56d11aec4d6778cd151d45b6b35711955dfd416e1bea083",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.67143968839954e-15,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Sno*Drift Rally — Stage 6",
+          "id": "rally-section-sno-drift-6",
+          "lengthM": 2278.9388622182105,
+          "parentRef": "SnoDrift Rally — Old State — Road Section",
+          "firstNode": 153,
+          "lastNode": 209,
+          "startDistanceM": 6861.707076070488,
+          "endDistanceM": 9140.645938288699,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "7f5cbefe0ab8e451b56d11aec4d6778cd151d45b6b35711955dfd416e1bea083",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              5.009373623305039e-14,
+              4.43512788032064
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "new-zealand",
+      "name": "Rally New Zealand",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Rally New Zealand — Stage 1",
+          "id": "rally-section-new-zealand-1",
+          "lengthM": 6512.346176364334,
+          "parentRef": "Rally New Zealand — Whaanga Coast — Road Section",
+          "firstNode": 0,
+          "lastNode": 196,
+          "startDistanceM": 0,
+          "endDistanceM": 6512.346176364334,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "8c9aa095b2ca1ec1c2caab5e3891ac9b0b209df33d61a5aeffe932fef55c3efe",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.2722218725854067e-14,
+              5.088887490341627e-13
+            ]
+          }
+        },
+        {
+          "ref": "Rally New Zealand — Stage 2",
+          "id": "rally-section-new-zealand-2",
+          "lengthM": 6786.760276549217,
+          "parentRef": "Rally New Zealand — Whaanga Coast — Road Section",
+          "firstNode": 196,
+          "lastNode": 441,
+          "startDistanceM": 6512.346176364334,
+          "endDistanceM": 13299.106452913551,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "8c9aa095b2ca1ec1c2caab5e3891ac9b0b209df33d61a5aeffe932fef55c3efe",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.1983321795318423e-13,
+              1.526666247102488e-13
+            ]
+          }
+        },
+        {
+          "ref": "Rally New Zealand — Stage 3",
+          "id": "rally-section-new-zealand-3",
+          "lengthM": 4586.968647778664,
+          "parentRef": "Rally New Zealand — Whaanga Coast — Road Section",
+          "firstNode": 441,
+          "lastNode": 644,
+          "startDistanceM": 13299.106452913551,
+          "endDistanceM": 17886.075100692215,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "8c9aa095b2ca1ec1c2caab5e3891ac9b0b209df33d61a5aeffe932fef55c3efe",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.0177774980683254e-13,
+              8.509814057060163
+            ]
+          }
+        },
+        {
+          "ref": "Rally New Zealand — Stage 4",
+          "id": "rally-section-new-zealand-4",
+          "lengthM": 9841.059986938699,
+          "parentRef": "Rally New Zealand — Te Hutewai — Road Section",
+          "firstNode": 0,
+          "lastNode": 316,
+          "startDistanceM": 0,
+          "endDistanceM": 9841.059986938699,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "727161efab9f6ac51801a268cf4237c1ff596f92ac03c4f01f15086e06765427",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.2722218725854067e-13,
+              6.997220299219737e-13
+            ]
+          }
+        },
+        {
+          "ref": "Rally New Zealand — Stage 5",
+          "id": "rally-section-new-zealand-5",
+          "lengthM": 5098.217870217109,
+          "parentRef": "Rally New Zealand — Te Akau South — Road Section",
+          "firstNode": 0,
+          "lastNode": 155,
+          "startDistanceM": 0,
+          "endDistanceM": 5098.217870217109,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "d2f7d762598de7efc1f99f64345eb82643e23e71f6480477c221737b152f5a3b",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              6.3611093629270335e-15,
+              7.63333123551244e-14
+            ]
+          }
+        },
+        {
+          "ref": "Rally New Zealand — Stage 6",
+          "id": "rally-section-new-zealand-6",
+          "lengthM": 5276.330780438341,
+          "parentRef": "Rally New Zealand — Te Akau South — Road Section",
+          "firstNode": 155,
+          "lastNode": 332,
+          "startDistanceM": 5098.217870217109,
+          "endDistanceM": 10374.54865065545,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "d2f7d762598de7efc1f99f64345eb82643e23e71f6480477c221737b152f5a3b",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              3.81666561775622e-14,
+              5.72499842663433e-13
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "mexico",
+      "name": "Rally Mexico — Rally of Nations",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Rally Mexico — Rally of Nations — Stage 1",
+          "id": "rally-section-mexico-1",
+          "lengthM": 5888.9417942422015,
+          "parentRef": "Rally Mexico — Rally of Nations — Valenciana 2025",
+          "firstNode": 0,
+          "lastNode": 173,
+          "startDistanceM": 0,
+          "endDistanceM": 5888.9417942422015,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "f7ef3f221e3cbcbd331bbf5ff9d754cab3e62f25d3ade95bb22076775b4ba6de",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              9.192893784034007,
+              6.159499225149967
+            ]
+          }
+        },
+        {
+          "ref": "Rally Mexico — Rally of Nations — Stage 2",
+          "id": "rally-section-mexico-2",
+          "lengthM": 5993.850749014199,
+          "parentRef": "Rally Mexico — Rally of Nations — Mineral de Pozos 2025",
+          "firstNode": 0,
+          "lastNode": 163,
+          "startDistanceM": 0,
+          "endDistanceM": 5993.850749014199,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ea16c51faf0e0200016207aecc00f251393d01896d6fac8ca2e11e6b7b276451",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.5738447467006815,
+              1.2470692845835136
+            ]
+          }
+        },
+        {
+          "ref": "Rally Mexico — Rally of Nations — Stage 3",
+          "id": "rally-section-mexico-3",
+          "lengthM": 5980.33566446116,
+          "parentRef": "Rally Mexico — Rally of Nations — Mineral de Pozos 2025",
+          "firstNode": 163,
+          "lastNode": 307,
+          "startDistanceM": 5993.850749014199,
+          "endDistanceM": 11974.18641347536,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ea16c51faf0e0200016207aecc00f251393d01896d6fac8ca2e11e6b7b276451",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.24706928458331,
+              2.9448939845258466
+            ]
+          }
+        },
+        {
+          "ref": "Rally Mexico — Rally of Nations — Stage 4",
+          "id": "rally-section-mexico-4",
+          "lengthM": 5997.192360834841,
+          "parentRef": "Rally Mexico — Rally of Nations — Mineral de Pozos 2025",
+          "firstNode": 307,
+          "lastNode": 447,
+          "startDistanceM": 11974.18641347536,
+          "endDistanceM": 17971.3787743102,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ea16c51faf0e0200016207aecc00f251393d01896d6fac8ca2e11e6b7b276451",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.9448939845256974,
+              7.63333123551244e-14
+            ]
+          }
+        },
+        {
+          "ref": "Rally Mexico — Rally of Nations — Stage 5",
+          "id": "rally-section-mexico-5",
+          "lengthM": 5813.225537513291,
+          "parentRef": "Rally Mexico — Rally of Nations — Mesa de Borregos 2025",
+          "firstNode": 0,
+          "lastNode": 174,
+          "startDistanceM": 0,
+          "endDistanceM": 5813.225537513291,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "989870dfd2bc158f3176f9d4c80adfb683197d26894959b87bbd1e1eaa263d18",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.5444437451708134e-14,
+              4.129562106957113
+            ]
+          }
+        },
+        {
+          "ref": "Rally Mexico — Rally of Nations — Stage 6",
+          "id": "rally-section-mexico-6",
+          "lengthM": 5692.102019190002,
+          "parentRef": "Rally Mexico — Rally of Nations — Mesa de Borregos 2025",
+          "firstNode": 174,
+          "lastNode": 370,
+          "startDistanceM": 5813.225537513291,
+          "endDistanceM": 11505.327556703292,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "989870dfd2bc158f3176f9d4c80adfb683197d26894959b87bbd1e1eaa263d18",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.129562106956986,
+              1.0559441542458876e-12
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "norway",
+      "name": "Norway — Finnskog Rally Roads",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Norway — Finnskog Rally Roads — Stage 1",
+          "id": "rally-section-norway-1",
+          "lengthM": 7616.784070266076,
+          "parentRef": "Norway — Finnskog Rally Roads — Hof-Finnskog — Road Recreation",
+          "firstNode": 0,
+          "lastNode": 192,
+          "startDistanceM": 0,
+          "endDistanceM": 7616.784070266076,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "5b8984b1beb028f8977e4cfe28effd6783f0734bac66dad5b252ee42c42aa5a5",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              0.0,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Norway — Finnskog Rally Roads — Stage 2",
+          "id": "rally-section-norway-2",
+          "lengthM": 8139.871772338625,
+          "parentRef": "Norway — Finnskog Rally Roads — Hof-Finnskog — Road Recreation",
+          "firstNode": 192,
+          "lastNode": 400,
+          "startDistanceM": 7616.784070266076,
+          "endDistanceM": 15756.655842604701,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "5b8984b1beb028f8977e4cfe28effd6783f0734bac66dad5b252ee42c42aa5a5",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              0.0,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Norway — Finnskog Rally Roads — Stage 3",
+          "id": "rally-section-norway-3",
+          "lengthM": 7722.451606453753,
+          "parentRef": "Norway — Finnskog Rally Roads — Hof-Finnskog — Road Recreation",
+          "firstNode": 400,
+          "lastNode": 619,
+          "startDistanceM": 15756.655842604701,
+          "endDistanceM": 23479.107449058454,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "5b8984b1beb028f8977e4cfe28effd6783f0734bac66dad5b252ee42c42aa5a5",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              7.63333123551244e-14,
+              4.579998741307465e-13
+            ]
+          }
+        },
+        {
+          "ref": "Norway — Finnskog Rally Roads — Stage 4",
+          "id": "rally-section-norway-4",
+          "lengthM": 7269.496676768131,
+          "parentRef": "Norway — Finnskog Rally Roads — Svullrya — Road Recreation",
+          "firstNode": 0,
+          "lastNode": 185,
+          "startDistanceM": 0,
+          "endDistanceM": 7269.496676768131,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "0178db326ff6a7db88ac5ef4e9d04c749b82d160915562a03a4392ecb30d8ac7",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              5.786866111324669,
+              1.831999496522986e-12
+            ]
+          }
+        },
+        {
+          "ref": "Norway — Finnskog Rally Roads — Stage 5",
+          "id": "rally-section-norway-5",
+          "lengthM": 7024.956327007938,
+          "parentRef": "Norway — Finnskog Rally Roads — Svullrya — Road Recreation",
+          "firstNode": 185,
+          "lastNode": 376,
+          "startDistanceM": 7269.496676768131,
+          "endDistanceM": 14294.453003776069,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "0178db326ff6a7db88ac5ef4e9d04c749b82d160915562a03a4392ecb30d8ac7",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.3790549017347105e-12,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Norway — Finnskog Rally Roads — Stage 6",
+          "id": "rally-section-norway-6",
+          "lengthM": 7149.73672778551,
+          "parentRef": "Norway — Finnskog Rally Roads — Svullrya — Road Recreation",
+          "firstNode": 376,
+          "lastNode": 571,
+          "startDistanceM": 14294.453003776069,
+          "endDistanceM": 21444.18973156158,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "0178db326ff6a7db88ac5ef4e9d04c749b82d160915562a03a4392ecb30d8ac7",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              3.6894434304976796e-13,
+              5.088887490341627e-13
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "chile",
+      "name": "Rally Chile",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Rally Chile — Stage 1",
+          "id": "rally-section-chile-1",
+          "lengthM": 3332.14258135583,
+          "parentRef": "Rally Chile — Conuco — Forest Road Recreation",
+          "firstNode": 0,
+          "lastNode": 98,
+          "startDistanceM": 0,
+          "endDistanceM": 3332.14258135583,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "2f8b975ca1f5b3bbfab7568d2ffc14b2fbc313ec389044a8146942a0d52d231c",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              9.44306354861489,
+              6.997220299219737e-13
+            ]
+          }
+        },
+        {
+          "ref": "Rally Chile — Stage 2",
+          "id": "rally-section-chile-2",
+          "lengthM": 3396.9164302702593,
+          "parentRef": "Rally Chile — Conuco — Forest Road Recreation",
+          "firstNode": 98,
+          "lastNode": 194,
+          "startDistanceM": 3332.14258135583,
+          "endDistanceM": 6729.059011626089,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "2f8b975ca1f5b3bbfab7568d2ffc14b2fbc313ec389044a8146942a0d52d231c",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              6.742775924702655e-13,
+              8.303290792643056
+            ]
+          }
+        },
+        {
+          "ref": "Rally Chile — Stage 3",
+          "id": "rally-section-chile-3",
+          "lengthM": 3382.1119219451857,
+          "parentRef": "Rally Chile — Conuco — Outer Forest Roads",
+          "firstNode": 0,
+          "lastNode": 99,
+          "startDistanceM": 0,
+          "endDistanceM": 3382.1119219451857,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "b1ad75e4d459e7e085ce779d1b624cfc89485c3310ee5660f296be05d3cdc28a",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.5444437451708134e-14,
+              1.2722218725854067e-13
+            ]
+          }
+        },
+        {
+          "ref": "Rally Chile — Stage 4",
+          "id": "rally-section-chile-4",
+          "lengthM": 3157.3752235079573,
+          "parentRef": "Rally Chile — Conuco — Outer Forest Roads",
+          "firstNode": 99,
+          "lastNode": 193,
+          "startDistanceM": 3382.1119219451857,
+          "endDistanceM": 6539.487145453143,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "b1ad75e4d459e7e085ce779d1b624cfc89485c3310ee5660f296be05d3cdc28a",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              0.0,
+              8.001631569408882
+            ]
+          }
+        },
+        {
+          "ref": "Rally Chile — Stage 5",
+          "id": "rally-section-chile-5",
+          "lengthM": 2958.539063590996,
+          "parentRef": "Rally Chile — Conuco — Outer Forest Roads",
+          "firstNode": 193,
+          "lastNode": 263,
+          "startDistanceM": 6539.487145453143,
+          "endDistanceM": 9498.02620904414,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "b1ad75e4d459e7e085ce779d1b624cfc89485c3310ee5660f296be05d3cdc28a",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              8.001631569408557,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Rally Chile — Stage 6",
+          "id": "rally-section-chile-6",
+          "lengthM": 3304.8657155024994,
+          "parentRef": "Rally Chile — Conuco — Outer Forest Roads",
+          "firstNode": 263,
+          "lastNode": 361,
+          "startDistanceM": 9498.02620904414,
+          "endDistanceM": 12802.891924546639,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "b1ad75e4d459e7e085ce779d1b624cfc89485c3310ee5660f296be05d3cdc28a",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.526666247102488e-13,
+              3.6894434304976796e-13
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "safari-kenya",
+      "name": "Safari Rally Kenya",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Safari Rally Kenya — Stage 1",
+          "id": "rally-section-safari-kenya-1",
+          "lengthM": 1761.318641752665,
+          "parentRef": "Safari Rally Kenya — Hell’s Gate — Road Recreation",
+          "firstNode": 0,
+          "lastNode": 46,
+          "startDistanceM": 0,
+          "endDistanceM": 1761.318641752665,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "6a34dc1412c9b69468e2cdbc3822e62c94d0edf42433d83f8b40c7f4f8434c8b",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.90833280887811e-14,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Safari Rally Kenya — Stage 2",
+          "id": "rally-section-safari-kenya-2",
+          "lengthM": 1708.8418081895647,
+          "parentRef": "Safari Rally Kenya — Hell’s Gate — Road Recreation",
+          "firstNode": 46,
+          "lastNode": 85,
+          "startDistanceM": 1761.318641752665,
+          "endDistanceM": 3470.1604499422297,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "6a34dc1412c9b69468e2cdbc3822e62c94d0edf42433d83f8b40c7f4f8434c8b",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.0813885916975958e-13,
+              5.979442801151411e-13
+            ]
+          }
+        },
+        {
+          "ref": "Safari Rally Kenya — Stage 3",
+          "id": "rally-section-safari-kenya-3",
+          "lengthM": 1856.2299331985637,
+          "parentRef": "Safari Rally Kenya — Hell’s Gate — Road Recreation",
+          "firstNode": 85,
+          "lastNode": 129,
+          "startDistanceM": 3470.1604499422297,
+          "endDistanceM": 5326.390383140793,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "6a34dc1412c9b69468e2cdbc3822e62c94d0edf42433d83f8b40c7f4f8434c8b",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              7.124442486478278e-13,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Safari Rally Kenya — Stage 4",
+          "id": "rally-section-safari-kenya-4",
+          "lengthM": 1613.2293472762967,
+          "parentRef": "Safari Rally Kenya — Hell’s Gate — Road Recreation",
+          "firstNode": 129,
+          "lastNode": 171,
+          "startDistanceM": 5326.390383140793,
+          "endDistanceM": 6939.61973041709,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "6a34dc1412c9b69468e2cdbc3822e62c94d0edf42433d83f8b40c7f4f8434c8b",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              7.63333123551244e-14,
+              3.8166656177562204e-13
+            ]
+          }
+        },
+        {
+          "ref": "Safari Rally Kenya — Stage 5",
+          "id": "rally-section-safari-kenya-5",
+          "lengthM": 1794.0401624085926,
+          "parentRef": "Safari Rally Kenya — Hell’s Gate — Road Recreation",
+          "firstNode": 171,
+          "lastNode": 212,
+          "startDistanceM": 6939.61973041709,
+          "endDistanceM": 8733.659892825683,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "6a34dc1412c9b69468e2cdbc3822e62c94d0edf42433d83f8b40c7f4f8434c8b",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.5444437451708134e-13,
+              1.2499579898151621e-12
+            ]
+          }
+        },
+        {
+          "ref": "Safari Rally Kenya — Stage 6",
+          "id": "rally-section-safari-kenya-6",
+          "lengthM": 1780.2558738725056,
+          "parentRef": "Safari Rally Kenya — Hell’s Gate — Road Recreation",
+          "firstNode": 212,
+          "lastNode": 251,
+          "startDistanceM": 8733.659892825683,
+          "endDistanceM": 10513.915766698188,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "6a34dc1412c9b69468e2cdbc3822e62c94d0edf42433d83f8b40c7f4f8434c8b",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              7.410692407809994e-13,
+              1.0177774980683254e-13
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "japan-hokkaido",
+      "name": "Rally Japan — Hokkaido",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Rally Japan — Hokkaido — Stage 1",
+          "id": "rally-section-japan-hokkaido-1",
+          "lengthM": 4390.103480165932,
+          "parentRef": "Rally Japan — Hokkaido — Bisan — Road Recreation",
+          "firstNode": 0,
+          "lastNode": 131,
+          "startDistanceM": 0,
+          "endDistanceM": 4390.103480165932,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "fb61b1a9f525862bf98a9732eff6854087595e7d085c30e56cfddb39e7080659",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              6.629817754267126,
+              2.5444437451708134e-14
+            ]
+          }
+        },
+        {
+          "ref": "Rally Japan — Hokkaido — Stage 2",
+          "id": "rally-section-japan-hokkaido-2",
+          "lengthM": 3431.763009462226,
+          "parentRef": "Rally Japan — Hokkaido — Naekawa — Road Recreation",
+          "firstNode": 0,
+          "lastNode": 82,
+          "startDistanceM": 0,
+          "endDistanceM": 3431.763009462226,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "979a72837d950f293573229cd0e347739bb4a28030ad7d7b5bb9b6063b629887",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              9.450434272036128,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Rally Japan — Hokkaido — Stage 3",
+          "id": "rally-section-japan-hokkaido-3",
+          "lengthM": 3639.975346291302,
+          "parentRef": "Rally Japan — Hokkaido — Naekawa — Road Recreation",
+          "firstNode": 82,
+          "lastNode": 207,
+          "startDistanceM": 3431.763009462226,
+          "endDistanceM": 7071.738355753528,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "979a72837d950f293573229cd0e347739bb4a28030ad7d7b5bb9b6063b629887",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.335832966214677e-13,
+              2.5444437451708134e-14
+            ]
+          }
+        },
+        {
+          "ref": "Rally Japan — Hokkaido — Stage 4",
+          "id": "rally-section-japan-hokkaido-4",
+          "lengthM": 3988.1223832071073,
+          "parentRef": "Rally Japan — Hokkaido — Naekawa — Road Recreation",
+          "firstNode": 207,
+          "lastNode": 380,
+          "startDistanceM": 7071.738355753528,
+          "endDistanceM": 11059.860738960635,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "979a72837d950f293573229cd0e347739bb4a28030ad7d7b5bb9b6063b629887",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              5.72499842663433e-13,
+              7.633331235512441e-13
+            ]
+          }
+        },
+        {
+          "ref": "Rally Japan — Hokkaido — Stage 5",
+          "id": "rally-section-japan-hokkaido-5",
+          "lengthM": 2218.7175944964656,
+          "parentRef": "Rally Japan — Hokkaido — Naekawa — Road Recreation",
+          "firstNode": 380,
+          "lastNode": 481,
+          "startDistanceM": 11059.860738960635,
+          "endDistanceM": 13278.5783334571,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "979a72837d950f293573229cd0e347739bb4a28030ad7d7b5bb9b6063b629887",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.1958885602302823e-12,
+              5.352316412233748
+            ]
+          }
+        },
+        {
+          "ref": "Rally Japan — Hokkaido — Stage 6",
+          "id": "rally-section-japan-hokkaido-6",
+          "lengthM": 4001.768402201049,
+          "parentRef": "Rally Japan — Hokkaido — Naekawa — Road Recreation",
+          "firstNode": 481,
+          "lastNode": 634,
+          "startDistanceM": 13278.5783334571,
+          "endDistanceM": 17280.34673565815,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "979a72837d950f293573229cd0e347739bb4a28030ad7d7b5bb9b6063b629887",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              5.352316412233765,
+              4.0711099922733015e-13
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "turkey",
+      "name": "Rally Turkey",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Rally Turkey — Stage 1",
+          "id": "rally-section-turkey-1",
+          "lengthM": 7973.552884742324,
+          "parentRef": "Rally Turkey — Ula 2019",
+          "firstNode": 0,
+          "lastNode": 343,
+          "startDistanceM": 0,
+          "endDistanceM": 7973.552884742324,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "952687c7e1bac9d8907049c4c3fcdd3a03e67b15dadd29173e0fd86a67f67ba9",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              6.361109362927034e-14,
+              7.90442233372957
+            ]
+          }
+        },
+        {
+          "ref": "Rally Turkey — Stage 2",
+          "id": "rally-section-turkey-2",
+          "lengthM": 7829.308887393373,
+          "parentRef": "Rally Turkey — Ula 2019",
+          "firstNode": 343,
+          "lastNode": 631,
+          "startDistanceM": 7973.552884742324,
+          "endDistanceM": 15802.861772135697,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "952687c7e1bac9d8907049c4c3fcdd3a03e67b15dadd29173e0fd86a67f67ba9",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              7.904422333729619,
+              6.45431544616483
+            ]
+          }
+        },
+        {
+          "ref": "Rally Turkey — Stage 3",
+          "id": "rally-section-turkey-3",
+          "lengthM": 13126.50485530314,
+          "parentRef": "Rally Turkey — Çiçekli 2019",
+          "firstNode": 0,
+          "lastNode": 569,
+          "startDistanceM": 0,
+          "endDistanceM": 13126.50485530314,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "d67153a829ba7b8a68cb50e1d07c2230672fa9a56156f55946d093b90586ac5c",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              45.42244855393253,
+              19.857334484432435
+            ]
+          }
+        },
+        {
+          "ref": "Rally Turkey — Stage 4",
+          "id": "rally-section-turkey-4",
+          "lengthM": 7991.960742412118,
+          "parentRef": "Rally Turkey — İçmeler 2019",
+          "firstNode": 0,
+          "lastNode": 320,
+          "startDistanceM": 0,
+          "endDistanceM": 7991.960742412118,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "652c7d786a5fcf59372029355a118b4b1c1d9285c13a705d80731d32a5fa6f66",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.205016277263888,
+              6.281595495890446e-13
+            ]
+          }
+        },
+        {
+          "ref": "Rally Turkey — Stage 5",
+          "id": "rally-section-turkey-5",
+          "lengthM": 7991.645346838707,
+          "parentRef": "Rally Turkey — İçmeler 2019",
+          "firstNode": 320,
+          "lastNode": 626,
+          "startDistanceM": 7991.960742412118,
+          "endDistanceM": 15983.606089250825,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "652c7d786a5fcf59372029355a118b4b1c1d9285c13a705d80731d32a5fa6f66",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.6557631590220366e-13,
+              1.3994440598439475e-13
+            ]
+          }
+        },
+        {
+          "ref": "Rally Turkey — Stage 6",
+          "id": "rally-section-turkey-6",
+          "lengthM": 8059.840058237583,
+          "parentRef": "Rally Turkey — İçmeler 2019",
+          "firstNode": 626,
+          "lastNode": 933,
+          "startDistanceM": 15983.606089250825,
+          "endDistanceM": 24043.44614748841,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "652c7d786a5fcf59372029355a118b4b1c1d9285c13a705d80731d32a5fa6f66",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              3.053332494204976e-13,
+              0.0
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "spain",
+      "name": "Rally Spain",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Rally Spain — Stage 1",
+          "id": "rally-section-spain-1",
+          "lengthM": 2302.1231379133687,
+          "parentRef": "Rally Spain — La Fatarella–Vilalba — Sant Francesc Road",
+          "firstNode": 0,
+          "lastNode": 57,
+          "startDistanceM": 0,
+          "endDistanceM": 2302.1231379133687,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "36773a198eb23655fdadea028079dff4e0066c9dbad1a85aa96f5d64f9f617f3",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              0.0,
+              1.526666247102488e-13
+            ]
+          }
+        },
+        {
+          "ref": "Rally Spain — Stage 2",
+          "id": "rally-section-spain-2",
+          "lengthM": 2287.1553796010467,
+          "parentRef": "Rally Spain — La Fatarella–Vilalba — Sant Francesc Road",
+          "firstNode": 57,
+          "lastNode": 114,
+          "startDistanceM": 2302.1231379133687,
+          "endDistanceM": 4589.278517514415,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "36773a198eb23655fdadea028079dff4e0066c9dbad1a85aa96f5d64f9f617f3",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.526666247102488e-13,
+              7.731132441617015
+            ]
+          }
+        },
+        {
+          "ref": "Rally Spain — Stage 3",
+          "id": "rally-section-spain-3",
+          "lengthM": 2539.5102417806083,
+          "parentRef": "Rally Spain — La Fatarella–Vilalba — Sant Francesc Road",
+          "firstNode": 114,
+          "lastNode": 181,
+          "startDistanceM": 4589.278517514415,
+          "endDistanceM": 7128.788759295024,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "36773a198eb23655fdadea028079dff4e0066c9dbad1a85aa96f5d64f9f617f3",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              7.731132441616456,
+              9.960094589014739
+            ]
+          }
+        },
+        {
+          "ref": "Rally Spain — Stage 4",
+          "id": "rally-section-spain-4",
+          "lengthM": 2159.945732347519,
+          "parentRef": "Rally Spain — La Fatarella–Vilalba — Sant Francesc Road",
+          "firstNode": 181,
+          "lastNode": 235,
+          "startDistanceM": 7128.788759295024,
+          "endDistanceM": 9288.734491642543,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "36773a198eb23655fdadea028079dff4e0066c9dbad1a85aa96f5d64f9f617f3",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              9.960094589014867,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Rally Spain — Stage 5",
+          "id": "rally-section-spain-5",
+          "lengthM": 2366.1061949872146,
+          "parentRef": "Rally Spain — La Fatarella–Vilalba — Sant Francesc Road",
+          "firstNode": 235,
+          "lastNode": 296,
+          "startDistanceM": 9288.734491642543,
+          "endDistanceM": 11654.840686629757,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "36773a198eb23655fdadea028079dff4e0066c9dbad1a85aa96f5d64f9f617f3",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.5444437451708134e-13,
+              5.870093154494371
+            ]
+          }
+        },
+        {
+          "ref": "Rally Spain — Stage 6",
+          "id": "rally-section-spain-6",
+          "lengthM": 2435.302623591846,
+          "parentRef": "Rally Spain — La Fatarella–Vilalba — Sant Francesc Road",
+          "firstNode": 296,
+          "lastNode": 359,
+          "startDistanceM": 11654.840686629757,
+          "endDistanceM": 14090.143310221603,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "36773a198eb23655fdadea028079dff4e0066c9dbad1a85aa96f5d64f9f617f3",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              5.870093154494035,
+              7.034162538913696
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "wales",
+      "name": "Wales — Sweet Lamb/Hafren",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Wales — Sweet Lamb/Hafren — Stage 1",
+          "id": "rally-section-wales-1",
+          "lengthM": 3127.0774834057174,
+          "parentRef": "Wales — Sweet LambHafren — Sweet Lamb–Hafren — Western Section",
+          "firstNode": 0,
+          "lastNode": 89,
+          "startDistanceM": 0,
+          "endDistanceM": 3127.0774834057174,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "d53890334079b480e1a0f5855d8decc6c79debde9b819efa3a566e03d21c6d87",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              3.626583012793123,
+              2.5444437451708134e-13
+            ]
+          }
+        },
+        {
+          "ref": "Wales — Sweet Lamb/Hafren — Stage 2",
+          "id": "rally-section-wales-2",
+          "lengthM": 3392.9645060778403,
+          "parentRef": "Wales — Sweet LambHafren — Sweet Lamb–Hafren — Western Section",
+          "firstNode": 89,
+          "lastNode": 185,
+          "startDistanceM": 3127.0774834057174,
+          "endDistanceM": 6520.041989483558,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "d53890334079b480e1a0f5855d8decc6c79debde9b819efa3a566e03d21c6d87",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.0711099922733015e-13,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Wales — Sweet Lamb/Hafren — Stage 3",
+          "id": "rally-section-wales-3",
+          "lengthM": 2608.9969352418366,
+          "parentRef": "Wales — Sweet LambHafren — Hafren — Forest Traverse",
+          "firstNode": 0,
+          "lastNode": 64,
+          "startDistanceM": 0,
+          "endDistanceM": 2608.9969352418366,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ece4b9db928e2c9adf4974233c3a439cf96c40c6778053299aa067718ded10fc",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              0.0,
+              2.5444437451708134e-13
+            ]
+          }
+        },
+        {
+          "ref": "Wales — Sweet Lamb/Hafren — Stage 4",
+          "id": "rally-section-wales-4",
+          "lengthM": 2704.821758756885,
+          "parentRef": "Wales — Sweet LambHafren — Hafren — Forest Traverse",
+          "firstNode": 64,
+          "lastNode": 144,
+          "startDistanceM": 2608.9969352418366,
+          "endDistanceM": 5313.818693998722,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ece4b9db928e2c9adf4974233c3a439cf96c40c6778053299aa067718ded10fc",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.9083328088781102e-13,
+              9.563517098755174
+            ]
+          }
+        },
+        {
+          "ref": "Wales — Sweet Lamb/Hafren — Stage 5",
+          "id": "rally-section-wales-5",
+          "lengthM": 2582.634577166128,
+          "parentRef": "Wales — Sweet LambHafren — Hafren — Forest Traverse",
+          "firstNode": 144,
+          "lastNode": 221,
+          "startDistanceM": 5313.818693998722,
+          "endDistanceM": 7896.45327116485,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ece4b9db928e2c9adf4974233c3a439cf96c40c6778053299aa067718ded10fc",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              9.563517098755257,
+              6.453466941731304
+            ]
+          }
+        },
+        {
+          "ref": "Wales — Sweet Lamb/Hafren — Stage 6",
+          "id": "rally-section-wales-6",
+          "lengthM": 2547.798176341601,
+          "parentRef": "Wales — Sweet LambHafren — Hafren — Forest Traverse",
+          "firstNode": 221,
+          "lastNode": 297,
+          "startDistanceM": 7896.45327116485,
+          "endDistanceM": 10444.25144750645,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ece4b9db928e2c9adf4974233c3a439cf96c40c6778053299aa067718ded10fc",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              6.453466941731192,
+              0.0
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "germany",
+      "name": "Rally Germany",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Rally Germany — Stage 1",
+          "id": "rally-section-germany-1",
+          "lengthM": 1647.0546445225643,
+          "parentRef": "Rally Germany — Panzerplatte — Range Road Section",
+          "firstNode": 0,
+          "lastNode": 34,
+          "startDistanceM": 0,
+          "endDistanceM": 1647.0546445225643,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "6fd0dee164fb81266292049ad3a08545942af8ecbb491b43c838045c3cc9429a",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              0.0,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Rally Germany — Stage 2",
+          "id": "rally-section-germany-2",
+          "lengthM": 1583.1916995976933,
+          "parentRef": "Rally Germany — Panzerplatte — Range Road Section",
+          "firstNode": 34,
+          "lastNode": 68,
+          "startDistanceM": 1647.0546445225643,
+          "endDistanceM": 3230.2463441202576,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "6fd0dee164fb81266292049ad3a08545942af8ecbb491b43c838045c3cc9429a",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              7.63333123551244e-14,
+              2.827878968025972
+            ]
+          }
+        },
+        {
+          "ref": "Rally Germany — Stage 3",
+          "id": "rally-section-germany-3",
+          "lengthM": 1634.5767793087039,
+          "parentRef": "Rally Germany — Panzerplatte — Range Road Section",
+          "firstNode": 68,
+          "lastNode": 115,
+          "startDistanceM": 3230.2463441202576,
+          "endDistanceM": 4864.8231234289615,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "6fd0dee164fb81266292049ad3a08545942af8ecbb491b43c838045c3cc9429a",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.8278789680261758,
+              4.9166587198592
+            ]
+          }
+        },
+        {
+          "ref": "Rally Germany — Stage 4",
+          "id": "rally-section-germany-4",
+          "lengthM": 1885.7715856643279,
+          "parentRef": "Rally Germany — Baumholder — Concrete Range Roads",
+          "firstNode": 0,
+          "lastNode": 55,
+          "startDistanceM": 0,
+          "endDistanceM": 1885.7715856643279,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "94c6da900a7cd9158219f14c684ab7dbd789cb2243ea11982a81b5b5ef1de272",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              3.2685272798294527,
+              3.4072992532989406
+            ]
+          }
+        },
+        {
+          "ref": "Rally Germany — Stage 5",
+          "id": "rally-section-germany-5",
+          "lengthM": 2069.3405376713263,
+          "parentRef": "Rally Germany — Baumholder — Concrete Range Roads",
+          "firstNode": 55,
+          "lastNode": 115,
+          "startDistanceM": 1885.7715856643279,
+          "endDistanceM": 3955.1121233356544,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "94c6da900a7cd9158219f14c684ab7dbd789cb2243ea11982a81b5b5ef1de272",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              3.407299253309118,
+              4.244339423291369
+            ]
+          }
+        },
+        {
+          "ref": "Rally Germany — Stage 6",
+          "id": "rally-section-germany-6",
+          "lengthM": 1744.6446686592808,
+          "parentRef": "Rally Germany — Baumholder — Concrete Range Roads",
+          "firstNode": 115,
+          "lastNode": 170,
+          "startDistanceM": 3955.1121233356544,
+          "endDistanceM": 5699.756791994935,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "94c6da900a7cd9158219f14c684ab7dbd789cb2243ea11982a81b5b5ef1de272",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.244339423289856,
+              2.798888119687895e-13
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "japan-aichi",
+      "name": "Rally Japan — Aichi",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Rally Japan — Aichi — Stage 1",
+          "id": "rally-section-japan-aichi-1",
+          "lengthM": 1768.9799165790516,
+          "parentRef": "Rally Japan — Aichi — Otaga — Mountain Roads",
+          "firstNode": 0,
+          "lastNode": 67,
+          "startDistanceM": 0,
+          "endDistanceM": 1768.9799165790516,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "3b151c369fee44314d5f12058243a826d97aaba8061b817e9aa80f498bed2f92",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              8.390652070829091,
+              22.966176406533734
+            ],
+            "remainingReview": "No nearby straight with 35 m grid approach and 40 m finish runout; original geography retained."
+          }
+        },
+        {
+          "ref": "Rally Japan — Aichi — Stage 2",
+          "id": "rally-section-japan-aichi-2",
+          "lengthM": 1817.374872193118,
+          "parentRef": "Rally Japan — Aichi — Otaga — Mountain Roads",
+          "firstNode": 67,
+          "lastNode": 140,
+          "startDistanceM": 1768.9799165790516,
+          "endDistanceM": 3586.3547887721697,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "3b151c369fee44314d5f12058243a826d97aaba8061b817e9aa80f498bed2f92",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              22.966176406533755,
+              2.9225385678186835
+            ],
+            "remainingReview": "No nearby straight with 35 m grid approach and 40 m finish runout; original geography retained."
+          }
+        },
+        {
+          "ref": "Rally Japan — Aichi — Stage 3",
+          "id": "rally-section-japan-aichi-3",
+          "lengthM": 1522.3620858001423,
+          "parentRef": "Rally Japan — Aichi — Otaga — Mountain Roads",
+          "firstNode": 140,
+          "lastNode": 199,
+          "startDistanceM": 3586.3547887721697,
+          "endDistanceM": 5108.716874572312,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "3b151c369fee44314d5f12058243a826d97aaba8061b817e9aa80f498bed2f92",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.9225385678183025,
+              4.055207218865984e-14
+            ]
+          }
+        },
+        {
+          "ref": "Rally Japan — Aichi — Stage 4",
+          "id": "rally-section-japan-aichi-4",
+          "lengthM": 1643.7468168801215,
+          "parentRef": "Rally Japan — Aichi — Otaga — Mountain Roads",
+          "firstNode": 199,
+          "lastNode": 247,
+          "startDistanceM": 5108.716874572312,
+          "endDistanceM": 6752.4636914524335,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "3b151c369fee44314d5f12058243a826d97aaba8061b817e9aa80f498bed2f92",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              3.657637883683044e-14,
+              1.0177774980683254e-13
+            ]
+          }
+        },
+        {
+          "ref": "Rally Japan — Aichi — Stage 5",
+          "id": "rally-section-japan-aichi-5",
+          "lengthM": 1311.4828415822756,
+          "parentRef": "Rally Japan — Aichi — Otaga — Mountain Roads",
+          "firstNode": 247,
+          "lastNode": 281,
+          "startDistanceM": 6752.4636914524335,
+          "endDistanceM": 8063.946533034709,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "3b151c369fee44314d5f12058243a826d97aaba8061b817e9aa80f498bed2f92",
+          "linePlacement": {
+            "beforeDegrees": [
+              0.0,
+              30.73
+            ],
+            "lengthBeforeM": 1508.33,
+            "lineWindowsM": [
+              80,
+              40
+            ],
+            "corridorDegrees": [
+              0.0,
+              0.0
+            ],
+            "trimStartM": 0,
+            "trimFinishM": 196.85,
+            "status": "adjusted",
+            "afterDegrees": [
+              0.0,
+              0.0
+            ],
+            "lengthAfterM": 1311.48,
+            "method": "existing-road-straight-v2",
+            "surveyedStartLine": false,
+            "geometrySignature": "e902af4eaf4fdbfd044104ea726d0920c28e3eb88b203c0a6f6518adcbda5622"
+          }
+        },
+        {
+          "ref": "Rally Japan — Aichi — Stage 6",
+          "id": "rally-section-japan-aichi-6",
+          "lengthM": 1888.3349627837651,
+          "parentRef": "Rally Japan — Aichi — Otaga — Mountain Roads",
+          "firstNode": 286,
+          "lastNode": 359,
+          "startDistanceM": 8260.797609477597,
+          "endDistanceM": 10149.132572261362,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "3b151c369fee44314d5f12058243a826d97aaba8061b817e9aa80f498bed2f92",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              16.54804501933891,
+              7.094097337250624
+            ],
+            "remainingReview": "No nearby straight with 35 m grid approach and 40 m finish runout; original geography retained."
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "100-acre-wood",
+      "name": "100 Acre Wood Rally",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "100 Acre Wood Rally — Stage 1",
+          "id": "rally-section-100-acre-wood-1",
+          "lengthM": 2994.300616649894,
+          "parentRef": "100 Acre Wood Rally — Cattle Guard — Ollie Coleman Road",
+          "firstNode": 0,
+          "lastNode": 68,
+          "startDistanceM": 0,
+          "endDistanceM": 2994.300616649894,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "9de408b49128b8a77e4856f031da9597d299e383214b75c100e7400632a7059b",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              0.0,
+              8.52709935364647
+            ]
+          }
+        },
+        {
+          "ref": "100 Acre Wood Rally — Stage 2",
+          "id": "rally-section-100-acre-wood-2",
+          "lengthM": 3041.369698950484,
+          "parentRef": "100 Acre Wood Rally — Cattle Guard — Ollie Coleman Road",
+          "firstNode": 68,
+          "lastNode": 133,
+          "startDistanceM": 2994.300616649894,
+          "endDistanceM": 6035.670315600378,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "9de408b49128b8a77e4856f031da9597d299e383214b75c100e7400632a7059b",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              8.527099353646062,
+              5.852220613892871e-13
+            ]
+          }
+        },
+        {
+          "ref": "100 Acre Wood Rally — Stage 3",
+          "id": "rally-section-100-acre-wood-3",
+          "lengthM": 2123.776471114994,
+          "parentRef": "100 Acre Wood Rally — K P Road — Northern Section",
+          "firstNode": 0,
+          "lastNode": 47,
+          "startDistanceM": 0,
+          "endDistanceM": 2123.776471114994,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "58ff2b4fbe96614debc1b1dd5ee6280f7851f77daa5926c88e8a6ef2a22c6e95",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.987846675914698e-16,
+              3.053332494204976e-13
+            ]
+          }
+        },
+        {
+          "ref": "100 Acre Wood Rally — Stage 4",
+          "id": "rally-section-100-acre-wood-4",
+          "lengthM": 2179.303484107202,
+          "parentRef": "100 Acre Wood Rally — K P Road — Northern Section",
+          "firstNode": 47,
+          "lastNode": 93,
+          "startDistanceM": 2123.776471114994,
+          "endDistanceM": 4303.079955222196,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "58ff2b4fbe96614debc1b1dd5ee6280f7851f77daa5926c88e8a6ef2a22c6e95",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              3.053332494204976e-13,
+              7.63333123551244e-14
+            ]
+          }
+        },
+        {
+          "ref": "100 Acre Wood Rally — Stage 5",
+          "id": "rally-section-100-acre-wood-5",
+          "lengthM": 2085.4227418785267,
+          "parentRef": "100 Acre Wood Rally — K P Road — Northern Section",
+          "firstNode": 93,
+          "lastNode": 140,
+          "startDistanceM": 4303.079955222196,
+          "endDistanceM": 6388.502697100723,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "58ff2b4fbe96614debc1b1dd5ee6280f7851f77daa5926c88e8a6ef2a22c6e95",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.2722218725854067e-14,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "100 Acre Wood Rally — Stage 6",
+          "id": "rally-section-100-acre-wood-6",
+          "lengthM": 2104.1800665273677,
+          "parentRef": "100 Acre Wood Rally — K P Road — Northern Section",
+          "firstNode": 140,
+          "lastNode": 185,
+          "startDistanceM": 6388.502697100723,
+          "endDistanceM": 8492.68276362809,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "58ff2b4fbe96614debc1b1dd5ee6280f7851f77daa5926c88e8a6ef2a22c6e95",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.2722218725854067e-14,
+              0.0
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "ojibwe",
+      "name": "Ojibwe Forests Rally",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Ojibwe Forests Rally — Stage 1",
+          "id": "rally-section-ojibwe-1",
+          "lengthM": 1502.9110287429562,
+          "parentRef": "Ojibwe Forests Rally — Steamboat — Forest Road Section",
+          "firstNode": 0,
+          "lastNode": 35,
+          "startDistanceM": 0,
+          "endDistanceM": 1502.9110287429562,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "cb512d067ae8b4e7a850285ac7fede5b30a7f5e4d5d51fdab3e5cff2baa7c964",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              6.3611093629270335e-15,
+              18.307914896733845
+            ]
+          }
+        },
+        {
+          "ref": "Ojibwe Forests Rally — Stage 2",
+          "id": "rally-section-ojibwe-2",
+          "lengthM": 1237.997121322234,
+          "parentRef": "Ojibwe Forests Rally — Steamboat — Forest Road Section",
+          "firstNode": 39,
+          "lastNode": 70,
+          "startDistanceM": 1674.0579380279696,
+          "endDistanceM": 2912.055059350204,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "cb512d067ae8b4e7a850285ac7fede5b30a7f5e4d5d51fdab3e5cff2baa7c964",
+          "linePlacement": {
+            "beforeDegrees": [
+              13.5,
+              15.44
+            ],
+            "lengthBeforeM": 1515.75,
+            "lineWindowsM": [
+              40,
+              40
+            ],
+            "corridorDegrees": [
+              0.0,
+              0.0
+            ],
+            "trimStartM": 171.15,
+            "trimFinishM": 106.6,
+            "status": "adjusted",
+            "afterDegrees": [
+              0.0,
+              0.0
+            ],
+            "lengthAfterM": 1238.0,
+            "method": "existing-road-straight-v2",
+            "surveyedStartLine": false,
+            "geometrySignature": "98d653fdf9429ccd00224f33b70cf97508a57562e5074ef16d6c670a62af022b"
+          }
+        },
+        {
+          "ref": "Ojibwe Forests Rally — Stage 3",
+          "id": "rally-section-ojibwe-3",
+          "lengthM": 1461.2562075702547,
+          "parentRef": "Ojibwe Forests Rally — Steamboat — Forest Road Section",
+          "firstNode": 76,
+          "lastNode": 108,
+          "startDistanceM": 3137.525226997176,
+          "endDistanceM": 4598.78143456743,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "cb512d067ae8b4e7a850285ac7fede5b30a7f5e4d5d51fdab3e5cff2baa7c964",
+          "linePlacement": {
+            "beforeDegrees": [
+              36.45,
+              6.79
+            ],
+            "lengthBeforeM": 1580.13,
+            "lineWindowsM": [
+              80,
+              80
+            ],
+            "corridorDegrees": [
+              4.91,
+              6.79
+            ],
+            "trimStartM": 118.87,
+            "trimFinishM": 0.0,
+            "status": "adjusted",
+            "afterDegrees": [
+              0.0,
+              6.79
+            ],
+            "lengthAfterM": 1461.26,
+            "method": "existing-road-straight-v2",
+            "surveyedStartLine": false,
+            "geometrySignature": "42cfbea8f64cb1daee2c6408b6cd8c9ead974bd5938152d9a2fe4b1c55861cd6"
+          }
+        },
+        {
+          "ref": "Ojibwe Forests Rally — Stage 4",
+          "id": "rally-section-ojibwe-4",
+          "lengthM": 1588.9756452579968,
+          "parentRef": "Ojibwe Forests Rally — Steamboat — Forest Road Section",
+          "firstNode": 108,
+          "lastNode": 144,
+          "startDistanceM": 4598.78143456743,
+          "endDistanceM": 6187.757079825426,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "cb512d067ae8b4e7a850285ac7fede5b30a7f5e4d5d51fdab3e5cff2baa7c964",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              5.470554052117249e-13,
+              8.909996543859224
+            ]
+          }
+        },
+        {
+          "ref": "Ojibwe Forests Rally — Stage 5",
+          "id": "rally-section-ojibwe-5",
+          "lengthM": 1536.593664081547,
+          "parentRef": "Ojibwe Forests Rally — Steamboat — Forest Road Section",
+          "firstNode": 144,
+          "lastNode": 181,
+          "startDistanceM": 6187.757079825426,
+          "endDistanceM": 7724.350743906974,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "cb512d067ae8b4e7a850285ac7fede5b30a7f5e4d5d51fdab3e5cff2baa7c964",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              8.909996543861883,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Ojibwe Forests Rally — Stage 6",
+          "id": "rally-section-ojibwe-6",
+          "lengthM": 1544.1019951754179,
+          "parentRef": "Ojibwe Forests Rally — Steamboat — Forest Road Section",
+          "firstNode": 181,
+          "lastNode": 216,
+          "startDistanceM": 7724.350743906974,
+          "endDistanceM": 9268.452739082391,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "cb512d067ae8b4e7a850285ac7fede5b30a7f5e4d5d51fdab3e5cff2baa7c964",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.9261103069464353e-13,
+              6.710054471783126
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "latvia",
+      "name": "Rally Latvia",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Rally Latvia — Stage 1",
+          "id": "rally-section-latvia-1",
+          "lengthM": 4726.71146516741,
+          "parentRef": "Rally Latvia — Milzkalne 2024",
+          "firstNode": 0,
+          "lastNode": 140,
+          "startDistanceM": 0,
+          "endDistanceM": 4726.71146516741,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ff6d3e9b400c0e86a50cc2bbf65c2f5ae00371222c96092525a4aef2bbdb63f3",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              0.0,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Rally Latvia — Stage 2",
+          "id": "rally-section-latvia-2",
+          "lengthM": 9082.621774559988,
+          "parentRef": "Rally Latvia — Tukums 2024",
+          "firstNode": 0,
+          "lastNode": 252,
+          "startDistanceM": 0,
+          "endDistanceM": 9082.621774559988,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ab7d41fea927a2bd857dbcabe4c6a6d4699440bd7a15a9ce133018da7eb00b55",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              9.686010823883827,
+              5.744876893393478e-13
+            ]
+          }
+        },
+        {
+          "ref": "Rally Latvia — Stage 3",
+          "id": "rally-section-latvia-3",
+          "lengthM": 9098.449109762414,
+          "parentRef": "Rally Latvia — Tukums 2024",
+          "firstNode": 252,
+          "lastNode": 495,
+          "startDistanceM": 9082.621774559988,
+          "endDistanceM": 18181.070884322402,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ab7d41fea927a2bd857dbcabe4c6a6d4699440bd7a15a9ce133018da7eb00b55",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              6.726873151295338e-13,
+              1.831999496522986e-12
+            ]
+          }
+        },
+        {
+          "ref": "Rally Latvia — Stage 4",
+          "id": "rally-section-latvia-4",
+          "lengthM": 9196.890212661288,
+          "parentRef": "Rally Latvia — Tukums 2024",
+          "firstNode": 495,
+          "lastNode": 741,
+          "startDistanceM": 18181.070884322402,
+          "endDistanceM": 27377.96109698369,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ab7d41fea927a2bd857dbcabe4c6a6d4699440bd7a15a9ce133018da7eb00b55",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.8574439339746936e-12,
+              8.142219984546603e-13
+            ]
+          }
+        },
+        {
+          "ref": "Rally Latvia — Stage 5",
+          "id": "rally-section-latvia-5",
+          "lengthM": 8666.509178970877,
+          "parentRef": "Rally Latvia — Andumi 2024",
+          "firstNode": 0,
+          "lastNode": 224,
+          "startDistanceM": 0,
+          "endDistanceM": 8666.509178970877,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "d8b0b79c41c32c4db1a06d4fbb64a9f06007536f6a3a03b4b7d6e8bcbeeb51e4",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.3914037236169947,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Rally Latvia — Stage 6",
+          "id": "rally-section-latvia-6",
+          "lengthM": 8725.889795505833,
+          "parentRef": "Rally Latvia — Andumi 2024",
+          "firstNode": 224,
+          "lastNode": 455,
+          "startDistanceM": 8666.509178970877,
+          "endDistanceM": 17392.39897447671,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "d8b0b79c41c32c4db1a06d4fbb64a9f06007536f6a3a03b4b7d6e8bcbeeb51e4",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.9083328088781102e-13,
+              0.0
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "estonia",
+      "name": "Rally Estonia",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Rally Estonia — Stage 1",
+          "id": "rally-section-estonia-1",
+          "lengthM": 4346.183760551175,
+          "parentRef": "Rally Estonia — RÜA 2020",
+          "firstNode": 0,
+          "lastNode": 113,
+          "startDistanceM": 0,
+          "endDistanceM": 4346.183760551175,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "c5139431115ab26f025f39813d8ee1de7d93a915c9950c46ef4ab6b52d0431b1",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              5.3989458486456225,
+              5.038876440676003
+            ]
+          }
+        },
+        {
+          "ref": "Rally Estonia — Stage 2",
+          "id": "rally-section-estonia-2",
+          "lengthM": 4462.259495897358,
+          "parentRef": "Rally Estonia — RÜA 2020",
+          "firstNode": 113,
+          "lastNode": 244,
+          "startDistanceM": 4346.183760551175,
+          "endDistanceM": 8808.443256448532,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "c5139431115ab26f025f39813d8ee1de7d93a915c9950c46ef4ab6b52d0431b1",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              5.03887644067566,
+              3.053332494204976e-13
+            ]
+          }
+        },
+        {
+          "ref": "Rally Estonia — Stage 3",
+          "id": "rally-section-estonia-3",
+          "lengthM": 4832.119728982743,
+          "parentRef": "Rally Estonia — MÄEKÜLA 2020",
+          "firstNode": 0,
+          "lastNode": 120,
+          "startDistanceM": 0,
+          "endDistanceM": 4832.119728982743,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "078fcf67e32427536955a6f4649bfa8e5d47e675ebfdbf664d423d4a745012dc",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.90833280887811e-14,
+              5.72499842663433e-13
+            ]
+          }
+        },
+        {
+          "ref": "Rally Estonia — Stage 4",
+          "id": "rally-section-estonia-4",
+          "lengthM": 4712.952005390898,
+          "parentRef": "Rally Estonia — MÄEKÜLA 2020",
+          "firstNode": 120,
+          "lastNode": 230,
+          "startDistanceM": 4832.119728982743,
+          "endDistanceM": 9545.071734373641,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "078fcf67e32427536955a6f4649bfa8e5d47e675ebfdbf664d423d4a745012dc",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              5.088887490341627e-13,
+              6.239017684509691
+            ]
+          }
+        },
+        {
+          "ref": "Rally Estonia — Stage 5",
+          "id": "rally-section-estonia-5",
+          "lengthM": 4958.685664974959,
+          "parentRef": "Rally Estonia — MÄEKÜLA 2020",
+          "firstNode": 230,
+          "lastNode": 357,
+          "startDistanceM": 9545.071734373641,
+          "endDistanceM": 14503.7573993486,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "078fcf67e32427536955a6f4649bfa8e5d47e675ebfdbf664d423d4a745012dc",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              6.239017684509386,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Rally Estonia — Stage 6",
+          "id": "rally-section-estonia-6",
+          "lengthM": 6219.434719961395,
+          "parentRef": "Rally Estonia — ARULA 2020",
+          "firstNode": 0,
+          "lastNode": 151,
+          "startDistanceM": 0,
+          "endDistanceM": 6219.434719961395,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "efd688c4c59e0928cecc2e2511afe6ffabb2f8c135f1a6217eb555ebfdee9e7d",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.4527765540489235e-14,
+              7.2357619003295e-14
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "sardinia",
+      "name": "Rally Italia Sardegna",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Rally Italia Sardegna — Stage 1",
+          "id": "rally-section-sardinia-1",
+          "lengthM": 4159.10280978345,
+          "parentRef": "Rally Italia Sardegna — Monte Lerno — Monti di Alà 2024",
+          "firstNode": 0,
+          "lastNode": 110,
+          "startDistanceM": 0,
+          "endDistanceM": 4159.10280978345,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "c86d5345cb9f641abcf641bd703d520a0a12f55533edb61e76d222cceec18e4c",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              0.0,
+              4.707220928566004e-13
+            ]
+          }
+        },
+        {
+          "ref": "Rally Italia Sardegna — Stage 2",
+          "id": "rally-section-sardinia-2",
+          "lengthM": 4211.923052514649,
+          "parentRef": "Rally Italia Sardegna — Monte Lerno — Monti di Alà 2024",
+          "firstNode": 110,
+          "lastNode": 219,
+          "startDistanceM": 4159.10280978345,
+          "endDistanceM": 8371.025862298098,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "c86d5345cb9f641abcf641bd703d520a0a12f55533edb61e76d222cceec18e4c",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.770832022195275e-13,
+              7.939817511706521
+            ]
+          }
+        },
+        {
+          "ref": "Rally Italia Sardegna — Stage 3",
+          "id": "rally-section-sardinia-3",
+          "lengthM": 4026.290799289869,
+          "parentRef": "Rally Italia Sardegna — Monte Lerno — Monti di Alà 2024",
+          "firstNode": 219,
+          "lastNode": 320,
+          "startDistanceM": 8371.025862298098,
+          "endDistanceM": 12397.316661587967,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "c86d5345cb9f641abcf641bd703d520a0a12f55533edb61e76d222cceec18e4c",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              7.939817511706127,
+              7.432330698802558
+            ]
+          }
+        },
+        {
+          "ref": "Rally Italia Sardegna — Stage 4",
+          "id": "rally-section-sardinia-4",
+          "lengthM": 4322.469642217697,
+          "parentRef": "Rally Italia Sardegna — Monte Lerno — Monti di Alà 2024",
+          "firstNode": 320,
+          "lastNode": 428,
+          "startDistanceM": 12397.316661587967,
+          "endDistanceM": 16719.786303805664,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "c86d5345cb9f641abcf641bd703d520a0a12f55533edb61e76d222cceec18e4c",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              7.432330698811027,
+              7.726914362000877
+            ]
+          }
+        },
+        {
+          "ref": "Rally Italia Sardegna — Stage 5",
+          "id": "rally-section-sardinia-5",
+          "lengthM": 4194.589051398281,
+          "parentRef": "Rally Italia Sardegna — Monte Lerno — Monti di Alà 2024",
+          "firstNode": 428,
+          "lastNode": 536,
+          "startDistanceM": 16719.786303805664,
+          "endDistanceM": 20914.375355203945,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "c86d5345cb9f641abcf641bd703d520a0a12f55533edb61e76d222cceec18e4c",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              7.726914362001562,
+              5.629510726397161
+            ]
+          }
+        },
+        {
+          "ref": "Rally Italia Sardegna — Stage 6",
+          "id": "rally-section-sardinia-6",
+          "lengthM": 4176.115254917855,
+          "parentRef": "Rally Italia Sardegna — Monte Lerno — Monti di Alà 2024",
+          "firstNode": 536,
+          "lastNode": 646,
+          "startDistanceM": 20914.375355203945,
+          "endDistanceM": 25090.4906101218,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "c86d5345cb9f641abcf641bd703d520a0a12f55533edb61e76d222cceec18e4c",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              5.629510726398659,
+              7.268794076368802
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "croatia",
+      "name": "Croatia Rally",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Croatia Rally — Stage 1",
+          "id": "rally-section-croatia-1",
+          "lengthM": 5739.822985408043,
+          "parentRef": "Croatia Rally — Ucka 2026",
+          "firstNode": 0,
+          "lastNode": 121,
+          "startDistanceM": 0,
+          "endDistanceM": 5739.822985408043,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "2394dac53dc050ed0dffae5a2698bcaa5dacd00ecfe0cae7be5b86f107a2110f",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              6.3611093629270335e-15,
+              4.770832022195275e-13
+            ]
+          }
+        },
+        {
+          "ref": "Croatia Rally — Stage 2",
+          "id": "rally-section-croatia-2",
+          "lengthM": 5764.416940956157,
+          "parentRef": "Croatia Rally — Ucka 2026",
+          "firstNode": 121,
+          "lastNode": 237,
+          "startDistanceM": 5739.822985408043,
+          "endDistanceM": 11504.2399263642,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "2394dac53dc050ed0dffae5a2698bcaa5dacd00ecfe0cae7be5b86f107a2110f",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.770832022195275e-13,
+              4.195615499790237
+            ]
+          }
+        },
+        {
+          "ref": "Croatia Rally — Stage 3",
+          "id": "rally-section-croatia-3",
+          "lengthM": 5358.535719573487,
+          "parentRef": "Croatia Rally — Platak 2026",
+          "firstNode": 0,
+          "lastNode": 104,
+          "startDistanceM": 0,
+          "endDistanceM": 5358.535719573487,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "86d6c63470502b3b06bc3a2a38e15af334e7364a2e4eae758bc89c9315da6268",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.627909162582061,
+              4.834443115824545e-13
+            ]
+          }
+        },
+        {
+          "ref": "Croatia Rally — Stage 4",
+          "id": "rally-section-croatia-4",
+          "lengthM": 5389.20007981191,
+          "parentRef": "Croatia Rally — Platak 2026",
+          "firstNode": 104,
+          "lastNode": 209,
+          "startDistanceM": 5358.535719573487,
+          "endDistanceM": 10747.735799385397,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "86d6c63470502b3b06bc3a2a38e15af334e7364a2e4eae758bc89c9315da6268",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.2899993706537323e-13,
+              4.961665303083086e-13
+            ]
+          }
+        },
+        {
+          "ref": "Croatia Rally — Stage 5",
+          "id": "rally-section-croatia-5",
+          "lengthM": 5392.928964899274,
+          "parentRef": "Croatia Rally — Platak 2026",
+          "firstNode": 209,
+          "lastNode": 308,
+          "startDistanceM": 10747.735799385397,
+          "endDistanceM": 16140.664764284671,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "86d6c63470502b3b06bc3a2a38e15af334e7364a2e4eae758bc89c9315da6268",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              8.014997797288062e-13,
+              4.579998741307465e-13
+            ]
+          }
+        },
+        {
+          "ref": "Croatia Rally — Stage 6",
+          "id": "rally-section-croatia-6",
+          "lengthM": 9696.05373323827,
+          "parentRef": "Croatia Rally — Ravna Gora - Skrad 2026",
+          "firstNode": 0,
+          "lastNode": 196,
+          "startDistanceM": 0,
+          "endDistanceM": 9696.05373323827,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "0ffab001c371ce29431078e161a92497b1c577cd8dc5ccccc9a9663dd2c005b6",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              0.0,
+              0.0
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "corsica",
+      "name": "Tour de Corse",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Tour de Corse — Stage 1",
+          "id": "rally-section-corsica-1",
+          "lengthM": 3853.226032684959,
+          "parentRef": "Tour de Corse — La Porta — Barchetta — Road Recreation",
+          "firstNode": 4,
+          "lastNode": 140,
+          "startDistanceM": 111.34487963689057,
+          "endDistanceM": 3964.57091232185,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "11dd225c03caa9583f47b0bd32eb6d266faab602e7311f89ddb0ce9f67cacbf8",
+          "linePlacement": {
+            "beforeDegrees": [
+              57.43,
+              77.14
+            ],
+            "lengthBeforeM": 3964.57,
+            "lineWindowsM": [
+              40,
+              40
+            ],
+            "corridorDegrees": [
+              0.0,
+              0.0
+            ],
+            "trimStartM": 111.34,
+            "trimFinishM": 0.0,
+            "status": "adjusted",
+            "afterDegrees": [
+              0.0,
+              0.0
+            ],
+            "lengthAfterM": 3853.23,
+            "method": "existing-road-straight-v2",
+            "surveyedStartLine": false,
+            "geometrySignature": "3bb82f29c0f808f6bb6835e05f85e4ce9be7a7320d42bbde02446812429105fd"
+          }
+        },
+        {
+          "ref": "Tour de Corse — Stage 2",
+          "id": "rally-section-corsica-2",
+          "lengthM": 4658.903615568901,
+          "parentRef": "Tour de Corse — La Porta — Barchetta — Road Recreation",
+          "firstNode": 140,
+          "lastNode": 308,
+          "startDistanceM": 3964.57091232185,
+          "endDistanceM": 8623.47452789075,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "11dd225c03caa9583f47b0bd32eb6d266faab602e7311f89ddb0ce9f67cacbf8",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.361561850986661e-13,
+              4.635118065671915
+            ]
+          }
+        },
+        {
+          "ref": "Tour de Corse — Stage 3",
+          "id": "rally-section-corsica-3",
+          "lengthM": 4015.4790135565254,
+          "parentRef": "Tour de Corse — La Porta — Barchetta — Road Recreation",
+          "firstNode": 308,
+          "lastNode": 445,
+          "startDistanceM": 8623.47452789075,
+          "endDistanceM": 12638.953541447276,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "11dd225c03caa9583f47b0bd32eb6d266faab602e7311f89ddb0ce9f67cacbf8",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.635118065672933,
+              4.4111191004104
+            ]
+          }
+        },
+        {
+          "ref": "Tour de Corse — Stage 4",
+          "id": "rally-section-corsica-4",
+          "lengthM": 4199.387115369487,
+          "parentRef": "Tour de Corse — La Porta — Barchetta — Road Recreation",
+          "firstNode": 445,
+          "lastNode": 595,
+          "startDistanceM": 12638.953541447276,
+          "endDistanceM": 16838.340656816763,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "11dd225c03caa9583f47b0bd32eb6d266faab602e7311f89ddb0ce9f67cacbf8",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.411119100409636,
+              3.9438878050147607e-13
+            ]
+          }
+        },
+        {
+          "ref": "Tour de Corse — Stage 5",
+          "id": "rally-section-corsica-5",
+          "lengthM": 4694.270126998137,
+          "parentRef": "Tour de Corse — La Porta — Barchetta — Road Recreation",
+          "firstNode": 595,
+          "lastNode": 789,
+          "startDistanceM": 16838.340656816763,
+          "endDistanceM": 21532.6107838149,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "11dd225c03caa9583f47b0bd32eb6d266faab602e7311f89ddb0ce9f67cacbf8",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.671665932429354e-13,
+              1.526666247102488e-13
+            ]
+          }
+        },
+        {
+          "ref": "Tour de Corse — Stage 6",
+          "id": "rally-section-corsica-6",
+          "lengthM": 3656.9318984537204,
+          "parentRef": "Tour de Corse — La Porta — Barchetta — Road Recreation",
+          "firstNode": 789,
+          "lastNode": 938,
+          "startDistanceM": 21532.6107838149,
+          "endDistanceM": 25189.54268226862,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "11dd225c03caa9583f47b0bd32eb6d266faab602e7311f89ddb0ce9f67cacbf8",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.834443115824545e-13,
+              18.64559439323314
+            ],
+            "remainingReview": "No nearby straight with 35 m grid approach and 40 m finish runout; original geography retained."
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "ypres",
+      "name": "Ypres Rally",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Ypres Rally — Stage 1",
+          "id": "rally-section-ypres-1",
+          "lengthM": 1556.5312770239439,
+          "parentRef": "Ypres Rally — Kemmelberg — Road Recreation",
+          "firstNode": 0,
+          "lastNode": 37,
+          "startDistanceM": 0,
+          "endDistanceM": 1556.5312770239439,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ded7554c6a3188c77d1aa0cc3920686834e3f79a8ac246bb80a0bf8b1940fdca",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              6.822327787410632,
+              2.7867027594314084
+            ]
+          }
+        },
+        {
+          "ref": "Ypres Rally — Stage 2",
+          "id": "rally-section-ypres-2",
+          "lengthM": 1500.8234353924881,
+          "parentRef": "Ypres Rally — Kemmelberg — Road Recreation",
+          "firstNode": 37,
+          "lastNode": 71,
+          "startDistanceM": 1556.5312770239439,
+          "endDistanceM": 3057.354712416432,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ded7554c6a3188c77d1aa0cc3920686834e3f79a8ac246bb80a0bf8b1940fdca",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.78670275943137,
+              3.180554681463517e-13
+            ]
+          }
+        },
+        {
+          "ref": "Ypres Rally — Stage 3",
+          "id": "rally-section-ypres-3",
+          "lengthM": 1608.4974205060657,
+          "parentRef": "Ypres Rally — Kemmelberg — Road Recreation",
+          "firstNode": 71,
+          "lastNode": 118,
+          "startDistanceM": 3057.354712416432,
+          "endDistanceM": 4665.852132922498,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ded7554c6a3188c77d1aa0cc3920686834e3f79a8ac246bb80a0bf8b1940fdca",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.961665303083086e-13,
+              4.368922390132473
+            ]
+          }
+        },
+        {
+          "ref": "Ypres Rally — Stage 4",
+          "id": "rally-section-ypres-4",
+          "lengthM": 1573.263549870766,
+          "parentRef": "Ypres Rally — Kemmelberg — Road Recreation",
+          "firstNode": 118,
+          "lastNode": 156,
+          "startDistanceM": 4665.852132922498,
+          "endDistanceM": 6239.115682793264,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ded7554c6a3188c77d1aa0cc3920686834e3f79a8ac246bb80a0bf8b1940fdca",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.368922390132672,
+              9.902235073150026
+            ]
+          }
+        },
+        {
+          "ref": "Ypres Rally — Stage 5",
+          "id": "rally-section-ypres-5",
+          "lengthM": 1335.1144007359674,
+          "parentRef": "Ypres Rally — Kemmelberg — Road Recreation",
+          "firstNode": 156,
+          "lastNode": 191,
+          "startDistanceM": 6239.115682793264,
+          "endDistanceM": 7574.230083529233,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ded7554c6a3188c77d1aa0cc3920686834e3f79a8ac246bb80a0bf8b1940fdca",
+          "linePlacement": {
+            "beforeDegrees": [
+              5.73,
+              41.65
+            ],
+            "lengthBeforeM": 1527.67,
+            "lineWindowsM": [
+              80,
+              40
+            ],
+            "corridorDegrees": [
+              9.9,
+              9.16
+            ],
+            "trimStartM": 0,
+            "trimFinishM": 192.56,
+            "status": "adjusted",
+            "afterDegrees": [
+              5.73,
+              0.0
+            ],
+            "lengthAfterM": 1335.11,
+            "method": "existing-road-straight-v2",
+            "surveyedStartLine": false,
+            "geometrySignature": "f881e5139c65b0229bee43a701c40ee92736218c581d9f06a1114f5e7ce62855"
+          }
+        },
+        {
+          "ref": "Ypres Rally — Stage 6",
+          "id": "rally-section-ypres-6",
+          "lengthM": 1294.6132533012592,
+          "parentRef": "Ypres Rally — Kemmelberg — Road Recreation",
+          "firstNode": 208,
+          "lastNode": 246,
+          "startDistanceM": 8033.284077145489,
+          "endDistanceM": 9327.897330446753,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "ded7554c6a3188c77d1aa0cc3920686834e3f79a8ac246bb80a0bf8b1940fdca",
+          "linePlacement": {
+            "beforeDegrees": [
+              89.76,
+              0.0
+            ],
+            "lengthBeforeM": 1561.11,
+            "lineWindowsM": [
+              40,
+              80
+            ],
+            "corridorDegrees": [
+              7.45,
+              0.0
+            ],
+            "trimStartM": 266.49,
+            "trimFinishM": 0.0,
+            "status": "adjusted",
+            "afterDegrees": [
+              3.43,
+              0.0
+            ],
+            "lengthAfterM": 1294.61,
+            "method": "existing-road-straight-v2",
+            "surveyedStartLine": false,
+            "geometrySignature": "720b9a11d6cea7fe59f5326d611ae38bc3d24ec038b066132fd743064dc91ce5"
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "central-europe",
+      "name": "Central European Rally",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Central European Rally — Stage 1",
+          "id": "rally-section-central-europe-1",
+          "lengthM": 2269.9476912966206,
+          "parentRef": "Central European Rally — Strašínská — Road Recreation",
+          "firstNode": 0,
+          "lastNode": 65,
+          "startDistanceM": 0,
+          "endDistanceM": 2269.9476912966206,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "da8c4f6fd86e8e05ce219a6613166d27092cc910f1637edc1f3ee4ce8fc5254f",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.988039746105266,
+              4.0711099922733015e-13
+            ]
+          }
+        },
+        {
+          "ref": "Central European Rally — Stage 2",
+          "id": "rally-section-central-europe-2",
+          "lengthM": 2266.8808286664002,
+          "parentRef": "Central European Rally — Strašínská — Road Recreation",
+          "firstNode": 65,
+          "lastNode": 123,
+          "startDistanceM": 2269.9476912966206,
+          "endDistanceM": 4536.828519963021,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "da8c4f6fd86e8e05ce219a6613166d27092cc910f1637edc1f3ee4ce8fc5254f",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.0991660897659211e-13,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Central European Rally — Stage 3",
+          "id": "rally-section-central-europe-3",
+          "lengthM": 2253.799094636569,
+          "parentRef": "Central European Rally — Strašínská — Road Recreation",
+          "firstNode": 123,
+          "lastNode": 176,
+          "startDistanceM": 4536.828519963021,
+          "endDistanceM": 6790.62761459959,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "da8c4f6fd86e8e05ce219a6613166d27092cc910f1637edc1f3ee4ce8fc5254f",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.2722218725854067e-14,
+              7.792063815511358
+            ]
+          }
+        },
+        {
+          "ref": "Central European Rally — Stage 4",
+          "id": "rally-section-central-europe-4",
+          "lengthM": 2167.729558565329,
+          "parentRef": "Central European Rally — Strašínská — Road Recreation",
+          "firstNode": 176,
+          "lastNode": 233,
+          "startDistanceM": 6790.62761459959,
+          "endDistanceM": 8958.357173164919,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "da8c4f6fd86e8e05ce219a6613166d27092cc910f1637edc1f3ee4ce8fc5254f",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              7.7920638155112245,
+              1.3930829504810203e-12
+            ]
+          }
+        },
+        {
+          "ref": "Central European Rally — Stage 5",
+          "id": "rally-section-central-europe-5",
+          "lengthM": 2292.1008386442627,
+          "parentRef": "Central European Rally — Strašínská — Road Recreation",
+          "firstNode": 233,
+          "lastNode": 303,
+          "startDistanceM": 8958.357173164919,
+          "endDistanceM": 11250.458011809182,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "da8c4f6fd86e8e05ce219a6613166d27092cc910f1637edc1f3ee4ce8fc5254f",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              7.188053580107548e-13,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Central European Rally — Stage 6",
+          "id": "rally-section-central-europe-6",
+          "lengthM": 2193.488536883402,
+          "parentRef": "Central European Rally — Strašínská — Road Recreation",
+          "firstNode": 303,
+          "lastNode": 364,
+          "startDistanceM": 11250.458011809182,
+          "endDistanceM": 13443.946548692584,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "da8c4f6fd86e8e05ce219a6613166d27092cc910f1637edc1f3ee4ce8fc5254f",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              5.406942958487979e-13,
+              9.254089407816823
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "poland",
+      "name": "Rally Poland",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Rally Poland — Stage 1",
+          "id": "rally-section-poland-1",
+          "lengthM": 1851.3801636977632,
+          "parentRef": "Rally Poland — Świętajno — Pietrasze to Chełchy — Road Recreatio",
+          "firstNode": 0,
+          "lastNode": 37,
+          "startDistanceM": 0,
+          "endDistanceM": 1851.3801636977632,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "e7f667ab4140ac62e073e467e11ee00ed6e96639e30294028b426eb63550488d",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              0.0,
+              3.251048623219611
+            ]
+          }
+        },
+        {
+          "ref": "Rally Poland — Stage 2",
+          "id": "rally-section-poland-2",
+          "lengthM": 2022.0318599033285,
+          "parentRef": "Rally Poland — Świętajno — Pietrasze to Chełchy — Road Recreatio",
+          "firstNode": 37,
+          "lastNode": 84,
+          "startDistanceM": 1851.3801636977632,
+          "endDistanceM": 3873.4120236010917,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "e7f667ab4140ac62e073e467e11ee00ed6e96639e30294028b426eb63550488d",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              3.251048623219571,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Rally Poland — Stage 3",
+          "id": "rally-section-poland-3",
+          "lengthM": 1769.3956212103635,
+          "parentRef": "Rally Poland — Świętajno — Pietrasze to Chełchy — Road Recreatio",
+          "firstNode": 84,
+          "lastNode": 129,
+          "startDistanceM": 3873.4120236010917,
+          "endDistanceM": 5642.807644811455,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "e7f667ab4140ac62e073e467e11ee00ed6e96639e30294028b426eb63550488d",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              8.905553108097847e-14,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Rally Poland — Stage 4",
+          "id": "rally-section-poland-4",
+          "lengthM": 1895.6739542399773,
+          "parentRef": "Rally Poland — Świętajno — Pietrasze to Chełchy — Road Recreatio",
+          "firstNode": 129,
+          "lastNode": 179,
+          "startDistanceM": 5642.807644811455,
+          "endDistanceM": 7538.481599051433,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "e7f667ab4140ac62e073e467e11ee00ed6e96639e30294028b426eb63550488d",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              7.63333123551244e-14,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Rally Poland — Stage 5",
+          "id": "rally-section-poland-5",
+          "lengthM": 1797.527027483955,
+          "parentRef": "Rally Poland — Świętajno — Pietrasze to Chełchy — Road Recreatio",
+          "firstNode": 179,
+          "lastNode": 220,
+          "startDistanceM": 7538.481599051433,
+          "endDistanceM": 9336.008626535388,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "e7f667ab4140ac62e073e467e11ee00ed6e96639e30294028b426eb63550488d",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.9261103069464353e-13,
+              0.0
+            ]
+          }
+        },
+        {
+          "ref": "Rally Poland — Stage 6",
+          "id": "rally-section-poland-6",
+          "lengthM": 1839.746939536868,
+          "parentRef": "Rally Poland — Świętajno — Pietrasze to Chełchy — Road Recreatio",
+          "firstNode": 220,
+          "lastNode": 260,
+          "startDistanceM": 9336.008626535388,
+          "endDistanceM": 11175.755566072256,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "e7f667ab4140ac62e073e467e11ee00ed6e96639e30294028b426eb63550488d",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              3.2441657750927873e-13,
+              1.7142345173139688
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "australia",
+      "name": "Rally Australia",
+      "status": "installed",
+      "sections": [
+        {
+          "ref": "Rally Australia — Stage 1",
+          "id": "rally-section-australia-1",
+          "lengthM": 3659.546563376647,
+          "parentRef": "Rally Australia — Sherwood Road — Road Recreation",
+          "firstNode": 0,
+          "lastNode": 101,
+          "startDistanceM": 0,
+          "endDistanceM": 3659.546563376647,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "18261e481cdd6f3285aab8fe4e75526a89afc94520a5aac912de669d5aeac651",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              1.2722218725854067e-14,
+              2.816467532955296
+            ]
+          }
+        },
+        {
+          "ref": "Rally Australia — Stage 2",
+          "id": "rally-section-australia-2",
+          "lengthM": 3628.5650825776747,
+          "parentRef": "Rally Australia — Sherwood Road — Road Recreation",
+          "firstNode": 101,
+          "lastNode": 198,
+          "startDistanceM": 3659.546563376647,
+          "endDistanceM": 7288.111645954322,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "18261e481cdd6f3285aab8fe4e75526a89afc94520a5aac912de669d5aeac651",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.8164675329548126,
+              9.417638829713816
+            ]
+          }
+        },
+        {
+          "ref": "Rally Australia — Stage 3",
+          "id": "rally-section-australia-3",
+          "lengthM": 3696.3235438109596,
+          "parentRef": "Rally Australia — Sherwood Road — Road Recreation",
+          "firstNode": 198,
+          "lastNode": 293,
+          "startDistanceM": 7288.111645954322,
+          "endDistanceM": 10984.435189765281,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "18261e481cdd6f3285aab8fe4e75526a89afc94520a5aac912de669d5aeac651",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              9.4176388297186,
+              2.0029430746352124
+            ]
+          }
+        },
+        {
+          "ref": "Rally Australia — Stage 4",
+          "id": "rally-section-australia-4",
+          "lengthM": 3634.643987311061,
+          "parentRef": "Rally Australia — Sherwood Road — Road Recreation",
+          "firstNode": 293,
+          "lastNode": 377,
+          "startDistanceM": 10984.435189765281,
+          "endDistanceM": 14619.079177076343,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "18261e481cdd6f3285aab8fe4e75526a89afc94520a5aac912de669d5aeac651",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              2.0029430746357977,
+              1.2722218725854068e-12
+            ]
+          }
+        },
+        {
+          "ref": "Rally Australia — Stage 5",
+          "id": "rally-section-australia-5",
+          "lengthM": 4058.2709113419955,
+          "parentRef": "Rally Australia — Coldwater Creek Road — Road Recreation",
+          "firstNode": 0,
+          "lastNode": 103,
+          "startDistanceM": 0,
+          "endDistanceM": 4058.2709113419955,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "63e4b3942639b3f9d55eb43b6ff64aebd76b5ef6f326476eecdafe33db6dc530",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              3.053912158027239,
+              4.1983321795318423e-13
+            ]
+          }
+        },
+        {
+          "ref": "Rally Australia — Stage 6",
+          "id": "rally-section-australia-6",
+          "lengthM": 3992.2541739112253,
+          "parentRef": "Rally Australia — Coldwater Creek Road — Road Recreation",
+          "firstNode": 103,
+          "lastNode": 204,
+          "startDistanceM": 4058.2709113419955,
+          "endDistanceM": 8050.525085253221,
+          "direction": "forward",
+          "version": 1,
+          "parentGeometrySignature": "63e4b3942639b3f9d55eb43b6ff64aebd76b5ef6f326476eecdafe33db6dc530",
+          "linePlacement": {
+            "method": "mapped-section-boundary-v1",
+            "surveyedStartLine": false,
+            "corridorDegrees": [
+              4.579998741307465e-13,
+              0.0
+            ]
+          }
+        }
+      ],
+      "formats": [
+        4,
+        12
+      ]
+    }
+  ]
+}

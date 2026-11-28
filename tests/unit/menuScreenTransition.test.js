@@ -1,3 +1,4 @@
+// Navigation tests use ready assets; deferred readiness is covered explicitly in menuScreenTransition.test.js.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {MenuScreenTransition} from '../../src/menus/MenuScreenTransition.js';
@@ -21,7 +22,7 @@ test('transition supports skipped frames, unavailable canvas, and cancellation',
 test('menu navigation fades in preview and blocks confirmation and touch until finished',async()=>{
  const previous=globalThis.document;
  const player=new MenuPlayer({input:{},transitionTo(){},setActiveMusicTrack(){}});
- player.settings.load=async()=>{};player.resources.prepareGarage=async()=>{};
+ player.settings.load=async()=>{};player.resources.prepareScreen=()=>null;player.resources.prepareGarage=async()=>{};
  await player.open(createMenuDocument(),{preview:true});
  try {
   globalThis.document={createElement:canvas};player.lastDrawCanvas={};player.bounds=bounds;
@@ -53,7 +54,7 @@ for(const dpr of [1,2,3])test(`portrait snapshot crops only the menu viewport at
 
 test('Game Start begins fading before car selection setup or rendering',async()=>{
  const previous=globalThis.document,player=new MenuPlayer({input:{},transitionTo(){},setActiveMusicTrack(){}});
- player.settings.load=async()=>{};player.resources.prepareGarage=async()=>{};
+ player.settings.load=async()=>{};player.resources.prepareScreen=()=>null;player.resources.prepareGarage=async()=>{};
  await player.open(createMenuDocument(),{preview:true});
  try {
   globalThis.document={createElement:canvas};player.lastDrawCanvas={};player.bounds=bounds;
@@ -71,7 +72,7 @@ test('Game Start begins fading before car selection setup or rendering',async()=
 
 test('garage screens switch instantly in both directions but leaving the group still fades',async()=>{
  const previous=globalThis.document,player=new MenuPlayer({input:{},transitionTo(){},setActiveMusicTrack(){}});
- player.settings.load=async()=>{};player.resources.prepareGarage=async()=>{};player.openTuner=()=>{};
+ player.settings.load=async()=>{};player.resources.prepareScreen=()=>null;player.resources.prepareGarage=async()=>{};player.openTuner=()=>{};
  await player.open(createMenuDocument(),{preview:true,screenId:'garage'});
  try{
   globalThis.document={createElement:canvas};player.lastDrawCanvas={};player.bounds=bounds;
@@ -85,7 +86,7 @@ test('garage screens switch instantly in both directions but leaving the group s
 
 test('fade stays black and input stays blocked until screen artwork is ready',async()=>{
  const previous=globalThis.document,player=new MenuPlayer({input:{},transitionTo(){},setActiveMusicTrack(){}});
- player.settings.load=async()=>{};player.resources.prepareGarage=async()=>{};
+ player.settings.load=async()=>{};player.resources.prepareScreen=()=>null;player.resources.prepareGarage=async()=>{};
  await player.open(createMenuDocument(),{preview:true});
  let ready;player.resources.prepareScreen=()=>new Promise(resolve=>{ready=resolve;});
  try{
@@ -105,7 +106,7 @@ test('fade stays black and input stays blocked until screen artwork is ready',as
 
 test('late preparation cannot reopen a cleaned-up menu',async()=>{
  const player=new MenuPlayer({input:{},transitionTo(){},setActiveMusicTrack(){}});
- player.settings.load=async()=>{};player.resources.prepareGarage=async()=>{};
+ player.settings.load=async()=>{};player.resources.prepareScreen=()=>null;player.resources.prepareGarage=async()=>{};
  await player.open(createMenuDocument(),{preview:true});
  let ready;player.resources.prepareScreen=()=>new Promise(resolve=>{ready=resolve;});
  player.flow.goTo('cars');const task=player.screenEntryTask;
@@ -116,7 +117,7 @@ test('late preparation cannot reopen a cleaned-up menu',async()=>{
 test('first splash is prepared before switching from the studio to menu playback',async()=>{
  let transitions=0,ready;
  const player=new MenuPlayer({input:{},transitionTo(){transitions++;},setActiveMusicTrack(){}});
- player.settings.load=async()=>{};player.resources.prepareGarage=async()=>{};
+ player.settings.load=async()=>{};player.resources.prepareScreen=()=>null;player.resources.prepareGarage=async()=>{};
  player.resources.prepareScreen=()=>new Promise(resolve=>{ready=resolve;});
  const opening=player.open(createMenuDocument(),{preview:true});
  await new Promise(resolve=>setTimeout(resolve,0));
@@ -127,7 +128,7 @@ test('first splash is prepared before switching from the studio to menu playback
 
 test('tuning readiness holds the previous garage frame without a fade',async()=>{
  const previous=globalThis.document,player=new MenuPlayer({input:{},transitionTo(){},setActiveMusicTrack(){}});
- player.settings.load=async()=>{};player.resources.prepareGarage=async()=>{};
+ player.settings.load=async()=>{};player.resources.prepareScreen=()=>null;player.resources.prepareGarage=async()=>{};
  await player.open(createMenuDocument(),{preview:true,screenId:'garage'});
  try{
   globalThis.document={createElement:canvas};player.lastDrawCanvas={};player.bounds=bounds;
@@ -142,7 +143,7 @@ test('tuning readiness holds the previous garage frame without a fade',async()=>
 test('live menu filters its viewport once and never re-filters captured outgoing frames',async()=>{
  const calls=[];
  const player=new MenuPlayer({input:{},transitionTo(){},setActiveMusicTrack(){},drawDisplayModeFilter(ctx,w,h){calls.push(['filter',w,h]);}});
- player.settings.load=async()=>{};player.resources.prepareGarage=async()=>{};
+ player.settings.load=async()=>{};player.resources.prepareScreen=()=>null;player.resources.prepareGarage=async()=>{};
  await player.open(createMenuDocument(),{preview:true});
  const ctx=new Proxy({canvas:{},getTransform:()=>({a:1,d:1,e:0,f:0}),measureText:()=>({width:20}),rect:(...args)=>calls.push(['clip-bounds',...args])},{get:(o,k)=>k in o?o[k]:()=>{}});
  player.draw(ctx,390,844);

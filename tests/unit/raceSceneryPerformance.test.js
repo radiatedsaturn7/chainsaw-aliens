@@ -512,3 +512,29 @@ test('art arrival rebuilds only that art, even among other trees in the same chu
  }
  e.playtestSession.removedSceneryIds.push('light');e.addRaceThreeDoodads(renderer);assert.equal(renderer.dynamicDoodadCount,2);
 });
+
+test('flattening harmless vegetation edits only its triangles and restores without rebuilding neighbors',()=>{
+ const sprites=Array.from({length:160},(_,i)=>({id:`grass-${i}`,presetId:'doodad',x:i%16*3,z:Math.floor(i/16)*3,
+  previewDoodad:{artRef:'grass',widthM:1,heightM:1,defaultRule:{behavior:'flatten',speedDrainPercent:0,damage:{panels:0,suspension:0,engine:0}},rules:[]}}));
+ const {e,renderer}=managedSceneryEditor(sprites);
+ let quads=0;const original=e.getRaceDoodadWorldQuad.bind(e);
+ e.getRaceDoodadWorldQuad=s=>{quads++;return original(s);};
+ e.addRaceThreeDoodads(renderer);
+ const holder=[...renderer.dynamicDoodadChunks.values()][0],group=holder.dynamicDoodadGroup;
+ const mesh=group.children.find(c=>c.userData.softVegetation?.length);
+ const position=mesh.geometry.getAttribute('position'),before=position.array.slice();
+ let disposed=0;mesh.geometry.addEventListener('dispose',()=>disposed++);quads=0;
+ e.playtestSession.flattenedSceneryIds.push('grass-3');
+ const stats={};e.addRaceThreeDoodads(renderer,{stats});
+ assert.equal(quads,0);assert.equal(disposed,0);assert.equal(holder.dynamicDoodadGroup,group);
+ assert.equal(stats.dynamicDoodadChunkRebuilds,0);assert.equal(stats.dynamicDoodadVisibilityUpdates,1);
+ assert.equal(renderer.dynamicDoodadCount,159);
+ const range=mesh.userData.softVegetation.find(r=>r.id==='grass-3');
+ for(let i=0;i<before.length;i++){
+  const expected=i>=range.start&&i<range.start+range.count?before[range.start+(i-range.start)%3]:before[i];
+  assert.equal(position.array[i],expected);
+ }
+ e.playtestSession.flattenedSceneryIds=[];e.addRaceThreeDoodads(renderer);
+ assert.deepEqual(position.array,before);assert.equal(quads,0);assert.equal(renderer.dynamicDoodadCount,160);
+ e.clearRaceThreeDynamicDoodads(renderer);
+});

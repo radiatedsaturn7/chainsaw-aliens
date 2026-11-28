@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
+import {campaignTravelOrder} from '../../src/menus/CampaignItinerary.js';
 import {createAmericaWorldMap,AMERICA_OPENING_RACE} from '../../src/menus/AmericaWorldMap.js';
 import {normalizeMenuElement} from '../../src/menus/MenuDocument.js';
 import {worldMapNodes,worldMapSelectableNodes,raceCompletionKey} from '../../src/menus/MenuWorldMap.js';
@@ -11,7 +12,8 @@ const catalog=read('data/campaigns/america/catalog.json');
 const map=normalizeMenuElement({type:'world-map',...createAmericaWorldMap(catalog)});
 const decode=d=>d.__chainsawStorage?JSON.parse(zlib.gunzipSync(Buffer.from(d.data,'base64'))):d;
 const raceFor=s=>decode(read(path.join('data/server-storage/files',s.documentPath))).race;
-const expected=['Tower Hill Road','Mount Washington Auto Road','Laurel Highlands Scenic Byway','Ohio River Crossing','Ozark Backroads','Data Center City','Historic Route 66','Pikes Peak Highway','Moki Dugway','Oak Creek Canyon','Angeles Crest Highway'];
+const REGION1_FINALE='Pachaug State Forest — public gravel access roads';
+const expected=['Providence, Rhode Island','Mount Washington Auto Road','Laurel Highlands Scenic Byway','Ohio River Crossing','Ozark Backroads','Data Center City','Historic Route 66','Pikes Peak Highway','Moki Dugway','Oak Creek Canyon','Angeles Crest Highway'];
 
 test('eleven ordered Middle Route locations resolve to installed races',()=>{
  assert.deepEqual(catalog.map(s=>s.label||s.name),expected);
@@ -22,7 +24,8 @@ test('eleven ordered Middle Route locations resolve to installed races',()=>{
   assert.equal(manifest.folders.races[stage.name],stage.documentPath);
   assert.ok(Number.isFinite(stage.location.lat)&&Number.isFinite(stage.location.lon));
   const race=raceFor(stage);assert.equal(race.id,stage.id);assert.equal(race.type,'destination');
-  assert.equal(race.finishBehavior.menuScreen,'world-map');
+  // Providence is a stop inside Chapter One; only its finale returns to America.
+  assert.equal(race.finishBehavior.menuScreen,i===0?'campaign-hub-1':'world-map');
  }
  assert.ok(!Object.keys(manifest.folders.races).some(n=>/^(North|South|Middle) \d\d - /.test(n)));
 });
@@ -58,16 +61,17 @@ test('single geographic route unlocks exactly one next race at a time',()=>{
  const parameters={};
  assert.equal(worldMapSelectableNodes(worldMapNodes(map,null,null,parameters)).length,1);
  assert.equal(map.nodes[0].raceRef,AMERICA_OPENING_RACE);
- for(const [i,stage] of catalog.entries()){
+ const itinerary=[...catalog].sort((a,b)=>campaignTravelOrder(a.stage)-campaignTravelOrder(b.stage));
+ for(const [i,stage] of itinerary.entries()){
   const nodes=worldMapNodes(map,null,null,parameters);
   assert.equal(nodes[i].locked,false);
   if(i<10)assert.equal(nodes[i+1].locked,true);
-  if(i)assert.ok(map.connections.some(c=>c.from===catalog[i-1].id&&c.to===stage.id));
+  if(i)assert.ok(map.connections.some(c=>c.from===itinerary[i-1].id&&c.to===stage.id));
   parameters[raceCompletionKey(stage.name)]=true;
   assert.equal(worldMapSelectableNodes(worldMapNodes(map,null,null,parameters)).length,Math.min(11,i+2));
  }
  // The requested St Louis stop is east of the Ozarks; geography is not faked.
- assert.ok(map.nodes[5].x>map.nodes[4].x);
+ assert.ok(map.nodes.find(n=>n.id===catalog[5].id).x>map.nodes.find(n=>n.id===catalog[4].id).x);
  assert.ok(map.nodes[1].y<map.nodes[0].y);
 });
 
@@ -75,12 +79,23 @@ test('saved menu retains route progression with editable pin positions and old c
  const menu=decode(read('data/server-storage/files/menus/Game Menu/document.json'));
  const saved=normalizeMenuElement(menu.screens.find(s=>s.id==='world-map').elements.find(e=>e.type==='world-map'));
  const progression=nodes=>nodes.map(({id,raceRef,unlockParameter,unlockValue,completedParameter})=>({id,raceRef,unlockParameter,unlockValue,completedParameter}));
- assert.deepEqual(progression(saved.nodes),progression(map.nodes));
+ const expectedProgression=progression(map.nodes);
+ const region1=menu.parameters.campaignProgression.regions.find(r=>r.stage===1);
+ assert.equal(region1.bossRef,AMERICA_OPENING_RACE); // Graphic pin stays Providence.
+ assert.equal(region1.finaleRef,REGION1_FINALE);
+ const finaleKey=raceCompletionKey(REGION1_FINALE);
+ expectedProgression[0].completedParameter=finaleKey;
+ expectedProgression[1].unlockParameter=finaleKey;
+ assert.deepEqual(progression(saved.nodes),expectedProgression);
  assert.deepEqual(saved.connections.map(({from,to})=>({from,to})),map.connections.map(({from,to})=>({from,to})));
  assert.ok(saved.nodes.every(n=>Number.isFinite(n.x)&&Number.isFinite(n.y)));
- const parameters={[raceCompletionKey('North 01 - Providence - Blackstone')]:true,[raceCompletionKey(AMERICA_OPENING_RACE)]:true};
- assert.deepEqual(worldMapSelectableNodes(worldMapNodes(saved,null,null,parameters)).map(n=>n.raceRef),catalog.slice(0,2).map(s=>s.name));
- assert.equal(menu.parameters.campaignOpeningRace,AMERICA_OPENING_RACE);
+ const legacyFlags={[raceCompletionKey('North 01 - Providence - Blackstone')]:true,[raceCompletionKey(AMERICA_OPENING_RACE)]:true};
+ const selectable=parameters=>worldMapSelectableNodes(worldMapNodes(saved,null,null,parameters)).map(n=>n.raceRef);
+ assert.deepEqual(selectable(legacyFlags),[AMERICA_OPENING_RACE]);
+ assert.deepEqual(selectable({...legacyFlags,[finaleKey]:true}),expectedProgression.slice(0,2).map(n=>n.raceRef));
+ const finale=raceFor({documentPath:read('data/server-storage/files/manifest.json').folders.races[REGION1_FINALE]});
+ assert.equal(finale.finishBehavior.menuScreen,'world-map');
+ assert.equal(menu.parameters.campaignOpeningRace,'Tower Hill Road');
 });
 
 test('campaign map remains extensible beyond eleven races',()=>{
@@ -109,7 +124,7 @@ test('geographic pins and selected labels stay legible on phone and landscape ma
   for(let i=0;i<points.length;i++)for(let j=i+1;j<points.length;j++)assert.ok(Math.hypot(points[i].x-points[j].x,points[i].y-points[j].y)>diameter,'selection rings overlap');
   const labels=[];const ctx=new Proxy({globalAlpha:1},{get:(o,k)=>k in o?o[k]:()=>{}});
   drawWorldMap(ctx,b,map,null,{}, {},catalog[0].name,{drawText:(text,x,y,width)=>labels.push({text,x,y,width})});
-  assert.ok(labels.some(l=>l.text.includes('Tower Hill Road')));
+  assert.ok(labels.some(l=>l.text.includes('Providence')));
   assert.ok(!labels.some(l=>l.text===catalog[2].name),'avoid overlapping long geographic labels; show them in the selected detail');
  }
 });

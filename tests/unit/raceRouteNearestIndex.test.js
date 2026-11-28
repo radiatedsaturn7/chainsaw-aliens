@@ -48,3 +48,19 @@ test('route projection keeps retained results independent and invalidates replac
  assert.notEqual(e.raceRouteProjectionIndex,previousIndex);
  assert.deepEqual(first,saved);
 });
+
+test('warm projections reuse numeric segment coefficients and retain crossing hints',()=>{
+ let reads=0;
+ const samples=[{x:-50,z:0,distance:0},{x:50,z:0,distance:100},{x:50,z:50,distance:150},{x:0,z:-50,distance:262}];
+ for(const p of samples)for(const key of ['x','z']){const value=p[key];Object.defineProperty(p,key,{get(){reads++;return value;}});}
+ const e=Object.create(RaceEditor.prototype);Object.defineProperty(e,'selectedRace',{value:{road:{}}});e.getRacePathSamplesCached=()=>samples;
+ const first=e.getRaceRouteProjectionForWorldPoint({x:25,z:0});
+ const coefficients=e.raceRouteProjectionIndex.coefficients;
+ reads=0;
+ for(let i=0;i<100;i++)assert.deepEqual(e.getRaceRouteProjectionForWorldPoint({x:25,z:0}),first);
+ assert.equal(reads,0,'warm queries must not re-read every candidate vertex');
+ assert.equal(e.raceRouteProjectionIndex.coefficients,coefficients);
+ const earlier=e.getRaceRouteProjectionForWorldPoint({x:25,z:0,routeDistanceHint:75,routeHintWindowM:10});
+ const later=e.getRaceRouteProjectionForWorldPoint({x:25,z:0,routeDistanceHint:206,routeHintWindowM:10});
+ assert.equal(earlier.distance,75);assert.equal(later.distance,206);
+});

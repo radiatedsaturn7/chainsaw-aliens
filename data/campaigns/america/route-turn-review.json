@@ -1,0 +1,25 @@
+{
+  "capture": "ec180a1d1c0e54d6b4dcea945dd0fb94d2b51813a802c62e49dd343fc660ea35",
+  "race": "Pittsburgh International Race Complex \u2014 Wampum",
+  "observedReverseSpurSeconds": [
+    35,
+    40
+  ],
+  "geometryAuditCount": 247,
+  "recceRuntimeAuditCount": 247,
+  "runtimeErrors": 0,
+  "repairedRoadContactProbes": 2131,
+  "repairs": [
+    "Pittsburgh International Race Complex \u2014 Wampum",
+    "Ozarks International Raceway \u2014 Gravois Mills",
+    "NCM Motorsports Park"
+  ],
+  "paceNotes": "Usable-road minimum-curvature line with reference vehicle clearance and solid obstacle constraints; centerline still groups directions and turn shapes. Invalid corridors fall back conservatively to centerline.",
+  "preserved": "Mapped single hairpins, turnarounds, bridges and crossings are not removed just for having a sharp angle.",
+  "validationScope": "Offline geometry, recce, unit tests and repaired road mesh contact; no browser-driven lap.",
+  "commands": [
+    "python tools/campaigns/repair_circuit_spurs.py",
+    "node tools/campaigns/audit_route_turns.mjs",
+    "python tools/campaigns/test_circuit_spurs.py"
+  ]
+}

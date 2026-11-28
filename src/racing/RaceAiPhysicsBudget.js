@@ -60,9 +60,14 @@ function imminentPlayerContact(ai, session, record, playerY, playerVy, playerRad
 
 export function assignRaceAiPhysicsBudget(session, { worker = false, seconds = 0 } = {}) {
   const cars = session.aiRuntime || [];
-  if (worker) {
+  // A small competitive field must use the same tire/slip/suspension solver
+  // throughout the race. Distance-based demotion gave leaders ideal traction
+  // and made their 20 Hz poses visibly step while racing nearby. Large traffic
+  // fleets retain the bounded interaction budget.
+  const competitiveField = session.routeRuntimeType === 'circuit' && cars.length <= 7;
+  if (worker || competitiveField) {
     selections.delete(session);
-    for (const ai of cars) { ai.physicsBudgetDetail = null; ai.physicsBudgetReason = 'worker'; }
+    for (const ai of cars) { ai.physicsBudgetDetail = worker ? null : 'full'; ai.physicsBudgetReason = worker ? 'worker' : 'competitive-field'; }
     session.aiDetailedPhysicsCount = cars.length;
     session.aiCheapPhysicsCount = 0;
     session.aiDetailedPhysicsSafetyCount = 0;
@@ -135,6 +140,33 @@ export function assignRaceAiPhysicsBudget(session, { worker = false, seconds = 0
     if (!record.previous) record.selectedAt = selection.clock;
     selectedCount += 1;
     if (record.emergency) safetyCount += 1;
+  }
+  // Give one persistently blocked distant car a bounded physical escape
+  // attempt. A conservative cheap-model rejection must not freeze it forever
+  // or immediately teleport it. Player-contact safety retains priority.
+  let recovery = selection.recovery;
+  if (recovery && (selection.clock >= recovery.until
+    || recovery.record.generation !== selection.generation)) {
+    recovery.record.recoveryAfter = selection.clock + 2;
+    selection.recovery = recovery = null;
+  }
+  if (!recovery) {
+    let candidate = null;
+    for (const record of selection.records.values()) {
+      const ai = record.ai;
+      if (record.generation !== selection.generation || record.selected
+        || selection.clock < (record.recoveryAfter || 0)
+        || !ai.cheapPhysicsHeld || !(ai.cheapHeldSeconds >= 2)
+        || !['traffic','traffic-overlap','terrain-step','off-road','unsupported-pose','obstacle'].includes(ai.distantPhysicsReason)) continue;
+      if (!candidate || ai.cheapHeldSeconds > candidate.ai.cheapHeldSeconds
+        || (ai.cheapHeldSeconds === candidate.ai.cheapHeldSeconds && compareIds(record,candidate) < 0)) candidate = record;
+    }
+    if (candidate) selection.recovery = recovery = {record:candidate,until:selection.clock+1};
+  }
+  if (recovery && !recovery.record.selected) {
+    recovery.record.selected = true;
+    recovery.record.reason = 'blocked-recovery';
+    selectedCount++;
   }
   for (const record of selection.records.values()) {
     const ai = record.ai;

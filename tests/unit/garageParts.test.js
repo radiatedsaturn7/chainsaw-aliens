@@ -184,3 +184,21 @@ test('catalog brakes appear in Upgrade, affect physical pressure and unlock only
   assert.equal(car.tuning.brakePressure,undefined,'stock document stays unchanged');
  }
 });
+
+test('metadata-only garage builds preserve installed tire setup, then full builds hydrate artwork',async()=>{
+ const {garage}=fixture();
+ await garage.load();
+ const calls=[];
+ garage.loadTire=async(ref,{hydrateArtwork=true}={})=>{calls.push([ref,hydrateArtwork]);return savedTireForRef(ref);};
+ const ref='Picker tire fixture';
+ const installed=part('picker-tire',{slot:'tires',tireRef:'Sport'});
+ garage.items.progress.garage.parts[installed.id]=installed;
+ garage.items.progress.garage.cars[ref]={installed:{tires:installed.id},tune:{}};
+ garage.items.progress.bags.items[installed.id]=1;
+ const car=stock(),light=await garage.build(ref,car,{hydrateArtwork:false});
+ assert.deepEqual(calls,[['Street',false],['Stock',false]]);
+ calls.length=0;
+ const full=await garage.build(ref,car);
+ assert.deepEqual(calls,[['Street',true],['Stock',true]]);
+ assert.deepEqual(light,full);
+});

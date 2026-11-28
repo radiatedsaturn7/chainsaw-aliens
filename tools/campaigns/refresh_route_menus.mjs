@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+import {createCampaignHubMenus} from '../../src/menus/CampaignHubMenus.js';
+import {attachCampaignRoutePreviews} from './route_previews.mjs';
+const read=p=>JSON.parse(fs.readFileSync(p));
+const path='data/server-storage/files/menus/Game Menu/document.json',menu=read(path);
+const base='data/campaigns/america/';
+const result=createCampaignHubMenus(read(base+'catalog.json'),read('AI/last-on-the-grid/last_on_the_grid_99_side_races.json'),[...read(base+'side-races/catalog.json'),...read(base+'raceways/catalog.json')]);
+menu.screens=menu.screens.filter(s=>!s.id.startsWith('campaign-hub-')).concat(result.screens);
+Object.assign(menu.parameters,{campaignOpeningRace:'Tower Hill Road',campaignHubs:result.hubs,campaignSideGates:result.sideGates,campaignProgression:result.progression});
+const previews=attachCampaignRoutePreviews(menu);
+fs.writeFileSync(path,JSON.stringify(menu,null,2)+'\n');
+const meta=path.replace('document.json','metadata.json');fs.writeFileSync(meta,JSON.stringify({...read(meta),savedAt:Date.now()},null,2)+'\n');
+console.log(`Updated ${Object.keys(previews).length} route previews in ${result.screens.length} regional screens.`);

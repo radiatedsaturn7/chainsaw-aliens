@@ -101,3 +101,31 @@ test('drive-through foliage and non-solid scenery never request do not cut',()=>
  editor.selectedRace.scenery=[{...inside,previewDoodad:{widthM:2,isFence:true}}];
  assert.ok(analyzeRaceRecce(editor)[0].modifiers.includes("don't cut"));
 });
+
+test('a wide racing line grades easier than the same narrow centerline turn',async()=>{
+ const {racingLineTrack}=await import('../fixtures/racingLineTrack.js');
+ const narrow=analyzeRaceRecce(racingLineTrack({radius:30,width:4.4}).editor).find(n=>n.direction);
+ const wide=analyzeRaceRecce(racingLineTrack({radius:30,width:12}).editor).find(n=>n.direction);
+ assert.equal(narrow.direction,wide.direction);
+ assert.ok(wide.severity>narrow.severity);
+ assert.ok(wide.recce.steeringDeg<narrow.recce.steeringDeg*.8);
+ assert.ok(wide.recce.apexSpeedMps>narrow.recce.apexSpeedMps);
+ assert.equal(wide.shape,null);
+});
+test('usable-line grading preserves compact hairpins and opposite corner chains',async()=>{
+ const {racingLineTrack}=await import('../fixtures/racingLineTrack.js');
+ for(const sign of [-1,1]){
+  const note=analyzeRaceRecce(racingLineTrack({radius:12,width:4.4,angle:sign*Math.PI}).editor).find(n=>n.direction);
+  assert.equal(note.shape,'Hairpin');assert.equal(note.severity,1);
+ }
+});
+test('an apex rock constrains the usable line rather than granting free cutting speed',async()=>{
+ const {racingLineTrack}=await import('../fixtures/racingLineTrack.js');
+ const t=racingLineTrack({radius:30,width:12}),p=t.pose((t.entry+t.end)/2);
+ const before=analyzeRaceRecce(t.editor).find(n=>n.direction);
+ t.editor.selectedRace.scenery=[{id:'rock',x:p.x+Math.cos(p.yaw)*3,z:p.z-Math.sin(p.yaw)*3,
+  previewDoodad:{widthM:3,defaultRule:{behavior:'collide'}}}];
+ const after=analyzeRaceRecce(t.editor).find(n=>n.direction);
+ assert.ok(after.recce.steeringDeg>before.recce.steeringDeg);
+ assert.ok(after.severity<=before.severity);
+});

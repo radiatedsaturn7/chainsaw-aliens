@@ -1,21 +1,21 @@
 [
   {
-    "id": "america-opening-tower-hill",
+    "id": "city-ri",
     "branch": "middle",
     "stage": 1,
     "difficulty": 1,
-    "name": "Tower Hill Road",
-    "label": "Tower Hill Road",
-    "documentPath": "races/Tower Hill Road/document.json",
+    "name": "Providence, RI \u2014 Landmark Run",
+    "label": "Providence, Rhode Island",
+    "documentPath": "races/Providence%2C RI %E2%80%94 Landmark Run/document.json",
     "location": {
-      "lat": 41.9964,
-      "lon": -71.437,
-      "place": "Cumberland, Rhode Island"
+      "lat": 41.824,
+      "lon": -71.4128,
+      "place": "Providence, Rhode Island"
     },
-    "lengthM": 3920.470716387638,
+    "lengthM": 7348.2512644888175,
     "preserveExisting": true,
-    "estimatedDrivingSeconds": 210,
-    "durationMethod": "Existing opening ends at completion or 210 seconds, whichever comes first."
+    "estimatedDrivingSeconds": 525,
+    "durationMethod": "Mapped city route; actual pace depends on car and conditions."
   },
   {
     "id": "osm-cf573fba73e0",

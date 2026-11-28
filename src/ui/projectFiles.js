@@ -1,3 +1,4 @@
+import {CAR_VERSIONS_FILE} from '../racing/CarVersions.js';
 import {invalidateProjectCarThumbnail} from './shared/carPreviewThumbnails.js';
 import { isSystemCarDocument, LEGACY_PROJECT_CAR_PRESET_NAMES } from '../racing/CarPresets.js';
 /**
@@ -145,6 +146,7 @@ export function listProjectFiles(folder, { includeDeleted = false, includeSystem
   });
   listed.sort((a, b) => b.updatedAt - a.updatedAt || a.name.localeCompare(b.name));
   return listed.filter((entry) => {
+    if (folder==='cars'&&entry.name===CAR_VERSIONS_FILE)return false;
     if (entry.deleted && !includeDeleted) return false;
     // Async preload callers filter system documents after hydration, avoiding
     // synchronous network reads just to enumerate the manifest.

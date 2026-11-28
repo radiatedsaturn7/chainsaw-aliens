@@ -44,3 +44,22 @@ test('held retries are bounded in simulation time and promotion is immediate',()
  assert.equal(retries,20);
  ai.physicsBudgetDetail='full';assert.equal(shouldRetryRaceAiCheap(ai,.001),true);
 });
+
+test('blocked progress survives promotion but clears after real movement or a traffic queue',()=>{
+ const {ai,runner}=fixture();
+ for(let i=0;i<20;i++)shouldRetryRaceAiCheap(ai,.1);
+ assert.ok(ai.blockedProgressSeconds>=1.9);
+ ai.physicsBudgetDetail='full';ai.cheapPhysicsHeld=false;ai.cheapHeldSeconds=0;
+ shouldRetryRaceAiCheap(ai,1);
+ assert.ok(ai.blockedProgressSeconds>=2.9);
+ runner.state.position.z+=1;
+ shouldRetryRaceAiCheap(ai,.1);assert.equal(ai.blockedProgressSeconds,0);
+ ai.cheapPhysicsHeld=true;shouldRetryRaceAiCheap(ai,1);
+ ai.distantPhysicsReason='traffic';shouldRetryRaceAiCheap(ai,.1);
+ assert.equal(ai.blockedProgressSeconds,0);
+});
+test('broken cars cannot use blocked road recovery to mask a mechanical failure',()=>{
+ const {e,ai,runner}=fixture();runner.state.mechanical={engineRunning:false,components:{}};
+ assert.equal(tryRecoverRaceAiCheap(e,ai,{car:{},tuning:{}}),false);
+ assert.equal(ai.cheapRecoveryCount,undefined);
+});

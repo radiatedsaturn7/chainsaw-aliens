@@ -1,6 +1,10 @@
+import {calculateBrushTireForce} from './simulation/ContactPatchTireModel.js';
+import {createVehicleDynamicsConfigFromTuning} from './simulation/VehicleDynamicsRunner.js';
+import {PowertrainModel} from './simulation/PowertrainModel.js';
+const remotePowertrain=new PowertrainModel();
+import {getRaceAiRouteMotion} from './RaceAiRouteMotion.js';
 import { tireSizeForWheel } from './TireSizes.js';
 import {clamp,RACE_WHEEL_IDS} from './simulation/SimulationMath.js';
-import {getRaceServiceBrakeForceN} from './simulation/RaceSimulationConfig.js';
 import {planRaceAiControls} from './RaceAiControls.js';
 
 // Healthy, supported cars outside the interaction envelope use an aggregate
@@ -26,18 +30,22 @@ export function stepRaceAiRemotePowertrain(editor,ai,{car,tuning,contactState,pr
     * (editor.playtestSession.trackState ? 1 : editor.getRaceWeatherGripMultiplier(weather));
   let records=scratchByCar.get(ai);
   if(!records){records={dynamicNormalLoads:{},tireSlipByWheel:{},wheelContactScaleByWheel:{},
-    contactWheelSpinRatioByWheel:{},brakeState:{lockByWheel:{},appliedByWheel:{}},temperature:{},grip:{}};scratchByCar.set(ai,records);}
+    contactWheelSpinRatioByWheel:{},brakeState:{lockByWheel:{},appliedByWheel:{}},temperature:{},grip:{},brush:{}};scratchByCar.set(ai,records);}
   let traction=0,drivenTraction=0,rolling=0,pressureRolling=0,snow=0;
   for(const id of RACE_WHEEL_IDS){
     const contact=contactState.contacts.contacts[id];
     const surface=contact.surface||contact.surfaceId||'asphalt';
     const temperature=Number(ai.tireTemperature?.[id]??70);
-    const grip=editor.getRaceWheelGripForSurface({car,normalizedSetup:setup,wheelId:id,
-      surfaceId:surface,baseSurfaceId:contact.baseSurface||surface,
-      snowDepthInches:contact.snowDepthInches??weather.snowDepthInches,weather:weather.id,
-      material:contact.trackState?.cell||null,damage:ai.damage||{},
-      terrainGripScale:contact.terrainGripScale||1,temperatureF:temperature});
-    const capacity=Math.max(0,loads[id]*grip*gripFactor);
+    const tire=ai.tireConfigByWheel?.[id] || {compound:editor.getRaceTireCompound(setup.tireCompoundByWheel[id],car),...tireSizeForWheel(setup,id)};
+    const cell=contact.trackState?.cell;
+    const material={...(cell||{}),baseSurfaceId:cell?.baseSurfaceId||contact.baseSurfaceId||surface,
+      surfaceId:surface,surfaceGripScale:Number(cell?.baseGrip??contact.friction??contactState.averageSurfaceGrip??1)
+        * Number(contact.trackState?.effectiveGripMultiplier??1),trackStateConditionApplied:Boolean(cell)};
+    const patch=calculateBrushTireForce({normalLoadN:loads[id],kinematics:{slipRatio:0,slipAngleRad:0,camberAngleRad:0},
+      tire:{...tire,pressurePsi:setup.tirePressurePsi[id],temperatureF:temperature,
+        wear:ai.vehicleDynamicsRunner?.state?.tireState?.[id]?.wear||0,damage:Number(ai.damage?.tires?.[id])||0},
+      material,target:records.brush[id] ||= {}});
+    const capacity=patch.combinedSlipLimitN;
     records.grip[id]=capacity;traction+=capacity;if(driven.includes(id))drivenTraction+=capacity;
     records.dynamicNormalLoads[id]=loads[id];records.wheelContactScaleByWheel[id]=1;
     rolling+=Number(contact.trackState?.rollingResistanceMultiplier||1)/Math.max(.2,Number(contact.trackState?.cell?.baseRollingResistance||1));
@@ -53,23 +61,38 @@ export function stepRaceAiRemotePowertrain(editor,ai,{car,tuning,contactState,pr
   // Reserve tire capacity for the requested turn; no unlimited acceleration
   // around hairpins even though individual contact-patch relaxation is omitted.
   const steer=Number(ai.drivingPlan?.steeringAngleRad)||0;
-  const lateralForce=mass*speed*speed*Math.tan(steer)/Math.max(1,tuning.wheelbaseM||2.65);
+  const routeMotion=getRaceAiRouteMotion(editor,ai,{tuning,averageSpeed:speed,seconds:dt});
+  // Use the turn this chassis will actually execute. Pure pursuit may still
+  // request a corrective wheel angle while distant motion follows a straight;
+  // reserving a full corner's grip there falsely starved the driven wheels.
+  const lateralForce=routeMotion ? mass*speed*routeMotion.yawRate
+    : mass*speed*speed*Math.tan(steer)/Math.max(1,tuning.wheelbaseM||2.65);
   const remaining=Math.sqrt(Math.max(0,1-Math.min(1,Math.abs(lateralForce)/Math.max(1,traction))**2));
   const totalCapacity=traction;
   traction*=remaining;drivenTraction*=remaining;
-  const ratio=editor.getRaceGearRatio(tuning,controls.gear);
-  const demand=editor.getRaceDriveForceComponents({tuning,gearRatio:ratio,
-    engineTorqueNm:editor.getRaceTorqueNmAtRpm(controls.rpm,tuning),
-    availablePowerW:tuning.powerHp*745.7,speedMps:speed}).baseForceN
-    * tuning.accelerationCalibration*controls.throttle;
-  const mechanical=ai.vehicleDynamicsRunner?.state?.mechanical;
-  const effects=mechanical?.config?.enabled?mechanical.effects:null;
-  const driveScale=mechanical?.engineRunning===false?0:clamp(Number(effects?.torque??1),0,1)*clamp(Number(effects?.drive??1),0,1);
-  const brakeScale=RACE_WHEEL_IDS.reduce((sum,id)=>sum+clamp(Number(effects?.brakes?.[id]??1),0,1),0)/4;
-  const drive=Math.min(Math.max(0,demand)*driveScale,drivenTraction);
-  const brake=Math.min(getRaceServiceBrakeForceN(tuning)*controls.brake*brakeScale,traction);
-  const engineBrake=editor.getRaceEngineBrakingForce({tuning,gearRatio:ratio,throttle:controls.throttle,
-    speedMps:speed,engineRpm:controls.rpm,drivenTractionLimit:drivenTraction,tireContactScale:1}).force;
+  // Use the same engine, clutch take-up and shift interruptions as nearby
+  // cars. Instant projected RPM/gear changes gave distant leaders free pace.
+  const state=ai.vehicleDynamicsRunner?.state || (ai.remotePowertrainState ||= {});
+  const config=ai.vehicleDynamicsRunner?.config || (records.config ||= createVehicleDynamicsConfigFromTuning(tuning));
+  const kinematics={},capacity={};
+  for(const id of RACE_WHEEL_IDS){
+    const radius=Math.max(.1,Number(config.wheelRadiusM||tuning.wheelRadiusM)||.33);
+    kinematics[id]={wheelAngularVelocityRadps:speed/radius,longitudinalVelocityMps:speed,
+      effectiveRollingRadiusM:radius,slipRatio:0};
+    capacity[id]=records.grip[id]*remaining;
+  }
+  const shares=remotePowertrain.getDriveForceShareByWheel(tuning,driven);
+  const power=remotePowertrain.stepAuthoritativeWheelTorques({tuning,config,
+    controls:{...controls,requestedGear:controls.gear,assists:{autoShift:true,tractionControlEnabled:true}},
+    previous:state.powertrainState||{gear:ai.gear||1,engineRpm:ai.rpm||tuning.idleRpm},
+    state:{...state,groundSpeedMps:speed},kinematicsByWheel:kinematics,
+    capacityByWheel:capacity,driveShareByWheel:shares,damage:ai.damage||{},dt});
+  state.powertrainState={...power.state,telemetry:power.telemetry};
+  const radius=Math.max(.1,Number(config.wheelRadiusM||tuning.wheelRadiusM)||.33);
+  const demand=RACE_WHEEL_IDS.reduce((sum,id)=>sum+power.wheelDriveTorqueNm[id]/radius,0);
+  const drive=Math.min(Math.max(0,demand),drivenTraction);
+  const engineBrake=Math.max(-drivenTraction,Math.min(0,demand));
+  const brake=Math.min(traction,RACE_WHEEL_IDS.reduce((sum,id)=>sum+power.wheelBrakeTorqueNm[id]/radius,0));
   const resistance=editor.getRaceLongitudinalResistanceForces({tuning,speedMps:speed,setupModifiers:modifiers,
     terrainResistance:(1+loose*.32+editor.getRaceSnowResistanceMultiplier(snow/4))*rolling/4,
     looseSurfaceFactor:loose,tirePressureRollingMultiplier:pressureRolling/4,tireContactScale:1});
@@ -89,7 +112,7 @@ export function stepRaceAiRemotePowertrain(editor,ai,{car,tuning,contactState,pr
   ai.engineDrive={...controls,...records,combinedBrakeState:records.brakeState,driveForceN:drive,
     tractionLimitN:drivenTraction,driveDemandRatio:demand/Math.max(1,drivenTraction),
     topSpeedLimitMps:topSpeed,approximation:'remote-aggregate'};
-  ai.gear=controls.gear;ai.rpm=controls.rpm;ai.tireTemperature=records.temperature;
+  ai.gear=power.state.gear;ai.rpm=power.state.engineRpm;ai.tireTemperature=records.temperature;
   return {speedMps:Math.max(0,Math.min(speed+acceleration*dt,
     controls.throttle>0&&acceleration>0?topSpeed*1.02:Infinity)),acceleration,
     braking:controls.braking,gripFactor,looseSurfaceFactor:loose};

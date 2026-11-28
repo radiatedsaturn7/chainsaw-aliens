@@ -68,14 +68,32 @@ test('impact events produce occasional chatter, road calls preempt it and disabl
  updateCodriverEvents(state,s,.1,{...options,enabled:false});assert.equal(spoken.length,2);
 }));
 
-test('showcase is silent and all five countdown beats follow the race clock with voice-only gating',()=>withSpeech((speech,spoken)=>{
- const state={},s={countdownRemainingMs:6000,raceIntro:{active:true,elapsed:0}};
- for(const elapsed of [0,.4,1.8,3.6,5.3]){s.raceIntro.elapsed=elapsed;updateCodriverEvents(state,s,.1,{enabled:true,intro:true,active:false});}
+test('five and four occupy the final two intro seconds, with one-second beats through GO',()=>withSpeech((speech,spoken)=>{
+ const state={},s={countdownRemainingMs:4000,raceIntro:{active:true,elapsed:0}};
+ const events=[];
+ // Sample both sides of camera cuts and every countdown boundary.
+ for(const time of [0,1.8,3.6,3.699,3.7,4,4.699,4.7,5.399,5.4,5.699,5.7,6.699,6.7,7.699,7.7,8.699,8.7]){
+  const intro=time<5.7;
+  s.raceIntro={active:intro,elapsed:Math.min(time,5.7)};
+  s.countdownRemainingMs=intro?4000:Math.round(4000-(time-5.7)*1000);
+  const before=spoken.length;
+  updateCodriverEvents(state,s,.001,{enabled:true,intro,active:false});
+  if(spoken.length>before)events.push({time,text:spoken.at(-1),intro});
+ }
+ assert.deepEqual(events,[
+  {time:3.7,text:'5',intro:true},{time:4.7,text:'4',intro:true},
+  {time:5.7,text:'3',intro:false},{time:6.7,text:'2',intro:false},
+  {time:7.7,text:'1',intro:false},{time:8.7,text:'Go!',intro:false}
+ ]);
+ for(let i=1;i<events.length;i++)assert.ok(Math.abs(events[i].time-events[i-1].time-1)<1e-9);
+}));
+
+test('intro countdown is silent with voice disabled or paused and never repeats held beats',()=>withSpeech((speech,spoken)=>{
+ const s={countdownRemainingMs:4000,raceIntro:{active:true,elapsed:3.7}},state={};
+ for(const options of [{enabled:false},{enabled:true,paused:true}]){
+  updateCodriverEvents(state,s,.1,{intro:true,active:false,...options});
+ }
  assert.deepEqual(spoken,[]);
- s.raceIntro.active=false;
- for(const ms of [6000,5000,4000,3000,2000,1000]){s.countdownRemainingMs=ms;updateCodriverEvents(state,s,.1,{enabled:true,intro:false,active:false});}
- assert.deepEqual(spoken,['5','4','3','2','1','Go!']);
- for(const enabled of [false])for(const intro of [true,false])updateCodriverEvents({},s,.1,{enabled,intro,active:false});
- assert.equal(spoken.length,6);
- updateCodriverEvents({},s,.1,{enabled:true,intro:true,paused:true,active:false});assert.equal(spoken.length,6);
+ for(let i=0;i<5;i++)updateCodriverEvents(state,s,.1,{enabled:true,intro:true,active:false});
+ assert.deepEqual(spoken,['5']);
 }));

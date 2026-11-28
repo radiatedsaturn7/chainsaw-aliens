@@ -108,6 +108,7 @@ export function installRaceLighting(material,uniforms){
  litMaterials.add(material);
  const previous=material.onBeforeCompile,previousKey=material.customProgramCacheKey?.bind(material);
  const key=previousKey?.()||'';
+ const sceneReflective=Boolean(material.userData?.automotive&&material.isMeshStandardMaterial);
  material.onBeforeCompile=function(shader,renderer){
   previous?.call(this,shader,renderer);Object.assign(shader.uniforms,uniforms);
   let vertex=shader.vertexShader;
@@ -119,6 +120,7 @@ export function installRaceLighting(material,uniforms){
   const opaque='#include <opaque_fragment>';
   const carLight=material.userData?.raceCarLighting||material.userData?.raceSpriteEmissive;
   const cloud=material.userData?.raceSnowCloud;
+  const nativeLamp=material.userData?.raceVehicleLamp===true&&(material.isMeshStandardMaterial||material.isMeshPhysicalMaterial);
   // Cloud sprites are an obscuring veil, not a lit solid surface. A fixed
   // night fill and the lamp footprint made this overlay look like road light.
   // Bright lamps affect coverage in RaceSnowClouds, not the sprite's RGB.
@@ -126,7 +128,22 @@ export function installRaceLighting(material,uniforms){
   if(shader.fragmentShader.includes(opaque)) {
    const lighting=cloud
     ? `outgoingLight *= pow(${light}, vec3(2.2));\ndiffuseColor.a *= exp(-2.996*length(vRtgWorld-rtgCamera)/max(1.0,rtgVisibility));\n`
-    : `outgoingLight = rtgFog(outgoingLight * pow(${light}, vec3(2.2)));\n`;
+    : sceneReflective
+      ? `// Vehicle IBL is already assigned day/night/weather radiance. Dim
+// generic direct/diffuse light, not that environment a second time.
+vec3 rtgSceneReflection=vec3(0.0);
+#if defined(USE_ENVMAP) && defined(ENVMAP_TYPE_CUBE_UV)
+ rtgSceneReflection=reflectedLight.indirectSpecular;
+ #ifdef USE_CLEARCOAT
+ rtgSceneReflection=rtgSceneReflection*(1.0-material.clearcoat*Fcc)+clearcoatSpecularIndirect*material.clearcoat;
+ #endif
+#endif
+vec3 rtgProtectedLight = rtgSceneReflection${nativeLamp?' + totalEmissiveRadiance':''};
+outgoingLight = rtgFog((outgoingLight - rtgProtectedLight) * pow(${light},vec3(2.2)) + rtgProtectedLight);
+`
+      : nativeLamp
+        ? `outgoingLight = rtgFog((outgoingLight - totalEmissiveRadiance) * pow(${light}, vec3(2.2)) + totalEmissiveRadiance);\n`
+        : `outgoingLight = rtgFog(outgoingLight * pow(${light}, vec3(2.2)));\n`;
    shader.fragmentShader=shader.fragmentShader.replace(opaque,lighting+opaque);
   }
   else {
@@ -142,9 +159,9 @@ export function installRaceLighting(material,uniforms){
   }
   shader.fragmentShader=(shader.fragmentShader.includes(opaque)?'#define RTG_LINEAR_FOG\n':'')+declarations+shader.fragmentShader;
  };
- material.customProgramCacheKey=()=>key+'|rtg-beams-rear-fog-v8'+(material.userData?.raceSnowCloud?'|snow-cloud':'')+(material.userData?.raceCarLighting?'|car-fill':'')+(material.userData?.raceSpriteEmissive?'|emissive-sprite':'')+(material.userData?.racePrecipitation?'|precipitation':'');material.needsUpdate=true;
+ material.customProgramCacheKey=()=>key+'|rtg-beams-rear-fog-v9'+(sceneReflective?'|scene-ibl':'')+(material.userData?.raceVehicleLamp?'|native-lamp':'')+(material.userData?.raceSnowCloud?'|snow-cloud':'')+(material.userData?.raceCarLighting?'|car-fill':'')+(material.userData?.raceSpriteEmissive?'|emissive-sprite':'')+(material.userData?.racePrecipitation?'|precipitation':'');material.needsUpdate=true;
 }
-export function updateRaceLighting(renderer,{brightness=1,night=false,pose=null,dimensions={},headlightIntensity=1,highBeams=false,auxIntensity=0,braking=false,reverse=false,lampPower=1,visibilityDistanceM=1e9,cameraPosition={}}={}){
+export function updateRaceLighting(renderer,{brightness=1,night=false,pose=null,dimensions={},mountedLamps=null,headlightIntensity=1,highBeams=false,auxIntensity=0,braking=false,reverse=false,lampPower=1,visibilityDistanceM=1e9,cameraPosition={}}={}){
  const u=renderer.raceLightingUniforms||={rtgNight:{value:0},rtgTail:{value:0},rtgReverse:{value:0},rtgRearSpill:{value:2.475},rtgRearLeft:{value:{x:0,y:0,z:0}},rtgRearRight:{value:{x:0,y:0,z:0}},rtgHighBeam:{value:0},rtgAux:{value:0},rtgVisibility:{value:1e9},rtgCamera:{value:{x:0,y:0,z:0}},rtgAmbient:{value:1},rtgHeadlights:{value:0},rtgLampLeft:{value:{x:0,y:0,z:0}},rtgLampRight:{value:{x:0,y:0,z:0}},rtgLampForward:{value:{x:0,y:0,z:1}},rtgLampUp:{value:{x:0,y:1,z:0}}};
  u.rtgHighBeam.value=highBeams?1:0;u.rtgAux.value=pose?Math.max(0,Math.min(1,auxIntensity)):0;u.rtgVisibility.value=Number.isFinite(visibilityDistanceM)?Math.max(10,visibilityDistanceM):1e9;Object.assign(u.rtgCamera.value,{x:0,y:0,z:0},cameraPosition);
  u.rtgNight.value=night&&brightness>0?1:0;u.rtgAmbient.value=brightness;u.rtgHeadlights.value=pose?Math.max(0,Math.min(1,headlightIntensity)):0;
@@ -152,7 +169,12 @@ export function updateRaceLighting(renderer,{brightness=1,night=false,pose=null,
  u.rtgTail.value=pose?Math.max(u.rtgHeadlights.value*.36,braking?power*.54:0):0;
  u.rtgReverse.value=pose&&reverse?power*.46:0;
  u.rtgRearSpill.value=(Number(dimensions.length)||4.5)*.55;
- if(pose){const rear=rearLightPose(pose,dimensions);Object.assign(u.rtgRearLeft.value,rear.left);Object.assign(u.rtgRearRight.value,rear.right);const light=rallyLightPose(pose,dimensions);for(const [k,v] of Object.entries({rtgLampLeft:light.left,rtgLampRight:light.right,rtgLampForward:light.forward,rtgLampUp:light.up}))Object.assign(u[k].value,v);}
+ if(pose){
+  const rear=mountedLamps?.rear||rearLightPose(pose,dimensions);
+  const light=mountedLamps?.front||rallyLightPose(pose,dimensions);
+  for(const [k,v] of Object.entries({rtgRearLeft:rear.left,rtgRearRight:rear.right,rtgLampLeft:light.left,rtgLampRight:light.right,rtgLampForward:light.forward,rtgLampUp:light.up}))Object.assign(u[k].value,v);
+ }
  renderer.scene.traverse(object=>{const m=object.material;if(Array.isArray(m))m.forEach(m=>installRaceLighting(m,u));else if(m)installRaceLighting(m,u);});
  return u;
 }
+

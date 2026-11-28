@@ -2255,13 +2255,13 @@ test('cutscene MP4 export uses ffmpeg h264 aac server transcode and real downloa
   assert.equal(cutsceneEditorSource.includes("document.addEventListener('visibilitychange', handleVisibilityChange);"), true);
   assert.equal(cutsceneEditorSource.includes('MP4 export interrupted because the page was hidden'), true);
   assert.equal(cutsceneEditorSource.includes('const frameCount = Math.max(1, Math.ceil((durationMs / 1000) * fps));'), true);
-  assert.equal(cutsceneEditorSource.includes('version: 7'), true);
-  assert.equal(cutsceneEditorSource.includes('cutscene-mp4-v7'), true);
+  assert.equal(cutsceneEditorSource.includes('version: 8'), true);
+  assert.equal(cutsceneEditorSource.includes('cutscene-mp4-v8'), true);
   assert.equal(cutsceneEditorSource.includes("{ fit: layout.fit || 'contain', drawBorder: false, pixelSnap: true }"), true);
   assert.equal(cutsceneEditorSource.includes('videoBitsPerSecond: Math.max(12000000'), true);
   assert.equal(cutsceneEditorSource.includes('beginMasterCapture'), true);
   assert.equal(cutsceneEditorSource.includes('beginMasterCapture?.({ monitor: false })'), true);
-  assert.equal(cutsceneEditorSource.includes('renderCutsceneMidiAudioBlob(safeDoc, durationMs'), true);
+  assert.equal(cutsceneEditorSource.includes('renderCutsceneAudioBlob(safeDoc, durationMs'), true);
   assert.equal(cutsceneEditorSource.includes('OfflineAudioContext'), true);
   assert.equal(cutsceneEditorSource.includes('preparePreviewAudioResources(safeDoc)'), true);
   assert.equal(cutsceneEditorSource.includes('endMasterCapture'), true);

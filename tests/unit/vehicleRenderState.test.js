@@ -121,3 +121,37 @@ test('VehicleRenderState ignores stale tire-substep world hubs at high chassis s
     assert.equal(second.wheelPoses[wheelId].position.z - first.wheelPoses[wheelId].position.z, 12);
   }
 });
+
+test('grounded showcase wheels start at rest height, not full suspension droop',()=>{
+ const runner=runnerFor({position:{x:0,y:10.55,z:0}});
+ Object.assign(runner.config,{suspensionTravelFrontM:.2,suspensionTravelRearM:.3,staticSagRatioFront:.4,staticSagRatioRear:.5});
+ runner.state.suspensionState={};runner.state.contactPatches={};
+ const before=structuredClone(runner.state);
+ const render=createVehicleRenderStateFromRunner(runner);
+ for(const id of wheelIds)assert.ok(Math.abs(render.wheelPoses[id].position.y-render.wheels[id].radiusM-10)<1e-9);
+ assert.deepEqual(runner.state,before,'presentation must not advance or modify physics');
+ runner.state.grounded=false;
+ const airborne=createVehicleRenderStateFromRunner(runner);
+ assert.ok(airborne.wheelPoses.fl.position.y<render.wheelPoses.fl.position.y-.07);
+});
+
+test('AI body and wheels advance together between fixed steps without changing physics',async()=>{
+ const {raceAiRenderState}=await import('../../src/racing/RaceAiRenderState.js');
+ const runner=runnerFor();runner.config.chassisHz=60;runner.stepIndex=60;
+ runner.simulationTimeSeconds=1;runner.observedTimeSeconds=1+1/120;
+ runner.state.velocity={x:0,y:0,z:24};runner.state.angularVelocityWorld={x:0,y:0,z:0};
+ runner.state.wheelAngularVelocityRadps=Object.fromEntries(wheelIds.map(id=>[id,72]));
+ const canonical=createVehicleRenderStateFromRunner(runner),before=structuredClone(canonical);
+ const session={vehicleRenderState:canonical,vehicleDynamicsRunner:runner,physicsBudgetDetail:'full'};
+ const render=raceAiRenderState(session);
+ assert.ok(Math.abs(render.position.z-canonical.position.z-.2)<1e-8);
+ for(const id of wheelIds){
+  assert.ok(Math.abs(render.wheelPoses[id].position.z-canonical.wheelPoses[id].position.z-.2)<1e-8);
+  assert.ok(Math.abs(render.wheels[id].spinAngleRad-canonical.wheels[id].spinAngleRad-.6)<1e-8);
+ }
+ assert.deepEqual(canonical,before,'presentation must not alter authoritative snapshot');
+ runner.pendingCollisionImpulses=[{}];assert.strictEqual(raceAiRenderState(session),canonical);
+ runner.pendingCollisionImpulses=[];session.workerVehicleId='ai';assert.strictEqual(raceAiRenderState(session),canonical);
+ delete session.workerVehicleId;runner.observedTimeSeconds=100;
+ assert.ok(raceAiRenderState(session).position.z-canonical.position.z<=.400001,'lead capped at one tick');
+});

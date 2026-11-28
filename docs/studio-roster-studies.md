@@ -1,0 +1,91 @@
+# 3D Car Design: roster studies
+
+Open **Graphics → 3D Car Design → Menu → Roster studies** to edit a copy
+of a design. Undo returns to the previous working design. Choose the existing
+**3D** version of the same car in a race or garage to see its bundled study.
+The 2D versions, car documents, progression, handling and saves are unchanged.
+To view the earlier 3D artwork, add `studioRoster=legacy` to the game URL.
+
+| Existing 3D roster name | Reference vehicle | Studio exercise |
+| --- | --- | --- |
+| Linaria 2021 | 2021 Porsche 911 GT3 (992.1) | Compound surfaces, fixed wing |
+| Linum 1983 | John Buffum Audi quattro A1 R44 tribute | Angular bodywork and rally lamp openings |
+| Ember Pod Prototype | Tata TAMO Racemo | Compact, multi-opening fascia |
+| 2018 Kestrel 660 | Honda S660 6MT | Kei-car width, short overhangs and separate tracks |
+| 2005 Flint Coupe | Citroën C4 Coupé VTS 180 | Raked roof and glass |
+| 2024 Caravan-9 | Kia Carnival LX7 | Three seating rows |
+| Dustjack V8 | Local Motors Rally Fighter | High stance and underbody |
+| Lark 1600 1990 | Mazda MX-5 Miata 1.6 NA | Roadster hardpoints and lamps-down silhouette |
+| Briar XT 2004 | Subaru Forester 2.5XT | Boxy body and hood scoop |
+
+These editable studies are not photo-accurate replicas. This pass adds:
+
+- **Linaria:** adjustable swan-neck supports that attach from above.
+- **Linum:** flatter nose with a wider grille and more rectangular lamps,
+  revised coupe profile and side molding.
+- **Ember Pod:** a continuous dark fascia finish spanning the separate
+  front apertures, with independent front and rear insert controls.
+- **Kestrel:** dark fabric targa cover, lower nose and reshaped apertures.
+- **Flint:** two rear glazing faces separated by a physical divider.
+- **Caravan-9:** longer roof, upright hatch and 2+2+3 seating.
+- **Dustjack:** visible suspension links, axles and skid plates; static
+  body geometry only, not a suspension-physics change.
+- **Lark:** two flush headlamp lids with recessed shutlines.
+- **Briar:** longer roof, upright framed hatch, rails and taller tail lamps.
+
+The following photo-reference pass moved the Linaria's headlamps into the
+hood shoulders and opened the Lark's cabin with a fixed windshield and
+folded top cover. The Linum got the black rally fascia and period wheel
+colors; the Kestrel got darker end bands and a reshaped aft deck. The
+Ember Pod got sculpted side and hood recesses. The Flint's rear optics
+were raised and wrapped; Caravan-9 got a taller grille, rear window trim
+and a sliding-door track. The Dustjack got round headlamps and a larger
+dark mouth, and the Briar got a wider grille and more accurate lamps.
+
+The Honda fabric roof and Miata top/headlamp lids are not animated. The
+Carnival still uses the common door shut-lines rather than modeled
+sliding doors. Some trim and optical outlines remain approximations.
+
+Run `node tools/vehicle-validation/build-studio-roster.mjs --write` to
+regenerate the bundled model pairs from the editable genes. Append study IDs
+to re-export only those packs without dropping the other registry entries.
+The packs bind only to those existing model references. Compact geometry is capped at
+15,000 triangles with four wheels and fitted to existing wheel hardpoints.
+If a pair fails to load, the game uses that car's earlier assets.
+
+See [the exact variants and photo sources](studio-roster-photo-references.md).
+
+## Scaling to the verified 660-car roster
+
+The native editor generator remains the source for each editable design. Use
+the **Find a car** field inside **Roster studies** to search by in-game name,
+real-world reference, or year. Only finished, bundled studies are listed.
+Queued cars keep their current assets; they aren't counted as conversions.
+
+To create or refresh the authoring queue from an exact Git revision:
+
+```sh
+python3 tools/vehicle-validation/audit-studio-roster.py --revision HEAD --queue /tmp/studio-queue.json
+```
+
+The audit reads committed vehicle documents (including compact-v1 wrappers),
+checks 660 unique 3D IDs and independent body/wheel references, then validates
+each enrolled study against its original car. It checks equivalent named 2D
+car provenance only when the 3D document does not carry a reference. A blank
+reference means investigate original art or catalog notes; don't guess a donor
+or claim a photo match. This audit needs the local car blobs, not the full art
+checkout. It doesn't auto-enroll anything.
+
+Per batch: confirm the exact trim and compare independent views, fit each
+editable genome to the stock hardpoints, enforce 15,000 total gameplay
+triangles including all four wheels, verify deterministic exports, then inspect
+the model in the editor and in the game renderer. Original car documents,
+suspension and handling stay intact. Keep all other cars on existing assets.
+
+New static packs can be generated with `--write --compact <id ...>`.
+The compact format keeps the same faces, materials, lamp roles, and exact
+joint transforms, with at most 0.005 mm of rounding per position axis.
+The editable genome and editable engine export are not quantized.
+Texture coordinates retain their wrap across the atlas edge. Both pack
+versions are readable, so cached assets remain usable. The site size gate
+continues to apply; record actual package sizes as more cars are added.

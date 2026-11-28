@@ -57,7 +57,7 @@ for(const rough of [false,true])test(`opening sequence: ${rough?'rough runs miss
   if(index===2)assert.ok(garage.installed('RTG-001').some(p=>p.id==='snow-tires'),'suspension installation preserves tires');
   const mechanical=createMechanicalState(garage.configuration('RTG-001').condition?.mechanical,{},car.mechanics);
   const session={raceId:stage.id,raceDocumentName:stage.name,carId:'RTG-001',elapsedMs:[210000,840000,660000][index],
-   finishReason:index===0?'time-limit':'finish',mechanical,campaignStartCondition:campaignConditionSnapshot(mechanical),campaignRecoveries:rough?1:0};
+   finishReason:'finish',mechanical,campaignStartCondition:campaignConditionSnapshot(mechanical),campaignRecoveries:rough?1:0};
   // Fixed, disclosed wear scenario: all fluids depleted; four dampers at 10%/20% damage.
   for(const key of ['fuel','oil','coolant','charge'])mechanical[key]=0;
   for(const wheel of ['fl','fr','rl','rr'])mechanical.components['damper_'+wheel].damage=rough?20:10;
@@ -68,7 +68,7 @@ for(const rough of [false,true])test(`opening sequence: ${rough?'rough runs miss
   const reward=session.campaignReward;
   assert.equal(reward.objectiveBonus,rough?0:[150,250,250][index]);
   assert.equal(reward.objectiveStatus,rough?'Objective missed':'Objective met');
-  assert.equal(reward.personalBest,!rough&&index>0,'scripted Tower ending and recovered runs cannot set full-course records');
+  assert.equal(reward.personalBest,!rough,'successful unrecovered boss finishes can set full-course records');
   assert.equal(game.items.progress.bags.items[prizes[index]],1);
   assert.equal(game.menuProgress[raceCompletionKey(stage.name)],true);
   assert.deepEqual(selectable(game),catalog.slice(0,index+2).map(s=>s.name));

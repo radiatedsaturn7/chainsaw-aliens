@@ -1,6 +1,7 @@
 import {test,expect} from '@playwright/test';
 import fs from 'node:fs';
 import {catalogCar,expectThumbnailOnCanvas,installThumbnailBrowseWitness} from '../helpers/carThumbnailBrowseWitness.js';
+import {selectCatalogTarget} from '../helpers/carCatalogBoundedPickerSetup.js';
 for(const mobile of [false,true])test(`Cornsalad ${mobile?'handheld touch':'desktop keyboard'} static picker initial page, later page, cockpit and real input drive`,async({browser},info)=>{
  test.setTimeout(360000);
  const context=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1280,height:720},isMobile:mobile,hasTouch:mobile});if(mobile)await context.addInitScript(()=>Object.defineProperty(navigator,'userAgentData',{value:{mobile:true}}));const qa=await installThumbnailBrowseWitness(context);const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
@@ -11,7 +12,7 @@ for(const mobile of [false,true])test(`Cornsalad ${mobile?'handheld touch':'desk
  const snapshot=()=>page.evaluate(async()=>{const g=window.__game,p=g.menuPlayer,{showroomPage}=await import('/src/menus/MenuGarageWidgets.js'),e=p.flow.screen.elements.find(e=>e.type==='car-showroom'),choices=p.resources.choices('cars',p.flow.document,p.flow.parameters),shown=showroomPage(choices,p.flow.parameters[e.binding],e.maxVisible);return {selected:p.flow.parameters.carRef,start:shown.start,visible:shown.entries.map(e=>e.value),targetIndex:choices.findIndex(e=>e.value==='Cornsalad 2005'),selectedIndex:shown.index,loadedCars:p.resources.cars.size,totalChoices:choices.length,errors:[...p.resources.errors]};});
  const first=await snapshot();expect(first.start).toBe(0);expect(first.visible).toContain(first.selected);first.thumbnail=await expectThumbnailOnCanvas(page,qa,first.selected);qa.assertBrowseCold();expect(first.loadedCars).toBeLessThan(first.totalChoices);await page.screenshot({path:info.outputPath('picker-initial.png')});
  expect(first.targetIndex).toBeGreaterThan(3);
- for(let i=first.selectedIndex;i<first.targetIndex;i++){await page.keyboard.press('ArrowRight');await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));await menuReady();}
+ await selectCatalogTarget(page,{targetName:'Cornsalad 2005',mobile,menuReady,info,thumbnailQA:qa});
  // Wait for the target's decoded atlas to be drawn without loading its original art.
  const laterThumbnail=await expectThumbnailOnCanvas(page,qa,'Cornsalad 2005');
  const later=await snapshot();expect(later.selected).toBe('Cornsalad 2005');expect(later.start).toBeGreaterThan(0);expect(later.visible).toContain('Cornsalad 2005');later.thumbnail=laterThumbnail;qa.assertBrowseCold();expect(later.errors).toEqual([]);await page.screenshot({path:info.outputPath('picker-later.png')});fs.writeFileSync(info.outputPath('picker.json'),JSON.stringify({first,later},null,2));

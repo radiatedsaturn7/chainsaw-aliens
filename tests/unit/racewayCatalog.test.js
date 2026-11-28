@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
 import fs from 'node:fs';
 import zlib from 'node:zlib';
 import path from 'node:path';
@@ -21,13 +22,50 @@ test('Turini terrain stays aligned with its mountain road without kilometre-wide
 });
 
 test('every reviewed raceway layout resolves to dense mapped geometry and distinct course provenance',()=>{
- const keys=new Set(),shapes=new Set();
+ const keys=new Set(),shapes=new Set(),rallyShapes=new Set();
+ const rallySourcesRoot=path.resolve('data/campaigns/america/raceways/sources');
+ // Reproducible short Fuji OSM loops: dense 50m sampling, exact reviewed source ways.
+ const fujiShort=new Map([
+  ['raceway-fuji-short-outer',[39,[148620323,196331214,196331215]]],
+  ['raceway-fuji-short-middle',[35,[148620323,196331214,196331215,196353740,196353741]]],
+  ['raceway-fuji-short-inner',[29,[148620323,196331214,196353740]]],
+ ]);
  for(const event of events){
   assert.equal(event.status,'installed');assert.ok(!keys.has(event.raceRef));keys.add(event.raceRef);
   const {race}=read(path.join(root,event.documentPath));
-  assert.equal(race.name,event.raceRef);assert.equal(race.type,event.import_kind==='road'?'destination':'circuit');assert.ok(race.road.nodes.length>35,event.raceRef);
-  assert.ok(race.source.osmWayIds.length>0);assert.match(race.source.provider,/OpenStreetMap/);
-  assert.ok(!shapes.has(race.source.layoutGeometrySha256),event.raceRef);shapes.add(race.source.layoutGeometrySha256);
+  assert.equal(race.name,event.raceRef);assert.equal(race.type,event.import_kind==='road'?'destination':'circuit');const short=fujiShort.get(event.id);
+  if(short){
+   assert.equal(race.road.nodes.length,short[0],event.raceRef);
+   assert.deepEqual(race.source.osmWayIds,short[1],event.raceRef);
+   assert.ok(race.road.segments.every(s=>s.length<=50.01),event.raceRef);
+   fujiShort.delete(event.id);
+  }else if(event.id==='raceway-ebisu-school'){
+   // The 405 m school loop is densely sampled despite its small node count.
+   assert.equal(race.road.nodes.length,35);
+   assert.ok(race.road.segments.every(s=>s.length<=20),event.raceRef);
+  }else assert.ok(race.road.nodes.length>35,event.raceRef);
+  const source=race.source;
+  if(event.id.startsWith('rally-')){
+   // Long rally parent roads can come from a published organizer trace or a
+   // reviewed mapped road. Verify the raw snapshot and separate saved routes.
+   assert.ok(source.rallyCollection?.id,event.raceRef);
+   assert.match(source.layoutReference,/^https:\/\//,event.raceRef);
+   assert.ok(source.geometryMethod,event.raceRef);
+   const snapshot=path.resolve(source.sourceSnapshot);
+   assert.equal(path.dirname(snapshot),rallySourcesRoot,event.raceRef);
+   assert.equal(createHash('sha256').update(fs.readFileSync(snapshot)).digest('hex'),source.sourceSha256,event.raceRef);
+   assert.ok(source.provider,event.raceRef);
+   if(source.provider.includes('OpenStreetMap'))assert.ok(source.osmWayIds.length>0,event.raceRef);
+   const geometry=JSON.stringify(race.road.nodes.map(({x,y,elevation})=>[x,y,elevation]));
+   const digest=createHash('sha256').update(geometry).digest('hex');
+   assert.ok(!rallyShapes.has(digest),event.raceRef);rallyShapes.add(digest);
+  }else{
+   assert.ok(source.osmWayIds.length>0,event.raceRef);assert.match(source.provider,/OpenStreetMap/,event.raceRef);
+   assert.match(source.layoutGeometrySha256,/^[0-9a-f]{64}$/,event.raceRef);
+   // Reverse layouts legitimately share their source trace, but not driving direction.
+   const layoutKey=`${source.layoutGeometrySha256}:${Boolean(source.reversed)}`;
+   assert.ok(!shapes.has(layoutKey),event.raceRef);shapes.add(layoutKey);
+  }
   assert.equal(race.road.autoExtend,false);assert.equal(race.road.nodes.length,race.road.segments.length+1);
   const [a,b]=[race.road.nodes[0],race.road.nodes.at(-1)];if(race.type==='circuit')assert.ok(Math.hypot(a.x-b.x,a.y-b.y)<.01,event.raceRef);
   assert.ok(race.road.nodes.every(p=>[p.x,p.y,p.elevation].every(Number.isFinite)));
@@ -36,6 +74,7 @@ test('every reviewed raceway layout resolves to dense mapped geometry and distin
   assert.ok(race.roadTextures.road.artRef);assert.ok(race.scenery.length>0,event.raceRef);
   if(event.hubStage)assert.equal(campaignEventCategory(event),'raceways');
  }
+ assert.equal(fujiShort.size,0,'All three reviewed Fuji short courses remain installed');
  for(const venue of ['watkins','road-america','road-atlanta','vir','sebring','indianapolis','homestead','daytona','laguna','willow','lime','mid-ohio'])assert.ok(events.some(e=>e.venueKey===venue),venue);
 });
 
@@ -59,5 +98,16 @@ test('all installed US layouts appear once in campaign menus and remain optional
  const buttons=screens.flatMap(s=>s.elements).filter(e=>e.action?.parameter==='raceRef');
  for(const event of events.filter(e=>e.hubStage))assert.equal(buttons.filter(b=>b.action.value===event.raceRef).length,1,event.raceRef);
  for(const s of screens)assert.ok(s.elements.filter(e=>e.type==='button').length<=8,s.id);
- assert.equal(main.length,11);assert.equal(side.length,99);
+ assert.equal(main.length,11);
+ const researchedIds=research.hubs.flatMap(hub=>hub.races.map(race=>race.id)).sort();
+ assert.equal(researchedIds.length,99);
+ assert.deepEqual(side.filter(event=>event.id!=='detour-tower-hill').map(event=>event.id).sort(),researchedIds);
+ const detours=side.filter(event=>event.id==='detour-tower-hill');
+ assert.equal(detours.length,1);
+ const [tower]=detours;
+ assert.equal(tower.status,'installed');assert.equal(tower.raceRef,'Tower Hill Road');
+ assert.equal(tower.hubRaceRef,'Providence, RI — Landmark Run');
+ assert.equal(tower.documentPath,'races/Tower Hill Road/document.json');
+ assert.equal(campaignEventCategory(tower),'detours');
+ assert.equal(read(path.join(root,tower.documentPath)).race.name,tower.raceRef);
 });
