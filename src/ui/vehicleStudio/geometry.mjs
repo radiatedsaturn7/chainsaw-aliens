@@ -879,7 +879,20 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  const roofW=Math.min(X*.91,X*d.cabinWidth*c.roof.size*.94),glassBaseW=X*d.cabinWidth*1.12,
   roofC=(.023+.068*d.crown)*(.60+c.roof.shape)*((c.roof.type==='flat'||coveredTarga)?.40:1)*c.roof.depth;
  const baseW=z=>Math.min(skinX(z)-.035,glassBaseW);
- const roofPoint=(z,u)=>{const k=2*u-1,edge=g.body.roofEdge;return [k*roofW*(1-(.067+.12*(canopy.canopyShoulder-.5))*Math.abs(2*(z-roofRear)/Math.max(.15,roofFront-roofRear)-1)**2),d.height+UP_PATCH(g,'roof',z,u,roofRear,roofFront)-roofC*Math.abs(k)**(2.28-.68*edge-.60*(canopy.canopyShoulder-.5))-.014*edge*Math.abs(k)**11-roofC*.45*Math.abs(2*(z-roofRear)/Math.max(.15,roofFront-roofRear)-1)**2,z];};
+ const shoulderTaper=roadster||coveredTarga||canopy.rearHatchFold||canopy.gullwingRoofSeams?0:canopy.roofShoulderTaper;
+ const shoulderRoll=roadster||coveredTarga||canopy.rearHatchFold||canopy.gullwingRoofSeams?0:canopy.screenShoulderRoll;
+ const roofPoint=(z,u)=>{
+  const k=2*u-1,edge=g.body.roofEdge,t=(z-roofRear)/Math.max(.15,roofFront-roofRear);
+  const p=[k*roofW*(1-(.067+.12*(canopy.canopyShoulder-.5))*Math.abs(2*t-1)**2),d.height+UP_PATCH(g,'roof',z,u,roofRear,roofFront)-roofC*Math.abs(k)**(2.28-.68*edge-.60*(canopy.canopyShoulder-.5))-.014*edge*Math.abs(k)**11-roofC*.45*Math.abs(2*t-1)**2,z];
+  if(shoulderTaper){
+   const end=Math.abs(2*t-1)**2,corner=Math.abs(k)**1.8;
+   // Move the outside of the real roof shell, not a strip drawn over it.
+   // At maximum edit the local inset stays well below half of roof width.
+   p[0]-=Math.sign(k)*corner*(.26+.74*end)*Math.min(shoulderTaper,.34*roofW);
+   p[1]-=.42*shoulderTaper*corner*(.45+.55*end);
+  }
+  return p;
+ };
  const bubbleRoof=canopy.bubbleCanopy;
  function canopyRoof(z,u){
   const p=roofPoint(z,u);
@@ -901,6 +914,15 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   const q=lerp3(boot,header,t);
   const zBow=sgn<0&&hatchUpright?Math.min(.045*c.glass.depth,(edge-gate)*.28):(.045*c.glass.depth+bubbleRoof*.11)*(open?open:1);
   q[2]+=sgn*zBow*bell(t)*bell(u);
+  if(shoulderRoll&&!(sgn<0&&hatchUpright)){
+   // Roll the rail in actual world Y/Z, fading to zero at both shared
+   // joins. Side glass and A/C-pillar paths inherit this boundary.
+   const r=bell(t)**1.36,edgeWeight=.54+.46*Math.abs(2*u-1)**1.5;
+   const span=Math.abs(header[2]-boot[2]),rise=Math.abs(header[1]-boot[1]);
+   const bend=Math.min(shoulderRoll,.235*Math.min(span,rise))*r*edgeWeight;
+   q[1]+=bend;
+   q[2]-=sgn*.47*bend;
+  }
   if(sgn<0&&canopy.rearGlassArc){
    const round=bell(t)**1.35;
    q[1]+=canopy.rearGlassArc*round;
@@ -1336,7 +1358,11 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    const outer=u===0||u===1;
    const mat=roofStrake&&outer?'roofPaint':(c.pillars.type==='painted'||framed&&outer)&&!(u===0&&canopy.darkWindscreenFrame)?'paint':'trim',w=(.013+.027*c.pillars.shape)*c.pillars.size+(u===1?canopy.rearPillarWidth:0);
    const pillar=(v,j)=>{
-    const q=side(clamp(u+(j-.5)*w*(u===.5?2:3)),v);q[0]+=s*(.007+.011*bell(j))*c.pillars.depth;return q;
+    // Solve the upper B-pillar station in metres relative to the lower
+    // door split. This one scalar moves the construction path itself.
+    const centerLean=!outer&&c.doors.type==='four door'?canopy.centerPillarLean:0;
+    const mid=centerLean?u-v*centerLean/Math.max(.62,roofFront-roofRear):u;
+    const q=side(clamp(mid+(j-.5)*w*(u===.5?2:3)),v);q[0]+=s*(.007+.011*bell(j))*c.pillars.depth;return q;
    };
    put('pillars',mat,patch(small(lod?7:12,5,4,4),small(3,2,1,1),pillar,framed&&s<0));
    if(framed&&outer)put('pillars','trim',patch(small(lod?7:12,5,4,3),small(2,1,1,1),(v,j)=>{

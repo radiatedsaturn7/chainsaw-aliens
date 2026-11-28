@@ -2,7 +2,7 @@
   "kind": "lotg-vehicle-design",
   "schemaVersion": 1,
   "generatorVersion": 5,
-  "name": "2022 US Field Scabious · N 2.0T 6MT",
+  "name": "2022 US Field Scabious \u00b7 N 2.0T 6MT",
   "family": "sedan",
   "dimensions": {
     "wheelbase": 2.72,
@@ -17,9 +17,9 @@
     "cabin": 0.051,
     "cabinLength": 0.62,
     "cabinWidth": 0.773,
-    "hood": -0.072,
+    "hood": 0.127,
     "trunk": -0.066,
-    "crown": 0.41,
+    "crown": 0.63,
     "skirt": 0.9,
     "frontBox": 0.095,
     "rearBox": 0.22,
@@ -76,8 +76,8 @@
     },
     "roof": {
       "type": "arched",
-      "size": 1.1,
-      "shape": 0.24,
+      "size": 1.04,
+      "shape": 0.48,
       "depth": 1
     },
     "pillars": {
@@ -621,8 +621,8 @@
       "wagonGlassPillarLean": 0.018,
       "rearDeckButtresses": 0,
       "rearPillarFoot": 0.126,
-      "rearRoofShift": 0.031,
-      "rearPillarWidth": 0.077,
+      "rearRoofShift": -0.105,
+      "rearPillarWidth": 0.039,
       "pickupCabFrame": 0,
       "utilityCabinSplit": 0,
       "hardtopRearSide": 0,
@@ -643,11 +643,14 @@
       "rearBenchFacingAft": 0,
       "rearBenchSeats": 2,
       "canopyLength": 0.91,
-      "frontScreenRake": -0.044,
+      "frontScreenRake": -0.036,
       "sideGlassRise": 0.05,
       "darkWindscreenFrame": 0,
       "canopyShoulder": 0.51,
-      "glassBow": 0.35
+      "glassBow": 0.35,
+      "roofShoulderTaper": 0.105,
+      "screenShoulderRoll": 0.117,
+      "centerPillarLean": 0.082
     },
     "finish": {
       "paintRoughness": 0.44,
