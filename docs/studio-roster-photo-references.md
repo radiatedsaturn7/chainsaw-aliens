@@ -661,3 +661,29 @@ a genuine separate middle jumper, and the Caravan has two-place middle
 bench and three-place rear bench. Minivan hatch ends remain simplified;
 Mercedes lamp envelopes and classic wing-to-glass transitions are not
 yet photo-exact.
+
+### Full-roster rollout, modern Aston Martin, Škoda, Plymouth, Nissan, and Jaguar
+
+| In-game 3D car | Exact visual target and reference |
+| --- | --- |
+| Water Forgetmenot 2008 | UK Aston Martin DBS 5.9 V12 manual coupe, 2+0. [Aston Martin archive](https://media.astonmartin.com/dbs2/?lang=eng). |
+| Marsh Bedstraw 2017 | UK Aston Martin DB11 original V12 608 PS, not V8 or AMR. [Aston Martin launch archive](https://www.astonmartin.com/en/our-world/news/2017/2/28/aston-martin-db11-the-latest-in-an-illustrious-bloodline). |
+| Suckling Clover 2019 | Original Aston Martin DBS Superleggera coupe, not Volante or Ultimate. [Aston Martin launch](https://www.astonmartin.com/en-gb/our-world/news/2018/6/26/introducing-the-new-dbs-superleggera-two-illustrious-names-one-magnificent-super-gt). |
+| Winterberry Clover 2015 | European Škoda Fabia Combi Active 1.0 MPI 75, standard 14-inch. [Škoda launch kit](https://www.skoda-storyboard.com/en/press-kits/new-skoda-fabia-combi-simply-fabulous-press-kit/). |
+| Elderberry Clover 2015 | European Škoda Superb Combi Active 1.4 TSI 125, normal suspension. [Škoda launch kit](https://cdn.skoda-storyboard.com/2016/05/150629-The-new-%C5%A0KODA-Superb-Combi-Press-Kit.pdf). |
+| Bayberry Clover 2017 | European facelift Škoda Rapid Spaceback Active 1.0 TSI 95 five-door. [Škoda press kit](https://cdn.skoda-storyboard.com/2017/05/SKODA_RAPID_SPACEBACK_Press_Kit_EN_with_TD.pdf). |
+| Bithynian Vetch 1958 | US Plymouth Fury Dual Fury V-800 318 three-speed, not Golden Commando. [Original brochure](https://over-drive-magazine.com/document/1958-plymouth-fury-foldout-brochure/). |
+| Bush Vetch 1968 | US Plymouth Barracuda Formula S 340 four-speed fastback, not later E-body. [Original brochure](https://over-drive-magazine.com/document/1968-plymouth-barracuda-brochure/). |
+| Toothwort 1970 | Petty Plymouth Superbird #43 Carolina 500 winner, non-graphic event tribute. [NASCAR race record](https://www.nascar.com/news-media/2022/07/02/cataloging-all-200-of-richard-pettys-nascar-wins-one-by-one/); [Plymouth period ad](https://autohistorypreservationsociety.org/wp-content/uploads/1970-03-MOTOR-TREND.pdf). |
+| Heartsease 1991 | Bathurst 1991 Tooheys 1000 winning Nissan Skyline R32 GT-R, Richards/Skaife. [Nissan Australia retrospective](https://australia.nissannews.com/en-AU/releases/making-a-monster-how-the-nissan-gt-rs-godzilla-legend-was-cemented-at-mount-panorama). |
+| Slender Tare 1995 | Nissan NISMO GT-R LM BCNR33 road homologation one-off, not race car. [Nissan exact car archive](https://www.nissan-global.com/EN/HERITAGE_COLLECTION/181_nismo_gt-r_lm_road_car.html). |
+| Hellebore RS 2015 | US Nissan Juke NISMO RS front-drive six-speed manual, not AWD CVT. [Nissan US press kit](https://usa.nissannews.com/en-US/releases/us-2015-nissan-juke-nismo-press-kit). |
+| Curled Dock 2015 | UK Jaguar XE S 3.0 launch rear-drive 8AT. [Jaguar period press kit](https://media.jlr.com/archive-jaguar/en-gb/news/2015/04/press-kit-new-jaguar-xe). |
+| Red Bartsia 2015 | UK Jaguar XFR-S X250 rear-drive saloon, not Sportbrake. [UK period brochure](https://xr793.com/wp-content/uploads/2022/10/2015-Jaguar-XF-UK.pdf). |
+| White Stonecrop 2012 | UK Jaguar XKR-S 5.0 supercharged automatic coupe, not convertible or GT. [Jaguar launch](https://media.jlr.com/jaguar/en-gb/news/2011/02/jaguar-launch-xkr-s-and-celebrate-50-years-e-type-geneva). |
+
+Race vehicles omit their sponsor graphics. Fury fins, Superbird extended
+nose, DB11 roof rails and Juke split lamps are editable shapes. Škoda
+clear notches do not alter active lamp assignments. Rear optical contours,
+Jaguar hatch/door transitions, Juke body wrap, and some aero construction
+remain approximations.

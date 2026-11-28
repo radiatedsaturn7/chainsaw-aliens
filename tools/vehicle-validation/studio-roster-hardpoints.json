@@ -10161,5 +10161,698 @@
         }
       ]
     }
+  },
+  {
+    "id": "aston-martin-dbs-uk-2008",
+    "label": "Water Forgetmenot 2008",
+    "capability": "2008 DBS six-speed two-seat narrow high grille and lower corner inlets",
+    "carId": "3d-water-forgetmenot-2008-3d-ce24b305aa1d",
+    "bodyRef": "Water-Forgetmenot-2008",
+    "wheelRef": "Water-Forgetmenot-2008-Wheel",
+    "radius": 0.33975,
+    "axles": [
+      {
+        "track": 1.5900399684906006,
+        "y": 0.3397499918937683,
+        "z": 1.3700000047683716
+      },
+      {
+        "track": 1.5798799991607666,
+        "y": 0.3397499918937683,
+        "z": -1.3700000047683716
+      }
+    ],
+    "reference": "2008 UK Aston Martin DBS V12 coupe 2+0 manual"
+  },
+  {
+    "id": "aston-martin-db11-v12-uk-2017",
+    "label": "Marsh Bedstraw 2017",
+    "capability": "original 608 PS DB11 clamshell bonnet and flowing contrast roof strake",
+    "carId": "3d-marsh-bedstraw-2017-3d-6fd5b2567b61",
+    "bodyRef": "Marsh-Bedstraw-2017-finished",
+    "wheelRef": "Marsh-Bedstraw-2017-wheel",
+    "radius": 0.356,
+    "axles": [
+      {
+        "track": 1.6281399726867676,
+        "y": 0.35600000619888306,
+        "z": 1.402500033378601
+      },
+      {
+        "track": 1.643380045890808,
+        "y": 0.3555710017681122,
+        "z": -1.402500033378601
+      }
+    ],
+    "reference": "2017 UK Aston Martin DB11 V12 original 608 PS coupe"
+  },
+  {
+    "id": "aston-martin-dbs-superleggera-2019",
+    "label": "Suckling Clover 2019",
+    "capability": "2019 DBS Superleggera full-depth black grille and pronounced haunches",
+    "carId": "3d-suckling-clover-2019-3d-31230363312c",
+    "bodyRef": "Suckling-Clover-2019-finished",
+    "wheelRef": "Suckling-Clover-2019-wheel",
+    "radius": 0.35945,
+    "axles": [
+      {
+        "track": 1.6649999618530273,
+        "y": 0.35945001244544983,
+        "z": 1.402500033378601
+      },
+      {
+        "track": 1.6449999809265137,
+        "y": 0.35902801156044006,
+        "z": -1.402500033378601
+      }
+    ],
+    "reference": "2019 original Aston Martin DBS Superleggera V12 2+2 coupe"
+  },
+  {
+    "reference": "2015 Skoda Fabia Combi Active1.0MPI75, continentalEurope January2015 third-generation basic estate55kWfive-speed manual14inch wheels, standard suspension; nothatchback,TSI,GreenLine orDSG",
+    "canonicalLampSides": true,
+    "id": "skoda-fabia-combi-2015",
+    "label": "Winterberry Clover 2015",
+    "capability": "Short third-generation base estate with swept upright cargo enclosure and compact trapezoid headlamps",
+    "carId": "3d-winterberry-clover-2015-3d-147434a3cf89",
+    "bodyRef": "Winterberry-Clover-2015",
+    "wheelRef": "Winterberry-Clover-2015-Wheel",
+    "radius": 0.3003,
+    "axles": [
+      {
+        "track": 1.4630000591278076,
+        "y": 0.3003000020980835,
+        "z": 1.2350000143051147
+      },
+      {
+        "track": 1.4570000171661377,
+        "y": 0.3003000020980835,
+        "z": -1.2350000143051147
+      }
+    ]
+  },
+  {
+    "reference": "2015 Skoda Superb Combi Active1.4TSI125, continentalEurope June2015 third-generation basic estate92kW FWD six-speedmanual16inch wheels, standard passive suspension; notACT150,4x4,DSG,LK orDCC",
+    "canonicalLampSides": true,
+    "id": "skoda-superb-combi-2015",
+    "label": "Elderberry Clover 2015",
+    "capability": "Long third-generation base estate with extended cargo greenhouse and angular low lamps",
+    "carId": "3d-elderberry-clover-2015-3d-7c3f6115486f",
+    "bodyRef": "Elderberry-Clover",
+    "wheelRef": "Elderberry-Clover-Wheel",
+    "radius": 0.3322,
+    "axles": [
+      {
+        "track": 1.5839999914169312,
+        "y": 0.33219999074935913,
+        "z": 1.4205000400543213
+      },
+      {
+        "track": 1.5720000267028809,
+        "y": 0.33219999074935913,
+        "z": -1.4205000400543213
+      }
+    ]
+  },
+  {
+    "reference": "2017 Skoda Rapid Spaceback Active1.0TSI95, continentalEurope May2017 facelift basicfive-door hatch70kWfive-speedmanual14inch wheels solidroof; notliftback,MonteCarlo,DSG orpanoramicStyle",
+    "canonicalLampSides": true,
+    "id": "skoda-rapid-spaceback-2017",
+    "label": "Bayberry Clover 2017",
+    "capability": "2017 facelift solid-roof base hatch with shortened tail, slimmer wrapped nose, and compact base wheels",
+    "carId": "3d-bayberry-clover-2017-3d-1928eec7eb2c",
+    "bodyRef": "Bayberry-Clover-2017-finished",
+    "wheelRef": "Bayberry-Clover-2017-wheel",
+    "radius": 0.3003,
+    "axles": [
+      {
+        "track": 1.4630000591278076,
+        "y": 0.3003000020980835,
+        "z": 1.3009999990463257
+      },
+      {
+        "track": 1.5,
+        "y": 0.30114200711250305,
+        "z": -1.3009999990463257
+      }
+    ]
+  },
+  {
+    "id": "plymouth-fury-1958",
+    "label": "Bithynian Vetch 1958",
+    "carId": "3d-bithynian-vetch-1958-3d-e5f24cde4cf4",
+    "capability": "1958 US Plymouth Fury two-doorhardtop,standard318cuin DualFuryV800 two-four-barrelV8,three-speedmanual and3.73highperformancechassisaxle;not305hp350GoldenCommando,not1957model",
+    "bodyRef": "Bithynian-Vetch-1958-body",
+    "wheelRef": "Bithynian-Vetch-1958-wheel",
+    "radius": 0.33904999999999996,
+    "axles": [
+      {
+        "track": 1.5468599796295166,
+        "y": 0.3390499949455261,
+        "z": 1.5235999822616577
+      },
+      {
+        "track": 1.5138399600982666,
+        "y": 0.3390499949455261,
+        "z": -1.4736000299453735
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6990000009536743,
+            0.6790000200271606,
+            -2.7174201011657715
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6990000009536743,
+            0.6790000200271606,
+            -2.7174201011657715
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.8009999990463257,
+            0.6790000200271606,
+            2.7024199962615967
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.8009999990463257,
+            0.6790000200271606,
+            2.7024199962615967
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7734299898147583,
+            0.3390499949455261,
+            -1.5235999822616577
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7734299898147583,
+            0.3390499949455261,
+            -1.5235999822616577
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7569199800491333,
+            0.3390499949455261,
+            1.4736000299453735
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7569199800491333,
+            0.3390499949455261,
+            1.4736000299453735
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "https://over-drive-magazine.com/document/1958-plymouth-fury-foldout-brochure/"
+  },
+  {
+    "id": "plymouth-barracuda-formula-s-1968",
+    "label": "Bush Vetch 1968",
+    "carId": "3d-bush-vetch-1968-3d-81044cffa7a5",
+    "capability": "1968 US Plymouth Barracuda Formula S340 V8 fastback, four-speedmanual3.23openrearaxle;not383,notlaterE-bodyCuda orHemiSuperStock",
+    "bodyRef": "Bush-Vetch-1968-body",
+    "wheelRef": "Bush-Vetch-1968-wheel",
+    "radius": 0.3143,
+    "axles": [
+      {
+        "track": 1.4579600095748901,
+        "y": 0.314300000667572,
+        "z": 1.413599967956543
+      },
+      {
+        "track": 1.4122400283813477,
+        "y": 0.314300000667572,
+        "z": -1.3295999765396118
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.6549999713897705,
+            0.546999990940094,
+            -2.547559976577759
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.6549999713897705,
+            0.546999990940094,
+            -2.547559976577759
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.5870000123977661,
+            0.5289999842643738,
+            2.5515599250793457
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.5870000123977661,
+            0.5289999842643738,
+            2.5515599250793457
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7289800047874451,
+            0.314300000667572,
+            -1.413599967956543
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7289800047874451,
+            0.314300000667572,
+            -1.413599967956543
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7061200141906738,
+            0.314300000667572,
+            1.3295999765396118
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7061200141906738,
+            0.314300000667572,
+            1.3295999765396118
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "https://over-drive-magazine.com/document/1968-plymouth-barracuda-brochure/"
+  },
+  {
+    "id": "plymouth-superbird-nascar-1970",
+    "label": "Toothwort 1970",
+    "carId": "3d-toothwort-1970-3d-3bf3ae58e530",
+    "capability": "Richard Petty #43 Plymouth Superbird, 8 March 1970 Carolina 500 victory at North Carolina Motor Speedway (Rockingham). Event verified by NASCAR; technical architecture informed by restored Petty competition car, not exact event chassis identity.",
+    "bodyRef": "Toothwort-1970-body",
+    "wheelRef": "Toothwort-1970-wheel",
+    "radius": 0.3555,
+    "axles": [
+      {
+        "track": 1.559999942779541,
+        "y": 0.3555000126361847,
+        "z": 1.5950000286102295
+      },
+      {
+        "track": 1.559999942779541,
+        "y": 0.3555000126361847,
+        "z": -1.3509999513626099
+      }
+    ],
+    "stockFrame": {
+      "forward": "-z",
+      "basis": "raw-stock-model",
+      "joints": [
+        {
+          "name": "HeadlightMount_L",
+          "position": [
+            -0.5820000171661377,
+            0.453000009059906,
+            -2.88700008392334
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "HeadlightMount_R",
+          "position": [
+            0.5820000171661377,
+            0.453000009059906,
+            -2.88700008392334
+          ],
+          "rotation": [
+            0,
+            -1,
+            0,
+            4.371138828673793e-08
+          ]
+        },
+        {
+          "name": "TaillightMount_L",
+          "position": [
+            -0.699999988079071,
+            0.621999979019165,
+            2.877000093460083
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "TaillightMount_R",
+          "position": [
+            0.699999988079071,
+            0.621999979019165,
+            2.877000093460083
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FL",
+          "position": [
+            -0.7799999713897705,
+            0.3555000126361847,
+            -1.5950000286102295
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_FR",
+          "position": [
+            0.7799999713897705,
+            0.3555000126361847,
+            -1.5950000286102295
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RL",
+          "position": [
+            -0.7799999713897705,
+            0.3555000126361847,
+            1.3509999513626099
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WheelMount_RR",
+          "position": [
+            0.7799999713897705,
+            0.3555000126361847,
+            1.3509999513626099
+          ],
+          "rotation": [
+            0,
+            0,
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    "reference": "https://www.nascar.com/news-media/2022/07/02/cataloging-all-200-of-richard-pettys-nascar-wins-one-by-one/"
+  },
+  {
+    "id": "nissan-r32-bathurst-1991",
+    "label": "Heartsease 1991",
+    "capability": "Sponsor-free red Group A body, tall race tires, split intakes and four rear circles",
+    "carId": "3d-heartsease-1991-3d-2c978d2b4b08",
+    "bodyRef": "Heartsease-1991-finished",
+    "wheelRef": "Heartsease-1991-wheel",
+    "radius": 0.3346,
+    "axles": [
+      {
+        "track": 1.590000033378601,
+        "y": 0.3346000015735626,
+        "z": 1.3075000047683716
+      },
+      {
+        "track": 1.5399999618530273,
+        "y": 0.3346889913082123,
+        "z": -1.3075000047683716
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "1991 Tooheys 1000-winning Nissan Skyline GT-R BNR32 Group A, Richards/Skaife"
+  },
+  {
+    "id": "nissan-r33-lm-road-1995",
+    "label": "Slender Tare 1995",
+    "capability": "Road glass and mirrors, very wide LM body, wrap fenders, functional rear lamp pairs",
+    "carId": "3d-slender-tare-1995-3d-13e93e412769",
+    "bodyRef": "slender-tare-finished",
+    "wheelRef": "slender-tare-wheel",
+    "radius": 0.32135,
+    "axles": [
+      {
+        "track": 1.5499999523162842,
+        "y": 0.3208630084991455,
+        "z": 1.1967999935150146
+      },
+      {
+        "track": 1.5800000429153442,
+        "y": 0.3210679888725281,
+        "z": -1.5232000350952148
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "1995 Nissan NISMO GT-R LM Road Car BCNR33, one-off UK homologation"
+  },
+  {
+    "id": "nissan-juke-nismo-rs-2015",
+    "label": "Hellebore RS 2015",
+    "capability": "Upper hood shoulder markers, lower main round projectors, red accents and dark 18-inch wheels",
+    "carId": "3d-hellebore-rs-2015-3d-8f01764d3c6f",
+    "bodyRef": "Hellebore-RS-2015",
+    "wheelRef": "Hellebore-RS-2015-Wheel",
+    "radius": 0.32985,
+    "axles": [
+      {
+        "track": 1.5240000486373901,
+        "y": 0.3298499882221222,
+        "z": 1.2649199962615967
+      },
+      {
+        "track": 1.5240000486373901,
+        "y": 0.3298499882221222,
+        "z": -1.2649199962615967
+      }
+    ],
+    "canonicalLampSides": true,
+    "reference": "2015 US Nissan Juke NISMO RS FWD six-speed manual"
+  },
+  {
+    "id": "jaguar-xe-s-2015",
+    "label": "Curled Dock 2015",
+    "capability": "UK launch XE S narrow J-style optics, sport air intakes, compact cabin and single dual outlets",
+    "carId": "3d-curled-dock-2015-3d-71bb0c074fcf",
+    "bodyRef": "Curled-Dock-2015-finished",
+    "wheelRef": "Curled-Dock-2015-wheel",
+    "radius": 0.3313,
+    "axles": [
+      {
+        "track": 1.577340006828308,
+        "y": 0.3312999904155731,
+        "z": 1.4175000190734863
+      },
+      {
+        "track": 1.5951199531555176,
+        "y": 0.3310219943523407,
+        "z": -1.4175000190734863
+      }
+    ],
+    "reference": "2015 UK Jaguar XE S launch3.0superchargedV6 rear-wheel-drive eight-speed automatic; not2017US or later380PS/AWD",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "jaguar-xfr-s-2015",
+    "label": "Red Bartsia 2015",
+    "capability": "UK XFR-S saloon with deeper triple intakes, carbon style rear aero and quad outlets",
+    "carId": "3d-red-bartsia-2015-3d-eafa3c1d0d0b",
+    "bodyRef": "Red-Bartsia-2015-finished",
+    "wheelRef": "Red-Bartsia-2015-wheel",
+    "radius": 0.34675,
+    "axles": [
+      {
+        "track": 1.6027400493621826,
+        "y": 0.3463680148124695,
+        "z": 1.3963199853897095
+      },
+      {
+        "track": 1.5951199531555176,
+        "y": 0.3418259918689728,
+        "z": -1.5126800537109375
+      }
+    ],
+    "reference": "2015 UK Jaguar XFR-S X250 four-door saloon,5.0 superchargedV8 550PS680Nm RWD eight-speed Quickshift automatic; not Sportbrake,XKR-S,F-TYPE R or laterXF generation.",
+    "canonicalLampSides": true
+  },
+  {
+    "id": "jaguar-xkr-s-2012",
+    "label": "White Stonecrop 2012",
+    "capability": "UK XKR-S fixed-roof 2+2, oval mesh nose, twin bonnet vents, quad outlets and low aero wing",
+    "carId": "3d-white-stonecrop-2012-3d-2266fa061d64",
+    "bodyRef": "White-Stonecrop-2012-finished",
+    "wheelRef": "White-Stonecrop-2012-wheel",
+    "radius": 0.34325,
+    "axles": [
+      {
+        "track": 1.559999942779541,
+        "y": 0.34325000643730164,
+        "z": 1.3760000467300415
+      },
+      {
+        "track": 1.6080000400543213,
+        "y": 0.3429659903049469,
+        "z": -1.3760000467300415
+      }
+    ],
+    "reference": "2012 UK/Europe Jaguar XKR-S Coupe5.0supercharged6AT;notConvertible,GTorXFR-S",
+    "canonicalLampSides": true
   }
 ]

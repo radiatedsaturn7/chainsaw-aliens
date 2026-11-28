@@ -499,6 +499,25 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
  }
  const hoodEdge=bumperFront+g.seams.hoodSeam.offset-g.seams.hoodSeam.gap*.5,
   trunkEdge=bumperRear+g.seams.trunkSeam.offset+g.seams.trunkSeam.gap*.5;
+ if(g.body.upperHoodMarkers>0){
+  // Trace both bonded upper marker housings on the hood itself. They
+  // follow shoulder and nose edits without replacing the lower main beam.
+  const length=g.body.upperHoodMarkers, station=hoodEdge-.013;
+  for(const side of [-1,1]){
+   const skin=(t,v,solid)=>{const z=station-length*t;
+    const q=Math.max(0,1-(2*t-1)**2)**.66;
+    const center=.855-.042*t+.018*Math.sin(Math.PI*t);
+    const w=(.009+.025*q)*(solid?1:.80);
+    const u=side>0?center+(2*v-1)*w:1-center-(2*v-1)*w;
+    const pt=hoodPoint(z,u);
+    return [pt[0],pt[1]+(solid?.0023:.0056),pt[2]];
+   };
+   put('headlights','seamDark',patch(small(12,8,7,6),3,(t,v)=>skin(t,v,true),side<0));
+   put('headlights',side>0?'signalR':'signalL',patch(small(10,7,6,5),2,(t,v)=>skin(.036+.92*t,v,false),side<0));
+   put('headlights','opticCover',patch(small(10,7,6,5),2,(t,v)=>{const q=skin(.04+.91*t,v,false);q[1]+=.001;return q;},side<0));
+  }
+ }
+
  const coverPoint=(raw,edge,settings,z,u)=>{
   const p=raw(z,u);p[1]-=settings.flush*.5*clamp(1-Math.abs(edge-z)/.07)**3;return p;
  };
@@ -677,8 +696,11 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
      // clamped arch/belt intersection follows the local top of the arch
      // instead of floating into it or poking through a door seam.
      const bottom=sampler(x,1)[1],top=sampler(x,0)[1],thickness=.016;
+     const gold=g.body.periodGoldSide;
+     const section=clamp((z-bumperRear)/(doorFront-bumperRear));
+     const extra=gold?(1-section)**.78*.058:0;
      const target=skinY(z)-.101-.25*(g.body.sideRubStripHeight-.39);
-     const y=clamp(target,Math.min(top,bottom+.011),top-.017)+(v-.5)*thickness;
+     const y=clamp(target,Math.min(top,bottom+.011),top-.017)+(v-.5)*(thickness+extra);
      let lo=0,hi=1;
      for(let i=0;i<14;i++){const t=(lo+hi)*.5;if(sampler(x,t)[1]>y)lo=t;else hi=t;}
      const p=sampler(x,(lo+hi)*.5);
@@ -686,9 +708,37 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
      return p;
     },s<0);
     band.userData.constructionRole='side panel / rolled protective molding';
-    put(key,'trim',band);
+    put(key,g.body.periodGoldSide?'roofPaint':'trim',band);
    }
    joins.push({a,b,component:key,side:s});
+  }
+  if(g.body.periodTailFin){
+   // Swept stamped steel quarter married to the authored outer deck rail.
+   // Closed underside deliberately sits below the deck; there is no slit
+   // or detached trim at the root. Shape rises outboard near the rear tip.
+   const back=Lr+.045,fwd=Math.min(doorRear-.065,-L+.31);
+   if(fwd>back+.11){
+    const fin=(u,v)=>{
+     const z=mix(back,fwd,u),a=v*Math.PI*2,sc=Math.sin(a);
+     const pin=.24+.76*Math.sin(Math.PI*u)**.45;
+     const y=g.body.periodTailFin*(1-u)**1.35;
+     const p=skinPoint(z,0,s,'rearFenders');
+     const bias=-(.064+.023*u);
+     return [p[0]+s*(bias+Math.cos(a)*(.018+.028*u)*pin),p[1]-.030+(sc>=0?y*sc:.028*sc),z+Math.max(0,sc)*.067*(1-u)];
+    };
+    const shell=patch(small(20,14,12,10),8,fin,s>0);
+    shell.userData.constructionRole='rear quarter / swept stamped tail fin';
+    put('rearFenders','paint',shell);
+    for(const [u,flip] of [[0,s>0],[1,s<0]]){
+     const p=fin(u,0),q=fin(u,.5),mid=p.map((v,i)=>(v+q[i])/2);
+     const pts=[mid,...Array.from({length:8},(_,i)=>fin(u,i/8))],tri=[];
+     for(let i=0;i<8;i++){const j=1+(i+1)%8;tri.push(0,flip?j:i+1,flip?i+1:j);}
+     const cap=new T.BufferGeometry();
+     cap.setAttribute('position',new T.Float32BufferAttribute(pts.flat(),3));
+     cap.setIndex(tri);cap.computeVertexNormals();
+     put('rearFenders','paint',cap);
+    }
+   }
   }
   for(const seam of master.seams){
    const k=seam.id,component=k.includes('Fender')?(k==='rearFenderSeam'?'rearFenders':'frontFenders'):'doors';
@@ -837,6 +887,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    },end===0));
   }
  }
+ const roofStrake=!roadster&&!coveredTarga&&!canopy.roofGlazing&&!canopy.gullwingRoofSeams&&canopy.foldingRoofSeam<=.09&&canopy.utilityCabinSplit<.25&&!canopy.pickupCabFrame&&!canopy.hatchQuarterTaper?canopy.roofStrake:0;
  if(!roadster){
   const roofMode=coveredTarga?0:Math.round(canopy.roofGlazing);
   const roofFinish=coveredTarga?'trim':canopy.hardtopContrast?'roofPaint':'paint';
@@ -870,6 +921,15 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
     });
     m.userData.constructionRole=seal?'closed folding roof / seal':'closed folding roof / painted section';
     put('roof',seal?'seamDark':roofFinish,m);
+   }
+  }else if(roofStrake>0){
+   // A painted roof insert and two flush perimeter strakes, partitioned
+   // on the original chart. No rails or overlays above the roof/glass join.
+   const rows=small(17,9,8,7),cols=small(12,9,8,7);
+   for(const [a,b,m,tag] of [[0,roofStrake,'roofPaint','contrast roof strake'],[roofStrake,1-roofStrake,'paint','roof center skin'],[1-roofStrake,1,'roofPaint','contrast roof strake']]){
+    const q=patch(rows,tag==='roof center skin'?cols:1,(t,u)=>canopyRoof(mix(roofRear,roofFront,t),mix(a,b,u)));
+    q.userData.constructionRole=tag;
+    put('roof',m,q);
    }
   }else if(!roofMode)sheet('roof',roofFinish,roofRear,roofFront,canopyRoof,small(17,9,8,7),small(12,9,8,7));
   else{
@@ -1210,7 +1270,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
   const windowPillar=c.doors.type==='four door'?.50:asymDoors&&s>0?.605:.65;
   for(const u of roadster?[0]:split>=.25?[]:taper?[0,windowPillar]:[0,windowPillar,1]){
    const outer=u===0||u===1;
-   const mat=(c.pillars.type==='painted'||framed&&outer)&&!(u===0&&canopy.darkWindscreenFrame)?'paint':'trim',w=(.013+.027*c.pillars.shape)*c.pillars.size+(u===1?canopy.rearPillarWidth:0);
+   const mat=roofStrake&&outer?'roofPaint':(c.pillars.type==='painted'||framed&&outer)&&!(u===0&&canopy.darkWindscreenFrame)?'paint':'trim',w=(.013+.027*c.pillars.shape)*c.pillars.size+(u===1?canopy.rearPillarWidth:0);
    const pillar=(v,j)=>{
     const q=side(clamp(u+(j-.5)*w*(u===.5?2:3)),v);q[0]+=s*(.007+.011*bell(j))*c.pillars.depth;return q;
    };
@@ -1230,7 +1290,7 @@ export function generateVehicle(input,{quality='preview',compact=0}={}){
    grip.userData.constructionRole='right rear hidden door pull';
    put('handles','trim',grip);
   }
-  if(framed&&!roadster&&split<.25)put('pillars','paint',patch(small(20,12,10,9),small(3,1,1,1),(u,j)=>{
+  if(framed&&!roadster&&split<.25)put('pillars',roofStrake?'roofPaint':'paint',patch(small(20,12,10,9),small(3,1,1,1),(u,j)=>{
    const q=side(u,1-j*.046);q[0]+=s*.006;return q;
   },s<0));
   if(split<.25)put('pillars','trim',patch(small(18,10,9,8),small(3,1,1,1),(u,v)=>{const q=side(u,v*.060);q[0]+=s*.010;return q;}));

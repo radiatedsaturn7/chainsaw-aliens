@@ -27,6 +27,8 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
  // Shared hood and rollover datum. The center can fall away into the
  // grille while the top of each fender retains its headlamp shoulder.
  const leadingDrop=u=>hoodDrop*(1-(f.hoodNoseShoulder??.72)*smoother((Math.abs(2*u-1)-.32)/.68));
+ const wedge=end==='front'?(f.speedwayWedge??0):0;
+ const wedgeAt=z=>wedge*clamp((s*z-(join-.34))/Math.max(.35,travel+.34))**1.12;
  const shoulder=x=>Math.exp(-((x-.78)**2)/.034);
  function plan(u){
   const a=2*u-1, b=Math.abs(a),x=Math.sin(b*Math.PI*.5);
@@ -47,7 +49,7 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
   const y=.088*f.shoulder*shoulder(Math.abs(x))-.082*f.drop*(1-b*b)
    +.027*(bumper.shape-.5)*hump(b)+guide(f.curves.transverse,(x+1)*.5)*transverseScale*.36;
   const w=1-(.027+.11*f.taper)*blend;
-  return [raw[0]*w,raw[1]+blend*y-leadingDrop(u)*smoother((s*z-(join-.54))/.54)*.65,raw[2]-s*blend*dx*.30];
+  return [raw[0]*w,raw[1]+blend*y-wedgeAt(z)*(.57+.43*(1-b**1.65))-leadingDrop(u)*smoother((s*z-(join-.54))/.54)*.65,raw[2]-s*blend*dx*.30];
  }
  const stockDeck=(z,u)=>adjustDeck(deckAt(z,u),z,u);
  function sweptDeck(z,u){
@@ -94,7 +96,7 @@ export function createEndSurface({settings:f,end,tip,seam,archEnd,cabin,floor,de
   const track=1-(.022+.15*f.taper)*(.82+.18*v)-.055*f.lowerRoll*v**3;
   const cross=guide(f.curves.transverse,(x+1)*.5)*transverseScale;
   const form=shoulder(b)*(.013+.085*f.shoulder)+.034*co*(1-f.boxiness);
-  const y=edge[1]-drop*(1-v)+(f.upperFasciaLift??0)*(1-v)**1.65*(.63+.37*Math.sin(Math.PI*u))+form*(1-v)**1.8 +vOffsetGuide(v)*(.28+.72*co)*(1-v)*.65+cross*(.76+.24*hump(v))*(1-v);
+  const y=edge[1]-drop*(1-v)-wedgeAt(tip)*(1-smooth(clamp(v/.82)))*(.57+.43*co)+(f.upperFasciaLift??0)*(1-v)**1.65*(.63+.37*Math.sin(Math.PI*u))+form*(1-v)**1.8 +vOffsetGuide(v)*(.28+.72*co)*(1-v)*.65+cross*(.76+.24*hump(v))*(1-v);
   const lip=(f.valanceRise??0)*smooth(clamp((v-.67)/.33))*(1-smooth(clamp((Math.abs(x)-(.16+.58*(f.valanceWidth??.5)))/.24)));
   const beltV=(f.bumperBeltHeight??.44)-(f.bumperBeltSweep??0)*Math.abs(x)**1.8;
   const q=(v-beltV)/.050;
